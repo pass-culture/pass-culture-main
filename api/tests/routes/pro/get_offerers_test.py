@@ -51,17 +51,38 @@ def test_access_by_pro(client):
 
 
 def test_access_by_admin(client):
-    offers_factories.OffererFactory(name="offreur B")
-    offers_factories.OffererFactory(name="offreur A")
-    offers_factories.OffererFactory(name="offreur C")
+    offerer_b = offers_factories.OffererFactory(name="offreur B")
+    offerers_factories.VenueFactory(managingOfferer=offerer_b)
+    offerer_a = offers_factories.OffererFactory(name="offreur A")
+    offerers_factories.VenueFactory(managingOfferer=offerer_a)
+    offerers_factories.VenueFactory(managingOfferer=offerer_a)
+    offerers_factories.VenueFactory(managingOfferer=offerer_a)
+    offerers_factories.UserOffererFactory(offerer=offerer_a)
+    offerers_factories.UserOffererFactory(offerer=offerer_a)
+    offerers_factories.UserOffererFactory(offerer=offerer_a)
+    offerer_c = offers_factories.OffererFactory(name="offreur C")
+    offerers_factories.VenueFactory(managingOfferer=offerer_c)
     admin = users_factories.AdminFactory()
 
-    response = client.with_session_auth(admin.email).get("/offerers")
+    # Show 2 offerers only (which is less than the number of venues
+    # for the first matching offerer). It's intended to problematic
+    # `distinct` clause.
+    url = "/offerers?keywords=offreur&paginate=2"
+    response = client.with_session_auth(admin.email).get(url)
 
     assert response.status_code == 200
     offerers = response.json["offerers"]
-    assert len(offerers) == 3
+    assert len(offerers) == 2
+    assert [o["name"] for o in offerers] == ["offreur A", "offreur B"]
     assert all(o["userHasAccess"] for o in offerers)
+    assert response.json["nbTotalResults"] == 3
+
+    response = client.with_session_auth(admin.email).get(url + "&page=2")
+    assert response.status_code == 200
+    offerers = response.json["offerers"]
+    assert len(offerers) == 1
+    assert offerers[0]["name"] == "offreur C"
+    assert response.json["nbTotalResults"] == 3
 
 
 def test_filter_on_keywords(client):

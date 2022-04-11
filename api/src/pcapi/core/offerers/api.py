@@ -427,11 +427,15 @@ def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> l
         ).all()
 
     else:
-        offerers = get_all_offerers_for_user(
-            user=current_user,
-            validated=True,
-            validated_for_user=True,
-        ).all()
+        offerers = (
+            get_all_offerers_for_user(
+                user=current_user,
+                validated=True,
+                validated_for_user=True,
+            )
+            .distinct(Offerer.id)
+            .all()
+        )
     return offerers
 
 
