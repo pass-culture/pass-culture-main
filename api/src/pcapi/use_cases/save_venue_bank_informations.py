@@ -14,6 +14,7 @@ from pcapi.domain.bank_information import check_offerer_presence
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
+from pcapi.domain.demarches_simplifiees import archive_dossier
 from pcapi.domain.demarches_simplifiees import format_error_to_demarches_simplifiees_text
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import update_demarches_simplifiees_text_annotations
@@ -134,6 +135,8 @@ class SaveVenueBankInformations:
                     application_details.annotation_id,
                     "Valid dossier",
                 )
+        if application_details.status != BankInformationStatus.DRAFT:
+            archive_dossier(application_details.dossier_id)  # type: ignore [arg-type]
         return bank_information
 
     def get_referent_venue(
