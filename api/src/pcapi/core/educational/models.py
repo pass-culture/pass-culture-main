@@ -119,7 +119,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     contactEmail = sa.Column(sa.String(120), nullable=False)
 
-    contactPhone = sa.Column(sa.String(20), nullable=False)
+    contactPhone = sa.Column(sa.Text, nullable=False)
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
@@ -202,7 +202,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             **offer_mapping,
             offerId=offer.id,
             contactEmail=offer.extraData.get("contactEmail"),
-            contactPhone=offer.extraData.get("contactPhone"),
+            contactPhone=offer.extraData.get("contactPhone", "").strip(),
             offerVenue=offer.extraData.get("offerVenue"),
             students=students,
         )
@@ -276,7 +276,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     contactEmail = sa.Column(sa.String(120), nullable=False)
 
-    contactPhone = sa.Column(sa.String(20), nullable=False)
+    contactPhone = sa.Column(sa.Text, nullable=False)
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)
 
@@ -369,7 +369,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
             **offer_mapping,
             offerId=offer.id,
             contactEmail=offer.extraData.get("contactEmail"),
-            contactPhone=offer.extraData.get("contactPhone"),
+            contactPhone=offer.extraData.get("contactPhone", "").strip(),
             offerVenue=offer.extraData.get("offerVenue"),
             students=students,
             priceDetail=price_detail,
