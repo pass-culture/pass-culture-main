@@ -10232,7 +10232,6 @@ eslint-webpack-plugin@^2.6.0:
   integrity sha512-V+LPY/T3kur5QO3u+1s34VDTcRxjXWPUGM4hlmTb5DwVD0OQz631yGTxJZf4SpAqAjdbBVe978S8BJeHpAdOhQ==
   dependencies:
     "@types/eslint" "^7.28.2"
-    arrify "^2.0.1"
     jest-worker "^27.3.1"
     micromatch "^4.0.4"
     normalize-path "^3.0.0"
