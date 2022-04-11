@@ -282,7 +282,6 @@ def _check_offer_data_is_valid(
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
     check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)
-    check_offer_withdrawal(offer_data.withdrawal_type, offer_data.withdrawal_delay, offer_data.subcategory_id)
 
 
 def update_offer(

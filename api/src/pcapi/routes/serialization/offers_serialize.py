@@ -584,8 +584,6 @@ class GetOfferResponseModel(BaseModel):
     venue: GetOfferVenueResponseModel
     venueId: str
     withdrawalDetails: Optional[str]
-    withdrawalType: Optional[WithdrawalTypeEnum]
-    withdrawalDelay: Optional[int]
     status: OfferStatus
 
     _humanize_id = humanize_field("id")
@@ -610,6 +608,11 @@ class GetOfferResponseModel(BaseModel):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
+
+
+class GetIndividualOfferResponseModel(GetOfferResponseModel):
+    withdrawalType: Optional[WithdrawalTypeEnum]
+    withdrawalDelay: Optional[int]
 
 
 class ImageBodyModel(BaseModel):
