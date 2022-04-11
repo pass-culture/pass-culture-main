@@ -160,7 +160,7 @@
     "eslint-plugin-jest": "^24.1.0",
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-pass-culture": "./eslint-plugin-pass-culture",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-testing-library": "^3.9.2",
