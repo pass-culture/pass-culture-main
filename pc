@@ -501,7 +501,7 @@ elif [[ "$CMD" == "python" ]]; then
     if [ "$FILE_TO_UPLOAD" == 'none' ]; then
       kubectl -n $ENV exec -it $(pod_console) -- flask shell
     else
-      kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):"$FILE_TO_UPLOAD"
+      kubectl cp -n $ENV "$FILE_TO_UPLOAD" $(pod_console):/tmp/"$FILE_TO_UPLOAD"
       kubectl -n $ENV exec -it $(pod_console) -- flask shell
     fi
     exit
