@@ -3,6 +3,8 @@ from unittest import mock
 from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import _build_url
 from pcapi.connectors.cine_digital_service import get_resource
+from pcapi.connectors.cine_digital_service import put_resource
+from pcapi.connectors.serialization.cine_digital_service_serializers import CancelBookingCDS
 from pcapi.core.testing import override_settings
 
 
@@ -55,3 +57,32 @@ class CineDigitalServiceGetResourceTest:
         # Then
         request_get.assert_called_once_with("https://test_id.test_url/tariffs?api_token=test_token")
         assert json_data == shows_json
+
+
+class CineDigitalServicePutResourceTest:
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.put")
+    @override_settings(IS_DEV=False)
+    def test_should_return_shows_with_success(self, request_put):
+        # Given
+        cinema_id = "test_id"
+        api_url = "test_url/"
+        token = "test_token"
+        resource = ResourceCDS.CANCEL_BOOKING
+        body = CancelBookingCDS(barcodes=["111111111111"], paiementtypeid=5)
+
+        response_json = {"111111111111": "BARCODE_NOT_FOUND"}
+
+        response_return_value = mock.MagicMock(status_code=200, text="")
+        response_return_value.json = mock.MagicMock(return_value=response_json)
+        request_put.return_value = response_return_value
+
+        # When
+        json_data = put_resource(api_url, cinema_id, token, resource, body)
+
+        # Then
+        request_put.assert_called_once_with(
+            "https://test_id.test_url/transaction/cancel?api_token=test_token",
+            headers={"Content-Type": "application/json"},
+            data=body.json(),
+        )
+        assert json_data == response_json
