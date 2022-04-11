@@ -5,6 +5,7 @@ from sib_api_v3_sdk.rest import ApiException
 
 from pcapi import settings
 from pcapi.core import mails
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 
 
 logger = logging.getLogger(__name__)
@@ -45,12 +46,12 @@ class ToDevSendinblueBackend(SendinblueBackend):
             if not super().send_transactional_sms(recipient, content):
                 return False
 
-        mail_content = {
-            "Subject": "Code de validation du téléphone",
-            "Html-part": (
+        mail_content = SendinblueTransactionalWithoutTemplateEmailData(
+            subject="Code de validation du téléphone",
+            html_content=(
                 f"<div>Le contenu suivant serait envoyé par sms au numéro {recipient}</div>"
                 f"<div>{content}</div></div>"
             ),
-        }
+        )
 
         return mails.send(recipients=[settings.DEV_EMAIL_ADDRESS], data=mail_content)
