@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import os
 import pathlib
 from unittest.mock import patch
@@ -485,7 +485,7 @@ class ValidateOffererTest:
 
         # Then
         assert user_offerer.offerer.validationToken is None
-        assert user_offerer.offerer.dateValidated == datetime.utcnow()
+        assert user_offerer.offerer.dateValidated == datetime.datetime.utcnow()
 
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_pro_role_is_added_to_user(self, mocked_async_index_offers_of_venue_ids):
@@ -674,7 +674,31 @@ def test_set_business_unit_to_venue_id():
 
     offerers_api.set_business_unit_to_venue_id(new_business_unit.id, venue.id)
 
-    assert current_link.timespan.upper.timestamp() == pytest.approx(datetime.utcnow().timestamp())
+    assert current_link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+    new_link = finance_models.BusinessUnitVenueLink.query.order_by(
+        finance_models.BusinessUnitVenueLink.id.desc()
+    ).first()
+    assert new_link.venue == venue
+    assert new_link.businessUnit == new_business_unit
+    assert new_link.timespan.lower == current_link.timespan.upper
+    assert new_link.timespan.upper is None
+
+
+def test_set_business_unit_to_venue_id_with_multiple_links():
+    current_link = finance_factories.BusinessUnitVenueLinkFactory()
+    venue = current_link.venue
+    finance_factories.BusinessUnitVenueLinkFactory(
+        venue=venue,
+        timespan=[  # former, inactive link
+            datetime.datetime.utcnow() - datetime.timedelta(days=1000),
+            datetime.datetime.utcnow() - datetime.timedelta(days=800),
+        ],
+    )
+    new_business_unit = finance_factories.BusinessUnitFactory()
+
+    offerers_api.set_business_unit_to_venue_id(new_business_unit.id, venue.id)
+
+    assert current_link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
     new_link = finance_models.BusinessUnitVenueLink.query.order_by(
         finance_models.BusinessUnitVenueLink.id.desc()
     ).first()
@@ -695,4 +719,4 @@ def test_delete_business_unit():
     assert business_unit.status == finance_models.BusinessUnitStatus.DELETED
     assert venue.businessUnit is None
     assert link.timespan.lower == start_link_date  # unchanged
-    assert link.timespan.upper.timestamp() == pytest.approx(datetime.utcnow().timestamp())
+    assert link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())

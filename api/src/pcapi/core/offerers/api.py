@@ -176,8 +176,11 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
 
 def set_business_unit_to_venue_id(business_unit_id: int, venue_id: int) -> None:
-    current_link = finance_models.BusinessUnitVenueLink.query.filter_by(venueId=venue_id).one_or_none()
     now = datetime.utcnow()
+    current_link = finance_models.BusinessUnitVenueLink.query.filter(
+        finance_models.BusinessUnitVenueLink.venueId == venue_id,
+        finance_models.BusinessUnitVenueLink.timespan.contains(now),
+    ).one_or_none()
     if current_link:
         current_link.timespan = current_link._make_timespan(
             current_link.timespan.lower,
