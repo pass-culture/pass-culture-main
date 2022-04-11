@@ -148,7 +148,7 @@ def _update_collective_offer(
         setattr(collective_offer, attr_name, attr_value)
 
     collective_offer.contactEmail = offer.extraData.get("contactEmail")
-    collective_offer.contactPhone = offer.extraData.get("contactPhone")
+    collective_offer.contactPhone = offer.extraData.get("contactPhone", "").strip()
     collective_offer.offerVenue = offer.extraData.get("offerVenue")
     collective_offer.students = students
 
