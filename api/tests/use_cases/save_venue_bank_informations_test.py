@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.api_entreprises import ApiEntrepriseException
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.factories import OffererFactory
 from pcapi.core.offers import factories as offers_factories
@@ -55,6 +56,25 @@ class SaveVenueBankInformationsTest:
 
             self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
             assert errors.errors["Venue"] == ["Venue not found", "SIRET is no longer active"]
+
+        @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", side_effect=ApiEntrepriseException())
+        @pytest.mark.usefixtures("db_session")
+        def test_raises_an_error_if_api_entreprise_errored(self, siret_is_active):
+            offerer = OffererFactory()
+            offers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
+            application_details = ApplicationDetail(
+                siren="999999999",
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                iban="XXX",
+                bic="YYY",
+                modification_date=datetime.utcnow(),
+                siret="99999999900000",
+            )
+            errors = ApiErrors()
+
+            self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
+            assert errors.errors["Venue"] == ["Error while checking SIRET on Api Entreprise"]
 
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_no_venue_found_by_name(self):
