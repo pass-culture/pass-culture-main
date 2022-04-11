@@ -30,7 +30,7 @@ const Banner = ({
     <div className={cn('bi-banner', type, className)}>
       {closable && (
         <button onClick={handleOnClick} type="button">
-          <Icon svg="icons-close" />
+          <Icon alt="Masquer le bandeau" svg="icons-close" />
         </button>
       )}
 

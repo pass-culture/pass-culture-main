@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react'
-import React from 'react'
+import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
+import React from 'react'
 
 import BannerRGS from '../BannerRGS'
 
@@ -15,5 +16,15 @@ describe('src | new_components | BannerRGS', () => {
       'href',
       'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-'
     )
+  })
+  it('should close the banner', () => {
+    const spyClose = jest.fn()
+    render(<BannerRGS closable onClose={spyClose} />)
+    userEvent.click(
+      screen.getByRole('img', {
+        name: 'Masquer le bandeau',
+      })
+    )
+    expect(spyClose).toHaveBeenCalledTimes(1)
   })
 })
