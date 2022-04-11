@@ -136,8 +136,13 @@ class SaveVenueBankInformations:
             venue = self.venue_repository.find_by_siret(siret)
             if not venue:
                 api_errors.add_error("Venue", "Venue not found")
-            if not api_entreprises.check_siret_is_still_active(siret):
-                api_errors.add_error("Venue", "SIRET is no longer active")
+            try:
+                is_siret_active = api_entreprises.check_siret_is_still_active(siret)
+                if not is_siret_active:
+                    api_errors.add_error("Venue", "SIRET is no longer active")
+            except api_entreprises.ApiEntrepriseException:
+                api_errors.add_error("Venue", "Error while checking SIRET on Api Entreprise")
+
         else:
             if not offerer:
                 return None  # type: ignore [return-value]
