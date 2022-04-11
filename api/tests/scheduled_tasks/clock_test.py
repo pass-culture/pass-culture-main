@@ -47,7 +47,7 @@ def test_pc_send_today_events_notifications_only_to_individual_bookings_users():
     pc_send_today_events_notifications_metropolitan_france()
 
     assert len(testing.requests) == 1
-    assert all(data["message"]["title"] == "my_offer, c'est aujourd'hui !" for data in testing.requests)
+    assert all(data["message"]["title"] == "C'est aujourd'hui !" for data in testing.requests)
 
     user_ids = {user_id for data in testing.requests for user_id in data["user_ids"]}
     assert user_ids == {user1.id}
