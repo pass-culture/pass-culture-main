@@ -65,7 +65,7 @@ class UserProfilingFraudDataFactory(factory.Factory):
 
     account_email = factory.Sequence("user.email-{0}@example.com".format)
     account_email_result = "success"
-    account_email_score = "0"
+    account_email_score = 0
     account_telephone_result = "success"
     account_telephone_score = factory.Faker("pyint")
     account_telephone_is_valid = "yes"
