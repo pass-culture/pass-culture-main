@@ -194,6 +194,11 @@ def update_demarches_simplifiees_text_annotations(dossier_id: str, annotation_id
     client.update_text_annotation(dossier_id, settings.DMS_INSTRUCTOR_ID, annotation_id, message)  # type: ignore [arg-type]
 
 
+def archive_dossier(dossier_id: str) -> None:
+    client = api_dms.DMSGraphQLClient()
+    client.archive_application(dossier_id, settings.DMS_INSTRUCTOR_ID)  # type: ignore [arg-type]
+
+
 def format_error_to_demarches_simplifiees_text(api_error: CannotRegisterBankInformation) -> str:
     error_fields = []
     for key, value in api_error.errors.items():
