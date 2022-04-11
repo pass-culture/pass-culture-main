@@ -23,7 +23,7 @@ parameters:
     default: 'node_modules-14.18-{{ checksum "pro/yarn.lock" }}'
   pro_jest_cache_key:
     type: string
-    default: 'node-14.18-jest-cache-{{ epoch }}' # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
+    default: "node-14.18-jest-cache-{{ epoch }}" # epoch is to ensure we store jest cache at each run (cf https://circleci.com/docs/2.0/caching/#using-keys-and-templates)
   adage-front_cache_key:
     type: string
     default: 'node_modules-14.18-{{ checksum "adage-front/yarn.lock" }}'
@@ -66,7 +66,6 @@ executors:
 ###################
 
 commands:
-
   notify-slack:
     description: Send notification to Slack
     parameters:
@@ -687,8 +686,6 @@ jobs:
     working_directory: ~/pass-culture
     steps:
       - checkout
-      - skip_unchanged:
-          paths: pro
       - run: sudo chown -R 1000:1000 .
       - run: ./install_lib_ci_with_chrome.sh
       - run: sudo ./pc symlink
@@ -699,13 +696,6 @@ jobs:
             cd api
             pc start-backend
           background: true
-      - unless:
-          condition:
-            equal: ["master", << pipeline.git.branch >>]
-          steps:
-            - restore_cache:
-                name: Restore Yarn Package Cache
-                key: << pipeline.parameters.pro_cache_key >>
       - run:
           name: Run Frontend PRO
           command: |
@@ -754,23 +744,23 @@ jobs:
           registry-region: GCP_REGION
       - export_app_version
       - run:
-            name: Build & push pcapi image
-            command: |
-              source ${BASH_ENV}
-              docker build ./api \
-                -f ./api/Dockerfile \
-                --target pcapi \
-                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
-              docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+          name: Build & push pcapi image
+          command: |
+            source ${BASH_ENV}
+            docker build ./api \
+              -f ./api/Dockerfile \
+              --target pcapi \
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi:<<parameters.app_version>>
       - run:
-            name: Build & push pcapi-console image
-            command: |
-              source ${BASH_ENV}
-              docker build ./api \
-                -f ./api/Dockerfile \
-                --target pcapi-console \
-                -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
-              docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
+          name: Build & push pcapi-console image
+          command: |
+            source ${BASH_ENV}
+            docker build ./api \
+              -f ./api/Dockerfile \
+              --target pcapi-console \
+              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
+            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/pcapi-console:<<parameters.app_version>>
       - run:
           name: Send failure notification
           command: |
@@ -1009,145 +999,145 @@ workflows:
     jobs:
       - tests-script-pc
       - type-checking-pro:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - quality-pro:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - type-checking-adage-front:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - quality-adage-front:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - quality-api:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - tests-api:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
       - tests-adage-front:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
-         requires:
-           - type-checking-adage-front
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
+          requires:
+            - type-checking-adage-front
       - tests-pro-unit-tests:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
-         requires:
-           - type-checking-pro
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
+          requires:
+            - type-checking-pro
       - tests-pro-e2e-tests:
-         filters:
-           branches:
-             ignore:
-               - production
-               - staging
-               - integration
-         context: Slack
-         requires:
-           - type-checking-pro
+          filters:
+            branches:
+              ignore:
+                - production
+                - staging
+                - integration
+          context: Slack
+          requires:
+            - type-checking-pro
       - build-and-push-image:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - tests-api
-           - quality-api
-         context:
-           - GCP
-           - GCP_EHP
-         app_version: ${CIRCLE_SHA1}
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - tests-api
+            - quality-api
+          context:
+            - GCP
+            - GCP_EHP
+          app_version: ${CIRCLE_SHA1}
       - deploy-pcapi:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - build-and-push-image
-         context:
-           - GCP
-           - GCP_EHP
-         helm_environment: testing
-         app_version: ${CIRCLE_SHA1}
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - build-and-push-image
+          context:
+            - GCP
+            - GCP_EHP
+          helm_environment: testing
+          app_version: ${CIRCLE_SHA1}
       - restart-pcapi:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - deploy-pcapi
-         context:
-           - GCP
-           - GCP_EHP
-         helm_environment: testing
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - deploy-pcapi
+          context:
+            - GCP
+            - GCP_EHP
+          helm_environment: testing
       - deploy-pro:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - quality-pro
-           - tests-pro-unit-tests
-           - tests-pro-e2e-tests
-           - restart-pcapi
-         context:
-           - GCP
-           - GCP_EHP
-         app_environment: testing
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - quality-pro
+            - tests-pro-unit-tests
+            - tests-pro-e2e-tests
+            - restart-pcapi
+          context:
+            - GCP
+            - GCP_EHP
+          app_environment: testing
       - deploy-adage-front:
-         filters:
-           branches:
-             only:
-               - master
-         requires:
-           - quality-adage-front
-           - tests-adage-front
-           - restart-pcapi
-         context:
-           - GCP
-           - GCP_EHP
-         app_environment: testing
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - quality-adage-front
+            - tests-adage-front
+            - restart-pcapi
+          context:
+            - GCP
+            - GCP_EHP
+          app_environment: testing
   gcp-ehp:
     jobs:
       - build-and-push-image:
