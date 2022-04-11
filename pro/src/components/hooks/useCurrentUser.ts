@@ -19,6 +19,7 @@ interface IAPICurrentUser {
   firstName: string | null
   hasPhysicalVenues: boolean
   hasSeenProTutorials: boolean
+  hasSeenProRgs: boolean
   id: string
   idPieceNumber: string | null
   isAdmin: boolean
