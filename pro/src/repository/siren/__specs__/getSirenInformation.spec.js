@@ -18,7 +18,7 @@ describe('getSirenInformations', () => {
 
       // then
       expect(fetch.mock.calls).toHaveLength(1)
-      expect(fetch.mock.calls[0][0]).toStrictEqual(
+      expect(fetch.mock.calls[0][0]).toBe(
         `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(errorMessage).toStrictEqual({ error: 'SIREN invalide' })
@@ -37,7 +37,7 @@ describe('getSirenInformations', () => {
 
       // then
       expect(fetch.mock.calls).toHaveLength(1)
-      expect(fetch.mock.calls[0][0]).toStrictEqual(
+      expect(fetch.mock.calls[0][0]).toBe(
         `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(errorMessage).toStrictEqual({ error: 'Service indisponible' })
@@ -69,7 +69,7 @@ describe('getSirenInformations', () => {
 
       // then
       expect(fetch.mock.calls).toHaveLength(1)
-      expect(fetch.mock.calls[0][0]).toStrictEqual(
+      expect(fetch.mock.calls[0][0]).toBe(
         `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
       )
       expect(locationValues).toStrictEqual({
@@ -109,7 +109,7 @@ describe('getSirenInformations', () => {
 
         // then
         expect(fetch.mock.calls).toHaveLength(1)
-        expect(fetch.mock.calls[0][0]).toStrictEqual(
+        expect(fetch.mock.calls[0][0]).toBe(
           `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
         )
         expect(locationValues).toMatchObject({
@@ -145,7 +145,7 @@ describe('getSirenInformations', () => {
 
         // then
         expect(fetch.mock.calls).toHaveLength(1)
-        expect(fetch.mock.calls[0][0]).toStrictEqual(
+        expect(fetch.mock.calls[0][0]).toBe(
           `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
         )
         expect(locationValues).toMatchObject({
