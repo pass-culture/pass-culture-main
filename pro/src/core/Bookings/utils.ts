@@ -12,7 +12,7 @@ export const buildBookingsRecapQuery = ({
   bookingStatusFilter = DEFAULT_PRE_FILTERS.bookingStatusFilter,
   offerType = DEFAULT_PRE_FILTERS.offerType,
   page,
-}: TPreFilters & { page?: number }): TAPIFilters => {
+}: Partial<TPreFilters> & { page?: number }): TAPIFilters => {
   const params = { page } as TAPIFilters
 
   if (offerVenueId !== DEFAULT_PRE_FILTERS.offerVenueId) {

@@ -1,14 +1,14 @@
-import { api } from 'api/v1/api'
-import { BookingRecapResponseModel } from 'api/v1/gen'
 import {
-  GetFilteredBookingsRecapAdapter,
-  GetFilteredBookingsRecapAdapterPayload,
+  GetFilteredCollectiveBookingsRecapAdapter,
+  GetFilteredCollectiveBookingsRecapAdapterPayload,
+  CollectiveBookingResponseModel,
 } from 'core/Bookings'
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 const MAX_LOADED_PAGES = 5
 
-const FAILING_RESPONSE: AdapterFailure<GetFilteredBookingsRecapAdapterPayload> =
+const FAILING_RESPONSE: AdapterFailure<GetFilteredCollectiveBookingsRecapAdapterPayload> =
   {
     isOk: false,
     message:
@@ -20,10 +20,10 @@ const FAILING_RESPONSE: AdapterFailure<GetFilteredBookingsRecapAdapterPayload> =
     },
   }
 
-export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
+export const getFilteredCollectiveBookingsRecapAdapter: GetFilteredCollectiveBookingsRecapAdapter =
   async apiFilters => {
     try {
-      let allBookings: BookingRecapResponseModel[] = []
+      let allBookings: CollectiveBookingResponseModel[] = []
       let currentPage = 0
       let pages: number
 
@@ -39,19 +39,16 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
           bookingPeriodBeginningDate,
           bookingPeriodEndingDate,
           bookingStatusFilter,
-          offerType,
           page,
         } = buildBookingsRecapQuery(nextPageFilters)
 
-        const bookings = await api.getBookingsGetBookingsPro(
+        const bookings = await pcapi.getCollectiveBookings(
           page,
-          // @ts-expect-error api expect number
           venueId,
           eventDate,
           bookingStatusFilter,
           bookingPeriodBeginningDate,
-          bookingPeriodEndingDate,
-          offerType
+          bookingPeriodEndingDate
         )
         pages = bookings.pages
 
@@ -72,4 +69,4 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
     }
   }
 
-export default getFilteredBookingsRecapAdapter
+export default getFilteredCollectiveBookingsRecapAdapter
