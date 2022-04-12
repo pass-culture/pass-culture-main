@@ -124,7 +124,9 @@ class SaveVenueBankInformations:
         if application_details.annotation_id is not None:
             if application_details.status == BankInformationStatus.ACCEPTED:
                 update_demarches_simplifiees_text_annotations(
-                    application_details.dossier_id, application_details.annotation_id, "Dossier imported Sucessfully"
+                    application_details.dossier_id,  # type: ignore [arg-type]
+                    application_details.annotation_id,
+                    "Dossier imported Sucessfully",
                 )
         return bank_information
 
