@@ -1,7 +1,9 @@
 from pcapi.connectors.cine_digital_service import get_payment_types
 from pcapi.connectors.cine_digital_service import get_shows
+from pcapi.connectors.cine_digital_service import get_tariffs
 from pcapi.connectors.serialization.cine_digital_service_serializers import PaymentTypeCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import TariffCDS
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 
 
@@ -28,5 +30,15 @@ class CineDigitalServiceAPI:
 
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Pass Culture payment type not found in Cine Digital Service API for cinemaId={self.cinemaid}"
+            f" & url={self.apiUrl}"
+        )
+
+    def get_tariff(self) -> TariffCDS:
+        tariffs = get_tariffs(self.cinemaid, self.apiUrl, self.token)
+        for tariff in tariffs:
+            if tariff.label == "Pass Culture 5€":
+                return tariff
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Tariff Pass Culture not found in Cine Digital Service API for cinemaId={self.cinemaid}"
             f" & url={self.apiUrl}"
         )
