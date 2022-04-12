@@ -167,7 +167,6 @@
     "eslint-webpack-plugin": "^2.6.0",
     "file-loader": "^6.2.0",
     "fs-extra": "^9.0.1",
-    "glob": "^7.1.7",
     "history": "^4.7.2",
     "html-webpack-plugin": "^4.5.0",
     "hygen": "^6.2.0",
