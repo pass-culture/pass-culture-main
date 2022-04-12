@@ -50,6 +50,7 @@ class BookingRecap:
         redactor_firstname: Optional[str],
         redactor_email: Optional[str],
         event_beginning_datetime: Optional[datetime],
+        stock_identifier: int,
     ):
         self.booking_amount = booking_amount
         self.beneficiary_lastname = beneficiary_lastname
@@ -81,6 +82,7 @@ class BookingRecap:
             confirmation_date=booking_confirmation_date,
         )
         self.event_beginning_datetime = event_beginning_datetime
+        self.stock_identifier = stock_identifier
 
     def __new__(cls, *args, **kwargs):  # type: ignore [no-untyped-def]
         return object.__new__(cls)
