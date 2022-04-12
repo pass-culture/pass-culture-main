@@ -42,6 +42,7 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
+from pcapi.models import db
 
 
 BOOKING_DATE_STATUS_MAPPING = {
@@ -684,3 +685,8 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
         return query.one()
     except NoResultFound:
         raise CollectiveOfferTemplateNotFound()
+
+
+def user_has_bookings(user: User) -> bool:
+    bookings_query = CollectiveBooking.query.join(CollectiveBooking.offerer).join(Offerer.UserOfferers)
+    return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()

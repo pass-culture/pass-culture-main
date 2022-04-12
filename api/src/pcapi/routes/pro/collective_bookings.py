@@ -8,6 +8,7 @@ from pcapi.core.educational import api as collective_api
 from pcapi.core.educational import repository as collective_repository
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_bookings_serialize
+from pcapi.routes.serialization.bookings_serialize import UserHasBookingResponse
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -79,3 +80,11 @@ def get_collective_bookings_csv(query: collective_bookings_serialize.ListCollect
     )
 
     return bookings.encode("utf-8-sig")
+
+
+@blueprint.pro_private_api.route("/collective/bookings/pro/userHasBookings", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=UserHasBookingResponse)
+def get_user_has_collective_bookings() -> UserHasBookingResponse:
+    user = current_user._get_current_object()
+    return UserHasBookingResponse(hasBookings=collective_repository.user_has_bookings(user))
