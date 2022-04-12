@@ -5,6 +5,7 @@ import pytest
 
 from pcapi.connectors.serialization.cine_digital_service_serializers import PaymentTypeCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import TariffCDS
 from pcapi.core.booking_providers.cds.CineDigitalService import CineDigitalServiceAPI
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 
@@ -119,4 +120,53 @@ class CineDigitalServiceGetPaymentTypeTest:
         assert (
             str(cds_exception.value)
             == "Pass Culture payment type not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
+        )
+
+
+class CineDigitalServiceGetTariffTest:
+    @patch("pcapi.core.booking_providers.cds.CineDigitalService.get_tariffs")
+    def test_should_return_tariffs_with_pass_culture_tariff(self, mocked_get_tariffs):
+        tariffs = [
+            TariffCDS(
+                id=1,
+                price=10,
+                label="Pass Culture 5€",
+                is_active=True,
+            ),
+            TariffCDS(
+                id=2,
+                price=3.5,
+                label="Other tariff",
+                is_active=True,
+            ),
+        ]
+        mocked_get_tariffs.return_value = tariffs
+        cine_digital_service = CineDigitalServiceAPI(cinemaid="cinemaid_test", token="token_test", apiUrl="apiUrl_test")
+        tariff = cine_digital_service.get_tariff()
+
+        assert tariff.label == "Pass Culture 5€"
+
+    @patch("pcapi.core.booking_providers.cds.CineDigitalService.get_tariffs")
+    def test_should_raise_exception_if_tariff_not_found(self, mocked_get_tariffs):
+        tariffs = [
+            TariffCDS(
+                id=1,
+                price=10,
+                label="Another Tariff",
+                is_active=True,
+            ),
+            TariffCDS(
+                id=2,
+                price=3.5,
+                label="Other tariff",
+                is_active=True,
+            ),
+        ]
+        mocked_get_tariffs.return_value = tariffs
+        cine_digital_service = CineDigitalServiceAPI(cinemaid="test_id", token="token_test", apiUrl="test_url")
+        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
+            cine_digital_service.get_tariff()
+        assert (
+            str(cds_exception.value)
+            == "Tariff Pass Culture not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
         )
