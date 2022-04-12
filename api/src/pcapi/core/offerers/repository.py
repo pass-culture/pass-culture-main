@@ -63,12 +63,6 @@ def get_all_offerers_for_user(
             query = query.filter(models.UserOfferer.validationToken.isnot(None))
 
     if keywords:
-        # FIXME (dbaty, 2022-03-02): There is a bug here. If an
-        # offerer does not have any venue and the user provided
-        # keywords, the offerer will not be returned even if its name
-        # matches the keywords. We should outerjoin, here.  See
-        # `test_filter_on_keywords()`, too.
-        query = query.join(models.Venue, models.Venue.managingOffererId == models.Offerer.id)
         query = filter_offerers_with_keywords_string(query, keywords)
 
     return query
@@ -235,7 +229,13 @@ def filter_offerers_with_keywords_string(query: BaseQuery, keywords_string: str)
     keywords_filter = create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offerer, keywords_string
     )
-    query = query.filter(keywords_filter)
+    subquery = (
+        models.Offerer.query.outerjoin(models.Offerer.managedVenues)
+        .filter(keywords_filter)
+        .with_entities(models.Offerer.id)
+        .subquery()
+    )
+    query = query.filter(models.Offerer.id.in_(subquery))
     return query
 
 

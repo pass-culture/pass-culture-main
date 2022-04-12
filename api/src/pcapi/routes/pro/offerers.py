@@ -53,26 +53,27 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
         keywords=query.keywords,
     )
 
-    # UserOfferer and Venue may or may not be already JOINed, depending
+    # UserOfferer may or may not be already JOINed, depending
     # on the arguments passed to `get_all_offerers_for_user()`.
-    for model, relationship in (
-        (offerers_models.Venue, offerers_models.Offerer.managedVenues),
-        (offerers_models.UserOfferer, offerers_models.Offerer.UserOfferers),
-    ):
-        if model in {mapper.entity for mapper in offerers_query._join_entities}:  # type: ignore [attr-defined]
-            option = sqla_orm.contains_eager(relationship)
-        else:
-            option = sqla_orm.joinedload(relationship)
-        offerers_query = offerers_query.options(option)
+    if offerers_models.UserOfferer in {mapper.entity for mapper in offerers_query._join_entities}:  # type: ignore [attr-defined]
+        option = sqla_orm.contains_eager(offerers_models.Offerer.UserOfferers)
+    else:
+        option = sqla_orm.joinedload(offerers_models.Offerer.UserOfferers)
+    offerers_query = offerers_query.options(option)
 
     offerers_query = offerers_query.options(
+        sqla_orm.joinedload(offerers_models.Offerer.managedVenues).load_only(
+            offerers_models.Venue.id,
+            offerers_models.Venue.isVirtual,
+        ),
         sqla_orm.load_only(
             offerers_models.Offerer.id,
             offerers_models.Offerer.name,
             offerers_models.Offerer.siren,
             offerers_models.Offerer.validationToken,
-        )
+        ),
     )
+
     offerers_query = offerers_query.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
     offerers_query = offerers_query.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)
     offerers_query = offerers_query.paginate(  # type: ignore [attr-defined]

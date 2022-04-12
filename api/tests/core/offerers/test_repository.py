@@ -89,10 +89,6 @@ class GetAllOfferersForUserTest:
     def test_search_keywords_in_offerer_name(self):
         offerer1 = offers_factories.OffererFactory(name="cinéma")
         offerer2 = offers_factories.OffererFactory(name="théâtre")
-        # Because of a bug, we need venues, here: see bug explained in
-        # `repository.get_all_offerers_for_user()`.
-        offers_factories.VenueFactory(managingOfferer=offerer1, name="dummy")
-        offers_factories.VenueFactory(managingOfferer=offerer2, name="dummy")
         pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
         offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
