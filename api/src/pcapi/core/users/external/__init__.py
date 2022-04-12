@@ -122,6 +122,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
                 "venue_type": {venue.venueTypeCode.name for venue in venues if venue.venueTypeCode},  # type: ignore [dict-item, attr-defined]
                 "venue_label": {venue.venueLabel.label for venue in venues if venue.venueLabelId},  # type: ignore [dict-item]
                 "departement_code": {venue.departementCode for venue in venues if venue.departementCode},  # type: ignore [dict-item]
+                "postal_code": {venue.postalCode for venue in venues if venue.postalCode},  # type: ignore [dict-item, has-type]
                 "dms_application_submitted": any(venue.demarchesSimplifieesIsDraft for venue in venues),
                 "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
                 "isVirtual": any(venue.isVirtual for venue in venues),
@@ -145,7 +146,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         is_booking_email=bool(venues),
         marketing_email_subscription=marketing_email_subscription,
         offerer_name=set(offerer_name),
-        venue_count=len(all_venue_ids),
+        venue_ids=all_venue_ids,
         **attributes,  # type: ignore [arg-type]
     )
 
@@ -177,9 +178,11 @@ def get_user_attributes(user: User) -> UserAttributes:
         first_name=user.firstName,
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
         user_id=user.id,
+        is_active=user.isActive,  # type: ignore [arg-type]
         is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,  # type: ignore [arg-type]
+        is_phone_validated=user.is_phone_validated,  # type: ignore [arg-type]
         is_pro=is_pro_user,  # type: ignore [arg-type]
         last_booking_date=user_bookings[0].dateCreated if user_bookings else None,
         last_favorite_creation_date=last_favorite.dateCreated if last_favorite else None,  # type: ignore [attr-defined]
@@ -187,13 +190,16 @@ def get_user_attributes(user: User) -> UserAttributes:
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,
-        postal_code=user.postalCode,
+        phone_number=user.phoneNumber,
+        postal_code=user.postalCode,  # type: ignore [arg-type]
         products_use_date={
             f"product_{TRACKED_PRODUCT_IDS[booking.stock.offer.productId]}_use": booking.dateUsed
             for booking in user_bookings
             if booking.dateUsed and booking.stock.offer.productId in TRACKED_PRODUCT_IDS
         },
         roles=[role.value for role in user.roles],
+        suspension_date=user.suspension_date,
+        suspension_reason=user.suspension_reason,
     )
 
 
