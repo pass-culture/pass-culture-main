@@ -18,11 +18,7 @@ import wtforms.validators
 from pcapi.admin import base_configuration
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
-from pcapi.core.subscription import messages as subscription_messages
 import pcapi.core.subscription.api as subscription_api
-import pcapi.core.subscription.exceptions as subscription_exceptions
-import pcapi.core.users.api as users_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -42,6 +38,11 @@ class FraudReviewForm(wtforms.Form):
     reason = wtforms.TextAreaField(validators=[wtforms.validators.DataRequired()])
     review = wtforms.SelectField(
         choices=[(item.name, item.value) for item in fraud_models.FraudReviewStatus],
+        validators=[wtforms.validators.DataRequired()],
+    )
+    eligibility = wtforms.SelectField(
+        choices=[(item.name, item.value) for item in users_models.EligibilityType],
+        validate_choice=False,
         validators=[wtforms.validators.DataRequired()],
     )
 
@@ -71,7 +72,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "email",
         "subscription_status",
         "beneficiaryFraudChecks",
-        "beneficiaryFraudReview",
+        "beneficiaryFraudReviews",
         "dateCreated",
     ]
     column_labels = {
@@ -79,7 +80,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "lastName": "Nom",
         "subscription_status": "Statut",
         "beneficiaryFraudChecks": "Vérifications anti fraudes",
-        "beneficiaryFraudReview": "Evaluation Manuelle",
+        "beneficiaryFraudReviews": "Evaluations Manuelles",
         "dateCreated": "Date de creation de compte",
     }
 
@@ -90,7 +91,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         "dateCreated",
         "beneficiaryFraudChecks.type",
         "beneficiaryFraudChecks.status",
-        "beneficiaryFraudReview",
+        "beneficiaryFraudReviews",
     ]
 
     column_sortable_list = [
@@ -116,7 +117,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             {
                 "subscription_status": support_utils.beneficiary_subscription_status_formatter,
                 "beneficiaryFraudChecks": support_utils.beneficiary_fraud_checks_formatter,
-                "beneficiaryFraudReview": support_utils.beneficiary_fraud_review_formatter,
+                "beneficiaryFraudReviews": support_utils.beneficiary_fraud_review_formatter,
             }
         )
         return formatters
@@ -135,7 +136,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         view_filter = self.get_view_filter()
         query = users_models.User.query.filter(view_filter).options(
             sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudChecks),
-            sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudReview),
+            sqlalchemy.orm.joinedload(users_models.User.beneficiaryFraudReviews),
         )
         return query
 
@@ -188,7 +189,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             details_columns=self._details_columns,
             get_value=self.get_detail_value,
             return_url=return_url,
-            has_performed_identity_check=fraud_api.has_user_performed_identity_check(user),
+            has_filled_identity_check=bool(fraud_api.get_last_filled_identity_fraud_check(user)),
             enum_update_request_value=users_models.EmailHistoryEventTypeEnum.UPDATE_REQUEST.value,
             subscription_items=support_api.get_subscription_items_by_eligibility(user),
             next_subscription_step=subscription_api.get_next_subscription_step(user),
@@ -215,57 +216,10 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             flask.flash("Cet utilisateur n'existe pas", "error")
             return flask.redirect(flask.url_for(".index_view"))
 
-        if user.beneficiaryFraudReview:
-            flask.flash(
-                f"Une revue manuelle a déjà été réalisée sur l'utilisateur {user.id} {user.firstName} {user.lastName}"
-            )
-            return flask.redirect(flask.url_for(".details_view", id=user_id))
-
         review = fraud_models.BeneficiaryFraudReview(
             user=user, author=flask_login.current_user, reason=form.data["reason"], review=form.data["review"]
         )
-        if review.review == fraud_models.FraudReviewStatus.OK.value:
-            source_data = fraud_api.get_source_data(user)
-            users_api.update_user_information_from_external_source(user, source_data)  # type: ignore [arg-type]
-            eligibility = fraud_api.decide_eligibility(user, source_data)  # type: ignore [arg-type]
-
-            if eligibility is None:
-                flask.flash("La date de naissance du dossier indique que l'utilisateur n'est pas éligible", "error")
-                return flask.redirect(flask.url_for(".details_view", id=user_id))
-
-            try:
-                fraud_check = users_api.get_activable_identity_fraud_check(user)
-                if not fraud_check:
-                    fraud_check = fraud_models.BeneficiaryFraudCheck(
-                        user=user,
-                        type=fraud_models.FraudCheckType.JOUVE,
-                        status=fraud_models.FraudCheckStatus.OK,
-                        reason="Validated by admin",
-                        eligibilityType=eligibility,
-                        thirdPartyId="admin_validation",
-                        resultContent={
-                            "id": 0,
-                            "registrationDate": datetime.datetime.utcnow().isoformat(),
-                        },
-                    )
-
-                subscription_api.activate_beneficiary(user, "fraud_validation")
-            except subscription_exceptions.CannotUpgradeBeneficiaryRole:
-                flask.flash("L'utilisateur est déjà bénéficiaire", "error")
-            flask.flash(f"L'utilisateur à été activé comme bénéficiaire {user.firstName} {user.lastName}")
-
-        elif review.review == fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS.value:
-            review.reason += " ; Redirigé vers DMS"  # type: ignore [operator]
-            send_subscription_document_error_email(user.email, "unread-document")
-            flask.flash(f"L'utilisateur {user.firstName} {user.lastName} à été redirigé vers DMS")
-            subscription_messages.on_redirect_to_dms_from_idcheck(user)
-        elif review.review == fraud_models.FraudReviewStatus.KO.value:
-            subscription_messages.on_fraud_review_ko(user)
-        db.session.add(review)
-        db.session.commit()
-
-        flask.flash(f"Une revue manuelle ajoutée pour le bénéficiaire {user.firstName} {user.lastName}")
-        return flask.redirect(flask.url_for(".details_view", id=user_id))
+        return support_api.on_admin_review(review, user, form.data)
 
     @flask_admin.expose("/validate/beneficiary/phone_number/<user_id>", methods=["POST"])
     def validate_phone_number(self, user_id: int) -> Response:

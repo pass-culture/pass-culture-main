@@ -528,6 +528,23 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
     )
 
 
+def get_last_filled_identity_fraud_check(user: users_models.User) -> typing.Optional[models.BeneficiaryFraudCheck]:
+    user_identity_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type in models.IDENTITY_CHECK_TYPES
+        and fraud_check.source_data().get_last_name() is not None
+        and fraud_check.source_data().get_first_name() is not None
+        and fraud_check.source_data().get_birth_date() is not None
+    ]
+
+    return (
+        max(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated)
+        if user_identity_fraud_checks
+        else None
+    )
+
+
 def is_risky_user_profile(user: users_models.User) -> bool:
     # No need to filter on eligibilityType ; profiling is performed only for AGE18 users.
     user_profiling = (
