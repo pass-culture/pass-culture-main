@@ -226,7 +226,8 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     @property
     def is_eligible_for_search(self) -> bool:
-        return self.isPermanent and self.managingOfferer.isActive and self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE  # type: ignore [return-value, attr-defined]
+        not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE  # type: ignore [attr-defined]
+        return self.isPermanent and self.managingOfferer.isActive and not_administrative  # type: ignore [return-value]
 
     def store_departement_code(self) -> None:
         if not self.postalCode:
@@ -281,6 +282,10 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         which have at most one banner (thumb).
         """
         return "{}/{}/{}".format(self.thumb_base_url, self.thumb_path_component, humanize(self.id))
+
+    @property
+    def isReleased(self) -> bool:
+        return self.isValidated and self.managingOfferer.isActive and self.managingOfferer.isValidated
 
     @hybrid_property
     def timezone(self) -> str:
