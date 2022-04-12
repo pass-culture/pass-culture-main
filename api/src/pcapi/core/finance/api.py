@@ -396,6 +396,8 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     )
     if not pricings:
         return
+    pricing_ids = {p.id for p in pricings}
+    bookings_already_priced = {p.bookingId for p in pricings}
     for pricing in pricings:
         if pricing.status not in models.DELETABLE_PRICING_STATUSES:
             # FIXME (dbaty, 2022-04-06): there was a bug that caused
@@ -438,6 +440,8 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
             }
             # fmt: on
             if pricing.stockId in stock_ids:
+                pricing_ids.remove(pricing.id)
+                bookings_already_priced.remove(pricing.bookingId)
                 logger.info(
                     "Found non-deletable pricing for a SIRET that has an older booking to price or cancel (special case for prematurely reimbursed event bookings)",
                     extra={
@@ -459,16 +463,14 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
                 )
                 raise exceptions.NonCancellablePricingError()
 
-    # Do not reuse `query` from above. It should not have changed
+    # Do not reuse the `pricings` query. It should not have changed
     # since the beginning of the function (since we should have an
     # exclusive lock on the business unit to avoid that)... but I'd
     # rather be safe than sorry.
-    pricing_ids = [p.id for p in pricings]
     lines = models.PricingLine.query.filter(models.PricingLine.pricingId.in_(pricing_ids))
     lines.delete(synchronize_session=False)
     logs = models.PricingLog.query.filter(models.PricingLog.pricingId.in_(pricing_ids))
     logs.delete(synchronize_session=False)
-    bookings_already_priced = [p.bookingId for p in pricings]
     pricings = models.Pricing.query.filter(models.Pricing.id.in_(pricing_ids))
     pricings.delete(synchronize_session=False)
     logger.info(
