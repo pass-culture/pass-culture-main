@@ -438,6 +438,10 @@ def get_collective_offers_template_for_filters(
         period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
         period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
+
+    if query is None:
+        return []
+
     query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())  # type: ignore [union-attr, attr-defined]
     offers = (
         query.options(

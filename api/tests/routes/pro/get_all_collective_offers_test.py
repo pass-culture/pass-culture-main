@@ -151,3 +151,37 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 0
+
+    def test_with_filters(self, app):
+        # Given
+        user = users_factories.UserFactory()
+        offerer = offerer_factories.OffererFactory(users=[user])
+        venue = offerer_factories.VenueFactory(managingOfferer=offerer)
+        offer = educational_factories.CollectiveOfferFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__venue=venue,
+            collectiveOffer__dateCreated=datetime.datetime.utcnow(),
+            collectiveOffer__offerId=2,
+            beginningDatetime=datetime.datetime(2022, 8, 10),
+        )
+        educational_factories.CollectiveOfferTemplateFactory(
+            venue=venue, dateCreated=datetime.datetime.utcnow() + datetime.timedelta(days=10), offerId=2
+        )
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer=offer,
+            stockId=1,
+            beginningDatetime=datetime.datetime(2022, 10, 10),
+        )
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user.email)
+        response = client.get("/collective/offers?periodBeginningDate=2022-10-10&periodEndingDate=2022-10-11")
+
+        # Then
+        response_json = response.json
+        assert response.status_code == 200
+        assert isinstance(response_json, list)
+        assert len(response_json) == 1
+        assert response_json[0]["id"] == humanize(offer.offerId)
