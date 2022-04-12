@@ -193,16 +193,33 @@ def synchronize_stocks(
     ):
         offers_by_venue_reference = get_offers_map_by_venue_reference(products_references, venue.id)
 
-    # Update by batch of 100 offer ids. It's more efficient than
-    # making a single, large SQL query that has up to 1000 ids.
-    offer_ids = list(offers_by_provider_reference.values())
-    batch_size = 100
-    ranges = [offer_ids[i : i + batch_size] for i in range(0, len(offer_ids), batch_size)]
-    for range_ in ranges:
-        Offer.query.filter(Offer.id.in_(range_)).update(
-            {"lastProviderId": provider_id},
-            synchronize_session=False,
+    with log_elapsed(
+        logger,
+        "bulk update: Offer.lastProviderId",
+        extra={
+            "venue": venue.id,
+            "ref_count": len(products_references),
+        },
+    ):
+        offer_ids = list(offers_by_provider_reference.values())
+        # Do not use the ORM, otherwise SQLAlchemy automatically
+        # updates `dateUpdated` (because the model field has the
+        # "onupdate" option). Updating this column takes a lot of time
+        # because it has an index. We want offer synchronization to be
+        # as quick as possible, and since `dateUpdated` is only used
+        # by the data team (to update their copy of the database),
+        # we update that column asynchronously.
+        db.session.execute(
+            """
+                UPDATE offer
+                SET "lastProviderId" = :provider_id
+                WHERE id in :offer_ids
+                AND "lastProviderId" != :provider_id
+                """,
+            {"offer_ids": tuple(offer_ids), "provider_id": provider_id},
         )
+        # FIXME: enqueue the list of offer_ids and `utcnow()` in
+        # Redis, so that a cron can make the update.
 
     new_offers = _build_new_offers_from_stock_details(
         stock_details,
