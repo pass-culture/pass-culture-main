@@ -89,6 +89,7 @@ def clear_outboxes():
         search_testing.reset_search_store()
         sms_notifications_testing.reset_requests()
         users_testing.reset_sendinblue_requests()
+        users_testing.reset_zendesk_requests()
         adage_api_testing.reset_requests()
 
 

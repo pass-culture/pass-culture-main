@@ -1,6 +1,12 @@
-sendinblue_requests = []
+sendinblue_requests: list[dict] = []
+zendesk_requests: list[dict] = []
 
 
-def reset_sendinblue_requests():  # type: ignore [no-untyped-def]
+def reset_sendinblue_requests() -> None:
     global sendinblue_requests  # pylint: disable=global-statement
     sendinblue_requests = []
+
+
+def reset_zendesk_requests() -> None:
+    global zendesk_requests  # pylint: disable=global-statement
+    zendesk_requests = []

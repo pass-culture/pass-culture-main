@@ -24,6 +24,7 @@ from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
+from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import UserRole
 from pcapi.notifications.push import testing as batch_testing
 
@@ -85,7 +86,12 @@ def test_update_external_pro_user():
 
 
 def test_get_user_attributes_beneficiary():
-    user = BeneficiaryGrant18Factory(deposit__version=1, departementCode="75")
+    user = BeneficiaryGrant18Factory(
+        deposit__version=1,
+        departementCode="75",
+        phoneNumber="0706050403",
+        phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+    )
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
     b1 = IndividualBookingFactory(individualBooking__user=user, amount=10, stock__offer=offer)
     b2 = IndividualBookingFactory(
@@ -120,11 +126,13 @@ def test_get_user_attributes_beneficiary():
         deposit_expiration_date=user.deposit_expiration_date,
         eligibility=EligibilityType.AGE18,
         first_name="Jeanne",
+        is_active=True,
         is_beneficiary=True,
         is_pro=False,
         last_booking_date=last_date_created,
         last_name="Doux",
         marketing_push_subscription=True,
+        phone_number="0706050403",
         postal_code=None,
         products_use_date={"product_brut_x_use": datetime(2021, 5, 6, 0, 0)},
         booking_count=2,
@@ -134,10 +142,13 @@ def test_get_user_attributes_beneficiary():
         user_id=user.id,
         is_eligible=True,
         is_email_validated=True,
+        is_phone_validated=True,
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
         roles=[UserRole.BENEFICIARY.value],
+        suspension_date=None,
+        suspension_reason=None,
     )
 
 
@@ -173,11 +184,13 @@ def test_get_user_attributes_not_beneficiary():
         domains_credit=None,
         eligibility=EligibilityType.AGE18,
         first_name="Cou",
+        is_active=True,
         is_beneficiary=False,
         is_pro=False,
         last_booking_date=None,
         last_name="Zin",
         marketing_push_subscription=True,
+        phone_number=None,
         postal_code=None,
         products_use_date={},
         booking_count=0,
@@ -187,10 +200,13 @@ def test_get_user_attributes_not_beneficiary():
         user_id=user.id,
         is_eligible=True,
         is_email_validated=True,
+        is_phone_validated=False,
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
         roles=[],
+        suspension_date=None,
+        suspension_reason=None,
     )
 
 

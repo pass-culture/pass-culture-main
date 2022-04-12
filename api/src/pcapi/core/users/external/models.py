@@ -23,9 +23,11 @@ class UserAttributes:
     first_name: Optional[str]
     has_completed_id_check: bool
     user_id: int
+    is_active: bool  # Added for Zendesk
     is_beneficiary: bool
     is_eligible: bool
     is_email_validated: bool
+    is_phone_validated: bool  # Added for Zendesk
     is_pro: bool
     last_booking_date: Optional[datetime]
     last_favorite_creation_date: Optional[datetime]
@@ -33,9 +35,12 @@ class UserAttributes:
     last_visit_date: Optional[datetime]
     marketing_email_subscription: bool
     marketing_push_subscription: bool
+    phone_number: Optional[str]  # Added for Zendesk
     postal_code: Optional[str]
     products_use_date: dict
     roles: list[str]
+    suspension_date: Optional[datetime]  # Added for Zendesk
+    suspension_reason: Optional[str]  # Added for Zendesk
 
 
 @dataclass
@@ -46,7 +51,7 @@ class ProAttributes:
     is_booking_email: bool  # Email address is set as bookingEmail for at least one active venue
     marketing_email_subscription: bool
     offerer_name: Iterable[str]  # All active offerers associated with user account or bookingEmail
-    venue_count: Optional[int] = None  # Total number of active venues related to email (by offerer or bookingEmail)
+    venue_ids: Iterable[int]  # All active venue ids related to email
 
     # Attributes set when is_user_email is True:
     user_id: Optional[int] = None
@@ -60,6 +65,7 @@ class ProAttributes:
     venue_type: Optional[Iterable[str]] = None  # Distinct venue types of all these venues
     venue_label: Optional[Iterable[str]] = None  # Distinct venue labels of all these venues
     departement_code: Optional[Iterable[str]] = None  # Distinct department codes of all these venues
+    postal_code: Optional[Iterable[str]] = None  # Distinct postal codes of all these venues
     dms_application_submitted: Optional[bool] = None  # At last one bank info is waiting for approval in DMS in venues
     dms_application_approved: Optional[bool] = None  # All venues have bank information approved
     isVirtual: Optional[bool] = None  # At least one venue is virtual

@@ -104,7 +104,7 @@ class FormatUserAttributesTest:
             "LAST_VISIT_DATE": None,
             "LASTNAME": "Last name",
             "MARKETING_EMAIL_SUBSCRIPTION": True,
-            "POSTAL_CODE": None,
+            "POSTAL_CODE": "04000,06400",
             "PRODUCT_BRUT_X_USE_DATE": None,
             "USER_ID": 2,
             "DMS_APPLICATION_SUBMITTED": False,
