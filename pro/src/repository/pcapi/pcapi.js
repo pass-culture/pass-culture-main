@@ -458,6 +458,11 @@ export const getFilteredBookingsCSV = async filters => {
   return client.getPlainText(`/bookings/csv?${queryParams}`)
 }
 
+export const getFilteredCollectiveBookingsCSV = async filters => {
+  const queryParams = buildBookingsRecapQuery(filters)
+  return client.getPlainText(`/collective/bookings/csv?${queryParams}`)
+}
+
 //
 // Booking
 //
