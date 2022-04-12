@@ -3,9 +3,12 @@ import logging
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.connectors.api_adage import AdageException
+from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
@@ -57,3 +60,50 @@ def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollec
             status_code=404,
         )
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers", methods=["POST"])
+@login_required
+@spectree_serialize(response_model=collective_offers_serialize.CollectiveOfferResponseIdModel, on_success_status=201, api=blueprint.pro_private_schema)  # type: ignore
+def create_collective_offer(
+    body: collective_offers_serialize.PostCollectiveOfferBodyModel,
+) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
+    try:
+        offer = educational_api.create_collective_offer(offer_data=body, user=current_user)
+    except CulturalPartnerNotFoundException:
+        logger.info(
+            "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
+        )
+        raise ApiErrors({"offerer: not found in adage"}, 403)
+    except AdageException:
+        logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
+        raise ApiErrors({"adage_api: error"}, 500)
+    except offers_exceptions.UnknownOfferSubCategory as error:
+        logger.info(
+            "Could not create offer: selected subcategory is unknown.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+    except offers_exceptions.SubCategoryIsInactive as error:
+        logger.info(
+            "Could not create offer: subcategory cannot be selected.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer as error:
+        logger.info(
+            "Could not create offer: subcategory is not eligible for educational offer.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id},
+        )
+        raise ApiErrors(
+            error.errors,
+            status_code=400,
+        )
+
+    return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)

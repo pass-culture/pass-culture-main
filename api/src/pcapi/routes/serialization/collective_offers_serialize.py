@@ -20,6 +20,7 @@ from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
@@ -267,3 +268,51 @@ class GetCollectiveOfferResponseModel(BaseModel):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
+
+
+class CollectiveOfferResponseIdModel(BaseModel):
+    id: str
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+
+
+class CollectiveOfferExtraDataOfferVenueBodyModel(BaseModel):
+    addressType: OfferAddressType
+    otherAddress: str
+    venueId: str
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class PostCollectiveOfferBodyModel(BaseModel):
+    offerer_id: str
+    venue_id: str
+    subcategory_id: str
+    name: str
+    booking_email: Optional[str]
+    description: Optional[str]
+    duration_minutes: Optional[int]
+    audio_disability_compliant: bool = False
+    mental_disability_compliant: bool = False
+    motor_disability_compliant: bool = False
+    visual_disability_compliant: bool = False
+    students: list[StudentLevels]
+    offer_venue: CollectiveOfferExtraDataOfferVenueBodyModel
+    contact_email: str
+    contact_phone: str
+
+    @validator("name", pre=True)
+    def validate_name(cls, name, values):  # pylint: disable=no-self-argument
+        check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"

@@ -147,43 +147,8 @@ def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: Us
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))  # type: ignore [arg-type]
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
     offer = create_offer(completed_data, user)
-    create_collective_offer(offer_data, user, offer.id)
+    educational_api.create_collective_offer(offer_data, user, offer.id)
     return offer
-
-
-def create_collective_offer(
-    offer_data: PostEducationalOfferBodyModel,
-    user: User,
-    offer_id: int,
-) -> None:
-    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))  # type: ignore [arg-type]
-    venue = load_or_raise_error(Venue, offer_data.venue_id)
-    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [attr-defined]
-    _check_offer_data_is_valid(offer_data, True)  # type: ignore [arg-type]
-    collective_offer = educational_models.CollectiveOffer(
-        venueId=venue.id,  # type: ignore [attr-defined]
-        name=offer_data.name,
-        offerId=offer_id,
-        bookingEmail=offer_data.booking_email,
-        description=offer_data.description,
-        durationMinutes=offer_data.duration_minutes,
-        subcategoryId=offer_data.subcategory_id,
-        students=offer_data.extra_data.students,
-        contactEmail=offer_data.extra_data.contact_email,
-        contactPhone=offer_data.extra_data.contact_phone,
-        offerVenue=offer_data.extra_data.offer_venue.dict(),
-        validation=OfferValidationStatus.DRAFT,
-        audioDisabilityCompliant=offer_data.audio_disability_compliant,
-        mentalDisabilityCompliant=offer_data.mental_disability_compliant,
-        motorDisabilityCompliant=offer_data.motor_disability_compliant,
-        visualDisabilityCompliant=offer_data.visual_disability_compliant,
-    )
-    db.session.add(collective_offer)
-    db.session.commit()
-    logger.info(
-        "Collective offer template has been created",
-        extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer_id},
-    )
 
 
 def create_offer(

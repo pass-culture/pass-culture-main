@@ -48,6 +48,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import send_eac_new_prebooking_email_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offer_validation
@@ -64,9 +65,14 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
+from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
+from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.db import unaccent
+from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.rest import load_or_raise_error
 
 
 logger = logging.getLogger(__name__)
@@ -808,3 +814,47 @@ def list_collective_offers_for_pro_user(
             template_index += 1
 
     return merged_offers
+
+
+def create_collective_offer(
+    offer_data: Union[PostCollectiveOfferBodyModel, PostEducationalOfferBodyModel],
+    user: User,
+    offer_id: Optional[int] = None,
+) -> CollectiveOffer:
+
+    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
+    venue = load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
+    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
+    offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
+    collective_offer = educational_models.CollectiveOffer(
+        venueId=venue.id,
+        name=offer_data.name,
+        offerId=offer_id,
+        bookingEmail=offer_data.booking_email,
+        description=offer_data.description,
+        durationMinutes=offer_data.duration_minutes,
+        subcategoryId=offer_data.subcategory_id,
+        students=offer_data.extra_data.students if hasattr(offer_data, "extra_data") else offer_data.students,
+        contactEmail=offer_data.extra_data.contact_email
+        if hasattr(offer_data, "extra_data")
+        else offer_data.contact_email,
+        contactPhone=offer_data.extra_data.contact_phone
+        if hasattr(offer_data, "extra_data")
+        else offer_data.contact_phone,
+        offerVenue=offer_data.extra_data.offer_venue.dict()
+        if hasattr(offer_data, "extra_data")
+        else offer_data.offer_venue.dict(),
+        validation=OfferValidationStatus.DRAFT,
+        audioDisabilityCompliant=offer_data.audio_disability_compliant,
+        mentalDisabilityCompliant=offer_data.mental_disability_compliant,
+        motorDisabilityCompliant=offer_data.motor_disability_compliant,
+        visualDisabilityCompliant=offer_data.visual_disability_compliant,
+    )
+    db.session.add(collective_offer)
+    db.session.commit()
+    logger.info(
+        "Collective offer template has been created",
+        extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer_id},
+    )
+    return collective_offer
