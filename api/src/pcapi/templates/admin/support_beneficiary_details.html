@@ -11,378 +11,403 @@
 {% block details_table %}
 
 <div class="modal fade" id="userValidationModal" tabindex="-1" role="dialog" aria-labelledby="userValidationModalTitle"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="userValidationModalTitle">Validation de l'utilisateur {{ model.firstName}}
-          {{model.lastName}}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form method="POST" action="{{ url_for('support_beneficiary.validate_beneficiary', user_id=model.id)}}">
-        <div class="modal-body">
-          <div class="form-group row">
-            <label for="review" class="col-4 col-form-label">Revue</label>
-            <div class="col-8">
-              <select id="review" name="review" class="form-control">
-                <option></option>
-                <option value="OK">OK</option>
-                <option value="KO">KO</option>
-                <option value="REDIRECTED_TO_DMS">Renvoi vers DMS</option>
-              </select>
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userValidationModalTitle">Validation de l'utilisateur
+                    {% if model.firstName and model.lastName %}
+                    {{ model.firstName}}&nbsp;{{model.lastName}}
+                    {% else %}
+                    {{ model.email }}
+                    {% endif %}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-          </div>
-          <div class="form-group row">
-            <label for="reason" class="col-4 col-form-label">Raison</label>
-            <div class="col-8">
+            <form method="POST" action="{{ url_for('support_beneficiary.validate_beneficiary', user_id=model.id)}}">
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label for="review" class="col-4 col-form-label">Revue</label>
+                        <div class="col-8">
+                            <select id="review" name="review" class="form-control">
+                                <option></option>
+                                <option value="OK">OK</option>
+                                <option value="KO">KO</option>
+                                <option value="REDIRECTED_TO_DMS">Renvoi vers DMS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="eligibility" class="col-4 col-form-label">Eligibilité</label>
+                        <div class="col-8">
+                            <select id="eligibility" name="eligibility" class="form-control">
+                                <option>Par défaut</option>
+                                <option value="UNDERAGE">Pass 15-17</option>
+                                <option value="AGE18">Pass 18 ans</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="reason" class="col-4 col-form-label">Raison</label>
+                        <div class="col-8">
               <textarea id="reason" name="reason" cols="40" rows="5" class="form-control"
-                required="required"></textarea>
-            </div>
-          </div>
+                        required="required"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button name="submit" type="submit" class="btn btn-primary">Valider</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-          <button name="submit" type="submit" class="btn btn-primary">Valider</button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
 
 <div class="row">
-  <div class="col">
-    {% if has_performed_identity_check and not model.beneficiaryFraudReview and (current_user.has_jouve_role or
-    current_user.is_super_admin()) %}
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
-      Soumettre une revue manuelle
-    </button>
-    {% endif %}
-    {% if current_user.has_admin_role %}
-    <button name="submit" form="validate_form_button" type="submit" class="btn btn-primary">Valider le n° de
-      téléphone</button>
-    {# avoid putting the button inside the form to get the buttons aligned on the same grid #}
-    <form id="validate_form_button" method="POST"
-      action="{{ url_for('support_beneficiary.validate_phone_number', user_id=model.id)}}">
-    </form>
-    {% endif %}
-  </div>
+    <div class="col">
+        {% if has_filled_identity_check and (current_user.is_super_admin()) %}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userValidationModal">
+            Soumettre une revue manuelle
+        </button>
+        {% else %}
+        <button type="button" class="btn btn-danger" disabled>
+            Revue manuelle non disponible (aucun fraud check avec nom, prénom, date de naissance)
+        </button>
+        {% endif %}
+        {% if current_user.has_admin_role %}
+        <button name="submit" form="validate_form_button" type="submit" class="btn btn-primary">Valider le n° de
+            téléphone
+        </button>
+        {# avoid putting the button inside the form to get the buttons aligned on the same grid #}
+        <form id="validate_form_button" method="POST"
+              action="{{ url_for('support_beneficiary.validate_phone_number', user_id=model.id)}}">
+        </form>
+        {% endif %}
+    </div>
 </div>
 <div class="section row-section">
-  <div class="row-element">
-    <h3>Utilisateur</h3>
-    <table class="table">
-      <tr>
-        <th scope="row">Id</th>
-        <td>{{ model.id }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Nom</th>
-        <td>{{ model.lastName }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Prénom</th>
-        <td>{{ model.firstName }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Email</th>
-        <td>{{ model.email }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Numéro de téléphone</th>
-        <td>{{ model.phoneNumber }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Date de naissance</th>
-        <td>{% if model.dateOfBirth %}{{ model.dateOfBirth.strftime('%d/%m/%Y') }}{% else %}Inconnue{% endif %}</td>
-      </tr>
-      <tr>
-        <th scope="row">Date de création du compte</th>
-        <td>{{ model.dateCreated.strftime('%d/%m/%Y') }}</td>
-      </tr>
-      <tr>
-        <th scope="row">N° de la pièce d'identité</th>
-        <td>{{ model.idPieceNumber }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Commentaire</th>
-        <td>{% if model.comment %} {{ model.comment }} {% endif %}</td>
-      </tr>
-      <tr>
-        <th scope="row">Compte actif</th>
-        <td>{{ model.isActive|yesno }}</td>
-      </tr>
-      {% if model.suspension_reason %}
-      <tr>
-        <th scope="row">L'utilisateur est suspendu</th>
-        <td>{{ model.suspension_reason|suspension_reason_format }}</td>
-      </tr>
-      {% endif %}
-      <tr>
-        <th scope="row">Bénéficiaire 15-17</th>
-        <td>{{ model.has_underage_beneficiary_role|yesno }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Bénéficiaire 18</th>
-        <td>{{ model.has_beneficiary_role|yesno }}</td>
-      </tr>
-      <tr>
-    </table>
-    </dl>
-  </div>
-  <div class="row-element subscription-info">
-    <h3>Parcours d'inscription</h3>
-    <div class="table subscription-info">
-      <table class="table">
-        <tr>
-          <th />
-          <th scope="col" style="text-align: center;">pass 15-17</th>
-          <th scope="col" style="text-align: center;">pass 18</th>
-        </tr>
-        {% for item in subscription_items %}
-        <tr>
-          <th scope="row">{{item.UNDERAGE.type.name}}</th>
-          <td style="text-align: center;">{{ item.UNDERAGE.status|subscription_status_format }}</td>
-          <td style="text-align: center;">{{ item.AGE18.status|subscription_status_format }}</td>
-        </tr>
-        {% endfor %}
-      </table>
+    <div class="row-element">
+        <h3>Utilisateur</h3>
+        <table class="table">
+            <tr>
+                <th scope="row">Id</th>
+                <td>{{ model.id }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Nom</th>
+                <td>{{ model.lastName }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Prénom</th>
+                <td>{{ model.firstName }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Email</th>
+                <td>{{ model.email }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Numéro de téléphone</th>
+                <td>{{ model.phoneNumber }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Date de naissance</th>
+                <td>{% if model.dateOfBirth %}{{ model.dateOfBirth.strftime('%d/%m/%Y') }}{% else %}Inconnue{% endif
+                    %}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Date de création du compte</th>
+                <td>{{ model.dateCreated.strftime('%d/%m/%Y') }}</td>
+            </tr>
+            <tr>
+                <th scope="row">N° de la pièce d'identité</th>
+                <td>{{ model.idPieceNumber }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Commentaire</th>
+                <td>{% if model.comment %} {{ model.comment }} {% endif %}</td>
+            </tr>
+            <tr>
+                <th scope="row">Compte actif</th>
+                <td>{{ model.isActive|yesno }}</td>
+            </tr>
+            {% if model.suspension_reason %}
+            <tr>
+                <th scope="row">L'utilisateur est suspendu</th>
+                <td>{{ model.suspension_reason|suspension_reason_format }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th scope="row">Bénéficiaire 15-17</th>
+                <td>{{ model.has_underage_beneficiary_role|yesno }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Bénéficiaire 18</th>
+                <td>{{ model.has_beneficiary_role|yesno }}</td>
+            </tr>
+            <tr></tr>
+        </table>
     </div>
-    <div class="table additional-subscription-info">
-      <h4>Autres</h4>
-      <table>
-        <tr>
-          <th scope="row">Éligibilité</th>
-          <td>{{ model.eligibility|eligibility_format }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Prochaine étape sur l'app</th>
-          <td>{% if next_subscription_step %} {{ next_subscription_step.name }} {% else %}Aucune{% endif %}</td>
-        </tr>
-      </table>
+    <div class="row-element subscription-info">
+        <h3>Parcours d'inscription</h3>
+        <div class="table subscription-info">
+            <table class="table">
+                <tr>
+                    <th/>
+                    <th scope="col" style="text-align: center;">pass 15-17</th>
+                    <th scope="col" style="text-align: center;">pass 18</th>
+                </tr>
+                {% for item in subscription_items %}
+                <tr>
+                    <th scope="row">{{item.UNDERAGE.type.name}}</th>
+                    <td style="text-align: center;">{{ item.UNDERAGE.status|subscription_status_format }}</td>
+                    <td style="text-align: center;">{{ item.AGE18.status|subscription_status_format }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="table additional-subscription-info">
+            <h4>Autres</h4>
+            <table>
+                <tr>
+                    <th scope="row">Éligibilité</th>
+                    <td>{{ model.eligibility|eligibility_format }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Prochaine étape sur l'app</th>
+                    <td>{% if next_subscription_step %} {{ next_subscription_step.name }} {% else %}Aucune{% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
-  </div>
-  {% if model.beneficiaryFraudReview %}
-  <div class="row-element">
-    <h3>Revue manuelle</h3>
-    <table class="table">
-      <tr>
-        <th scope="row">Auteur</th>
-        <td>{{ model.beneficiaryFraudReview.author.firstName }} {{ model.beneficiaryFraudReview.author.lastName }}</td>
-      </tr>
+    {% if model.beneficiaryFraudReviews %}
+    <div class="row-element">
+        <h3>Revue(s) manuelle(s)</h3>
+        {% for review in model.beneficiaryFraudReviews %}
 
-      <tr>
-        <th scope="row">Etat</th>
-        <td>{{ model.beneficiaryFraudReview.review.value }}</td>
-      </tr>
-      <tr>
-        <th scope="row">Date de création</th>
-        <td>{{ model.beneficiaryFraudReview.dateReviewed.strftime('le %d/%m/%Y à %H:%M:%S') }}</dd>
-        </td>
-      </tr>
-      <tr>
-        <th scope="row">Explication</th>
-        <td>{{ model.beneficiaryFraudReview.reason }}</dd>
-        </td>
-      </tr>
-    </table>
-  </div>
-  {% endif %}
+        <table class="table" style="border-style: solid; border-width:1px;">
+            <tr>
+                <th scope="row">Auteur</th>
+                <td>{{ review.author.firstName }} {{ review.author.lastName }}</td>
+            </tr>
+
+            <tr>
+                <th scope="row">Etat</th>
+                <td>{{ review.review.value }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Date de création</th>
+                <td>{{ review.dateReviewed.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Explication</th>
+                <td>{{ review.reason }}</td>
+            </tr>
+        </table>
+        {% endfor %}
+
+    </div>
+    {% endif %}
 </div>
 
 {% if model.suspension_history|length > 0 %}
 <div class="section">
-  <h3>Historique des suspensions de compte</h3>
-  <table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Événement</th>
-        <th scope="col">Date</th>
-        <th scope="col">Auteur</th>
-        <th scope="col">Explication</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for suspension_event in model.suspension_history %}
-      <tr>
-        <td>{{ suspension_event.eventType|suspension_event_format }}</td>
-        <td>
-          {% if suspension_event.eventDate %}
-            {{ suspension_event.eventDate.strftime('le %d/%m/%Y à %H:%M:%S') }}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>
-          {% if suspension_event.actorUser %}
-            {{ suspension_event.actorUser.firstName }} {{ suspension_event.actorUser.lastName }}
-          {% else %}
-            -
-          {% endif %}
-        </td>
-        <td>{{ suspension_event.reasonCode|suspension_reason_format }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <h3>Historique des suspensions de compte</h3>
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Événement</th>
+            <th scope="col">Date</th>
+            <th scope="col">Auteur</th>
+            <th scope="col">Explication</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for suspension_event in model.suspension_history %}
+        <tr>
+            <td>{{ suspension_event.eventType|suspension_event_format }}</td>
+            <td>
+                {% if suspension_event.eventDate %}
+                {{ suspension_event.eventDate.strftime('le %d/%m/%Y à %H:%M:%S') }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            <td>
+                {% if suspension_event.actorUser %}
+                {{ suspension_event.actorUser.firstName }} {{ suspension_event.actorUser.lastName }}
+                {% else %}
+                -
+                {% endif %}
+            </td>
+            <td>{{ suspension_event.reasonCode|suspension_reason_format }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endif %}
 
 <div class="section">
-  <h3>Historique des changements d'adresse email</h3>
-  {% if model.email_history|length == 0 %}
-  <p class="card card-body">
-    Pas de changement d'adresse email pour le moment
-  </p>
-  {% else %}
-  <a href="{{ url_for('user_email_history.index_view', flt1_0=model.id ) }}">Vue détaillée</a>
-  <table class="table table-striped table-hover">
-    <thead>
-      <tr>
-        {% if current_user.is_super_admin() %}
-        <th scope="col">Validation</th>
-        {% endif %}
-        <th scope="col">Ancienne adresse email</th>
-        <th scope="col">Nouvelle adresse email</th>
-        <th scope="col">Date</th>
-        <th scope="col">Type d'événement</th>
-        <th scope="col">Device ID</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for email_history in model.email_history %}
-      <tr>
-        {% if current_user.is_super_admin() %}
-        <td>
-          {% if email_history.eventType.value == enum_update_request_value %}
-          <form action={{ url_for("user_email_history.validate_user_email", entry_id=email_history.id,
-            next="support_beneficiary.details_view" , id=model.id) }} method="POST">
-            <button class="btn btn-secondary"
-              onclick="return confirm('Êtes-vous certain de vouloir valider l\'adresse email {{ email_history.newEmail }}')"
-              title="Approve">
-              Valider
-            </button>
-          </form>
-          {% endif %}
-        </td>
-        {% endif %}
-        <td>{{ email_history.oldEmail }}</td>
-        <td>{{ email_history.newEmail }}</td>
-        <td>{{ email_history.creationDate.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>
-        <td>{{ email_history.eventType.value }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endif %}
+    <h3>Historique des changements d'adresse email</h3>
+    {% if model.email_history|length == 0 %}
+    <p class="card card-body">
+        Pas de changement d'adresse email pour le moment
+    </p>
+    {% else %}
+    <a href="{{ url_for('/user_email_history.index_view', flt1_0=model.id ) }}">Vue détaillée</a>
+    <table class="table table-striped table-hover">
+        <thead>
+        <tr>
+            {% if current_user.is_super_admin() %}
+            <th scope="col">Validation</th>
+            {% endif %}
+            <th scope="col">Ancienne adresse email</th>
+            <th scope="col">Nouvelle adresse email</th>
+            <th scope="col">Date</th>
+            <th scope="col">Type d'événement</th>
+            <th scope="col">Device ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for email_history in model.email_history %}
+        <tr>
+            {% if current_user.is_super_admin() %}
+            <td>
+                {% if email_history.eventType.value == enum_update_request_value %}
+                <form action={{ url_for(
+                "/user_email_history.validate_user_email", entry_id=email_history.id,
+                next="support_beneficiary.details_view" , id=model.id) }} method="POST">
+                <button class="btn btn-secondary"
+                        onclick="return confirm('Êtes-vous certain de vouloir valider l\'adresse email {{ email_history.newEmail }}')"
+                        title="Approve">
+                    Valider
+                </button>
+                </form>
+                {% endif %}
+            </td>
+            {% endif %}
+            <td>{{ email_history.oldEmail }}</td>
+            <td>{{ email_history.newEmail }}</td>
+            <td>{{ email_history.creationDate.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>
+            <td>{{ email_history.eventType.value }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </div>
 
 <div class="section">
-  <h3>Vérification des données utilisateurs</h3>
-  <div class="row">
-    {% for check in model.beneficiaryFraudChecks %}
-    <div class="col-lg-4">
-      <table class="table">
-        <tr>
-          <th scope="row">Éligibilité</th>
-          <td>{{ check.eligibilityType|eligibility_format }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Type</th>
-          <td>{{ check.type.value }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Statut</th>
-          <td>{{ check.status|fraud_check_status_format }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Date de création</th>
-          <td>{{ check.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Identifiant technique</th>
-          <td>{{ check.thirdPartyId }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Explication</th>
-          <td>{{ check.reason|default("Aucune") }}</td>
-        </tr>
-        <tr>
-          <th>Codes d'erreurs</th>
-          <td>
-            <ul>
-              {% for code in check.reasonCodes|default([], true) %}
-              <li>{{code.value}}</li>
-              {% else %}
-              Aucune erreur
-              {% endfor %}
-            </ul>
-          </td>
-        </tr>
+    <h3>Vérification des données utilisateurs</h3>
+    <div class="row">
+        {% for check in model.beneficiaryFraudChecks %}
+        <div class="col-lg-4">
+            <table class="table">
+                <tr>
+                    <th scope="row">Éligibilité</th>
+                    <td>{{ check.eligibilityType|eligibility_format }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Type</th>
+                    <td>{{ check.type.value }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Statut</th>
+                    <td>{{ check.status|fraud_check_status_format }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Date de création</th>
+                    <td>{{ check.dateCreated.strftime('le %d/%m/%Y à %H:%M:%S') }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Identifiant technique</th>
+                    <td>{{ check.thirdPartyId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Explication</th>
+                    <td>{{ check.reason|default("Aucune") }}</td>
+                </tr>
+                <tr>
+                    <th>Codes d'erreurs</th>
+                    <td>
+                        <ul>
+                            {% for code in check.reasonCodes|default([], true) %}
+                            <li>{{code.value}}</li>
+                            {% else %}
+                            Aucune erreur
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
 
-      </table>
-      <h4>Détails techniques</h4>
-      <div class="row">
-        <pre class="pre-scrollable"><code>{{ check.resultContent|pprint }}</code></pre>
-      </div>
+            </table>
+            <h4>Détails techniques</h4>
+            <div class="row">
+                <pre class="pre-scrollable"><code>{{ check.resultContent|pprint }}</code></pre>
+            </div>
+        </div>
+        {% else %}
+        <div class="card card-body">
+            Aucune vérification externe (Jouve, DMS)
+        </div>
+        {% endfor %}
     </div>
-    {% else %}
-    <div class="card card-body">
-      Aucune vérification externe (Jouve, DMS)
-    </div>
-    {% endfor %}
-  </div>
 </div>
 
-  <h1>{{has_dms_fraud_check}}</h1>
+<h1>{{has_dms_fraud_check}}</h1>
 
 {% if display_beneficiary_imports%}
 <div class="section">
-  <h3>Beneficiary Imports -- Deprécié</h3>
-  <p>Catgorie dépréciée au profit des "Vérification des données utilisateurs" ci-dessus</p>
-  <div class="row">
-    {% for import in model.beneficiaryImports %}
-    <div class="col-lg-4">
+    <h3>Beneficiary Imports -- Deprécié</h3>
+    <p>Catgorie dépréciée au profit des "Vérification des données utilisateurs" ci-dessus</p>
+    <div class="row">
+        {% for import in model.beneficiaryImports %}
+        <div class="col-lg-4">
 
-      <table class="table">
-        <tr>
-          <th scope="row">Auteur</th>
-          <td>{{ import.author|default("Aucun") }}</td>
-        </tr>
+            <table class="table">
+                <tr>
+                    <th scope="row">Auteur</th>
+                    <td>{{ import.author|default("Aucun") }}</td>
+                </tr>
 
-        <tr>
-          <th scope="row">Application ID</th>
-          <td>{{ import.applicationId }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Source ID</th>
-          <td>{{ import.sourceId }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Source</th>
-          <td>{{ import.source }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Etat</th>
-          <td>{{ import.currentStatus.value }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Historique</th>
-          <td>
-            <ul>
-              {% for status in import.statuses %}
-              <li>{{ status.status.value }} - {{ status.detail }} - {% if status.date %}le {{ status.date.strftime('le
-                %d/%m/%Y à %H:%M:%S') }} {% endif %}
-              </li>
-              {% endfor %}
-            </ul>
-          </td>
-        </tr>
-      </table>
+                <tr>
+                    <th scope="row">Application ID</th>
+                    <td>{{ import.applicationId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Source ID</th>
+                    <td>{{ import.sourceId }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Source</th>
+                    <td>{{ import.source }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Etat</th>
+                    <td>{{ import.currentStatus.value }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">Historique</th>
+                    <td>
+                        <ul>
+                            {% for status in import.statuses %}
+                            <li>{{ status.status.value }} - {{ status.detail }} - {% if status.date %}le {{
+                                status.date.strftime('le
+                                %d/%m/%Y à %H:%M:%S') }} {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-  </div>
 </div>
 {% endif %}
 {% endblock %}

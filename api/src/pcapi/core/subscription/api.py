@@ -34,17 +34,10 @@ def get_latest_subscription_message(user: users_models.User) -> typing.Optional[
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
 
 
-def activate_beneficiary(user: users_models.User, deposit_source: str = None) -> users_models.User:
-    fraud_check = users_api.get_activable_identity_fraud_check(user)
-    if not fraud_check:
-        raise exceptions.BeneficiaryFraudCheckMissingException(
-            f"No validated Identity fraudCheck found when trying to activate user {user.id}"
-        )
-    eligibility = fraud_check.eligibilityType
+def activate_beneficiary_for_eligibility(
+    user: users_models.User, fraud_check: fraud_models.BeneficiaryFraudCheck, eligibility: users_models.EligibilityType
+) -> users_models.User:
     deposit_source = fraud_check.get_detailed_source()
-
-    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):  # type: ignore [arg-type]
-        raise exceptions.CannotUpgradeBeneficiaryRole()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
         user.validate_user_identity_15_17()
@@ -78,8 +71,21 @@ def activate_beneficiary(user: users_models.User, deposit_source: str = None) ->
 
     if not accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user):
         logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
-
     return user
+
+
+def activate_beneficiary(user: users_models.User, deposit_source: str = None) -> users_models.User:
+    fraud_check = users_api.get_activable_identity_fraud_check(user)
+    if not fraud_check:
+        raise exceptions.BeneficiaryFraudCheckMissingException(
+            f"No validated Identity fraudCheck found when trying to activate user {user.id}"
+        )
+    eligibility = fraud_check.eligibilityType
+
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):  # type: ignore [arg-type]
+        raise exceptions.CannotUpgradeBeneficiaryRole()
+
+    return activate_beneficiary_for_eligibility(user, fraud_check, eligibility)  # type: ignore [arg-type]
 
 
 def has_completed_profile(user: users_models.User) -> bool:
