@@ -2,10 +2,10 @@ import {
   IOfferEducationalFormValues,
   hasStatusCode,
 } from 'core/OfferEducational'
-import { postCollectiveCreateCollectiveOffer} from 'api/v1/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { createOfferPayload } from '../utils/createOfferPayload'
+import { createCollectiveOfferPayload } from './utils/createOfferPayload'
+
 
 type Params = IOfferEducationalFormValues
 
@@ -30,13 +30,14 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   },
 }
 
-const postOfferAdapter: PostOfferAdapter = async (
+const postCollectiveOfferAdapter: PostOfferAdapter = async (
   offer: IOfferEducationalFormValues
 ) => {
   try {
-    const payload = createOfferPayload(offer)
 
-    const response = await pcapi.createEducationalOffer(payload)
+    const payload = createCollectiveOfferPayload(offer)
+
+    const response = await postCollectiveCreateCollectiveOffer(payload)
 
     return {
       isOk: true,
@@ -54,4 +55,4 @@ const postOfferAdapter: PostOfferAdapter = async (
   }
 }
 
-export default postOfferAdapter
+export default postCollectiveOfferAdapter
