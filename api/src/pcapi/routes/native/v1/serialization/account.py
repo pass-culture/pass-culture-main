@@ -281,10 +281,18 @@ class UserProfileResponse(BaseModel):
         user.isBeneficiary = user.is_beneficiary
         user.subscriptionMessage = cls._get_subscription_message(user)
 
-        if not FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active():
+        if _should_prevent_from_filling_cultural_survey(user):
             user.needsToFillCulturalSurvey = False
 
         return super().from_orm(user)
+
+
+def _should_prevent_from_filling_cultural_survey(user: User) -> bool:
+    # when the native form is active, there is no reason to prevent
+    if FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY.is_active():
+        return False
+    # when the typeform is active, it should be limited to only beneficiaries to respect the quota
+    return not FeatureToggle.ENABLE_CULTURAL_SURVEY.is_active() or not user.is_beneficiary
 
 
 class UserProfileUpdateRequest(BaseModel):
