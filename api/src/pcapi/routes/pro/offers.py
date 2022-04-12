@@ -186,7 +186,7 @@ def patch_all_offers_active_status(
 @spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, api=blueprint.pro_private_schema)  # type: ignore
 def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     offer = load_or_404(Offer, human_id=offer_id)
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)  # type: ignore [attr-defined]
 
     offer = offers_api.update_offer(offer, **body.dict(exclude_unset=True))
 
