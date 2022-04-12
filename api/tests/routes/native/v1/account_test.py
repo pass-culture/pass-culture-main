@@ -242,23 +242,54 @@ class AccountTest:
         assert msg["callToAction"] is None
         assert msg["popOverIcon"] == subscription_models.PopOverIcon.CLOCK.value
 
-    @override_features(ENABLE_NATIVE_CULTURAL_SURVEY=True)
-    def test_user_should_need_to_fill_cultural_survey_by_default(self, client):
-        user = users_factories.UserFactory()
+    @pytest.mark.parametrize(
+        "feature_flags,roles,needsToFillCulturalSurvey",
+        [
+            (
+                {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
+                [],
+                True,
+            ),
+            (
+                {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
+                [],
+                False,
+            ),
+            (
+                {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
+                [UserRole.BENEFICIARY],
+                True,
+            ),
+            (
+                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
+                [],
+                True,
+            ),
+            (
+                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
+                [UserRole.BENEFICIARY],
+                True,
+            ),
+            (
+                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
+                [],
+                False,
+            ),
+            (
+                {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
+                [UserRole.BENEFICIARY],
+                False,
+            ),
+        ],
+    )
+    def test_user_should_need_to_fill_cultural_survey(self, client, feature_flags, roles, needsToFillCulturalSurvey):
+        user = users_factories.UserFactory(roles=roles)
 
         client.with_token(user.email)
-        response = client.get("/native/v1/me")
+        with override_features(**feature_flags):
+            response = client.get("/native/v1/me")
 
-        assert response.json["needsToFillCulturalSurvey"] == True
-
-    @override_features(ENABLE_NATIVE_CULTURAL_SURVEY=False)
-    def test_user_should_not_need_to_fill_cultural_survey_when_feature_toggle_is_deactivated(self, client):
-        user = users_factories.UserFactory(needsToFillCulturalSurvey=True)
-
-        client.with_token(user.email)
-        response = client.get("/native/v1/me")
-
-        assert response.json["needsToFillCulturalSurvey"] == False
+        assert response.json["needsToFillCulturalSurvey"] == needsToFillCulturalSurvey
 
 
 class AccountCreationTest:
