@@ -2565,7 +2565,7 @@ class MockedShows:
 class MockedPaymentType:
     status_code = 200
 
-    def json(self):
+    def json(self):  # type: ignore [no-untyped-def]
         return [
             {
                 "activable": True,
