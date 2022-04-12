@@ -660,7 +660,7 @@ CARTE_JEUNES = Subcategory(
     is_digital_deposit=False,
     is_physical_deposit=True,
     reimbursement_rule=ReimbursementRuleChoices.STANDARD.value,
-    is_bookable_by_underage_when_not_free=False,
+    is_bookable_by_underage_when_not_free=True,
 )
 # endregion
 # region VISITE
