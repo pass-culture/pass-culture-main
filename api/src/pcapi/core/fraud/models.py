@@ -430,9 +430,7 @@ class BeneficiaryFraudReview(PcObject, Model):  # type: ignore [valid-type, misc
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = sa.orm.relationship(  # type: ignore [misc]
-        "User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReview", uselist=False)
-    )
+    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudReviews"))  # type: ignore [misc]
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 

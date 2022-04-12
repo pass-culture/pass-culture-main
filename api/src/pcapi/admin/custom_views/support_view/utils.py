@@ -16,19 +16,25 @@ def beneficiary_fraud_review_formatter(view, context, model, name) -> Markup:  #
         fraud_models.FraudReviewStatus.KO: "badge-danger",
         fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS: "badge-secondary",
     }
-    if model.beneficiaryFraudReview is None:
+    if not model.beneficiaryFraudReviews:
         return Markup("""<span class="badge badge-secondary">inconnu</span>""")
 
-    reviewer = model.beneficiaryFraudReview.author
-    reviewer_name = f"{reviewer.firstName} {reviewer.lastName}"
-    review_result = model.beneficiaryFraudReview.review
-    badge = result_mapping_class[review_result]
-    return Markup(
-        """
-          <div><span>{reviewer_name}</span></div>
-          <span class="badge {badge}">{review_result_value}</span>
-        """
-    ).format(reviewer_name=reviewer_name, badge=badge, review_result_value=review_result.value)
+    ordered_fraud_reviews = sorted(model.beneficiaryFraudReviews, key=lambda review: review.dateReviewed)
+    html = Markup("<ul>")
+
+    for beneficiary_fraud_review in ordered_fraud_reviews:
+        reviewer = beneficiary_fraud_review.author
+        reviewer_name = f"{reviewer.firstName} {reviewer.lastName}"
+        review_result = beneficiary_fraud_review.review
+        badge = result_mapping_class[review_result]
+        html += Markup(
+            """
+              <div><span>{reviewer_name}</span></div>
+              <span class="badge {badge}">{review_result_value}</span>
+            """
+        ).format(reviewer_name=reviewer_name, badge=badge, review_result_value=review_result.value)
+
+    return html
 
 
 def beneficiary_fraud_checks_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
