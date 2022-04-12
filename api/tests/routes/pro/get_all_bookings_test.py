@@ -105,7 +105,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
 
-    def when_booking_is_educational(self, app):
+    def test_when_booking_is_educational(self, app):
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory()
         bookings_factories.EducationalBookingFactory(
@@ -121,6 +121,7 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json["bookingsRecap"][0]["stock"]["offer_is_educational"] is True
+        assert response.json["bookingsRecap"][0]["stock"]["stock_identifier"] is not None
         assert response.json["bookingsRecap"][0]["beneficiary"] == {
             "email": "redactor@email.com",
             "firstname": "Georges",
@@ -129,7 +130,7 @@ class Returns200Test:
         }
         assert response.json["bookingsRecap"][0]["booking_token"] is None
 
-    def when_user_is_linked_to_a_valid_offerer(self, app):
+    def test_when_user_is_linked_to_a_valid_offerer(self, app):
         booking = bookings_factories.UsedIndividualBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
             dateUsed=datetime(2020, 8, 13, 12, 0, 0),
@@ -154,6 +155,7 @@ class Returns200Test:
                     "offer_is_educational": False,
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
+                    "stock_identifier": humanize(booking.stock.id),
                 },
                 "beneficiary": {
                     "email": "beneficiary@example.com",
