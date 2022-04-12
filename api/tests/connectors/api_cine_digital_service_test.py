@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.connectors.cine_digital_service import get_payment_types
 from pcapi.connectors.cine_digital_service import get_shows
+from pcapi.connectors.cine_digital_service import get_tariffs
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.testing import override_settings
 
@@ -171,10 +172,106 @@ class CineDigitalServiceGetPaymentTypesTest:
         token = "test_token"
         response_return_value = mock.MagicMock(status_code=400, text="")
         request_get.return_value = response_return_value
-
         # When
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
             get_payment_types(cinema_id, url, token)
+        # Then
+        assert (
+            str(exception.value) == f"Error getting Cine Digital Service API DATA for cinemaId={cinema_id} & url={url}"
+        )
+
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.get", side_effect=Exception)
+    @override_settings(IS_DEV=False)
+    def test_should_raise_exception_when_api_call_fails_with_connection_error(self, request_get):
+        # Given
+        cinema_id = "test_id"
+        url = "test_url"
+        token = "test_token"
+        # When
+        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
+            get_payment_types(cinema_id, url, token)
+        # Then
+        assert str(cds_exception.value) == f"Error connecting CDS for cinemaId={cinema_id} & url={url}"
+
+
+class CineDigitalServiceGetTariffsTest:
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
+    @override_settings(IS_DEV=False)
+    def test_should_return_all_necessary_attributes(self, request_get):
+        # Given
+        cinema_id = "test_id"
+        url = "test_url"
+        token = "test_token"
+
+        tariffs_json = [
+            {
+                "id": 1,
+                "labeltariff": "Pass Culture 5€",
+                "price": 3.5,
+                "active": True,
+            },
+        ]
+
+        response_return_value = mock.MagicMock(status_code=200, text="")
+        response_return_value.json = mock.MagicMock(return_value=tariffs_json)
+        request_get.return_value = response_return_value
+
+        # When
+        tariffs = get_tariffs(cinema_id, url, token)
+
+        # Then
+        assert len(tariffs) == 1
+        assert tariffs[0].id == 1
+        assert tariffs[0].label == "Pass Culture 5€"
+        assert tariffs[0].price == 3.5
+        assert tariffs[0].is_active
+
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
+    @override_settings(IS_DEV=False)
+    def test_should_return_shows_with_success(self, request_get):
+        # Given
+        cinema_id = "test_id"
+        url = "test_url"
+        token = "test_token"
+        tariffs_json = [
+            {
+                "id": 1,
+                "labeltariff": "Pass Culture 5€",
+                "price": 3.5,
+                "active": True,
+            },
+            {
+                "id": 2,
+                "labeltariff": "Another tariff",
+                "price": 10,
+                "active": True,
+            },
+        ]
+
+        response_return_value = mock.MagicMock(status_code=200, text="")
+        response_return_value.json = mock.MagicMock(return_value=tariffs_json)
+        request_get.return_value = response_return_value
+
+        # When
+        shows = get_tariffs(cinema_id, url, token)
+
+        # Then
+        request_get.assert_called_once_with(f"https://{cinema_id}.{url}tariffs?api_token={token}")
+        assert len(shows) == 2
+
+    @mock.patch("pcapi.connectors.cine_digital_service.requests.get")
+    @override_settings(IS_DEV=False)
+    def test_should_raise_exception_when_api_call_fails(self, request_get):
+        # Given
+        cinema_id = "test_id"
+        url = "test_url"
+        token = "test_token"
+        response_return_value = mock.MagicMock(status_code=400, text="")
+        request_get.return_value = response_return_value
+
+        # When
+        with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
+            get_tariffs(cinema_id, url, token)
 
         # Then
         assert (
@@ -191,7 +288,7 @@ class CineDigitalServiceGetPaymentTypesTest:
 
         # When
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
-            get_payment_types(cinema_id, url, token)
+            get_tariffs(cinema_id, url, token)
 
         # Then
         assert str(cds_exception.value) == f"Error connecting CDS for cinemaId={cinema_id} & url={url}"
