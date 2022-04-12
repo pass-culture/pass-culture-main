@@ -55,6 +55,7 @@ class SerializeBookingRecapTest:
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
                     "offer_is_educational": False,
+                    "stock_identifier": humanize(thing_booking_recap.stock_identifier),
                 },
                 beneficiary={
                     "lastname": "Seldon",
@@ -81,6 +82,7 @@ class SerializeBookingRecapTest:
                     "event_beginning_datetime": None,
                     "offer_isbn": None,
                     "offer_is_educational": False,
+                    "stock_identifier": humanize(thing_booking_recap.stock_identifier),
                 },
                 beneficiary={
                     "lastname": "Trevize",
@@ -136,6 +138,7 @@ class SerializeBookingRecapTest:
                     "event_beginning_datetime": format_into_timezoned_date(day_after_booking_date),
                     "offer_isbn": None,
                     "offer_is_educational": False,
+                    "stock_identifier": humanize(event_booking_recap.stock_identifier),
                 },
                 beneficiary={
                     "lastname": "Seldon",
@@ -190,6 +193,7 @@ class SerializeBookingRecapTest:
                 "offer_identifier": humanize(thing_booking_recap.offer_identifier),
                 "offer_isbn": "987654345678",
                 "offer_is_educational": False,
+                "stock_identifier": humanize(thing_booking_recap.stock_identifier),
             },
             beneficiary={
                 "lastname": "Seldon",

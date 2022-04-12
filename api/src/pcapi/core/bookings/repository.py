@@ -585,6 +585,7 @@ def _get_filtered_booking_pro(
             User.email.label("beneficiaryEmail"),
             User.phoneNumber.label("beneficiaryPhoneNumber"),
             Stock.beginningDatetime.label("stockBeginningDatetime"),
+            Booking.stockId,
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
         )
@@ -630,6 +631,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
             else None
         ),
         offer_isbn=booking.offerIsbn,  # type: ignore [attr-defined]
+        stock_identifier=booking.stockId,  # type: ignore [attr-defined]
     )
 
 

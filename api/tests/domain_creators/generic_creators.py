@@ -32,6 +32,7 @@ def create_domain_booking_recap(
     redactor_firstname=None,
     redactor_email=None,
     event_beginning_datetime: Optional[datetime] = None,
+    stock_identifier: int = 1,
 ) -> BookingRecap:
     return BookingRecap(
         offer_identifier=offer_identifier,
@@ -60,4 +61,5 @@ def create_domain_booking_recap(
         redactor_firstname=redactor_firstname,
         redactor_email=redactor_email,
         event_beginning_datetime=event_beginning_datetime,
+        stock_identifier=stock_identifier,
     )
