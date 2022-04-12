@@ -12,8 +12,10 @@ import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/Boo
 import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
+  CollectiveBookingResponseModel,
   GetBookingsCSVFileAdapter,
   GetFilteredBookingsRecapAdapter,
+  GetFilteredCollectiveBookingsRecapAdapter,
   GetUserHasBookingsAdapter,
   GetVenuesAdapter,
   TPreFilters,
@@ -30,7 +32,9 @@ interface IBookingsProps {
   venueId?: string
   audience: Audience
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
-  getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter
+  getFilteredBookingsRecapAdapter:
+    | GetFilteredBookingsRecapAdapter
+    | GetFilteredCollectiveBookingsRecapAdapter
   getUserHasBookingsAdapter: GetUserHasBookingsAdapter
   getVenuesAdapter: GetVenuesAdapter
 }
@@ -59,7 +63,7 @@ const Bookings = ({
   })
   const [isTableLoading, setIsTableLoading] = useState(false)
   const [bookingsRecap, setBookingsRecap] = useState<
-    BookingRecapResponseModel[]
+    BookingRecapResponseModel[] | CollectiveBookingResponseModel[]
   >([])
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const [hasBooking, setHasBooking] = useState(true)

@@ -103,6 +103,7 @@ export enum BookingRecapStatus {
     Confirmed = 'confirmed',
     Pending = 'pending'
 }
+
 export interface BusinessUnitEditionBodyModel {
     siret: string;
 }
@@ -175,7 +176,6 @@ export interface CollectiveOffersStockResponseModel {
     offerId: string;
     remainingQuantity: number | string;
 }
-
 export interface CreateOffererQueryModel {
     address?: string | null;
     city: string;

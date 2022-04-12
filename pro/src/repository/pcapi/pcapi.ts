@@ -1,5 +1,11 @@
+import { stringify as queryStringStringify } from 'query-string'
+
+import { BookingStatusFilter } from 'api/v1/gen'
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import {
+  CollectiveBookingsResponseModel,
+  DEFAULT_PRE_FILTERS,
+} from 'core/Bookings'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
@@ -538,6 +544,25 @@ export const getFilteredBookingsCSV = async filters => {
 export const getFilteredCollectiveBookingsCSV = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getPlainText(`/collective/bookings/csv?${queryParams}`)
+}
+
+export const getCollectiveBookings = async (
+  page?: number,
+  venueId?: string | null,
+  eventDate?: string | null,
+  bookingStatusFilter?: BookingStatusFilter,
+  bookingPeriodBeginningDate?: string | null,
+  bookingPeriodEndingDate?: string | null
+): Promise<CollectiveBookingsResponseModel> => {
+  const queryParams = queryStringStringify({
+    page,
+    venueId,
+    eventDate,
+    bookingStatusFilter,
+    bookingPeriodBeginningDate,
+    bookingPeriodEndingDate,
+  })
+  return client.get(`/collective/bookings/pro?${queryParams}`)
 }
 
 //
