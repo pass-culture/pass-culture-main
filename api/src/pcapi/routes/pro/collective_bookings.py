@@ -1,6 +1,8 @@
+from datetime import datetime
 import logging
 import math
 
+from dateutil import parser
 from flask_login import current_user
 from flask_login import login_required
 
@@ -30,12 +32,14 @@ def get_collective_bookings_pro(
     per_page_limit = 1000
     page = query.page
     venue_id = query.venue_id
-    event_date = query.event_date
+    event_date = parser.parse(query.event_date) if query.event_date else None
     booking_status = query.booking_status_filter
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
-        booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
-
+        booking_period = (
+            datetime.fromisoformat(query.booking_period_beginning_date).date(),
+            datetime.fromisoformat(query.booking_period_ending_date).date(),
+        )
     total_collective_bookings, collective_bookings_page = collective_repository.find_collective_bookings_by_pro_user(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
@@ -47,7 +51,7 @@ def get_collective_bookings_pro(
     )
 
     return collective_bookings_serialize.ListCollectiveBookingsResponseModel(
-        bookings_recap=[serialize_collective_booking(booking) for booking in collective_bookings_page],
+        bookingsRecap=[serialize_collective_booking(booking) for booking in collective_bookings_page],
         page=page,
         pages=int(math.ceil(total_collective_bookings / per_page_limit)),  # type: ignore [operator]
         total=total_collective_bookings,
@@ -65,10 +69,13 @@ def get_collective_bookings_pro(
 )
 def get_collective_bookings_csv(query: collective_bookings_serialize.ListCollectiveBookingsQueryModel) -> bytes:
     venue_id = query.venue_id
-    event_date = query.event_date
+    event_date = parser.parse(query.event_date) if query.event_date else None
     booking_period = None
     if query.booking_period_beginning_date and query.booking_period_ending_date:
-        booking_period = (query.booking_period_beginning_date, query.booking_period_ending_date)
+        booking_period = (
+            datetime.fromisoformat(query.booking_period_beginning_date).date(),
+            datetime.fromisoformat(query.booking_period_ending_date).date(),
+        )
     booking_status = query.booking_status_filter
 
     bookings = collective_api.get_collective_booking_csv_report(
