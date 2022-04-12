@@ -133,6 +133,22 @@ export interface CategoryResponseModel {
     proLabel: string;
 }
 
+export interface CollectiveOfferExtraDataOfferVenueBodyModel {
+    addressType: OfferAddressType;
+    otherAddress: string;
+    venueId: string;
+}
+
+export interface CollectiveOfferOfferVenueResponseModel {
+    addressType: OfferAddressType;
+    otherAddress: string;
+    venueId: string;
+}
+
+export interface CollectiveOfferResponseIdModel {
+    id: string;
+}
+
 export interface CollectiveOfferResponseModel {
     hasBookingLimitDatetimesPassed: boolean;
     id: string;
@@ -802,6 +818,24 @@ export enum PhoneValidationStatusType {
     BlockedTooManyCodeVerificationTries = 'blocked-too-many-code-verification-tries',
     Validated = 'validated'
 }
+export interface PostCollectiveOfferBodyModel {
+    audioDisabilityCompliant?: boolean;
+    bookingEmail?: string | null;
+    contactEmail: string;
+    contactPhone: string;
+    description?: string | null;
+    durationMinutes?: number | null;
+    mentalDisabilityCompliant?: boolean;
+    motorDisabilityCompliant?: boolean;
+    name: string;
+    offerVenue: CollectiveOfferExtraDataOfferVenueBodyModel;
+    offererId: string;
+    students: Array<StudentLevels>;
+    subcategoryId: string;
+    venueId: string;
+    visualDisabilityCompliant?: boolean;
+}
+
 export interface PostEducationalOfferBodyModel {
     audioDisabilityCompliant?: boolean;
     bookingEmail?: string | null;
@@ -2333,6 +2367,34 @@ export const DefaultApiFetchParamCreator = function (configuration?: APIConfigur
         },
         /**
          * 
+         * @summary create_collective_offer <POST>
+         * @param {PostCollectiveOfferBodyModel} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postCollectiveCreateCollectiveOffer(body?: PostCollectiveOfferBodyModel, options: any = {}): Promise<FetchArgs> {
+            const localVarPath = `/collective/offers`;
+            const localVarUrlObj = url.parse(localVarPath, true);
+            const localVarRequestOptions = Object.assign({
+                method: 'POST',
+                credentials: 'includes',
+            }, options);
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarUrlObj.query = Object.assign({}, localVarUrlObj.query, localVarQueryParameter, options.query);
+            // fix override query string Detail: https://stackoverflow.com/a/7517673/1077943
+            localVarUrlObj.search = null;
+            localVarRequestOptions.headers = Object.assign({}, localVarHeaderParameter, options.headers);
+            const needsSerialization = (<any>"PostCollectiveOfferBodyModel" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
+            localVarRequestOptions.body =  needsSerialization ? JSON.stringify(body || {}) : (body || "");
+            return {
+                url: url.format(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary create_offerer <POST>
          * @param {CreateOffererQueryModel} [body] 
          * @param {*} [options] Override http request option.
@@ -3079,6 +3141,18 @@ export const DefaultApiFp = function(api: DefaultApi, configuration?: APIConfigu
         },
         /**
          * 
+         * @summary create_collective_offer <POST>
+         * @param {PostCollectiveOfferBodyModel} [body] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async postCollectiveCreateCollectiveOffer(basePath: string, body?: PostCollectiveOfferBodyModel, options?: any): Promise<CollectiveOfferResponseIdModel> {
+            const localVarFetchArgs = await DefaultApiFetchParamCreator(configuration).postCollectiveCreateCollectiveOffer(body, options);
+            const response = await safeFetch(basePath + localVarFetchArgs.url, localVarFetchArgs.options)
+            return handleGeneratedApiResponse(response)
+        },
+        /**
+         * 
          * @summary create_offerer <POST>
          * @param {CreateOffererQueryModel} [body] 
          * @param {*} [options] Override http request option.
@@ -3591,6 +3665,16 @@ export interface DefaultApiInterface {
      * @memberof DefaultApiInterface
      */
     patchVenuesEditVenue(venueId: string, body?: EditVenueBodyModel, options?: any): Promise<GetVenueResponseModel>;
+
+    /**
+     * 
+     * @summary create_collective_offer <POST>
+     * @param {PostCollectiveOfferBodyModel} [body] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    postCollectiveCreateCollectiveOffer(body?: PostCollectiveOfferBodyModel, options?: any): Promise<CollectiveOfferResponseIdModel>;
 
     /**
      * 
@@ -4158,6 +4242,18 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
     public async patchVenuesEditVenue(venueId: string, body?: EditVenueBodyModel, options?: any) {
         const functionalApi = DefaultApiFp(this, this.configuration)
         return functionalApi.patchVenuesEditVenue(this.basePath, venueId, body, options)
+    }
+    /**
+     * 
+     * @summary create_collective_offer <POST>
+     * @param {PostCollectiveOfferBodyModel} [body] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public async postCollectiveCreateCollectiveOffer(body?: PostCollectiveOfferBodyModel, options?: any) {
+        const functionalApi = DefaultApiFp(this, this.configuration)
+        return functionalApi.postCollectiveCreateCollectiveOffer(this.basePath, body, options)
     }
     /**
      * 
