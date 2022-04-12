@@ -39,7 +39,7 @@ from . import blueprint
 @spectree_serialize(response_model=GetVenueResponseModel, api=blueprint.pro_private_schema)
 def get_venue(venue_id: str) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
 
     return GetVenueResponseModel.from_orm(venue)
 
@@ -98,7 +98,7 @@ def post_create_venue(body: PostVenueBodyModel) -> VenueResponseModel:
 def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
 
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
     not_venue_fields = {
         "isAccessibilityAppliedOnAllOffers",
         "isEmailAppliedOnAllOffers",
@@ -117,7 +117,7 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
         (field in update_venue_attrs and update_venue_attrs[field] != venue_attrs[field])
         for field in accessibility_fields
     )
-    have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails
+    have_withdrawal_details_changes = body.withdrawalDetails != venue.withdrawalDetails  # type: ignore [attr-defined]
     venue = offerers_api.update_venue(venue, contact_data=body.contact, **update_venue_attrs)
     venue_attrs = as_dict(venue)
 
@@ -140,7 +140,7 @@ def edit_venue(venue_id: str, body: EditVenueBodyModel) -> GetVenueResponseModel
 def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
 
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
 
     try:
         venue_banner = venues_serialize.VenueBannerContentModel.from_request(request)
@@ -171,7 +171,7 @@ def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
 @spectree_serialize(on_success_status=204)
 def delete_venue_banner(venue_id: str) -> None:
     venue = load_or_404(Venue, venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
 
     offerers_api.delete_venue_banner(venue)
 
@@ -181,12 +181,12 @@ def delete_venue_banner(venue_id: str) -> None:
 @spectree_serialize(on_success_status=200, response_model=VenueStatsResponseModel, api=blueprint.pro_private_schema)
 def get_venue_stats(humanized_venue_id: str) -> VenueStatsResponseModel:
     venue = load_or_404(Venue, humanized_venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
 
-    active_bookings_quantity = get_legacy_active_bookings_quantity_for_venue(venue.id)
-    validated_bookings_count = get_legacy_validated_bookings_quantity_for_venue(venue.id)
-    active_offers_count = get_active_offers_count_for_venue(venue.id)
-    sold_out_offers_count = get_sold_out_offers_count_for_venue(venue.id)
+    active_bookings_quantity = get_legacy_active_bookings_quantity_for_venue(venue.id)  # type: ignore [attr-defined]
+    validated_bookings_count = get_legacy_validated_bookings_quantity_for_venue(venue.id)  # type: ignore [attr-defined]
+    active_offers_count = get_active_offers_count_for_venue(venue.id)  # type: ignore [attr-defined]
+    sold_out_offers_count = get_sold_out_offers_count_for_venue(venue.id)  # type: ignore [attr-defined]
 
     return VenueStatsResponseModel(
         activeBookingsQuantity=active_bookings_quantity,

@@ -160,7 +160,7 @@ def generate_api_key_route(offerer_id: str) -> GenerateOffererApiKeyResponse:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
     offerer = load_or_404(offerers_models.Offerer, offerer_id)
     try:
-        clear_key = api.generate_and_save_api_key(offerer.id)
+        clear_key = api.generate_and_save_api_key(offerer.id)  # type: ignore [attr-defined]
     except ApiKeyCountMaxReached:
         raise ApiErrors({"api_key_count_max": "Le nombre de clés maximal a été atteint"})
     except ApiKeyPrefixGenerationError:

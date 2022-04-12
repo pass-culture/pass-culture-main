@@ -158,10 +158,10 @@ def create_collective_offer(
 ) -> None:
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))  # type: ignore [arg-type]
     venue = load_or_raise_error(Venue, offer_data.venue_id)
-    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [attr-defined]
     _check_offer_data_is_valid(offer_data, True)  # type: ignore [arg-type]
     collective_offer = educational_models.CollectiveOffer(
-        venueId=venue.id,
+        venueId=venue.id,  # type: ignore [attr-defined]
         name=offer_data.name,
         offerId=offer_id,
         bookingEmail=offer_data.booking_email,
@@ -192,7 +192,7 @@ def create_offer(
 ) -> Offer:
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)  # type: ignore [arg-type]
     venue = load_or_raise_error(Venue, offer_data.venue_id)
-    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [attr-defined]
     _check_offer_data_is_valid(offer_data, offer_data.is_educational)  # type: ignore [arg-type]
     if _is_able_to_create_book_offer_from_isbn(subcategory):  # type: ignore [arg-type]
         offer = _initialize_book_offer_from_template(offer_data)
@@ -205,11 +205,11 @@ def create_offer(
 
     logger.info(  # type: ignore [call-arg]
         "Offer has been created",
-        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},
+        extra={"offer_id": offer.id, "venue_id": venue.id, "product_id": offer.productId},  # type: ignore [attr-defined]
         technical_message_id="offer.created",
     )
 
-    update_external_pro(venue.bookingEmail)
+    update_external_pro(venue.bookingEmail)  # type: ignore [attr-defined]
 
     return offer
 
