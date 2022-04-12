@@ -35,10 +35,10 @@ class CollectiveBookingRecapStatus(Enum):
 class ListCollectiveBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
-    event_date: Optional[datetime]
+    event_date: Optional[str]
     booking_status_filter: Optional[CollectiveBookingStatusFilter]
-    booking_period_beginning_date: Optional[date]
-    booking_period_ending_date: Optional[date]
+    booking_period_beginning_date: Optional[str]
+    booking_period_ending_date: Optional[str]
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
 
@@ -72,7 +72,7 @@ class CollectiveStockResponseModel(BaseModel):
     offer_name: str
     offer_identifier: str
     event_beginning_datetime: str
-    offer_isbn: None = None
+    offer_isbn: Optional[str]
     offer_is_educational = True
 
 
@@ -86,7 +86,7 @@ class EducationalRedactorResponseModel(BaseModel):
 class CollectiveBookingResponseModel(BaseModel):
     stock: CollectiveStockResponseModel
     beneficiary: EducationalRedactorResponseModel
-    booking_token: None = None
+    booking_token: Optional[str]
     booking_date: str
     booking_status: str
     booking_is_duo = False
@@ -95,13 +95,14 @@ class CollectiveBookingResponseModel(BaseModel):
 
 
 class ListCollectiveBookingsResponseModel(BaseModel):
-    bookings_recap: list[CollectiveBookingResponseModel]
+    bookingsRecap: list[CollectiveBookingResponseModel]
     page: int
     pages: int
     total: int
 
     class Config:
         json_encoders = {datetime: format_into_utc_date}
+        alias_generator = to_camel
 
 
 def _get_booking_status(status: CollectiveBookingStatus, is_confirmed: bool) -> str:
