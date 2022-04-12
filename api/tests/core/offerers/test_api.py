@@ -14,6 +14,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -720,3 +721,53 @@ def test_delete_business_unit():
     assert venue.businessUnit is None
     assert link.timespan.lower == start_link_date  # unchanged
     assert link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+
+
+class IsVenueEligibleForStrictSearchTest:
+    def test_eligible(self):
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+        offers_factories.EventStockFactory(offer__venue=venue)
+
+        assert offerers_api.is_venue_eligible_for_strict_search(venue)
+
+    def test_venue_not_validated(self):
+        venue = offerers_factories.VenueFactory(isPermanent=True, validationToken="not_validated_yet")
+        offers_factories.EventStockFactory(offer__venue=venue)
+
+        assert not offerers_api.is_venue_eligible_for_strict_search(venue)
+
+    def test_no_offers(self):
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+        assert not offerers_api.is_venue_eligible_for_strict_search(venue)
+
+    def test_managing_offerer_not_validated(self):
+        venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer__validationToken="not_validated_yet")
+        offers_factories.EventStockFactory(offer__venue=venue)
+
+        assert not offerers_api.is_venue_eligible_for_strict_search(venue)
+
+    def test_offer_without_stock(self):
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+        offers_factories.OfferFactory(venue=venue)
+
+        assert not offerers_api.is_venue_eligible_for_strict_search(venue)
+
+    def test_expired_event(self):
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+
+        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        offers_factories.EventStockFactory(beginningDatetime=one_week_ago, offer__venue=venue)
+
+        assert not offerers_api.is_venue_eligible_for_strict_search(venue)
+
+    def test_only_one_bookable_offer(self):
+        venue = offerers_factories.VenueFactory(isPermanent=True)
+
+        # offer with bookable stock: venue is eligible
+        offers_factories.EventStockFactory(offer__venue=venue)
+
+        # without the previous offer, the venue would not be eligible
+        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        offers_factories.EventStockFactory(beginningDatetime=one_week_ago, offer__venue=venue)
+
+        assert offerers_api.is_venue_eligible_for_strict_search(venue)
