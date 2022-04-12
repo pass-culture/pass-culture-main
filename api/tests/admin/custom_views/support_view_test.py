@@ -1,4 +1,3 @@
-import dataclasses
 from datetime import datetime
 import logging
 
@@ -10,8 +9,7 @@ from pcapi.admin.custom_views.support_view.api import BeneficiaryActivationStatu
 from pcapi.admin.custom_views.support_view.api import get_beneficiary_activation_status
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
-import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+import pcapi.core.fraud.ubble.models as ubble_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
@@ -74,39 +72,32 @@ class BeneficiaryValidationViewTest:
         assert response.headers["Location"] == "http://localhost/pc/back-office/"
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
-    def test_validation_view_validate_user_from_jouve_data_staging(self, client):
-        user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
-
-        content = fraud_factories.JouveContentFactory(birthDateTxt=f"{AGE18_ELIGIBLE_BIRTH_DATE:%d/%m/%Y}")
+    def test_override_validation_for_fraud_check_is_ko(self, client):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.JOUVE,
-            resultContent=content,
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
         )
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
 
         response = client.post(
             f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
         )
         assert response.status_code == 302
-
-        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
-
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).first()
         assert review.review == fraud_models.FraudReviewStatus.OK
         assert review.reason == "User is granted"
-
         user = users_models.User.query.get(user.id)
         assert user.has_beneficiary_role is True
-        assert len(user.deposits) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.ACCEPTED_AS_BENEFICIARY.value
-        )
 
-        jouve_content = fraud_models.JouveContent(**check.resultContent)
-        assert user.firstName == jouve_content.firstName
-        assert user.lastName == jouve_content.lastName
+        dms_content = fraud_models.DMSContent(**check.resultContent)
+        assert user.firstName == dms_content.first_name
+        assert user.lastName == dms_content.last_name
+        assert user.idPieceNumber == dms_content.id_piece_number
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).first()
+        assert fraud_check.status == check.status
 
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_from_dms_data_staging(self, client):
@@ -117,11 +108,10 @@ class BeneficiaryValidationViewTest:
 
         response = client.post(
             f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
         )
         assert response.status_code == 302
-
-        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one()
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).first()
         assert review.review == fraud_models.FraudReviewStatus.OK
         assert review.reason == "User is granted"
         user = users_models.User.query.get(user.id)
@@ -142,7 +132,7 @@ class BeneficiaryValidationViewTest:
 
         response = client.post(
             f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
         )
         assert response.status_code == 302
 
@@ -167,7 +157,7 @@ class BeneficiaryValidationViewTest:
 
         response = client.post(
             f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-            form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
         )
         assert response.status_code == 302
 
@@ -192,7 +182,7 @@ class BeneficiaryValidationViewTest:
 
         response = client.post(
             f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-            form={"user_id": user.id, "badkey": "User is granted", "review": "OK"},
+            form={"user_id": user.id, "badkey": "User is granted", "review": "OK", "eligibility": "Par défaut"},
         )
         assert response.status_code == 302
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
@@ -226,7 +216,7 @@ class BeneficiaryValidationViewTest:
         with override_settings(IS_PROD=True):
             response = client.post(
                 f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-                form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+                form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
             )
         assert response.status_code == 302
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
@@ -236,14 +226,14 @@ class BeneficiaryValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_prod_requires_super_admin(self, client):
         user = users_factories.UserFactory()
-        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
             response = client.post(
                 f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-                form={"user_id": user.id, "reason": "User is granted", "review": "OK"},
+                form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
             )
         assert response.status_code == 302
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
@@ -251,20 +241,20 @@ class BeneficiaryValidationViewTest:
         assert review.author == admin
         assert user.has_beneficiary_role is True
 
-        jouve_content = fraud_models.JouveContent(**check.resultContent)
-        assert user.firstName == jouve_content.firstName
-        assert user.lastName == jouve_content.lastName
+        ubble_content = ubble_models.UbbleContent(**check.resultContent)
+        assert user.firstName == ubble_content.get_first_name()
+        assert user.lastName == ubble_content.get_last_name()
 
     def test_review_ko_does_not_activate_the_beneficiary(self, client):
         user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.JOUVE)
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
 
         with override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=[admin.email]):
             response = client.post(
                 f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
-                form={"user_id": user.id, "reason": "User is denied", "review": "KO"},
+                form={"user_id": user.id, "reason": "User is denied", "review": "KO", "eligibility": "Par défaut"},
             )
         assert response.status_code == 302
         review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).one_or_none()
