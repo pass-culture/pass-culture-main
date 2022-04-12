@@ -82,7 +82,15 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: igno
 
     @property
     def isBookable(self):  # type: ignore [no-untyped-def]
-        return not self.isExpired and self.offer.isReleased and not self.isSoldOut
+        return self._bookable and self.offer.isReleased
+
+    @sa.ext.hybrid.hybrid_property
+    def _bookable(self):
+        return not self.isExpired and not self.isSoldOut
+
+    @_bookable.expression  # type: ignore [no-redef]
+    def _bookable(cls):  # pylint: disable=no-self-argument
+        return sa.and_(sa.not_(cls.isExpired), sa.not_(cls.isSoldOut))
 
     @property
     def is_forbidden_to_underage(self):  # type: ignore [no-untyped-def]
@@ -115,9 +123,13 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: igno
     def isEventExpired(cls):  # pylint: disable=no-self-argument
         return sa.and_(cls.beginningDatetime != None, cls.beginningDatetime <= sa.func.now())
 
-    @property
-    def isExpired(self):  # type: ignore [no-untyped-def]
+    @sa.ext.hybrid.hybrid_property
+    def isExpired(self):
         return self.isEventExpired or self.hasBookingLimitDatetimePassed
+
+    @isExpired.expression  # type: ignore [no-redef]
+    def isExpired(cls):  # pylint: disable=no-self-argument
+        return sa.or_(cls.isEventExpired, cls.hasBookingLimitDatetimePassed)
 
     @property
     def isEventDeletable(self):  # type: ignore [no-untyped-def]
@@ -126,8 +138,8 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: igno
         limit_date_for_stock_deletion = self.beginningDatetime + bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         return limit_date_for_stock_deletion >= datetime.utcnow()
 
-    @property
-    def isSoldOut(self):  # type: ignore [no-untyped-def]
+    @sa.ext.hybrid.hybrid_property
+    def isSoldOut(self):
         # pylint: disable=comparison-with-callable
         if (
             not self.isSoftDeleted
@@ -136,6 +148,19 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: igno
         ):
             return False
         return True
+
+    @isSoldOut.expression  # type: ignore [no-redef]
+    def isSoldOut(cls):  # pylint: disable=no-self-argument
+        return sa.not_(
+            sa.and_(
+                sa.not_(cls.isSoftDeleted),
+                sa.or_(cls.beginningDatetime.is_(None), cls.beginningDatetime > sa.func.now()),
+                sa.or_(
+                    cls.remainingQuantity.is_(None),
+                    cls.remainingQuantity > 0,  # pylint: disable=comparison-with-callable
+                ),
+            )
+        )
 
     @classmethod
     def queryNotSoftDeleted(cls):  # type: ignore [no-untyped-def]
@@ -365,12 +390,19 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     @property
     def isReleased(self) -> bool:
         return (
-            self.isActive
-            and self.validation == OfferValidationStatus.APPROVED
-            and self.venue.isValidated
+            self._released
+            and self.venue.isReleased
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
         )
+
+    @sa.ext.hybrid.hybrid_property
+    def _released(self) -> bool:
+        return self.isActive and self.validation == OfferValidationStatus.APPROVED
+
+    @_released.expression  # type: ignore [no-redef]
+    def _released(cls) -> bool:  # pylint: disable=no-self-argument
+        return sa.and_(cls.isActive, cls.validation == OfferValidationStatus.APPROVED)
 
     @sa.ext.hybrid.hybrid_property
     def isPermanent(self) -> bool:
@@ -423,7 +455,13 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
                 return True
         return False
 
-    is_eligible_for_search = isBookable
+    @sa.ext.hybrid.hybrid_property
+    def is_eligible_for_search(self) -> bool:
+        return self.isReleased and self.isBookable
+
+    @is_eligible_for_search.expression  # type: ignore [no-redef]
+    def is_eligible_for_search(cls):  # pylint: disable=no-self-argument
+        return sa.and_(cls._released, Stock._bookable)
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
