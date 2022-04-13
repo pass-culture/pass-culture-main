@@ -669,8 +669,8 @@ class GetEligibleForSearchVenuesTest:
 
 
 def test_set_business_unit_to_venue_id():
-    current_link = finance_factories.BusinessUnitVenueLinkFactory()
-    venue = current_link.venue
+    venue = offerers_factories.VenueFactory()
+    current_link = finance_models.BusinessUnitVenueLink.query.one()
     new_business_unit = finance_factories.BusinessUnitFactory()
 
     offerers_api.set_business_unit_to_venue_id(new_business_unit.id, venue.id)
@@ -686,8 +686,8 @@ def test_set_business_unit_to_venue_id():
 
 
 def test_set_business_unit_to_venue_id_with_multiple_links():
-    current_link = finance_factories.BusinessUnitVenueLinkFactory()
-    venue = current_link.venue
+    venue = offerers_factories.VenueFactory()
+    current_link = finance_models.BusinessUnitVenueLink.query.one()
     finance_factories.BusinessUnitVenueLinkFactory(
         venue=venue,
         timespan=[  # former, inactive link
@@ -712,7 +712,7 @@ def test_set_business_unit_to_venue_id_with_multiple_links():
 def test_delete_business_unit():
     venue = offerers_factories.VenueFactory()
     business_unit = venue.businessUnit
-    link = finance_factories.BusinessUnitVenueLinkFactory(venue=venue)
+    link = finance_models.BusinessUnitVenueLink.query.one()
     start_link_date = link.timespan.lower
 
     offerers_api.delete_business_unit(business_unit)
