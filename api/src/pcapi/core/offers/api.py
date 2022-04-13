@@ -99,6 +99,7 @@ from pcapi.routes.serialization.stock_serialize import EducationalStockCreationB
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
@@ -910,7 +911,7 @@ def create_mediation(
     offer: Offer,
     credit: str,
     image_as_bytes: bytes,
-    crop_params: tuple = None,
+    crop_params: Optional[CropParams] = None,
 ) -> Mediation:
     # checks image type, min dimensions
     validation.check_image(image_as_bytes)

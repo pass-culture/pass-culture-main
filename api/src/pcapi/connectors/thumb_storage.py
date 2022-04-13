@@ -1,6 +1,9 @@
+import typing
+
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.models import Model
+from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import IMAGE_RATIO_PORTRAIT_DEFAULT
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
@@ -10,14 +13,14 @@ def create_thumb(
     model_with_thumb: Model,  # type: ignore [valid-type]
     image_as_bytes: bytes,
     image_index: int,
-    crop_params: tuple = None,
+    crop_params: typing.Optional[CropParams] = None,
     ratio: float = IMAGE_RATIO_PORTRAIT_DEFAULT,
     keep_ratio: bool = False,
 ) -> None:
     if keep_ratio:
         image_as_bytes = process_original_image(image_as_bytes)
     else:
-        image_as_bytes = standardize_image(image_as_bytes, ratio=ratio, crop_params=crop_params)  # type: ignore [arg-type]
+        image_as_bytes = standardize_image(image_as_bytes, ratio=ratio, crop_params=crop_params)
 
     object_storage.store_public_object(
         folder=settings.THUMBS_FOLDER_NAME,

@@ -314,4 +314,9 @@ class VenueBannerContentModel(BaseModel):
     def crop_params(self) -> Optional[CropParams]:
         if {self.x_crop_percent, self.y_crop_percent, self.height_crop_percent} == {None}:
             return None
-        return (self.x_crop_percent, self.y_crop_percent, self.height_crop_percent)
+
+        return CropParams(
+            x_crop_percent=self.x_crop_percent,
+            y_crop_percent=self.y_crop_percent,
+            height_crop_percent=self.height_crop_percent,
+        )

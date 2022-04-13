@@ -585,6 +585,7 @@ class VenueBannerTest:
                 "author_id": user.id,
                 "image_credit": "none",
                 "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
+                "crop_params": None,
             }
 
             mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
