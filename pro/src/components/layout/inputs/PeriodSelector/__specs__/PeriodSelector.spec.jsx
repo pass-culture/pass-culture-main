@@ -30,16 +30,14 @@ describe('components | PeriodSelector', () => {
     const beginCalendar = startingDateWrapper.children[1]
 
     fireEvent.click(
-      within(beginCalendar).getByLabelText(
-        'Choose Thursday, October 21st, 2021'
-      )
+      within(beginCalendar).getByLabelText('Choose jeudi 21 octobre 2021')
     )
     expect(endDateWrapper.children).toHaveLength(2)
 
     const endCalendar = endDateWrapper.children[1]
 
     fireEvent.click(
-      within(endCalendar).getByLabelText('Choose Saturday, October 30th, 2021')
+      within(endCalendar).getByLabelText('Choose samedi 30 octobre 2021')
     )
     expect(endDateWrapper.children).toHaveLength(1)
   })

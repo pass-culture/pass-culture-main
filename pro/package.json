@@ -82,7 +82,7 @@
     "react-autosize-textarea": "^7.1.0",
     "react-avatar-editor": "^11.1.0",
     "react-csv": "^2.2.2",
-    "react-datepicker": "^3.8.0",
+    "react-datepicker": "^4.7.0",
     "react-dom": "^16.13.1",
     "react-dotdotdot": "^1.2.3",
     "react-final-form": "^6.5.8",
