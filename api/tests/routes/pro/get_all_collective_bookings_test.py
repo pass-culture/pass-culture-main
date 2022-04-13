@@ -33,7 +33,7 @@ class Returns200Test:
         response = client.get(f"collective/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         assert response.status_code == 200
-        assert len(response.json["bookings_recap"]) == 1
+        assert len(response.json["bookingsRecap"]) == 1
 
     def test_when_regular_pro_user_and_booking_confirmed_by_ce(self, client):
         # Given
@@ -80,11 +80,11 @@ class Returns200Test:
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
-                "booking_status": "réservé",
+                "booking_status": "booked",
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "réservé",
+                        "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
                     },
                 ],
@@ -95,7 +95,7 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
-        assert response.json["bookings_recap"] == expected_bookings_recap
+        assert response.json["bookingsRecap"] == expected_bookings_recap
 
     def test_when_no_results(self, client):
         # Given
@@ -126,7 +126,7 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 0
         assert response.json["total"] == 0
-        assert response.json["bookings_recap"] == []
+        assert response.json["bookingsRecap"] == []
 
     def test_when_collective_booking_pending_should_show_prereserve_in_history(self, client):
         # Given
@@ -154,11 +154,11 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        booking_recap = response.json["bookings_recap"][0]
-        assert booking_recap["booking_status"] == "préréservé"
+        booking_recap = response.json["bookingsRecap"][0]
+        assert booking_recap["booking_status"] == "pending"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "préréservé",
+                "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
             },
         ]
@@ -192,15 +192,15 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        booking_recap = response.json["bookings_recap"][0]
-        assert booking_recap["booking_status"] == "validé"
+        booking_recap = response.json["bookingsRecap"][0]
+        assert booking_recap["booking_status"] == "validated"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "réservé",
+                "status": "booked",
                 "date": "2022-03-12T13:15:00+01:00",
             },
             {
-                "status": "validé",
+                "status": "validated",
                 "date": "2022-05-16T22:00:00+02:00",
             },
         ]
@@ -236,15 +236,15 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        booking_recap = response.json["bookings_recap"][0]
-        assert booking_recap["booking_status"] == "annulé"
+        booking_recap = response.json["bookingsRecap"][0]
+        assert booking_recap["booking_status"] == "cancelled"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "réservé",
+                "status": "booked",
                 "date": "2022-03-12T13:15:00+01:00",
             },
             {
-                "status": "annulé",
+                "status": "cancelled",
                 "date": "2022-03-16T11:47:00+01:00",
             },
         ]
@@ -280,15 +280,15 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        booking_recap = response.json["bookings_recap"][0]
-        assert booking_recap["booking_status"] == "annulé"
+        booking_recap = response.json["bookingsRecap"][0]
+        assert booking_recap["booking_status"] == "cancelled"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "réservé",
+                "status": "booked",
                 "date": "2022-03-11T11:15:00+01:00",
             },
             {
-                "status": "annulé",
+                "status": "cancelled",
                 "date": "2022-03-16T11:47:00+01:00",
             },
         ]
@@ -327,23 +327,23 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        booking_recap = response.json["bookings_recap"][0]
-        assert booking_recap["booking_status"] == "remboursé"
+        booking_recap = response.json["bookingsRecap"][0]
+        assert booking_recap["booking_status"] == "reimbursed"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "réservé",
+                "status": "booked",
                 "date": "2022-03-12T13:15:00+01:00",
             },
             {
-                "status": "confirmé",
+                "status": "confirmed",
                 "date": "2022-04-30T22:00:00+02:00",
             },
             {
-                "status": "validé",
+                "status": "validated",
                 "date": "2022-05-16T22:00:00+02:00",
             },
             {
-                "status": "remboursé",
+                "status": "reimbursed",
                 "date": "2022-05-30T22:00:00+02:00",
             },
         ]
@@ -379,11 +379,11 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        booking_recap = response.json["bookings_recap"][0]
-        assert booking_recap["booking_status"] == "préréservé"
+        booking_recap = response.json["bookingsRecap"][0]
+        assert booking_recap["booking_status"] == "pending"
         assert booking_recap["booking_status_history"] == [
             {
-                "status": "préréservé",
+                "status": "pending",
                 "date": "2022-03-11T11:15:00+01:00",
             },
         ]
@@ -441,11 +441,11 @@ class Returns200Test:
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
-                "booking_status": "réservé",
+                "booking_status": "booked",
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "réservé",
+                        "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
                     },
                 ],
@@ -456,7 +456,7 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
-        assert response.json["bookings_recap"] == expected_bookings_recap
+        assert response.json["bookingsRecap"] == expected_bookings_recap
 
     def test_when_filter_event_date(self, client):
         # Given
@@ -511,11 +511,11 @@ class Returns200Test:
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
-                "booking_status": "réservé",
+                "booking_status": "booked",
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "réservé",
+                        "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
                     },
                 ],
@@ -526,7 +526,7 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
-        assert response.json["bookings_recap"] == expected_bookings_recap
+        assert response.json["bookingsRecap"] == expected_bookings_recap
 
     @freeze_time("2022-05-20 15:00:00")
     def test_when_filter_booking_status(self, client):
@@ -584,19 +584,19 @@ class Returns200Test:
                 "booking_date": "2022-02-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
-                "booking_status": "validé",
+                "booking_status": "validated",
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
-                        "status": "réservé",
+                        "status": "booked",
                         "date": "2022-02-12T11:15:00+01:00",
                     },
                     {
-                        "status": "confirmé",
+                        "status": "confirmed",
                         "date": "2022-02-23T11:15:00+01:00",  # la date limite d'annulation est automatiquement calculée en db et écrase celle fournie. Dans notre cas : 15 jours avant date evènement.
                     },
                     {
-                        "status": "validé",
+                        "status": "validated",
                         "date": "2022-03-11T11:15:00+01:00",
                     },
                 ],
@@ -607,7 +607,7 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
-        assert response.json["bookings_recap"] == expected_bookings_recap
+        assert response.json["bookingsRecap"] == expected_bookings_recap
 
 
 @pytest.mark.usefixtures("db_session")
