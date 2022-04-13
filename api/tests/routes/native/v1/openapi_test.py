@@ -1255,7 +1255,7 @@ def test_public_api(client, app):
                 },
                 "UserRole": {
                     "description": "An enumeration.",
-                    "enum": ["ADMIN", "BENEFICIARY", "PRO", "JOUVE", "UNDERAGE_BENEFICIARY"],
+                    "enum": ["ADMIN", "BENEFICIARY", "PRO", "UNDERAGE_BENEFICIARY"],
                     "title": "UserRole",
                 },
                 "UserProfileUpdateRequest": {

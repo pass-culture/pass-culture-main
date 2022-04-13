@@ -280,47 +280,7 @@ class BeneficiaryValidationViewTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class JouveAccessTest:
-    """Specific tests to ensure JOUVE does not access anything else"""
-
-    def test_access_index(self, client):
-        user = users_factories.UserFactory(roles=[users_models.UserRole.JOUVE])
-        client.with_session_auth(user.email)
-        response = client.get("/pc/back-office/")
-        assert response.status_code == 200
-
-    @pytest.mark.parametrize(
-        "url",
-        [
-            "/pc/back-office/pro_users",
-            "/pc/back-office/admin_users",
-            "/pc/back-office/beneficiary_users",
-        ],
-    )
-    def test_access_forbidden_views(self, client, url):
-        user = users_factories.UserFactory(roles=[users_models.UserRole.JOUVE])
-        client.with_session_auth(user.email)
-        response = client.get(url)
-        assert response.status_code == 302
-        assert response.headers["Location"] == "http://localhost/pc/back-office/"
-
-
-@pytest.mark.usefixtures("db_session")
 class ValidatePhoneNumberTest:
-    def test_jouve_has_no_access(self, client):
-        user = users_factories.UserFactory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
-        )
-        jouve_admin = users_factories.UserFactory(roles=[users_models.UserRole.JOUVE])
-        client.with_session_auth(jouve_admin.email)
-
-        response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
-        assert "Valider le n° de télépone" not in response.data.decode()
-
-        response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/phone_number/{user.id}")
-        assert response.status_code == 302
-        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS
-
     def test_phone_validation(self, client, caplog):
         admin = users_factories.AdminFactory()
         user = users_factories.UserFactory(

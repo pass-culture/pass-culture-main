@@ -1089,7 +1089,6 @@ export enum UserRole {
     ADMIN = 'ADMIN',
     BENEFICIARY = 'BENEFICIARY',
     PRO = 'PRO',
-    JOUVE = 'JOUVE',
     UNDERAGEBENEFICIARY = 'UNDERAGE_BENEFICIARY'
 }
 export interface ValidationError extends Array<ValidationErrorElement> {
