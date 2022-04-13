@@ -1,5 +1,7 @@
 import logging
 
+import sqlalchemy as sqla
+
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
@@ -83,6 +85,18 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         for id_, in finance_models.BusinessUnit.query.filter(
             finance_models.BusinessUnit.id.in_(business_unit_ids_to_delete)
         ).with_entities(finance_models.BusinessUnit.bankAccountId)
+    } | {  # handle old-style BankInformation that are linked to the
+        # offerer or one of its venues, where one of the
+        # Venue.businessUnit has been cleared.
+        id_
+        for id_, in BankInformation.query.outerjoin(BankInformation.venue)
+        .filter(
+            sqla.or_(
+                BankInformation.offererId == offerer_id,
+                Venue.managingOffererId == offerer_id,
+            )
+        )
+        .with_entities(BankInformation.id)
     }
     deleted_business_unit_venue_link_count = finance_models.BusinessUnitVenueLink.query.filter(
         finance_models.BusinessUnitVenueLink.businessUnitId.in_(business_unit_ids_to_delete)
