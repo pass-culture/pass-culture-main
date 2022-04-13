@@ -39,7 +39,8 @@ from pcapi.core import search
 from pcapi.core.bookings.api import cancel_bookings_from_rejected_offer
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
-from pcapi.core.criteria import api as criteria_api
+import pcapi.core.criteria.api as criteria_api
+import pcapi.core.criteria.models as criteria_models
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -54,7 +55,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.models import db
-from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
@@ -102,7 +102,7 @@ class OfferChangeForm(Form):
     ids = HiddenField()
     tags = QuerySelectMultipleField(
         get_label="name",
-        query_factory=lambda: Criterion.query.all(),  # pylint: disable=unnecessary-lambda
+        query_factory=lambda: criteria_models.Criterion.query.all(),  # pylint: disable=unnecessary-lambda
         allow_blank=True,
     )
     remove_other_tags = BooleanField(
@@ -184,10 +184,10 @@ class OfferView(BaseAdminView):
         change_form.ids.data = joined_ids
 
         criteria_in_common = (
-            db.session.query(Criterion)
+            db.session.query(criteria_models.Criterion)
             .join(OfferCriterion)
             .filter(OfferCriterion.offerId.in_(ids))
-            .group_by(Criterion.id)
+            .group_by(criteria_models.Criterion.id)
             .having(func.count(OfferCriterion.criterion) == len(ids))
             .all()
         )

@@ -1,6 +1,6 @@
 import factory
 
-from pcapi.core.offers.factories import CriterionFactory
+import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
@@ -56,7 +56,7 @@ class VenueCriterionFactory(BaseFactory):
         model = models.VenueCriterion
 
     venue = factory.SubFactory(VenueFactory)
-    criterion = factory.SubFactory(CriterionFactory)
+    criterion = factory.SubFactory(criteria_factories.CriterionFactory)
 
 
 DEFAULT_PREFIX = "development_prefix"

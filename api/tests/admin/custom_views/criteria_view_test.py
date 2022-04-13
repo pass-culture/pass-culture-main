@@ -2,9 +2,10 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.criteria.factories as criteria_factories
+import pcapi.core.criteria.models as criteria_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models.criterion import Criterion
 
 from tests.conftest import clean_database
 
@@ -24,8 +25,8 @@ class CriteriaViewTest:
         )
 
         assert response.status_code == 302
-        assert Criterion.query.count() == 1
-        criterion = Criterion.query.first()
+        assert criteria_models.Criterion.query.count() == 1
+        criterion = criteria_models.Criterion.query.first()
         assert criterion.name == name
         assert criterion.description == "My description"
 
@@ -46,7 +47,7 @@ class CriteriaViewTest:
 
         assert response.status_code == 200
         assert "Le nom ne doit contenir aucun caractère d&#39;espacement" in response.data.decode("utf8")
-        assert Criterion.query.count() == 0
+        assert criteria_models.Criterion.query.count() == 0
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -62,7 +63,7 @@ class CriteriaViewTest:
 
         assert response.status_code == 200
         assert "Le nom d&#39;un tag ne peut excéder 140 caractères" in response.data.decode("utf8")
-        assert Criterion.query.count() == 0
+        assert criteria_models.Criterion.query.count() == 0
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
@@ -70,7 +71,7 @@ class CriteriaViewTest:
         users_factories.AdminFactory(email="admin@example.com")
 
         offer = offers_factories.OfferFactory()
-        criterion = offers_factories.CriterionFactory(name="test_delete_criterion")
+        criterion = criteria_factories.CriterionFactory(name="test_delete_criterion")
         offers_factories.OfferCriterionFactory(offer=offer, criterion=criterion)
 
         assert len(offer.criteria) == 1

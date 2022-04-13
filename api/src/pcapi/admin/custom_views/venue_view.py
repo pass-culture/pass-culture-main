@@ -24,7 +24,8 @@ from wtforms.fields.simple import HiddenField
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
-from pcapi.core.criteria import api as criteria_api
+import pcapi.core.criteria.api as criteria_api
+import pcapi.core.criteria.models as criteria_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
 import pcapi.core.offerers.models as offerers_models
@@ -34,7 +35,6 @@ import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
-from pcapi.models.criterion import Criterion
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
@@ -72,7 +72,7 @@ class VenueChangeForm(Form):
     )
     tags = QuerySelectMultipleField(
         get_label="name",
-        query_factory=lambda: Criterion.query.all(),  # pylint: disable=unnecessary-lambda
+        query_factory=lambda: criteria_models.Criterion.query.all(),  # pylint: disable=unnecessary-lambda
         allow_blank=True,
     )
     remove_other_tags = BooleanField(
@@ -87,7 +87,11 @@ class VenueCriteriaFilter(fa_filters.BaseSQLAFilter):
 
     def apply(self, query: BaseQuery, value: str, alias=None) -> BaseQuery:  # type: ignore [no-untyped-def]
         parsed_value = tools.parse_like_term(value)
-        return query.join(offerers_models.VenueCriterion).join(Criterion).filter(Criterion.name.ilike(parsed_value))
+        return (
+            query.join(offerers_models.VenueCriterion)
+            .join(criteria_models.Criterion)
+            .filter(criteria_models.Criterion.name.ilike(parsed_value))
+        )
 
     def operation(self):  # type: ignore [no-untyped-def]
         return lazy_gettext("contains")
@@ -275,10 +279,10 @@ class VenueView(BaseAdminView):
         change_form.is_permanent.data = True
 
         criteria_in_common = (
-            db.session.query(Criterion)
+            db.session.query(criteria_models.Criterion)
             .join(offerers_models.VenueCriterion)
             .filter(offerers_models.VenueCriterion.venueId.in_(ids))
-            .group_by(Criterion.id)
+            .group_by(criteria_models.Criterion.id)
             .having(func.count(offerers_models.VenueCriterion.criterion) == len(ids))
             .all()
         )

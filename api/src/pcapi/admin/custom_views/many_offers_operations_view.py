@@ -14,10 +14,10 @@ from wtforms import validators
 
 from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.categories import categories
+from pcapi.core.criteria.models import Criterion
 from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import deactivate_inappropriate_products
 from pcapi.core.offers.models import Offer
-from pcapi.models.criterion import Criterion
 from pcapi.models.product import Product
 
 

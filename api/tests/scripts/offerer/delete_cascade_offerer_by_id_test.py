@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BusinessUnit
 import pcapi.core.offerers.factories as offerers_factories
@@ -24,7 +25,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.models.bank_information import BankInformation
-from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
@@ -233,7 +233,7 @@ def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_of
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
     assert OfferCriterion.query.count() == 1
-    assert Criterion.query.count() == 2
+    assert criteria_models.Criterion.query.count() == 2
 
 
 @pytest.mark.usefixtures("db_session")

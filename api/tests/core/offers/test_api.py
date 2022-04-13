@@ -16,6 +16,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -1889,8 +1890,8 @@ class AddCriterionToOffersTest:
         offer21 = factories.OfferFactory(product=product2)
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
-        criterion1 = factories.CriterionFactory(name="Pretty good books")
-        criterion2 = factories.CriterionFactory(name="Other pretty good books")
+        criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
+        criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
 
         # When
         is_successful = api.add_criteria_to_offers([criterion1, criterion2], isbn=isbn)
@@ -1915,8 +1916,8 @@ class AddCriterionToOffersTest:
         offer21 = factories.OfferFactory(product=product2)
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
-        criterion1 = factories.CriterionFactory(name="Pretty good books")
-        criterion2 = factories.CriterionFactory(name="Other pretty good books")
+        criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
+        criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
 
         # When
         is_successful = api.add_criteria_to_offers([criterion1, criterion2], visa=visa)
@@ -1935,7 +1936,7 @@ class AddCriterionToOffersTest:
         # Given
         isbn = "2-221-00164-8"
         factories.OfferFactory(extraData={"isbn": "2221001647"})
-        criterion = factories.CriterionFactory(name="Pretty good books")
+        criterion = criteria_factories.CriterionFactory(name="Pretty good books")
 
         # When
         is_successful = api.add_criteria_to_offers([criterion], isbn=isbn)

@@ -1,5 +1,6 @@
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
 import pcapi.core.fraud.models as fraud_models
@@ -14,7 +15,6 @@ from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
-from pcapi.models.criterion import Criterion
 from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
 from pcapi.models.offer_criterion import OfferCriterion
@@ -54,7 +54,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     users_models.Favorite.query.delete()
     offers_models.Mediation.query.delete()
     OfferCriterion.query.delete()
-    Criterion.query.delete()
+    criteria_models.Criterion.query.delete()
     educational_models.CollectiveOffer.query.delete()
     educational_models.CollectiveOfferTemplate.query.delete()
     offers_models.Offer.query.delete()

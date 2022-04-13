@@ -11,6 +11,7 @@ from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.core import testing
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
@@ -858,7 +859,7 @@ class OfferViewTest:
         client,
     ):
         offer = offers_factories.EventStockFactory().offer
-        tag = offers_factories.CriterionFactory()
+        tag = criteria_factories.CriterionFactory()
         data = {"criteria": [tag.id], "validation": OfferValidationStatus.APPROVED.value}
 
         admin = users_factories.AdminFactory(email="admin@example.com")
