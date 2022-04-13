@@ -23,6 +23,7 @@ from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.mails import testing as mails_testing
 from pcapi.core.object_storage.testing import recursive_listdir
+import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
@@ -345,21 +346,21 @@ class DeleteDependentPricingsTest:
         used_date = datetime.datetime(2022, 1, 15)
         booking = bookings_factories.UsedBookingFactory(dateUsed=used_date)
         earlier_pricing = factories.PricingFactory(
-            siret=booking.venue.siret,
+            booking__stock__offer__venue=booking.venue,
             booking__dateUsed=booking.dateUsed - datetime.timedelta(seconds=1),
         )
         later_pricing = factories.PricingFactory(
-            siret=booking.venue.siret,
+            booking__stock__offer__venue=booking.venue,
             booking__dateUsed=booking.dateUsed + datetime.timedelta(seconds=1),
         )
         later_pricing_another_year = factories.PricingFactory(
-            siret=booking.venue.siret,
+            booking__stock__offer__venue=booking.venue,
             booking__dateUsed=used_date + datetime.timedelta(days=365),
         )
         factories.PricingLineFactory(pricing=later_pricing)
         factories.PricingLogFactory(pricing=later_pricing)
         _same_date_pricing_but_greater_booking_id = factories.PricingFactory(
-            siret=booking.venue.siret,
+            booking__stock__offer__venue=booking.venue,
             valueDate=booking.dateUsed,
         )
         api._delete_dependent_pricings(booking, "some log message")
@@ -415,30 +416,62 @@ class PriceBookingsTest:
         used_date3 = datetime.datetime.utcnow() - datetime.timedelta(days=8)
         used_date4 = datetime.datetime.utcnow() - datetime.timedelta(days=7)
 
+        # Use the same venue so that we only consider the event date
+        # and the used date.
+        venue = offerers_factories.VenueFactory()
+
         booking1 = bookings_factories.UsedBookingFactory(
             # non-event, created first, marked as used first
             dateUsed=used_date1,
+            stock__offer__venue=venue,
         )
         booking2 = bookings_factories.UsedBookingFactory(
             # event, marked as used before the event date
             dateUsed=used_date3,
             stock__beginningDatetime=event_day2,
+            stock__offer__venue=venue,
         )
         booking3 = bookings_factories.UsedBookingFactory(
             # event, marked as used after booking2, but with an event
             # date *before* booking2 event date.
             dateUsed=used_date4,
             stock__beginningDatetime=event_day1,
+            stock__offer__venue=venue,
         )
         booking4 = bookings_factories.UsedBookingFactory(
             # non-event, created last, marked as used second
             dateUsed=used_date2,
+            stock__offer__venue=venue,
         )
 
         api.price_bookings()
         pricings = models.Pricing.query.order_by(models.Pricing.id).all()
         ordered_bookings = [pricing.booking for pricing in pricings]
         assert ordered_bookings == [booking1, booking4, booking3, booking2]
+
+    def test_order_on_business_unit_venue_link_date(self):
+        venue1 = offerers_factories.VenueFactory(businessUnit=None)
+        booking1 = bookings_factories.UsedBookingFactory(
+            dateUsed=datetime.datetime.utcnow() - datetime.timedelta(days=2),
+            stock__offer__venue=venue1,
+        )
+        venue2 = offerers_factories.VenueFactory()
+        booking2 = bookings_factories.UsedBookingFactory(
+            dateUsed=booking1.dateUsed + datetime.timedelta(days=1),
+            stock__offer__venue=venue2,
+        )
+
+        # booking1 is not priced because its venue is not linked to any business unit.
+        api.price_bookings()
+        pricing = models.Pricing.query.one()
+        assert pricing.booking == booking2
+
+        # Make booking1 priceable.
+        offerers_api.set_business_unit_to_venue_id(venue2.businessUnitId, venue1.id)
+        api.price_bookings()
+
+        pricings = models.Pricing.query.all()
+        assert {pricing.booking for pricing in pricings} == {booking1, booking2}
 
 
 class GenerateCashflowsTest:

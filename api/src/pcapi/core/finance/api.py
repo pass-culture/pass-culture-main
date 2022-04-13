@@ -88,6 +88,18 @@ MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 # stable order. If you change this, you MUST update
 # `_booking_comparison_tuple()` below.
 _PRICE_BOOKINGS_ORDER_CLAUSE = (
+    # Order by business unit-venue link date first. Example where it's
+    # required:
+    # 1. Booking B1 is marked as used. Its venue V1 is _not_ linked to
+    #    any business unit yet, so B1 is not priced.
+    # 2. Booking B2 is marked as used. Its venue V2 is linked to a
+    #    business unit, thus B2 is priced.
+    # 3. The offerer links venue V1 to the same business unit as V2.
+    # 4. Now B1 can be priced.
+    # B1's used date is before B2's used date, and since B2 may
+    # already have been reimbursed, we need another order criterion:
+    # the date that the venue has been linked to the business unit.
+    sqla.func.lower(models.BusinessUnitVenueLink.timespan),
     # In case of an event, we should order by the event date
     # first. Otherwise, we would risk the following with a venue that
     # has two events E1 (on 15/02) and E2 (on 20/02):
@@ -140,6 +152,13 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ig
         # once BusinessUnit.siret is set as NOT NULLable.
         .filter(models.BusinessUnit.siret.isnot(None))
         .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
+        .join(
+            models.BusinessUnitVenueLink,
+            sqla.and_(
+                models.BusinessUnitVenueLink.venueId == bookings_models.Booking.venueId,
+                models.BusinessUnitVenueLink.businessUnitId == models.BusinessUnit.id,
+            ),
+        )
         .order_by(*_PRICE_BOOKINGS_ORDER_CLAUSE)
         .options(
             sqla_orm.load_only(bookings_models.Booking.id),
@@ -180,6 +199,7 @@ def _booking_comparison_tuple(booking: bookings_models.Booking) -> list:
     compared to `_PRICE_BOOKINGS_ORDER_CLAUSE`.
     """
     tupl = (
+        booking.venue.businessUnit.venue_links[-1].timespan.lower,
         booking.stock.beginningDatetime or booking.dateUsed,
         booking.dateUsed,
         booking.id,
@@ -217,6 +237,9 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         booking = (
             bookings_models.Booking.query.filter_by(id=booking.id)
             .options(
+                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
+                .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
+                .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
                 sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).joinedload(
                     offerers_models.Venue.businessUnit, innerjoin=True
                 ),
@@ -385,6 +408,14 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
         models.Pricing.query.filter(models.Pricing.siret == siret)
         .join(models.Pricing.booking)
         .join(bookings_models.Booking.stock)
+        .join(bookings_models.Booking.venue)
+        .join(
+            models.BusinessUnitVenueLink,
+            sqla.and_(
+                models.BusinessUnitVenueLink.venueId == bookings_models.Booking.venueId,
+                models.BusinessUnitVenueLink.businessUnitId == models.Pricing.businessUnitId,
+            ),
+        )
         .filter(
             models.Pricing.valueDate <= revenue_period_end,
             sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
