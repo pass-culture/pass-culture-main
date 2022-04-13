@@ -178,6 +178,7 @@ def test_public_api(client, app):
                         },
                         "displayDmsRedirection": {"title": "Displaydmsredirection", "type": "boolean"},
                         "enableIdCheckRetention": {"title": "Enableidcheckretention", "type": "boolean"},
+                        "enableNativeCulturalSurvey": {"title": "Enablenativeculturalsurvey", "type": "boolean"},
                         "enableNativeEacIndividual": {"title": "Enablenativeeacindividual", "type": "boolean"},
                         "enableNativeIdCheckVerboseDebugging": {
                             "title": "Enablenativeidcheckverbosedebugging",
@@ -196,6 +197,7 @@ def test_public_api(client, app):
                         "autoActivateDigitalBookings",
                         "displayDmsRedirection",
                         "enableIdCheckRetention",
+                        "enableNativeCulturalSurvey",
                         "enableNativeEacIndividual",
                         "enableNativeIdCheckVerboseDebugging",
                         "enablePhoneValidation",
