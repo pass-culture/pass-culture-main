@@ -5,6 +5,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.image_conversion import CropParams
 
 
 class CreateThumbnailBodyModel(BaseModel):
@@ -20,10 +21,15 @@ class CreateThumbnailBodyModel(BaseModel):
         alias_generator = to_camel
 
     @property
-    def crop_params(self):  # type: ignore [no-untyped-def]
+    def crop_params(self) -> Optional[CropParams]:
         if {self.cropping_rect_x, self.cropping_rect_y, self.cropping_rect_height} == {None}:
             return None
-        return (self.cropping_rect_x, self.cropping_rect_y, self.cropping_rect_height)
+
+        return CropParams.build(
+            x_crop_percent=self.cropping_rect_x,
+            y_crop_percent=self.cropping_rect_y,
+            height_crop_percent=self.cropping_rect_height,
+        )
 
     def get_image_as_bytes(self, request) -> bytes:  # type: ignore [no-untyped-def]
         """
