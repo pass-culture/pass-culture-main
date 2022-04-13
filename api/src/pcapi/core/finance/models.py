@@ -91,7 +91,7 @@ class BusinessUnitVenueLink(Model):  # type: ignore [valid-type, misc]
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
-    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
+    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venue_links")
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the business unit.
