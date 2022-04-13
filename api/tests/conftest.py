@@ -1,5 +1,6 @@
 import contextlib
 from functools import wraps
+import os
 from pathlib import Path
 from pprint import pprint
 import typing
@@ -35,6 +36,7 @@ from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
 from pcapi.repository.clean_database import clean_all_database
 from pcapi.routes import install_all_routes
+from pcapi.utils.module_loading import import_string
 
 from tests.serialization.serialization_decorator_test import test_blueprint
 
@@ -239,6 +241,25 @@ def ubble_mocker() -> typing.Callable:
             yield
 
     return ubble_mock
+
+
+# Define the CHECK_DATA_LEAKS env variable to assert that no test
+# leaks any data. This is useful to detect a missing use of the
+# `db_session` fixture.
+# The value should be a comma-separated list of full model paths, for
+# example:
+#     CHECK_DATA_LEAKS=pcapi.core.offers.models.Offer,pcapi.core.bookings.models.Booking pytest
+if os.environ.get("CHECK_DATA_LEAKS"):
+
+    @pytest.fixture(scope="function", autouse=True)
+    def check_data_leaks(request, app):
+        models = {import_string(path.strip()) for path in os.environ["CHECK_DATA_LEAKS"].split(",")}
+
+        counts_before = {model: model.query.count() for model in models}
+        yield
+        counts_after = {model: model.query.count() for model in models}
+        leaked_models = ", ".join([model.__name__ for model in models if counts_after[model] != counts_before[model]])
+        assert not leaked_models, f"LEAK: {request.function} leaks {leaked_models}"
 
 
 @pytest.fixture(name="cloud_task_client")
