@@ -1,5 +1,4 @@
 import csv
-from datetime import date
 from datetime import datetime
 from enum import Enum
 from io import StringIO
@@ -24,12 +23,12 @@ from pcapi.utils.human_ids import humanize
 
 
 class CollectiveBookingRecapStatus(Enum):
-    booked = "réservé"
-    validated = "validé"
-    cancelled = "annulé"
-    reimbursed = "remboursé"
-    confirmed = "confirmé"
-    pending = "préréservé"
+    booked = "booked"
+    validated = "validated"
+    cancelled = "cancelled"
+    reimbursed = "reimbursed"
+    confirmed = "confirmed"
+    pending = "pending"
 
 
 class ListCollectiveBookingsQueryModel(BaseModel):
