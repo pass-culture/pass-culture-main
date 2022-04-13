@@ -1,7 +1,7 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import { ADRESS_TYPE } from 'core/OfferEducational'
+import { OfferAddressType } from 'api/v1/gen'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
@@ -35,16 +35,16 @@ export const validationSchema = yup.object().shape({
     addressType: yup
       .string()
       .oneOf([
-        ADRESS_TYPE.OFFERER_VENUE,
-        ADRESS_TYPE.OTHER,
-        ADRESS_TYPE.SCHOOL,
+        OfferAddressType.OffererVenue,
+        OfferAddressType.Other,
+        OfferAddressType.School,
       ]),
     otherAddress: yup.string().when('addressType', {
-      is: ADRESS_TYPE.OTHER,
+      is: OfferAddressType.Other,
       then: yup.string().required('Veuillez renseigner une adresse'),
     }),
     venueId: yup.string().when('addressType', {
-      is: ADRESS_TYPE.OFFERER_VENUE,
+      is: OfferAddressType.OffererVenue,
       then: yup.string().required('Veuillez sélectionner un lieu'),
     }),
   }),

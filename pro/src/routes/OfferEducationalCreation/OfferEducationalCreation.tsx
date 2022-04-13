@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router'
 
-import useNotification from 'components/hooks/useNotification'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
@@ -33,7 +33,9 @@ const OfferEducationalCreation = (): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
 
-  const enableNewCollectiveModel = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
+  const enableNewCollectiveModel = useActiveFeature(
+    'ENABLE_NEW_COLLECTIVE_MODEL'
+  )
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -46,11 +48,11 @@ const OfferEducationalCreation = (): JSX.Element => {
   const notify = useNotification()
 
   const createOffer = async (offer: IOfferEducationalFormValues) => {
-    if(enableNewCollectiveModel) {
-      const { payload, isOk, message } = await postCollectiveOfferAdapter(offer)
-    } else {
-      const { payload, isOk, message } = await postOfferAdapter(offer)
-    }
+    const adapter = enableNewCollectiveModel
+      ? postCollectiveOfferAdapter
+      : postOfferAdapter
+
+    const { payload, isOk, message } = await adapter(offer)
 
     if (!isOk) {
       return notify.error(message)

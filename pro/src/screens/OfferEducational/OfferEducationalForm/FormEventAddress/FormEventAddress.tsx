@@ -1,9 +1,9 @@
 import { useFormikContext } from 'formik'
 import React, { useEffect, useState } from 'react'
 
+import { OfferAddressType } from 'api/v1/gen'
 import {
   DEFAULT_EAC_FORM_VALUES,
-  ADRESS_TYPE,
   IOfferEducationalFormValues,
   IUserOfferer,
   IUserVenue,
@@ -29,15 +29,15 @@ interface IFormEventAddressProps {
 const adressTypeRadios = [
   {
     label: EVENT_ADDRESS_OFFERER_LABEL,
-    value: ADRESS_TYPE.OFFERER_VENUE,
+    value: OfferAddressType.OffererVenue,
   },
   {
     label: EVENT_ADDRESS_SCHOOL_LABEL,
-    value: ADRESS_TYPE.SCHOOL,
+    value: OfferAddressType.School,
   },
   {
     label: EVENT_ADDRESS_OTHER_LABEL,
-    value: ADRESS_TYPE.OTHER,
+    value: OfferAddressType.Other,
   },
 ]
 
@@ -51,7 +51,7 @@ const FormEventAddress = ({
 
   useEffect(() => {
     if (
-      values.eventAddress.addressType !== ADRESS_TYPE.OFFERER_VENUE &&
+      values.eventAddress.addressType !== OfferAddressType.OffererVenue &&
       values.eventAddress.venueId
     ) {
       setFieldValue(
@@ -62,7 +62,7 @@ const FormEventAddress = ({
     }
 
     if (
-      values.eventAddress.addressType !== ADRESS_TYPE.OTHER &&
+      values.eventAddress.addressType !== OfferAddressType.Other &&
       values.eventAddress.otherAddress
     ) {
       setFieldValue(
@@ -74,7 +74,7 @@ const FormEventAddress = ({
 
   useEffect(() => {
     if (
-      values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE &&
+      values.eventAddress.addressType === OfferAddressType.OffererVenue &&
       values.eventAddress.venueId
     ) {
       if (currentOfferer) {
@@ -104,7 +104,7 @@ const FormEventAddress = ({
         />
       </FormLayout.Row>
 
-      {values.eventAddress.addressType === ADRESS_TYPE.OFFERER_VENUE && (
+      {values.eventAddress.addressType === OfferAddressType.OffererVenue && (
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1}
@@ -126,7 +126,7 @@ const FormEventAddress = ({
         </FormLayout.Row>
       )}
 
-      {values.eventAddress.addressType === ADRESS_TYPE.OTHER && (
+      {values.eventAddress.addressType === OfferAddressType.Other && (
         <FormLayout.Row>
           <TextArea
             countCharacters

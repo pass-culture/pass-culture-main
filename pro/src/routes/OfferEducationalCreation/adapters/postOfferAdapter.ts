@@ -2,7 +2,6 @@ import {
   IOfferEducationalFormValues,
   hasStatusCode,
 } from 'core/OfferEducational'
-import { postCollectiveCreateCollectiveOffer} from 'api/v1/api'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { createOfferPayload } from '../utils/createOfferPayload'

@@ -1,8 +1,5 @@
-import {
-  DEFAULT_EAC_FORM_VALUES,
-  Mode,
-  ADRESS_TYPE,
-} from 'core/OfferEducational'
+import { OfferAddressType } from 'api/v1/gen'
+import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
 
 import { IOfferEducationalProps } from '../OfferEducational'
 
@@ -69,7 +66,7 @@ const editionFormValues = {
   offererId: 'OFFERER_ID',
   venueId: 'VENUE_ID',
   eventAddress: {
-    addressType: ADRESS_TYPE.OTHER,
+    addressType: OfferAddressType.Other,
     otherAddress: 'other adress string',
     venueId: '',
   },

@@ -1,4 +1,4 @@
-import { ADRESS_TYPE } from 'core/OfferEducational'
+import { OfferAddressType } from 'api/v1/gen'
 
 export enum OfferStatus {
   OFFER_STATUS_ACTIVE = 'ACTIVE',
@@ -31,7 +31,7 @@ export type Offer = {
     offerVenue?: {
       venueId: string
       otherAddress: string
-      addressType: ADRESS_TYPE
+      addressType: OfferAddressType
     }
     isShowcase?: boolean
   }

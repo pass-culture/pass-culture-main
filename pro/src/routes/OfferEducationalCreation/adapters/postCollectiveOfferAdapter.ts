@@ -1,11 +1,10 @@
+import { api } from 'api/v1/api'
 import {
   IOfferEducationalFormValues,
   hasStatusCode,
 } from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
 
-import { createCollectiveOfferPayload } from './utils/createOfferPayload'
-
+import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = IOfferEducationalFormValues
 
@@ -34,10 +33,9 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async (
   offer: IOfferEducationalFormValues
 ) => {
   try {
-
     const payload = createCollectiveOfferPayload(offer)
 
-    const response = await postCollectiveCreateCollectiveOffer(payload)
+    const response = await api.postCollectiveCreateCollectiveOffer(payload)
 
     return {
       isOk: true,
