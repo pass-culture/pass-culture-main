@@ -391,6 +391,7 @@ def save_venue_banner(
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
+        "crop_params": crop_params,
     }
 
     repository.save(venue)

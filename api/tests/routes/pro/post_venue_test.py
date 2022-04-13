@@ -267,6 +267,11 @@ class VenueBannerTest:
             assert response.json["bannerMeta"] == {
                 "image_credit": "none",
                 "original_image_url": str(url_prefix / f"{humanize(venue.id)}_{original_banner_url_timestamp}"),
+                "crop_params": {
+                    "x_crop_percent": 0.8,
+                    "y_crop_percent": 0.7,
+                    "height_crop_percent": 0.6,
+                },
             }
 
     def test_upload_image_missing(self, client):
