@@ -17,6 +17,7 @@ class SettingsResponse(BaseModel):
     deposit_amounts_by_age = DepositAmountsByAge()
     display_dms_redirection: bool
     enable_id_check_retention: bool
+    enable_native_cultural_survey: bool
     enable_native_eac_individual: bool
     enable_native_id_check_verbose_debugging: bool
     enable_phone_validation: bool
