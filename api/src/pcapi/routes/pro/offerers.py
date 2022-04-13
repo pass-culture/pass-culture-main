@@ -199,7 +199,7 @@ def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def can_offerer_create_educational_offer(humanized_offerer_id: str):  # type: ignore [no-untyped-def]
     try:
-        api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))  # type: ignore [arg-type]
+        api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))
     except CulturalPartnerNotFoundException:
         logger.info("This offerer has not been found in Adage", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"offerer": "not found in adage"}, 404)
