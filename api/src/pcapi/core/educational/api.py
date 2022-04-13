@@ -823,7 +823,7 @@ def create_collective_offer(
 ) -> CollectiveOffer:
 
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
-    venue = load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
+    venue: offerers_models.Venue = load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
@@ -835,15 +835,17 @@ def create_collective_offer(
         description=offer_data.description,
         durationMinutes=offer_data.duration_minutes,
         subcategoryId=offer_data.subcategory_id,
-        students=offer_data.extra_data.students if hasattr(offer_data, "extra_data") else offer_data.students,
+        students=offer_data.extra_data.students
+        if isinstance(offer_data, PostEducationalOfferBodyModel)
+        else offer_data.students,
         contactEmail=offer_data.extra_data.contact_email
-        if hasattr(offer_data, "extra_data")
+        if isinstance(offer_data, PostEducationalOfferBodyModel)
         else offer_data.contact_email,
         contactPhone=offer_data.extra_data.contact_phone
-        if hasattr(offer_data, "extra_data")
+        if isinstance(offer_data, PostEducationalOfferBodyModel)
         else offer_data.contact_phone,
         offerVenue=offer_data.extra_data.offer_venue.dict()
-        if hasattr(offer_data, "extra_data")
+        if isinstance(offer_data, PostEducationalOfferBodyModel)
         else offer_data.offer_venue.dict(),
         validation=OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,

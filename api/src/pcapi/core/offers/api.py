@@ -144,7 +144,7 @@ def list_offers_for_pro_user(
 
 
 def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Offer:
-    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))  # type: ignore [arg-type]
+    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
     offer = create_offer(completed_data, user)
     educational_api.create_collective_offer(offer_data, user, offer.id)

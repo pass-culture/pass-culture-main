@@ -74,10 +74,10 @@ def create_collective_offer(
         logger.info(
             "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
         )
-        raise ApiErrors({"offerer: not found in adage"}, 403)
+        raise ApiErrors({"offerer": "not found in adage"}, 403)
     except AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
-        raise ApiErrors({"adage_api: error"}, 500)
+        raise ApiErrors({"adage_api": "error"}, 500)
     except offers_exceptions.UnknownOfferSubCategory as error:
         logger.info(
             "Could not create offer: selected subcategory is unknown.",
