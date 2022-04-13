@@ -5,9 +5,7 @@ from typing import Optional
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils.urls import booking_app_link
 
@@ -53,26 +51,17 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optio
     )
 
 
-def get_today_stock_notification_data(stock_id: int) -> Optional[TransactionalNotificationData]:
-    stock = Stock.query.filter_by(id=stock_id).one()
-    query = (
-        Booking.query.filter(Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED)
-        .join(Booking.individualBooking)  # exclude collective bookings
-        .with_entities(Booking.userId)
-        .distinct()
-    )
-
-    user_ids = [booking.userId for booking in query]
-    if not user_ids:
-        return None
-
+def get_today_stock_booking_notification_data(
+    booking: Booking, offer: Offer
+) -> Optional[TransactionalNotificationData]:
     return TransactionalNotificationData(
         group_id=GroupId.TODAY_STOCK.value,
-        user_ids=user_ids,
+        user_ids=[booking.userId],
         message=TransactionalNotificationMessage(
             title="C'est aujourd'hui !",
-            body=f"Retrouve les détails de la réservation pour {stock.offer.name} sur l’application pass Culture",
+            body=f"Retrouve les détails de la réservation pour {offer.name} sur l’application pass Culture",
         ),
+        extra={"deeplink": booking_app_link(booking)},
     )
 
 
