@@ -542,3 +542,15 @@ def auto_mark_as_used_after_event() -> None:
             "collectiveBookingsUpdatedCount": n_collective_bookings_updated,
         },
     )
+
+
+def get_individual_bookings_from_stock(stock_id: int) -> typing.Generator[Booking, None, None]:
+    query = (
+        Booking.query.filter(Booking.stockId == stock_id, Booking.status != BookingStatus.CANCELLED)
+        .join(Booking.individualBooking)  # exclude collective bookings
+        .with_entities(Booking.id, Booking.userId)
+        .distinct()
+    )
+
+    for booking in query.yield_per(1_000):
+        yield booking

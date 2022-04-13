@@ -34,6 +34,7 @@ def test_pc_send_today_events_notifications_only_to_individual_bookings_users():
 
     # should be fetched
     bookings_factories.IndividualBookingFactory(stock=stock_today, user=user1)
+    bookings_factories.IndividualBookingFactory(stock=stock_today, user=user2)
 
     # should not be fetched: cancelled
     bookings_factories.IndividualBookingFactory(stock=stock_today, status=BookingStatus.CANCELLED, user=user2)
@@ -46,11 +47,11 @@ def test_pc_send_today_events_notifications_only_to_individual_bookings_users():
 
     pc_send_today_events_notifications_metropolitan_france()
 
-    assert len(testing.requests) == 1
+    assert len(testing.requests) == 2
     assert all(data["message"]["title"] == "C'est aujourd'hui !" for data in testing.requests)
 
     user_ids = {user_id for data in testing.requests for user_id in data["user_ids"]}
-    assert user_ids == {user1.id}
+    assert user_ids == {user1.id, user2.id}
 
 
 @pytest.mark.usefixtures("db_session")
