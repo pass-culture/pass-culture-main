@@ -1,10 +1,10 @@
+import { PostCollectiveOfferBodyModel } from 'api/v1/gen'
 import {
   EducationalOfferModelPayload,
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
-import PostCollectiveOfferBodyModel from 'api/v1/api'
 
 const disabilityCompliances = (
   accessibility: IOfferEducationalFormValues['accessibility']
@@ -40,7 +40,6 @@ export const createOfferPayload = (
   },
 })
 
-
 export const createCollectiveOfferPayload = (
   offer: IOfferEducationalFormValues
 ): PostCollectiveOfferBodyModel => ({
@@ -55,5 +54,5 @@ export const createCollectiveOfferPayload = (
   students: serializeParticipants(offer.participants),
   offerVenue: offer.eventAddress,
   contactEmail: offer.email,
-  contactPhone: offer.phone
+  contactPhone: offer.phone,
 })

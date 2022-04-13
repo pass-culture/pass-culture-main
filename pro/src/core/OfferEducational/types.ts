@@ -1,3 +1,4 @@
+import { OfferAddressType } from 'api/v1/gen'
 import { Offer } from 'custom_types/offer'
 
 export type IUserVenue = {
@@ -14,12 +15,6 @@ export type IUserOfferer = {
   id: string
   name: string
   managedVenues: IUserVenue[]
-}
-
-export enum ADRESS_TYPE {
-  OFFERER_VENUE = 'offererVenue',
-  SCHOOL = 'school',
-  OTHER = 'other',
 }
 
 export enum ACCESSIBILITY {
@@ -50,7 +45,7 @@ export type IOfferEducationalFormValues = {
   offererId: string
   venueId: string
   eventAddress: {
-    addressType: ADRESS_TYPE
+    addressType: OfferAddressType
     otherAddress: string
     venueId: string
   }
@@ -105,7 +100,7 @@ export type EducationalOfferModelPayload = {
     contactEmail: string
     contactPhone: string
     offerVenue: {
-      addressType: ADRESS_TYPE
+      addressType: OfferAddressType
       otherAddress: string
       venueId: string
     }
