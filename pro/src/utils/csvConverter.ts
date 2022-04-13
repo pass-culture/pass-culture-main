@@ -1,4 +1,4 @@
-import parse from 'csv-parse/lib/sync'
+import { parse } from 'csv-parse/lib/sync'
 const CSV_SEMI_COLON_SEPARATOR = ';'
 
 interface ObjectFromCsv {
