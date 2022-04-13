@@ -33,6 +33,7 @@ from pcapi.admin.custom_views.user_offerer_view import UserOffererView
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueForOffererSubview
 from pcapi.admin.custom_views.venue_view import VenueView
+import pcapi.core.criteria.models as criteria_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
@@ -44,7 +45,6 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.models.beneficiary_import import BeneficiaryImport
-from pcapi.models.criterion import Criterion
 from pcapi.models.feature import Feature
 
 from . import base_configuration
@@ -91,7 +91,12 @@ def install_views(admin: Admin, session: Session) -> None:
         )
     )
     admin.add_view(
-        CriteriaView(Criterion, session, name="Tags des offres et des lieux", category=Category.OFFRES_STRUCTURES_LIEUX)
+        CriteriaView(
+            criteria_models.Criterion,
+            session,
+            name="Tags des offres et des lieux",
+            category=Category.OFFRES_STRUCTURES_LIEUX,
+        )
     )
     admin.add_view(
         OffererTagView(

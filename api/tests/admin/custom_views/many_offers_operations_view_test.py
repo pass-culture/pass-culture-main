@@ -4,10 +4,11 @@ import pytest
 
 from pcapi.admin.custom_views.many_offers_operations_view import _get_current_criteria_on_active_offers
 from pcapi.admin.custom_views.many_offers_operations_view import _get_products_compatible_status
+import pcapi.core.criteria.factories as criteria_factories
+import pcapi.core.criteria.models as criteria_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
-from pcapi.models.criterion import Criterion
 from pcapi.models.product import Product
 
 from tests.conftest import TestClient
@@ -96,8 +97,8 @@ class ManyOffersOperationsViewTest:
             product=product, extraData={"isbn": "9783161484100"}, isActive=False
         )
         unmatched_offer = offers_factories.OfferFactory()
-        criterion1 = offers_factories.CriterionFactory(name="Pretty good books")
-        criterion2 = offers_factories.CriterionFactory(name="Other pretty good books")
+        criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
+        criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
 
         data = dict(
             criteria=[criterion1.id, criterion2.id],
@@ -132,8 +133,8 @@ class ManyOffersOperationsViewTest:
             product=product, extraData={"visa": "9783161484100"}, isActive=False
         )
         unmatched_offer = offers_factories.OfferFactory()
-        criterion1 = offers_factories.CriterionFactory(name="Pretty good books")
-        criterion2 = offers_factories.CriterionFactory(name="Other pretty good books")
+        criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
+        criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
 
         data = dict(
             criteria=[criterion1.id, criterion2.id],
@@ -182,8 +183,8 @@ class ManyOffersOperationsViewTest:
 
     def test_get_current_criteria_on_active_offers(self):
         # Given
-        criterion1 = Criterion(name="One criterion")
-        criterion2 = Criterion(name="Another criterion")
+        criterion1 = criteria_models.Criterion(name="One criterion")
+        criterion2 = criteria_models.Criterion(name="Another criterion")
         offer1 = Offer(criteria=[criterion1], isActive=True)
         offer2 = Offer(criteria=[criterion1, criterion2], isActive=True)
         offer3 = Offer(criteria=[], isActive=True)

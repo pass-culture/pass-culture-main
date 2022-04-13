@@ -27,6 +27,7 @@ from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.conf import can_create_from_isbn
+import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
@@ -81,7 +82,6 @@ from pcapi.domain import admin_emails
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.criterion import Criterion
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferValidationType
@@ -964,7 +964,11 @@ def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
     return list(domains)  # type: ignore [arg-type]
 
 
-def add_criteria_to_offers(criteria: list[Criterion], isbn: Optional[str] = None, visa: Optional[str] = None) -> bool:
+def add_criteria_to_offers(
+    criteria: list[criteria_models.Criterion],
+    isbn: Optional[str] = None,
+    visa: Optional[str] = None,
+) -> bool:
     if not isbn and not visa:
         return False
 

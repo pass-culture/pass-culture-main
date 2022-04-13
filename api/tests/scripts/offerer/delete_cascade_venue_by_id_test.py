@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+from pcapi.core.criteria.models import Criterion
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
@@ -17,7 +18,6 @@ from pcapi.core.providers.models import VenueProvider
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.models.bank_information import BankInformation
-from pcapi.models.criterion import Criterion
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 

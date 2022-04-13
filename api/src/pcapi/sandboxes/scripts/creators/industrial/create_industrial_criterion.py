@@ -1,6 +1,6 @@
 import logging
 
-from pcapi.models.criterion import Criterion
+import pcapi.core.criteria.factories as criteria_factories
 from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.repository import repository
 
@@ -11,24 +11,22 @@ logger = logging.getLogger(__name__)
 def create_industrial_criteria() -> dict:
     logger.info("create_industrial_criteria")
 
+    criterion1 = criteria_factories.CriterionFactory(
+        name="Bonne offre d’appel",
+        description="Offre déjà beaucoup réservée par les autres jeunes",
+    )
+    criterion2 = criteria_factories.CriterionFactory(
+        name="Mauvaise accroche",
+        description="Offre ne possédant pas une accroche de qualité suffisante",
+    )
+    criterion3 = criteria_factories.CriterionFactory(
+        name="Offre de médiation spécifique",
+        description="Offre possédant une médiation orientée pour les jeunes de 18 ans",
+    )
+
     criteria_by_name = {}
-
-    criterion1 = Criterion()
-    criterion1.name = "Bonne offre d’appel"
-    criterion1.description = "Offre déjà beaucoup réservée par les autres jeunes"
-    criteria_by_name[criterion1.name] = criterion1
-
-    criterion2 = Criterion()
-    criterion2.name = "Mauvaise accroche"
-    criterion2.description = "Offre ne possédant pas une accroche de qualité suffisante"
-    criteria_by_name[criterion2.name] = criterion2
-
-    criterion3 = Criterion()
-    criterion3.name = "Offre de médiation spécifique"
-    criterion3.description = "Offre possédant une médiation orientée pour les jeunes de 18 ans"
-    criteria_by_name[criterion3.name] = criterion3
-
-    repository.save(*criteria_by_name.values())
+    for criterion in (criterion1, criterion2, criterion3):
+        criteria_by_name[criterion.name] = criterion
 
     logger.info("created %d criteria", len(criteria_by_name))
 

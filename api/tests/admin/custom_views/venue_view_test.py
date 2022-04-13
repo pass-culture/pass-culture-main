@@ -6,6 +6,7 @@ import pytest
 from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
@@ -269,7 +270,7 @@ class VenueViewTest:
     ):
         admin = AdminFactory(email="user@example.com")
         venue = offers_factories.VenueFactory(isPermanent=True)
-        tag = offers_factories.CriterionFactory()
+        tag = criteria_factories.CriterionFactory()
         data = {
             "criteria": [tag.id],
             "name": venue.name,

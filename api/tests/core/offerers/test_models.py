@@ -168,9 +168,9 @@ class OffererLegalCategoryTest:
 @pytest.mark.usefixtures("db_session")
 class VenueCriterionTest:
     def test_unique_venue_criterion(self):
-        venue = factories.VenueFactory()
-        criterion = offers_factories.CriterionFactory()
-        factories.VenueCriterionFactory(venue=venue, criterion=criterion)
+        venue_criterion = factories.VenueCriterionFactory()
+        venue = venue_criterion.venue
+        criterion = venue_criterion.criterion
         with pytest.raises(IntegrityError):
             factories.VenueCriterionFactory(venue=venue, criterion=criterion)
 
