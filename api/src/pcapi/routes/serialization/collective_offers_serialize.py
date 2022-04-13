@@ -309,7 +309,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     contact_phone: str
 
     @validator("name", pre=True)
-    def validate_name(cls, name, values):  # pylint: disable=no-self-argument
+    def validate_name(cls: BaseModel, name: str, values: str) -> str:  # pylint: disable=no-self-argument
         check_offer_name_length_is_valid(name)
         return name
 
