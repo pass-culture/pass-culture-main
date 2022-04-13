@@ -3,27 +3,27 @@ import typing
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.models import VenueCriterion
-from pcapi.core.offers.models import Offer
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 from pcapi.models import db
-from pcapi.models.offer_criterion import OfferCriterion
+
+from . import models
 
 
 IterIds = typing.Iterable[int]
 
-IterOffer = typing.Iterable[Offer]
-IterVenue = typing.Iterable[Venue]
+IterOffer = typing.Iterable[offers_models.Offer]
+IterVenue = typing.Iterable[offerers_models.Venue]
 IterBase = typing.Union[IterOffer, IterVenue]
 
-Mapper = typing.Union[OfferCriterion, VenueCriterion]
+Mapper = typing.Union[models.OfferCriterion, models.VenueCriterion]
 
-IterOfferCriterion = typing.Iterable[OfferCriterion]
-IterVenueCriterion = typing.Iterable[VenueCriterion]
+IterOfferCriterion = typing.Iterable[models.OfferCriterion]
+IterVenueCriterion = typing.Iterable[models.VenueCriterion]
 IterMapper = typing.Union[IterOfferCriterion, IterVenueCriterion]
 
-BaseModel = typing.Union[typing.Type[Offer], typing.Type[Venue]]
-MapperModel = typing.Union[typing.Type[OfferCriterion], typing.Type[VenueCriterion]]
+BaseModel = typing.Union[typing.Type[offers_models.Offer], typing.Type[offerers_models.Venue]]
+MapperModel = typing.Union[typing.Type[models.OfferCriterion], typing.Type[models.VenueCriterion]]
 
 
 class BulkUpdate:
@@ -108,12 +108,12 @@ class BulkUpdate:
 
 
 class OfferUpdate(BulkUpdate):
-    base_cls = Offer
-    mapper_cls = OfferCriterion
+    base_cls = offers_models.Offer
+    mapper_cls = models.OfferCriterion
     mapper_base_column_name = "offerId"
 
 
 class VenueUpdate(BulkUpdate):
-    base_cls = Venue
-    mapper_cls = VenueCriterion
+    base_cls = offerers_models.Venue
+    mapper_cls = models.VenueCriterion
     mapper_base_column_name = "venueId"

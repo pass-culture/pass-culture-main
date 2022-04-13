@@ -17,7 +17,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
 from pcapi.models.user_session import UserSession
 
@@ -53,7 +52,8 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     offers_models.Stock.query.delete()
     users_models.Favorite.query.delete()
     offers_models.Mediation.query.delete()
-    OfferCriterion.query.delete()
+    criteria_models.OfferCriterion.query.delete()
+    criteria_models.VenueCriterion.query.delete()
     criteria_models.Criterion.query.delete()
     educational_models.CollectiveOffer.query.delete()
     educational_models.CollectiveOfferTemplate.query.delete()

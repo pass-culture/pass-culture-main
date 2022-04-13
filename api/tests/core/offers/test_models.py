@@ -1,7 +1,6 @@
 import datetime
 
 import pytest
-from sqlalchemy.exc import IntegrityError
 
 import pcapi.core.bookings.constants as bookings_constants
 import pcapi.core.bookings.factories as bookings_factories
@@ -582,12 +581,3 @@ class StockIsEventDeletableTest:
         dt = datetime.datetime.utcnow() - bookings_constants.AUTO_USE_AFTER_EVENT_TIME_DELAY
         stock = factories.EventStockFactory(beginningDatetime=dt)
         assert not stock.isEventDeletable
-
-
-class OfferCriterionTest:
-    def test_unique_offer_criterion(self):
-        offer_criterion = factories.OfferCriterionFactory()
-        offer = offer_criterion.offer
-        criterion = offer_criterion.criterion
-        with pytest.raises(IntegrityError):
-            factories.OfferCriterionFactory(offer=offer, criterion=criterion)

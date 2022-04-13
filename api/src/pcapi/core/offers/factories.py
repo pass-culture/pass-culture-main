@@ -6,13 +6,11 @@ import schwifty
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
-import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 
@@ -266,22 +264,6 @@ class MediationFactory(BaseFactory):
 
     offer = factory.SubFactory(OfferFactory)
     isActive = True
-
-
-class OfferCriterionFactory(BaseFactory):
-    class Meta:
-        model = OfferCriterion
-
-    offer = factory.SubFactory(OfferFactory)
-    criterion = factory.SubFactory(criteria_factories.CriterionFactory)
-
-
-class VenueCriterionFactory(BaseFactory):
-    class Meta:
-        model = offerers_models.VenueCriterion
-
-    venue = factory.SubFactory(VenueFactory)
-    criterion = factory.SubFactory(criteria_factories.CriterionFactory)
 
 
 class BankInformationFactory(BaseFactory):

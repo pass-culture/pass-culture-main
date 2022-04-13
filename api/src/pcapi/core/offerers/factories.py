@@ -1,6 +1,5 @@
 import factory
 
-import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
@@ -49,14 +48,6 @@ class VenueContactFactory(BaseFactory):
     website = "https://my@website.com"
     phone_number = "+33102030405"
     social_medias = {"instagram": "http://instagram.com/@venue"}
-
-
-class VenueCriterionFactory(BaseFactory):
-    class Meta:
-        model = models.VenueCriterion
-
-    venue = factory.SubFactory(VenueFactory)
-    criterion = factory.SubFactory(criteria_factories.CriterionFactory)
 
 
 DEFAULT_PREFIX = "development_prefix"

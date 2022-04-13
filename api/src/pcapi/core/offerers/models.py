@@ -353,24 +353,6 @@ class VenueContact(PcObject, Model):  # type: ignore [valid-type, misc]
         return getattr(self, field) != value
 
 
-class VenueCriterion(PcObject, Model):  # type: ignore [valid-type, misc]
-    venueId = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    venue = relationship("Venue", foreign_keys=[venueId])
-
-    criterionId = Column(BigInteger, ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True)
-
-    criterion = relationship("Criterion", foreign_keys=[criterionId])  # type: ignore [misc]
-
-    __table_args__ = (
-        UniqueConstraint(
-            "venueId",
-            "criterionId",
-            name="unique_venue_criterion",
-        ),
-    )
-
-
 @listens_for(Venue, "before_insert")
 def before_insert(mapper, connect, self):  # type: ignore [no-untyped-def]
     _fill_departement_code_from_postal_code(self)

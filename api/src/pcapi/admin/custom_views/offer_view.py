@@ -55,7 +55,6 @@ import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_user_can_load_config
 from pcapi.domain.admin_emails import send_offer_validation_notification_to_administration
 from pcapi.models import db
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
@@ -185,10 +184,10 @@ class OfferView(BaseAdminView):
 
         criteria_in_common = (
             db.session.query(criteria_models.Criterion)
-            .join(OfferCriterion)
-            .filter(OfferCriterion.offerId.in_(ids))
+            .join(criteria_models.OfferCriterion)
+            .filter(criteria_models.OfferCriterion.offerId.in_(ids))
             .group_by(criteria_models.Criterion.id)
-            .having(func.count(OfferCriterion.criterion) == len(ids))
+            .having(func.count(criteria_models.OfferCriterion.criterion) == len(ids))
             .all()
         )
         change_form.tags.data = criteria_in_common
@@ -208,7 +207,7 @@ class OfferView(BaseAdminView):
         change_form = OfferChangeForm(request.form)
         if change_form.validate():
             offer_ids: List[str] = change_form.ids.data.split(",")
-            criteria: List[OfferCriterion] = change_form.data["tags"]
+            criteria: List[criteria_models.OfferCriterion] = change_form.data["tags"]
             remove_other_tags = change_form.data["remove_other_tags"]
 
             criteria_ids = [crit.id for crit in criteria]

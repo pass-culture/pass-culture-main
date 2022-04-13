@@ -72,7 +72,7 @@ class CriteriaViewTest:
 
         offer = offers_factories.OfferFactory()
         criterion = criteria_factories.CriterionFactory(name="test_delete_criterion")
-        offers_factories.OfferCriterionFactory(offer=offer, criterion=criterion)
+        criteria_factories.OfferCriterionFactory(offer=offer, criterion=criterion)
 
         assert len(offer.criteria) == 1
 
