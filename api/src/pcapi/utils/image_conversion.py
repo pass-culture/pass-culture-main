@@ -19,7 +19,7 @@ from pydantic import confloat
 if TYPE_CHECKING:
     CropParam = float
 else:
-    CropParam = confloat(gt=0.0, lt=1.0)
+    CropParam = confloat(ge=0.0, le=1.0)
 
 
 @dataclass
