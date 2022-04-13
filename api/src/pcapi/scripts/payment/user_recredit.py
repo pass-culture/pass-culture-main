@@ -82,6 +82,7 @@ def recredit_underage_users() -> None:
 
     start_index = 0
     total_users_recredited = 0
+    failed_users = []
 
     while start_index < len(user_ids):
         users = (
@@ -96,18 +97,25 @@ def recredit_underage_users() -> None:
         users_and_recredit_amounts = []
         with transaction():
             for user in users_to_recredit:
-                recredit = payments_models.Recredit(
-                    deposit=user.deposit,
-                    amount=deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]],
-                    recreditType=deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
-                )
-                users_and_recredit_amounts.append((user, recredit.amount))
-                recredit.deposit.amount += recredit.amount
-                user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
+                try:
+                    recredit = payments_models.Recredit(
+                        deposit=user.deposit,
+                        amount=deposit_conf.RECREDIT_TYPE_AMOUNT_MAPPING[
+                            deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age]
+                        ],
+                        recreditType=deposit_conf.RECREDIT_TYPE_AGE_MAPPING[user.age],
+                    )
+                    users_and_recredit_amounts.append((user, recredit.amount))
+                    recredit.deposit.amount += recredit.amount
+                    user.recreditAmountToShow = recredit.amount if recredit.amount > 0 else None
 
-                db.session.add(user)
-                db.session.add(recredit)
-                total_users_recredited += 1
+                    db.session.add(user)
+                    db.session.add(recredit)
+                    total_users_recredited += 1
+                except Exception as e:  # pylint: disable=broad-except
+                    failed_users.append(user.id)
+                    logger.exception("Could not recredit user %s: %s", user.id, e)
+                    continue
 
         logger.info("Recredited %s underage users deposits", len(users_to_recredit))
 
@@ -118,3 +126,5 @@ def recredit_underage_users() -> None:
 
         start_index += RECREDIT_BATCH_SIZE
     logger.info("Recredited %s users successfully", total_users_recredited)
+    if failed_users:
+        logger.error("Failed to recredit %s users: %s", len(failed_users), failed_users)
