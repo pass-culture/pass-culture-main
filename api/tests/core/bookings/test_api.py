@@ -927,3 +927,35 @@ class AutoMarkAsUsedAfterEventTest:
     def test_raise_if_feature_flag_is_deactivated(self):
         with pytest.raises(ValueError):
             api.auto_mark_as_used_after_event()
+
+
+@pytest.mark.usefixtures("db_session")
+class GetInvidualBookingsFromStockTest:
+    def test_has_bookings(self):
+        stock = offers_factories.StockFactory()
+        bookings = booking_factories.IndividualBookingFactory.create_batch(2, stock=stock)
+
+        found_bookings = list(api.get_individual_bookings_from_stock(stock.id))
+
+        found_booking_ids = {booking.id for booking in found_bookings}
+        expected_booking_ids = {booking.id for booking in bookings}
+
+        assert len(found_bookings) == len(bookings)
+        assert found_booking_ids == expected_booking_ids
+
+    def test_has_cancelled_bookings(self):
+        stock = offers_factories.StockFactory()
+
+        booking = booking_factories.IndividualBookingFactory(stock=stock)
+        booking_factories.IndividualBookingFactory(stock=stock, status=BookingStatus.CANCELLED)
+
+        found_bookings = list(api.get_individual_bookings_from_stock(stock.id))
+
+        found_booking_ids = {b.id for b in found_bookings}
+        expected_booking_ids = {booking.id}
+
+        assert found_booking_ids == expected_booking_ids
+
+    def test_has_no_bookings(self):
+        stock = offers_factories.StockFactory()
+        assert not list(api.get_individual_bookings_from_stock(stock.id))
