@@ -5,6 +5,7 @@ import sqlalchemy as sqla
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 from pcapi.core.bookings.models import Booking
+import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -19,7 +20,6 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
 
 
@@ -40,8 +40,10 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         Favorite.offerId == Offer.id, Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id
     ).delete(synchronize_session=False)
 
-    deleted_offer_criteria_count = OfferCriterion.query.filter(
-        OfferCriterion.offerId == Offer.id, Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id
+    deleted_offer_criteria_count = criteria_models.OfferCriterion.query.filter(
+        criteria_models.OfferCriterion.offerId == Offer.id,
+        Offer.venueId == Venue.id,
+        Venue.managingOffererId == offerer_id,
     ).delete(synchronize_session=False)
 
     deleted_mediations_count = Mediation.query.filter(

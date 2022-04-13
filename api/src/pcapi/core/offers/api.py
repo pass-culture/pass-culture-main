@@ -83,7 +83,6 @@ from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 from pcapi.repository import offer_queries
@@ -991,11 +990,16 @@ def add_criteria_to_offers(
     if not offer_ids:
         return False
 
-    offer_criteria: list[OfferCriterion] = []
+    offer_criteria: list[criteria_models.OfferCriterion] = []
     for criterion in criteria:
         logger.info("Adding criterion %s to %d offers", criterion, len(offer_ids))
-
-        offer_criteria.extend(OfferCriterion(offerId=offer_id, criterionId=criterion.id) for offer_id in offer_ids)
+        offer_criteria.extend(
+            criteria_models.OfferCriterion(
+                offerId=offer_id,
+                criterionId=criterion.id,
+            )
+            for offer_id in offer_ids
+        )
 
     db.session.bulk_save_objects(offer_criteria)
     db.session.commit()

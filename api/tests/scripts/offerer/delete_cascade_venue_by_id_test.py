@@ -3,7 +3,8 @@ import pytest
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
-from pcapi.core.criteria.models import Criterion
+import pcapi.core.criteria.factories as criteria_factories
+import pcapi.core.criteria.models as criteria_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
@@ -18,7 +19,6 @@ from pcapi.core.providers.models import VenueProvider
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.models.bank_information import BankInformation
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 
@@ -120,8 +120,8 @@ def test_delete_cascade_venue_should_remove_criterions():
     # Given
     venue = offers_factories.VenueFactory()
     venue_to_delete = offers_factories.VenueFactory()
-    offers_factories.OfferCriterionFactory(offer__venue=venue_to_delete)
-    offers_factories.OfferCriterionFactory(offer__venue=venue)
+    criteria_factories.OfferCriterionFactory(offer__venue=venue_to_delete)
+    criteria_factories.OfferCriterionFactory(offer__venue=venue)
 
     # When
     delete_cascade_venue_by_id(venue_to_delete.id)
@@ -130,8 +130,8 @@ def test_delete_cascade_venue_should_remove_criterions():
     assert Offerer.query.count() == 2
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
-    assert OfferCriterion.query.count() == 1
-    assert Criterion.query.count() == 2
+    assert criteria_models.OfferCriterion.query.count() == 1
+    assert criteria_models.Criterion.query.count() == 2
 
 
 @pytest.mark.usefixtures("db_session")

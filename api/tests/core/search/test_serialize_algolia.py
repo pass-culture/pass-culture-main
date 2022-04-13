@@ -4,6 +4,7 @@ import decimal
 import pytest
 
 from pcapi.core.categories import subcategories
+import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
@@ -105,7 +106,7 @@ def test_serialize_offer_distinct(extra_data, expected_distinct):
 
 
 def test_serialize_offer_tags():
-    tag = offers_factories.OfferCriterionFactory(criterion__name="formidable")
+    tag = criteria_factories.OfferCriterionFactory(criterion__name="formidable")
     serialized = algolia.AlgoliaBackend().serialize_offer(tag.offer)
     assert serialized["offer"]["tags"] == ["formidable"]
 

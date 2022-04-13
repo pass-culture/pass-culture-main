@@ -7,6 +7,7 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
@@ -1223,7 +1224,7 @@ class DeletePastDraftOfferTest:
         two_days_ago = datetime.utcnow() - timedelta(days=2)
         offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.DRAFT)
         offers_factories.MediationFactory(offer=offer)
-        offers_factories.OfferCriterionFactory(offer=offer)
+        criteria_factories.OfferCriterionFactory(offer=offer)
         past_offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.PENDING)
         today_offer = offers_factories.OfferFactory(
             dateCreated=datetime.utcnow(), validation=OfferValidationStatus.DRAFT

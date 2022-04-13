@@ -3,6 +3,7 @@ import logging
 from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.bookings.models import Booking
+import pcapi.core.criteria.models as criteria_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
@@ -13,7 +14,6 @@ from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
-from pcapi.models.offer_criterion import OfferCriterion
 
 
 logger = logging.getLogger(__name__)
@@ -33,8 +33,8 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         synchronize_session=False
     )
 
-    deleted_offer_criteria_count = OfferCriterion.query.filter(
-        OfferCriterion.offerId == Offer.id, Offer.venueId == venue_id
+    deleted_offer_criteria_count = criteria_models.OfferCriterion.query.filter(
+        criteria_models.OfferCriterion.offerId == Offer.id, Offer.venueId == venue_id
     ).delete(synchronize_session=False)
 
     deleted_mediations_count = Mediation.query.filter(Mediation.offerId == Offer.id, Offer.venueId == venue_id).delete(

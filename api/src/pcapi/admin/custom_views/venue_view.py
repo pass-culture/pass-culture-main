@@ -28,7 +28,6 @@ import pcapi.core.criteria.api as criteria_api
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.finance import repository as finance_repository
 from pcapi.core.offerers.api import VENUE_ALGOLIA_INDEXED_FIELDS
-import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
@@ -88,7 +87,7 @@ class VenueCriteriaFilter(fa_filters.BaseSQLAFilter):
     def apply(self, query: BaseQuery, value: str, alias=None) -> BaseQuery:  # type: ignore [no-untyped-def]
         parsed_value = tools.parse_like_term(value)
         return (
-            query.join(offerers_models.VenueCriterion)
+            query.join(criteria_models.VenueCriterion)
             .join(criteria_models.Criterion)
             .filter(criteria_models.Criterion.name.ilike(parsed_value))
         )
@@ -280,10 +279,10 @@ class VenueView(BaseAdminView):
 
         criteria_in_common = (
             db.session.query(criteria_models.Criterion)
-            .join(offerers_models.VenueCriterion)
-            .filter(offerers_models.VenueCriterion.venueId.in_(ids))
+            .join(criteria_models.VenueCriterion)
+            .filter(criteria_models.VenueCriterion.venueId.in_(ids))
             .group_by(criteria_models.Criterion.id)
-            .having(func.count(offerers_models.VenueCriterion.criterion) == len(ids))
+            .having(func.count(criteria_models.VenueCriterion.criterion) == len(ids))
             .all()
         )
         change_form.tags.data = criteria_in_common
@@ -303,7 +302,7 @@ class VenueView(BaseAdminView):
         if change_form.validate():
             venue_ids: list[str] = change_form.ids.data.split(",")
             is_permanent: bool = change_form.is_permanent.data
-            criteria: list[offerers_models.VenueCriterion] = change_form.data["tags"]
+            criteria: list[criteria_models.VenueCriterion] = change_form.data["tags"]
             remove_other_tags = change_form.data["remove_other_tags"]
 
             Venue.query.filter(Venue.id.in_(venue_ids)).update(

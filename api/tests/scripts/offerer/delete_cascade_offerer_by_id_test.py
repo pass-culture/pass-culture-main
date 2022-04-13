@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsException
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
+import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BusinessUnit
@@ -25,7 +26,6 @@ import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
 from pcapi.models.bank_information import BankInformation
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.product import Product
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
@@ -222,8 +222,8 @@ def test_delete_cascade_offerer_should_remove_favorites_of_managed_offers():
 def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers():
     # Given
     offerer_to_delete = offers_factories.OffererFactory()
-    offers_factories.OfferCriterionFactory(offer__venue__managingOfferer=offerer_to_delete)
-    offers_factories.OfferCriterionFactory()
+    criteria_factories.OfferCriterionFactory(offer__venue__managingOfferer=offerer_to_delete)
+    criteria_factories.OfferCriterionFactory()
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
@@ -232,7 +232,7 @@ def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_of
     assert Offerer.query.count() == 1
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
-    assert OfferCriterion.query.count() == 1
+    assert criteria_models.OfferCriterion.query.count() == 1
     assert criteria_models.Criterion.query.count() == 2
 
 

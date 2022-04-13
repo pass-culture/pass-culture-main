@@ -18,6 +18,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
+import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -37,7 +38,6 @@ from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.product import Product
 from pcapi.utils.custom_keys import compute_venue_reference
@@ -529,7 +529,10 @@ def delete_past_draft_offers() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
     filters = (Offer.dateCreated < yesterday, Offer.validation == OfferValidationStatus.DRAFT)
     Mediation.query.filter(Mediation.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
-    OfferCriterion.query.filter(OfferCriterion.offerId == Offer.id).filter(*filters).delete(synchronize_session=False)
+    criteria_models.OfferCriterion.query.filter(
+        criteria_models.OfferCriterion.offerId == Offer.id,
+        *filters,
+    ).delete(synchronize_session=False)
     Offer.query.filter(*filters).delete()
     db.session.commit()
 
