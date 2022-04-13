@@ -1,6 +1,7 @@
+import { OfferAddressType, StudentLevels } from 'api/v1/gen'
+
 import {
   IOfferEducationalFormValues,
-  ADRESS_TYPE,
   OfferEducationalStockFormValues,
   EducationalOfferType,
 } from './types'
@@ -14,7 +15,7 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   offererId: '',
   venueId: '',
   eventAddress: {
-    addressType: ADRESS_TYPE.OFFERER_VENUE,
+    addressType: OfferAddressType.OffererVenue,
     otherAddress: '',
     venueId: '',
   },
@@ -40,14 +41,14 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   notificationEmail: '',
 }
 
-export const PARTICIPANTS: Record<string, string> = {
-  quatrieme: 'Collège - 4e',
-  troisieme: 'Collège - 3e',
-  CAPAnnee1: 'CAP - 1re année',
-  CAPAnnee2: 'CAP - 2e année',
-  seconde: 'Lycée - Seconde',
-  premiere: 'Lycée - Première',
-  terminale: 'Lycée - Terminale',
+export const PARTICIPANTS: Record<string, StudentLevels> = {
+  quatrieme: StudentLevels.Collge4e,
+  troisieme: StudentLevels.Collge3e,
+  CAPAnnee1: StudentLevels.CAP1reAnne,
+  CAPAnnee2: StudentLevels.CAP2eAnne,
+  seconde: StudentLevels.LyceSeconde,
+  premiere: StudentLevels.LycePremire,
+  terminale: StudentLevels.LyceTerminale,
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
