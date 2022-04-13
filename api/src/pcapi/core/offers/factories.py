@@ -60,6 +60,16 @@ class VenueFactory(BaseFactory):
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
 
+    @factory.post_generation
+    def venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+        import pcapi.core.finance.factories as finance_factories
+
+        if not create:
+            return None
+        if not venue.businessUnit:
+            return None
+        return finance_factories.BusinessUnitVenueLinkFactory(venue=venue, businessUnit=venue.businessUnit)
+
 
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True
