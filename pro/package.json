@@ -76,7 +76,7 @@
     "lodash.merge": "^4.6.2",
     "lodash.omit": "^4.5.0",
     "prop-types": "^15.8.1",
-    "re-reselect": "^3.4.0",
+    "re-reselect": "^4.0.0",
     "react": "^16.10.2",
     "react-autocomplete": "^1.8.1",
     "react-autosize-textarea": "^7.1.0",
