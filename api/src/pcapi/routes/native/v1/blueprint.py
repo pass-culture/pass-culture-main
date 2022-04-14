@@ -4,12 +4,14 @@ from spectree import SecurityScheme
 
 from pcapi import settings
 from pcapi.routes.native import utils
+from pcapi.routes.utils import tag_with_api_user_typology
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
 native_v1 = Blueprint("native_v1", __name__)
 native_v1.before_request(utils.check_client_version)
+native_v1.before_request(lambda: tag_with_api_user_typology("jeunes"))
 CORS(
     native_v1,
     origins=settings.CORS_ALLOWED_ORIGINS_NATIVE,
