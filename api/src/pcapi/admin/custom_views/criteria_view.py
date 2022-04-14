@@ -5,6 +5,7 @@ from wtforms.validators import Length
 from wtforms.validators import Regexp
 
 from pcapi.admin.base_configuration import BaseAdminView
+import pcapi.admin.rules as pcapi_rules
 
 
 CRITERION_NAME_REGEX = r"^[^\s]+$"
@@ -24,7 +25,13 @@ class CriteriaView(BaseAdminView):
     column_searchable_list = ["name", "description", "startDateTime", "endDateTime"]
     column_filters: list[str] = []
     form_columns = ["description", "startDateTime", "endDateTime"]
-    form_create_rules = ("name", "description", "startDateTime", "endDateTime")
+    form_create_rules = (
+        "name",
+        "description",
+        "startDateTime",
+        "endDateTime",
+        pcapi_rules.HiddenField("csrf_token"),
+    )
 
     def get_create_form(self) -> Form:
         form = self.scaffold_form()
