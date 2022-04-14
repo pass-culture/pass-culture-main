@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
-import { composeValidators, removeWhitespaces } from 'react-final-form-utils'
+import { removeWhitespaces } from 'react-final-form-utils'
 
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { getSirenInformation } from 'repository/siren/getSirenInformation'
+import { composeValidators } from 'utils/react-final-form'
 
 import formatSiren from './formatSiren'
 

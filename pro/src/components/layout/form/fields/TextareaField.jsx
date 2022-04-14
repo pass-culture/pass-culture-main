@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import React, { PureComponent, Fragment } from 'react'
 import Textarea from 'react-autosize-textarea'
 import { Field } from 'react-final-form'
-import { composeValidators } from 'react-final-form-utils'
+
+import { composeValidators } from 'utils/react-final-form'
 
 import FieldErrors from '../FieldErrors'
 import getRequiredValidate from '../utils/getRequiredValidate'
