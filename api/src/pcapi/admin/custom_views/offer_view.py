@@ -320,7 +320,7 @@ class OfferView(BaseAdminView):
         search.async_index_offer_ids([offer.id])
 
     def get_query(self) -> BaseQuery:
-        return self.session.query(self.model).filter(Offer.validation != OfferValidationStatus.DRAFT).from_self()
+        return self.session.query(self.model).filter(self.model.validation != OfferValidationStatus.DRAFT).from_self()
 
 
 class OfferForVenueSubview(OfferView):
@@ -403,37 +403,12 @@ class OfferValidationForm(SecureForm):
     )
 
 
-class ValidationView(BaseAdminView):
+class ValidationBaseView(BaseAdminView):
     can_create = False
     can_edit = True
     can_delete = False
     list_template = "admin/offer_validation_list.html"
-
-    column_list = [
-        "id",
-        "name",
-        "validation",
-        "venue",
-        "offerer",
-        "offer",
-        "offers",
-        "dateCreated",
-        "isEducational",
-    ]
-    if IS_PROD:
-        column_list.append("metabase")
     column_sortable_list = ["id", "name", "validation", "dateCreated"]
-    column_labels = {
-        "name": "Nom",
-        "validation": "Validation",
-        "venue": "Lieu",
-        "offerer": "Structure",
-        "offer": "Offre",
-        "offers": "Offres",
-        "metabase": "Metabase",
-        "dateCreated": "Date de création",
-        "isEducational": "Offre EAC",
-    }
     column_filters = ["name", "venue.name", "id", "dateCreated"]
     column_default_sort = ("id", True)
     page_size = 100
@@ -453,20 +428,20 @@ class ValidationView(BaseAdminView):
 
     def get_query(self):  # type: ignore [no-untyped-def]
         return (
-            Offer.query.join(Venue)
+            self.model.query.join(Venue)
             .join(Offerer)
-            .options(sqla_orm.contains_eager(Offer.venue).contains_eager(Venue.managingOfferer))
+            .options(sqla_orm.contains_eager(self.model.venue).contains_eager(Venue.managingOfferer))
             .filter(Offerer.validationToken.is_(None))
-            .filter(Offer.validation == OfferValidationStatus.PENDING)
+            .filter(self.model.validation == OfferValidationStatus.PENDING)
         )
 
     def get_count_query(self):  # type: ignore [no-untyped-def]
         return (
-            self.session.query(func.count(Offer.id))
+            self.session.query(func.count(self.model.id))
             .join(Venue)
             .join(Offerer)
             .filter(Offerer.validationToken.is_(None))
-            .filter(Offer.validation == OfferValidationStatus.PENDING)
+            .filter(self.model.validation == OfferValidationStatus.PENDING)
         )
 
     def _batch_validate(self, offers, validation_status):  # type: ignore [no-untyped-def]
@@ -504,18 +479,18 @@ class ValidationView(BaseAdminView):
 
     @action("approve", "Approuver", "Etes-vous sûr(e) de vouloir approuver les offres sélectionnées ?")
     def action_approve(self, ids):  # type: ignore [no-untyped-def]
-        offers_to_approve = Offer.query.filter(Offer.id.in_(ids))
+        offers_to_approve = self.model.query.filter(self.model.id.in_(ids))
         self._batch_validate(offers_to_approve, OfferValidationStatus.APPROVED)
 
     @action("reject", "Rejeter", "Etes-vous sûr(e) de vouloir rejeter les offres sélectionnées ?")
     def action_reject(self, ids):  # type: ignore [no-untyped-def]
-        offers_to_reject = Offer.query.filter(Offer.id.in_(ids))
+        offers_to_reject = self.model.query.filter(self.model.id.in_(ids))
         self._batch_validate(offers_to_reject, OfferValidationStatus.REJECTED)
 
     @expose("/edit/", methods=["GET", "POST"])
     def edit(self) -> Response:
         offer_id = request.args["id"]
-        offer = Offer.query.get(offer_id)
+        offer = self.model.query.get(offer_id)
         form = OfferValidationForm()
         if request.method == "POST":
             form = OfferValidationForm(request.form)
@@ -538,17 +513,17 @@ class ValidationView(BaseAdminView):
                     send_offer_validation_notification_to_administration(validation_status, offer)
                     if request.form["action"] == "save-and-go-next":
                         next_offer_query = (
-                            Offer.query.filter(Offer.validation == OfferValidationStatus.PENDING)
-                            .filter(Offer.id < offer_id)
-                            .order_by(Offer.id.desc())
+                            self.model.query.filter(self.model.validation == OfferValidationStatus.PENDING)
+                            .filter(self.model.id < offer_id)
+                            .order_by(self.model.id.desc())
                             .limit(1)
                         )
                         if next_offer_query.count() > 0:
                             next_offer = next_offer_query.one()
                             return redirect(url_for(".edit", id=next_offer.id))
-                        return redirect(url_for("validation.index_view"))
+                        return redirect(url_for(f"{self.endpoint}.index_view"))
                     if request.form["action"] == "save":
-                        return redirect(url_for("validation.index_view"))
+                        return redirect(url_for(f"{self.endpoint}.index_view"))
                 else:
                     flash("Une erreur s'est produite lors de la mise à jour du statut de validation", "error")
 
@@ -563,7 +538,7 @@ class ValidationView(BaseAdminView):
         validation_items = parse_offer_validation_config(offer, current_config)[1]  # type: ignore [arg-type]
         context = {
             "form": form,
-            "cancel_link_url": url_for("validation.index_view"),
+            "cancel_link_url": url_for(f"{self.endpoint}.index_view"),
             "legal_category_code": legal_category_code,
             "legal_category_label": legal_category_label,
             "pc_offer_url": build_pc_pro_offer_link(offer),
@@ -576,6 +551,77 @@ class ValidationView(BaseAdminView):
             "offerer_url": build_pc_pro_offerer_link(offer.venue.managingOfferer),
         }
         return self.render("admin/edit_offer_validation.html", **context)
+
+
+class ValidationOfferView(ValidationBaseView):
+    column_list = [
+        "id",
+        "name",
+        "validation",
+        "venue",
+        "offerer",
+        "offer",
+        "offers",
+        "dateCreated",
+        "isEducational",
+    ]
+    if IS_PROD:
+        column_list.append("metabase")
+    column_labels = {
+        "name": "Nom",
+        "validation": "Validation",
+        "venue": "Lieu",
+        "offerer": "Structure",
+        "offer": "Offre",
+        "offers": "Offres",
+        "metabase": "Metabase",
+        "dateCreated": "Date de création",
+        "isEducational": "Offre EAC",
+    }
+
+
+class ValidationCollectiveOfferView(ValidationBaseView):
+    column_list = [
+        "id",
+        "name",
+        "validation",
+        "venue",
+        "offerer",
+        "offer",
+        "offers",
+        "dateCreated",
+    ]
+    column_labels = {
+        "name": "Nom",
+        "validation": "Validation",
+        "venue": "Lieu",
+        "offerer": "Structure",
+        "offer": "Offre",
+        "offers": "Offres",
+        "dateCreated": "Date de création",
+    }
+
+
+class ValidationCollectiveOfferTemplateView(ValidationBaseView):
+    column_list = [
+        "id",
+        "name",
+        "validation",
+        "venue",
+        "offerer",
+        "offer",
+        "offers",
+        "dateCreated",
+    ]
+    column_labels = {
+        "name": "Nom",
+        "validation": "Validation",
+        "venue": "Lieu",
+        "offerer": "Structure",
+        "offer": "Offre",
+        "offers": "Offres",
+        "dateCreated": "Date de création",
+    }
 
 
 def yaml_formatter(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
