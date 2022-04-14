@@ -1,0 +1,50 @@
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  run-mypy-cop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2.3.4
+        with:
+          persist-credentials: false
+      - name: check changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            src:
+              - 'api/**'
+      - name: Run mypy cop 🔧
+        id: mypy-cop
+        if: steps.changes.outputs.src == 'true'
+        run: |
+          cd api
+          body="$(./mypy_cop.sh)"
+          body="${body//'%'/'%25'}"
+          body="${body//$'\n'/'%0A'}"
+          body="${body//$'\r'/'%0D'}"
+          echo "::set-output name=body::$body"
+      - name: Find Comment
+        if: steps.changes.outputs.src == 'true'
+        uses: peter-evans/find-comment@v1
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Mypy cop report
+      - name: Create comment
+        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id == '' }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.mypy-cop.outputs.body }}
+      - name: Update comment
+        if: ${{ steps.changes.outputs.src == 'true' && steps.fc.outputs.comment-id != '' }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          edit-mode: replace
+          body: ${{ steps.mypy-cop.outputs.body }}
