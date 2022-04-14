@@ -425,9 +425,7 @@ class Offerer(
 
     dateValidated = Column(DateTime, nullable=True, default=None)
 
-    tags = sa.orm.relationship(
-        "OffererTag", backref=db.backref("offerer_tags", lazy="dynamic"), secondary="offerer_tag_mapping"
-    )
+    tags = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
     thumb_path_component = "offerers"
 
