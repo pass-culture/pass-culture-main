@@ -1091,12 +1091,11 @@ def set_offer_status_based_on_fraud_criteria(
 
 
 def update_pending_offer_validation(offer: Offer, validation_status: OfferValidationStatus) -> bool:
-    offer = offer_queries.get_offer_by_id(offer.id)
+
+    offer = type(offer).query.filter_by(id=offer.id).one()
     if offer.validation != OfferValidationStatus.PENDING:
-        logger.info(
-            "Offer validation status cannot be updated, initial validation status is not PENDING. %s",
-            extra={"offer": offer.id},
-        )
+        template = f"{type(offer)} validation status cannot be updated, initial validation status is not PENDING. %s"
+        logger.info(template, extra={"offer": offer.id})
         return False
     offer.validation = validation_status  # type: ignore [assignment]
     if validation_status == OfferValidationStatus.APPROVED:
@@ -1105,13 +1104,20 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
     try:
         db.session.commit()
     except Exception as exception:  # pylint: disable=broad-except
+        template = f"Could not update {type(offer)} validation status: %s"
         logger.exception(
-            "Could not update offer validation status: %s",
+            template,
             extra={"offer": offer.id, "validation_status": validation_status, "exc": str(exception)},
         )
         return False
-    search.async_index_offer_ids([offer.id])
-    logger.info("Offer validation status updated", extra={"offer": offer.id})
+    if isinstance(offer, Offer):
+        search.async_index_offer_ids([offer.id])
+    elif isinstance(offer, CollectiveOffer):
+        search.async_index_collective_offer_ids([offer.id])
+    elif isinstance(offer, CollectiveOfferTemplate):
+        search.async_index_collective_offer_template_ids([offer.id])
+    template = f"{type(offer)} validation status updated"
+    logger.info(template, extra={"offer": offer.id})
     return True
 
 
