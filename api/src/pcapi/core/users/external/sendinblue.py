@@ -167,7 +167,7 @@ def format_user_attributes(attributes: Union[UserAttributes, ProAttributes]) -> 
         SendinblueAttributes.LAST_VISIT_DATE.value: _get_attr(attributes, "last_visit_date"),
         SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
         SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
-        SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerer_name", format_list),
+        SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
         SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
         SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(
             attributes, "products_use_date", lambda v: v.get("product_brut_x_use")
@@ -175,10 +175,10 @@ def format_user_attributes(attributes: Union[UserAttributes, ProAttributes]) -> 
         SendinblueAttributes.USER_ID.value: _get_attr(attributes, "user_id"),
         SendinblueAttributes.USER_IS_ATTACHED.value: _get_attr(attributes, "user_is_attached"),
         SendinblueAttributes.USER_IS_CREATOR.value: _get_attr(attributes, "user_is_creator"),
-        SendinblueAttributes.VENUE_COUNT.value: _get_attr(attributes, "venue_ids", len),
-        SendinblueAttributes.VENUE_LABEL.value: _get_attr(attributes, "venue_label", format_list),
-        SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venue_name", format_list),
-        SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venue_type", format_list),
+        SendinblueAttributes.VENUE_COUNT.value: _get_attr(attributes, "venues_ids", len),
+        SendinblueAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
+        SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
+        SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
     }
 
 

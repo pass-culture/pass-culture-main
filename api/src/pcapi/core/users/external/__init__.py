@@ -70,11 +70,11 @@ def get_user_or_pro_attributes(user: User) -> Union[UserAttributes, ProAttribute
 def get_pro_attributes(email: str) -> ProAttributes:
     # Offerer name attribute is the list of all offerers either managed by the user account (associated in user_offerer)
     # or the parent offerer of the venue which bookingEmail is the requested email address.
-    offerer_name = []
+    offerers_names = []
 
     # All venues which are either managed by offerers associated with user account or linked to the current email as
-    # booking email. A venue can be part of both sets, which union is the following set() of ids
-    all_venue_ids: set[int] = set()
+    # booking email. A venue can be part of both sets.
+    all_venues: list[Venue] = []
 
     attributes = {}
 
@@ -83,7 +83,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         offerers = [offerer for offerer in user.offerers if offerer.isActive]
 
         if offerers:
-            offerer_name += [offerer.name for offerer in offerers]
+            offerers_names += [offerer.name for offerer in offerers]
 
         # A pro user is considered as:
         # - a creator if he is the lowest id of user_offerer association for any offerer,
@@ -95,7 +95,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         if user and offerers:
             offerer_ids = [offerer.id for offerer in offerers]
             user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
-            all_venue_ids.update([venue.id for venue in find_venues_by_offerers(*offerers)])
+            all_venues += find_venues_by_offerers(*offerers)
             for offerer_id in offerer_ids:
                 if min([(uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id])[1] == user.id:
                     user_is_creator = True
@@ -114,15 +114,10 @@ def get_pro_attributes(email: str) -> ProAttributes:
 
     venues = find_active_venues_by_booking_email(email)
     if venues:
-        offerer_name += [venue.managingOfferer.name for venue in venues if venue.managingOfferer]
-        all_venue_ids.update([venue.id for venue in venues])
+        offerers_names += [venue.managingOfferer.name for venue in venues if venue.managingOfferer]
+        all_venues += venues
         attributes.update(
             {
-                "venue_name": {venue.publicName or venue.name for venue in venues},  # type: ignore [dict-item]
-                "venue_type": {venue.venueTypeCode.name for venue in venues if venue.venueTypeCode},  # type: ignore [dict-item, attr-defined]
-                "venue_label": {venue.venueLabel.label for venue in venues if venue.venueLabelId},  # type: ignore [dict-item]
-                "departement_code": {venue.departementCode for venue in venues if venue.departementCode},  # type: ignore [dict-item]
-                "postal_code": {venue.postalCode for venue in venues if venue.postalCode},  # type: ignore [dict-item, has-type]
                 "dms_application_submitted": any(venue.demarchesSimplifieesIsDraft for venue in venues),
                 "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
                 "isVirtual": any(venue.isVirtual for venue in venues),
@@ -145,8 +140,13 @@ def get_pro_attributes(email: str) -> ProAttributes:
         is_user_email=bool(user),
         is_booking_email=bool(venues),
         marketing_email_subscription=marketing_email_subscription,
-        offerer_name=set(offerer_name),
-        venue_ids=all_venue_ids,
+        offerers_names=set(offerers_names),
+        venues_ids={venue.id for venue in all_venues},
+        venues_names={venue.publicName or venue.name for venue in all_venues},  # type: ignore [dict-item]
+        venues_types={venue.venueTypeCode.name for venue in all_venues if venue.venueTypeCode},  # type: ignore [dict-item, attr-defined]
+        venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},  # type: ignore [dict-item]
+        departement_code={venue.departementCode for venue in all_venues if venue.departementCode},  # type: ignore [dict-item]
+        postal_code={venue.postalCode for venue in all_venues if venue.postalCode},  # type: ignore [dict-item, has-type]
         **attributes,  # type: ignore [arg-type]
     )
 

@@ -50,8 +50,13 @@ class ProAttributes:
     is_user_email: bool  # Email address is set at least for a user account
     is_booking_email: bool  # Email address is set as bookingEmail for at least one active venue
     marketing_email_subscription: bool
-    offerer_name: Iterable[str]  # All active offerers associated with user account or bookingEmail
-    venue_ids: Iterable[int]  # All active venue ids related to email
+    offerers_names: Iterable[str]  # All active offerers associated with user account or bookingEmail
+    venues_ids: Iterable[int]  # All active venues ids related to email (from user account or bookingEmail)
+    venues_names: Iterable[str]  # Distinct names of all these venues
+    venues_types: Iterable[str]  # Distinct types of all these venues
+    venues_labels: Iterable[str]  # Distinct labels of all these venues
+    departement_code: Iterable[str]  # Distinct department codes of all these venues; keep same name as UserAttributes
+    postal_code: Iterable[str]  # Distinct postal codes of all these venues; keep same name as UserAttributes
 
     # Attributes set when is_user_email is True:
     user_id: Optional[int] = None
@@ -60,12 +65,8 @@ class ProAttributes:
     user_is_attached: Optional[bool] = None  # User is attached to at least one active offerer, he is not the creator
     user_is_creator: Optional[bool] = None  # User is the creator of at least one active offerer
 
-    # Attributes set when is_booking_email is True:
-    venue_name: Optional[Iterable[str]] = None  # All active venues in which contact email is set as bookingEmail
-    venue_type: Optional[Iterable[str]] = None  # Distinct venue types of all these venues
-    venue_label: Optional[Iterable[str]] = None  # Distinct venue labels of all these venues
-    departement_code: Optional[Iterable[str]] = None  # Distinct department codes of all these venues
-    postal_code: Optional[Iterable[str]] = None  # Distinct postal codes of all these venues
+    # Attributes set when is_booking_email is True,
+    # which only take venues in which contact email is set as bookingEmail into account:
     dms_application_submitted: Optional[bool] = None  # At last one bank info is waiting for approval in DMS in venues
     dms_application_approved: Optional[bool] = None  # All venues have bank information approved
     isVirtual: Optional[bool] = None  # At least one venue is virtual
