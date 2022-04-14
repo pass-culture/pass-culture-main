@@ -8,12 +8,14 @@ from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import validators
+from wtforms.fields import HiddenField
 from wtforms.fields.core import Field
 from wtforms.fields.core import StringField
 from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
+import pcapi.admin.rules as pcapi_rules
 from pcapi.admin.validators import PhoneNumberValidator
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
 import pcapi.core.offerers.api as offerers_api
@@ -113,7 +115,8 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         "offererName",
         "offererPostalCode",
         "offererCity",
-        "csrf_token",
+        pcapi_rules.HiddenField("comment"),
+        pcapi_rules.HiddenField("csrf_token"),
     )
 
     @property
@@ -152,6 +155,9 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         form.firstName = StringField("Prénom", [validators.DataRequired()])
         form.lastName = StringField("Nom", [validators.DataRequired()])
         form.phoneNumber = StringField("Numéro de téléphone", [validators.DataRequired(), PhoneNumberValidator()])
+        # We require a SIREN, which means that "comment" must be empty
+        # (see model constraints), which is why the field is hidden.
+        form.comment = HiddenField()
         return form
 
     def get_edit_form(self) -> Form:
