@@ -20,6 +20,7 @@ const subcategoryOption = Selector('.offer-form [name="subcategoryId"] option')
 const venueInput = Selector('.offer-form [name="venueId"]')
 const venueOption = Selector('.offer-form [name="venueId"] option')
 const categoryOption = Selector('.offer-form [name="categoryId"] option')
+const withdrawalType = Selector('.input-radio-input[name="withdrawalType"]')
 const durationMinutesInput = Selector('.offer-form [name="durationMinutes"]')
 const descriptionInput = Selector('.offer-form [name="description"]')
 const isDuo = Selector('.offer-form [name="offerOption"]').withAttribute(
@@ -132,6 +133,7 @@ test('je peux créer une offre avec des sous-types', async t => {
     .click(offererOption.withText(offerer.name))
     .click(venueInput)
     .click(venueOption.withText(venue.name))
+    .click(withdrawalType)
     .click(noDisabilityCompliantCheckbox)
     .typeText(durationMinutesInput, '01:30')
     .typeText(
@@ -166,6 +168,7 @@ test('une offre Event est duo par défaut', async t => {
     .click(offererOption.withText(offerer.name))
     .click(venueInput)
     .click(venueOption.withText(venue.name))
+    .click(withdrawalType)
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(getPathname())

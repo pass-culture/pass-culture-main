@@ -38,6 +38,7 @@ export const fieldLabels = {
   venueId: { label: 'Lieu', exact: true },
   visa: { label: 'Visa d’exploitation', exact: false },
   withdrawalDetails: { label: 'Informations de retrait', exact: false },
+  withdrawalType: { label: 'Évènement sans billet', exact: false },
 }
 
 export const getOfferInputForField = async fieldName => {

@@ -135,8 +135,6 @@ const OfferForm = ({
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
   )
 
-  const isWithdrawalTypeEnabled = useActiveFeature('PRO_DISABLE_EVENTS_QRCODE')
-
   const [mandatoryFields, setMandatoryFields] = useState([...MANDATORY_FIELDS])
 
   const resetMandatoryFields = useCallback(() => {
@@ -216,7 +214,6 @@ const OfferForm = ({
       mandatoryFields.push('isbn')
     }
     if (
-      isWithdrawalTypeEnabled &&
       WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)
     ) {
       mandatoryFields.push('withdrawalType')
@@ -232,7 +229,6 @@ const OfferForm = ({
     formValues,
     offerSubCategory,
     isIsbnRequiredInLivreEditionEnabled,
-    isWithdrawalTypeEnabled,
     mandatoryFields,
     resetMandatoryFields,
   ])
@@ -504,7 +500,6 @@ const OfferForm = ({
     }
 
     if (
-      isWithdrawalTypeEnabled &&
       WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
         formValues.subcategoryId
       ) &&
@@ -517,7 +512,7 @@ const OfferForm = ({
 
     setFormErrors(newFormErrors)
     return Object.keys(newFormErrors).length === 0
-  }, [offerFormFields, mandatoryFields, formValues, isWithdrawalTypeEnabled])
+  }, [offerFormFields, mandatoryFields, formValues])
 
   const submitForm = useCallback(
     async event => {
@@ -995,46 +990,45 @@ const OfferForm = ({
                 </div>
               )}
 
-              {isWithdrawalTypeEnabled &&
-                WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
-                  formValues.subcategoryId
-                ) && (
-                  <>
-                    <OfferWithdrawalTypeOptions
-                      error={getErrorMessage('withdrawalType')}
-                      updateWithdrawalType={updateWithdrawalType}
-                      withdrawalType={formValues.withdrawalType}
-                    />
-                    {formValues.withdrawalType ===
-                      OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE && (
-                      <div className="form-row">
-                        <Select
-                          error={getErrorMessage('withdrawalDelay')}
-                          handleSelection={handleSingleFormUpdate}
-                          label="Heure de retrait"
-                          name="withdrawalDelay"
-                          options={WITHDRAWAL_ON_SITE_DELAY_OPTIONS}
-                          rightLabel="avant le début de l’événement"
-                          selectedValue={formValues.withdrawalDelay}
-                        />
-                      </div>
-                    )}
-                    {formValues.withdrawalType ===
-                      OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL && (
-                      <div className="form-row">
-                        <Select
-                          error={getErrorMessage('withdrawalDelay')}
-                          handleSelection={handleSingleFormUpdate}
-                          label="Date d'envoi"
-                          name="withdrawalDelay"
-                          options={WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS}
-                          rightLabel="avant le début de l’événement"
-                          selectedValue={formValues.withdrawalDelay}
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
+              {WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
+                formValues.subcategoryId
+              ) && (
+                <>
+                  <OfferWithdrawalTypeOptions
+                    error={getErrorMessage('withdrawalType')}
+                    updateWithdrawalType={updateWithdrawalType}
+                    withdrawalType={formValues.withdrawalType}
+                  />
+                  {formValues.withdrawalType ===
+                    OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE && (
+                    <div className="form-row">
+                      <Select
+                        error={getErrorMessage('withdrawalDelay')}
+                        handleSelection={handleSingleFormUpdate}
+                        label="Heure de retrait"
+                        name="withdrawalDelay"
+                        options={WITHDRAWAL_ON_SITE_DELAY_OPTIONS}
+                        rightLabel="avant le début de l’événement"
+                        selectedValue={formValues.withdrawalDelay}
+                      />
+                    </div>
+                  )}
+                  {formValues.withdrawalType ===
+                    OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL && (
+                    <div className="form-row">
+                      <Select
+                        error={getErrorMessage('withdrawalDelay')}
+                        handleSelection={handleSingleFormUpdate}
+                        label="Date d'envoi"
+                        name="withdrawalDelay"
+                        options={WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS}
+                        rightLabel="avant le début de l’événement"
+                        selectedValue={formValues.withdrawalDelay}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
 
               <div className="form-row">
                 <TextareaInput
