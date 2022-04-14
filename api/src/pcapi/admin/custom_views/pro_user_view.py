@@ -14,6 +14,7 @@ from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError
 
 from pcapi.admin.base_configuration import BaseAdminView
+from pcapi.admin.validators import PhoneNumberValidator
 from pcapi.core.mails.transactional.pro.reset_password_to_pro import send_reset_password_link_to_admin_email
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
@@ -124,6 +125,7 @@ class ProUserView(SuspensionMixin, BaseAdminView):
             "dateOfBirth",
             "departementCode",
             "postalCode",
+            "phoneNumber",
         )
         if self.check_super_admins():
             fields += ("comment",)
@@ -149,12 +151,13 @@ class ProUserView(SuspensionMixin, BaseAdminView):
         form.offererCity = StringField("Ville de la structure", [validators.DataRequired()])
         form.firstName = StringField("Prénom", [validators.DataRequired()])
         form.lastName = StringField("Nom", [validators.DataRequired()])
-        form.phoneNumber = StringField("Numéro de tél.", [validators.DataRequired()])
+        form.phoneNumber = StringField("Numéro de téléphone", [validators.DataRequired(), PhoneNumberValidator()])
         return form
 
     def get_edit_form(self) -> Form:
         form = super().get_form()
         form.email = StringField("Email", [DataRequired()], filters=[filter_email])
+        form.phoneNumber = StringField("Numéro de téléphone", [PhoneNumberValidator()])
         return form
 
     def on_model_change(self, form: Form, model: User, is_created: bool) -> None:
