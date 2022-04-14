@@ -18,7 +18,6 @@ class OffererTagView(BaseAdminView):
     column_labels = {"name": "Nom"}
     column_searchable_list = ["name"]
     column_filters: list[str] = []
-    form_create_rules = ("name",)
 
     def get_create_form(self) -> Form:
         form = self.scaffold_form()
