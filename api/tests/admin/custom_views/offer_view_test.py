@@ -6,12 +6,16 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.admin.custom_views.offer_view import OfferView
-from pcapi.admin.custom_views.offer_view import ValidationView
+from pcapi.admin.custom_views.offer_view import ValidationCollectiveOfferTemplateView
+from pcapi.admin.custom_views.offer_view import ValidationCollectiveOfferView
+from pcapi.admin.custom_views.offer_view import ValidationOfferView
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.core import testing
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.criteria.factories as criteria_factories
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
@@ -526,7 +530,7 @@ class OfferValidationViewTest:
         assert url_for("admin.index") in response.location
 
     def test_get_query_and_count(self, db_session):
-        offer_view = ValidationView(model=Offer, session=db_session)
+        offer_view = ValidationOfferView(model=Offer, session=db_session)
         validated_offerer = offers_factories.OffererFactory()
         non_validated_offerer = offers_factories.OffererFactory(validationToken="token")
         offer_1 = offers_factories.OfferFactory(
@@ -673,6 +677,514 @@ class OfferValidationViewTest:
             "Une erreur s&#39;est produite lors de la mise à jour du statut de validation des offres"
             in get_response.data.decode("utf8")
         )
+
+    @freeze_time("2020-11-17 15:00:00")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_approve_collective_offer_template_and_send_mail_to_administration(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        client,
+    ):
+        # Given
+        config_yaml = """
+                    minimum_score: 0.6
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "Offer"
+                             attribute: "name"
+                             condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                    """
+        import_offer_validation_config(config_yaml)
+        users_factories.AdminFactory(email="admin@example.com")
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING, isActive=True
+        )
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
+
+        # When
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation-collective-offer-template.edit", id=offer.id), form=data
+        )
+
+        # Then
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer-template.index_view") in response.location
+        assert offer.validation == OfferValidationStatus.APPROVED
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.APPROVED, offer
+        )
+        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
+
+    @freeze_time("2020-11-17 15:00:00")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_reject_collective_offer_template_and_send_mail_to_administration(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        client,
+    ):
+        # Given
+        config_yaml = """
+                    minimum_score: 0.6
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "Offer"
+                             attribute: "name"
+                             condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                    """
+        import_offer_validation_config(config_yaml)
+        users_factories.AdminFactory(email="admin@example.com")
+        offer = educational_factories.CollectiveOfferTemplateFactory(validation=OfferValidationStatus.PENDING)
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
+
+        # When
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation-collective-offer-template.edit", id=offer.id), form=data
+        )
+
+        # Then
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.REJECTED, offer
+        )
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer-template.index_view") in response.location
+        assert offer.validation == OfferValidationStatus.REJECTED
+        assert offer.isActive is False
+        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
+
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_access_to_collective_offer_template_validation_page_with_super_admin_user_on_prod_env(self, client):
+        users_factories.AdminFactory(email="super_admin@example.com")
+
+        response = client.with_session_auth("super_admin@example.com").get(
+            url_for("validation-collective-offer-template.index_view")
+        )
+
+        assert response.status_code == 200
+
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_access_to_collective_offer_templayte_validation_page_with_none_super_admin_user_on_prod_env(self, client):
+        users_factories.AdminFactory(email="simple_admin@example.com")
+
+        response = client.with_session_auth("simple_admin@example.com").get(
+            url_for("validation-collective-offer-template.index_view")
+        )
+
+        assert response.status_code == 302
+        assert url_for("admin.index") in response.location
+
+    def test_get_collective_offer_template_query_and_count(self, db_session):
+        offer_view = ValidationCollectiveOfferTemplateView(
+            model=educational_models.CollectiveOfferTemplate, session=db_session
+        )
+        validated_offerer = offers_factories.OffererFactory()
+        non_validated_offerer = offers_factories.OffererFactory(validationToken="token")
+        offer_1 = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING,
+            venue__managingOfferer=validated_offerer,
+        )
+        educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING,
+            venue__managingOfferer=non_validated_offerer,
+        )
+
+        get_query_offers_list = offer_view.get_query().all()
+        get_count_query_scalar = offer_view.get_count_query().scalar()
+
+        assert get_query_offers_list == [offer_1]
+        assert get_count_query_scalar == 1
+
+    @pytest.mark.parametrize(
+        "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
+    )
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    def test_batch_approve_collective_offers_template(
+        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
+    ):
+        users_factories.AdminFactory(email="admin@example.com")
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offer1 = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+        offer2 = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+
+        data = dict(rowid=[offer1.id, offer2.id], action=action)
+        client.with_session_auth("admin@example.com")
+        response = client.post(url_for("validation-collective-offer-template.action_view"), form=data)
+
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer-template.index_view") in response.location
+
+        assert educational_models.CollectiveOfferTemplate.query.get(offer1.id).validation == expected
+        assert educational_models.CollectiveOfferTemplate.query.get(offer2.id).validation == expected
+
+        # There is no status returned by the action, check flash message
+        get_response = client.get(response.location)
+        assert "2 offres ont été modifiées avec succès" in get_response.data.decode("utf8")
+
+    @pytest.mark.parametrize("action", ["approve", "reject"])
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    @patch("pcapi.core.offers.api.update_pending_offer_validation")
+    def test_batch_approve_reject_collective_offers_template_not_updated(
+        self,
+        mocked_update_pending_offer_validation,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        action,
+        client,
+    ):
+        users_factories.AdminFactory(email="admin@example.com")
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offer = educational_factories.CollectiveOfferTemplateFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+        offers_factories.OfferValidationConfigFactory()
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+
+        mocked_update_pending_offer_validation.return_value = False
+
+        data = dict(rowid=[offer.id], action=action)
+        client.with_session_auth("admin@example.com")
+        response = client.post(url_for("validation-collective-offer-template.action_view"), form=data)
+
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer-template.index_view") in response.location
+
+        assert (
+            educational_models.CollectiveOfferTemplate.query.get(offer.id).validation == OfferValidationStatus.PENDING
+        )
+
+        # There is no status returned by the action, check flash message
+        get_response = client.get(response.location)
+        assert (
+            "Une erreur s&#39;est produite lors de la mise à jour du statut de validation des offres"
+            in get_response.data.decode("utf8")
+        )
+
+    @freeze_time("2020-11-17 15:00:00")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_approve_collective_offer_and_send_mail_to_administration(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        client,
+    ):
+        # Given
+        config_yaml = """
+                    minimum_score: 0.6
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "CollectiveOffer"
+                             attribute: "name"
+                             condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                    """
+        import_offer_validation_config(config_yaml)
+        users_factories.AdminFactory(email="admin@example.com")
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+        data = dict(validation=OfferValidationStatus.APPROVED.value, action="save")
+
+        # When
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation-collective-offer.edit", id=offer.id), form=data
+        )
+
+        # Then
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer.index_view") in response.location
+        assert offer.validation == OfferValidationStatus.APPROVED
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.APPROVED, offer
+        )
+        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
+
+    @freeze_time("2020-11-17 15:00:00")
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
+    def test_reject_collective_offer_and_send_mail_to_administration(
+        self,
+        mocked_send_offer_validation_notification_to_administration,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        client,
+    ):
+        # Given
+        config_yaml = """
+                    minimum_score: 0.6
+                    rules:
+                       - name: "check offer name"
+                         factor: 0
+                         conditions:
+                           - model: "Offer"
+                             attribute: "name"
+                             condition:
+                                operator: "not in"
+                                comparated: "REJECTED"
+                    """
+        import_offer_validation_config(config_yaml)
+        users_factories.AdminFactory(email="admin@example.com")
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+        data = dict(validation=OfferValidationStatus.REJECTED.value, action="save")
+
+        # When
+        response = client.with_session_auth("admin@example.com").post(
+            url_for("validation-collective-offer.edit", id=offer.id), form=data
+        )
+
+        # Then
+        mocked_send_offer_validation_notification_to_administration.assert_called_once_with(
+            OfferValidationStatus.REJECTED, offer
+        )
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer.index_view") in response.location
+        assert offer.validation == OfferValidationStatus.REJECTED
+        assert offer.isActive is False
+        assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
+        assert offer.lastValidationType == OfferValidationType.MANUAL
+
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_access_to_collective_offer_validation_page_with_super_admin_user_on_prod_env(self, client):
+        users_factories.AdminFactory(email="super_admin@example.com")
+
+        response = client.with_session_auth("super_admin@example.com").get(
+            url_for("validation-collective-offer.index_view")
+        )
+
+        assert response.status_code == 200
+
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
+    def test_access_to_collectve_offer_validation_page_with_none_super_admin_user_on_prod_env(self, client):
+        users_factories.AdminFactory(email="simple_admin@example.com")
+
+        response = client.with_session_auth("simple_admin@example.com").get(
+            url_for("validation-collective-offer.index_view")
+        )
+
+        assert response.status_code == 302
+        assert url_for("admin.index") in response.location
+
+    def test_get_query_and_count_on_collective_offer(self, db_session):
+        offer_view = ValidationCollectiveOfferView(model=educational_models.CollectiveOffer, session=db_session)
+        validated_offerer = offers_factories.OffererFactory()
+        non_validated_offerer = offers_factories.OffererFactory(validationToken="token")
+        offer_1 = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            venue__managingOfferer=validated_offerer,
+        )
+        educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            venue__managingOfferer=non_validated_offerer,
+        )
+
+        get_query_offers_list = offer_view.get_query().all()
+        get_count_query_scalar = offer_view.get_count_query().scalar()
+
+        assert get_query_offers_list == [offer_1]
+        assert get_count_query_scalar == 1
+
+    @clean_database
+    @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
+    def test_number_of_queries_for_collective_offer_list(self, client):
+        admin = users_factories.AdminFactory(email="superadmin@example.com")
+
+        offers_factories.OfferValidationConfigFactory(
+            specs={
+                "minimum_score": 0.1,
+                "rules": [
+                    {
+                        "conditions": [
+                            {
+                                "attribute": "max_price",
+                                "condition": {"comparated": 1, "operator": ">"},
+                                "model": "Offer",
+                            },
+                        ],
+                        "factor": 0.8,
+                        "name": "Vérification",
+                    },
+                ],
+            }
+        )
+        for _ in range(5):
+            educational_factories.CollectiveStockFactory(collectiveOffer__validation=OfferValidationStatus.PENDING)
+
+        client = client.with_session_auth(admin.email)
+
+        n_queries = testing.AUTHENTICATION_QUERIES
+        n_queries += 1  # count
+        n_queries += 1  # select offers
+        with testing.assert_num_queries(n_queries):
+            response = client.get(url_for("validation-collective-offer.index_view"))
+
+        assert response.status_code == 200
+        assert b"<h2>Validation des offres</h2>" in response.data
+
+    @pytest.mark.parametrize(
+        "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
+    )
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    def test_batch_approve_collective_offers(
+        self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
+    ):
+        users_factories.AdminFactory(email="admin@example.com")
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offer1 = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+        offer2 = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+
+        data = dict(rowid=[offer1.id, offer2.id], action=action)
+        client.with_session_auth("admin@example.com")
+        response = client.post(url_for("validation-collective-offer.action_view"), form=data)
+
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer.index_view") in response.location
+
+        assert educational_models.CollectiveOffer.query.get(offer1.id).validation == expected
+        assert educational_models.CollectiveOffer.query.get(offer2.id).validation == expected
+
+        # There is no status returned by the action, check flash message
+        get_response = client.get(response.location)
+        assert "2 offres ont été modifiées avec succès" in get_response.data.decode("utf8")
+
+    @pytest.mark.parametrize("action", ["approve", "reject"])
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
+    @patch("pcapi.core.offers.api.update_pending_offer_validation")
+    def test_batch_approve_reject_collective_offers_not_updated(
+        self,
+        mocked_update_pending_offer_validation,
+        mocked_get_offerer_legal_category,
+        mocked_validate_csrf_token,
+        action,
+        client,
+    ):
+        users_factories.AdminFactory(email="admin@example.com")
+        venue = VenueFactory()
+        offerer = venue.managingOfferer
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
+        offer = educational_factories.CollectiveOfferFactory(
+            validation=OfferValidationStatus.PENDING,
+            isActive=True,
+            venue__bookingEmail="email1@example.com",
+            venue=venue,
+        )
+        offers_factories.OfferValidationConfigFactory()
+
+        mocked_get_offerer_legal_category.return_value = {
+            "legal_category_code": 5202,
+            "legal_category_label": "Société en nom collectif",
+        }
+
+        mocked_update_pending_offer_validation.return_value = False
+
+        data = dict(rowid=[offer.id], action=action)
+        client.with_session_auth("admin@example.com")
+        response = client.post(url_for("validation-collective-offer.action_view"), form=data)
+
+        assert response.status_code == 302
+        assert url_for("validation-collective-offer.index_view") in response.location
+
+        assert educational_models.CollectiveOffer.query.get(offer.id).validation == OfferValidationStatus.PENDING
+
+        # There is no status returned by the action, check flash message
+        get_response = client.get(response.location)
+        assert (
+            "Une erreur s&#39;est produite lors de la mise à jour du statut de validation des offres"
+            in get_response.data.decode("utf8")
+        )
+
+
+###############################################################################################################################
 
 
 class GetOfferValidationViewTest:

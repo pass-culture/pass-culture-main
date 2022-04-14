@@ -34,6 +34,7 @@ from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueForOffererSubview
 from pcapi.admin.custom_views.venue_view import VenueView
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
@@ -203,11 +204,31 @@ def install_views(admin: Admin, session: Session) -> None:
         )
     )
     admin.add_view(
-        offer_view.ValidationView(
+        offer_view.ValidationOfferView(
             offers_models.Offer,
             session,
             name="Validation",
             endpoint="validation",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        offer_view.ValidationCollectiveOfferView(
+            educational_models.CollectiveOffer,
+            session,
+            name="Validation d'offres collectives",
+            endpoint="validation-collective-offer",
+            category=Category.CUSTOM_OPERATIONS,
+        )
+    )
+
+    admin.add_view(
+        offer_view.ValidationCollectiveOfferTemplateView(
+            educational_models.CollectiveOfferTemplate,
+            session,
+            name="Validation d'offres collectives vitrines",
+            endpoint="validation-collective-offer-template",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
