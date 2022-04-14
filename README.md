@@ -167,9 +167,7 @@ Faire un hotfix consiste à créer un nouveau tag à partir du tag précédent a
 
 1. Vérifier que les commits à Hot Fix sont poussés sur `master`, déployés sur testing et validés par les POs.
 
-2. Se placer sur la branche de maintenance de l'itération.
-
-Si un hotfix à déjà été fait pour l'itération en cours, il faut se placer sur la branche de maintenance de l'itération (`git checkout maint/v182`). Dans le cas contraire, il faut la créer à partir du tag posé (`git checkout v182.0.0 && git checkout -b maint/v182`).
+2. Se placer sur la branche de maintenance de l'itération `git checkout maint/v182`
 
 3. Choix des commits désirés (équipes des devs)
 
