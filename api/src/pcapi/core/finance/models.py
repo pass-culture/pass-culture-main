@@ -128,7 +128,7 @@ class Pricing(Model):  # type: ignore [valid-type, misc]
     collectiveBookingId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
     )
-    collectiveBooking = sqla_orm.relationship(
+    collectiveBooking = sqla_orm.relationship(  # type: ignore [misc]
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
 

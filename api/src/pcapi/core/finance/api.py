@@ -46,12 +46,16 @@ from sqlalchemy import Date
 from sqlalchemy import and_
 from sqlalchemy import cast
 import sqlalchemy.orm as sqla_orm
+from sqlalchemy.orm import joinedload
 import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
+from pcapi.core.educational import repository as educational_repository
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
@@ -65,6 +69,7 @@ from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.utils import human_ids
 from pcapi.utils import pdf as pdf_utils
@@ -132,6 +137,7 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ig
 
     This function is normally called by a cron job.
     """
+    is_new_collective_model_enable = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
     # The upper bound on `dateUsed` avoids selecting a very recent
     # booking that may have been COMMITed to the database just before
     # another booking with a slightly older `dateUsed` (see note in
@@ -171,6 +177,13 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ig
             ),
         )
     )
+
+    # If CollectiveBooking model is used, we dont need to price educational
+    # bookings anymore, otherwise we will price twice the same booking (because
+    # the data has been duplicated between EducationalBooking and CollectiveBooking)
+    if is_new_collective_model_enable:
+        bookings = bookings.filter(bookings_models.Booking.educationalBookingId.is_(None))
+
     errorred_business_unit_ids = set()
     for booking in bookings:
         try:
@@ -192,6 +205,29 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ig
                     "exc": str(exc),
                 },
             )
+
+    if is_new_collective_model_enable:
+        collective_bookings_query = educational_repository.get_collective_bookings_query_for_pricing_generation(window)
+        for collective_booking in collective_bookings_query:
+            try:
+                if collective_booking.venue.businessUnitId in errorred_business_unit_ids:
+                    continue
+                extra = {
+                    "collective_booking": collective_booking.id,
+                    "business_unit_id": collective_booking.venue.businessUnitId,
+                }
+                with log_elapsed(logger, "Priced collective booking", extra):
+                    price_booking(collective_booking)
+            except Exception as exc:  # pylint: disable=broad-except
+                errorred_business_unit_ids.add(collective_booking.venue.businessUnitId)
+                logger.exception(
+                    "Could not price collective booking",
+                    extra={
+                        "collective_booking": collective_booking.id,
+                        "business_unit": collective_booking.venue.businessUnitId,
+                        "exc": str(exc),
+                    },
+                )
 
 
 def _booking_comparison_tuple(booking: bookings_models.Booking) -> list:
@@ -223,10 +259,23 @@ def lock_business_unit(business_unit_id: int):  # type: ignore [no-untyped-def]
     logger.info("Acquired lock on business unit", extra={"business_unit": business_unit_id})
 
 
-def price_booking(booking: bookings_models.Booking) -> models.Pricing:
+def get_non_cancelled_pricing_from_booking(
+    booking: typing.Union[bookings_models.Booking, educational_models.CollectiveBooking]
+) -> typing.Optional[models.Pricing]:
+    if isinstance(booking, bookings_models.Booking):
+        pricing_query = models.Pricing.query.filter_by(booking=booking)
+    else:
+        pricing_query = models.Pricing.query.filter_by(collectiveBooking=booking)
+
+    return pricing_query.filter(models.Pricing.status != models.PricingStatus.CANCELLED).one_or_none()
+
+
+def price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooking]) -> typing.Optional[models.Pricing]:
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
-        return None  # type: ignore [return-value]
+        return None
+
+    is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
 
     with transaction():
         lock_business_unit(business_unit_id)
@@ -235,24 +284,19 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
         # database again so that we can make some final checks before
         # actually pricing the booking.
         booking = (
-            bookings_models.Booking.query.filter_by(id=booking.id)
-            .options(
-                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
-                .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
-                .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
-                sqla_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
-                    offers_models.Stock.offer, innerjoin=True
-                ),
-            )
-            .one()
+            reload_collective_booking_for_pricing(booking.id)
+            if is_booking_collective
+            else reload_booking_for_pricing(booking.id)
         )
 
         # Perhaps the booking has been marked as unused since we
         # fetched it before we acquired the lock.
         # If the status is REIMBURSED, it means the booking is
         # already priced.
-        if booking.status is not bookings_models.BookingStatus.USED:
-            return None  # type: ignore [return-value]
+        if (is_booking_collective and booking.status is not CollectiveBookingStatus.USED) or (
+            not is_booking_collective and booking.status is not bookings_models.BookingStatus.USED
+        ):
+            return None
 
         business_unit = booking.venue.businessUnit
         # FIXME (dbaty, 2021-12-08): we can get rid of this condition
@@ -264,14 +308,14 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
 
         # Pricing the same booking twice is not allowed (and would be
         # rejected by a database constraint, anyway).
-        pricing = models.Pricing.query.filter(
-            models.Pricing.booking == booking,
-            models.Pricing.status != models.PricingStatus.CANCELLED,
-        ).one_or_none()
+        pricing = get_non_cancelled_pricing_from_booking(booking)
         if pricing:
             return pricing
 
-        _delete_dependent_pricings(booking, "Deleted pricings priced too early")
+        # we do not need to delete the pricing if booking is collective
+        # because there is no degressive reimbursement rate
+        if not is_booking_collective:
+            _delete_dependent_pricings(booking, "Deleted pricings priced too early")
 
         pricing = _price_booking(booking)
         db.session.add(pricing)
@@ -280,7 +324,7 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
     return pricing
 
 
-def _get_revenue_period(value_date: datetime.datetime) -> [datetime.datetime, datetime.datetime]:  # type: ignore [misc]
+def _get_revenue_period(value_date: datetime.datetime) -> typing.Tuple[datetime.datetime, datetime.datetime]:
     """Return a datetime (year) period for the given value date, i.e. the
     first and last seconds of the year of the ``value_date``.
     """
@@ -300,7 +344,7 @@ def _get_revenue_period(value_date: datetime.datetime) -> [datetime.datetime, da
     return first_second, last_second
 
 
-def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.Union[str, int]:
+def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.Tuple[str, int]:
     """Return the SIRET to use for the requested booking, and the current
     year revenue for this SIRET, NOT including the requested booking.
     """
@@ -341,14 +385,15 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.U
         .with_entities(sqla.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
         .scalar()
     )
-    return siret, utils.to_eurocents(current_revenue or 0)  # type: ignore [return-value]
+    return siret, utils.to_eurocents(current_revenue or 0)
 
 
-def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
-    siret, current_revenue = _get_siret_and_current_revenue(booking)  # type: ignore [misc]
+def _price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooking]) -> models.Pricing:
+    siret, current_revenue = _get_siret_and_current_revenue(booking)
     new_revenue = current_revenue
+    is_booking_collective = isinstance(booking, CollectiveBooking)
     # Collective bookings must not be included in revenue.
-    if booking.individualBookingId:
+    if not is_booking_collective and booking.individualBookingId:
         new_revenue += utils.to_eurocents(booking.total_amount)
     rule_finder = reimbursement.CustomRuleFinder()
     # FIXME (dbaty, 2021-11-10): `revenue` here is in eurocents but
@@ -360,7 +405,9 @@ def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
     # `Pricing.amount` equals the sum of the amount of all lines.
     lines = [
         models.PricingLine(
-            amount=-utils.to_eurocents(booking.total_amount),
+            amount=-utils.to_eurocents(
+                booking.collectiveStock.price if is_booking_collective else booking.total_amount
+            ),
             category=models.PricingLineCategory.OFFERER_REVENUE,
         )
     ]
@@ -370,22 +417,35 @@ def _price_booking(booking: bookings_models.Booking) -> models.Pricing:
             category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
         )
     )
-    pricing = models.Pricing(
-        status=_get_initial_pricing_status(booking),
-        bookingId=booking.id,
-        businessUnitId=booking.venue.businessUnitId,
-        siret=siret,
-        valueDate=booking.dateUsed,
-        amount=amount,
-        standardRule=rule.description if not isinstance(rule, payments_models.CustomReimbursementRule) else "",
-        customRuleId=rule.id if isinstance(rule, payments_models.CustomReimbursementRule) else None,
-        revenue=new_revenue,
-        lines=lines,
-    )
+
+    pricing_data = {
+        "status": _get_initial_pricing_status(booking),
+        "businessUnitId": booking.venue.businessUnitId,
+        "siret": siret,
+        "valueDate": booking.dateUsed,
+        "amount": amount,
+        "standardRule": rule.description if not isinstance(rule, payments_models.CustomReimbursementRule) else "",
+        "customRuleId": rule.id if isinstance(rule, payments_models.CustomReimbursementRule) else None,
+        "revenue": new_revenue,
+        "lines": lines,
+    }
+    if isinstance(booking, bookings_models.Booking):
+        pricing = models.Pricing(
+            **pricing_data,
+            bookingId=booking.id,
+        )
+    else:
+        pricing = models.Pricing(
+            **pricing_data,
+            collectiveBookingId=booking.id,
+        )
+
     return pricing
 
 
-def _get_initial_pricing_status(booking: bookings_models.Booking) -> models.PricingStatus:
+def _get_initial_pricing_status(
+    booking: typing.Union[bookings_models.Booking, CollectiveBooking]
+) -> models.PricingStatus:
     # In the future, we may set the pricing as "pending" (as in
     # "pending validation") for example if the business unit is new,
     # or if the offer or offerer has particular characteristics. For
@@ -417,11 +477,14 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
             models.Pricing.valueDate.between(revenue_period_start, revenue_period_end),
             sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
         )
-        .with_entities(
-            models.Pricing.id, models.Pricing.bookingId, models.Pricing.status, bookings_models.Booking.stockId
-        )
-        .all()
     )
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        pricings = pricings.filter(bookings_models.Booking.educationalBookingId.is_(None))
+
+    pricings = pricings.with_entities(
+        models.Pricing.id, models.Pricing.bookingId, models.Pricing.status, bookings_models.Booking.stockId
+    ).all()
     if not pricings:
         return
     pricing_ids = {p.id for p in pricings}
@@ -1336,3 +1399,33 @@ def merge_cashflow_batches(  # type: ignore [no-untyped-def]
         )
         assert final_sum == initial_sum
         db.session.commit()
+
+
+def reload_booking_for_pricing(booking_id: int) -> bookings_models.Booking:
+    return (
+        bookings_models.Booking.query.filter_by(id=booking_id)
+        .options(
+            joinedload(bookings_models.Booking.venue, innerjoin=True)
+            .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
+            .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
+            joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
+                offers_models.Stock.offer, innerjoin=True
+            ),
+        )
+        .one()
+    )
+
+
+def reload_collective_booking_for_pricing(booking_id: int) -> CollectiveBooking:
+    return (
+        CollectiveBooking.query.filter_by(id=booking_id)
+        .options(
+            joinedload(CollectiveBooking.venue, innerjoin=True)
+            .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
+            .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
+            joinedload(CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
+                CollectiveStock.collectiveOffer, innerjoin=True
+            ),
+        )
+        .one()
+    )
