@@ -16,5 +16,4 @@ def send_storage_file(bucketId, objectId):  # type: ignore [no-untyped-def]
         mimetype = type_path.read_text()
     else:
         return "file not found", 404
-    with path.open("rb") as fp:
-        return send_file(fp, mimetype=mimetype)
+    return send_file(path, mimetype=mimetype)
