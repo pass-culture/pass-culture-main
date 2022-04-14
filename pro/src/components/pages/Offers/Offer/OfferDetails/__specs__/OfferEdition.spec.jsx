@@ -391,6 +391,7 @@ describe('offerDetails - Edition', () => {
         delete fieldNames.showSubType
         delete fieldNames.showType
         delete fieldNames.url
+        delete fieldNames.withdrawalType
 
         beforeEach(() => {
           editedOffer = {

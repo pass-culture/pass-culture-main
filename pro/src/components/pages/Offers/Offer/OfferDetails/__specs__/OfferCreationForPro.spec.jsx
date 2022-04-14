@@ -13,6 +13,7 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiCategories } from 'utils/fakeApi'
@@ -1606,12 +1607,17 @@ describe('offerDetails - Creation - pro user', () => {
           performer: 'TEST PERFORMER NAME',
         },
         withdrawalDetails: 'À venir chercher sur place.',
+        withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET,
       }
 
       await renderOffers(props, store)
 
       setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
       setOfferValues({ subcategoryId: 'CONCERT' })
+      await userEvent.click(
+        await screen.findByLabelText(/Évènement sans billet/)
+      )
+
       setOfferValues(offerValues)
       await sidebarDisplayed()
 
@@ -1636,6 +1642,7 @@ describe('offerDetails - Creation - pro user', () => {
         ...offerValues,
         bookingEmail: null,
         durationMinutes: 90,
+        withdrawalDelay: null,
       })
     })
 
@@ -1896,6 +1903,11 @@ describe('offerDetails - Creation - pro user', () => {
 
       setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
       setOfferValues({ subcategoryId: 'CONCERT' })
+
+      await userEvent.click(
+        await screen.findByLabelText(/Évènement sans billet/)
+      )
+
       pcapi.getVenue.mockResolvedValue(venues[0])
       setOfferValues(offerValues)
       await sidebarDisplayed()
