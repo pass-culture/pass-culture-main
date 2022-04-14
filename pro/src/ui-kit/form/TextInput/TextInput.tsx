@@ -14,6 +14,7 @@ interface ITextInputProps {
   maxLength?: number
   isOptional?: boolean
   smallLabel?: boolean
+  step?: number | string
 }
 
 const TextInput = ({
@@ -27,6 +28,7 @@ const TextInput = ({
   maxLength,
   smallLabel,
   isOptional = false,
+  step,
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
     name,
@@ -50,6 +52,7 @@ const TextInput = ({
         hasError={meta.touched && !!meta.error}
         maxLength={maxLength}
         placeholder={placeholder}
+        step={step}
         type={type}
         {...field}
       />

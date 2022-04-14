@@ -49,6 +49,7 @@ const FormStock = ({ mode }: IFormStockProps): JSX.Element => {
         name="totalPrice"
         placeholder="Ex : 200€"
         smallLabel
+        step={0.01} // allow user to enter a price with cents
         type="number"
       />
       <DatePicker
