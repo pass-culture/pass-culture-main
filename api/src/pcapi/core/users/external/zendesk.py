@@ -54,9 +54,9 @@ def _get_backoffice_pro_user_links(email: str) -> list[str]:
     ]
 
 
-def _get_backoffice_venues_link(venue_ids: Iterable[int]) -> str:
-    sorted_venue_ids = sorted([str(venue_id) for venue_id in venue_ids])
-    return f"{settings.API_URL}/pc/back-office/venue/?flt3_26={'%2C'.join(sorted_venue_ids)}"
+def _get_backoffice_venues_link(venues_ids: Iterable[int]) -> str:
+    sorted_venues_ids = sorted([str(venue_id) for venue_id in venues_ids])
+    return f"{settings.API_URL}/pc/back-office/venue/?flt3_26={'%2C'.join(sorted_venues_ids)}"
 
 
 def _format_list(raw_list: Optional[Iterable[str]]) -> Optional[str]:
@@ -154,13 +154,13 @@ def _format_pro_attributes(email: str, attributes: ProAttributes) -> dict:
         "user_fields": {
             "backoffice_url": _get_backoffice_pro_user_links(email)[0]
             if attributes.user_id
-            else _get_backoffice_venues_link(attributes.venue_ids),
+            else _get_backoffice_venues_link(attributes.venues_ids),
             "user_id": attributes.user_id,
             "first_name": attributes.first_name,
             "last_name": attributes.last_name,
             "postal_code": _format_list(attributes.postal_code),
-            "offerer_name": _format_list(attributes.offerer_name),
-            "venue_name": _format_list(attributes.venue_name),
+            "offerer_name": _format_list(attributes.offerers_names),
+            "venue_name": _format_list(attributes.venues_names),
             "dms_application": "Approuvé"
             if attributes.dms_application_approved
             else "Déposé"
@@ -204,10 +204,10 @@ def _add_internal_note(
             )
             for bo_link in _get_backoffice_pro_user_links(email):
                 html_body += Markup('<a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
-        if attributes.venue_ids:
-            venue_count = len(set(attributes.venue_ids))
+        if attributes.venues_ids:
+            venue_count = len(set(attributes.venues_ids))
             html_body += f"{venue_count} lieux identifiés :" if venue_count > 1 else "1 lieu identifié :"
-            bo_link = _get_backoffice_venues_link(attributes.venue_ids)
+            bo_link = _get_backoffice_venues_link(attributes.venues_ids)
             html_body += Markup('<br/><a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
     else:
         html_body += Markup("Utilisateur identifié : <b>{} {}</b>").format(attributes.first_name, attributes.last_name)

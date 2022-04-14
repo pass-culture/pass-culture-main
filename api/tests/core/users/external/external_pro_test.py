@@ -156,7 +156,6 @@ def test_update_external_pro_user_attributes(
         BankInformationFactory(venue=venue3, status=BankInformationStatus.ACCEPTED)
 
     # This offerer is managed by pro user but venue has a different email address
-    # Venue details should not appear in attributes which look for booking email address only
     offerer4 = OffererFactory(siren="001002003", name="Juste Libraire")
     if attached == "all":
         UserOffererFactory(user=ProFactory(), offerer=offerer4)
@@ -204,11 +203,31 @@ def test_update_external_pro_user_attributes(
     assert attributes.is_booking_email is True
     assert attributes.marketing_email_subscription is enable_subscription
     assert (
-        attributes.offerer_name == {"Culture en ligne", "Juste Libraire", "Plage Culture", "Plage Events"}
+        attributes.offerers_names == {"Culture en ligne", "Juste Libraire", "Plage Culture", "Plage Events"}
         if create_virtual
         else {"Juste Libraire", "Plage Culture", "Plage Events"}
     )
-    assert len(attributes.venue_ids) == 5 if create_virtual else 4
+    assert len(attributes.venues_ids) == 5 if create_virtual else 4
+    assert (
+        attributes.venues_names
+        == {"Cinéma de la plage", "Festival de la mer", "Théâtre de la plage", "Théâtre en ligne", "Librairie du port"}
+        if create_virtual
+        else {"Cinéma de la plage", "Festival de la mer", "Théâtre de la plage", "Librairie du port"}
+    )
+    assert (
+        attributes.venues_types
+        == {
+            VenueTypeCode.DIGITAL.name,
+            VenueTypeCode.MOVIE.name,
+            VenueTypeCode.PERFORMING_ARTS.name,
+            VenueTypeCode.BOOKSTORE.name,
+        }
+        if create_virtual
+        else {VenueTypeCode.MOVIE.name, VenueTypeCode.PERFORMING_ARTS.name, VenueTypeCode.BOOKSTORE.name}
+    )
+    assert attributes.venues_labels == {"Cinéma d'art et d'essai", "Scènes conventionnées"}
+    assert attributes.departement_code == {"06", "83", "13"}
+    assert attributes.postal_code == {"06590", "83700", "13260"}
 
     assert attributes.user_id == pro_user.id
     assert attributes.first_name == pro_user.firstName
@@ -216,20 +235,6 @@ def test_update_external_pro_user_attributes(
     assert attributes.user_is_attached is (attached in ("one", "all"))
     assert attributes.user_is_creator is not (attached == "all")
 
-    assert (
-        attributes.venue_name == {"Cinéma de la plage", "Festival de la mer", "Théâtre de la plage", "Théâtre en ligne"}
-        if create_virtual
-        else {"Cinéma de la plage", "Festival de la mer", "Théâtre de la plage"}
-    )
-    assert (
-        attributes.venue_type
-        == {VenueTypeCode.DIGITAL.name, VenueTypeCode.MOVIE.name, VenueTypeCode.PERFORMING_ARTS.name}
-        if create_virtual
-        else {VenueTypeCode.MOVIE.name, VenueTypeCode.PERFORMING_ARTS.name}
-    )
-    assert attributes.venue_label == {"Cinéma d'art et d'essai", "Scènes conventionnées"}
-    assert attributes.departement_code == {"06", "83"}
-    assert attributes.postal_code == {"06590", "83700"}
     assert attributes.dms_application_submitted is create_dms_draft
     assert attributes.dms_application_approved is (create_dms_accepted and not create_dms_draft)
     assert attributes.isVirtual is create_virtual
@@ -247,8 +252,13 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     assert attributes.is_user_email is True
     assert attributes.is_booking_email is False
     assert attributes.marketing_email_subscription is True
-    assert attributes.offerer_name == set()
-    assert attributes.venue_ids == set()
+    assert attributes.offerers_names == set()
+    assert attributes.venues_ids == set()
+    assert attributes.venues_names == set()
+    assert attributes.venues_types == set()
+    assert attributes.venues_labels == set()
+    assert attributes.departement_code == set()
+    assert attributes.postal_code == set()
 
     assert attributes.user_id == user.id
     assert attributes.first_name == user.firstName
@@ -256,11 +266,6 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
     assert attributes.user_is_attached is False
     assert attributes.user_is_creator is False
 
-    assert attributes.venue_name is None
-    assert attributes.venue_type is None
-    assert attributes.venue_label is None
-    assert attributes.departement_code is None
-    assert attributes.postal_code is None
     assert attributes.dms_application_submitted is None
     assert attributes.dms_application_approved is None
     assert attributes.isVirtual is None
@@ -289,8 +294,13 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.is_user_email is False
     assert attributes.is_booking_email is True
     assert attributes.marketing_email_subscription is True
-    assert attributes.offerer_name == {offerer.name}
-    assert attributes.venue_ids == {venue.id}
+    assert attributes.offerers_names == {offerer.name}
+    assert attributes.venues_ids == {venue.id}
+    assert attributes.venues_names == {venue.name}
+    assert attributes.venues_types == {venue.venueTypeCode.name}
+    assert attributes.venues_labels == set()
+    assert attributes.departement_code == {venue.departementCode}
+    assert attributes.postal_code == {venue.postalCode}
 
     assert attributes.user_id is None
     assert attributes.first_name is None
@@ -298,11 +308,6 @@ def test_update_external_pro_booking_email_attributes():
     assert attributes.user_is_attached is None
     assert attributes.user_is_creator is None
 
-    assert attributes.venue_name == {venue.name}
-    assert attributes.venue_type == {venue.venueTypeCode.name}
-    assert attributes.venue_label == set()
-    assert attributes.departement_code == {venue.departementCode}
-    assert attributes.postal_code == {venue.postalCode}
     assert attributes.dms_application_submitted is False
     assert attributes.dms_application_approved is False
     assert attributes.isVirtual is False
@@ -318,8 +323,13 @@ def test_update_external_pro_removed_email_attributes():
     assert attributes.is_user_email is False
     assert attributes.is_booking_email is False
     assert attributes.marketing_email_subscription is False
-    assert attributes.offerer_name == set()
-    assert attributes.venue_ids == set()
+    assert attributes.offerers_names == set()
+    assert attributes.venues_ids == set()
+    assert attributes.venues_names == set()
+    assert attributes.venues_types == set()
+    assert attributes.venues_labels == set()
+    assert attributes.departement_code == set()
+    assert attributes.postal_code == set()
 
     assert attributes.user_id is None
     assert attributes.first_name is None
@@ -327,11 +337,6 @@ def test_update_external_pro_removed_email_attributes():
     assert attributes.user_is_attached is None
     assert attributes.user_is_creator is None
 
-    assert attributes.venue_name is None
-    assert attributes.venue_type is None
-    assert attributes.venue_label is None
-    assert attributes.departement_code is None
-    assert attributes.postal_code is None
     assert attributes.dms_application_submitted is None
     assert attributes.dms_application_approved is None
     assert attributes.isVirtual is None
