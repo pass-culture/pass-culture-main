@@ -3,10 +3,10 @@ import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { Field } from 'react-final-form'
-import { composeValidators } from 'react-final-form-utils'
 
 import FieldErrors from 'components/layout/form/FieldErrors'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import { composeValidators } from 'utils/react-final-form'
 
 import LocationViewer from './LocationViewer'
 
