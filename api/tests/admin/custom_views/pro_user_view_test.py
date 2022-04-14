@@ -42,10 +42,9 @@ class ProUserViewTest:
 
         # When
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
-
-        # Then
         response = client.post("/pc/back-office/pro_users/new", form=data)
 
+        # Then
         assert response.status_code == 302
 
         users_filtered = User.query.filter_by(email="toto@testemail.fr").all()
@@ -54,6 +53,7 @@ class ProUserViewTest:
         assert user_created.firstName == "Juste"
         assert user_created.lastName == "Leblanc"
         assert user_created.publicName == "Juste Leblanc"
+        assert user_created.phoneNumber == "0601020304"
         assert user_created.dateOfBirth == datetime(2020, 12, 9, 9, 45)
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
@@ -78,6 +78,73 @@ class ProUserViewTest:
         assert token.type == TokenType.RESET_PASSWORD
         assert token.expirationDate > datetime.utcnow() + timedelta(days=29)
         assert token.expirationDate < datetime.utcnow() + timedelta(days=31)
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_pro_user_edition(self, mocked_validate_csrf_token, app):
+        # Given
+        admin_user = users_factories.AdminFactory()
+        pro_user = users_factories.ProFactory()
+
+        data = dict(
+            csrf_token="token",
+            firstName=pro_user.firstName,
+            lastName=pro_user.lastName,
+            dateOfBirth="",
+            departementCode="06",
+            postalCode="06000",
+            comment="",
+            email=pro_user.email,
+            phoneNumber="0601020304",
+        )
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(admin_user.email)
+        response = client.post(f"/pc/back-office/pro_users/edit?id={pro_user.id}", form=data)
+
+        # Then
+        assert response.status_code == 302
+
+        updated_user = User.query.filter_by(email=pro_user.email).first()
+        assert updated_user.firstName == pro_user.firstName
+        assert updated_user.lastName == pro_user.lastName
+        assert updated_user.dateOfBirth is None
+        assert updated_user.departementCode == "06"
+        assert updated_user.postalCode == "06000"
+        assert updated_user.phoneNumber == "0601020304"
+
+    @clean_database
+    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
+    def test_pro_user_edition_phone_number_error(self, mocked_validate_csrf_token, app):
+        # Given
+        admin_user = users_factories.AdminFactory()
+        pro_user = users_factories.ProFactory()
+
+        data = dict(
+            csrf_token="token",
+            firstName=pro_user.firstName,
+            lastName=pro_user.lastName,
+            dateOfBirth="",
+            departementCode="06",
+            postalCode="06000",
+            comment="",
+            email=pro_user.email,
+            phoneNumber="+++123",
+        )
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(admin_user.email)
+        response = client.post(f"/pc/back-office/pro_users/edit?id={pro_user.id}", form=data)
+
+        # Then
+        assert response.status_code == 200
+
+        assert "Numéro de téléphone invalide" in response.data.decode("utf8")
+
+        updated_user = User.query.filter_by(email=pro_user.email).first()
+        assert updated_user.departementCode == pro_user.departementCode
+        assert updated_user.postalCode == pro_user.postalCode
+        assert updated_user.phoneNumber == pro_user.phoneNumber
 
     def test_it_gives_a_random_password_to_user(self, app, db_session):
         # Given
