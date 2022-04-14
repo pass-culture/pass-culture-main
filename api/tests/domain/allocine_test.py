@@ -35,6 +35,31 @@ class GetMovieShowtimeListFromAllocineTest:
 
     def test_should_extract_movies_from_api_result(self):
         # Given
+        given_movies = [
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6Mzc4MzI=",
+                        "internalId": 37832,
+                        "title": "Les Contes de la m\u00e8re poule",
+                        "type": "COMMERCIAL",
+                    }
+                }
+            },
+            {"node": {"movie": None}},
+            {"node": {}},
+            {
+                "node": {
+                    "movie": {
+                        "id": "TW92aWU6NTA0MDk=",
+                        "internalId": 50609,
+                        "title": "Le Ch\u00e2teau ambulant",
+                        "type": "BRAND_CONTENT",
+                    }
+                }
+            },
+        ]
+
         expected_movies = [
             {
                 "node": {
@@ -57,7 +82,7 @@ class GetMovieShowtimeListFromAllocineTest:
                 }
             },
         ]
-        self.mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 2, "edges": expected_movies}}
+        self.mock_get_movies_showtimes.return_value = {"movieShowtimeList": {"totalCount": 4, "edges": given_movies}}
 
         # When
         movies = get_movies_showtimes(
