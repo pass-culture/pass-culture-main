@@ -1,6 +1,6 @@
 {
   "name": "pass-culture-pro",
-  "version": "latest-master",
+  "version": "183.0.0",
   "private": true,
   "homepage": "/",
   "scripts": {
@@ -219,9 +219,9 @@
   },
   "browserslist": [
     ">0.2%",
-   "not dead",
-   "not op_mini all"
- ],
+    "not dead",
+    "not op_mini all"
+  ],
   "babel": {
     "presets": [
       "react-app"
