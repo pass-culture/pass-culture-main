@@ -19,19 +19,19 @@ Réduire la taille des tests
 
 ## Stratégie de tests
 
-En fonction de la nature du composant on délèguera les tests au `screen` qui fait appel à lui, ou non. 
+En fonction de la nature du composant on délèguera les tests au `screen` qui fait appel à lui, ou non.
 
-Pour en décider, plusieurs critères : 
+Pour en décider, plusieurs critères :
 
 **Les tests du screen dont il dépend sont-ils déjà très complexes / long ?** et **le composant en question est-t-il complexe, et propose-t-il de nombreuses interactions / calculs ?**
 
 Pour aléger et simplifier les tests du `screen`, on préfèrera alors déléguer une partie des tests au composant.
-Il est possible d'exporter des `tests-utils` depuis le `component` vers le `screen` s'il est cohérent de partager de la logique : 
+Il est possible d'exporter des `tests-utils` depuis le `component` vers le `screen` s'il est cohérent de partager de la logique :
 
 Par exemple au sein d'un fichier `Components/MonComposant/test-utils/fillFormAndSubmit.tsx`, nous pourrions exporter une action complexe pour remplir un formulaire et le soumettre.
 Cette action peut ainsi être utilisée à la fois dans le test du composant, mais aussi dans celui du `screen` dont il dépend.
 
-## structure 
+## structure
 
 ```
 /Components (new_components en atendant la migration)
@@ -49,23 +49,37 @@ Cette action peut ainsi être utilisée à la fois dans le test du composant, ma
 |   +-- index.ts                        // required
 ```
 
-## Imports 
+## Imports
 
-on importera un `Component` ainsi : 
+on importera un `Component` ainsi :
 
 ```js
 import MonComposant from '@components/MonComposant'
 ```
 
-on accedera aux tests-utils ainsi : 
+on accedera aux tests-utils ainsi :
 
 ```js
-import { 
+import {
   UneActionComplexeDeTest,
   UneAutreActionComplexeDeTest,
   UnMockPratique,
 } from '@Components/MonComposant/tests-utils'
 ```
+
+## Convention de nommage
+
+La convention de nommage retenu pour les composants et leurs interface est la suivante:
+
+```js
+// prefix I pour interface
+// prefix T pour types lorsqu'un type est necessaire
+// suffix Props pour les interface des Props
+interface IMonComposantProps {}
+
+const MonComposant(props: IMonComposantProps): JSX.Element => {}
+```
+
 
 ## DO
 
@@ -76,7 +90,7 @@ import {
 - nommer les sous-composant en utilisant le nom principal comme préfixe
 - ne jamais exporter un sous-composant depuis l'index (préférer extraire le sous-composant dans ce cas)
 - pour regrouper des composants liés, préférer en général l'usage d'un prefix à la création d'un dossier
-- regrouper les Screens liés entre eux alphabétiquement en utilisant un préfixe 
+- regrouper les Screens liés entre eux alphabétiquement en utilisant un préfixe
     - `OfferCreation`
     - `OfferEdition`
     - `OfferEditionSuccess`
