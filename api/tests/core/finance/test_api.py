@@ -13,9 +13,12 @@ import sqlalchemy.orm as sqla_orm
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.factories import UsedCollectiveBookingFactory
+from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import Ministry
 from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
@@ -29,6 +32,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -205,7 +209,110 @@ class PriceBookingTest:
         queries += 1  # select for update on BusinessUnit (lock)
         queries += 1  # fetch booking again with multiple joinedload
         queries += 1  # select existing Pricing (if any)
+        queries += 1  # select FF ENABLE_NEW_COLLECTIVE_MODEL
         queries += 1  # select dependent pricings
+        queries += 1  # select latest pricing (to get revenue)
+        queries += 1  # select all CustomReimbursementRule
+        queries += 3  # insert 1 Pricing + 2 PricingLine
+        queries += 1  # commit
+        with assert_num_queries(queries):
+            api.price_booking(booking)
+
+
+class PriceCollectiveBookingTest:
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_basics(self):
+        collective_booking = UsedCollectiveBookingFactory(collectiveStock__price=10)
+        pricing = api.price_booking(collective_booking)
+        assert models.Pricing.query.count() == 1
+        assert pricing.collectiveBooking == collective_booking
+        assert pricing.businessUnit == collective_booking.venue.businessUnit
+        assert pricing.siret == collective_booking.venue.siret
+        assert pricing.valueDate == collective_booking.dateUsed
+        assert pricing.amount == -1000
+        assert pricing.standardRule == "Remboursement total pour les offres éducationnelles"
+        assert pricing.customRule is None
+        assert pricing.revenue == 0
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_pricing_lines(self):
+        booking1 = UsedCollectiveBookingFactory(
+            collectiveStock__price=19_999,
+        )
+        api.price_booking(booking1)
+        pricing1 = models.Pricing.query.one()
+        assert pricing1.amount == -(19_999 * 100)
+        assert pricing1.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing1.lines[0].amount == -(19_999 * 100)
+        assert pricing1.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing1.lines[1].amount == 0
+
+        stock = booking1.collectiveStock
+        stock.price = 100
+        booking2 = UsedCollectiveBookingFactory(
+            collectiveStock=stock,
+        )
+        api.price_booking(booking2)
+        pricing2 = models.Pricing.query.filter_by(collectiveBooking=booking2).one()
+        assert pricing2.amount == -(100 * 100)
+        assert pricing2.lines[0].category == models.PricingLineCategory.OFFERER_REVENUE
+        assert pricing2.lines[0].amount == -(100 * 100)
+        assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
+        assert pricing2.lines[1].amount == 0
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_price_free_booking(self):
+        booking = UsedCollectiveBookingFactory(
+            collectiveStock__price=0,
+        )
+        pricing = api.price_booking(booking)
+        assert models.Pricing.query.count() == 1
+        assert pricing.amount == 0
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_accrue_revenue(self):
+        booking = UsedCollectiveBookingFactory(
+            collectiveStock__price=10,
+        )
+        pricing = api.price_booking(booking)
+        assert pricing.revenue == 0
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_price_booking_that_is_already_priced(self):
+        existing = factories.CollectivePricingFactory()
+        pricing = api.price_booking(existing.collectiveBooking)
+        assert pricing == existing
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_price_booking_that_is_not_used(self):
+        booking = CollectiveBookingFactory()
+        pricing = api.price_booking(booking)
+        assert pricing is None
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_price_booking_checks_business_unit(self):
+        booking = UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue__businessUnit__siret=None)
+        pricing = api.price_booking(booking)
+        assert pricing is None
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_price_booking_ignores_missing_bank_information(self):
+        booking = UsedCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+        )
+        pricing = api.price_booking(booking)
+        assert pricing
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_num_queries(self):
+        booking = UsedCollectiveBookingFactory()
+        booking = (
+            CollectiveBooking.query.filter_by(id=booking.id).options(sqla_orm.joinedload(CollectiveBooking.venue)).one()
+        )
+        queries = 0
+        queries += 1  # select for update on BusinessUnit (lock)
+        queries += 1  # fetch collective bookings
+        queries += 1  # select existing Pricing (if any)
         queries += 1  # select latest pricing (to get revenue)
         queries += 1  # select all CustomReimbursementRule
         queries += 3  # insert 1 Pricing + 2 PricingLine
@@ -392,7 +499,8 @@ class PriceBookingsTest:
     def test_num_queries(self):
         bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
         n_queries = 1
-        with assert_num_queries(n_queries):
+        n_queries_get_FF = 1
+        with assert_num_queries(n_queries + n_queries_get_FF):
             api.price_bookings(self.few_minutes_ago)
 
     def test_error_on_a_booking_does_not_block_other_bookings(self):
@@ -477,6 +585,55 @@ class PriceBookingsTest:
 
         pricings = models.Pricing.query.all()
         assert {pricing.booking for pricing in pricings} == {booking1, booking2}
+
+
+class PriceBookingsWithNewCollectiveModelsTest:
+    few_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_basics(self):
+        booking = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        educational_booking = bookings_factories.UsedEducationalBookingFactory(dateUsed=self.few_minutes_ago)
+        collective_booking = UsedCollectiveBookingFactory(dateUsed=self.few_minutes_ago)
+        api.price_bookings(min_date=self.few_minutes_ago)
+        assert len(booking.pricings) == 1
+        assert len(educational_booking.pricings) == 0
+        assert len(collective_booking.pricings) == 1
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
+    def test_num_queries(self):
+        bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        n_queries = 2  # 1 for bookings + 1 for collective bookings
+        n_queries_get_FF = 1
+        with assert_num_queries(n_queries + n_queries_get_FF):
+            api.price_bookings(self.few_minutes_ago)
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_error_on_a_booking_does_not_block_other_bookings(self):
+        booking1 = create_booking_with_undeletable_dependent(date_used=self.few_minutes_ago)
+        booking2 = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        collective_booking1 = UsedCollectiveBookingFactory(dateUsed=self.few_minutes_ago)
+
+        api.price_bookings(self.few_minutes_ago)
+
+        assert not booking1.pricings
+        assert len(booking2.pricings) == 1
+        assert len(collective_booking1.pricings) == 1
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_price_even_without_accepted_bank_info(self):
+        booking = bookings_factories.UsedBookingFactory(
+            dateUsed=self.few_minutes_ago,
+            stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+        )
+        collective_booking = UsedCollectiveBookingFactory(
+            dateUsed=self.few_minutes_ago,
+            collectiveStock__collectiveOffer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+        )
+        api.price_bookings(min_date=self.few_minutes_ago)
+        assert len(booking.pricings) == 1
+        assert len(collective_booking.pricings) == 1
 
 
 class GenerateCashflowsTest:
