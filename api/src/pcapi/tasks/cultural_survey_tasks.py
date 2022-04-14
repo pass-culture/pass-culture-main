@@ -19,9 +19,15 @@ def upload_answers_task(payload: serializers.CulturalSurveyAnswersForData) -> No
     answers_file_name = f"user_id_{payload.user_id}.jsonl"
     gcp_client = gcp_backend.GCPBackend(bucket_name=BUCKET_NAME, project_id=PROJECT_ID)
 
+    answer_str = {
+        "user_id": payload.user_id,
+        "submitted_at": payload.submitted_at.isoformat(),
+        "answers": payload.answers,
+    }
+
     gcp_client.store_public_object(
         folder=STORAGE_PATH,
         object_id=answers_file_name,
-        blob=bytes(json.dumps(payload.answers, ensure_ascii=False), "utf-8"),
+        blob=bytes(json.dumps(answer_str, ensure_ascii=False), "utf-8"),
         content_type="application/json",
     )

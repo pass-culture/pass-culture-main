@@ -31,8 +31,9 @@ class CulturalSurveyTasksTest:
         upload_answers_task(payload)
 
         answers_str = (
+            '{"user_id": 1, "submitted_at": "2020-01-01T00:00:00", "answers": '
             '[{"question_id": "SORTIES", "choices": ["FESTIVAL"]}, '
-            '{"question_id": "FESTIVALS", "choices": ["FESTIVAL_LIVRE"]}]'
+            '{"question_id": "FESTIVALS", "choices": ["FESTIVAL_LIVRE"]}]}'
         )
 
         # Note: if the path does not exist, GCP creates the necessary folders
