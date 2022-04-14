@@ -4,10 +4,12 @@ from spectree import SecurityScheme
 from spectree import SpecTree
 
 from pcapi import settings
+from pcapi.routes.utils import tag_with_stream_name
 from pcapi.serialization.utils import before_handler
 
 
 adage_iframe = Blueprint("adage_iframe", __name__)
+adage_iframe.before_request(lambda: tag_with_stream_name("adage"))
 CORS(
     adage_iframe,
     origins=settings.CORS_ALLOWED_ORIGINS_ADAGE_IFRAME,
