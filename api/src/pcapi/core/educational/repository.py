@@ -14,6 +14,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import load_only
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import extract
 
@@ -34,6 +35,9 @@ from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalRedactor
+from pcapi.core.finance.models import BusinessUnit
+from pcapi.core.finance.models import BusinessUnitStatus
+from pcapi.core.finance.models import Pricing
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -690,3 +694,30 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
 def user_has_bookings(user: User) -> bool:
     bookings_query = CollectiveBooking.query.join(CollectiveBooking.offerer).join(Offerer.UserOfferers)
     return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
+
+
+def get_collective_bookings_query_for_pricing_generation(window: Tuple[datetime, datetime]) -> BaseQuery:
+    return (
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.dateUsed.between(*window)
+        )
+        .outerjoin(Pricing, Pricing.collectiveBookingId == educational_models.CollectiveBooking.id)
+        .filter(Pricing.id.is_(None))
+        .join(educational_models.CollectiveBooking.venue)
+        .join(offerers_models.Venue.businessUnit)
+        # FIXME (dbaty, 2021-12-08): we can get rid of this filter
+        # once BusinessUnit.siret is set as NOT NULLable.
+        .filter(BusinessUnit.siret.isnot(None))
+        .filter(BusinessUnit.status == BusinessUnitStatus.ACTIVE)
+        .order_by(educational_models.CollectiveBooking.dateUsed, educational_models.CollectiveBooking.id)
+        .options(
+            load_only(educational_models.CollectiveBooking.id),
+            # Our code does not access `Venue.id` but SQLAlchemy needs
+            # it to build a `Venue` object (which we access through
+            # `booking.venue`).
+            contains_eager(educational_models.CollectiveBooking.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.businessUnitId,
+            ),
+        )
+    )
