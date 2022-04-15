@@ -18,7 +18,6 @@ class StartIdentificationTest:
         with caplog.at_level(logging.INFO):
             response = ubble.start_identification(
                 user_id=123,
-                phone_number="+33601232323",
                 first_name="prenom",
                 last_name="nom",
                 webhook_url="http://webhook/url/",
@@ -30,7 +29,7 @@ class StartIdentificationTest:
 
         attributes = ubble_mock.last_request.json()["data"]["attributes"]
         assert attributes["identification-form"]["external-user-id"] == 123
-        assert attributes["identification-form"]["phone-number"] == "+33601232323"
+        assert attributes["identification-form"]["phone-number"] == None
 
         assert attributes["reference-data"]["first-name"] == "prenom"
         assert attributes["reference-data"]["last-name"] == "nom"
@@ -49,7 +48,6 @@ class StartIdentificationTest:
             with caplog.at_level(logging.ERROR):
                 ubble.start_identification(
                     user_id=123,
-                    phone_number="+33601232323",
                     first_name="prenom",
                     last_name="nom",
                     webhook_url="http://webhook/url/",
@@ -67,7 +65,6 @@ class StartIdentificationTest:
         with pytest.raises(exceptions.IdentificationServiceError):
             ubble.start_identification(
                 user_id=123,
-                phone_number="+33601232323",
                 first_name="prenom",
                 last_name="nom",
                 webhook_url="http://webhook/url/",

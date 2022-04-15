@@ -87,7 +87,6 @@ def update_ubble_workflow(
 def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
     content = ubble.start_identification(
         user_id=user.id,
-        phone_number=user.phoneNumber,  # type: ignore [arg-type]
         first_name=user.firstName,  # type: ignore [arg-type]
         last_name=user.lastName,  # type: ignore [arg-type]
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
