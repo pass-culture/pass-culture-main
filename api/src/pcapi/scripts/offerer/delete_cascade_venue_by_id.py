@@ -4,6 +4,7 @@ from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
@@ -61,6 +62,10 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         synchronize_session=False
     )
 
+    deleted_business_unit_venue_links_count = finance_models.BusinessUnitVenueLink.query.filter_by(
+        venueId=venue_id
+    ).delete(synchronize_session=False)
+
     deleted_bank_informations_count = 0
     deleted_bank_informations_count += BankInformation.query.filter(BankInformation.venueId == venue_id).delete(
         synchronize_session=False
@@ -84,6 +89,7 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         "deleted_venues_count": deleted_venues_count,
         "deleted_venue_providers_count": deleted_venue_providers_count,
         "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
+        "deleted_business_unit_venue_links": deleted_business_unit_venue_links_count,
         "deleted_offers_count": deleted_offers_count,
         "deleted_mediations_count": deleted_mediations_count,
         "deleted_favorites_count": deleted_favorites_count,
