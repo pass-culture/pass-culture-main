@@ -9,6 +9,7 @@ import redis
 
 from pcapi import settings
 import pcapi.core.educational.models as educational_models
+import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.search.backends import base
@@ -458,6 +459,7 @@ class AlgoliaBackend(base.SearchBackend):
             "tags": [criterion.name for criterion in venue.criteria],
             "banner_url": venue.bannerUrl,
             "_geoloc": position(venue),
+            "is_eligible_for_strict_search": offerers_api.is_venue_eligible_for_strict_search(venue),
         }
 
     @classmethod
