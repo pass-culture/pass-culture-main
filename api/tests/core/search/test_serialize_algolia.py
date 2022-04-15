@@ -163,7 +163,16 @@ def test_serialize_venue():
         "tags": [],
         "banner_url": venue.bannerUrl,
         "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
+        "is_eligible_for_strict_search": True,
     }
+
+
+def test_serialize_eligible_for_strict_search_venue():
+    venue = offerers_factories.VenueFactory(isPermanent=True)
+    offers_factories.EventStockFactory(offer__venue=venue)
+
+    serialized = algolia.AlgoliaBackend().serialize_venue(venue)
+    assert serialized["is_eligible_for_strict_search"]
 
 
 def test_serialize_collective_offer():
