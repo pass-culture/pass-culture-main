@@ -23,7 +23,10 @@ logger = logging.getLogger(__name__)
 
 @private_api.route("/collective/offers", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=collective_offers_serialize.ListCollectiveOffersResponseModel, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
+    api=blueprint.pro_private_schema,
+)
 def list_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
@@ -47,7 +50,8 @@ def list_collective_offers(
 @private_api.route("/collective/offers/<offer_id>", methods=["GET"])
 @login_required
 @spectree_serialize(
-    response_model=collective_offers_serialize.GetCollectiveOfferResponseModel, api=blueprint.pro_private_schema
+    response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
+    api=blueprint.pro_private_schema,
 )
 def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
@@ -64,7 +68,11 @@ def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollec
 
 @private_api.route("/collective/offers", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=collective_offers_serialize.CollectiveOfferResponseIdModel, on_success_status=201, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=collective_offers_serialize.CollectiveOfferResponseIdModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
 def create_collective_offer(
     body: collective_offers_serialize.PostCollectiveOfferBodyModel,
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:

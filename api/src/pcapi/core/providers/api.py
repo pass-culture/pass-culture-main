@@ -50,12 +50,10 @@ def create_venue_provider(
     if not venue:
         raise VenueNotFound()
 
-    if provider.localClass == "AllocineStocks":  # type: ignore
+    if provider.localClass == "AllocineStocks":
         new_venue_provider = connect_venue_to_allocine(venue, provider_id, payload)
     else:
-        new_venue_provider = connect_venue_to_provider(
-            venue, provider, payload.venueIdAtOfferProvider  # type: ignore[arg-type]
-        )
+        new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
 
     return new_venue_provider
 

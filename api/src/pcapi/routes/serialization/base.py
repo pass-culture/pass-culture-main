@@ -10,7 +10,7 @@ from pcapi.utils import phone_number as phone_number_utils
 
 
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
-SocialMedias = dict[SocialMedia, pydantic.HttpUrl]  # type: ignore
+SocialMedias = dict[SocialMedia, pydantic.HttpUrl]
 
 
 class VenueContactModel(BaseModel):

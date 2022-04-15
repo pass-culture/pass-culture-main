@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
     response_model=serializers.CulturalSurveyQuestionsResponse,
     on_success_status=200,
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def get_cultural_survey_questions(user: users_models.User) -> serializers.CulturalSurveyQuestionsResponse:
     return serializers.CulturalSurveyQuestionsResponse(
@@ -34,7 +34,7 @@ def get_cultural_survey_questions(user: users_models.User) -> serializers.Cultur
     on_success_status=204,
     on_error_statuses=[400],
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def post_cultural_survey_answers(user: users_models.User, body: serializers.CulturalSurveyAnswersRequest) -> None:
     payload = CulturalSurveyAnswersForData(

@@ -74,7 +74,7 @@ def _fill_favorite_offer(
 
 
 @blueprint.native_v1.route("/me/favorites/count", methods=["GET"])
-@spectree_serialize(response_model=serializers.FavoritesCountResponse, api=blueprint.api)  # type: ignore
+@spectree_serialize(response_model=serializers.FavoritesCountResponse, api=blueprint.api)
 @authenticated_user_required
 def get_favorites_count(user: User) -> serializers.FavoritesCountResponse:
     return serializers.FavoritesCountResponse(count=Favorite.query.filter_by(user=user).count())
@@ -169,7 +169,7 @@ def get_favorites_for(user: User, favorite_id: Optional[int] = None) -> list[Fav
 
 
 @blueprint.native_v1.route("/me/favorites", methods=["GET"])
-@spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)  # type: ignore
+@spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
 @authenticated_user_required
 def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
     favorites = get_favorites_for(user)
@@ -183,7 +183,7 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
 
 
 @blueprint.native_v1.route("/me/favorites", methods=["POST"])
-@spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)  # type: ignore
+@spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)
 @authenticated_user_required
 def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
     if settings.MAX_FAVORITES:
@@ -212,7 +212,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
 
 
 @blueprint.native_v1.route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
 def delete_favorite(user: User, favorite_id: int) -> None:
     with transaction():

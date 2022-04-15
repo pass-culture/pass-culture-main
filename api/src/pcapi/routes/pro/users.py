@@ -47,7 +47,7 @@ def get_profile() -> users_serializers.SharedCurrentUserResponseModel:
 
 @blueprint.pro_private_api.route("/users/current", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=users_serializers.PatchProUserResponseModel, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(response_model=users_serializers.PatchProUserResponseModel, api=blueprint.pro_private_schema)
 def patch_profile(body: users_serializers.PatchProUserBodyModel) -> users_serializers.PatchProUserResponseModel:
     user = current_user._get_current_object()  # get underlying User object from proxy
     # This route should ony be used by "pro" users because it allows
