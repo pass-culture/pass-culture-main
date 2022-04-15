@@ -737,7 +737,7 @@ def user_has_bookings(user: User) -> bool:
     return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
 
 
-def offerer_has_ongoing_bookings(offerer_id: Offerer) -> bool:
+def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
     return db.session.query(
         Booking.query.filter(
             Booking.offererId == offerer_id,

@@ -4,6 +4,7 @@ from flask_admin.babel import lazy_gettext
 from flask_admin.contrib.sqla import filters as fa_filters
 from flask_admin.contrib.sqla import tools
 from flask_sqlalchemy import BaseQuery
+from jinja2.runtime import Context
 from markupsafe import Markup
 from markupsafe import escape
 from wtforms import Form
@@ -17,6 +18,7 @@ from pcapi.core.offerers.models import OffererTagMapping
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.external import update_external_pro
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
+from pcapi.utils.mailing import build_pc_pro_offerer_link
 
 
 def _get_emails_by_offerer(offerer: Offerer) -> set[str]:
@@ -32,7 +34,12 @@ def _get_emails_by_offerer(offerer: Offerer) -> set[str]:
     return emails
 
 
-def _venues_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
+def _format_offerer_name(view: BaseAdminView, context: Context, model: Offerer, name: str) -> Markup:
+    url = build_pc_pro_offerer_link(model)
+    return Markup('<a href="{url}">{name}</a>').format(url=url, name=model.name)
+
+
+def _format_venues_link(view: BaseAdminView, context: Context, model: Offerer, name: str) -> Markup:
     url = url_for("venue_for_offerer.index", id=model.id)
     return Markup('<a href="{}">Lieux associés</a>').format(escape(url))
 
@@ -74,7 +81,7 @@ class OffererView(BaseAdminView):
     @property
     def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
-        formatters.update(venues=_venues_link)
+        formatters.update(name=_format_offerer_name, venues=_format_venues_link)
         return formatters
 
     def delete_model(self, offerer: Offerer) -> bool:
@@ -95,7 +102,7 @@ class OffererView(BaseAdminView):
 
     def update_model(self, form: Form, offerer: Offerer) -> bool:
         if offerer.isActive and not form.isActive.data:
-            if offerer_has_ongoing_bookings(offerer.id):  # type: ignore [arg-type]
+            if offerer_has_ongoing_bookings(offerer.id):
                 flash(
                     "Impossible de désactiver une structure juridique pour laquelle des réservations sont en cours.",
                     "error",
