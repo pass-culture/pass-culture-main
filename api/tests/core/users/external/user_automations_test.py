@@ -190,19 +190,23 @@ class UserAutomationsTest:
             RemoveContactFromList(emails=None, ids=None, all=True),
         )
 
-        mock_import_contacts.assert_called_once_with(
-            RequestContactImport(
-                file_url=None,
-                file_body=f"EMAIL\n{users[2].email}\n{users[3].email}\n{users[4].email}",
-                list_ids=[settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID],
-                notify_url=None,
-                new_list=None,
-                email_blacklist=False,
-                sms_blacklist=False,
-                update_existing_contacts=True,
-                empty_contacts_attributes=False,
-            )
-        )
+        mock_import_contacts.assert_called_once()
+
+        request_contact_import = mock_import_contacts.call_args[0][0]
+        body_lines = request_contact_import.file_body.split("\n")
+
+        assert isinstance(request_contact_import, RequestContactImport)
+        assert request_contact_import.file_url == None
+        assert len(body_lines) == 4
+        assert body_lines[0] == "EMAIL"
+        assert set(body_lines[1:]) == {users[2].email, users[3].email, users[4].email}
+        assert request_contact_import.list_ids == [settings.SENDINBLUE_AUTOMATION_YOUNG_EXPIRATION_M3_ID]
+        assert request_contact_import.notify_url == None
+        assert request_contact_import.new_list == None
+        assert request_contact_import.email_blacklist == False
+        assert request_contact_import.sms_blacklist == False
+        assert request_contact_import.update_existing_contacts == True
+        assert request_contact_import.empty_contacts_attributes == False
 
         mock_get_process.assert_called()
 
