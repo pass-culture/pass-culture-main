@@ -76,12 +76,15 @@ def force_19yo_dms_import(dry_run: bool = True) -> None:
             user, "honor statement contained in DMS application", eligibility_type
         )
         fraud_items = fraud_api.dms_fraud_checks(user, fraud_check)
+        content = fraud_check.source_data()
         fraud_items.append(
-            fraud_api._duplicate_user_fraud_item(user.firstName, user.lastName, None, user.dateOfBirth, user.id)
+            fraud_api._duplicate_user_fraud_item(
+                content.get_first_name(), content.get_last_name(), content.get_married_name(), user.dateOfBirth, user.id
+            )
         )
         if all(fraud_item.status == fraud_models.FraudStatus.OK for fraud_item in fraud_items):
             try:
-                subscription_api.on_successful_application(user, fraud_check.source_data())
+                subscription_api.on_successful_application(user, content)
             except Exception:  # pylint: disable=broad-except
                 logger.warning("Cannot activate user %d", user.id, exc_info=True)
                 continue
