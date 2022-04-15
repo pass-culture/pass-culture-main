@@ -113,6 +113,9 @@ class EduconnectContent(common_models.IdentityCheckContent):
     def get_last_name(self) -> str:
         return self.last_name
 
+    def get_married_name(self) -> None:
+        return None
+
     def get_birth_date(self) -> datetime.date:
         return self.birth_date
 
@@ -165,6 +168,9 @@ class JouveContent(common_models.IdentityCheckContent):
     def get_last_name(self) -> typing.Optional[str]:
         return self.lastName
 
+    def get_married_name(self) -> None:
+        return None
+
     def get_birth_date(self) -> typing.Optional[datetime.date]:
         return self.birthDateTxt.date() if self.birthDateTxt else None
 
@@ -210,6 +216,9 @@ class DMSContent(common_models.IdentityCheckContent):
 
     def get_last_name(self) -> str:
         return self.last_name
+
+    def get_married_name(self) -> None:
+        return None
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return (

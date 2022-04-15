@@ -24,6 +24,7 @@ def send_duplicate_beneficiary_email(
         duplicate_beneficiary = fraud_api.find_duplicate_beneficiary(
             identity_content.get_first_name(),  # type: ignore [arg-type]
             identity_content.get_last_name(),  # type: ignore [arg-type]
+            identity_content.get_married_name(),
             identity_content.get_birth_date(),  # type: ignore [arg-type]
             rejected_user.id,
         )
