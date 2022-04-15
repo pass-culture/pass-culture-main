@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional
 
 from flask import flash
 from flask import redirect
@@ -12,6 +12,7 @@ from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.helpers import get_redirect_target
 from flask_sqlalchemy import BaseQuery
+from jinja2.runtime import Context
 from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy import func
@@ -35,22 +36,34 @@ from pcapi.core.offers.api import update_stock_id_at_providers
 from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
+from pcapi.utils.mailing import build_pc_pro_offerer_link
+from pcapi.utils.mailing import build_pc_pro_venue_link
 
 
-def _offers_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
+def _format_offers_link(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
     url = url_for("offer_for_venue.index", id=model.id)
     return Markup('<a href="{}">Offres associées</a>').format(escape(url))
 
 
-def _get_venue_provider_link(view, context, model, name) -> Union[Markup, None]:  # type: ignore [no-untyped-def]
+def _format_venue_provider(view: BaseAdminView, context: Context, model: Venue, name: str) -> Optional[Markup]:
     if not model.venueProviders:
         return None
     url = url_for("venue_providers.index_view", id=model.id)
     return Markup('<a href="{url}">{text}</a>').format(url=url, text=model.venueProviders[0].provider.name)
 
 
-def _get_venue_type_code_formatter(view, context, model, name) -> Union[Markup, None]:  # type: ignore [no-untyped-def]
-    return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value if model.venueTypeCode else "")
+def _format_venue_type_code(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
+    return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value if model.venueTypeCode else "")  # type: ignore [attr-defined]
+
+
+def _format_venue_name(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
+    url = build_pc_pro_venue_link(model)
+    return Markup('<a href="{url}">{name}</a>').format(url=url, name=model.name)
+
+
+def _format_offerer_name(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
+    url = build_pc_pro_offerer_link(model.managingOfferer)
+    return Markup('<a href="{url}">{name}</a>').format(url=url, name=model.managingOfferer.name)
 
 
 def _get_emails_by_venue(venue: Venue) -> set[str]:
@@ -189,9 +202,15 @@ class VenueView(BaseAdminView):
     @property
     def column_formatters(self):  # type: ignore [no-untyped-def]
         formatters = super().column_formatters
-        formatters.update(offres=_offers_link)
-        formatters.update(provider_name=_get_venue_provider_link)
-        formatters.update(venueTypeCode=_get_venue_type_code_formatter)
+        formatters.update(
+            {
+                "name": _format_venue_name,
+                "venueTypeCode": _format_venue_type_code,
+                "provider_name": _format_venue_provider,
+                "offres": _format_offers_link,
+                "managingOfferer.name": _format_offerer_name,
+            }
+        )
         return formatters
 
     def delete_model(self, venue: Venue) -> bool:

@@ -12,7 +12,6 @@ import wtforms.fields.core as wtf_fields
 import wtforms.fields.html5 as wtf_html5_fields
 import wtforms.validators as wtf_validators
 
-from pcapi import settings
 from pcapi.admin import fields
 from pcapi.admin import permissions
 from pcapi.admin import widgets
@@ -25,9 +24,10 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.api as payments_api
 import pcapi.core.payments.exceptions as payments_exceptions
-from pcapi.utils import human_ids
 import pcapi.utils.date as date_utils
 from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.mailing import build_pc_pro_offerer_link
+from pcapi.utils.mailing import build_pc_pro_venue_link
 
 
 def _get_subcategory_choices():  # type: ignore [no-untyped-def]
@@ -123,8 +123,7 @@ def format_offer(view, context, model, name):  # type: ignore [no-untyped-def]
 
 def format_offerer(view, context, model, name):  # type: ignore [no-untyped-def]
     offerer = model.offerer or model.offer.venue.managingOfferer
-    humanized_id = human_ids.humanize(offerer.id)
-    url = f"{settings.PRO_URL}/accueil?structure={humanized_id}"
+    url = build_pc_pro_offerer_link(offerer)
     return markupsafe.Markup('<a href="{url}">{offerer.name}</a>').format(
         url=url,
         offerer=offerer,
@@ -169,12 +168,7 @@ def format_venue(view, context, model, name):  # type: ignore [no-untyped-def]
     if model.offererId:
         return None
     venue = model.offer.venue
-    humanized_offerer_id = human_ids.humanize(venue.managingOffererId)
-    if venue.isVirtual:
-        url = f"{settings.PRO_URL}/accueil?structure={humanized_offerer_id}"
-    else:
-        humanized_venue_id = human_ids.humanize(venue.id)
-        url = f"{settings.PRO_URL}/structures/{humanized_offerer_id}/lieux/{humanized_venue_id}"
+    url = build_pc_pro_venue_link(venue)
     return markupsafe.Markup('<a href="{url}">{name}</a>').format(
         url=url,
         name=venue.publicName or venue.name,
