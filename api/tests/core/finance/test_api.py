@@ -601,8 +601,9 @@ def test_generate_business_units_file():
     with assert_num_queries(n_queries):
         path = api._generate_business_units_file()
 
-    reader = csv.DictReader(path.open(encoding="utf-8"), quoting=csv.QUOTE_NONNUMERIC)
-    rows = list(reader)
+    with path.open(encoding="utf-8") as fp:
+        reader = csv.DictReader(fp, quoting=csv.QUOTE_NONNUMERIC)
+        rows = list(reader)
     assert len(rows) == 2
     assert rows[0] == {
         "Identifiant de la BU": human_ids.humanize(venue1.id),
