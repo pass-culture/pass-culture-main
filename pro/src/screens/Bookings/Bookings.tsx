@@ -62,7 +62,7 @@ const Bookings = ({
     offerVenueId: venueId || DEFAULT_PRE_FILTERS.offerVenueId,
   })
   const [isTableLoading, setIsTableLoading] = useState(false)
-  const [bookingsRecap, setBookingsRecap] = useState<
+  const [bookings, setBookings] = useState<
     BookingRecapResponseModel[] | CollectiveBookingResponseModel[]
   >([])
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
@@ -92,7 +92,7 @@ const Bookings = ({
 
   const loadBookingsRecap = async (preFilters: TPreFilters) => {
     setIsTableLoading(true)
-    setBookingsRecap([])
+    setBookings([])
     setWereBookingsRequested(true)
 
     const { isOk, message, payload } = await getFilteredBookingsRecapAdapter({
@@ -105,7 +105,7 @@ const Bookings = ({
 
     const { bookings, currentPage, pages } = payload
 
-    setBookingsRecap(bookings)
+    setBookings(bookings)
 
     setIsTableLoading(false)
     if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
@@ -167,7 +167,7 @@ const Bookings = ({
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
         getBookingsCSVFileAdapter={getBookingsCSVFileAdapter}
-        hasResult={bookingsRecap.length > 0}
+        hasResult={bookings.length > 0}
         isBookingFiltersActive={isBookingFiltersActive}
         isFiltersDisabled={!hasBooking}
         isLocalLoading={isLocalLoading}
@@ -176,9 +176,9 @@ const Bookings = ({
         wereBookingsRequested={wereBookingsRequested}
       />
       {wereBookingsRequested ? (
-        bookingsRecap.length > 0 ? (
+        bookings.length > 0 ? (
           <BookingsRecapTable
-            bookingsRecap={bookingsRecap}
+            bookingsRecap={bookings}
             isBookingFiltersActive={isBookingFiltersActive}
             isLoading={isTableLoading}
             locationState={locationState}
