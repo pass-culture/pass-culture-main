@@ -12,7 +12,9 @@ export const getSirenRequestMockAs = offerer => {
         unite_legale: {
           denomination: name,
           siren,
+          etat_administratif: 'A',
           etablissement_siege: {
+            etat_administratif: 'A',
             geo_l4: address,
             libelle_commune: city,
             latitude: latitude,
@@ -34,7 +36,9 @@ export const getSiretRequestMockAs = venue => {
     )
     .respond(
       {
+        etat_administratif: 'A',
         etablissement: {
+          etat_administratif: 'A',
           code_postal: postalCode,
           enseigne_1: name,
           geo_l4: address,
@@ -42,6 +46,9 @@ export const getSiretRequestMockAs = venue => {
           latitude: latitude,
           longitude: longitude,
           siret: siret,
+          unite_legale: {
+            etat_administratif: 'A',
+          },
         },
       },
       200,
@@ -60,7 +67,9 @@ export const getSirenRequestMockWithDefaultValues = () =>
           id: 11654265,
           siren: '501106520',
           denomination: 'WEBEDIA',
+          etat_administratif: 'A',
           etablissement_siege: {
+            etat_administratif: 'A',
             code_postal: '92300',
             libelle_commune: 'LEVALLOIS-PERRET',
             enseigne_1: null,
