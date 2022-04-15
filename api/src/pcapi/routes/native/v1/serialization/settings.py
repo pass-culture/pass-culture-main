@@ -16,6 +16,7 @@ class SettingsResponse(BaseModel):
     auto_activate_digital_bookings: bool
     deposit_amounts_by_age = DepositAmountsByAge()
     display_dms_redirection: bool
+    enable_front_image_resizing: bool
     enable_id_check_retention: bool
     enable_native_cultural_survey: bool
     enable_native_eac_individual: bool

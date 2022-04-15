@@ -23,6 +23,7 @@ def get_settings() -> serializers.SettingsResponse:
 
     features = _get_features(
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
+        FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
         FeatureToggle.ENABLE_ID_CHECK_RETENTION,
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
         FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
@@ -38,6 +39,7 @@ def get_settings() -> serializers.SettingsResponse:
         # once all alive versions of the app works without this setting.
         auto_activate_digital_bookings=True,
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
+        enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         enable_id_check_retention=features[FeatureToggle.ENABLE_ID_CHECK_RETENTION],
         # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)
         enable_native_eac_individual=True,
