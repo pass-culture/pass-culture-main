@@ -69,6 +69,9 @@ class UbbleContent(IdentityCheckContent):
     def get_last_name(self) -> typing.Optional[str]:
         return self.last_name
 
+    def get_married_name(self) -> typing.Optional[str]:
+        return self.married_name
+
     def get_birth_date(self) -> typing.Optional[datetime.date]:
         return self.birth_date
 

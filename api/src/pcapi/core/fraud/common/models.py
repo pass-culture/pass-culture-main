@@ -18,6 +18,9 @@ class IdentityCheckContent(pydantic.BaseModel):
     def get_last_name(self) -> typing.Optional[str]:
         raise NotImplementedError()
 
+    def get_married_name(self) -> typing.Optional[str]:
+        raise NotImplementedError()
+
     def get_birth_date(self) -> typing.Optional[datetime.date]:
         raise NotImplementedError()
 

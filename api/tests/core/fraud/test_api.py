@@ -127,7 +127,11 @@ class CommonFraudCheckTest:
 
     def test_duplicate_user_fraud_ok(self):
         fraud_item = fraud_api._duplicate_user_fraud_item(
-            first_name="Jean", last_name="Michel", birth_date=datetime.date.today(), excluded_user_id=1
+            first_name="Jean",
+            last_name="Michel",
+            married_name=None,
+            birth_date=datetime.date.today(),
+            excluded_user_id=1,
         )
 
         assert fraud_item.status == fraud_models.FraudStatus.OK
@@ -137,6 +141,7 @@ class CommonFraudCheckTest:
         fraud_item = fraud_api._duplicate_user_fraud_item(
             first_name=user.firstName,
             last_name=user.lastName,
+            married_name=None,
             birth_date=user.dateOfBirth.date(),
             excluded_user_id=1,
         )
@@ -148,6 +153,7 @@ class CommonFraudCheckTest:
         fraud_item = fraud_api._duplicate_user_fraud_item(
             first_name=user.firstName,
             last_name=user.lastName,
+            married_name=None,
             birth_date=user.dateOfBirth.date(),
             excluded_user_id=user.id,
         )
@@ -222,7 +228,9 @@ class FindDuplicateUserTest:
         )
 
         assert (
-            fraud_api.find_duplicate_beneficiary("Alice", "RAVINEAU ", self.birth_date.date(), existing_user.id + 1)
+            fraud_api.find_duplicate_beneficiary(
+                "Alice", "RAVINEAU ", None, self.birth_date.date(), existing_user.id + 1
+            )
             == existing_user
         )
 
@@ -235,7 +243,9 @@ class FindDuplicateUserTest:
         )
 
         assert (
-            fraud_api.find_duplicate_beneficiary(self.first_name, self.last_name, self.birth_date, existing_user.id)
+            fraud_api.find_duplicate_beneficiary(
+                self.first_name, self.last_name, None, self.birth_date, existing_user.id
+            )
             is None
         )
 
@@ -247,8 +257,42 @@ class FindDuplicateUserTest:
         )
 
         assert (
-            fraud_api.find_duplicate_beneficiary(self.first_name, self.last_name, self.birth_date, existing_user.id + 1)
+            fraud_api.find_duplicate_beneficiary(
+                self.first_name, self.last_name, None, self.birth_date, existing_user.id + 1
+            )
             is None
+        )
+
+    def test_duplicate_user_with_married_name(self):
+        existing_user = users_factories.UserFactory(
+            firstName=self.first_name,
+            lastName=self.last_name,
+            married_name=None,
+            dateOfBirth=self.birth_date,
+            roles=[users_models.UserRole.BENEFICIARY],
+        )
+
+        assert (
+            fraud_api.find_duplicate_beneficiary(
+                "Alice", "Nom de jeune fille ", "RAVINEAU", self.birth_date.date(), existing_user.id + 1
+            )
+            == existing_user
+        )
+
+    def test_duplicate_user_with_last_name_matching_married_name(self):
+        existing_user = users_factories.UserFactory(
+            firstName=self.first_name,
+            lastName="Nom de jeune fille",
+            married_name="RAVINEAU",
+            dateOfBirth=self.birth_date,
+            roles=[users_models.UserRole.BENEFICIARY],
+        )
+
+        assert (
+            fraud_api.find_duplicate_beneficiary(
+                "Alice", "Ravineau", None, self.birth_date.date(), existing_user.id + 1
+            )
+            == existing_user
         )
 
 

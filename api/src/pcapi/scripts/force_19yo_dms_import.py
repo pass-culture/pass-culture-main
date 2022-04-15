@@ -77,7 +77,7 @@ def force_19yo_dms_import(dry_run: bool = True) -> None:
         )
         fraud_items = fraud_api.dms_fraud_checks(user, fraud_check)
         fraud_items.append(
-            fraud_api._duplicate_user_fraud_item(user.firstName, user.lastName, user.dateOfBirth, user.id)
+            fraud_api._duplicate_user_fraud_item(user.firstName, user.lastName, None, user.dateOfBirth, user.id)
         )
         if all(fraud_item.status == fraud_models.FraudStatus.OK for fraud_item in fraud_items):
             try:
