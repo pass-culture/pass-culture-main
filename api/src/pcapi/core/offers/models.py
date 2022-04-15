@@ -141,25 +141,21 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: igno
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
         # pylint: disable=comparison-with-callable
-        if (
-            not self.isSoftDeleted
-            and (self.beginningDatetime is None or self.beginningDatetime > datetime.utcnow())
-            and (self.remainingQuantity == "unlimited" or self.remainingQuantity > 0)
-        ):
-            return False
-        return True
+        return (
+            self.isSoftDeleted
+            or (self.beginningDatetime is not None and self.beginningDatetime <= datetime.utcnow())
+            or (self.remainingQuantity != "unlimited" and self.remainingQuantity <= 0)
+        )
 
     @isSoldOut.expression  # type: ignore [no-redef]
     def isSoldOut(cls):  # pylint: disable=no-self-argument
-        return sa.not_(
+        return sa.or_(
+            cls.isSoftDeleted,
+            sa.and_(sa.not_(cls.beginningDatetime.is_(None)), cls.beginningDatetime <= sa.func.now()),
             sa.and_(
-                sa.not_(cls.isSoftDeleted),
-                sa.or_(cls.beginningDatetime.is_(None), cls.beginningDatetime > sa.func.now()),
-                sa.or_(
-                    cls.remainingQuantity.is_(None),
-                    cls.remainingQuantity > 0,  # pylint: disable=comparison-with-callable
-                ),
-            )
+                sa.not_(cls.remainingQuantity.is_(None)),
+                cls.remainingQuantity <= 0,  # pylint: disable=comparison-with-callable
+            ),
         )
 
     @classmethod
