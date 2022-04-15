@@ -55,7 +55,7 @@ def activate_beneficiary_for_eligibility(
     deposit = payments_api.create_deposit(
         user,
         deposit_source=deposit_source,
-        eligibility=eligibility,  # type: ignore [arg-type]
+        eligibility=eligibility,
         age_at_registration=users_utils.get_age_at_date(
             user.dateOfBirth, fraud_check.source_data().get_registration_datetime()  # type: ignore [arg-type, union-attr]
         ),

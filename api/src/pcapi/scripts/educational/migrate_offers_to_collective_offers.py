@@ -159,14 +159,14 @@ def _update_collective_offer(
         "visualDisabilityCompliant",
     ]
     extra_data = getattr(offer, "extraData", {}) or {}
-    students = [StudentLevels(x).name for x in extra_data.get("students", [])]  # type: ignore [union-attr]
+    students = [StudentLevels(x).name for x in extra_data.get("students", [])]
     for attr_name in list_of_common_attributes:
         attr_value = getattr(offer, attr_name)
         setattr(collective_offer, attr_name, attr_value)
 
     collective_offer.contactEmail = _get_email(offer)
     collective_offer.contactPhone = _get_phone_number(offer)
-    collective_offer.offerVenue = extra_data.get("offerVenue")  # type: ignore [union-attr]
+    collective_offer.offerVenue = extra_data.get("offerVenue")
     collective_offer.students = students
 
     if is_template and offer.stocks:
@@ -201,13 +201,13 @@ def _create_collective_offer(
     ]
     extra_data = getattr(offer, "extraData", {}) or {}
     offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
-    students = [StudentLevels(x).name for x in extra_data.get("students", [])]  # type: ignore [union-attr]
+    students = [StudentLevels(x).name for x in extra_data.get("students", [])]
     collective_offer = base_class(
         **offer_mapping,
         offerId=offer.id,
         contactEmail=_get_email(offer),
         contactPhone=_get_phone_number(offer),
-        offerVenue=extra_data.get("offerVenue"),  # type: ignore [union-attr]
+        offerVenue=extra_data.get("offerVenue"),
         students=students,
     )
     if is_template:

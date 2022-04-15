@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
     response_model=serializers.NextSubscriptionStepResponse,
     on_success_status=200,
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def next_subscription_step(
     user: users_models.User,
@@ -60,7 +60,7 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
     response_model=serializers.ProfileOptionsResponse,
     on_success_status=200,
     api=blueprint.api,
-)  # type: ignore
+)
 def get_profile_options() -> serializers.ProfileOptionsResponse:
     return serializers.ProfileOptionsResponse(
         school_types=[

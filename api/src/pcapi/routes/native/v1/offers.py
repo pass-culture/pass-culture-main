@@ -21,9 +21,7 @@ from .serialization import offers as serializers
 
 # It will break the WebApp v2 proxy in case of endpoint modification. Read https://github.com/pass-culture/pass-culture-app-native/pull/2808/files#r844891000
 @blueprint.native_v1.route("/offer/<int:offer_id>", methods=["GET"])
-@spectree_serialize(
-    response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404]
-)  # type: ignore
+@spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
 def get_offer(offer_id: str) -> serializers.OfferResponse:
     offer = (
         Offer.query.options(joinedload(Offer.stocks))
@@ -42,7 +40,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 
 
 @blueprint.native_v1.route("/offer/<int:offer_id>/report", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
 def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest) -> None:
     offer = Offer.query.get_or_404(offer_id)
@@ -54,7 +52,7 @@ def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest
 
 
 @blueprint.native_v1.route("/offer/report/reasons", methods=["GET"])
-@spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)  # type: ignore
+@spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)
 @authenticated_user_required
 def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
     return serializers.OfferReportReasons(reasons=Reason.get_full_meta())
@@ -68,7 +66,7 @@ def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
 
 
 @blueprint.native_v1.route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
 def send_offer_app_link(user: User, offer_id: int) -> None:
     """
@@ -80,7 +78,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
 
 
 @blueprint.native_v1.route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api)  # type: ignore
+@spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_user_required
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
     Offer.query.get_or_404(offer_id)

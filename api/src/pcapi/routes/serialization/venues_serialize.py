@@ -252,9 +252,9 @@ class VenueBannerContentModel(BaseModel):
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
-    x_crop_percent: CropParam  # type: ignore
-    y_crop_percent: CropParam  # type: ignore
-    height_crop_percent: CropParam  # type: ignore
+    x_crop_percent: CropParam
+    y_crop_percent: CropParam
+    height_crop_percent: CropParam
 
     class Config:
         extra = pydantic.Extra.forbid

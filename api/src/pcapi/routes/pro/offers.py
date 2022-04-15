@@ -41,7 +41,10 @@ from pcapi.utils.rest import load_or_404
 
 @private_api.route("/offers", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.ListOffersResponseModel, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=offers_serialize.ListOffersResponseModel,
+    api=blueprint.pro_private_schema,
+)
 def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serialize.ListOffersResponseModel:
     paginated_offers = offers_api.list_offers_for_pro_user(
         user_id=current_user.id,
@@ -61,7 +64,10 @@ def list_offers(query: offers_serialize.ListOffersQueryModel) -> offers_serializ
 
 @private_api.route("/offers/<offer_id>", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.GetIndividualOfferResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(
+    response_model=offers_serialize.GetIndividualOfferResponseModel,
+    api=blueprint.pro_private_schema,
+)
 def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
@@ -77,7 +83,11 @@ def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel
 
 @private_api.route("/offers", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, on_success_status=201, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=offers_serialize.OfferResponseIdModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
 def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     try:
         check_offer_withdrawal(body.withdrawal_type, body.withdrawal_delay, body.subcategory_id)
@@ -94,7 +104,11 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
 
 @private_api.route("/offers/educational", methods=["POST"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, on_success_status=201, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=offers_serialize.OfferResponseIdModel,
+    on_success_status=201,
+    api=blueprint.pro_private_schema,
+)
 def create_educational_offer(
     body: offers_serialize.PostEducationalOfferBodyModel,
 ) -> offers_serialize.OfferResponseIdModel:
@@ -148,7 +162,11 @@ def create_educational_offer(
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=None,
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
 def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBodyModel) -> None:
     query = offers_repository.get_offers_by_ids(current_user, body.ids)
     collective_query = offers_repository.get_collective_offers_by_offer_ids(current_user, body.ids)
@@ -161,7 +179,11 @@ def patch_offers_active_status(body: offers_serialize.PatchOfferActiveStatusBody
 
 @private_api.route("/offers/all-active-status", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=None, on_success_status=202, api=blueprint.pro_private_schema)
+@spectree_serialize(
+    response_model=None,
+    on_success_status=202,
+    api=blueprint.pro_private_schema,
+)
 def patch_all_offers_active_status(
     body: offers_serialize.PatchAllOffersActiveStatusBodyModel,
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
@@ -183,7 +205,10 @@ def patch_all_offers_active_status(
 
 @private_api.route("/offers/<offer_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=offers_serialize.OfferResponseIdModel,
+    api=blueprint.pro_private_schema,
+)
 def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> offers_serialize.OfferResponseIdModel:
     offer = load_or_404(Offer, human_id=offer_id)
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)  # type: ignore [attr-defined]
@@ -195,7 +220,10 @@ def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> of
 
 @private_api.route("/offers/educational/<offer_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.OfferResponseIdModel, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=offers_serialize.OfferResponseIdModel,
+    api=blueprint.pro_private_schema,
+)
 def edit_educational_offer(
     offer_id: str, body: offers_serialize.PatchEducationalOfferBodyModel
 ) -> offers_serialize.GetOfferResponseModel:
@@ -228,7 +256,9 @@ def edit_educational_offer(
 @private_api.route("/offers/thumbnails/", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=CreateThumbnailResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201,
+    response_model=CreateThumbnailResponseModel,
+    api=blueprint.pro_private_schema,
 )
 def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseModel:
     offer = get_offer_by_id(form.offer_id)
@@ -248,7 +278,10 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 
 @private_api.route("/offers/categories", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=offers_serialize.CategoriesResponseModel, api=blueprint.pro_private_schema)
+@spectree_serialize(
+    response_model=offers_serialize.CategoriesResponseModel,
+    api=blueprint.pro_private_schema,
+)
 def get_categories() -> offers_serialize.CategoriesResponseModel:
     return offers_serialize.CategoriesResponseModel(
         categories=[
@@ -263,7 +296,11 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
 
 @private_api.route("/offers/<offer_id>/cancel_booking", methods=["PATCH"])
 @login_required
-@spectree_serialize(on_success_status=204, on_error_statuses=[400, 403, 404], api=blueprint.pro_private_schema)
+@spectree_serialize(
+    on_success_status=204,
+    on_error_statuses=[400, 403, 404],
+    api=blueprint.pro_private_schema,
+)
 def cancel_educational_offer_booking(offer_id: str) -> None:
     try:
         offer = (

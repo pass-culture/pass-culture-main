@@ -405,7 +405,7 @@ def delete_venue_banner(venue: Venue) -> None:
     search.async_index_venue_ids([venue.id])
 
 
-def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:  # type: ignore [return]
+def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:
     import pcapi.core.educational.adage_backends as adage_client
 
     if not offerer_id:

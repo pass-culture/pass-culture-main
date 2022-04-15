@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
     response_model=authentication.SigninResponse,
     on_success_status=200,
     api=blueprint.api,
-)  # type: ignore
+)
 @email_rate_limiter()
 @ip_rate_limiter()
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
@@ -59,7 +59,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
 @blueprint.native_v1.route("/refresh_access_token", methods=["POST"])
 @jwt_required(refresh=True)
-@spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api)  # type: ignore
+@spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api)
 def refresh() -> authentication.RefreshResponse:
     email = get_jwt_identity()
     user = find_user_by_email(email)
@@ -70,7 +70,7 @@ def refresh() -> authentication.RefreshResponse:
 
 
 @blueprint.native_v1.route("/request_password_reset", methods=["POST"])
-@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])  # type: ignore
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
     if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
         try:

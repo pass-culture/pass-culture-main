@@ -442,7 +442,7 @@ def get_collective_offers_template_for_filters(
     if query is None:
         return []
 
-    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())  # type: ignore [union-attr, attr-defined]
+    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())  # type: ignore [attr-defined]
     offers = (
         query.options(
             joinedload(educational_models.CollectiveOfferTemplate.venue).joinedload(

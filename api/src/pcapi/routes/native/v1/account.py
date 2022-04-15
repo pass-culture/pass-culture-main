@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
     response_model=serializers.UserProfileResponse,
     on_success_status=200,
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def get_user_profile(user: User) -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.from_orm(user)
@@ -48,7 +48,7 @@ def get_user_profile(user: User) -> serializers.UserProfileResponse:
     response_model=serializers.UserProfileResponse,
     on_success_status=200,
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
     api.update_notification_subscription(user, body.subscriptions)
@@ -60,7 +60,7 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
 @spectree_serialize(
     on_success_status=200,
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def reset_recredit_amount_to_show(user: User) -> None:
     api.reset_recredit_amount_to_show(user)
@@ -72,7 +72,7 @@ def reset_recredit_amount_to_show(user: User) -> None:
 @spectree_serialize(
     on_success_status=204,
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def update_user_email(user: User, body: serializers.UserProfileEmailUpdate) -> None:
     try:
@@ -137,7 +137,7 @@ def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmai
     on_success_status=204,
     on_error_statuses=[400],
     api=blueprint.api,
-)  # type: ignore
+)
 @authenticated_user_required
 def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) -> None:
     with transaction():

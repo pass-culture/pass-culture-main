@@ -19,7 +19,10 @@ logger = logging.getLogger(__name__)
 
 @private_api.route("/collective/bookings/pro", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=collective_bookings_serialize.ListCollectiveBookingsResponseModel, api=blueprint.pro_private_schema)  # type: ignore
+@spectree_serialize(
+    response_model=collective_bookings_serialize.ListCollectiveBookingsResponseModel,
+    api=blueprint.pro_private_schema,
+)
 def get_collective_bookings_pro(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
 ) -> collective_bookings_serialize.ListCollectiveBookingsResponseModel:

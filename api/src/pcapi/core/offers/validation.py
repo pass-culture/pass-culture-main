@@ -275,7 +275,7 @@ def check_activation_codes_expiration_datetime(
 
     if (
         booking_limit_datetime is not None
-        and activation_codes_expiration_datetime < booking_limit_datetime + timedelta(days=7)  # type: ignore[operator]
+        and activation_codes_expiration_datetime < booking_limit_datetime + timedelta(days=7)
     ):
         errors = ApiErrors()
         errors.add_error(

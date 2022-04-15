@@ -47,7 +47,7 @@ SENDINBLUE_IP_RANGE = [
 
 
 @public_api.route("/webhooks/sendinblue/unsubscribe", methods=["POST"])
-@spectree_serialize(on_success_status=204)  # type: ignore
+@spectree_serialize(on_success_status=204)
 def unsubscribe_user():  # type: ignore [no-untyped-def]
     source_ip = ipaddress.IPv4Address(request.headers.get("X-Forwarded-For", "0.0.0.0"))
     if source_ip not in SENDINBLUE_IP_RANGE and settings.IS_DEV is False:

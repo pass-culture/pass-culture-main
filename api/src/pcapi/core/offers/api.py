@@ -628,7 +628,7 @@ def upsert_stocks(
             edited_stocks.append(edited_stock)
             stocks.append(edited_stock)
         else:
-            activation_codes_exist = stock_data.activation_codes is not None and len(stock_data.activation_codes) > 0  # type: ignore[arg-type]
+            activation_codes_exist = stock_data.activation_codes is not None and len(stock_data.activation_codes) > 0
 
             if activation_codes_exist:
                 validation.check_offer_is_digital(offer)
