@@ -42,9 +42,15 @@ const getEntrepriseDataAdapter: GetEntrepriseDataFromSiretAdapter = async (
     }
   }
   try {
-    const values = (await apiEntreprise.getEntrepriseDataFromSiret(
-      siret
-    )) as IEntrepriseData
+    const values = await apiEntreprise.getEntrepriseDataFromSiret(siret)
+    if ('error' in values) {
+      return {
+        isOk: false,
+        message: values.error,
+        payload: {},
+      }
+    }
+
     return {
       isOk: true,
       message: `Siret ${humanSiret} :`,
