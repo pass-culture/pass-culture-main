@@ -777,9 +777,9 @@ class UbbleWebhookTest:
         signature = self._get_signature(payload)
 
         with mock.patch(
-            "pcapi.routes.external.users_subscription.ubble_webhook_update_application_status"
-        ) as update_mock:
-            update_mock.return_value = Exception
+            "pcapi.core.subscription.ubble.api.update_ubble_workflow",
+            side_effect=Exception(),
+        ):
             response = client.post(
                 "/webhooks/ubble/application_status",
                 headers={"Ubble-Signature": signature},
