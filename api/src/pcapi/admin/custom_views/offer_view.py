@@ -19,6 +19,7 @@ from flask_admin.helpers import get_redirect_target
 from flask_admin.helpers import is_form_submitted
 from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
+from jinja2.runtime import Context
 from markupsafe import Markup
 from markupsafe import escape
 from sqlalchemy import func
@@ -32,7 +33,6 @@ from wtforms.validators import InputRequired
 from wtforms.validators import ValidationError
 import yaml
 
-from pcapi import settings
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.admin.base_configuration import BaseSuperAdminView
 from pcapi.core import search
@@ -59,18 +59,24 @@ from pcapi.models.offer_criterion import OfferCriterion
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.settings import IS_PROD
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.mailing import build_pc_pro_offer_link
+from pcapi.utils.mailing import build_pc_pro_offerer_link
+from pcapi.utils.mailing import build_pc_pro_venue_link
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
 
 logger = logging.getLogger(__name__)
 
 
-def offer_category_formatter(view, context, model, name) -> str:  # type: ignore [no-untyped-def]
+def offer_category_formatter(view: BaseAdminView, context: Context, model: Offer, name: str) -> str:
     if model.subcategoryId is None:
         return ""
     return subcategories.ALL_SUBCATEGORIES_DICT[model.subcategoryId].category_id
+
+
+def offer_name_formatter(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
+    url = build_pc_pro_offer_link(model)
+    return Markup('<a href="{url}">{name}</a>').format(url=url, name=model.name)
 
 
 class ExtraDataFilterEqual(FilterEqual):
@@ -245,6 +251,7 @@ class OfferView(BaseAdminView):
         formatters.update(
             {
                 "categoryId": offer_category_formatter,
+                "name": offer_name_formatter,
             }
         )
         return formatters
@@ -358,49 +365,33 @@ class OfferForVenueSubview(OfferView):
         return venue.name
 
 
-def _pro_offer_url(offer: Offer) -> str:
-    return build_pc_pro_offer_link(offer)
-
-
 def _metabase_offer_url(offer_id: int) -> str:
     return f"https://support.internal-passculture.app/question/115?offer_id={offer_id}"
 
 
-def _venue_url(venue: Venue) -> str:
-    offerer_id = venue.managingOfferer.id
-    venue_id = venue.id
-    if venue.isVirtual:
-        return f"{settings.PRO_URL}/accueil?structure={humanize(offerer_id)}"
-    return f"{settings.PRO_URL}/structures/{humanize(offerer_id)}/lieux/{humanize(venue_id)}"
-
-
-def _offerer_url(offerer_id: int) -> str:
-    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer_id)}"
-
-
-def _pro_offer_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
-    url = _pro_offer_url(model)
+def _pro_offer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
+    url = build_pc_pro_offer_link(model)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre PC</a>').format(escape(url))
 
 
-def _related_offers_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
+def _related_offers_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
     url = url_for("offer_for_venue.index", id=model.venue.id)
     return Markup('<a href="{}">Offres associées</a>').format(escape(url))
 
 
-def _metabase_offer_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
+def _metabase_offer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
     url = _metabase_offer_url(model.id)
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre</a>').format(escape(url))
 
 
-def _offerer_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
-    url = _offerer_url(model.venue.managingOffererId)
+def _offerer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
+    url = build_pc_pro_offerer_link(model.venue.managingOfferer)
     link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
     return link.format(url=escape(url), name=escape(model.venue.managingOfferer.name))
 
 
-def _venue_link(view, context, model, name) -> Markup:  # type: ignore [no-untyped-def]
-    url = _venue_url(model.venue)
+def _venue_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
+    url = build_pc_pro_venue_link(model.venue)
     link = Markup('<a href="{url}" target="_blank" rel="noopener noreferrer">{name}</a>')
     return link.format(url=escape(url), name=escape(model.venue.publicName or model.venue.name))
 
@@ -576,14 +567,14 @@ class ValidationView(BaseAdminView):
             "cancel_link_url": url_for("validation.index_view"),
             "legal_category_code": legal_category_code,
             "legal_category_label": legal_category_label,
-            "pc_offer_url": _pro_offer_url(offer),
+            "pc_offer_url": build_pc_pro_offer_link(offer),
             "metabase_offer_url": _metabase_offer_url(offer.id) if IS_PROD else None,
             "offer_name": offer.name,
             "offer_score": compute_offer_validation_score(validation_items),
             "venue_name": offer.venue.publicName or offer.venue.name,
             "offerer_name": offer.venue.managingOfferer.name,
-            "venue_url": _venue_url(offer.venue),
-            "offerer_url": _offerer_url(offer.venue.managingOfferer.id),
+            "venue_url": build_pc_pro_venue_link(offer.venue),
+            "offerer_url": build_pc_pro_offerer_link(offer.venue.managingOfferer),
         }
         return self.render("admin/edit_offer_validation.html", **context)
 

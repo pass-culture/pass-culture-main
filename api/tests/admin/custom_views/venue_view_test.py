@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.admin.custom_views.venue_view import _get_venue_provider_link
+from pcapi.admin.custom_views.venue_view import _format_venue_provider
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.finance.factories as finance_factories
@@ -355,7 +355,7 @@ class GetVenueProviderLinkTest:
         venue = offers_factories.VenueFactory()
 
         # When
-        link = _get_venue_provider_link(None, None, venue, None)
+        link = _format_venue_provider(None, None, venue, None)
 
         # Then
         assert not link
@@ -367,7 +367,7 @@ class GetVenueProviderLinkTest:
         venue = venue_provider.venue
 
         # When
-        link = _get_venue_provider_link(None, None, venue, None)
+        link = _format_venue_provider(None, None, venue, None)
 
         # Then
         assert str(venue.id) in link
