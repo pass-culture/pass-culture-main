@@ -92,7 +92,6 @@ def _extract_useful_content_from_response(
 
 def start_identification(
     user_id: int,
-    phone_number: str,
     first_name: str,
     last_name: str,
     webhook_url: str,
@@ -106,7 +105,7 @@ def start_identification(
             "attributes": {
                 "identification-form": {
                     "external-user-id": user_id,
-                    "phone-number": phone_number,
+                    "phone-number": None,
                 },
                 "reference-data": {
                     "first-name": first_name,
