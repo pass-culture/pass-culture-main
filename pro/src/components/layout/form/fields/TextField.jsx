@@ -25,6 +25,12 @@ function getInputValue(inputType, value) {
 function TextField(props) {
   const inputType = props.readOnly ? 'text' : props.type
   const stepValue = inputType === 'number' ? props.step : undefined
+
+  const handleOnBlur = formOnBlur => e => {
+    formOnBlur(e)
+    if (props.onBlur) props.onBlur(e)
+  }
+
   return (
     <Field
       format={props.format}
@@ -69,7 +75,7 @@ function TextField(props) {
                   className={`field-input field-${props.type}`}
                   disabled={props.disabled || props.readOnly}
                   min={props.min}
-                  onBlur={props.onBlur}
+                  onBlur={handleOnBlur(input.onBlur)}
                   placeholder={props.readOnly ? '' : props.placeholder}
                   readOnly={props.readOnly}
                   required={!!props.required}
