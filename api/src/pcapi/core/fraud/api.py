@@ -142,6 +142,7 @@ def on_identity_fraud_check_result(
             _duplicate_user_fraud_item(
                 first_name=content_first_name,
                 last_name=content_last_name,
+                married_name=content.get_married_name(),
                 birth_date=content_birth_date,
                 excluded_user_id=user.id,
             )
@@ -197,9 +198,13 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: typing.Optional[
 
 
 def _duplicate_user_fraud_item(
-    first_name: str, last_name: str, birth_date: datetime.date, excluded_user_id: int
+    first_name: str,
+    last_name: str,
+    married_name: typing.Optional[str],
+    birth_date: datetime.date,
+    excluded_user_id: int,
 ) -> models.FraudItem:
-    duplicate_user = find_duplicate_beneficiary(first_name, last_name, birth_date, excluded_user_id)
+    duplicate_user = find_duplicate_beneficiary(first_name, last_name, married_name, birth_date, excluded_user_id)
 
     if duplicate_user:
         return models.FraudItem(
@@ -212,15 +217,33 @@ def _duplicate_user_fraud_item(
 
 
 def find_duplicate_beneficiary(
-    first_name: str, last_name: str, birth_date: datetime.date, excluded_user_id: int
+    first_name: str,
+    last_name: str,
+    married_name: typing.Optional[str],
+    birth_date: datetime.date,
+    excluded_user_id: int,
 ) -> typing.Optional[users_models.User]:
-    return users_models.User.query.filter(
+    base_query = users_models.User.query.filter(
         matching(users_models.User.firstName, first_name)
-        & (matching(users_models.User.lastName, last_name))
         & (sqlalchemy.func.DATE(users_models.User.dateOfBirth) == birth_date)
         & (users_models.User.is_beneficiary == True)
         & (users_models.User.id != excluded_user_id)
-    ).first()
+    )
+
+    duplicate_last_name_vs_last_name = base_query.filter(matching(users_models.User.lastName, last_name)).first()
+
+    if duplicate_last_name_vs_last_name:
+        return duplicate_last_name_vs_last_name
+
+    duplicate_last_name_vs_married_name = base_query.filter(matching(users_models.User.married_name, last_name)).first()
+
+    if duplicate_last_name_vs_married_name:
+        return duplicate_last_name_vs_married_name
+
+    if married_name:
+        return base_query.filter(matching(users_models.User.lastName, married_name)).first()
+
+    return None
 
 
 def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_number: str) -> models.FraudItem:
