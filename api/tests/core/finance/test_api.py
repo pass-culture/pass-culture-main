@@ -1091,6 +1091,199 @@ def test_generate_payments_file():
 
 
 @clean_temporary_files
+@override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+def test_generate_new_payments_file():
+    used_date = datetime.datetime(2020, 1, 2)
+    # This pricing belong to a business unit whose venue is the same
+    # as the venue of the offer.
+    venue1 = offers_factories.VenueFactory(
+        name='Le Petit Rintintin "test"\n',
+        siret='123456 "test"\n',
+    )
+    factories.PricingFactory(
+        amount=-1000,  # rate = 100 %
+        booking__amount=10,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire formidable",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue1,
+    )
+    # A free booking that should not appear in the CSV file.
+    factories.PricingFactory(
+        amount=0,
+        booking__amount=0,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name='Une histoire "gratuite"\n',
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=venue1,
+    )
+    # These other pricings belong to a business unit whose venue is
+    # NOT the venue of the offers.
+    business_unit_venue2 = offers_factories.VenueFactory(
+        siret="22222222233333",
+        name="BU du Gigantesque Cubitus\n",
+    )
+    business_unit2 = business_unit_venue2.businessUnit
+    offer_venue2 = offers_factories.VenueFactory(
+        name="Le Gigantesque Cubitus\n",
+        siret="99999999999999",
+        businessUnit=business_unit2,
+    )
+    # the 2 pricings below should be merged together as they share the same BU and same deposit type
+    factories.PricingFactory(
+        amount=-900,  # rate = 75 %
+        booking__amount=12,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=offer_venue2,
+    )
+    factories.PricingFactory(
+        amount=-600,  # rate = 50 %
+        booking__amount=12,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=offer_venue2,
+        standardRule="",
+        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
+    )
+    # pricing for an underage individual booking
+    underage_user = users_factories.UnderageBeneficiaryFactory()
+    factories.PricingFactory(
+        amount=-600,  # rate = 50 %
+        booking__amount=12,
+        booking__individualBooking__user=underage_user,
+        booking__dateUsed=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        booking__stock__offer__venue=offer_venue2,
+        standardRule="",
+        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
+    )
+    # pricing for educational booking
+    # check that the right deposit is used for csv
+    year1 = EducationalYearFactory()
+    year2 = EducationalYearFactory()
+    year3 = EducationalYearFactory()
+    educational_institution = EducationalInstitutionFactory()
+    EducationalDepositFactory(
+        educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
+    )
+    deposit2 = EducationalDepositFactory(
+        educationalInstitution=educational_institution,
+        educationalYear=year2,
+        ministry=Ministry.EDUCATION_NATIONALE.name,
+    )
+    EducationalDepositFactory(
+        educationalInstitution=educational_institution, educationalYear=year3, ministry=Ministry.ARMEES.name
+    )
+    # should not appear in the csv since the FF is enable
+    factories.EducationalPricingFactory(
+        amount=-600,  # rate = 100 %
+        booking__amount=6,
+        booking__dateUsed=used_date,
+        booking__stock__beginningDatetime=used_date,
+        booking__stock__offer__name="Une histoire plutôt bien",
+        booking__stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        booking__stock__offer__venue=offer_venue2,
+        booking__educationalBooking__educationalInstitution=deposit2.educationalInstitution,
+        booking__educationalBooking__educationalYear=deposit2.educationalYear,
+    )
+    # A pricing that belongs to a business unit whose SIRET is not a
+    # SIRET of any venue.
+    pricing6 = factories.PricingFactory(
+        amount=-1000,  # rate = 100 %
+        booking__dateUsed=used_date,
+        booking__stock__offer__venue__businessUnit__siret="orphan siret",
+    )
+    # the 2 following pricing should be merged together in the csv file
+    factories.CollectivePricingFactory(
+        amount=-300,  # rate = 100 %
+        collectiveBooking__collectiveStock__price=3,
+        collectiveBooking__dateUsed=used_date,
+        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien",
+        collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=offer_venue2,
+        collectiveBooking__educationalInstitution=deposit2.educationalInstitution,
+        collectiveBooking__educationalYear=deposit2.educationalYear,
+    )
+    factories.CollectivePricingFactory(
+        amount=-700,  # rate = 100 %
+        collectiveBooking__collectiveStock__price=7,
+        collectiveBooking__dateUsed=used_date,
+        collectiveBooking__collectiveStock__beginningDatetime=used_date,
+        collectiveBooking__collectiveStock__collectiveOffer__name="Une histoire plutôt bien 2",
+        collectiveBooking__collectiveStock__collectiveOffer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
+        collectiveBooking__collectiveStock__collectiveOffer__venue=offer_venue2,
+        collectiveBooking__educationalInstitution=deposit2.educationalInstitution,
+        collectiveBooking__educationalYear=deposit2.educationalYear,
+    )
+
+    cutoff = datetime.datetime.utcnow()
+    batch_id = api.generate_cashflows(cutoff)
+
+    n_queries = 2  # select pricings for bookings + collective bookings
+    with assert_num_queries(n_queries):
+        path = api._generate_new_payments_file(batch_id)
+
+    with zipfile.ZipFile(path) as zfile:
+        with zfile.open("payment_details.csv") as csv_bytefile:
+            csv_textfile = io.TextIOWrapper(csv_bytefile)
+            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
+            rows = list(reader)
+
+    assert len(rows) == 5
+    assert rows[0] == {
+        "Identifiant de la BU": human_ids.humanize(venue1.id),
+        "SIRET de la BU": "123456 test",
+        "Libellé de la BU": "Le Petit Rintintin test",
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Prix de la réservation": 10,
+        "Montant remboursé à l'offreur": 10,
+    }
+    assert rows[1] == {
+        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
+        "SIRET de la BU": "22222222233333",
+        "Libellé de la BU": "BU du Gigantesque Cubitus",
+        "Type de réservation": "EACI",
+        "Ministère": "",
+        "Prix de la réservation": 12,
+        "Montant remboursé à l'offreur": 6,
+    }
+    assert rows[2] == {
+        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
+        "SIRET de la BU": "22222222233333",
+        "Libellé de la BU": "BU du Gigantesque Cubitus",
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Prix de la réservation": 24,
+        "Montant remboursé à l'offreur": 15,
+    }
+    assert rows[3] == {
+        # Some fields are empty since there are no corresponding venue.
+        "Identifiant de la BU": "",
+        "SIRET de la BU": "orphan siret",
+        "Libellé de la BU": "",
+        "Type de réservation": "PC",
+        "Ministère": "",
+        "Prix de la réservation": pricing6.booking.total_amount,
+        "Montant remboursé à l'offreur": 10,
+    }
+    assert rows[4] == {
+        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
+        "SIRET de la BU": "22222222233333",
+        "Libellé de la BU": "BU du Gigantesque Cubitus",
+        "Type de réservation": "EACC",
+        "Ministère": Ministry.EDUCATION_NATIONALE.name,
+        "Prix de la réservation": 10,
+        "Montant remboursé à l'offreur": 10,
+    }
+
+
+@clean_temporary_files
 def test_generate_wallets_file():
     user1 = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
     bookings_factories.IndividualBookingFactory(individualBooking__user=user1, amount=10)

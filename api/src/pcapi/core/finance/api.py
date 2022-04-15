@@ -789,11 +789,15 @@ def generate_payment_files(batch_id: int):  # type: ignore [no-untyped-def]
             f"because {not_pending_cashflows} cashflows are not pending",
         )
 
+    is_new_collective_model_enabled = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
+
     file_paths = {}
     logger.info("Generating business units file")
     file_paths["business_units"] = _generate_business_units_file()
     logger.info("Generating payments file")
-    file_paths["payments"] = _generate_payments_file(batch_id)
+    file_paths["payments"] = (
+        _generate_new_payments_file(batch_id) if is_new_collective_model_enabled else _generate_payments_file(batch_id)
+    )
     logger.info("Generating wallets file")
     file_paths["wallets"] = _generate_wallets_file()
     logger.info(
@@ -855,6 +859,38 @@ def _write_csv(
         ) as zfile:
             zfile.write(path, arcname=path.name)
         path = compressed_path
+    return path
+
+
+def _append_csv(
+    path: pathlib.Path,
+    rows: typing.Iterable = None,
+    batched_rows: typing.Iterable = None,
+    row_formatter: typing.Callable[typing.Any, typing.Iterable] = lambda row: row,  # type: ignore [misc]
+    compress: bool = False,
+) -> pathlib.Path:
+    assert (rows is not None) ^ (batched_rows is not None)
+    # Store file in a dedicated directory within "/tmp". It's easier
+    # to clean files in tests that way.
+    with open(path, "a", encoding="utf-8") as fp:
+        writer = csv.writer(fp, quoting=csv.QUOTE_NONNUMERIC)
+        if rows is not None:
+            writer.writerows(row_formatter(row) for row in rows)
+        if batched_rows is not None:
+            for rows_ in batched_rows:
+                writer.writerows(row_formatter(row) for row in rows_)
+
+    if compress:
+        compressed_path = pathlib.Path(str(path) + ".zip")
+        with zipfile.ZipFile(
+            compressed_path,
+            "w",
+            compression=zipfile.ZIP_DEFLATED,
+            compresslevel=9,
+        ) as zfile:
+            zfile.write(path, arcname=path.name)
+        path = compressed_path
+
     return path
 
 
@@ -1002,6 +1038,125 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     )
 
 
+def _generate_new_payments_file(batch_id: int) -> pathlib.Path:
+    header = [
+        "Identifiant de la BU",
+        "SIRET de la BU",
+        "Libellé de la BU",  # actually, the commercial name of the related venue
+        "Type de réservation",
+        "Ministère",
+        "Prix de la réservation",
+        "Montant remboursé à l'offreur",
+    ]
+    bookings_query = (
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.booking)
+        .filter(bookings_models.Booking.amount != 0)
+        .join(models.Pricing.businessUnit)
+        # There should be a Venue with the same SIRET as the business
+        # unit... but edition has been sloppy and there are
+        # inconsistencies. To avoid excluding business unit, we do an
+        # _outer_ join and not an _inner_ join here. Obviously, the
+        # corresponding columns will be empty in the CSV file.
+        # See also `_generate_business_units_file()` and `generate_invoice_file()`.
+        .outerjoin(
+            offerers_models.Venue,
+            models.BusinessUnit.siret == offerers_models.Venue.siret,
+        )
+        .join(bookings_models.Booking.individualBooking)
+        .join(bookings_models.IndividualBooking.deposit)
+        .filter(models.Cashflow.batchId == batch_id)
+        .group_by(
+            offerers_models.Venue.id,
+            models.BusinessUnit.siret,
+            payments_models.Deposit.type,
+        )
+        .with_entities(
+            offerers_models.Venue.id.label("business_unit_venue_id"),
+            models.BusinessUnit.siret.label("business_unit_siret"),
+            sqla_func.coalesce(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ).label("business_unit_venue_name"),
+            sqla_func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity).label("booking_amount"),
+            payments_models.Deposit.type.label("deposit_type"),
+            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+        )
+        # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
+        # but I am not sure it helps here. We have used
+        # `pcapi.utils.db.get_batches` in the old-style payment code
+        # and that may be what's best here.
+        .yield_per(1000)
+    )
+
+    collective_bookings_query = (
+        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
+        .join(models.Pricing.cashflows)
+        .join(models.Pricing.collectiveBooking)
+        .join(CollectiveBooking.collectiveStock)
+        .join(models.Pricing.businessUnit)
+        # There should be a Venue with the same SIRET as the business
+        # unit... but edition has been sloppy and there are
+        # inconsistencies. To avoid excluding business unit, we do an
+        # _outer_ join and not an _inner_ join here. Obviously, the
+        # corresponding columns will be empty in the CSV file.
+        # See also `_generate_business_units_file()` and `generate_invoice_file()`.
+        .outerjoin(
+            offerers_models.Venue,
+            models.BusinessUnit.siret == offerers_models.Venue.siret,
+        )
+        .join(CollectiveBooking.educationalInstitution)
+        .join(
+            educational_models.EducationalDeposit,
+            and_(
+                educational_models.EducationalDeposit.educationalYearId == CollectiveBooking.educationalYearId,
+                educational_models.EducationalDeposit.educationalInstitutionId
+                == educational_models.EducationalInstitution.id,
+            ),
+        )
+        .filter(models.Cashflow.batchId == batch_id)
+        .group_by(
+            offerers_models.Venue.id,
+            models.BusinessUnit.siret,
+            educational_models.EducationalDeposit.ministry,
+        )
+        .with_entities(
+            offerers_models.Venue.id.label("business_unit_venue_id"),
+            models.BusinessUnit.siret.label("business_unit_siret"),
+            sqla_func.coalesce(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ).label("business_unit_venue_name"),
+            sqla_func.sum(CollectiveStock.price).label("booking_amount"),
+            educational_models.EducationalDeposit.ministry.label("ministry"),
+            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+        )
+        # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
+        # but I am not sure it helps here. We have used
+        # `pcapi.utils.db.get_batches` in the old-style payment code
+        # and that may be what's best here.
+        .yield_per(1000)
+    )
+
+    csv_file = _write_csv(
+        "payment_details",
+        header,
+        rows=bookings_query,
+        row_formatter=_new_payment_details_row_formatter,
+        compress=False,
+    )
+
+    csv_file = _append_csv(
+        csv_file,
+        rows=collective_bookings_query,
+        row_formatter=_new_payment_details_row_formatter,
+        compress=True,  # it's a large CSV file (> 100 Mb), we should compress it
+    )
+
+    return csv_file
+
+
 def _payment_details_row_formatter(sql_row):  # type: ignore [no-untyped-def]
     if sql_row.educational_booking_id is not None:
         booking_type = "EACC"
@@ -1033,6 +1188,31 @@ def _payment_details_row_formatter(sql_row):  # type: ignore [no-untyped-def]
         reimbursement_rate,
         reimbursed_amount,
         ministry,
+    )
+
+
+def _new_payment_details_row_formatter(sql_row):  # type: ignore [no-untyped-def]
+    if hasattr(sql_row, "ministry"):
+        booking_type = "EACC"
+    elif sql_row.deposit_type == payments_models.DepositType.GRANT_15_17:
+        booking_type = "EACI"
+    elif sql_row.deposit_type == payments_models.DepositType.GRANT_18:
+        booking_type = "PC"
+    else:
+        raise ValueError("Unknown booking type (not educational nor individual)")
+
+    booking_total_amount = sql_row.booking_amount
+    reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
+    ministry = sql_row.ministry.name if hasattr(sql_row, "ministry") else ""
+
+    return (
+        human_ids.humanize(sql_row.business_unit_venue_id),
+        _clean_for_accounting(sql_row.business_unit_siret),
+        _clean_for_accounting(sql_row.business_unit_venue_name),
+        booking_type,
+        ministry,
+        booking_total_amount,
+        reimbursed_amount,
     )
 
 
