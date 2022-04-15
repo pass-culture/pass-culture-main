@@ -73,7 +73,7 @@ class UbbleEndToEndTest:
         assert requests_mocker.last_request.json() == {
             "data": {
                 "attributes": {
-                    "identification-form": {"external-user-id": user.id, "phone-number": "+33612345678"},
+                    "identification-form": {"external-user-id": user.id, "phone-number": None},
                     "redirect_url": "https://passculture.app/verification-identite/fin",
                     "reference-data": {"first-name": "Raoul", "last-name": "de Toul"},
                     "webhook": flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
