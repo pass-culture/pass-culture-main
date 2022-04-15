@@ -20,6 +20,13 @@ from pcapi.utils.date import FrenchParserInfo
 logger = logging.getLogger(__name__)
 GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
 
+ARCHIVE_APPLICATION_QUERY_NAME = "archive_application"
+GET_BIC_QUERY_NAME = "pro/get_banking_info_v2"
+GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_details"
+GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME = "beneficiaries/get_applications_with_details"
+SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
+UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
+
 
 class ApiDemarchesSimplifieesException(Exception):
     pass
@@ -49,25 +56,27 @@ class DMSGraphQLClient:
     def build_query(self, query_name: str) -> str:
         return (GRAPHQL_DIRECTORY / f"{query_name}.graphql").read_text()
 
-    def execute_query(self, query: str, variables: dict[str, Any]) -> Any:
+    def execute_query(self, query_name: str, variables: dict[str, Any]) -> Any:
+        query = self.build_query(query_name)
+        logger.info("Executing dms query %s", query_name, extra=variables)
+
         return self.client.execute(gql.gql(query), variable_values=variables)
 
     def get_applications_with_details(  # type: ignore [misc]
         self, procedure_id: int, state: dms_models.GraphQLApplicationStates, page_token: str = ""
     ) -> list[dms_models.DmsApplicationResponse]:
-        query = self.build_query("beneficiaries/get_applications_with_details")
         variables = {
             "demarcheNumber": procedure_id,
             "state": state.value,
         }
         if page_token:
             variables["after"] = page_token
-        results = self.execute_query(query, variables=variables)
+        results = self.execute_query(GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME, variables=variables)
         # pylint: disable=unsubscriptable-object
         dms_demarche_response = dms_models.DmsProcessApplicationsResponse(**results["demarche"]["dossiers"])
         # pylint: enable=unsubscriptable-object
         logger.info(
-            "Found %s applications for procedure %d (page token :%s)",
+            "[DMS] Found %s applications for procedure %d (page token :%s)",
             len(dms_demarche_response.dms_applications),
             procedure_id,
             page_token,
@@ -81,10 +90,9 @@ class DMSGraphQLClient:
             )
 
     def send_user_message(self, application_scalar_id: str, instructeur_techid: str, body: str) -> Any:
-        query = self.build_query("send_user_message")
         try:
             return self.execute_query(
-                query,
+                SEND_USER_MESSAGE_QUERY_NAME,
                 variables={
                     "input": {"dossierId": application_scalar_id, "instructeurId": instructeur_techid, "body": body}
                 },
@@ -96,25 +104,23 @@ class DMSGraphQLClient:
             return None
 
     def archive_application(self, application_techid: str, instructeur_techid: str) -> Any:
-        query = self.build_query("archive_application")
-
         return self.execute_query(
-            query, variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}}
+            ARCHIVE_APPLICATION_QUERY_NAME,
+            variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}},
         )
 
     def get_single_application_details(self, application_id: int) -> dms_models.DmsApplicationResponse:
-        query = self.build_query("beneficiaries/get_single_application_details")
-        response = self.execute_query(query, variables={"applicationNumber": application_id})
+        response = self.execute_query(
+            GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": application_id}
+        )
 
         return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
 
     def get_bic(self, dossier_id: int) -> Any:
-        query = self.build_query("pro/get_banking_info_v2")
         variables = {"dossierNumber": dossier_id}
-        return self.execute_query(query, variables=variables)
+        return self.execute_query(GET_BIC_QUERY_NAME, variables=variables)
 
     def update_text_annotation(self, dossier_id: str, instructeur_id: str, annotation_id: str, value: str) -> Any:
-        query = self.build_query("update_text_annotation")
         variables = {
             "input": {
                 "dossierId": dossier_id,
@@ -123,7 +129,7 @@ class DMSGraphQLClient:
                 "value": value,
             }
         }
-        return self.execute_query(query, variables=variables)
+        return self.execute_query(UPDATE_TEXT_ANNOTATION_QUERY_NAME, variables=variables)
 
 
 def parse_beneficiary_information_graphql(
