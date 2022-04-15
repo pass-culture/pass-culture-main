@@ -119,6 +119,17 @@ class ReindexOfferIdsTest:
         assert offer.id in search_testing.search_store["offers"]
         assert app.redis_client.lrange("offer_ids_in_error", 0, 5) == [str(offer.id)]
 
+    def test_reindex_venues_after_reindexing_offers(self, app):
+        offer = make_bookable_offer()
+        assert search_testing.search_store["offers"] == {}
+
+        search.reindex_offer_ids([offer.id])
+        assert offer.id in search_testing.search_store["offers"]
+
+        venue_ids = app.redis_client.smembers("search:algolia:venue-ids-to-index")
+        venue_ids = {int(venue_id) for venue_id in venue_ids}
+        assert venue_ids == {offer.venueId}
+
 
 class ReindexVenueIdsTest:
     def test_index_new_venue(self):
@@ -185,13 +196,19 @@ class IndexOffersInQueueTest:
         assert app.redis_client.llen("offer_ids") == 0
 
 
-def test_unindex_offer_ids():
-    search_testing.search_store["offers"][1] = "dummy"
-    search_testing.search_store["offers"][2] = "dummy"
+def test_unindex_offer_ids(app):
+    offer1 = make_bookable_offer()
+    offer2 = make_bookable_offer()
 
-    search.unindex_offer_ids([1, 2])
+    search_testing.search_store["offers"][offer1.id] = offer1
+    search_testing.search_store["offers"][offer2.id] = offer2
 
+    search.unindex_offer_ids([offer1.id, offer2.id])
     assert search_testing.search_store["offers"] == {}
+
+    venue_ids = app.redis_client.smembers("search:algolia:venue-ids-to-index")
+    venue_ids = {int(venue_id) for venue_id in venue_ids}
+    assert venue_ids == {offer1.venueId, offer2.venueId}
 
 
 def test_unindex_all_offers():

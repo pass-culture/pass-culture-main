@@ -409,6 +409,9 @@ def reindex_offer_ids(offer_ids: Iterable[int]) -> None:
         )
         backend.enqueue_offer_ids_in_error([offer.id for offer in to_delete])
 
+    # some offers changes might make some venue ineligible for search
+    _reindex_venues_from_offers(offer_ids)
+
 
 def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
     backend = _get_backend()
@@ -418,6 +421,9 @@ def unindex_offer_ids(offer_ids: Iterable[int]) -> None:
         if settings.IS_RUNNING_TESTS:
             raise
         logger.exception("Could not unindex offers", extra={"offers": offer_ids})
+
+    # some offers changes might make some venue ineligible for search
+    _reindex_venues_from_offers(offer_ids)
 
 
 def unindex_all_offers() -> None:
@@ -430,6 +436,17 @@ def unindex_all_offers() -> None:
         if settings.IS_RUNNING_TESTS:
             raise
         logger.exception("Could not unindex all offers")
+
+
+def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
+    """
+    Get the offers' venue ids and reindex them
+    """
+    query = Offer.query.filter(Offer.id.in_(offer_ids)).with_entities(Offer.venueId).distinct()
+    venue_ids = [row[0] for row in query]
+
+    logger.info("Starting to reindex venues from offers", extra={"venues_count": len(venue_ids)})
+    async_index_venue_ids(venue_ids)
 
 
 def reindex_venue_ids(venue_ids: Iterable[int]) -> None:
