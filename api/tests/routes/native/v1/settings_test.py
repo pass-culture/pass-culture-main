@@ -11,6 +11,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class SettingsTest:
     @override_features(
         DISPLAY_DMS_REDIRECTION=True,
+        ENABLE_FRONT_IMAGE_RESIZING=True,
         ENABLE_ID_CHECK_RETENTION=False,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
         ENABLE_NATIVE_CULTURAL_SURVEY=True,
@@ -27,6 +28,7 @@ class SettingsTest:
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": True,
+            "enableFrontImageResizing": True,
             "enableIdCheckRetention": False,
             "enableNativeCulturalSurvey": True,
             "enableNativeEacIndividual": True,
@@ -42,6 +44,7 @@ class SettingsTest:
 
     @override_features(
         DISPLAY_DMS_REDIRECTION=False,
+        ENABLE_FRONT_IMAGE_RESIZING=False,
         ENABLE_ID_CHECK_RETENTION=True,
         ENABLE_NATIVE_APP_RECAPTCHA=False,
         ENABLE_NATIVE_CULTURAL_SURVEY=False,
@@ -58,6 +61,7 @@ class SettingsTest:
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": False,
+            "enableFrontImageResizing": False,
             "enableIdCheckRetention": True,
             "enableNativeCulturalSurvey": False,
             "enableNativeEacIndividual": True,
