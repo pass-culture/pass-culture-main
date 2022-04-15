@@ -728,13 +728,14 @@ class GenerateCashflowsTest:
         assert models.Cashflow.query.count() == 0
 
     def test_assert_num_queries(self):
-        business_unit1 = factories.BusinessUnitFactory()
+        business_unit1 = factories.BusinessUnitFactory(siret="01234567890000")
         factories.PricingFactory(status=models.PricingStatus.VALIDATED, businessUnit=business_unit1)
         factories.PricingFactory(status=models.PricingStatus.VALIDATED, businessUnit=business_unit1)
         factories.PricingFactory(status=models.PricingStatus.VALIDATED)
         cutoff = datetime.datetime.utcnow()
 
         n_queries = 0
+        n_queries += 1  # select FF
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # commit
         n_queries += 1  # select business unit and bank account ids to process
@@ -752,6 +753,53 @@ class GenerateCashflowsTest:
             api.generate_cashflows(cutoff)
 
         assert models.Cashflow.query.count() == 2
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_create_cashflow_for_collective_bookings_but_not_educational_booking_if_ff_is_enabled(self):
+        now = datetime.datetime.utcnow()
+        business_unit1 = factories.BusinessUnitFactory(siret="85331845900023")
+        business_unit2 = factories.BusinessUnitFactory(siret="11223344555667")
+        pricing = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+        )
+        educational_pricing = factories.EducationalPricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-1000,
+            booking__stock__beginningDatetime=now - datetime.timedelta(days=1),
+        )
+        pricing_collective_booking = factories.CollectivePricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit2,
+            amount=-1000,
+            collectiveBooking__collectiveStock__beginningDatetime=now - datetime.timedelta(days=1),
+        )
+        pricing_collective_booking_future_event = factories.CollectivePricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            collectiveBooking__collectiveStock__beginningDatetime=now + datetime.timedelta(days=1),
+        )
+        cutoff = datetime.datetime.utcnow()
+
+        batch_id = api.generate_cashflows(cutoff)
+
+        batch = models.CashflowBatch.query.one()
+
+        assert batch.id == batch_id
+        assert batch.cutoff == cutoff
+        assert pricing.status == models.PricingStatus.PROCESSED
+        assert pricing_collective_booking.status == models.PricingStatus.PROCESSED
+        assert models.Cashflow.query.count() == 2
+        assert len(pricing.cashflows) == 1
+        assert len(pricing_collective_booking.cashflows) == 1
+        assert pricing.cashflows[0].amount == -1000
+        assert pricing.cashflows[0].bankAccount == business_unit1.bankAccount
+        assert pricing_collective_booking.cashflows[0].amount == -1000
+        assert pricing_collective_booking.cashflows[0].bankAccount == business_unit2.bankAccount
+
+        assert not educational_pricing.cashflows
+        assert not pricing_collective_booking_future_event.cashflows
 
 
 @clean_temporary_files
