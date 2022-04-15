@@ -19,7 +19,6 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.feature import FeatureToggle
 
 from . import exceptions
 from ..categories import subcategories
@@ -336,11 +335,7 @@ def check_offer_withdrawal(
     if subcategory_id not in WITHDRAWABLE_SUBCATEGORIES and withdrawal_type is not None:
         raise exceptions.NonWithdrawableEventOfferCantHaveWithdrawal()
 
-    if (
-        FeatureToggle.PRO_DISABLE_EVENTS_QRCODE.is_active()
-        and subcategory_id in WITHDRAWABLE_SUBCATEGORIES
-        and withdrawal_type is None
-    ):
+    if subcategory_id in WITHDRAWABLE_SUBCATEGORIES and withdrawal_type is None:
         raise exceptions.WithdrawableEventOfferMustHaveWithdrawal()
 
     if withdrawal_type == WithdrawalTypeEnum.NO_TICKET and withdrawal_delay is not None:
