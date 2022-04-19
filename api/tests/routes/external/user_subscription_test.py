@@ -1699,6 +1699,7 @@ class UbbleWebhookTest:
         assert not user.has_beneficiary_role
         assert ubble_fraud_check.status == fraud_models.FraudCheckStatus.SUSPICIOUS
         assert fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in ubble_fraud_check.reasonCodes
+        assert fraud_models.FraudReasonCode.MISSING_REQUIRED_DATA in ubble_fraud_check.reasonCodes
 
         assert ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, user.eligibility)  # retry allowed
 

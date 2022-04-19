@@ -148,12 +148,10 @@ def on_identity_fraud_check_result(
                 excluded_user_id=user.id,
             )
         )
-
-    if content_first_name and content_last_name:
         fraud_items.append(_check_user_names_valid(content_first_name, content_last_name))
-
-    if content_birth_date:
         fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))  # type: ignore [arg-type]
+    else:
+        fraud_items.append(_missing_data_fraud_item())
 
     fraud_items.append(_check_user_has_no_active_deposit(user, beneficiary_fraud_check.eligibilityType))  # type: ignore [arg-type]
     fraud_items.append(_check_user_email_is_validated(user))
@@ -215,6 +213,14 @@ def _duplicate_user_fraud_item(
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="Utilisateur non dupliqué")
+
+
+def _missing_data_fraud_item() -> models.FraudItem:
+    return models.FraudItem(
+        status=models.FraudStatus.SUSPICIOUS,
+        reason_code=models.FraudReasonCode.MISSING_REQUIRED_DATA,
+        detail="Des informations obligatoires (prénom, nom ou date de naissance) sont absentes du dossier",
+    )
 
 
 def find_duplicate_beneficiary(
