@@ -897,8 +897,12 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).first()
         assert stock.price == 1200
 
+    @freeze_time("2020-11-17 15:00:00")
     def should_update_bookings_cancellation_limit_date_if_event_postponed(self):
         # Given
+        educational_year = educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
         cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(beginningDatetime=initial_event_date)
@@ -907,6 +911,7 @@ class EditCollectiveOfferStocksTest:
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=cancellation_limit_date,
             confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
+            educationalYear=educational_year,
         )
 
         new_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=25, hours=5)
@@ -926,6 +931,9 @@ class EditCollectiveOfferStocksTest:
     @freeze_time("2020-11-17 15:00:00")
     def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self):
         # Given
+        educational_year = educational_factories.EducationalYearFactory(
+            beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
+        )
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
         cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(beginningDatetime=initial_event_date)
@@ -934,6 +942,7 @@ class EditCollectiveOfferStocksTest:
             status=CollectiveBookingStatus.PENDING,
             cancellationLimitDate=cancellation_limit_date,
             confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
+            educationalYear=educational_year,
         )
 
         new_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5, hours=5)

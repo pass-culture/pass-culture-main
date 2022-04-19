@@ -18,6 +18,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational.factories import EducationalYearFactory
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
@@ -1054,15 +1055,22 @@ class EditEducationalOfferStocksTest:
         stock = models.Stock.query.filter_by(id=stock_to_be_updated.id).first()
         assert stock.price == 1200
 
+    @freeze_time("2020-11-17 15:00:00")
     def should_update_bookings_cancellation_limit_date_if_event_postponed(self):
         # Given
+        educational_year = EducationalYearFactory(
+            beginningDate=datetime(2020, 9, 1), expirationDate=datetime(2021, 8, 31)
+        )
         initial_event_date = datetime.utcnow() + timedelta(days=20)
         cancellation_limit_date = datetime.utcnow() + timedelta(days=5)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date, quantity=1, dnBookedQuantity=1
         )
         booking = bookings_factories.EducationalBookingFactory(
-            stock=stock_to_be_updated, status=BookingStatus.PENDING, cancellation_limit_date=cancellation_limit_date
+            stock=stock_to_be_updated,
+            status=BookingStatus.PENDING,
+            cancellation_limit_date=cancellation_limit_date,
+            educationalBooking__educationalYear=educational_year,
         )
 
         new_event_date = datetime.utcnow() + timedelta(days=25, hours=5)
@@ -1080,13 +1088,19 @@ class EditEducationalOfferStocksTest:
     @freeze_time("2020-11-17 15:00:00")
     def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self):
         # Given
+        educational_year = EducationalYearFactory(
+            beginningDate=datetime(2020, 9, 1), expirationDate=datetime(2021, 8, 31)
+        )
         initial_event_date = datetime.utcnow() + timedelta(days=20)
         cancellation_limit_date = datetime.utcnow() + timedelta(days=5)
         stock_to_be_updated = factories.EducationalEventStockFactory(
             beginningDatetime=initial_event_date, quantity=1, dnBookedQuantity=1
         )
         booking = bookings_factories.EducationalBookingFactory(
-            stock=stock_to_be_updated, status=BookingStatus.PENDING, cancellation_limit_date=cancellation_limit_date
+            stock=stock_to_be_updated,
+            status=BookingStatus.PENDING,
+            cancellation_limit_date=cancellation_limit_date,
+            educationalBooking__educationalYear=educational_year,
         )
 
         new_event_date = datetime.utcnow() + timedelta(days=5, hours=5)

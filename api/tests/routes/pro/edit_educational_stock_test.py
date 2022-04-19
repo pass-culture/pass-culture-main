@@ -6,6 +6,11 @@ import pytest
 
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import Booking
+from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.factories import CollectiveStockFactory
+from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBooking
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
@@ -160,6 +165,48 @@ class Return200Test:
 
         # Then
         assert len(adage_api_testing.adage_requests) == 0
+
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
+    def test_edit_educational_stock_update_booking_educational_year(self, client):
+        # Given
+        educational_year_2021_2022 = EducationalYearFactory(
+            beginningDate=datetime(2021, 9, 1), expirationDate=datetime(2022, 8, 31)
+        )
+        educational_year_2022_2023 = EducationalYearFactory(
+            beginningDate=datetime(2022, 9, 1), expirationDate=datetime(2023, 8, 31)
+        )
+        stock = offers_factories.EducationalEventStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+            educationalPriceDetail="Détail du prix",
+        )
+        collective_stock = CollectiveStockFactory(stockId=stock.id)
+        booking = booking_factories.PendingEducationalBookingFactory(
+            stock=stock, educationalBooking__educationalYear=educational_year_2021_2022
+        )
+        collective_booking = CollectiveBookingFactory(
+            bookingId=booking.id,
+            educationalYear=educational_year_2021_2022,
+            collectiveStock=collective_stock,
+            status=CollectiveBookingStatus.PENDING,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+
+        # When
+        stock_edition_payload = {
+            "beginningDatetime": "2023-01-17T22:00:00Z",
+        }
+
+        client.with_session_auth("user@example.com")
+        client.patch(f"/stocks/educational/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        edited_booking = Booking.query.get(booking.id)
+        edited_collective_booking = CollectiveBooking.query.get(collective_booking.id)
+        assert edited_booking.educationalBooking.educationalYearId == educational_year_2022_2023.adageId
+        assert edited_collective_booking.educationalYearId == educational_year_2022_2023.adageId
 
 
 @freeze_time("2020-11-17 15:00:00")
