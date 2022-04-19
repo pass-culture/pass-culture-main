@@ -209,17 +209,6 @@ class BeneficiaryGrant18Factory(BaseFactory):
         )
 
     @factory.post_generation
-    def beneficiaryFraudResults(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        import pcapi.core.fraud.factories as fraud_factories
-
-        if not create:
-            return None
-
-        return fraud_factories.BeneficiaryFraudResultFactory(
-            user=obj, status=fraud_models.FraudStatus.OK, eligibilityType=obj.eligibility, reason=None
-        )
-
-    @factory.post_generation
     def deposit(obj, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         if not create:
             return None

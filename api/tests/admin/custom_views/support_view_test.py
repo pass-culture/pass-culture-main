@@ -29,7 +29,6 @@ class BeneficiaryListViewTest:
         for review_status in fraud_models.FraudReviewStatus:
             user = users_factories.UserFactory(civility="M.")
             fraud_factories.BeneficiaryFraudCheckFactory(user=user)
-            fraud_factories.BeneficiaryFraudResultFactory(user=user)
             fraud_factories.BeneficiaryFraudReviewFactory(user=user, review=review_status)
         response = client.get(f"/pc/back-office/support_beneficiary/?search={user.id}")
         assert response.status_code == 200
@@ -41,7 +40,6 @@ class BeneficiaryDetailViewTest:
         admin = users_factories.AdminFactory(email="admin@example.com")
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user)
-        fraud_factories.BeneficiaryFraudResultFactory(user=user)
         client.with_session_auth(admin.email)
         response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
         assert response.status_code == 200
@@ -56,7 +54,6 @@ class BeneficiaryDetailViewTest:
                 fraud_models.FraudReasonCode.DUPLICATE_INE,
             ],
         )
-        fraud_factories.BeneficiaryFraudResultFactory(user=user)
         client.with_session_auth(admin.email)
         response = client.get("/pc/back-office/support_beneficiary/?id={user.id}")
         assert response.status_code == 200
