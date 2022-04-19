@@ -86,10 +86,8 @@ def _ubble_result_fraud_item(content: ubble_fraud_models.UbbleContent) -> fraud_
 
 
 def ubble_fraud_checks(
-    user: users_models.User, beneficiary_fraud_check: fraud_models.BeneficiaryFraudCheck
+    user: users_models.User, content: ubble_fraud_models.UbbleContent
 ) -> list[fraud_models.FraudItem]:
-    content = ubble_fraud_models.UbbleContent(**beneficiary_fraud_check.resultContent)  # type: ignore [arg-type]
-
     ubble_fraud_models_item = _ubble_result_fraud_item(content)
     fraud_items = [ubble_fraud_models_item]
 
