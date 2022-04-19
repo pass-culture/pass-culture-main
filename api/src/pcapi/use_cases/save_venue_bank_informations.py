@@ -128,6 +128,12 @@ class SaveVenueBankInformations:
                     application_details.annotation_id,
                     "Dossier successfully imported",
                 )
+            if application_details.status == BankInformationStatus.DRAFT:
+                update_demarches_simplifiees_text_annotations(
+                    application_details.dossier_id,  # type: ignore [arg-type]
+                    application_details.annotation_id,
+                    "Valid dossier",
+                )
         return bank_information
 
     def get_referent_venue(
