@@ -12,7 +12,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 import type { Store } from 'redux'
 
-import { api } from 'api/v1/api'
+import { apiV1 as api } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { getVenuesForOfferer, getUserHasBookings } from 'repository/pcapi/pcapi'
@@ -34,8 +34,8 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getUserHasBookings: jest.fn(),
 }))
 
-jest.mock('api/v1/api', () => ({
-  api: {
+jest.mock('api/api', () => ({
+  apiV1: {
     getBookingsGetBookingsPro: jest.fn(),
   },
 }))

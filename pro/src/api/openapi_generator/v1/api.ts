@@ -1,9 +1,9 @@
 import Package from '../../../../package.json'
 import { API_URL } from 'utils/config'
 
-import { APIConfiguration, APIConfigurationParameters, DefaultApi } from './gen'
+import { Configuration, ConfigurationParameters, DefaultApi } from './gen'
 
-const configuration: APIConfigurationParameters = {
+const configuration: ConfigurationParameters = {
   basePath: API_URL,
   // fetchApi: safeFetch,
   headers: {
@@ -11,5 +11,5 @@ const configuration: APIConfigurationParameters = {
   },
   credentials: 'include',
 }
-
-export const api = new DefaultApi(new APIConfiguration(configuration))
+console.log('DefaultApi', DefaultApi)
+export const api = new DefaultApi(new Configuration(configuration))

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Redirect, useHistory } from 'react-router-dom'
 
-import { api } from 'api/v1/api'
+import { api } from 'api/api'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'

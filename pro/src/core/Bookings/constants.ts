@@ -1,6 +1,7 @@
 import { startOfDay, subDays } from 'date-fns'
 
-import { BookingStatusFilter } from 'api/v1/gen'
+// import { BookingStatusFilter } from 'api/v1/gen'
+import { BookingStatusFilter } from 'api/openapi_generator/v1/gen'
 import { getToday } from 'utils/date'
 
 export const BOOKING_STATUS = {

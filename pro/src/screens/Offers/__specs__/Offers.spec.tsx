@@ -8,7 +8,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Router } from 'react-router'
 import type { Store } from 'redux'
 
-import { api } from 'api/v1/api'
+import { api } from 'api/api'
 import {
   ALL_OFFERERS,
   ALL_OFFERS,

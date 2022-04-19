@@ -1,5 +1,5 @@
-import { api } from 'api/v1/api'
-import { BookingRecapResponseModel } from 'api/v1/gen'
+import { apiV1 as api } from 'api/api'
+import { BookingRecapResponseModel } from 'api/openapi_generator/v1/gen'
 import {
   GetFilteredBookingsRecapAdapter,
   GetFilteredBookingsRecapAdapterPayload,

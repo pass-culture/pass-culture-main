@@ -9,7 +9,7 @@ import { Provider } from 'react-redux'
 import { Router } from 'react-router'
 import type { Store } from 'redux'
 
-import { api } from 'api/v1/api'
+import { api } from 'api/api'
 import {
   ALL_OFFERS,
   ALL_CATEGORIES_OPTION,
