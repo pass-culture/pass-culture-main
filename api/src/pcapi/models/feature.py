@@ -88,6 +88,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION = (
         "Sépare la visualisation des offres et des remboursements sur le portail PRO"
     )
+    OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -141,6 +142,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION,
+    FeatureToggle.OFFER_FORM_V3,
 )
 
 
