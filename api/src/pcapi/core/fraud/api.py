@@ -533,6 +533,7 @@ def get_last_filled_identity_fraud_check(user: users_models.User) -> typing.Opti
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type in models.IDENTITY_CHECK_TYPES
+        and fraud_check.resultContent is not None
         and fraud_check.source_data().get_last_name() is not None
         and fraud_check.source_data().get_first_name() is not None
         and fraud_check.source_data().get_birth_date() is not None
