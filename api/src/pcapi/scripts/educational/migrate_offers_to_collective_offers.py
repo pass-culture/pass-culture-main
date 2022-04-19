@@ -119,6 +119,22 @@ def _migrate_offers() -> None:
     search.async_index_collective_offer_ids(offers_ids)
 
 
+def _get_phone_number(offer: models.Offer) -> str:
+    extra_data = getattr(offer, "extraData", {}) or {}
+    phone = extra_data.get("contactPhone", "").strip()
+    if not phone and offer.venue.contact:
+        phone = (offer.venue.contact.phone_number or "").strip()
+    return phone
+
+
+def _get_email(offer: models.Offer) -> str:
+    extra_data = getattr(offer, "extraData", {}) or {}
+    email = extra_data.get("contactEmail", "").strip()
+    if not email and offer.venue.contact:
+        email = (offer.venue.contact.email or "").strip()
+    return email
+
+
 def _update_collective_offer(
     offer: models.Offer, stock: models.Stock
 ) -> Union[CollectiveOffer, CollectiveOfferTemplate]:
@@ -142,14 +158,15 @@ def _update_collective_offer(
         "motorDisabilityCompliant",
         "visualDisabilityCompliant",
     ]
-    students = [StudentLevels(x).name for x in offer.extraData.get("students", [])]  # type: ignore [union-attr]
+    extra_data = getattr(offer, "extraData", {}) or {}
+    students = [StudentLevels(x).name for x in extra_data.get("students", [])]  # type: ignore [union-attr]
     for attr_name in list_of_common_attributes:
         attr_value = getattr(offer, attr_name)
         setattr(collective_offer, attr_name, attr_value)
 
-    collective_offer.contactEmail = offer.extraData.get("contactEmail")  # type: ignore [union-attr]
-    collective_offer.contactPhone = offer.extraData.get("contactPhone", "").strip()  # type: ignore [union-attr]
-    collective_offer.offerVenue = offer.extraData.get("offerVenue")  # type: ignore [union-attr]
+    collective_offer.contactEmail = _get_email(offer)
+    collective_offer.contactPhone = _get_phone_number(offer)
+    collective_offer.offerVenue = extra_data.get("offerVenue")  # type: ignore [union-attr]
     collective_offer.students = students
 
     if is_template and offer.stocks:
@@ -164,11 +181,39 @@ def _create_collective_offer(
 ) -> Union[CollectiveOffer, CollectiveOfferTemplate]:
     is_template = offer.extraData and offer.extraData.get("isShowcase", False)  # type: ignore [union-attr]
     base_class = CollectiveOfferTemplate if is_template else CollectiveOffer
-    collective_offer = base_class.create_from_offer(offer)  # type: ignore [attr-defined]
+
+    list_of_common_attributes = [
+        "isActive",
+        "venue",
+        "name",
+        "description",
+        "durationMinutes",
+        "dateCreated",
+        "subcategoryId",
+        "dateUpdated",
+        "bookingEmail",
+        "lastValidationDate",
+        "validation",
+        "audioDisabilityCompliant",
+        "mentalDisabilityCompliant",
+        "motorDisabilityCompliant",
+        "visualDisabilityCompliant",
+    ]
+    extra_data = getattr(offer, "extraData", {}) or {}
+    offer_mapping = {x: getattr(offer, x) for x in list_of_common_attributes}
+    students = [StudentLevels(x).name for x in extra_data.get("students", [])]  # type: ignore [union-attr]
+    collective_offer = base_class(
+        **offer_mapping,
+        offerId=offer.id,
+        contactEmail=_get_email(offer),
+        contactPhone=_get_phone_number(offer),
+        offerVenue=extra_data.get("offerVenue"),  # type: ignore [union-attr]
+        students=students,
+    )
     if is_template:
-        collective_offer.priceDetail = stock.educationalPriceDetail
+        collective_offer.priceDetail = stock.educationalPriceDetail  # type: ignore [attr-defined]
     db.session.add(collective_offer)
-    return collective_offer
+    return collective_offer  # type: ignore [return-value]
 
 
 def _select_stock(stocks: list[models.Stock]) -> Optional[models.Stock]:
