@@ -1199,7 +1199,7 @@ class SaveVenueBankInformationsTest:
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
         @pytest.mark.usefixtures("db_session")
-        def test_update_text_application_details_on_bank_information_success(
+        def test_update_text_application_details_on_validated_bank_information(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
             OffererFactory(siren="999999999")
@@ -1213,5 +1213,5 @@ class SaveVenueBankInformationsTest:
             mock_update_text_annotation.assert_called_once_with(
                 "DOSSIER_ID",
                 "ANNOTATION_ID",
-                "Dossier imported Sucessfully",
+                "Dossier successfully imported",
             )
