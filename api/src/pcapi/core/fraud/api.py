@@ -107,9 +107,10 @@ def dms_fraud_checks(
     user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
 ) -> list[models.FraudItem]:
     fraud_items = []
-    fraud_items.append(
-        duplicate_id_piece_number_fraud_item(user, beneficiary_fraud_check.source_data().get_id_piece_number())  # type: ignore [union-attr, arg-type]
-    )
+    id_piece_number = beneficiary_fraud_check.source_data().get_id_piece_number()  # type: ignore [union-attr]
+    fraud_items.append(validate_id_piece_number_format_fraud_item(id_piece_number))
+    if id_piece_number:
+        fraud_items.append(duplicate_id_piece_number_fraud_item(user, id_piece_number))
     return fraud_items
 
 
