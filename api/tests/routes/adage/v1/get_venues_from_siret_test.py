@@ -20,7 +20,6 @@ class Returns200Test:
                     "address": venue.address,
                     "latitude": float(venue.latitude),
                     "longitude": float(venue.longitude),
-                    "postalCode": venue.postalCode,
                     "city": venue.city,
                     "siret": venue.siret,
                     "publicName": venue.publicName,
