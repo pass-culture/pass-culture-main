@@ -411,7 +411,7 @@ class EduconnectFraudTest:
             resultContent=fraud_factories.EduconnectContentFactory(age=age),
             user=user,
         )
-        result = fraud_api.educonnect_fraud_checks(user, beneficiary_fraud_check=fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user, fraud_check.source_data())
 
         age_check = next(
             fraud_check
@@ -430,7 +430,7 @@ class EduconnectFraudTest:
             type=fraud_models.FraudCheckType.EDUCONNECT,
             resultContent=fraud_factories.EduconnectContentFactory(age=age),
         )
-        result = fraud_api.educonnect_fraud_checks(user, beneficiary_fraud_check=fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user, fraud_check.source_data())
 
         age_check = next(
             (
@@ -477,7 +477,7 @@ class EduconnectFraudTest:
             user=underage_user,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
-        result = fraud_api.educonnect_fraud_checks(underage_user, fraud_check)
+        result = fraud_api.educonnect_fraud_checks(underage_user, fraud_check.source_data())
 
         assert not any(fraud_item.reason_code == fraud_models.FraudReasonCode.DUPLICATE_USER for fraud_item in result)
 
@@ -489,7 +489,7 @@ class EduconnectFraudTest:
             resultContent=fraud_factories.EduconnectContentFactory(ine_hash=same_ine_user.ineHash),
             user=user_in_validation,
         )
-        result = fraud_api.educonnect_fraud_checks(user_in_validation, fraud_check)
+        result = fraud_api.educonnect_fraud_checks(user_in_validation, fraud_check.source_data())
 
         duplicate_ine_check = next(
             fraud_check

@@ -75,8 +75,8 @@ def force_19yo_dms_import(dry_run: bool = True) -> None:
         fraud_api.create_honor_statement_fraud_check(
             user, "honor statement contained in DMS application", eligibility_type
         )
-        fraud_items = fraud_api.dms_fraud_checks(user, fraud_check)
         content = fraud_check.source_data()
+        fraud_items = fraud_api.dms_fraud_checks(user, content)
         fraud_items.append(
             fraud_api._duplicate_user_fraud_item(
                 content.get_first_name(), content.get_last_name(), content.get_married_name(), user.dateOfBirth, user.id

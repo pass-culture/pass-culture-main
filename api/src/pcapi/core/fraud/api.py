@@ -93,21 +93,18 @@ def on_dms_fraud_result(
 
 
 def educonnect_fraud_checks(
-    user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
+    user: users_models.User, educonnect_content: models.EduconnectContent
 ) -> list[models.FraudItem]:
-    educonnect_content = beneficiary_fraud_check.source_data()
     fraud_items = []
-    fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))  # type: ignore [union-attr, arg-type]
-    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))  # type: ignore [union-attr]
+    fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))
+    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
 
     return fraud_items
 
 
-def dms_fraud_checks(
-    user: users_models.User, beneficiary_fraud_check: models.BeneficiaryFraudCheck
-) -> list[models.FraudItem]:
+def dms_fraud_checks(user: users_models.User, content: models.DMSContent) -> list[models.FraudItem]:
     fraud_items = []
-    id_piece_number = beneficiary_fraud_check.source_data().get_id_piece_number()  # type: ignore [union-attr]
+    id_piece_number = content.get_id_piece_number()
     fraud_items.append(validate_id_piece_number_format_fraud_item(id_piece_number))
     if id_piece_number:
         fraud_items.append(duplicate_id_piece_number_fraud_item(user, id_piece_number))
@@ -119,23 +116,23 @@ def on_identity_fraud_check_result(
     beneficiary_fraud_check: models.BeneficiaryFraudCheck,
 ) -> list[models.FraudItem]:
     fraud_items: list[models.FraudItem] = []
+    identity_content: models.IdentityCheckContent = beneficiary_fraud_check.source_data()  # type: ignore [name-defined]
 
     if beneficiary_fraud_check.type == models.FraudCheckType.UBBLE:
-        fraud_items += ubble_api.ubble_fraud_checks(user, beneficiary_fraud_check)
+        fraud_items += ubble_api.ubble_fraud_checks(user, identity_content)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.DMS:
-        fraud_items += dms_fraud_checks(user, beneficiary_fraud_check)
+        fraud_items += dms_fraud_checks(user, identity_content)
 
     elif beneficiary_fraud_check.type == models.FraudCheckType.EDUCONNECT:
-        fraud_items += educonnect_fraud_checks(user, beneficiary_fraud_check)
+        fraud_items += educonnect_fraud_checks(user, identity_content)
 
     else:
         raise Exception("The fraud_check type is not known")
 
-    content: models.IdentityCheckContent = beneficiary_fraud_check.source_data()  # type: ignore [name-defined]
-    content_first_name = content.get_first_name()
-    content_last_name = content.get_last_name()
-    content_birth_date = content.get_birth_date()
+    content_first_name = identity_content.get_first_name()
+    content_last_name = identity_content.get_last_name()
+    content_birth_date = identity_content.get_birth_date()
 
     # Check for duplicate only when Id Check returns identity details
     if content_first_name and content_last_name and content_birth_date:
@@ -143,7 +140,7 @@ def on_identity_fraud_check_result(
             _duplicate_user_fraud_item(
                 first_name=content_first_name,
                 last_name=content_last_name,
-                married_name=content.get_married_name(),
+                married_name=identity_content.get_married_name(),
                 birth_date=content_birth_date,
                 excluded_user_id=user.id,
             )
