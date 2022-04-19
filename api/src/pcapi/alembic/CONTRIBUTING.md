@@ -6,41 +6,58 @@ Pour effectuer une migration du schéma de la base de données, il est recommand
 
 ### 1. Modifier le modèle applicatif dans les fichiers python
 
-### 2. Générer la migration de manière automatique
+### 2. Identifier s'il s'agit d'un migration `pre` ou `post`
 
-⚠️ Attention à ne pas avoir de contrainte `NOT NULL` au moment du lancement de la commande : 
+Lors d'un déploiement, on part d'un état stable (version `N` des migrations / version `N` du code) vers un autre état stable (version `N+1` des migrations / version `N+1` du code) en passant par 3 phases :
+
+1. Migrations `pre` : les migrations qui sont compatibles avec le code N (exemple : ajout de colonne)
+2. Déploiement du code version `N+1`, compatible avec les migrations `pre`
+3. Migrations `post` : les migrations qui ne sont pas compatibles avec le code version `N` (exemple : suppression de colonne) mais compatibles avec le code version `N+1`
+
+Le code doit être stable pendant ces 3 phases.
+
+NB: la phase 1 peut très bien durer longtemps. Par exemple si une des migrations échoue, le code `N+1` n'est pas déployé alors qu'une partie des migrations `pre` peut être passée.
+
+Il donc est primordial de se poser la question suivante : est-ce que ma migration `N+1` est compatible avec le code version `N` ?
+
+Si oui, il s'agit d'une migration `pre`. Si non, il s'agit d'une migration `post`.
+
+### 2. Générer le fichier de migration
+
+Pour une migration `pre`
 
 ```bash
-pc alembic  revision --autogenerate --head pre@head -m nom_de_la_migration
+pc alembic  revision --head pre@head -m nom_de_la_migration
 ```
 
-Pour générer automatiquement les migrations après l'ajout de contrainte `NOT NULL`
+Pour une migration `post`
 
 ```bash
-pc alembic  revision --autogenerate --head post@head -m nom_de_la_migration
+pc alembic  revision --head post@head -m nom_de_la_migration
 ```
 
-Si [alembic ne détecte pas automatiquement les différences entre le modèle et la db](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect), générer un fichier vide : 
+On peut générer une migration de manière automatique en ajoutant le flag `--autogenerate`.
 
-#### 2.1 Sans contrainte `NOT NULL` : 
+Par exemple :
+
 ```bash
-pc alembic revision -m nom_de_la_migration --head pre@head.
+pc alembic revision -m nom_de_la_migration --autogenerate --head pre@head
 ```
-#### 2.2 AVEC contrainte `NOT NULL` :
-```bash
-pc alembic revision -m nom_de_la_migration --head post@head.
-```
+
+NB: alembic peut ne pas détecter automatiquement les différences entre le modèle et la db [cf la doc autogenrate](https://alembic.sqlalchemy.org/en/latest/autogenerate.html#what-does-autogenerate-detect-and-what-does-it-not-detect).
 
 ### 3. Lire le fichier de migration généré et enlever les commentaires "please adjust"
 
 ### 4. Jouer la migration :
 
-#### 4.1. Dans le cas d'une modification qui n'est pas une contrainte `NOT NULL` ou d'un remplissage de données : 
+Dans le cas d'une modification `pre`
 
 ```bash
 pc alembic upgrade pre@head
 ```
-#### 4.1. Si on veut ajouter une contrainte `NOT NULL` ou remplir une nouvelle colonne :
+
+Dans le cas d'une modification `post`
+
 ```bash
 pc alembic upgrade post@head
 ```
@@ -53,7 +70,13 @@ pc alembic downgrade -1
 
 ## Autres commandes utiles :
 
-- Afficher le sql généré entre 2 migrations sans la jouer : `pc alembic upgrade e7b46b06f6dd:head --sql`
+- Afficher le sql généré entre 2 migrations sans la jouer
+
+```
+pc alembic upgrade e7b46b06f6dd:head --sql
+```
+
+## Do/Don't
 
 ### Do
 
