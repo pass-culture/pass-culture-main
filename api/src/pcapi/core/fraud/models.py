@@ -371,8 +371,7 @@ class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
         nullable=True,
     )
 
-    # Unlike BeneficiaryFraudResult, the eligibility is nullable here to support existing objects.
-    # A script may fill in this column for past objects.
+    # The eligibility is null when the user is not eligible
     eligibilityType = sa.Column(
         sa.Enum(users_models.EligibilityType, create_constraint=False),
         nullable=True,
@@ -403,36 +402,6 @@ class OrphanDmsApplication(PcObject, Model):  # type: ignore [valid-type, misc]
     email = sa.Column(sa.Text, nullable=True, index=True)
     application_id = sa.Column(sa.BigInteger, primary_key=True)
     process_id = sa.Column(sa.BigInteger)
-
-
-class BeneficiaryFraudResult(PcObject, Model):  # type: ignore [valid-type, misc]
-    __tablename__ = "beneficiary_fraud_result"
-
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
-    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
-
-    user = sa.orm.relationship("User", foreign_keys=[userId], backref=sa.orm.backref("beneficiaryFraudResults"))  # type: ignore [misc]
-
-    eligibilityType = sa.Column(
-        sa.Enum(users_models.EligibilityType, create_constraint=False),
-        nullable=True,
-    )
-
-    status = sa.Column(sa.Enum(FraudStatus, create_constraint=False))
-
-    reason = sa.Column(sa.Text)
-
-    reason_codes = sa.Column(
-        sa.ARRAY(sa.Enum(FraudReasonCode, create_constraint=False, native_enum=False)),
-        nullable=False,
-        server_default="{}",
-        default=[],
-    )
-
-    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
-
-    dateUpdated = sa.Column(sa.DateTime, nullable=True, onupdate=sa.func.now())
 
 
 class BeneficiaryFraudReview(PcObject, Model):  # type: ignore [valid-type, misc]

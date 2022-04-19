@@ -14,7 +14,6 @@ def test_delete_user_when_she_has_no_deposit():
     user_without_deposit = users_factories.UserFactory(email="user_to_delete@example.com")
     users_factories.FavoriteFactory(user=user_without_deposit)
     fraud_factories.BeneficiaryFraudCheckFactory(user=user_without_deposit)
-    fraud_factories.BeneficiaryFraudResultFactory(user=user_without_deposit)
     fraud_factories.BeneficiaryFraudReviewFactory(user=user_without_deposit, author=admin)
 
     deposit = Deposit.query.all()

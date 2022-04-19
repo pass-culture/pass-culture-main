@@ -31,11 +31,6 @@ class User19YearOldActivationTest:
             status=fraud_models.FraudCheckStatus.KO,
             reasonCodes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
         )
-        fraud_factories.BeneficiaryFraudResultFactory(
-            user=user,
-            status=fraud_models.FraudStatus.KO,
-            reason_codes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
-        )
 
         force_19yo_dms_import(dry_run=False)
 
@@ -59,11 +54,6 @@ class User19YearOldActivationTest:
             status=fraud_models.FraudCheckStatus.KO,
             reasonCodes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
         )
-        fraud_factories.BeneficiaryFraudResultFactory(
-            user=user,
-            status=fraud_models.FraudStatus.KO,
-            reason_codes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
-        )
 
         force_19yo_dms_import(dry_run=False)
         # TODO : a 19yo user which has applied at 18 year old might be able to activate his account
@@ -80,11 +70,6 @@ class User19YearOldActivationTest:
             status=fraud_models.FraudCheckStatus.KO,
             reasonCodes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
         )
-        fraud_factories.BeneficiaryFraudResultFactory(
-            user=user,
-            status=fraud_models.FraudStatus.KO,
-            reason_codes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
-        )
 
         assert not user.has_beneficiary_role
         assert not user.has_active_deposit
@@ -99,11 +84,6 @@ class User19YearOldActivationTest:
             type=fraud_models.FraudCheckType.UBBLE,
             status=fraud_models.FraudCheckStatus.KO,
             reasonCodes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
-        )
-        fraud_factories.BeneficiaryFraudResultFactory(
-            user=user,
-            status=fraud_models.FraudStatus.KO,
-            reason_codes=[fraud_models.FraudReasonCode.NOT_ELIGIBLE],
         )
 
         force_19yo_dms_import()
