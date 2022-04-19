@@ -325,6 +325,7 @@ class FraudReasonCode(enum.Enum):
     ID_CHECK_UNPROCESSABLE = "id_check_unprocessable"
     INVALID_ID_PIECE_NUMBER = "invalid_id_piece_number"
     INE_NOT_WHITELISTED = "ine_not_whitelisted"  # the value is kept because it still exists in the database
+    MISSING_REQUIRED_DATA = "missing_required_data"
     NAME_INCORRECT = "name_incorrect"
     NOT_ELIGIBLE = "not_eligible"
     PHONE_NOT_VALIDATED = "phone_not_validated"
