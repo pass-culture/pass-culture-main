@@ -297,7 +297,6 @@ def create_short_email_beneficiaries() -> dict:
         db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
         fraud_factories.BeneficiaryFraudCheckFactory(user=beneficiary_and_exunderage)
-        fraud_factories.BeneficiaryFraudResultFactory(user=beneficiary_and_exunderage)
     users_factories.DepositGrantFactory(user=beneficiary_and_exunderage)
     beneficiary_and_exunderage.add_beneficiary_role()
     beneficiary_and_exunderage.remove_underage_beneficiary_role()

@@ -1541,10 +1541,12 @@ class ProfilingFraudScoreTest:
         response = client.post("/native/v1/user_profiling", json={"sessionId": session_id, "agentType": "agent_mobile"})
 
         assert response.status_code == 204
-        assert (
-            fraud_models.BeneficiaryFraudResult.query.filter(fraud_models.BeneficiaryFraudResult.user == user).count()
-            == 0
-        )
+        assert fraud_models.BeneficiaryFraudCheck.query.count() == 1
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
+        assert fraud_check.userId == user.id
+        assert fraud_check.type == fraud_models.FraudCheckType.USER_PROFILING
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+
         assert user.is_subscriptionState_user_profiling_validated()
 
 
