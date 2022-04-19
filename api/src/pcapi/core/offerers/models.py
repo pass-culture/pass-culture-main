@@ -214,6 +214,8 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     bannerMeta = Column(MutableDict.as_mutable(JSONB), nullable=True)
 
+    adageId = Column(Text, nullable=True)
+
     thumb_path_component = "venues"
 
     criteria = sa.orm.relationship(  # type: ignore [misc]
