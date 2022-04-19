@@ -1,5 +1,5 @@
 import { useFormik, FormikProvider } from 'formik'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
 import * as yup from 'yup'
@@ -43,7 +43,7 @@ export interface IOfferEducationalStockProps {
   onSubmit: (
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
-  ) => void
+  ) => Promise<void>
   mode: Mode
   cancelActiveBookings?: () => void
   setIsOfferActive?: (isActive: boolean) => void
@@ -58,10 +58,17 @@ const OfferEducationalStock = ({
   setIsOfferActive,
 }: IOfferEducationalStockProps): JSX.Element => {
   const offerIsDisbaled = isOfferDisabled(offer.status)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const submitForm = async (values: OfferEducationalStockFormValues) => {
+    setIsLoading(true)
+    await onSubmit(offer, values)
+    setIsLoading(false)
+  }
 
   const { resetForm, ...formik } = useFormik({
     initialValues,
-    onSubmit: values => onSubmit(offer, values),
+    onSubmit: submitForm,
     validationSchema: yup.lazy((values: OfferEducationalStockFormValues) => {
       const isShowcase =
         values.educationalOfferType === EducationalOfferType.SHOWCASE
@@ -166,7 +173,7 @@ const OfferEducationalStock = ({
               <SubmitButton
                 className=""
                 disabled={offerIsDisbaled}
-                isLoading={false}
+                isLoading={isLoading}
               >
                 {mode === Mode.CREATION
                   ? 'Valider et créer l’offre'
