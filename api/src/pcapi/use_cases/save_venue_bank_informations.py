@@ -126,7 +126,7 @@ class SaveVenueBankInformations:
                 update_demarches_simplifiees_text_annotations(
                     application_details.dossier_id,  # type: ignore [arg-type]
                     application_details.annotation_id,
-                    "Dossier imported Sucessfully",
+                    "Dossier successfully imported",
                 )
         return bank_information
 
