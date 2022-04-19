@@ -161,6 +161,13 @@ poussé sur le repository distant. La CI lance alors des pipelines de tests.
 - Vendredi, mes deux correctifs sont cette fois OK, je livre en production => `138.2.1`
   et on déploie sur staging.
 
+Pour connaître le numéro de version de l'api déployé :
+
+```
+https://backend.staging.passculture.team/health/api
+https://backend.passculture.app/health/api
+```
+
 ### Hotfixes
 
 Faire un hotfix consiste à créer un nouveau tag à partir du tag précédent avec des commits spécifiques.
