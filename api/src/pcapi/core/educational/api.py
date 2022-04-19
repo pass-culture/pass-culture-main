@@ -584,6 +584,24 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         )
 
 
+def _update_educational_booking_educational_year_id(
+    booking: Union[bookings_models.Booking, educational_models.CollectiveBooking],
+    new_beginning_datetime: datetime.datetime,
+) -> None:
+    educational_year = educational_repository.find_educational_year_by_date(new_beginning_datetime)
+
+    if educational_year is None:
+        raise exceptions.EducationalYearNotFound()
+
+    if isinstance(booking, educational_models.CollectiveBooking):
+        booking.educationalYear = educational_year
+    else:
+        educational_booking = booking.educationalBooking
+        if educational_booking is None:
+            return
+        educational_booking.educationalYear = educational_year
+
+
 def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> CollectiveStock:
     from pcapi.core.offers.api import _update_educational_booking_cancellation_limit_date
 
@@ -608,6 +626,7 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
 
         if beginning:
             _update_educational_booking_cancellation_limit_date(collective_stock_unique_booking, beginning)
+            _update_educational_booking_educational_year_id(collective_stock_unique_booking, beginning)
 
         if stock_data.get("price"):
             collective_stock_unique_booking.amount = stock_data.get("price")

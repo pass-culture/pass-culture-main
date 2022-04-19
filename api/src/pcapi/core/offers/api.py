@@ -768,17 +768,18 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> Stock:
     if educational_stock_unique_booking:
         validation.check_stock_booking_status(educational_stock_unique_booking)  # type: ignore [arg-type]
 
-        educational_stock_unique_booking.educationalBooking.confirmationLimitDate = updatable_fields[  # type: ignore [attr-defined]
+        educational_stock_unique_booking.educationalBooking.confirmationLimitDate = updatable_fields[  # type: ignore [attr-defined, union-attr]
             "bookingLimitDatetime"
         ]
         db.session.add(educational_stock_unique_booking.educationalBooking)  # type: ignore [attr-defined]
 
         if beginning:
             _update_educational_booking_cancellation_limit_date(educational_stock_unique_booking, beginning)  # type: ignore [arg-type]
+            educational_api._update_educational_booking_educational_year_id(educational_stock_unique_booking, beginning)
             db.session.add(educational_stock_unique_booking)
 
         if stock_data.get("price"):
-            educational_stock_unique_booking.amount = stock_data.get("price")  # type: ignore [attr-defined]
+            educational_stock_unique_booking.amount = stock_data.get("price")  # type: ignore [attr-defined, assignment]
             db.session.add(educational_stock_unique_booking)
 
     validation.check_educational_stock_is_editable(stock)
