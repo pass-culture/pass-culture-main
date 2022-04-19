@@ -8,7 +8,6 @@ class BaseVenueModel(BaseModel):
     address: Optional[str]
     latitude: Optional[float]
     longitude: Optional[float]
-    postalCode: Optional[str]
     city: Optional[str]
     publicName: Optional[str]
     description: Optional[str]
