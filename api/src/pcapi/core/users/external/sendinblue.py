@@ -392,6 +392,10 @@ def add_contacts_to_list(user_emails: Iterable[str], sib_list_id: int, clear_lis
                 _wait_for_process(process_api_instance, remove_response.contacts.process_id)
 
         except SendinblueApiException as exception:
+            if exception.status == 524:
+                # Handled first because response is a generic html page, not the expected json body
+                logger.exception("Timeout when calling ContactsApi->remove_contact_from_list(%d)", sib_list_id)
+                return False
             message = json.loads(exception.body).get("message")
             if exception.status == 400 and message == "Contacts already removed from list and/or does not exist":
                 logger.info("ContactsApi->remove_contact_from_list(%d): list was already empty", sib_list_id)
