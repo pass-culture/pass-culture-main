@@ -1,6 +1,8 @@
 from typing import Any
 from typing import Optional
 
+from pydantic import PositiveInt
+
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
 from pcapi.routes.serialization import BaseModel
@@ -45,5 +47,10 @@ class GetVenuesBySiretResponseModel(BaseModel):
     venues: list[VenueModelWithRequiredSiret]
 
 
-class GetVenuesByNameResponseModel(BaseModel):
+class GetVenuesWithOptionalSiretResponseModel(BaseModel):
     venues: list[VenueModelWithOptionalSiret]
+
+
+class GetAllVenuesQueryModel(BaseModel):
+    page: Optional[PositiveInt]
+    per_page: Optional[PositiveInt]
