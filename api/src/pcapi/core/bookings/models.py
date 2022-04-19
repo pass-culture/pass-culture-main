@@ -55,6 +55,11 @@ class BookingStatusFilter(enum.Enum):
     REIMBURSED = "reimbursed"
 
 
+class BookingExportType(enum.Enum):
+    CSV = "csv"
+    EXCEL = "excel"
+
+
 class IndividualBooking(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "individual_booking"
 

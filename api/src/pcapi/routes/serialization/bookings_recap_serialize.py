@@ -4,6 +4,7 @@ from typing import Optional
 
 from pydantic import root_validator
 
+from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
@@ -169,6 +170,7 @@ class ListBookingsQueryModel(BaseModel):
     booking_period_beginning_date: Optional[str]
     booking_period_ending_date: Optional[str]
     offer_type: Optional[OfferType]
+    export_type: Optional[BookingExportType]
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
 

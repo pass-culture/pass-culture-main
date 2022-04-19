@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from typing import cast
 
 from dateutil import parser
 from flask import request
@@ -8,6 +9,7 @@ from flask_login import login_required
 
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingExportType
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
 from pcapi.routes.serialization import serialize
@@ -142,27 +144,21 @@ def get_user_has_bookings() -> UserHasBookingResponse:
     },
 )
 def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
-    venue_id = query.venue_id
-    event_date = parser.parse(query.event_date) if query.event_date else None
-    booking_period = None
-    if query.booking_period_beginning_date and query.booking_period_ending_date:
-        booking_period = (
-            datetime.fromisoformat(query.booking_period_beginning_date).date(),
-            datetime.fromisoformat(query.booking_period_ending_date).date(),
-        )
-    booking_status = query.booking_status_filter
-    offer_type = query.offer_type
 
-    bookings = booking_repository.get_csv_report(
-        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
-        booking_period=booking_period,
-        status_filter=booking_status,
-        event_date=event_date,
-        venue_id=venue_id,
-        offer_type=offer_type,
-    )
+    return _create_booking_export_file(query, BookingExportType.CSV)
 
-    return bookings.encode("utf-8-sig")
+
+@blueprint.pro_private_api.route("/bookings/excel", methods=["GET"])
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "application/vnd.ms-excel",
+        "Content-Disposition": "attachment; filename=reservations_pass_culture.xlsx",
+    },
+)
+def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
+    return _create_booking_export_file(query, BookingExportType.EXCEL)
 
 
 @blueprint.pro_public_api_v2.route("/bookings/token/<token>", methods=["GET"])
@@ -343,3 +339,30 @@ def _create_response_to_get_booking_by_token(booking: Booking) -> dict:
     }
 
     return response
+
+
+def _create_booking_export_file(query: ListBookingsQueryModel, export_type: BookingExportType) -> bytes:
+    venue_id = query.venue_id
+    event_date = parser.parse(query.event_date) if query.event_date else None
+    booking_period = None
+    if query.booking_period_beginning_date and query.booking_period_ending_date:
+        booking_period = (
+            datetime.fromisoformat(query.booking_period_beginning_date).date(),
+            datetime.fromisoformat(query.booking_period_ending_date).date(),
+        )
+    booking_status = query.booking_status_filter
+    offer_type = query.offer_type
+
+    export_data = booking_repository.get_export(
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        booking_period=booking_period,
+        status_filter=booking_status,
+        event_date=event_date,
+        venue_id=venue_id,
+        offer_type=offer_type,
+        export_type=export_type,
+    )
+
+    if export_type == BookingExportType.CSV:
+        return cast(str, export_data).encode("utf-8-sig")
+    return cast(bytes, export_data)

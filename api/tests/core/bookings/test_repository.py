@@ -3,16 +3,19 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from io import BytesIO
 from io import StringIO
 
 from dateutil import tz
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
+import openpyxl
 import pytest
 from pytest import fixture
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.factories import EducationalBookingFactory
+from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
@@ -1042,7 +1045,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
@@ -1106,7 +1109,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
@@ -1181,7 +1184,7 @@ class GetCsvReportTest:
             dateUsed=(booking_date + timedelta(days=8)),
             stock__offer__name="Harry Potter Vol 4",
         )
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro,
             booking_period=((booking_date + timedelta(2)), (booking_date + timedelta(5))),
             status_filter=BookingStatusFilter.VALIDATED,
@@ -1230,7 +1233,7 @@ class GetCsvReportTest:
             stock__offer__name="Harry Potter Vol 4",
         )
 
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro,
             booking_period=((booking_date + timedelta(1)), (booking_date + timedelta(3))),
             status_filter=BookingStatusFilter.REIMBURSED,
@@ -1258,7 +1261,7 @@ class GetCsvReportTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, quantity=2)
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1279,7 +1282,7 @@ class GetCsvReportTest:
         bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer, quantity=2)
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=admin, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1308,7 +1311,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1371,7 +1374,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1404,7 +1407,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1439,7 +1442,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1475,7 +1478,7 @@ class GetCsvReportTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1497,7 +1500,7 @@ class GetCsvReportTest:
         bookings_factories.BookingFactory(user=beneficiary, stock=stock)
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1525,7 +1528,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
@@ -1555,7 +1558,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
         )
 
@@ -1614,7 +1617,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1678,7 +1681,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
         )
 
@@ -1699,7 +1702,7 @@ class GetCsvReportTest:
         booking_two = bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro_user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             venue_id=booking_two.venue.id,
@@ -1728,7 +1731,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_date.date(),
@@ -1764,7 +1767,7 @@ class GetCsvReportTest:
         mayotte_booking = bookings_factories.BookingFactory(stock=stock_in_mayotte)
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             event_date=event_datetime.date(),
@@ -1796,7 +1799,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(booking_beginning_period, booking_ending_period),
         )
@@ -1838,7 +1841,7 @@ class GetCsvReportTest:
         )
 
         # When
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(requested_booking_period_beginning, requested_booking_period_ending),
         )
@@ -1873,7 +1876,7 @@ class GetCsvReportTest:
         # When
         beginning_period = datetime.fromisoformat("2021-10-15")
         ending_period = datetime.fromisoformat("2032-02-15")
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro,
             booking_period=(beginning_period, ending_period),
         )
@@ -1907,7 +1910,7 @@ class GetCsvReportTest:
         # When
         beginning_period = datetime.fromisoformat("2021-10-15")
         ending_period = datetime.fromisoformat("2032-02-15")
-        bookings_csv = booking_repository.get_csv_report(
+        bookings_csv = booking_repository.get_export(
             user=pro,
             booking_period=(beginning_period, ending_period),
         )
@@ -1946,17 +1949,17 @@ class GetCsvReportTest:
         )
 
         # When
-        individual_bookings_csv = booking_repository.get_csv_report(
+        individual_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             offer_type=OfferType.INDIVIDUAL_OR_DUO,
         )
-        educational_bookings_csv = booking_repository.get_csv_report(
+        educational_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             offer_type=OfferType.EDUCATIONAL,
         )
-        all_bookings_csv = booking_repository.get_csv_report(
+        all_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
         )
@@ -1996,7 +1999,7 @@ class GetCsvReportTest:
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
             ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_csv_report(
+            bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
             )
@@ -2038,7 +2041,7 @@ class GetCsvReportTest:
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
             ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_csv_report(
+            bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
             )
@@ -2081,7 +2084,7 @@ class GetCsvReportTest:
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
             ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_csv_report(
+            bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
             )
@@ -2126,7 +2129,7 @@ class GetCsvReportTest:
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
             ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_csv_report(
+            bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
             )
@@ -2173,7 +2176,7 @@ class GetCsvReportTest:
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
             ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_csv_report(
+            bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
             )
@@ -2233,7 +2236,7 @@ class GetCsvReportTest:
             # When
             beginning_period = datetime.fromisoformat("2021-10-15")
             ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_csv_report(
+            bookings_csv = booking_repository.get_export(
                 user=pro,
                 booking_period=(beginning_period, ending_period),
             )
@@ -2249,6 +2252,88 @@ class GetCsvReportTest:
                 "remboursé",
                 "validé",
             ]
+
+
+class GetExcelReportTest:
+    def test_should_return_excel_export_according_to_booking_atrributes(self):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        booking = bookings_factories.UsedBookingFactory(
+            user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+        headers = [
+            "Lieu",
+            "Nom de l’offre",
+            "Date de l'évènement",
+            "ISBN",
+            "Nom et prénom du bénéficiaire",
+            "Email du bénéficiaire",
+            "Téléphone du bénéficiaire",
+            "Date et heure de réservation",
+            "Date et heure de validation",
+            "Contremarque",
+            "Prix de la réservation",
+            "Statut de la contremarque",
+            "Date et heure de remboursement",
+            "Type d'offre",
+        ]
+
+        # When
+        bookings_excel = booking_repository.get_export(
+            user=pro,
+            booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365)),
+            export_type=BookingExportType.EXCEL,
+        )
+        wb = openpyxl.load_workbook(BytesIO(bookings_excel))
+        sheet = wb.active
+
+        # Then
+        # Headers
+        for i in range(1, len(headers)):
+            assert sheet.cell(row=1, column=i).value == headers[i - 1]
+        # Lieu
+        assert sheet.cell(row=2, column=1).value == venue.name
+        # Nom de l’offre
+        assert sheet.cell(row=2, column=2).value == offer.name
+        # Date de l'évènement
+        assert sheet.cell(row=2, column=3).value == "None"
+        # ISBN
+        assert sheet.cell(row=2, column=4).value == ((offer.extraData or {}).get("isbn") or None)
+        # Nom et prénom du bénéficiaire
+        assert sheet.cell(row=2, column=5).value == " ".join((beneficiary.lastName, beneficiary.firstName))
+        # Email du bénéficiaire
+        assert sheet.cell(row=2, column=6).value == beneficiary.email
+        # Téléphone du bénéficiaire
+        assert sheet.cell(row=2, column=7).value == (beneficiary.phoneNumber or None)
+        # Date et heure de réservation
+        assert sheet.cell(row=2, column=8).value == str(booking.dateCreated.astimezone(tz.gettz("Europe/Paris")))
+        # Date et heure de validation
+        assert sheet.cell(row=2, column=9).value == str(booking.dateUsed.astimezone(tz.gettz("Europe/Paris")))
+        # Contremarque
+        assert sheet.cell(row=2, column=10).value == booking.token
+        # Prix de la réservation
+        assert sheet.cell(row=2, column=11).value == booking.amount
+        # Statut de la contremarque
+        assert sheet.cell(row=2, column=12).value == booking_repository.BOOKING_STATUS_LABELS[booking.status]
+        # Date et heure de remboursement
+        assert sheet.cell(row=2, column=13).value == "None"
+        # Type d'offre
+        assert sheet.cell(row=2, column=14).value == "offre grand public"
 
 
 class FindSoonToBeExpiredBookingsTest:
