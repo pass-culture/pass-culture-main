@@ -1,4 +1,3 @@
-import { action } from '@storybook/addon-actions'
 import { Story } from '@storybook/react'
 import React from 'react'
 
@@ -35,7 +34,7 @@ const Template: Story<{ mode: Mode }> = args => (
       isEducational: true,
       isShowcase: false,
     }}
-    onSubmit={action('onSubmit')}
+    onSubmit={jest.fn()}
     setIsOfferActive={() => null}
     {...args}
   />
