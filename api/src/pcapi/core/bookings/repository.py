@@ -3,12 +3,14 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from io import BytesIO
 from io import StringIO
 import math
 import typing
 from typing import Iterable
 from typing import List
 from typing import Optional
+from typing import Union
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
@@ -24,10 +26,12 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import not_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
+import xlsxwriter
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
+from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.models import IndividualBooking
@@ -71,6 +75,23 @@ BOOKING_DATE_STATUS_MAPPING = {
     BookingStatusFilter.VALIDATED: Booking.dateUsed,
     BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
 }
+
+BOOKING_EXPORT_HEADER = [
+    "Lieu",
+    "Nom de l’offre",
+    "Date de l'évènement",
+    "ISBN",
+    "Nom et prénom du bénéficiaire",
+    "Email du bénéficiaire",
+    "Téléphone du bénéficiaire",
+    "Date et heure de réservation",
+    "Date et heure de validation",
+    "Contremarque",
+    "Prix de la réservation",
+    "Statut de la contremarque",
+    "Date et heure de remboursement",
+    "Type d'offre",
+]
 
 
 def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
@@ -390,14 +411,15 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
     )
 
 
-def get_csv_report(
+def get_export(
     user: User,
     booking_period: Optional[tuple[date, date]] = None,
     status_filter: Optional[BookingStatusFilter] = BookingStatusFilter.BOOKED,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
-) -> str:
+    export_type: Optional[BookingExportType] = BookingExportType.CSV,
+) -> Union[str, bytes]:
     bookings_query = _get_filtered_booking_report(
         pro_user=user,
         period=booking_period,  # type: ignore [arg-type]
@@ -407,6 +429,8 @@ def get_csv_report(
         offer_type=offer_type,
     )
     bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
+    if export_type == BookingExportType.EXCEL:
+        return _serialize_excel_report(bookings_query)
     return _serialize_csv_report(bookings_query)
 
 
@@ -659,24 +683,7 @@ def _get_booking_status(status: BookingStatus, is_confirmed: bool) -> str:
 def _serialize_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(
-        (
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "ISBN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-        )
-    )
+    writer.writerow(BOOKING_EXPORT_HEADER)
     for booking in query.yield_per(1000):
         writer.writerow(
             (
@@ -699,6 +706,50 @@ def _serialize_csv_report(query: BaseQuery) -> str:
             )
         )
 
+    return output.getvalue()
+
+
+def _serialize_excel_report(query: BaseQuery) -> bytes:
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+
+    bold = workbook.add_format({"bold": 1})
+    currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
+    col_width = 18
+
+    worksheet = workbook.add_worksheet()
+    row = 0
+
+    for col_num, title in enumerate(BOOKING_EXPORT_HEADER):
+        worksheet.write(row, col_num, title, bold)
+        worksheet.set_column(col_num, col_num, col_width)
+    row = 1
+    for booking in query.yield_per(1000):
+        worksheet.write(row, 0, booking.venueName)
+        worksheet.write(row, 1, booking.offerName)
+        worksheet.write(
+            row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
+        )
+        worksheet.write(row, 3, booking.isbn)
+        worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
+        worksheet.write(row, 5, booking.beneficiaryEmail)
+        worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
+        worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+        worksheet.write(
+            row,
+            9,
+            booking_recap_utils.get_booking_token(
+                booking.token, booking.status, booking.offerIsEducational, booking.stockBeginningDatetime
+            ),
+        )
+        worksheet.write(row, 10, booking.amount, currency_format)
+        worksheet.write(row, 11, _get_booking_status(booking.status, booking.isConfirmed))
+        worksheet.write(row, 12, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+        worksheet.write(row, 13, serialize_offer_type_educational_or_individual(booking.offerIsEducational))
+        row += 1
+
+    workbook.close()
     return output.getvalue()
 
 
