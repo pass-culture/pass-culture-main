@@ -482,6 +482,20 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     return [venue]
 
 
+def get_all_venues(page: Optional[int], per_page: Optional[int]) -> list[offerers_models.Venue]:
+    page = 1 if page is None else page
+    per_page = 1000 if per_page is None else per_page
+
+    return (
+        offerers_models.Venue.query.filter_by(isVirtual=False)
+        .order_by(offerers_models.Venue.id)
+        .offset((page - 1) * per_page)
+        .limit(per_page)
+        .options(joinedload(offerers_models.Venue.contact))
+        .all()
+    )
+
+
 def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
     name = name.replace(" ", "%")
     name = name.replace("-", "%")
