@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
+from io import BytesIO
 from io import StringIO
 import math
 import typing
@@ -24,6 +25,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import not_
 from sqlalchemy.sql.functions import coalesce
 from sqlalchemy.util._collections import AbstractKeyedTuple
+import xlsxwriter
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
@@ -410,6 +412,26 @@ def get_csv_report(
     return _serialize_csv_report(bookings_query)
 
 
+def get_excel_report(
+    user: User,
+    booking_period: Optional[tuple[date, date]] = None,
+    status_filter: Optional[BookingStatusFilter] = BookingStatusFilter.BOOKED,
+    event_date: Optional[datetime] = None,
+    venue_id: Optional[int] = None,
+    offer_type: Optional[OfferType] = None,
+) -> str:
+    bookings_query = _get_filtered_booking_report(
+        pro_user=user,
+        period=booking_period,  # type: ignore [arg-type]
+        status_filter=status_filter,  # type: ignore [arg-type]
+        event_date=event_date,
+        venue_id=venue_id,
+        offer_type=offer_type,
+    )
+    bookings_query = _duplicate_booking_when_quantity_is_two(bookings_query)
+    return _serialize_excel_report(bookings_query)
+
+
 # FIXME (Gautier, 03-25-2022): also used in collective_booking. SHould we move it to core or some other place?
 def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
     return cast(func.timezone(Venue.timezone, func.timezone("UTC", field)), Date)
@@ -697,6 +719,91 @@ def _serialize_csv_report(query: BaseQuery) -> str:
             )
         )
 
+    return output.getvalue()
+
+
+def _serialize_excel_report(query: BaseQuery) -> xlsxwriter.Workbook:
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+
+    bold = workbook.add_format({"bold": 1})
+    currency_format = workbook.add_format({"num_format": "#\ ##0.00\ [$€-fr-FR]"})
+
+    worksheet = workbook.add_worksheet()
+    row = 0
+    col_titles = [
+        "Lieu",
+        "Nom de l’offre",
+        "Date de l'évènement",
+        "ISBN",
+        "Nom et prénom du bénéficiaire",
+        "Email du bénéficiaire",
+        "Téléphone du bénéficiaire",
+        "Date et heure de réservation",
+        "Date et heure de validation",
+        "Contremarque",
+        "Prix de la réservation",
+        "Statut de la contremarque",
+        "Date et heure de remboursement",
+        "Type d'offre",
+    ]
+
+    for col_num, title in enumerate(col_titles):
+        worksheet.write(row, col_num, title, bold)
+    row = 1
+    for booking in query.yield_per(1000):
+        worksheet.set_column(0, 0, 140)
+        worksheet.write(row, 0, booking.venueName)
+
+        worksheet.set_column(1, 1, 140)
+        worksheet.write(row, 1, booking.offerName)
+
+        worksheet.set_column(2, 2, 25)
+        worksheet.write(
+            row, 2, str(convert_booking_dates_utc_to_venue_timezone(booking.stockBeginningDatetime, booking))
+        )
+
+        worksheet.set_column(3, 3, 25)
+        worksheet.write(row, 3, booking.isbn)
+
+        worksheet.set_column(4, 4, 30)
+        worksheet.write(row, 4, f"{booking.beneficiaryLastName} {booking.beneficiaryFirstName}")
+
+        worksheet.set_column(5, 5, 120)
+        worksheet.write(row, 5, booking.beneficiaryEmail)
+
+        worksheet.set_column(6, 6, 25)
+        worksheet.write(row, 6, booking.beneficiaryPhoneNumber)
+
+        worksheet.set_column(7, 7, 25)
+        worksheet.write(row, 7, str(convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)))
+
+        worksheet.set_column(8, 8, 25)
+        worksheet.write(row, 8, str(convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking)))
+
+        worksheet.set_column(9, 9, 15)
+        worksheet.write(
+            row,
+            9,
+            booking_recap_utils.get_booking_token(
+                booking.token, booking.status, booking.offerIsEducational, booking.stockBeginningDatetime
+            ),
+        )
+
+        worksheet.set_column(10, 10, 25)
+        worksheet.write(row, 10, booking.amount, currency_format)
+
+        worksheet.set_column(11, 11, 25)
+        worksheet.write(row, 11, _get_booking_status(booking.status, booking.isConfirmed))
+
+        worksheet.set_column(12, 12, 25)
+        worksheet.write(row, 12, str(convert_booking_dates_utc_to_venue_timezone(booking.reimbursedAt, booking)))
+
+        worksheet.set_column(13, 13, 20)
+        worksheet.write(row, 13, serialize_offer_type_educational_or_individual(booking.offerIsEducational))
+        row += 1
+
+    workbook.close()
     return output.getvalue()
 
 

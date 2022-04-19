@@ -91,3 +91,4 @@ Werkzeug==2.0.3
 wheel==0.35.1
 WTForms==2.3.3
 WTForms-SQLAlchemy==0.2
+XlsxWriter

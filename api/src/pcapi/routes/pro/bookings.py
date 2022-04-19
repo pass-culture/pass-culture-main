@@ -165,6 +165,39 @@ def get_bookings_csv(query: ListBookingsQueryModel) -> bytes:
     return bookings.encode("utf-8-sig")
 
 
+@blueprint.pro_private_api.route("/bookings/excel", methods=["GET"])
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "application/vnd.ms-excel",
+        "Content-Disposition": "attachment; filename=reservations_pass_culture.xlsx",
+    },
+)
+def get_bookings_excel(query: ListBookingsQueryModel) -> bytes:
+    venue_id = query.venue_id
+    event_date = parser.parse(query.event_date) if query.event_date else None
+    booking_period = None
+    if query.booking_period_beginning_date and query.booking_period_ending_date:
+        booking_period = (
+            datetime.fromisoformat(query.booking_period_beginning_date).date(),
+            datetime.fromisoformat(query.booking_period_ending_date).date(),
+        )
+    booking_status = query.booking_status_filter
+    offer_type = query.offer_type
+
+    bookings = booking_repository.get_excel_report(
+        user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
+        booking_period=booking_period,
+        status_filter=booking_status,
+        event_date=event_date,
+        venue_id=venue_id,
+        offer_type=offer_type,
+    )
+
+    return bookings
+
+
 @blueprint.pro_public_api_v2.route("/bookings/token/<token>", methods=["GET"])
 @ip_rate_limiter(deduct_when=lambda response: response.status_code == 401)
 @basic_auth_rate_limiter()
