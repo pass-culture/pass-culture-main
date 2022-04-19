@@ -16,6 +16,7 @@ class Returns200Test:
             "venues": [
                 {
                     "id": venue.id,
+                    "adageId": venue.adageId,
                     "name": venue.name,
                     "address": venue.address,
                     "latitude": float(venue.latitude),
@@ -24,6 +25,9 @@ class Returns200Test:
                     "siret": venue.siret,
                     "publicName": venue.publicName,
                     "description": venue.description,
+                    "phoneNumber": venue.contact.phone_number,
+                    "email": venue.contact.email,
+                    "website": venue.contact.website,
                 }
             ]
         }

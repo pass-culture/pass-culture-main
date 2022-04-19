@@ -474,7 +474,11 @@ def create_educational_deposit(
 
 
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
-    venue = offerers_models.Venue.query.filter_by(siret=siret).one()
+    venue = (
+        offerers_models.Venue.query.filter_by(siret=siret, isVirtual=False)
+        .options(joinedload(offerers_models.Venue.contact))
+        .one()
+    )
     return [venue]
 
 
@@ -490,6 +494,7 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
             )
         )
         .filter(offerers_models.Venue.isVirtual.is_(False))
+        .options(joinedload(offerers_models.Venue.contact))
         .all()
     )
     return venues
