@@ -155,14 +155,14 @@ describe('route Offers', () => {
         it('should filter offers given status filter when clicking on "Appliquer"', async () => {
           // Given
           renderOffers(store)
-          fireEvent.click(
+          await userEvent.click(
             await screen.findByAltText(
               'Afficher ou masquer le filtre par statut'
             )
           )
-          fireEvent.click(screen.getByLabelText('Expirée'))
+          await userEvent.click(screen.getByLabelText('Expirée'))
           // When
-          fireEvent.click(screen.getByText('Appliquer'))
+          await userEvent.click(screen.getByText('Appliquer'))
           // Then
           expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -183,13 +183,13 @@ describe('route Offers', () => {
             .mockResolvedValueOnce([])
           renderOffers(store)
           // When
-          fireEvent.click(
+          await userEvent.click(
             await screen.findByAltText(
               'Afficher ou masquer le filtre par statut'
             )
           )
-          fireEvent.click(screen.getByLabelText('Expirée'))
-          fireEvent.click(screen.getByText('Appliquer'))
+          await userEvent.click(screen.getByLabelText('Expirée'))
+          await userEvent.click(screen.getByText('Appliquer'))
           // Then
           const noOffersForSearchFiltersText = await screen.findByText(
             'Aucune offre trouvée pour votre recherche'
@@ -270,7 +270,7 @@ describe('route Offers', () => {
               target: { value: ALL_VENUES },
             })
             // When
-            fireEvent.click(screen.getByText('Lancer la recherche'))
+            await userEvent.click(screen.getByText('Lancer la recherche'))
             // Then
             const statusFiltersIcon = await screen.findByAltText(
               'Afficher ou masquer le filtre par statut'
@@ -298,7 +298,7 @@ describe('route Offers', () => {
             }
             renderOffers(store, filters)
             // When
-            fireEvent.click(
+            await userEvent.click(
               await screen.findByAltText('Supprimer le filtre par structure')
             )
             // Then
@@ -330,7 +330,7 @@ describe('route Offers', () => {
             }
             renderOffers(store, filters)
             // When
-            fireEvent.click(
+            await userEvent.click(
               await screen.findByAltText('Supprimer le filtre par structure')
             )
             // Then
@@ -389,7 +389,7 @@ describe('route Offers', () => {
             }
           )
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getOffersListOffers).toHaveBeenCalledWith(
             'Any word',
@@ -410,9 +410,9 @@ describe('route Offers', () => {
             name: proVenues[0].name,
           })
           const venueSelect = screen.getByLabelText('Lieu')
-          userEvent.selectOptions(venueSelect, firstVenueOption)
+          await userEvent.selectOptions(venueSelect, firstVenueOption)
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getOffersListOffers).toHaveBeenCalledWith(
             undefined,
@@ -437,7 +437,7 @@ describe('route Offers', () => {
           )
           userEvent.selectOptions(typeSelect, firstTypeOption)
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -462,7 +462,7 @@ describe('route Offers', () => {
             target: { value: importedCreationMode },
           })
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -479,12 +479,14 @@ describe('route Offers', () => {
         it('should load offers with selected period beginning date', async () => {
           // Given
           renderOffers(store)
-          fireEvent.click(
-            (await screen.findAllByPlaceholderText('JJ/MM/AAAA'))[0]
+          await userEvent.click(
+            (
+              await screen.findAllByPlaceholderText('JJ/MM/AAAA')
+            )[0]
           )
-          fireEvent.click(screen.getByText('25'))
+          await userEvent.click(screen.getByText('25'))
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -501,12 +503,14 @@ describe('route Offers', () => {
         it('should load offers with selected period ending date', async () => {
           // Given
           renderOffers(store)
-          fireEvent.click(
-            (await screen.findAllByPlaceholderText('JJ/MM/AAAA'))[1]
+          await userEvent.click(
+            (
+              await screen.findAllByPlaceholderText('JJ/MM/AAAA')
+            )[1]
           )
-          fireEvent.click(screen.getByText('27'))
+          await userEvent.click(screen.getByText('27'))
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
             undefined,
@@ -531,7 +535,7 @@ describe('route Offers', () => {
       const { history } = renderOffers(store)
       const nextPageIcon = await screen.findByAltText('page suivante')
       // When
-      fireEvent.click(nextPageIcon)
+      await userEvent.click(nextPageIcon)
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -551,7 +555,7 @@ describe('route Offers', () => {
           target: { value: 'AnyWord' },
         }
       )
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -567,7 +571,7 @@ describe('route Offers', () => {
       )
       // When
       fireEvent.change(searchInput, { target: { value: 'search string' } })
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       // Then
       expect(api.getOffersListOffers).toHaveBeenCalledWith(
         'search string',
@@ -593,7 +597,7 @@ describe('route Offers', () => {
           target: { value: ALL_OFFERS },
         }
       )
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({})
@@ -608,7 +612,7 @@ describe('route Offers', () => {
       const venueSelect = screen.getByLabelText('Lieu')
       // When
       userEvent.selectOptions(venueSelect, firstVenueOption)
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -637,7 +641,7 @@ describe('route Offers', () => {
       )
       // When
       userEvent.selectOptions(typeSelect, firstTypeOption)
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -659,12 +663,12 @@ describe('route Offers', () => {
         ),
       ])
       const { history } = renderOffers(store)
-      fireEvent.click(
+      await userEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
       )
-      fireEvent.click(screen.getByLabelText('Épuisée'))
+      await userEvent.click(screen.getByLabelText('Épuisée'))
       // When
-      fireEvent.click(screen.getByText('Appliquer'))
+      await userEvent.click(screen.getByText('Appliquer'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -686,12 +690,12 @@ describe('route Offers', () => {
         ),
       ])
       const { history } = renderOffers(store)
-      fireEvent.click(
+      await userEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
       )
-      fireEvent.click(screen.getByLabelText('Tous'))
+      await userEvent.click(screen.getByLabelText('Tous'))
       // When
-      fireEvent.click(screen.getByText('Appliquer'))
+      await userEvent.click(screen.getByText('Appliquer'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({})
@@ -718,7 +722,7 @@ describe('route Offers', () => {
       })
       renderOffers(store, filters)
       // When
-      fireEvent.click(
+      await userEvent.click(
         await screen.findByAltText('Supprimer le filtre par structure')
       )
       // Then
@@ -732,7 +736,7 @@ describe('route Offers', () => {
       fireEvent.change(await screen.findByDisplayValue('Tous les modes'), {
         target: { value: 'manual' },
       })
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({
@@ -747,12 +751,12 @@ describe('route Offers', () => {
       fireEvent.change(screen.getByDisplayValue('Tous les modes'), {
         target: { value: 'manual' },
       })
-      fireEvent.click(searchButton)
+      await userEvent.click(searchButton)
       // When
       fireEvent.change(screen.getByDisplayValue('Manuelle'), {
         target: { value: DEFAULT_CREATION_MODE.id },
       })
-      fireEvent.click(searchButton)
+      await userEvent.click(searchButton)
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
       expect(urlSearchParams).toMatchObject({})
@@ -770,7 +774,7 @@ describe('route Offers', () => {
       })
 
       // When
-      fireEvent.click(collectiveAudienceLink)
+      await userEvent.click(collectiveAudienceLink)
 
       // Then
       await waitFor(() => {
@@ -785,7 +789,7 @@ describe('route Offers', () => {
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       // When
-      fireEvent.click(nextIcon)
+      await userEvent.click(nextIcon)
       // Then
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
       await expect(
@@ -801,9 +805,9 @@ describe('route Offers', () => {
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       const previousIcon = await screen.findByAltText('page précédente')
-      fireEvent.click(nextIcon)
+      await userEvent.click(nextIcon)
       // When
-      fireEvent.click(previousIcon)
+      await userEvent.click(previousIcon)
       // Then
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
       await expect(
@@ -859,7 +863,7 @@ describe('route Offers', () => {
         const nextIcon = await screen.findByAltText('page suivante')
         // When
         for (let i = 1; i < 51; i++) {
-          fireEvent.click(nextIcon)
+          await userEvent.click(nextIcon)
         }
         // Then
         expect(screen.getByText(offersRecap[499].name)).toBeInTheDocument()
@@ -885,7 +889,7 @@ describe('route Offers', () => {
         ALL_VENUES_OPTION.displayName
       )
 
-      userEvent.selectOptions(venueSelect, firstVenueOption)
+      await userEvent.selectOptions(venueSelect, firstVenueOption)
 
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
       expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
@@ -900,7 +904,7 @@ describe('route Offers', () => {
         undefined
       )
 
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
 
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(2)
       expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
@@ -917,7 +921,7 @@ describe('route Offers', () => {
 
       await screen.findByText('Aucune offre trouvée pour votre recherche')
 
-      fireEvent.click(screen.getByText('afficher toutes les offres'))
+      await userEvent.click(screen.getByText('afficher toutes les offres'))
 
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(3)
       expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
@@ -948,7 +952,7 @@ describe('route Offers', () => {
         ALL_VENUES_OPTION.displayName
       )
 
-      userEvent.selectOptions(venueSelect, venueOptionToSelect)
+      await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
       expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
@@ -963,7 +967,7 @@ describe('route Offers', () => {
         undefined
       )
 
-      fireEvent.click(screen.getByText('Lancer la recherche'))
+      await userEvent.click(screen.getByText('Lancer la recherche'))
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(2)
       expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
         2,
@@ -977,7 +981,7 @@ describe('route Offers', () => {
         undefined
       )
 
-      fireEvent.click(screen.getByText('Réinitialiser les filtres'))
+      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
       expect(api.getOffersListOffers).toHaveBeenCalledTimes(3)
       expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
         3,

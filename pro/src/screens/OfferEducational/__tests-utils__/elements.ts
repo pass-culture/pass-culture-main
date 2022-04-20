@@ -18,10 +18,10 @@ import {
 } from '../constants/labels'
 
 export const elements = {
-  queryOffererSelect: (): QueryFieldResponse<HTMLSelectElement> =>
+  queryOffererSelect: (): Promise<QueryFieldResponse<HTMLSelectElement>> =>
     queryField<HTMLSelectElement>(OFFERER_LABEL),
 
-  queryVenueSelect: (): QueryFieldResponse<HTMLSelectElement> =>
+  queryVenueSelect: (): Promise<QueryFieldResponse<HTMLSelectElement>> =>
     queryField<HTMLSelectElement>(VENUE_LABEL),
 
   findOfferTypeTitle: (): Promise<HTMLElement> =>
@@ -34,25 +34,26 @@ export const elements = {
       name: 'Type d’offre',
     }),
 
-  queryCategorySelect: (): QueryFieldResponse<HTMLSelectElement> =>
+  queryCategorySelect: (): Promise<QueryFieldResponse<HTMLSelectElement>> =>
     queryField<HTMLSelectElement>(CATEGORY_LABEL),
 
-  querySubcategorySelect: (): QueryFieldResponse<HTMLSelectElement> =>
+  querySubcategorySelect: (): Promise<QueryFieldResponse<HTMLSelectElement>> =>
     queryField<HTMLSelectElement>(SUBCATEGORY_LABEL),
 
-  queryTitleInput: (): QueryFieldResponse<HTMLInputElement> =>
+  queryTitleInput: (): Promise<QueryFieldResponse<HTMLInputElement>> =>
     queryField<HTMLInputElement>(TITLE_LABEL),
 
-  queryDescriptionTextArea: (): QueryFieldResponse<HTMLTextAreaElement> =>
-    queryField<HTMLTextAreaElement>(DESCRIPTION_LABEL),
+  queryDescriptionTextArea: (): Promise<
+    QueryFieldResponse<HTMLTextAreaElement>
+  > => queryField<HTMLTextAreaElement>(DESCRIPTION_LABEL),
 
-  queryDurationInput: (): QueryFieldResponse<HTMLInputElement> =>
+  queryDurationInput: (): Promise<QueryFieldResponse<HTMLInputElement>> =>
     queryField<HTMLInputElement>(DURATION_LABEL),
 
   queryOfferVenueRadioButtons: (): {
-    offererVenueRadio: QueryFieldResponse<HTMLInputElement>
-    schoolRadio: QueryFieldResponse<HTMLInputElement>
-    otherRadio: QueryFieldResponse<HTMLInputElement>
+    offererVenueRadio: Promise<QueryFieldResponse<HTMLInputElement>>
+    schoolRadio: Promise<QueryFieldResponse<HTMLInputElement>>
+    otherRadio: Promise<QueryFieldResponse<HTMLInputElement>>
   } => ({
     offererVenueRadio: queryField<HTMLInputElement>(
       EVENT_ADDRESS_OFFERER_LABEL
@@ -61,12 +62,13 @@ export const elements = {
     otherRadio: queryField<HTMLInputElement>(EVENT_ADDRESS_OTHER_LABEL),
   }),
 
-  queryOfferVenueSelect: (): QueryFieldResponse<HTMLSelectElement> =>
+  queryOfferVenueSelect: (): Promise<QueryFieldResponse<HTMLSelectElement>> =>
     queryField<HTMLSelectElement>(EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL),
 
   queryOfferVenueAddressDisplay: (): HTMLElement | null =>
     screen.queryByText('Venue name', { exact: false, selector: 'p' }),
 
-  queryOfferVenueTextArea: (): QueryFieldResponse<HTMLTextAreaElement> =>
-    queryField<HTMLTextAreaElement>(EVENT_ADDRESS_OTHER_ADDRESS_LABEL),
+  queryOfferVenueTextArea: (): Promise<
+    QueryFieldResponse<HTMLTextAreaElement>
+  > => queryField<HTMLTextAreaElement>(EVENT_ADDRESS_OTHER_ADDRESS_LABEL),
 }

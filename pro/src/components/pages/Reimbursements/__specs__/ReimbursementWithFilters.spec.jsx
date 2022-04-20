@@ -277,7 +277,7 @@ describe('reimbursementsWithFilters', () => {
 
     // when
     const options = await within(filters.venue).findAllByRole('option')
-    userEvent.selectOptions(filters.venue, [options[1].value])
+    await userEvent.selectOptions(filters.venue, [options[1].value])
 
     // then
     expect(buttons.download).toBeEnabled()
@@ -347,7 +347,7 @@ describe('reimbursementsWithFilters', () => {
       `${API_URL}/remboursements-details?${initialFilterUrlParams}`
     )
     const options = await within(filters.venue).findAllByRole('option')
-    userEvent.selectOptions(filters.venue, [options[1].value])
+    await userEvent.selectOptions(filters.venue, [options[1].value])
     expect(buttons.display).toHaveAttribute(
       'href',
       `${API_URL}/remboursements-details?${withVenueFilterUrlParams}`

@@ -1,12 +1,5 @@
 import '@testing-library/jest-dom'
-import {
-  act,
-  render,
-  screen,
-  fireEvent,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
@@ -168,12 +161,14 @@ describe('homepage', () => {
         await renderHomePage(store)
       })
 
-      it('should smooth scroll to section if user doesnt prefer reduced motion', () => {
+      it('should smooth scroll to section if user doesnt prefer reduced motion', async () => {
         // given
         doesUserPreferReducedMotion.mockReturnValue(false)
 
         // when
-        userEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
+        await userEvent.click(
+          screen.getByRole('link', { name: 'Profil et aide' })
+        )
 
         // then
         expect(scrollIntoViewMock).toHaveBeenCalledWith({
@@ -181,12 +176,14 @@ describe('homepage', () => {
         })
       })
 
-      it('should jump to section if user prefers reduced motion', () => {
+      it('should jump to section if user prefers reduced motion', async () => {
         // given
         doesUserPreferReducedMotion.mockReturnValue(true)
 
         // when
-        userEvent.click(screen.getByRole('link', { name: 'Profil et aide' }))
+        await userEvent.click(
+          screen.getByRole('link', { name: 'Profil et aide' })
+        )
 
         // then
         expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'auto' })
@@ -199,11 +196,11 @@ describe('homepage', () => {
           .spyOn(pcapi, 'setHasSeenRGSBanner')
           .mockResolvedValue()
         renderHomePage(store)
-        userEvent.click(screen.getByRole('img', { name: /Masquer le bandeau/ }))
-        expect(spyRegister).toHaveBeenCalledTimes(1)
-        await waitForElementToBeRemoved(() =>
-          screen.queryByText(/Soyez vigilant/)
+        await userEvent.click(
+          screen.getByRole('img', { name: /Masquer le bandeau/ })
         )
+        expect(spyRegister).toHaveBeenCalledTimes(1)
+        expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
       })
       it('should not display if user has already seen', () => {
         jest
@@ -258,10 +255,14 @@ describe('homepage', () => {
 
         it('should close the modal when clicking on cancel button', async () => {
           // given
-          userEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+          await userEvent.click(
+            screen.getByText('Modifier', { selector: 'button' })
+          )
 
           // when
-          userEvent.click(screen.getByText('Annuler', { selector: 'button' }))
+          await userEvent.click(
+            screen.getByText('Annuler', { selector: 'button' })
+          )
 
           // then
           await waitFor(() =>
@@ -271,7 +272,9 @@ describe('homepage', () => {
 
         it('should update user info on submit', async () => {
           // given
-          userEvent.click(screen.getByText('Modifier', { selector: 'button' }))
+          await userEvent.click(
+            screen.getByText('Modifier', { selector: 'button' })
+          )
           fireEvent.change(screen.getByLabelText('Prénom'), {
             target: { value: 'Johnny' },
           })

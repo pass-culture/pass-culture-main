@@ -435,7 +435,7 @@ describe('route CollectiveOffers', () => {
             name: proVenues[0].name,
           })
           const venueSelect = screen.getByLabelText('Lieu')
-          userEvent.selectOptions(venueSelect, firstVenueOption)
+          await userEvent.selectOptions(venueSelect, firstVenueOption)
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
@@ -460,9 +460,9 @@ describe('route CollectiveOffers', () => {
           const typeSelect = screen.getByDisplayValue(
             ALL_CATEGORIES_OPTION.displayName
           )
-          userEvent.selectOptions(typeSelect, firstTypeOption)
+          await userEvent.selectOptions(typeSelect, firstTypeOption)
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(
             api.getCollectiveListCollectiveOffers
@@ -481,12 +481,14 @@ describe('route CollectiveOffers', () => {
         it('should load offers with selected period beginning date', async () => {
           // Given
           renderOffers(store)
-          fireEvent.click(
-            (await screen.findAllByPlaceholderText('JJ/MM/AAAA'))[0]
+          await userEvent.click(
+            (
+              await screen.findAllByPlaceholderText('JJ/MM/AAAA')
+            )[0]
           )
-          fireEvent.click(screen.getByText('25'))
+          await userEvent.click(screen.getByText('25'))
           // When
-          fireEvent.click(screen.getByText('Lancer la recherche'))
+          await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
           expect(
             api.getCollectiveListCollectiveOffers
@@ -611,7 +613,7 @@ describe('route CollectiveOffers', () => {
       })
       const venueSelect = screen.getByLabelText('Lieu')
       // When
-      userEvent.selectOptions(venueSelect, firstVenueOption)
+      await userEvent.selectOptions(venueSelect, firstVenueOption)
       fireEvent.click(screen.getByText('Lancer la recherche'))
       const urlSearchParams = parse(history.location.search.substring(1))
       // Then
@@ -657,7 +659,7 @@ describe('route CollectiveOffers', () => {
         ALL_CATEGORIES_OPTION.displayName
       )
       // When
-      userEvent.selectOptions(typeSelect, firstTypeOption)
+      await userEvent.selectOptions(typeSelect, firstTypeOption)
       fireEvent.click(screen.getByText('Lancer la recherche'))
       await waitFor(() => {
         const urlSearchParams = parse(history.location.search.substring(1))
@@ -899,7 +901,7 @@ describe('route CollectiveOffers', () => {
         ALL_VENUES_OPTION.displayName
       )
 
-      userEvent.selectOptions(venueSelect, firstVenueOption)
+      await userEvent.selectOptions(venueSelect, firstVenueOption)
 
       expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
@@ -962,7 +964,7 @@ describe('route CollectiveOffers', () => {
         ALL_VENUES_OPTION.displayName
       )
 
-      userEvent.selectOptions(venueSelect, venueOptionToSelect)
+      await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
       expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(

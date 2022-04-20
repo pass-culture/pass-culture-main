@@ -91,7 +91,7 @@ export const setVenueAddress = async addressDetails => {
   const longitudeField = await findVenueInputForField('longitude')
   const latitudeField = await findVenueInputForField('latitude')
 
-  await userEvent.paste(addressField, addressDetails['address'])
+  await userEvent.type(addressField, addressDetails['address'])
 
   const apiAddressUrl = `https://api-adresse.data.gouv.fr/search/?limit=5&q=${addressDetails['address']}`
   await waitFor(() => {
@@ -138,7 +138,7 @@ export const setVenueValues = async values => {
       await userEvent.selectOptions(input, value)
       await waitFor(() => expect(input).toHaveValue(value))
     } else {
-      await userEvent.paste(input, value)
+      await userEvent.type(input, value)
     }
     return Promise.resolve(input)
   }

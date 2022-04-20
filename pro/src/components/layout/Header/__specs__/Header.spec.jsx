@@ -87,12 +87,12 @@ describe('navigation menu', () => {
   })
 
   describe('trackers should have been called 1 time with pathname', () => {
-    it('when clicking on Pro', () => {
+    it('when clicking on Pro', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(
+      await userEvent.click(
         screen.getByAltText(
           "Pass Culture pro, l'espace Pass Culture des acteurs culturels"
         )
@@ -103,72 +103,72 @@ describe('navigation menu', () => {
       expect(mockLogProClick).toHaveBeenNthCalledWith(1, '/accueil')
     })
 
-    it('when clicking on Home', () => {
+    it('when clicking on Home', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(screen.getByText('Accueil'))
+      await userEvent.click(screen.getByText('Accueil'))
 
       // Then
       expect(mockLogHomeClick).toHaveBeenCalledTimes(1)
       expect(mockLogHomeClick).toHaveBeenNthCalledWith(1, '/accueil')
     })
 
-    it('when clicking on Ticket', () => {
+    it('when clicking on Ticket', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(screen.getByText('Guichet'))
+      await userEvent.click(screen.getByText('Guichet'))
 
       // Then
       expect(mockLogTicketClick).toHaveBeenCalledTimes(1)
       expect(mockLogTicketClick).toHaveBeenNthCalledWith(1, '/accueil')
     })
 
-    it('when clicking on Offers', () => {
+    it('when clicking on Offers', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(screen.getByText('Offres'))
+      await userEvent.click(screen.getByText('Offres'))
 
       // Then
       expect(mockLogOfferClick).toHaveBeenCalledTimes(1)
       expect(mockLogOfferClick).toHaveBeenNthCalledWith(1, '/accueil')
     })
 
-    it('when clicking on Bookings', () => {
+    it('when clicking on Bookings', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(screen.getByText('Réservations'))
+      await userEvent.click(screen.getByText('Réservations'))
 
       // Then
       expect(mockLogBookingClick).toHaveBeenCalledTimes(1)
       expect(mockLogBookingClick).toHaveBeenNthCalledWith(1, '/accueil')
     })
 
-    it('when clicking on Reimbursement', () => {
+    it('when clicking on Reimbursement', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(screen.getByText('Remboursements'))
+      await userEvent.click(screen.getByText('Remboursements'))
 
       // Then
       expect(mockLogReimbursementClick).toHaveBeenCalledTimes(1)
       expect(mockLogReimbursementClick).toHaveBeenNthCalledWith(1, '/accueil')
     })
 
-    it('when clicking on Logout', () => {
+    it('when clicking on Logout', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
 
       // When
-      userEvent.click(screen.getAllByRole('menuitem')[5])
+      await userEvent.click(screen.getAllByRole('menuitem')[5])
 
       // Then
       expect(mockLogLogoutClick).toHaveBeenCalledTimes(1)

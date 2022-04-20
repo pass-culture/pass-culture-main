@@ -92,7 +92,6 @@ const OfferEducationalForm = ({
       )
     }
   }, [values.offererId, userOfferers, notify, getIsOffererEligible, mode])
-
   return (
     <FormLayout className={styles['educational-form']} small>
       <p className={styles['educational-form-information']}>
