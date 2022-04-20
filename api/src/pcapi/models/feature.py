@@ -61,6 +61,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
+    ENABLE_USER_PROFILING = "Active l'étape USER_PROFILING dans le parcours d'inscription des jeunes de 18 ans"
     ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
     FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
     GENERATE_CASHFLOWS_BY_CRON = (
