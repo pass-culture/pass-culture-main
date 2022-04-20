@@ -192,7 +192,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     await submitFilters()
 
     // Then
@@ -321,7 +321,7 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     await submitFilters()
 
     // When
@@ -410,7 +410,7 @@ describe('components | BookingsRecap | Pro user', () => {
     const { submitFilters } = await renderBookingsRecap(store)
 
     // When
-    userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
+    await userEvent.selectOptions(screen.getByLabelText('Lieu'), venue.id)
     await submitFilters()
 
     // Then

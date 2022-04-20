@@ -1,15 +1,14 @@
 import '@testing-library/jest-dom'
+import { screen } from '@testing-library/react'
 
 import {
   defaultEditionProps,
   managedVenuesFactory,
   renderEACOfferForm,
   userOfferersFactory,
-  elements,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
 
-const { queryOffererSelect, queryVenueSelect, findOfferTypeTitle } = elements
 describe('screens | OfferEducational : edition offerer step', () => {
   let props: IOfferEducationalProps
 
@@ -44,20 +43,23 @@ describe('screens | OfferEducational : edition offerer step', () => {
     }
     renderEACOfferForm(props)
 
-    const offerTypeTitle = await findOfferTypeTitle()
-
-    const offererSelect = queryOffererSelect()
-
-    expect(offererSelect.input).toBeInTheDocument()
-    expect(offererSelect.input?.value).toBe(props.initialValues.offererId)
-    expect(offererSelect.input).toBeDisabled()
-
-    const venueSelect = queryVenueSelect()
-
-    expect(venueSelect.input).toBeInTheDocument()
-    expect(venueSelect.input?.value).toBe(props.initialValues.venueId)
-    expect(venueSelect.input).toBeDisabled()
-
+    const offerTypeTitle = await screen.findByRole('heading', {
+      name: 'Type d’offre',
+    })
     expect(offerTypeTitle).toBeInTheDocument()
+
+    const offererSelect = await screen.findByLabelText('Structure')
+
+    expect(offererSelect).toBeInTheDocument()
+    expect(offererSelect).toHaveValue(props.initialValues.offererId)
+    expect(offererSelect).toBeDisabled()
+
+    const venueSelect = await screen.findByLabelText(
+      'Lieu qui percevra le remboursement'
+    )
+
+    expect(venueSelect).toBeInTheDocument()
+    expect(venueSelect).toHaveValue(props.initialValues.venueId)
+    expect(venueSelect).toBeDisabled()
   })
 })

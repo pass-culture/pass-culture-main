@@ -17,10 +17,10 @@ describe('src | new_components | BannerRGS', () => {
       'https://aide.passculture.app/hc/fr/articles/4458607720732--Acteurs-Culturels-Comment-assurer-la-s%C3%A9curit%C3%A9-de-votre-compte-'
     )
   })
-  it('should close the banner', () => {
+  it('should close the banner', async () => {
     const spyClose = jest.fn()
     render(<BannerRGS closable onClose={spyClose} />)
-    userEvent.click(
+    await userEvent.click(
       screen.getByRole('img', {
         name: 'Masquer le bandeau',
       })

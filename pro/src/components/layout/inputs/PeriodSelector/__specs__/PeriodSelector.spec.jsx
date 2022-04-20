@@ -23,9 +23,8 @@ describe('components | PeriodSelector', () => {
     )
 
     expect(startingDateWrapper.children).toHaveLength(1)
-    userEvent.click(startingDateInput)
+    await userEvent.click(startingDateInput)
     expect(startingDateWrapper.children).toHaveLength(2)
-
     const endDateWrapper = screen.getByTestId('period-filter-end-picker')
     const beginCalendar = startingDateWrapper.children[1]
 

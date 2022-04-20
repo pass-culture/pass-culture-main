@@ -50,8 +50,8 @@ const renderHomePage = ({ store }) => {
     const offerer = screen.queryByTestId('offerrer-wrapper')
     const venues = screen.queryAllByTestId('venue-wrapper')
 
-    const selectOfferer = offererName => {
-      userEvent.selectOptions(
+    const selectOfferer = async offererName => {
+      await userEvent.selectOptions(
         within(offerer).getByDisplayValue('Bar des amis'),
         offererName
       )
@@ -345,7 +345,9 @@ describe('offererDetailsLegacy', () => {
     })
 
     it('should change displayed offerer informations', async () => {
-      expect(screen.getByText(newSelectedOfferer.siren)).toBeInTheDocument()
+      expect(
+        await screen.findByText(newSelectedOfferer.siren)
+      ).toBeInTheDocument()
       expect(
         screen.getByText(newSelectedOfferer.name, { selector: 'span' })
       ).toBeInTheDocument()
@@ -366,7 +368,7 @@ describe('offererDetailsLegacy', () => {
       const virtualVenueTitle = screen.getByText('Offres numériques')
       expect(virtualVenueTitle).toBeInTheDocument()
 
-      const physicalVenueTitle = screen.getByText(
+      const physicalVenueTitle = await screen.findByText(
         newSelectedOfferer.managedVenues[1].name
       )
       expect(physicalVenueTitle).toBeInTheDocument()
@@ -388,7 +390,7 @@ describe('offererDetailsLegacy', () => {
       const { waitForElements } = renderHomePage({ store })
       const { selectOfferer } = await waitForElements()
       // When
-      selectOfferer('+ Ajouter une structure')
+      await selectOfferer('+ Ajouter une structure')
 
       // Then
       expect(mockHistoryPush).toHaveBeenCalledWith('/structures/creation')
@@ -406,7 +408,7 @@ describe('offererDetailsLegacy', () => {
       const showButton = within(offerer).getByRole('button', {
         name: 'Afficher',
       })
-      fireEvent.click(showButton)
+      await userEvent.click(showButton)
 
       // Then
       const link = screen.getByRole('link', {

@@ -76,9 +76,9 @@ describe('src | components | pages | SetPassword', () => {
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When
-    userEvent.type(passwordInput, 'password1')
-    userEvent.type(confirmationPasswordInput, 'password2')
-    await act(async () => userEvent.click(submitButton))
+    await userEvent.type(passwordInput, 'password1')
+    await userEvent.type(confirmationPasswordInput, 'password2')
+    await userEvent.click(submitButton)
 
     // Then
     expect(screen.getByText(DIFFERENT_PASSWORDS_ERROR_MESSAGE)).toBeVisible()
@@ -98,9 +98,9 @@ describe('src | components | pages | SetPassword', () => {
     const submitButton = screen.getByText('Envoyer', { selector: 'button' })
 
     // When
-    userEvent.type(passwordInput, 'password1')
-    userEvent.type(confirmationPasswordInput, 'password1')
-    await act(async () => userEvent.click(submitButton))
+    await userEvent.type(passwordInput, 'password1')
+    await userEvent.type(confirmationPasswordInput, 'password1')
+    await userEvent.click(submitButton)
 
     // Then
     await waitFor(() => {

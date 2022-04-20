@@ -416,13 +416,13 @@ describe('screen Offers', () => {
         it('should hide status filters when clicking outside the modal', async () => {
           // Given
           renderOffers(props, store)
-          fireEvent.click(
+          await userEvent.click(
             await screen.findByAltText(
               'Afficher ou masquer le filtre par statut'
             )
           )
           // When
-          fireEvent.click(
+          await userEvent.click(
             screen.getByRole('heading', {
               name: 'Offres',
               level: 1,
@@ -488,7 +488,7 @@ describe('screen Offers', () => {
               name: proVenues[0].name,
             })
             // When
-            userEvent.selectOptions(
+            await userEvent.selectOptions(
               screen.getByLabelText('Lieu'),
               venueOptionToSelect
             )

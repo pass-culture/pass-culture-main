@@ -9,14 +9,14 @@ export const getContactInputs = async () => {
   const contactMail = await within(contactNode).findByLabelText('Mail :')
   const contactUrl = await screen.findByLabelText('URL de votre site web :')
 
-  const clearAndFillContact = ({ phoneNumber, email, website }) => {
-    userEvent.clear(contactPhoneNumber)
-    userEvent.clear(contactMail)
-    userEvent.clear(contactUrl)
+  const clearAndFillContact = async ({ phoneNumber, email, website }) => {
+    await userEvent.clear(contactPhoneNumber)
+    await userEvent.clear(contactMail)
+    await userEvent.clear(contactUrl)
 
-    userEvent.paste(contactPhoneNumber, phoneNumber)
-    userEvent.paste(contactMail, email)
-    userEvent.paste(contactUrl, website)
+    await userEvent.type(contactPhoneNumber, phoneNumber)
+    await userEvent.type(contactMail, email)
+    await userEvent.type(contactUrl, website)
   }
 
   return {

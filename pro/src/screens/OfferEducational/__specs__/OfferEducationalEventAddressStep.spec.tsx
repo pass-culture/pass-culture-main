@@ -1,28 +1,16 @@
 import '@testing-library/jest-dom'
-import { waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { triggerFieldValidation } from 'ui-kit/form/__tests-utils__'
 
 import {
   defaultCreationProps,
   renderEACOfferForm,
-  elements,
   categoriesFactory,
   subCategoriesFactory,
   userOfferersFactory,
   managedVenueFactory,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
-
-const {
-  queryOffererSelect,
-  queryOfferVenueRadioButtons,
-  queryOfferVenueSelect,
-  queryOfferVenueTextArea,
-  queryOfferVenueAddressDisplay,
-  queryVenueSelect,
-} = elements
 
 describe('screens | OfferEducational : event address step', () => {
   let props: IOfferEducationalProps
@@ -40,72 +28,60 @@ describe('screens | OfferEducational : event address step', () => {
 
     it('should display venue radio buttons with pre-selected offerer venue and a disabled select', async () => {
       renderEACOfferForm(props)
-
       // wait for page to be rendered
-      const offererSelect = queryOffererSelect()
-      await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
+      expect(screen.getByLabelText('Structure')).toBeInTheDocument()
 
-      const { offererVenueRadio, schoolRadio, otherRadio } =
-        queryOfferVenueRadioButtons()
+      expect(await screen.findByLabelText('Dans votre lieu')).toBeChecked()
+      expect(
+        screen.getByLabelText('Dans l’établissement scolaire')
+      ).not.toBeChecked()
+      expect(screen.getByLabelText('Autre')).not.toBeChecked()
 
-      const offerVenueSelect = queryOfferVenueSelect()
-      const offerVenueAddressDisplay = queryOfferVenueAddressDisplay()
+      expect(screen.getByLabelText('Sélectionner le lieu')).toHaveValue(
+        'VENUE_ID'
+      )
+      expect(screen.getByLabelText('Sélectionner le lieu')).toBeDisabled()
 
-      expect(offererVenueRadio.input?.checked).toBe(true)
-      expect(schoolRadio.input?.checked).toBe(false)
-      expect(otherRadio.input?.checked).toBe(false)
-      expect(offerVenueSelect.input?.value).toBe('VENUE_ID')
-      expect(offerVenueSelect.input).toBeDisabled()
-      expect(offerVenueSelect.input?.options).toHaveLength(1)
-      expect(offerVenueSelect.isOptionnal).toBe(false)
-      expect(offerVenueAddressDisplay).toBeInTheDocument()
+      expect(
+        screen.getByText('Venue name', { exact: false, selector: 'p' })
+      ).toBeInTheDocument()
     })
 
     it('should display text area when user selects "other"', async () => {
       renderEACOfferForm(props)
 
-      // wait for page to be rendered
-      const offererSelect = queryOffererSelect()
-      await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
+      await userEvent.click(await screen.findByLabelText('Autre'))
+      expect(screen.getByLabelText('Autre')).toBeChecked()
 
-      const { offererVenueRadio, schoolRadio, otherRadio } =
-        queryOfferVenueRadioButtons()
+      expect(
+        screen.queryByLabelText('Sélectionner le lieu')
+      ).not.toBeInTheDocument()
 
-      userEvent.click(otherRadio.input as HTMLInputElement)
-
-      const offerVenueSelect = queryOfferVenueSelect()
-      const offerVenueTextArea = queryOfferVenueTextArea()
-
-      expect(offererVenueRadio.input?.checked).toBe(false)
-      expect(schoolRadio.input?.checked).toBe(false)
-      expect(otherRadio.input?.checked).toBe(true)
-      expect(offerVenueSelect.input).not.toBeInTheDocument()
-      expect(offerVenueTextArea.input).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Adresse de l’événement')
+      ).toBeInTheDocument()
     })
 
     it('should not display neither event venue address nor text area if user selects "school"', async () => {
       renderEACOfferForm(props)
 
-      // wait for page to be rendered
-      const offererSelect = queryOffererSelect()
-      await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
+      await userEvent.click(
+        await screen.findByLabelText('Dans l’établissement scolaire')
+      )
+      expect(
+        screen.getByLabelText('Dans l’établissement scolaire')
+      ).toBeChecked()
 
-      const { offererVenueRadio, schoolRadio, otherRadio } =
-        queryOfferVenueRadioButtons()
+      expect(
+        screen.queryByLabelText('Sélectionner le lieu')
+      ).not.toBeInTheDocument()
 
-      userEvent.click(schoolRadio.input as HTMLInputElement)
-
-      const offerVenueSelect = queryOfferVenueSelect()
-      const offerVenueTextArea = queryOfferVenueTextArea()
-
-      expect(offererVenueRadio.input?.checked).toBe(false)
-      expect(schoolRadio.input?.checked).toBe(true)
-      expect(otherRadio.input?.checked).toBe(false)
-      expect(offerVenueSelect.input).not.toBeInTheDocument()
-      expect(offerVenueTextArea.input).not.toBeInTheDocument()
+      expect(
+        screen.queryByLabelText('Adresse de l’événement')
+      ).not.toBeInTheDocument()
     })
   })
-
+  // TO DO: move this test, it does not belong to Address step
   describe('when there are multiple venues managed by the offerer', () => {
     beforeEach(() => {
       props = {
@@ -130,34 +106,30 @@ describe('screens | OfferEducational : event address step', () => {
       renderEACOfferForm(props)
 
       // wait for page to be rendered
-      const offererSelect = queryOffererSelect()
-      await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
+      const offererSelect = await screen.findByLabelText(
+        'Lieu qui percevra le remboursement'
+      )
+      // select venue to open step Address
+      await userEvent.selectOptions(offererSelect, ['VENUE_1'])
 
-      const venueSelect = queryVenueSelect()
-      await waitFor(() => expect(venueSelect.input).toBeInTheDocument())
-      userEvent.selectOptions(venueSelect.input as HTMLSelectElement, 'VENUE_1')
+      const offerVenueSelect = await screen.findByLabelText(
+        'Sélectionner le lieu'
+      )
+      expect(offerVenueSelect).toHaveValue('')
+      expect(offerVenueSelect.children).toHaveLength(3)
+      await userEvent.selectOptions(offerVenueSelect, 'VENUE_1')
+      expect(offerVenueSelect).toHaveValue('VENUE_1')
 
-      const offerVenueSelect = queryOfferVenueSelect()
+      await userEvent.selectOptions(offerVenueSelect, '')
+      await userEvent.tab()
 
-      expect(offerVenueSelect.input?.value).toBe('')
-
-      triggerFieldValidation(offerVenueSelect.input as HTMLSelectElement)
+      expect(offerVenueSelect).toHaveValue('')
 
       await waitFor(() =>
-        expect(offerVenueSelect.getError()).toBeInTheDocument()
+        expect(
+          screen.getByText(/Veuillez sélectionner un lieu/)
+        ).toBeInTheDocument()
       )
-      expect(offerVenueSelect.getError()).toHaveTextContent(
-        'Veuillez sélectionner un lieu'
-      )
-      userEvent.selectOptions(
-        offerVenueSelect.input as HTMLSelectElement,
-        'VENUE_1'
-      )
-      await waitFor(() =>
-        expect(offerVenueSelect.getError()).not.toBeInTheDocument()
-      )
-
-      expect(offerVenueSelect.input?.options).toHaveLength(3)
     })
   })
 })

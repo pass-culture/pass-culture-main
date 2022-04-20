@@ -295,7 +295,7 @@ describe('test page : VenueEdition', () => {
         website: 'https://some-url-test.com',
         phoneNumber: '0606060606',
       }
-      clearAndFillContact(contactInfos)
+      await clearAndFillContact(contactInfos)
 
       expect(contactUrl).toHaveValue(contactInfos.website)
       expect(contactPhoneNumber).toHaveValue(contactInfos.phoneNumber)

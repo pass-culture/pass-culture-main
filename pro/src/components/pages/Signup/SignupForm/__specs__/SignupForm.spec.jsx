@@ -6,9 +6,12 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 
+import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import { configureTestStore } from 'store/testUtils'
 
 import SignupForm from '../SignupForm'
+
+jest.mock('core/Offerers/adapters/getSirenDataAdapter')
 
 describe('src | components | pages | Signup | SignupForm', () => {
   let props
@@ -179,7 +182,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
       ).toBeInTheDocument()
     })
 
-    it('should enable submit button only when required inputs are filled', () => {
+    it('should enable submit button only when required inputs are filled', async () => {
+      jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({})
       // Given the signup form
       render(
         <Router history={history}>
@@ -190,33 +194,36 @@ describe('src | components | pages | Signup | SignupForm', () => {
         name: /Créer mon compte/,
       })
       // when the user fills required information
-      userEvent.type(
+      await userEvent.type(
         screen.getByRole('textbox', {
           name: /Adresse e-mail/,
         }),
         'test@example.com'
       )
-      userEvent.type(screen.getByLabelText(/Mot de passe/), 'user@AZERTY123')
-      userEvent.type(
+      await userEvent.type(
+        screen.getByLabelText(/Mot de passe/),
+        'user@AZERTY123'
+      )
+      await userEvent.type(
         screen.getByRole('textbox', {
           name: /Nom/,
         }),
         'Nom'
       )
-      userEvent.type(
+      await userEvent.type(
         screen.getByRole('textbox', {
           name: /Prénom/,
         }),
         'Prénom'
       )
-      userEvent.type(
+      await userEvent.type(
         screen.getByRole('textbox', {
           name: /Téléphone/,
         }),
         '0722332233'
       )
       expect(submitButton).toBeDisabled()
-      userEvent.type(
+      await userEvent.type(
         screen.getByRole('textbox', {
           name: /SIREN/,
         }),

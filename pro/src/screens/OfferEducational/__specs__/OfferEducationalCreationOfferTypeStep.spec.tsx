@@ -1,26 +1,14 @@
 import '@testing-library/jest-dom'
-import { waitFor } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-
-import { triggerFieldValidation } from 'ui-kit/form/__tests-utils__'
 
 import {
   categoriesFactory,
   defaultCreationProps,
-  elements,
   renderEACOfferForm,
   subCategoriesFactory,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
-
-const {
-  findOfferTypeTitle,
-  queryCategorySelect,
-  querySubcategorySelect,
-  queryTitleInput,
-  queryDescriptionTextArea,
-  queryDurationInput,
-} = elements
 
 describe('screens | OfferEducational : creation offer type step', () => {
   let props: IOfferEducationalProps
@@ -31,47 +19,36 @@ describe('screens | OfferEducational : creation offer type step', () => {
 
   it('should display the right fields and titles', async () => {
     renderEACOfferForm(props)
-    await findOfferTypeTitle()
 
-    const categorySelect = queryCategorySelect()
-    expect(categorySelect.input).toBeInTheDocument()
-    expect(categorySelect.input).toBeEnabled()
-    expect(categorySelect.input).toHaveValue('')
-    expect(categorySelect.isOptionnal).toBe(false)
+    const categorySelect = await screen.findByLabelText('Catégorie')
+    expect(categorySelect).toBeInTheDocument()
+    expect(categorySelect).toBeEnabled()
+    expect(categorySelect).toHaveValue('')
 
-    const subCategorySelect = querySubcategorySelect()
-    expect(subCategorySelect.input).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Sous-catégorie')).not.toBeInTheDocument()
 
-    const titleInput = queryTitleInput()
-    expect(titleInput.input).toBeInTheDocument()
-    expect(titleInput.input).toBeEnabled()
-    expect(titleInput.input).toHaveValue('')
-    expect(titleInput.isOptionnal).toBe(false)
-    expect(titleInput.input?.placeholder).toMatchInlineSnapshot(`""`)
+    const titleInput = await screen.findByLabelText('Titre de l’offre')
+    expect(titleInput).toBeEnabled()
+    expect(titleInput).toHaveValue('')
+    expect(titleInput.getAttribute('placeholder')).toBeNull()
 
-    const titleCharCounter = titleInput.getCounter()
-    expect(titleCharCounter).toBeInTheDocument()
-    expect(titleCharCounter).toHaveTextContent('0/90')
+    expect(await screen.findByTestId('counter-title')).toHaveTextContent('0/90')
 
-    const descriptionTextArea = queryDescriptionTextArea()
-    expect(descriptionTextArea.input).toBeInTheDocument()
-    expect(descriptionTextArea.input).toBeEnabled()
-    expect(descriptionTextArea.input).toHaveValue('')
-    expect(descriptionTextArea.input?.placeholder).toBe(
+    const descriptionTextArea = await screen.findByLabelText(/Description/)
+    expect(descriptionTextArea).toBeEnabled()
+    expect(descriptionTextArea).toHaveValue('')
+    expect(descriptionTextArea.getAttribute('placeholder')).toBe(
       'Détaillez ici votre projet et son interêt pédagogique'
     )
-    expect(descriptionTextArea.isOptionnal).toBe(true)
+    expect(await screen.findByTestId('counter-description')).toHaveTextContent(
+      '0/1000'
+    )
 
-    const descriptionCharCounter = descriptionTextArea.getCounter()
-    expect(descriptionCharCounter).toBeInTheDocument()
-    expect(descriptionCharCounter).toHaveTextContent('0/1000')
-
-    const durationInput = queryDurationInput()
-    expect(durationInput.input).toBeInTheDocument()
-    expect(durationInput.input).toBeEnabled()
-    expect(durationInput.input).toHaveValue('')
-    expect(durationInput.input?.placeholder).toBe('HH:MM')
-    expect(durationInput.isOptionnal).toBe(true)
+    const durationInput = await screen.getByLabelText(/Durée/)
+    expect(durationInput).toBeInTheDocument()
+    expect(durationInput).toBeEnabled()
+    expect(durationInput).toHaveValue('')
+    expect(durationInput.getAttribute('placeholder')).toBe('HH:MM')
   })
 
   describe('catégories and sub catégories', () => {
@@ -92,71 +69,57 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
     it('should require user to select a category before displaying subcategories', async () => {
       renderEACOfferForm(props)
-      await findOfferTypeTitle()
 
-      const categorySelect = queryCategorySelect()
-      expect(categorySelect.input).toBeInTheDocument()
+      const categorySelect = await screen.findByLabelText('Catégorie')
+      expect(categorySelect).toBeInTheDocument()
 
-      expect(querySubcategorySelect().input).not.toBeInTheDocument()
+      expect(screen.queryByLabelText('Sous-catégorie')).not.toBeInTheDocument()
 
-      triggerFieldValidation(categorySelect.input as HTMLSelectElement)
+      await userEvent.click(categorySelect)
+      await userEvent.tab()
 
-      await waitFor(() => expect(categorySelect.getError()).toBeInTheDocument())
-      expect(categorySelect.getError()).toHaveTextContent(
-        'Veuillez sélectionner une catégorie'
-      )
+      expect(
+        await screen.findByText('Veuillez sélectionner une catégorie')
+      ).toBeInTheDocument()
 
-      userEvent.selectOptions(
-        categorySelect.input as HTMLSelectElement,
-        'CAT_1'
-      )
+      await userEvent.selectOptions(categorySelect, 'CAT_1')
 
-      await waitFor(() =>
-        expect(querySubcategorySelect().input).toBeInTheDocument()
-      )
+      expect(await screen.findByLabelText('Sous-catégorie')).toBeInTheDocument()
 
-      expect(categorySelect.getError()).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Veuillez sélectionner une catégorie')
+      ).not.toBeInTheDocument()
 
-      const subCategorySelect = querySubcategorySelect()
-      expect(subCategorySelect.input?.options).toHaveLength(3)
-      expect(subCategorySelect.input?.options[0].value).toBe('')
-      expect(subCategorySelect.input?.options[1].value).toBe('SUBCAT_1')
-      expect(subCategorySelect.input?.options[2].value).toBe('SUBCAT_2')
-      expect(subCategorySelect.isOptionnal).toBe(false)
+      const subCategorySelect = screen.getByLabelText('Sous-catégorie')
+      expect(subCategorySelect.children).toHaveLength(3)
+      expect(subCategorySelect.children[0]).toHaveValue('')
+      expect(subCategorySelect.children[1]).toHaveValue('SUBCAT_1')
+      expect(subCategorySelect.children[2]).toHaveValue('SUBCAT_2')
     })
 
     it('should require user to select a subcategory', async () => {
       renderEACOfferForm(props)
-      await findOfferTypeTitle()
-      const categorySelect = queryCategorySelect()
-      userEvent.selectOptions(
-        categorySelect.input as HTMLSelectElement,
-        'CAT_1'
-      )
+      const categorySelect = await screen.findByLabelText('Catégorie')
+      await userEvent.selectOptions(categorySelect, 'CAT_1')
 
       await waitFor(() =>
-        expect(querySubcategorySelect().input).toBeInTheDocument()
+        expect(screen.getByLabelText('Sous-catégorie')).toBeInTheDocument()
       )
 
-      const subCategorySelect = querySubcategorySelect()
+      const subCategorySelect = screen.getByLabelText('Sous-catégorie')
 
-      triggerFieldValidation(subCategorySelect.input as HTMLSelectElement)
+      await userEvent.click(subCategorySelect)
+      await userEvent.tab()
 
-      await waitFor(() =>
-        expect(subCategorySelect.getError()).toBeInTheDocument()
-      )
-      expect(subCategorySelect.getError()).toHaveTextContent(
-        'Veuillez sélectionner une sous-catégorie'
-      )
+      expect(
+        screen.getByText('Veuillez sélectionner une sous-catégorie')
+      ).toBeInTheDocument()
 
-      userEvent.selectOptions(
-        subCategorySelect.input as HTMLSelectElement,
-        'SUBCAT_1'
-      )
+      await userEvent.selectOptions(subCategorySelect, 'SUBCAT_1')
 
-      await waitFor(() =>
-        expect(subCategorySelect.getError()).not.toBeInTheDocument()
-      )
+      expect(
+        screen.queryByText('Veuillez sélectionner une sous-catégorie')
+      ).not.toBeInTheDocument()
     })
   })
   describe('catégories and sub catégories / when there is only one item', () => {
@@ -173,108 +136,107 @@ describe('screens | OfferEducational : creation offer type step', () => {
     })
     it('should pre-select both categories and subcategories', async () => {
       renderEACOfferForm(props)
-      await findOfferTypeTitle()
 
-      const categorySelect = queryCategorySelect()
-      const subCategorySelect = querySubcategorySelect()
+      const categorySelect = await screen.findByLabelText('Catégorie')
+      const subCategorySelect = await screen.findByLabelText('Sous-catégorie')
 
-      expect(categorySelect.input).toBeInTheDocument()
-      expect(subCategorySelect.input).toBeInTheDocument()
+      expect(categorySelect).toHaveLength(1)
+      expect(subCategorySelect).toHaveLength(1)
 
-      expect(categorySelect.input?.options).toHaveLength(1)
-      expect(subCategorySelect.input?.options).toHaveLength(1)
-
-      expect(categorySelect.input).toHaveValue('CAT_1')
-      expect(subCategorySelect.input).toHaveValue('SUBCAT_1')
+      expect(categorySelect).toHaveValue('CAT_1')
+      expect(subCategorySelect).toHaveValue('SUBCAT_1')
     })
   })
 
   describe('title, description and duration inputs', () => {
     it('should require a title with less than 90 chars (and truncate longer strings)', async () => {
       renderEACOfferForm(props)
-      await findOfferTypeTitle()
 
       const titleMaxLength = 90
 
-      const titleInput = queryTitleInput()
-      expect(titleInput.input).toHaveValue('')
-      expect(titleInput.getCounter()).toHaveTextContent(`0/${titleMaxLength}`)
-
-      triggerFieldValidation(titleInput.input as HTMLInputElement)
-
-      await waitFor(() => expect(titleInput.getError()).toBeInTheDocument())
-
-      expect(titleInput.getError()).toHaveTextContent(
-        'Veuillez renseigner un titre'
+      const titleInput = await screen.findByLabelText('Titre de l’offre')
+      expect(titleInput).toHaveValue('')
+      expect(screen.getByTestId('counter-title')).toHaveTextContent(
+        `0/${titleMaxLength}`
       )
 
-      const title = 'a valid title'
-      userEvent.paste(titleInput.input as HTMLInputElement, title)
+      await userEvent.click(titleInput)
+      await userEvent.tab()
 
-      await waitFor(() => expect(titleInput.getError()).not.toBeInTheDocument())
-      expect(titleInput.getCounter()).toHaveTextContent(
-        `${title.length}/${titleMaxLength}`
+      await waitFor(() =>
+        expect(
+          screen.getByText('Veuillez renseigner un titre')
+        ).toBeInTheDocument()
       )
 
-      await expect(titleInput.doesTruncateAt(titleMaxLength)).resolves.toBe(
-        true
+      const title =
+        'a valid title ' + Array.from({ length: 50 }).map(() => 'test ')
+      await userEvent.type(titleInput, title)
+
+      expect(screen.getByTestId('counter-title')).toHaveTextContent(
+        `${titleMaxLength}/${titleMaxLength}`
+      )
+
+      await expect(titleInput.getAttribute('value')).toHaveLength(
+        titleMaxLength
       )
     })
 
     it('should require a description with less than 1000 chars (and truncate longer strings)', async () => {
       renderEACOfferForm(props)
-      await findOfferTypeTitle()
 
       const descMaxLength = 1000
 
-      const description = queryDescriptionTextArea()
-      expect(description.input).toHaveValue('')
-      expect(description.getCounter()).toHaveTextContent(`0/${descMaxLength}`)
-
-      const descriptionString = 'my description that is valid'
-
-      userEvent.paste(
-        description.input as HTMLTextAreaElement,
-        descriptionString
+      const description = await screen.findByLabelText(/Description/)
+      expect(description).toHaveValue('')
+      expect(screen.getByTestId('counter-description')).toHaveTextContent(
+        `0/${descMaxLength}`
       )
 
-      await waitFor(() =>
-        expect(description.input).toHaveValue(descriptionString)
+      const descriptionString =
+        'my description that is valid' +
+        Array.from({ length: 50 }).map(() => 'description pour tester')
+
+      await userEvent.type(description, descriptionString)
+
+      expect(descriptionString).toContain(description.textContent)
+
+      expect(screen.getByTestId('counter-description')).toHaveTextContent(
+        `${descMaxLength}/${descMaxLength}`
       )
 
-      expect(description.getCounter()).toHaveTextContent(
-        `${descriptionString.length}/${descMaxLength}`
-      )
-
-      await expect(description.doesTruncateAt(descMaxLength)).resolves.toBe(
-        true
-      )
+      await expect(description.textContent).toHaveLength(descMaxLength)
     })
 
     it('should have a duration field with a format of hh:mm', async () => {
       renderEACOfferForm(props)
-      await findOfferTypeTitle()
 
-      const duration = queryDurationInput()
-      expect(duration.input).toHaveValue('')
+      const duration = await screen.findByLabelText(/Durée/)
+      expect(duration).toHaveValue('')
 
-      userEvent.paste(duration.input as HTMLInputElement, 'bad String')
+      await userEvent.type(duration, 'bad String')
 
-      await waitFor(() => expect(duration.input).toHaveValue('bad String'))
+      await waitFor(() => expect(duration).toHaveValue('bad String'))
 
-      triggerFieldValidation(duration.input as HTMLInputElement)
+      await userEvent.click(duration)
+      await userEvent.tab()
 
-      await waitFor(() =>
-        expect(duration.getError()).toHaveTextContent(
+      expect(
+        screen.getByText(
           'Veuillez renseigner une durée en heures au format hh:mm. Exemple: 1:30'
         )
-      )
+      ).toBeInTheDocument()
 
-      userEvent.clear(duration.input as HTMLInputElement)
-      userEvent.paste(duration.input as HTMLInputElement, '2:30')
+      await userEvent.clear(duration)
+      await userEvent.type(duration, '2:30')
 
-      await waitFor(() => expect(duration.input).toHaveValue('2:30'))
-      await waitFor(() => expect(duration.getError()).not.toBeInTheDocument())
+      expect(duration).toHaveValue('2:30')
+
+      expect(
+        screen.queryByText(
+          'Veuillez renseigner une durée en heures au format hh:mm. Exemple: 1:30'
+        )
+      ).not.toBeInTheDocument()
     })
   })
 })
