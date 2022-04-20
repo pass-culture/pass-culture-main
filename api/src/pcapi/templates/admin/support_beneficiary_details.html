@@ -280,7 +280,7 @@
             <td>
                 {% if email_history.eventType.value == enum_update_request_value %}
                 <form action={{ url_for(
-                "/user_email_history.validate_user_email", entry_id=email_history.id,
+                "user_email_history.validate_user_email", entry_id=email_history.id,
                 next="support_beneficiary.details_view" , id=model.id) }} method="POST">
                 <button class="btn btn-secondary"
                         onclick="return confirm('Êtes-vous certain de vouloir valider l\'adresse email {{ email_history.newEmail }}')"
