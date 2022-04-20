@@ -3,7 +3,7 @@ import pathlib
 import astroid
 import pylint.testutils
 
-from pcapi.utils.pylint import MarkupSafeChecker
+import pcapi.utils.pylint as pcapi_pylint
 
 import tests
 
@@ -11,15 +11,18 @@ import tests
 TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
 
-class MarkupSafeCheckerTest(pylint.testutils.CheckerTestCase):
-    CHECKER_CLASS = MarkupSafeChecker
-
+class CheckerTestCaseBase(pylint.testutils.CheckerTestCase):
     def test_checker(self):
-        code = (TEST_FILES_PATH / "pylint.py").read_text()
+        code = (TEST_FILES_PATH / self.test_filename).read_text()
         node = astroid.parse(code)
         self.walk(node)
         messages = self.linter.release_messages()
-        msg_ids = {m.msg_id for m in messages}
-        assert msg_ids == {"markupsafe-uncontrolled-string"}
-        lines = {m.line for m in messages}
-        assert lines == {25, 26, 28, 29, 31, 32, 34, 35, 37, 38, 41, 42}
+        lines = {m.line for m in messages if m.msg_id == self.message_id}
+        assert lines == self.expected_error_lines
+
+
+class MarkupSafeCheckerTest(CheckerTestCaseBase):
+    CHECKER_CLASS = pcapi_pylint.MarkupSafeChecker
+    message_id = pcapi_pylint.MSG_USE_OF_UNCONTROLLED_STRING
+    test_filename = "pylint_markupsafe.py"
+    expected_error_lines = {25, 26, 28, 29, 31, 32, 34, 35, 37, 38, 41, 42}
