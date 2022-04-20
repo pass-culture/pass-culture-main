@@ -246,13 +246,12 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
         if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
             return models.SubscriptionStep.PHONE_VALIDATION
 
-        user_profiling = fraud_repository.get_last_user_profiling_fraud_check(user)
+    user_profiling_item = get_user_profiling_subscription_item(user, user.eligibility)
 
-        if not user_profiling:
-            return models.SubscriptionStep.USER_PROFILING
-
-        if fraud_api.is_risky_user_profile(user):
-            return None
+    if user_profiling_item.status == models.SubscriptionItemStatus.TODO:
+        return models.SubscriptionStep.USER_PROFILING
+    if user_profiling_item.status == models.SubscriptionItemStatus.KO:
+        return None
 
     if not has_completed_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION

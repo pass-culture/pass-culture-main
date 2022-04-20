@@ -189,7 +189,10 @@ class NextSubscriptionStepTest:
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="high")
         fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=content,
+            user=user,
+            status=fraud_models.FraudCheckStatus.KO,
         )
 
         assert subscription_api.get_next_subscription_step(user) == None
@@ -202,7 +205,28 @@ class NextSubscriptionStepTest:
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=content,
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+        )
+
+    def test_next_subscription_step_profile_completion_if_user_profiling_suspicious(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city=None,
+        )
+        content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="medium")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=content,
+            user=user,
+            status=fraud_models.FraudCheckStatus.SUSPICIOUS,
         )
 
         assert (
@@ -218,7 +242,10 @@ class NextSubscriptionStepTest:
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=content,
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -238,7 +265,10 @@ class NextSubscriptionStepTest:
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=content,
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -258,7 +288,10 @@ class NextSubscriptionStepTest:
         )
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
-            type=fraud_models.FraudCheckType.USER_PROFILING, resultContent=content, user=user
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=content,
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,

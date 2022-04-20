@@ -51,6 +51,7 @@ class NextStepTest:
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
         )
 
         client.with_token(user.email)
@@ -167,6 +168,7 @@ class NextStepTest:
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
         )
 
         response = client.get("/native/v1/subscription/next_step")
@@ -274,6 +276,7 @@ class NextStepTest:
                 risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
             ),
             eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
         )
 
         response = client.get("/native/v1/subscription/next_step")
