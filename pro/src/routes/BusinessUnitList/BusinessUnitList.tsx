@@ -108,6 +108,7 @@ const BusinessUnitList = (): JSX.Element => {
     async function loadVenues(offererId: string) {
       const venuesForOffererResponse: IAPIVenue[] =
         await pcapi.getVenuesForOfferer({
+          // @ts-expect-error string is not assignable to type null | undefined
           offererId,
         })
       const serializedVenueList: IBusinessUnitVenue[] =
