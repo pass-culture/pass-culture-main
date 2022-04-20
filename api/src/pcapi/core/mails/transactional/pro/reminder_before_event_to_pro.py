@@ -9,13 +9,15 @@ from pcapi.utils.mailing import get_event_datetime
 
 
 def get_reminder_7_days_before_event_email_data(stock: Stock) -> SendinblueTransactionalEmailData:
+    event_datetime = get_event_datetime(stock)
+
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.REMINDER_7_DAYS_BEFORE_EVENT_TO_PRO.value,
         params={
             "OFFER_NAME": stock.offer.name,
             "VENUE_NAME": stock.offer.venue.publicName or stock.offer.venue.name,
-            "EVENT_DATE": format_date(get_event_datetime(stock), format="full", locale="fr"),
-            "EVENT_HOUR": get_time_formatted_for_email(stock.beginningDatetime),  # type: ignore [arg-type]
+            "EVENT_DATE": format_date(event_datetime, format="full", locale="fr"),
+            "EVENT_HOUR": get_time_formatted_for_email(event_datetime),  # type: ignore [arg-type]
             "BOOKING_COUNT": stock.dnBookedQuantity,
         },
     )
