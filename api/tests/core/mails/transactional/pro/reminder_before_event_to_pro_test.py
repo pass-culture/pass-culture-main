@@ -21,7 +21,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
         venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="offer@bookingEmail.com")
-        stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 1, 14, 10))
+        stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 5, 1, 14, 10))
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.BookingFactory(stock=stock)
@@ -38,8 +38,8 @@ class Reminder7DaysBeforeEventToProEmailTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": product.name,
             "VENUE_NAME": venue.name,
-            "EVENT_DATE": "mardi 1 mars 2022",
-            "EVENT_HOUR": "14h10",
+            "EVENT_DATE": "dimanche 1 mai 2022",
+            "EVENT_HOUR": "16h10",
             "BOOKING_COUNT": 3,
         }
 
@@ -49,7 +49,7 @@ class Reminder7DaysBeforeEventToProEmailTest:
         venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail=None)
-        stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 1, 14, 10))
+        stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 5, 1, 14, 10))
         bookings_factories.BookingFactory(stock=stock)
         bookings_factories.BookingFactory(stock=stock)
 
@@ -65,8 +65,8 @@ class Reminder7DaysBeforeEventToProEmailTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": product.name,
             "VENUE_NAME": venue.name,
-            "EVENT_DATE": "mardi 1 mars 2022",
-            "EVENT_HOUR": "14h10",
+            "EVENT_DATE": "dimanche 1 mai 2022",
+            "EVENT_HOUR": "16h10",
             "BOOKING_COUNT": 2,
         }
 
@@ -86,6 +86,6 @@ class Reminder7DaysBeforeEventToProEmailTest:
             "OFFER_NAME": product.name,
             "VENUE_NAME": venue.name,
             "EVENT_DATE": "mercredi 2 mars 2022",
-            "EVENT_HOUR": "14h20",
+            "EVENT_HOUR": "15h20",
             "BOOKING_COUNT": 1,
         }
