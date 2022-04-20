@@ -262,6 +262,9 @@ def suspend_account(user: User) -> None:
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_user_required
 def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudRequest) -> None:
+    if not FeatureToggle.ENABLE_USER_PROFILING.is_active():
+        return
+
     handler = user_profiling.UserProfilingClient()
 
     # User Profiling step must be after Phone Validation
