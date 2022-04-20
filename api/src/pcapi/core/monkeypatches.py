@@ -4,7 +4,7 @@ import time
 from pcapi.utils.requests import logger
 
 
-SENDINBLUE_REQUEST_TIMEOUT = 5
+SENDINBLUE_REQUEST_TIMEOUT = 10
 
 
 def custom_restclient_request(self, method, url, **kwargs):  # type: ignore [no-untyped-def]
@@ -12,9 +12,8 @@ def custom_restclient_request(self, method, url, **kwargs):  # type: ignore [no-
     that sets a default timeout and logs the request.
     """
     start = time.perf_counter()
-    # FIXME (dbaty, 2022-02-21): once we have gathered logs, we can
-    # set an appropriate timeout value with the following line:
-    # kwargs.setdefault("_request_timeout", SENDINBLUE_REQUEST_TIMEOUT)
+    if kwargs.get("_request_timeout") is None:
+        kwargs["_request_timeout"] = SENDINBLUE_REQUEST_TIMEOUT
     try:
         response = self.__orig_request(method, url, **kwargs)
     except Exception as exc:
