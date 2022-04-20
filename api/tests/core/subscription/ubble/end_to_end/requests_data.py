@@ -298,7 +298,7 @@ WRONG_REFERENCE_DATA_RESPONSE = {
             "attributes": {
                 "birth-date": "2000-01-01",
                 "birth-place": None,
-                "document-number": "140275P00463",
+                "document-number": "123456P00123",
                 "document-type": "ID",
                 "document-type-detailed": None,
                 "expiry-date": "2029-02-17",
@@ -310,15 +310,15 @@ WRONG_REFERENCE_DATA_RESPONSE = {
                 "last-name": "DE TOUL",
                 "married-name": None,
                 "media-type": "video",
-                "mrz": "IDFRADETOUL<<<<<<<<<<<<<<<<<<<75P001140275P004633RAOUL<<JEAN<<0001010M8",
+                "mrz": "IDFRADETOUL<<<<<<<<<<<<<<<<<<<75P001123456P001233RAOUL<<JEAN<<0001010M8",
                 "nationality": None,
                 "obtaining-date": None,
                 "personal-number": None,
                 "remarks": None,
-                "signed-image-back-url": f"https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/{IDENTIFICATION_ID}/eab18174-2f08-4bcf-b9a3-5f33f510f9e0/tight_crops/FRA-I3-Back-eab18174-2f08-4bcf-b9a3-5f33f510f9e0-1649166934986.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220405%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220405T140019Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=89173b10d55ece4a1b02d16c3c77a931832c3db1b9378d251cf26b32e8a2189d",
-                "signed-image-front-url": f"https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/{IDENTIFICATION_ID}/eab18174-2f08-4bcf-b9a3-5f33f510f9e0/tight_crops/FRA-I4-Front-eab18174-2f08-4bcf-b9a3-5f33f510f9e0-1649166920650.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220405%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220405T140019Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=624ee6525a62a14895618f610f94863811d8140c2a166b5e338ed0c170022c89",
-                "signed-video-back-url": f"https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/{IDENTIFICATION_ID}/eab18174-2f08-4bcf-b9a3-5f33f510f9e0/video/rec-eab18174-2f08-4bcf-b9a3-5f33f510f9e0-meC0xwRq5u-yH6fmxDdPN3rfwZ8-1649166927217-video-document_0_side_back_document_scene.webm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220405%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220405T140019Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d391cb327495e370cabb6efdf9285502186ad4345159432ef69cd66370ae8639",
-                "signed-video-front-url": f"https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/{IDENTIFICATION_ID}/eab18174-2f08-4bcf-b9a3-5f33f510f9e0/video/rec-eab18174-2f08-4bcf-b9a3-5f33f510f9e0-QkKeHcbERo-fAnkk7i0NilyiVl6-1649166904799-video-document_0_side_front_document_scene.webm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220405%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220405T140019Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=cdaf94b7c78cd5300d2da1bf3e4810e10c7f586f8f78808ab69ed86ac26e92e5",
+                "signed-image-back-url": f"https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/{IDENTIFICATION_ID}/hidden_signature",
+                "signed-image-front-url": f"https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/{IDENTIFICATION_ID}/hidden_signature",
+                "signed-video-back-url": f"https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/{IDENTIFICATION_ID}/hidden_signature",
+                "signed-video-front-url": f"https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/{IDENTIFICATION_ID}/hidden_signature",
             },
             "relationships": {
                 "identity": {
@@ -347,8 +347,8 @@ WRONG_REFERENCE_DATA_RESPONSE = {
             "type": "faces",
             "id": "5856896",
             "attributes": {
-                "signed-image-url": f"https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/{IDENTIFICATION_ID}/eab18174-2f08-4bcf-b9a3-5f33f510f9e0/live_face/eab18174-2f08-4bcf-b9a3-5f33f510f9e0-1649166966365.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220405%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220405T140019Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=ea8f03ebda7c3385e10ed3b367fce94156038fac3176580bda29cf7cbf6f0649",
-                "signed-video-url": f"https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/{IDENTIFICATION_ID}/eab18174-2f08-4bcf-b9a3-5f33f510f9e0/video/rec-eab18174-2f08-4bcf-b9a3-5f33f510f9e0-I7V8ti6Jss-9ZtiyBtrUseLqFw9-1649166953353-video-face.webm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220405%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220405T140019Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=e6ecb749fc6c73d770829d24a204b1e966af23f4152f3f684726a4f0dcc0951f",
+                "signed-image-url": f"https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/{IDENTIFICATION_ID}/hidden_signature",
+                "signed-video-url": f"https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/{IDENTIFICATION_ID}/hidden_signature",
             },
             "relationships": {
                 "identity": {
@@ -521,7 +521,7 @@ PROCESSED_IDENTIFICATION_RESPONSE = {
             "attributes": {
                 "birth-date": "2000-01-01",
                 "birth-place": None,
-                "document-number": "140275P00463",
+                "document-number": "123456P00123",
                 "document-type": "ID",
                 "document-type-detailed": None,
                 "expiry-date": "2029-02-17",
@@ -533,15 +533,15 @@ PROCESSED_IDENTIFICATION_RESPONSE = {
                 "last-name": "DE TOUL",
                 "married-name": None,
                 "media-type": "video",
-                "mrz": "IDFRADETOUL<<<<<<<<<<<<<<<<<<<75P001140275P004633RAOUL<<JEAN<<0001010M8",
+                "mrz": "IDFRADETOUL<<<<<<<<<<<<<<<<<<<75P001123456P001233RAOUL<<JEAN<<0001010M8",
                 "nationality": None,
                 "obtaining-date": None,
                 "personal-number": None,
                 "remarks": None,
-                "signed-image-back-url": "https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/1f44355f-2d66-4ba8-850d-79bb287c953d/anonymized/tight_crops/FRA-I3-Back-anonymized-1649233993079.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220406%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220406T084212Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=1f7c89c7dfd2d465475514e4a9a706f3a97b3e9570d9a7c4dfb08b0d230f4c4e",
-                "signed-image-front-url": "https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/1f44355f-2d66-4ba8-850d-79bb287c953d/anonymized/tight_crops/FRA-I4-Front-anonymized-1649233955005.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220406%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220406T084212Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=82d4dafbb6bc6c430e7a432a207f72f33c5d35748dd14395eaa4083891948081",
-                "signed-video-back-url": "https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/1f44355f-2d66-4ba8-850d-79bb287c953d/anonymized/video/rec-anonymized-wN0BcFzKci-tUgBn66z73XTaJxz-1649233975053-video-document_0_side_back_document_scene.webm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220406%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220406T084212Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=e9e3d1baf56f273612ec10fd76157f7d1ba049c898b4e0f75551bbfc45697472",
-                "signed-video-front-url": "https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/1f44355f-2d66-4ba8-850d-79bb287c953d/anonymized/video/rec-anonymized-iwhJsmrt3X-A4o5PRe0n3E39hLX-1649233951038-video-document_0_side_front_document_scene.webm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220406%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220406T084212Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=48d15df3c18613c0947765ee2ec38fe5e2dea415fc73525a422d9c607cd28e25",
+                "signed-image-back-url": "https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/hidden_signature",
+                "signed-image-front-url": "https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/hidden_signature",
+                "signed-video-back-url": "https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/hidden_signature",
+                "signed-video-front-url": "https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/hidden_signature",
             },
             "relationships": {
                 "identity": {
@@ -570,8 +570,8 @@ PROCESSED_IDENTIFICATION_RESPONSE = {
             "type": "faces",
             "id": "5868163",
             "attributes": {
-                "signed-image-url": "https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/1f44355f-2d66-4ba8-850d-79bb287c953d/anonymized/live_face/anonymized-1649234013962.png?response-content-type=image%2Fpng&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220406%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220406T084212Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=d74d750cc6ff29784e338a6e24896e4ddb8c6d5d2cd147d8ce8f62f50b93fe70",
-                "signed-video-url": "https://storage.ubble.ai/production-ubble-ai/OIOXQTAYFYMF/1f44355f-2d66-4ba8-850d-79bb287c953d/anonymized/video/rec-anonymized-jgmv6LgeNL-QJ3obaVHqVSRKwhS-1649234011147-video-face.webm?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20220406%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20220406T084212Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Signature=bcb25f2fbf90330f649c0a4e099e8d5412d13af5712a5b00d59ddfb1023f06c6",
+                "signed-image-url": "https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/hidden_signature",
+                "signed-video-url": "https://storage.ubble.ai/production-ubble-ai/HIDDEN_CODE/hidden_signature",
             },
             "relationships": {
                 "identity": {
