@@ -24,10 +24,11 @@ class BaseVenueModel(BaseModel):
 
     @classmethod
     def from_orm(cls: Any, venue: Venue):  # type: ignore
-        contact: VenueContact = venue.contact
-        venue.email = contact.email
-        venue.website = contact.website
-        venue.phoneNumber = contact.phone_number
+        contact: Optional[VenueContact] = venue.contact
+        if contact is not None:
+            venue.email = contact.email
+            venue.website = contact.website
+            venue.phoneNumber = contact.phone_number
 
         return super().from_orm(venue)
 
