@@ -240,9 +240,6 @@ def price_booking(booking: bookings_models.Booking) -> models.Pricing:
                 sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
                 .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
                 .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
-                sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True).joinedload(
-                    offerers_models.Venue.businessUnit, innerjoin=True
-                ),
                 sqla_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
                     offers_models.Stock.offer, innerjoin=True
                 ),
