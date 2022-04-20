@@ -1645,6 +1645,10 @@ describe('offerDetails - Creation - pro user', () => {
         name: 'Ma petite offre',
         subcategoryId: 'LIVESTREAM_MUSIQUE',
         venueId: venues[2].id,
+        extraData: {
+          musicType: '501',
+          musicSubType: '502',
+        },
         url: 'http://www.url.com',
         audioDisabilityCompliant: false,
         visualDisabilityCompliant: true,
@@ -1753,10 +1757,6 @@ describe('offerDetails - Creation - pro user', () => {
       expect(typeError).toBeNull()
       const authorError = queryInputErrorForField('author')
       expect(authorError).toBeNull()
-      const musicTypeError = queryInputErrorForField('musicType')
-      expect(musicTypeError).toBeNull()
-      const musicSubTypeError = queryInputErrorForField('musicSubType')
-      expect(musicSubTypeError).toBeNull()
       const performerError = queryInputErrorForField('performer')
       expect(performerError).toBeNull()
       const isDuoError = queryInputErrorForField('isDuo')
