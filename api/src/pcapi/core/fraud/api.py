@@ -573,27 +573,6 @@ def get_last_filled_identity_fraud_check(user: users_models.User) -> typing.Opti
     )
 
 
-def is_risky_user_profile(user: users_models.User) -> bool:
-    # No need to filter on eligibilityType ; profiling is performed only for AGE18 users.
-    user_profiling = (
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.user == user,
-            models.BeneficiaryFraudCheck.type == models.FraudCheckType.USER_PROFILING,
-        )
-        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
-        .first()
-    )
-
-    if user_profiling and user_profiling.source_data().risk_rating == models.UserProfilingRiskRating.HIGH:
-        return True
-
-    if not (user_profiling or FeatureToggle.ALLOW_EMPTY_USER_PROFILING.is_active()):
-        # unprofiled user and forbidden empty profiling -> risky
-        return True
-
-    return False
-
-
 def create_honor_statement_fraud_check(
     user: users_models.User, origin: str, eligibility_type: typing.Optional[users_models.EligibilityType] = None
 ) -> None:
