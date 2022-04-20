@@ -1549,6 +1549,23 @@ class ProfilingFraudScoreTest:
 
         assert user.is_subscriptionState_user_profiling_validated()
 
+    @override_features(ENABLE_USER_PROFILING=False)
+    def test_no_profiling_performed_when_disabled(self, client, requests_mock):
+        user = users_factories.UserFactory(
+            subscriptionState=users_models.SubscriptionState.phone_validated,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        matcher = requests_mock.register_uri("POST", settings.USER_PROFILING_URL)
+        client.with_token(user.email)
+
+        response = client.post(
+            "/native/v1/user_profiling", json={"sessionId": "session_id_value", "agentType": "browser_mobile"}
+        )
+        assert response.status_code == 204
+        assert matcher.call_count == 0
+
+        assert fraud_models.BeneficiaryFraudCheck.query.count() == 0
+
 
 class ProfilingSessionIdTest:
     def test_profiling_session_id(self, client):
