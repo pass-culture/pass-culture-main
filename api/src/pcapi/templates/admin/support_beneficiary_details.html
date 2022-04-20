@@ -259,7 +259,7 @@
         Pas de changement d'adresse email pour le moment
     </p>
     {% else %}
-    <a href="{{ url_for('/user_email_history.index_view', flt1_0=model.id ) }}">Vue détaillée</a>
+    <a href="{{ url_for('user_email_history.index_view', flt1_0=model.id ) }}">Vue détaillée</a>
     <table class="table table-striped table-hover">
         <thead>
         <tr>
