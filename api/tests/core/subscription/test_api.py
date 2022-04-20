@@ -181,6 +181,17 @@ class NextSubscriptionStepTest:
         )
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.USER_PROFILING
 
+    @override_features(ENABLE_USER_PROFILING=False)
+    def test_next_subscription_step_user_profiling_disabled(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            city=None,
+        )
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+        )
+
     def test_next_subscription_step_user_profiling_ko(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
@@ -756,6 +767,36 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         )
 
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is True
+
+    @override_features(ENABLE_USER_PROFILING=False)
+    def test_no_missing_step_with_user_profiling_disabled(self):
+        user = self.eligible_user(validate_phone=True)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is True
+
+    @override_features(ENABLE_USER_PROFILING=False)
+    def test_missing_step_with_user_profiling_disabled_but_profiling_ko(self):
+        user = self.eligible_user(validate_phone=True)
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.KO
+        )
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
+        )
+
+        assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     def test_missing_step(self):
