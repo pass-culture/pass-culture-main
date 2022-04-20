@@ -3,7 +3,9 @@ import fetch from 'jest-fetch-mock'
 import { client } from 'repository/pcapi/pcapiClient'
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
+// @ts-expect-error ts-migrate(2790) FIXME: The operand of a 'delete' operator must be optiona... Remove this comment to see the full error message
 delete window.location
+// @ts-expect-error ts-migrate(2740) FIXME: Type '{}' is missing the following properties from... Remove this comment to see the full error message
 window.location = {}
 const setHrefSpy = jest.fn()
 Object.defineProperty(window.location, 'href', {
@@ -49,6 +51,7 @@ describe('pcapiClient', () => {
 
     it('should reject if return response status is not 200', async () => {
       // Given
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: string; }' is not assig... Remove this comment to see the full error message
       fetch.mockResponseOnce({ error: 'API error message' }, { status: 403 })
 
       // When
@@ -58,6 +61,7 @@ describe('pcapiClient', () => {
     })
 
     it('should throw an error if return response status is not 200', async () => {
+      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: string; }' is not assig... Remove this comment to see the full error message
       fetch.mockResponseOnce({ error: 'API error message' }, { status: 403 })
       let throwError
       try {
