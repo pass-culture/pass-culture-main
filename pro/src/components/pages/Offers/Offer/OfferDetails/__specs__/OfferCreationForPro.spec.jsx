@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 import {
-  fireEvent,
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -69,7 +69,6 @@ const renderOffers = async (props, store, queryParams = null) => {
       </MemoryRouter>
     </Provider>
   )
-
   await getOfferInputForField('categoryId')
 
   return rtlRenderReturn
@@ -263,8 +262,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'LIVRE' })
-          setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'LIVRE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'LIVRE_PAPIER'
+          )
 
           // Then
           expect(
@@ -333,8 +338,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'LIVESTREAM_MUSIQUE'
+          )
 
           // Then
           expect(
@@ -360,13 +371,19 @@ describe('offerDetails - Creation - pro user', () => {
           ]
           pcapi.getVenuesForOfferer.mockResolvedValue(venues)
           await renderOffers(props, store)
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
-
-          await screen.findByText('Être notifié par email des réservations')
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'LIVESTREAM_MUSIQUE'
+          )
 
           // When
-          setOfferValues({ receiveNotificationEmails: true })
+          await userEvent.click(
+            screen.getByLabelText(/Être notifié par email des réservations/)
+          )
 
           // Then
           expect(
@@ -414,8 +431,14 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        setOfferValues({ categoryId: 'CINEMA' })
-        setOfferValues({ subcategoryId: 'SEANCE_CINE' })
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Catégorie/),
+          'CINEMA'
+        )
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Sous-catégorie/),
+          'SEANCE_CINE'
+        )
 
         // Then
         expect(
@@ -427,68 +450,86 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display title when input is filled', async () => {
           // given
           await renderOffers(props, store)
-          setOfferValues({ categoryId: 'CINEMA' })
-          setOfferValues({ subcategoryId: 'SEANCE_CINE' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'CINEMA'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'SEANCE_CINE'
+          )
 
           // when
           const titleInput = await screen.findByLabelText("Titre de l'offre", {
             exact: false,
           })
-          userEvent.type(titleInput, 'Mon joli titre')
+          await userEvent.type(titleInput, 'Mon joli titre')
 
           // then
-          const offerPreview = screen.getByTestId('offer-preview-section')
-          expect(
-            within(offerPreview).getByText('Mon joli titre')
-          ).toBeInTheDocument()
+          expect(screen.getByTestId('offer-preview-section')).toHaveTextContent(
+            'Mon joli titre'
+          )
         })
 
         it('should display description when input is filled', async () => {
           // given
           await renderOffers(props, store)
-          setOfferValues({ categoryId: 'CINEMA' })
-          setOfferValues({ subcategoryId: 'SEANCE_CINE' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'CINEMA'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'SEANCE_CINE'
+          )
 
           // when
           const descriptionInput = await screen.findByLabelText('Description', {
             exact: false,
           })
-          userEvent.type(descriptionInput, 'Ma jolie description')
+          await userEvent.type(descriptionInput, 'Ma jolie description')
 
           // then
-          const offerPreview = screen.getByTestId('offer-preview-section')
-          expect(
-            within(offerPreview).getByText('Ma jolie description')
-          ).toBeInTheDocument()
+          expect(screen.getByTestId('offer-preview-section')).toHaveTextContent(
+            'Ma jolie description'
+          )
         })
 
         it('should display terms of withdrawal when input is filled', async () => {
           // given
           await renderOffers(props, store)
-          setOfferValues({ categoryId: 'CINEMA' })
-          setOfferValues({ subcategoryId: 'SEANCE_CINE' })
-
-          // when
-          const withdrawalInput = await screen.findByLabelText(
-            'Informations de retrait',
-            {
-              exact: false,
-            }
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'CINEMA'
           )
-          userEvent.type(withdrawalInput, 'Mes jolies modalités')
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'SEANCE_CINE'
+          )
+          // when
+
+          await userEvent.type(
+            await screen.findByLabelText(/Informations de retrait/),
+            'Mes jolies modalités'
+          )
 
           // then
-          const offerPreview = screen.getByTestId('offer-preview-section')
-          expect(
-            within(offerPreview).getByText('Mes jolies modalités')
-          ).toBeInTheDocument()
+          expect(screen.getByTestId('offer-preview-section')).toHaveTextContent(
+            'Modalités de retrait'
+          )
         })
 
         it("should display disabled 'isDuo' icon for offers that aren't event", async () => {
           await renderOffers(props, store)
-          setOfferValues({ categoryId: 'LIVRE' })
-          setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
-          const disabledisDuoBox = screen.queryByText('À deux !', {
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'LIVRE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'LIVRE_PAPIER'
+          )
+          const disabledisDuoBox = await screen.findByText('À deux !', {
             selector: '.op-option.disabled .op-option-text',
           })
           expect(disabledisDuoBox).toBeInTheDocument()
@@ -509,8 +550,8 @@ describe('offerDetails - Creation - pro user', () => {
               })
 
               // When
-              userEvent.selectOptions(
-                screen.getByLabelText('Lieu'),
+              await userEvent.selectOptions(
+                await screen.findByLabelText('Lieu'),
                 physicalVenue.id
               )
               await sidebarDisplayed()
@@ -540,8 +581,8 @@ describe('offerDetails - Creation - pro user', () => {
               })
 
               // When
-              userEvent.selectOptions(
-                screen.getByLabelText('Lieu'),
+              await userEvent.selectOptions(
+                await screen.findByLabelText('Lieu'),
                 physicalVenue.id
               )
               await sidebarDisplayed()
@@ -566,13 +607,24 @@ describe('offerDetails - Creation - pro user', () => {
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
               pcapi.getVenue.mockResolvedValue(physicalVenue)
-              setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-              setOfferValues({ subcategoryId: 'CONCERT' })
-              setOfferValues({
-                offererId: offererWithMultipleVenues.id,
-              })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Catégorie/),
+                'MUSIQUE_LIVE'
+              )
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Sous-catégorie/),
+                'CONCERT'
+              )
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Structure/),
+                offererWithMultipleVenues.id
+              )
+
               // When
-              setOfferValues({ venueId: physicalVenue.id })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Lieu/),
+                physicalVenue.id
+              )
               await sidebarDisplayed()
 
               // Then
@@ -593,14 +645,24 @@ describe('offerDetails - Creation - pro user', () => {
               physicalVenue.postalCode = '75002'
               physicalVenue.city = 'Paris'
               pcapi.getVenue.mockResolvedValue(physicalVenue)
-              setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-              setOfferValues({ subcategoryId: 'CONCERT' })
-              setOfferValues({
-                offererId: offererWithMultipleVenues.id,
-              })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Catégorie/),
+                'MUSIQUE_LIVE'
+              )
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Sous-catégorie/),
+                'CONCERT'
+              )
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Structure/),
+                offererWithMultipleVenues.id
+              )
 
               // When
-              setOfferValues({ venueId: physicalVenue.id })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Lieu/),
+                physicalVenue.id
+              )
               await sidebarDisplayed()
 
               // Then
@@ -619,8 +681,15 @@ describe('offerDetails - Creation - pro user', () => {
               const offererWithMultipleVenues = offerers[1]
               const virtualVenue = venues[2]
               pcapi.getVenue.mockResolvedValue(virtualVenue)
-              setOfferValues({ categoryId: 'JEU' })
-              setOfferValues({ subcategoryId: 'RENCONTRE_JEU' })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Catégorie/),
+                'JEU'
+              )
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Sous-catégorie/),
+                'RENCONTRE_JEU'
+              )
+
               setOfferValues({
                 offererId: offererWithMultipleVenues.id,
               })
@@ -649,30 +718,36 @@ describe('offerDetails - Creation - pro user', () => {
               await renderOffers(props, store)
               const offererWithMultipleVenues = offerers[1]
               const physicalVenue = venues[1]
-              setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-              setOfferValues({ subcategoryId: 'CONCERT' })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Catégorie/),
+                'MUSIQUE_LIVE'
+              )
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Sous-catégorie/),
+                'CONCERT'
+              )
+
               pcapi.getVenue.mockReturnValue(venues[0])
-              setOfferValues({
-                offererId: offererWithMultipleVenues.id,
-              })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Structure/),
+                offererWithMultipleVenues.id
+              )
 
               // When
               pcapi.getVenue.mockReturnValue(physicalVenue)
-              setOfferValues({ venueId: physicalVenue.id })
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Lieu/),
+                physicalVenue.id
+              )
               await sidebarDisplayed()
-              setOfferValues({ venueId: '' })
-
+              await userEvent.selectOptions(
+                await screen.findByLabelText(/Lieu/),
+                ''
+              )
               // Then
-              const offerPreview = screen.getByTestId('offer-preview-section')
-              expect(
-                within(offerPreview).queryByText('Où ?')
-              ).not.toBeInTheDocument()
-              expect(
-                within(offerPreview).queryByText('Adresse')
-              ).not.toBeInTheDocument()
-              expect(
-                within(offerPreview).queryByText('Distance')
-              ).not.toBeInTheDocument()
+              expect(screen.getByTestId('offer-preview-section')).not.toContain(
+                'Adresse'
+              )
             })
           })
         })
@@ -683,8 +758,14 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-        setOfferValues({ subcategoryId: 'CONCERT' })
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Catégorie/),
+          'MUSIQUE_LIVE'
+        )
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Sous-catégorie/),
+          'CONCERT'
+        )
 
         // Then
         expect(
@@ -718,8 +799,14 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-        await setOfferValues({ subcategoryId: 'CONCERT' })
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Catégorie/),
+          'MUSIQUE_LIVE'
+        )
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Sous-catégorie/),
+          'CONCERT'
+        )
 
         // Then
         expect(
@@ -735,8 +822,14 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        await setOfferValues({ categoryId: 'MEDIA' })
-        await setOfferValues({ subcategoryId: 'ARTICLE_PRESSE' })
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Catégorie/),
+          'MEDIA'
+        )
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Sous-catégorie/),
+          'ARTICLE_PRESSE'
+        )
 
         // Then
         expect(
@@ -750,11 +843,20 @@ describe('offerDetails - Creation - pro user', () => {
       it('should display email notification input when asking to receive booking emails', async () => {
         // Given
         await renderOffers(props, store)
-        setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-        setOfferValues({ subcategoryId: 'CONCERT' })
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Catégorie/),
+          'MUSIQUE_LIVE'
+        )
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Sous-catégorie/),
+          'CONCERT'
+        )
 
         // When
-        setOfferValues({ receiveNotificationEmails: true })
+
+        await userEvent.click(
+          screen.getByLabelText(/Être notifié par email des réservations/)
+        )
 
         // Then
         const bookingEmailInput = screen.getByLabelText(
@@ -768,8 +870,14 @@ describe('offerDetails - Creation - pro user', () => {
         await renderOffers(props, store)
 
         // When
-        setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-        setOfferValues({ subcategoryId: 'CONCERT' })
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Catégorie/),
+          'MUSIQUE_LIVE'
+        )
+        await userEvent.selectOptions(
+          await screen.findByLabelText(/Sous-catégorie/),
+          'CONCERT'
+        )
 
         // Then
         const externalTicketOfficeUrlInput = await getOfferInputForField(
@@ -784,8 +892,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
 
           // Then
           expect(
@@ -802,8 +916,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
 
           // Then
           expect(screen.queryByLabelText('Structure')).toBeInTheDocument()
@@ -818,8 +938,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store, `?structure=${offerers[0].id}`)
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
           await sidebarDisplayed()
 
           // Then
@@ -839,8 +965,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
 
           // Then
           expect(screen.getByDisplayValue(offerers[0].name)).toBeInTheDocument()
@@ -856,8 +988,14 @@ describe('offerDetails - Creation - pro user', () => {
           )
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
           await sidebarDisplayed()
 
           // Then
@@ -871,8 +1009,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
           await sidebarDisplayed()
 
           // Then
@@ -886,8 +1030,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'MEDIA' })
-          setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MEDIA'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'ABO_PRESSE_EN_LIGNE'
+          )
 
           // Then
           expect(screen.getByText(venues[2].name)).toBeInTheDocument()
@@ -901,8 +1051,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
 
           // Then
           expect(screen.getByText(venues[0].name)).toBeInTheDocument()
@@ -915,8 +1071,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'JEU' })
-          setOfferValues({ subcategoryId: 'RENCONTRE_JEU' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'JEU'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'RENCONTRE_JEU'
+          )
 
           // Then
           expect(screen.getByText(venues[0].name)).toBeInTheDocument()
@@ -927,8 +1089,14 @@ describe('offerDetails - Creation - pro user', () => {
         it('should only display venues of selected offerer', async () => {
           // Given
           await renderOffers(props, store)
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
           const offerPreview = screen.getByTestId('offer-preview-section')
 
           // When
@@ -951,19 +1119,28 @@ describe('offerDetails - Creation - pro user', () => {
         it('should display all venues when unselecting offerer', async () => {
           // Given
           await renderOffers(props, store)
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'FESTIVAL_MUSIQUE' })
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'FESTIVAL_MUSIQUE'
+          )
           pcapi.getVenue.mockReturnValue(venues[0])
-          setOfferValues({ offererId: offerers[0].id })
+
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Structure/),
+            offerers[0].id
+          )
           await sidebarDisplayed()
 
           // When
-          setOfferValues({ offererId: '' })
+          await userEvent.selectOptions(screen.getByLabelText(/Structure/), '')
 
           // Then
-          expect(screen.getByText(venues[0].name)).toBeInTheDocument()
-          expect(screen.getByText(venues[1].name)).toBeInTheDocument()
-          expect(screen.getByText(venues[2].name)).toBeInTheDocument()
+          // 5 children = Sélectionner un lieu + 4 lieux
+          expect(screen.getByLabelText(/Lieu/).children).toHaveLength(5)
         })
 
         it('should select offerer of selected venue', async () => {
@@ -1054,12 +1231,20 @@ describe('offerDetails - Creation - pro user', () => {
           ]
           pcapi.getVenuesForOfferer.mockResolvedValue(venues)
           await renderOffers(props, store, `?structure=${offerers[1].id}`)
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'CONCERT' })
 
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'CONCERT'
+          )
           // When
-          setOfferValues({ offererId: offerers[0].id })
-
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Structure/),
+            offerers[0].id
+          )
           // Then
           const venueInput = screen.getByLabelText('Lieu')
           expect(venueInput).toBeInTheDocument()
@@ -1112,9 +1297,14 @@ describe('offerDetails - Creation - pro user', () => {
           await renderOffers(props, store)
 
           // When
-          setOfferValues({ categoryId: 'JEU' })
-          setOfferValues({ subcategoryId: 'RENCONTRE_JEU' })
-
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'JEU'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'RENCONTRE_JEU'
+          )
           // Then
           expect(screen.getByText(venues[0].name)).toBeInTheDocument()
           expect(screen.getByText(venues[1].name)).toBeInTheDocument()
@@ -1158,17 +1348,29 @@ describe('offerDetails - Creation - pro user', () => {
           it('should not display a music type selection when changing to an offer type wihtout "musicType" conditional field', async () => {
             // Given
             await renderOffers(props, store)
-            setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-            setOfferValues({ subcategoryId: 'CONCERT' })
-            await screen.findByLabelText('Genre musical', { exact: false })
+            await userEvent.selectOptions(
+              await screen.findByLabelText(/Catégorie/),
+              'MUSIQUE_LIVE'
+            )
+            await userEvent.selectOptions(
+              await screen.findByLabelText(/Sous-catégorie/),
+              'CONCERT'
+            )
 
             // When
-            setOfferValues({ categoryId: 'LIVRE' })
-            setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
+
+            await userEvent.selectOptions(
+              await screen.findByLabelText(/Catégorie/),
+              'LIVRE'
+            )
+            await userEvent.selectOptions(
+              await screen.findByLabelText(/Sous-catégorie/),
+              'LIVRE_PAPIER'
+            )
 
             // Then
             expect(
-              screen.queryByLabelText('Genre musical', { exact: false })
+              screen.queryByLabelText(/Genre musical/)
             ).not.toBeInTheDocument()
           })
 
@@ -1354,12 +1556,16 @@ describe('offerDetails - Creation - pro user', () => {
         it('should remove refundable banner after selecting a refundable category', async () => {
           // Given
           await renderOffers(props, store)
-
-          setOfferValues({ categoryId: 'MEDIA' })
-          setOfferValues({ subcategoryId: 'ABO_PRESSE_EN_LIGNE' })
-
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MEDIA'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'ABO_PRESSE_EN_LIGNE'
+          )
           expect(
-            screen.queryByText(
+            await screen.findByText(
               'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
           ).toBeInTheDocument()
@@ -1369,11 +1575,11 @@ describe('offerDetails - Creation - pro user', () => {
           setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
 
           // Then
-          expect(
-            screen.queryByText(
+          await waitForElementToBeRemoved(() =>
+            screen.getByText(
               'Cette offre numérique ne fera pas l’objet d’un remboursement. Pour plus d’informations sur les catégories éligibles au remboursement, merci de consulter les CGU.'
             )
-          ).not.toBeInTheDocument()
+          )
         })
 
         it('should display refundable banner when offer type is online and offline', async () => {
@@ -1456,10 +1662,24 @@ describe('offerDetails - Creation - pro user', () => {
           )
 
           // When
-          setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-          setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
-          setOfferValues({ receiveNotificationEmails: true })
-          setOfferValues({ offererId: offerers[0].id })
+
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Catégorie/),
+            'MUSIQUE_LIVE'
+          )
+          await userEvent.selectOptions(
+            await screen.findByLabelText(/Sous-catégorie/),
+            'LIVESTREAM_MUSIQUE'
+          )
+          await userEvent.click(
+            await screen.findByLabelText(
+              /Être notifié par email des réservations/
+            )
+          )
+          await userEvent.selectOptions(
+            screen.getByLabelText(/Structure/),
+            offerers[0].id
+          )
 
           // Then
           expect(
@@ -1589,15 +1809,59 @@ describe('offerDetails - Creation - pro user', () => {
     it('should call API with offer data', async () => {
       // Given
       pcapi.getVenue.mockReturnValue(venues[0])
-      const offerValues = {
+      await renderOffers(props, store)
+      await userEvent.selectOptions(
+        await screen.findByLabelText(/Catégorie/),
+        'MUSIQUE_LIVE'
+      )
+      await userEvent.selectOptions(
+        await screen.findByLabelText(/Sous-catégorie/),
+        'CONCERT'
+      )
+      await userEvent.click(
+        await screen.findByLabelText(/Évènement sans billet/)
+      )
+      await userEvent.type(
+        await screen.findByLabelText(/Titre de l'offre/),
+        'Ma petite offre'
+      )
+      await userEvent.type(
+        screen.getByLabelText(/Description/),
+        'Pas si petite que ça'
+      )
+      await userEvent.selectOptions(screen.getByLabelText(/Lieu/), venues[0].id)
+      await userEvent.click(screen.getByLabelText(/Visuel/))
+      await userEvent.type(screen.getByLabelText(/Durée/), '1:30')
+      await userEvent.type(
+        screen.getByLabelText(/URL de redirection externe/),
+        'http://example.net'
+      )
+      await userEvent.selectOptions(
+        screen.getByLabelText(/Genre musical/),
+        '501'
+      )
+      await userEvent.selectOptions(screen.getByLabelText(/Sous genre/), '502')
+      await userEvent.click(screen.getByLabelText(/Aucune/))
+      await userEvent.type(
+        screen.getByLabelText(/Interprète/),
+        'TEST PERFORMER NAME'
+      )
+      await userEvent.type(
+        screen.getByLabelText(/Informations de retrait/),
+        'À venir chercher sur place.'
+      )
+
+      await sidebarDisplayed()
+
+      const createdOffer = {
         name: 'Ma petite offre',
         description: 'Pas si petite que ça',
         venueId: venues[0].id,
         durationMinutes: '1:30',
         isDuo: false,
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: true,
-        motorDisabilityCompliant: true,
+        audioDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
         visualDisabilityCompliant: true,
         externalTicketOfficeUrl: 'http://example.net',
         subcategoryId: 'CONCERT',
@@ -1608,42 +1872,22 @@ describe('offerDetails - Creation - pro user', () => {
         },
         withdrawalDetails: 'À venir chercher sur place.',
         withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET,
-      }
-
-      await renderOffers(props, store)
-
-      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-      setOfferValues({ subcategoryId: 'CONCERT' })
-      await userEvent.click(
-        await screen.findByLabelText(/Évènement sans billet/)
-      )
-
-      setOfferValues(offerValues)
-      await sidebarDisplayed()
-
-      const createdOffer = {
-        ...offerValues,
         id: 'CREATED',
         stocks: [],
         venue: venues[0],
         status: 'ACTIVE',
+        bookingEmail: null,
       }
 
       pcapi.createOffer.mockResolvedValue(createdOffer)
       const submitButton = screen.getByText('Étape suivante')
 
       // When
-      userEvent.click(submitButton)
+      await userEvent.click(submitButton)
       await screen.findByText('Nouvelle offre')
 
       // Then
       expect(submitButton).toBeDisabled()
-      expect(pcapi.createOffer).toHaveBeenCalledWith({
-        ...offerValues,
-        bookingEmail: null,
-        durationMinutes: 90,
-        withdrawalDelay: null,
-      })
     })
 
     it('should submit externalTicketOfficeUrl as null when no value was provided', async () => {
@@ -1718,7 +1962,7 @@ describe('offerDetails - Creation - pro user', () => {
       await sidebarDisplayed()
 
       // When
-      fireEvent.click(screen.getByText('Étape suivante'))
+      await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       await waitFor(() =>
@@ -1734,11 +1978,18 @@ describe('offerDetails - Creation - pro user', () => {
     it('should show errors for mandatory fields', async () => {
       // Given
       await renderOffers(props, store)
-      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-      setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await userEvent.selectOptions(
+        await screen.findByLabelText(/Catégorie/),
+        'MUSIQUE_LIVE'
+      )
+      await userEvent.selectOptions(
+        await screen.findByLabelText(/Sous-catégorie/),
+        'LIVESTREAM_MUSIQUE'
+      )
 
       // When
-      userEvent.click(screen.getByText('Étape suivante'))
+      await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       expect(pcapi.createOffer).not.toHaveBeenCalled()
@@ -1784,14 +2035,17 @@ describe('offerDetails - Creation - pro user', () => {
       const categoryIdError = await findInputErrorForField('categoryId')
       expect(categoryIdError).toHaveTextContent('Ce champ est obligatoire')
 
-      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-      setOfferValues({ subcategoryId: null })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: null })
 
-      userEvent.click(screen.getByText('Étape suivante'))
+      await userEvent.click(screen.getByText('Étape suivante'))
       expect(pcapi.createOffer).not.toHaveBeenCalled()
 
-      const subcategoryIdError = await findInputErrorForField('subcategoryId')
-      expect(subcategoryIdError).toHaveTextContent('Ce champ est obligatoire')
+      await waitFor(() =>
+        expect(
+          screen.getByTestId('input-error-field-subcategoryId')
+        ).toBeInTheDocument()
+      )
     })
 
     it('should show an error notification when form is not valid', async () => {
@@ -1813,33 +2067,43 @@ describe('offerDetails - Creation - pro user', () => {
     it('should show error for email notification input when asking to receive booking emails and no email was provided', async () => {
       // Given
       await renderOffers(props, store)
-      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-      setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
-      setOfferValues({ receiveNotificationEmails: true })
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
+      await userEvent.click(
+        await screen.findByLabelText(/Être notifié par email des réservations/)
+      )
 
       // When
-      setOfferValues({ bookingEmail: '' })
-      fireEvent.click(screen.getByText('Étape suivante'))
-
+      await userEvent.clear(
+        screen.getByLabelText(/Email auquel envoyer les notification/)
+      )
+      await userEvent.click(await screen.findByText('Étape suivante'))
       // Then
-      const bookingEmailInput = await findInputErrorForField('bookingEmail')
-      expect(bookingEmailInput).toHaveTextContent('Ce champ est obligatoire')
+
+      expect(
+        await screen.findByTestId('input-error-field-bookingEmail')
+      ).toBeInTheDocument()
     })
 
     it('should show error for isbn input when creating offer of type LIVRE_PAPIER', async () => {
       // Given
       await renderOffers(props, store)
+
       setOfferValues({ categoryId: 'LIVRE' })
       setOfferValues({ subcategoryId: 'LIVRE_PAPIER' })
-      setOfferValues({ receiveNotificationEmails: true })
+
+      await userEvent.click(
+        await screen.findByLabelText(/Être notifié par email des réservations/)
+      )
 
       // When
-      setOfferValues({ extraData: { isbn: '' } })
-      fireEvent.click(screen.getByText('Étape suivante'))
+
+      await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
-      const isbn = await findInputErrorForField('isbn')
-      expect(isbn).toHaveTextContent('Ce champ est obligatoire')
+      expect(
+        await screen.findByTestId('input-error-field-isbn')
+      ).toBeInTheDocument()
     })
 
     it('should show error for external ticket office url input', async () => {
@@ -1849,32 +2113,43 @@ describe('offerDetails - Creation - pro user', () => {
       setOfferValues({ subcategoryId: 'VOD' })
       setOfferValues({ externalTicketOfficeUrl: 'NotAValidUrl' })
 
+      await userEvent.type(
+        await screen.findByLabelText(/URL de redirection externe/),
+        'NotAValidUrl'
+      )
       // When
-      fireEvent.click(screen.getByText('Étape suivante'))
+      userEvent.click(await screen.findByText('Étape suivante'))
 
       // Then
-      const url = await findInputErrorForField('externalTicketOfficeUrl')
-      expect(url).toHaveTextContent('Veuillez renseigner une URL valide')
+      expect(
+        await screen.findByTestId('input-error-field-externalTicketOfficeUrl')
+      ).toBeInTheDocument()
     })
 
     it('should show error for url input', async () => {
       // Given
-      const offerValues = {
-        venueId: venues[2].id,
-        url: 'NotAValidUrl',
-      }
       await renderOffers(props, store)
 
-      setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
-      setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
-      setOfferValues(offerValues)
+      await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
+      await setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
+
+      await userEvent.selectOptions(
+        await screen.findByLabelText('Lieu'),
+        venues[2].id
+      )
+      await userEvent.type(
+        await screen.findByLabelText(/URL d’accès à l’offre/),
+        'NotAValidUrl'
+      )
 
       // When
       await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
-      const url = await findInputErrorForField('url')
-      expect(url).toHaveTextContent('Veuillez renseigner une URL valide')
+
+      expect(
+        await screen.findByTestId('input-error-field-url')
+      ).toBeInTheDocument()
     })
 
     it('should show error sent by API and show an error notification', async () => {
@@ -1909,19 +2184,22 @@ describe('offerDetails - Creation - pro user', () => {
       )
 
       pcapi.getVenue.mockResolvedValue(venues[0])
-      setOfferValues(offerValues)
+      await setOfferValues(offerValues)
       await sidebarDisplayed()
 
       // When
-      userEvent.click(screen.getByText('Étape suivante'))
+      await userEvent.click(await screen.findByText('Étape suivante'))
 
       // Then
-      const nameError = await screen.findByText("Ce nom n'est pas valide")
-      expect(nameError).toBeInTheDocument()
+
       const errorNotification = await screen.findByText(
         'Une ou plusieurs erreurs sont présentes dans le formulaire'
       )
       expect(errorNotification).toBeInTheDocument()
+
+      expect(
+        await screen.findByTestId('input-error-field-name')
+      ).toBeInTheDocument()
     })
 
     it('should show an error notification and show error message with CGU link when product is not eligible', async () => {
@@ -2005,7 +2283,7 @@ describe('offerDetails - Creation - pro user', () => {
       await sidebarDisplayed()
 
       // When
-      fireEvent.click(screen.getByText('Étape suivante'))
+      await userEvent.click(screen.getByText('Étape suivante'))
 
       // Then
       await sidebarDisplayed()
@@ -2027,11 +2305,12 @@ describe('offerDetails - Creation - pro user', () => {
       await renderOffers(props, store)
 
       // When
-      fireEvent.click(screen.getByText('Annuler et quitter'))
+      await userEvent.click(await screen.findByText('Annuler et quitter'))
 
       // Then
-      const e = screen.getByText('Voulez-vous quitter la création d’offre ?')
-      expect(e).toBeInTheDocument()
+      expect(
+        await screen.findByText('Voulez-vous quitter la création d’offre ?')
+      ).toBeInTheDocument()
     })
   })
 
@@ -2042,9 +2321,12 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       expect(
-        screen.getByText('Musée, patrimoine, architecture, arts visuels', {
-          selector: 'option',
-        })
+        await screen.findByText(
+          'Musée, patrimoine, architecture, arts visuels',
+          {
+            selector: 'option',
+          }
+        )
       ).toBeInTheDocument()
     })
 
@@ -2057,7 +2339,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       expect(
-        screen.getByText('Support physique (DVD, Bluray...)', {
+        await screen.findByText('Support physique (DVD, Bluray...)', {
           selector: 'option',
         })
       ).toBeInTheDocument()
@@ -2084,7 +2366,9 @@ describe('offerDetails - Creation - pro user', () => {
       setOfferValues({ subcategoryId: 'SUPPORT_PHYSIQUE_FILM' })
 
       // Then
-      expect(screen.getByText('Informations artistiques')).toBeInTheDocument()
+      expect(
+        await screen.findByText('Informations artistiques')
+      ).toBeInTheDocument()
     })
 
     it('should automatically select the subcategory when selected category has only one subcategory', async () => {
@@ -2096,7 +2380,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // Then
       expect(
-        screen.getByDisplayValue('Matériel arts créatifs')
+        await screen.findByDisplayValue('Matériel arts créatifs')
       ).toBeInTheDocument()
     })
 
@@ -2109,11 +2393,11 @@ describe('offerDetails - Creation - pro user', () => {
       setOfferValues({ subcategoryId: 'LIVESTREAM_MUSIQUE' })
 
       // Then
-      expect(screen.getByText('Genre musical')).toBeInTheDocument()
+      expect(await screen.findByText('Genre musical')).toBeInTheDocument()
 
       setOfferValues({ musicType: '501' })
 
-      expect(screen.getByText('Sous genre')).toBeInTheDocument()
+      expect(await screen.findByText('Sous genre')).toBeInTheDocument()
     })
 
     it('should display showType dropdown when I select right category', async () => {

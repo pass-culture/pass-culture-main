@@ -46,11 +46,11 @@ describe('src | components | pages | LostPassword', () => {
 
       // then
       // user can fill and submit email
-      userEvent.paste(
+      await userEvent.type(
         screen.getByLabelText(/Adresse e-mail/),
         'coucou@example.com'
       )
-      userEvent.click(screen.getByText(/Envoyer/))
+      await userEvent.click(screen.getByText(/Envoyer/))
 
       // he has been redirected to next step
       await waitFor(() => {
@@ -69,11 +69,11 @@ describe('src | components | pages | LostPassword', () => {
 
       // then
       // user can fill and submit new password
-      userEvent.paste(
+      await userEvent.type(
         screen.getByLabelText(/Nouveau mot de passe/),
         'newPassword'
       )
-      userEvent.click(screen.getByText(/Envoyer/))
+      await userEvent.click(screen.getByText(/Envoyer/))
 
       // he has been redirected to final step
       await waitFor(() => {

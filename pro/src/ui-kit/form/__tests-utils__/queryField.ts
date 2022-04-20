@@ -15,11 +15,11 @@ export type QueryFieldResponse<T> = {
   doesTruncateAt(charCount: number): Promise<boolean>
 }
 
-export const queryField = <
+export const queryField = async <
   T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 >(
   label: string
-): QueryFieldResponse<T> => {
+): Promise<QueryFieldResponse<T>> => {
   const input = screen.queryByLabelText(contains(label)) as T | null
 
   if (!input) {
@@ -43,15 +43,15 @@ export const queryField = <
     const tooLongString = stringWithCharCount(charCount + 10)
     const expectedTruncatedString = stringWithCharCount(charCount)
 
-    userEvent.clear(input as T)
-    userEvent.paste(input as T, tooLongString)
+    await userEvent.clear(input as T)
+    await userEvent.type(input as T, tooLongString)
 
     await within(wrapper).findByText(`${charCount}/${charCount}`)
 
     const isValid = input.value.length === expectedTruncatedString.length
 
     // clean input and wait for last update
-    userEvent.clear(input as T)
+    await userEvent.clear(input as T)
     await within(wrapper).findByDisplayValue('')
 
     return isValid

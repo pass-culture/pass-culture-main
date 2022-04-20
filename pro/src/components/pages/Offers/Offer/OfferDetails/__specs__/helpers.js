@@ -46,8 +46,8 @@ export const getOfferInputForField = async fieldName => {
   return await screen.findByLabelText(label, { exact })
 }
 
-export const findInputErrorForField = fieldName => {
-  return screen.findByTestId(`input-error-field-${fieldName}`)
+export const findInputErrorForField = async fieldName => {
+  return await screen.findByTestId(`input-error-field-${fieldName}`)
 }
 
 export const queryInputErrorForField = fieldName => {
@@ -64,21 +64,21 @@ export const setOfferValues = values => {
   ]
   const offerTypeRadio = ['isDuo']
 
-  const setFormValueForField = (field, value) => {
+  const setFormValueForField = async (field, value) => {
     let input
     const { label, exact } = fieldLabels[field]
-    input = screen.getByLabelText(label, { exact })
+    input = await screen.findByLabelText(label, { exact })
 
     if (checkboxes.includes(field)) {
-      userEvent.click(input)
+      await userEvent.click(input)
     } else if (offerTypeRadio.includes(field)) {
       if (value) {
-        userEvent.click(input)
+        await userEvent.click(input)
       } else {
-        userEvent.click(screen.getByLabelText('Aucune'))
+        await userEvent.click(screen.getByLabelText('Aucune'))
       }
     } else if (field === 'durationMinutes') {
-      userEvent.type(input, value)
+      await userEvent.type(input, value)
     } else {
       fireEvent.change(input, { target: { value } })
     }

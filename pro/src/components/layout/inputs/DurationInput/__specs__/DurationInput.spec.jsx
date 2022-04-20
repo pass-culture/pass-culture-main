@@ -83,7 +83,7 @@ describe('src | components | inputs | DurationInput', () => {
     // Given
     await renderDurationInput(props)
     const durationInput = screen.getByRole('textbox')
-    userEvent.type(durationInput, '1:7')
+    await userEvent.type(durationInput, '1:7')
 
     // When
     fireEvent.blur(durationInput)
@@ -97,14 +97,16 @@ describe('src | components | inputs | DurationInput', () => {
     // Given
     await renderDurationInput(props)
     const durationInput = screen.getByRole('textbox')
-    userEvent.type(durationInput, '3')
+
+    await userEvent.type(durationInput, '3')
 
     // When
     fireEvent.blur(durationInput)
 
     // Then
-    expect(props.onChange).toHaveBeenCalledWith(180)
     expect(durationInput).toHaveValue('3:00')
+
+    expect(props.onChange).toHaveBeenCalledWith(180)
   })
 
   it('should call onChange prop function with null when user remove the duration', async () => {

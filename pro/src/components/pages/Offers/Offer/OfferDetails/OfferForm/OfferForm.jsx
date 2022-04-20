@@ -605,36 +605,29 @@ const OfferForm = ({
     [formErrors, setFormErrors]
   )
 
-  const handleSingleFormUpdate = useCallback(
-    event => {
-      const field = event.target.name
-      const value =
-        event.target.type === 'checkbox'
-          ? !formValues[field]
-          : event.target.value
-      if (value !== null) {
-        resetFormError(field)
-      }
-      handleFormUpdate({ [field]: value })
-    },
-    [formValues, handleFormUpdate, resetFormError]
-  )
+  const handleSingleFormUpdate = event => {
+    const field = event.target.name
 
-  const updateWithdrawalType = useCallback(
-    event => {
-      handleSingleFormUpdate(event)
+    const value =
+      event.target.type === 'checkbox' ? !formValues[field] : event.target.value
+    if (value !== null) {
+      resetFormError(field)
+    }
+    handleFormUpdate({ [field]: value })
+  }
 
-      resetFormError('withdrawalDelay')
-      handleFormUpdate({
-        withdrawalDelay:
-          event.target.value === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE ||
-          event.target.value === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL
-            ? WITHDRAWAL_ON_SITE_DELAY_OPTIONS[0].id
-            : DEFAULT_FORM_VALUES['withdrawalDelay'],
-      })
-    },
-    [handleFormUpdate, handleSingleFormUpdate, resetFormError]
-  )
+  const updateWithdrawalType = event => {
+    handleSingleFormUpdate(event)
+
+    resetFormError('withdrawalDelay')
+    handleFormUpdate({
+      withdrawalDelay:
+        event.target.value === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE ||
+        event.target.value === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL
+          ? WITHDRAWAL_ON_SITE_DELAY_OPTIONS[0].id
+          : DEFAULT_FORM_VALUES['withdrawalDelay'],
+    })
+  }
 
   const handleDisabilityCompliantUpdate = useCallback(
     disabilityCompliantValues => {
@@ -647,10 +640,8 @@ const OfferForm = ({
     [handleFormUpdate, resetFormError]
   )
 
-  const handleDurationChange = useCallback(
-    value => handleFormUpdate({ durationMinutes: value }),
-    [handleFormUpdate]
-  )
+  const handleDurationChange = value =>
+    handleFormUpdate({ durationMinutes: value })
 
   const toggleReceiveNotification = useCallback(
     () => setReceiveNotificationEmails(!receiveNotificationEmails),
@@ -715,7 +706,6 @@ const OfferForm = ({
   if (isLoading) {
     return <Spinner />
   }
-
   return (
     <form className="offer-form" ref={formRef}>
       {providerName !== null ? (

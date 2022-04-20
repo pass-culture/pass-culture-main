@@ -3,23 +3,13 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import merge from 'lodash/merge'
 
-import { triggerFieldValidation } from 'ui-kit/form/__tests-utils__'
-
 import {
   defaultCreationProps,
   renderEACOfferForm,
   userOfferersFactory,
   managedVenuesFactory,
-  elements,
 } from '../__tests-utils__'
 import { IOfferEducationalProps } from '../OfferEducational'
-
-const {
-  queryOffererSelect,
-  queryVenueSelect,
-  findOfferTypeTitle,
-  queryOfferTypeTitle,
-} = elements
 
 const eligibilityResponse = (
   eligible: boolean,
@@ -52,25 +42,20 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should display offerer select with pre-selected options', async () => {
       renderEACOfferForm(props)
-      const offererSelect = queryOffererSelect()
+      const offererSelect = await screen.findByLabelText('Structure')
 
-      await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
-
-      expect(offererSelect.input?.value).toBe('OFFERER_ID')
-      expect(offererSelect.input).toBeDisabled()
-      expect(offererSelect.input?.options).toHaveLength(1)
-      expect(offererSelect.isOptionnal).toBe(false)
+      expect(offererSelect).toHaveValue('OFFERER_ID')
+      expect(offererSelect).toBeDisabled()
+      expect(offererSelect.children).toHaveLength(1)
     })
 
     it('should test eligibility and display venue input if offerer is eligible', async () => {
       renderEACOfferForm({ ...props, getIsOffererEligible })
-      const offererSelect = queryOffererSelect()
 
-      await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
-
-      const venueSelect = queryVenueSelect()
-      expect(venueSelect.input).toBeInTheDocument()
+      expect(
+        await screen.findByLabelText('Lieu qui percevra le remboursement')
+      ).toBeInTheDocument()
     })
 
     it('should test eligibility and display an error message with a link if the offerer is not eligible', async () => {
@@ -79,12 +64,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
         .mockResolvedValue(eligibilityResponse(false))
 
       renderEACOfferForm({ ...props, getIsOffererEligible })
-      const offererSelect = queryOffererSelect()
-
-      await waitFor(() => expect(offererSelect.input).toBeInTheDocument())
 
       expect(
-        screen.getByText(
+        await screen.findByText(
           'Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.'
         )
       ).toBeInTheDocument()
@@ -93,7 +75,9 @@ describe('screens | OfferEducational : creation offerer step', () => {
         screen.getByRole('link', { name: 'Faire une demande de référencement' })
       ).toBeInTheDocument()
 
-      expect(queryVenueSelect().input).not.toBeInTheDocument()
+      expect(
+        screen.queryByLabelText('Lieu qui percevra le remboursement')
+      ).not.toBeInTheDocument()
     })
   })
   describe('when there is only one managed venue associated with the offerer and offerer is eligible', () => {
@@ -110,24 +94,30 @@ describe('screens | OfferEducational : creation offerer step', () => {
 
     it('should pre-select both selects and display the next step', async () => {
       renderEACOfferForm(props)
-      const offerTypeTitle = await findOfferTypeTitle()
+      const offerTypeTitle = await screen.findByRole('heading', {
+        name: 'Type d’offre',
+      })
+      const offererSelect = await screen.findByLabelText('Structure')
+      const venueSelect = await screen.findByLabelText(
+        'Lieu qui percevra le remboursement'
+      )
 
-      const offererSelect = queryOffererSelect()
-      const venueSelect = queryVenueSelect()
+      expect(offererSelect).toBeInTheDocument()
+      expect(offererSelect).toHaveValue('OFFERER_ID')
+      expect(offererSelect.children).toHaveLength(1)
+      expect(offererSelect).toBeDisabled()
 
-      expect(offererSelect.input).toBeInTheDocument()
-      expect(offererSelect.input).toHaveValue('OFFERER_ID')
-      expect(offererSelect.input?.options).toHaveLength(1)
-      expect(offererSelect.input).toBeDisabled()
-      expect(offererSelect.isOptionnal).toBeFalsy()
-      expect(offererSelect.getError()).not.toBeInTheDocument()
+      expect(
+        await screen.queryByTestId('error-offererId')
+      ).not.toBeInTheDocument()
 
-      expect(venueSelect.input).toBeInTheDocument()
-      expect(venueSelect.input).toHaveValue('VENUE_ID')
-      expect(venueSelect.input?.options).toHaveLength(1)
-      expect(venueSelect.input).toBeDisabled()
-      expect(venueSelect.isOptionnal).toBeFalsy()
-      expect(venueSelect.getError()).not.toBeInTheDocument()
+      expect(venueSelect).toBeInTheDocument()
+      expect(venueSelect).toHaveValue('VENUE_ID')
+      expect(venueSelect.children).toHaveLength(1)
+      expect(venueSelect).toBeDisabled()
+      expect(
+        await screen.queryByTestId('error-venueId')
+      ).not.toBeInTheDocument()
 
       expect(offerTypeTitle).toBeInTheDocument()
     })
@@ -149,32 +139,31 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
     it('should require an offerer selection from the user and trigger eligibility check at selection', async () => {
       renderEACOfferForm({ ...props, getIsOffererEligible })
-      const offererSelect = queryOffererSelect()
+      const offererSelect = await screen.findByLabelText('Structure')
 
-      expect(offererSelect.input).toBeInTheDocument()
-      expect(offererSelect.input).toHaveValue('')
-      expect(offererSelect.input?.options).toHaveLength(3)
-      expect(offererSelect.input).toBeEnabled()
-      expect(offererSelect.isOptionnal).toBeFalsy()
-      expect(offererSelect.getError()).not.toBeInTheDocument()
+      expect(offererSelect).toBeInTheDocument()
+      expect(offererSelect).toHaveValue('')
+      expect(offererSelect.children).toHaveLength(3)
+      expect(offererSelect).toBeEnabled()
+      expect(
+        await screen.queryByTestId('error-offererId')
+      ).not.toBeInTheDocument()
 
-      triggerFieldValidation(offererSelect.input as HTMLSelectElement)
+      await userEvent.click(offererSelect)
+      await userEvent.tab()
 
-      await waitFor(() => expect(offererSelect.getError()).toBeInTheDocument())
-      expect(offererSelect.getError()).toHaveTextContent(
-        'Veuillez sélectionner une structure'
-      )
+      await waitFor(() => expect(offererSelect).toBeInTheDocument())
+      expect(
+        await screen.findByText('Veuillez sélectionner une structure')
+      ).toBeInTheDocument()
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(0)
 
-      userEvent.selectOptions(
-        offererSelect.input as HTMLSelectElement,
-        'OFFERER_1'
-      )
+      await userEvent.selectOptions(offererSelect, 'OFFERER_1')
 
-      await waitFor(() =>
-        expect(offererSelect.getError()).not.toBeInTheDocument()
-      )
+      expect(
+        screen.queryByText('Veuillez sélectionner une structure')
+      ).not.toBeInTheDocument()
 
       expect(getIsOffererEligible).toHaveBeenCalledTimes(1)
       expect(getIsOffererEligible).toHaveBeenCalledWith('OFFERER_1')
@@ -183,17 +172,11 @@ describe('screens | OfferEducational : creation offerer step', () => {
     it('should check eligibility every time a diferent offerer is selected', async () => {
       renderEACOfferForm({ ...props, getIsOffererEligible })
 
-      const offererSelect = queryOffererSelect()
+      const offererSelect = await screen.findByLabelText('Structure')
 
-      userEvent.selectOptions(
-        offererSelect.input as HTMLSelectElement,
-        'OFFERER_1'
-      )
+      await userEvent.selectOptions(offererSelect, 'OFFERER_1')
 
-      userEvent.selectOptions(
-        offererSelect.input as HTMLSelectElement,
-        'OFFERER_2'
-      )
+      await userEvent.selectOptions(offererSelect, 'OFFERER_2')
 
       await waitFor(() => expect(getIsOffererEligible).toHaveBeenCalledTimes(2))
 
@@ -218,36 +201,44 @@ describe('screens | OfferEducational : creation offerer step', () => {
     })
     it('should require a venue selection from the user', async () => {
       renderEACOfferForm(props)
-
-      await waitFor(() => expect(queryVenueSelect().input).toBeInTheDocument())
-
-      const venueSelect = queryVenueSelect()
-      expect(venueSelect.input).toBeInTheDocument()
-      expect(venueSelect.input).toHaveValue('')
-      expect(venueSelect.input).toHaveDisplayValue('Sélectionner un lieu')
-      expect(venueSelect.input?.options).toHaveLength(3)
-      expect(venueSelect.input).toBeEnabled()
-      expect(venueSelect.isOptionnal).toBeFalsy()
-      expect(venueSelect.getError()).not.toBeInTheDocument()
-
-      expect(queryOfferTypeTitle()).not.toBeInTheDocument()
-
-      triggerFieldValidation(venueSelect.input as HTMLSelectElement)
-
-      await waitFor(() => expect(venueSelect.getError()).toBeInTheDocument())
-      expect(venueSelect.getError()).toHaveTextContent(
-        'Veuillez sélectionner un lieu'
+      const venueSelect = await screen.findByLabelText(
+        'Lieu qui percevra le remboursement'
       )
 
-      userEvent.selectOptions(venueSelect.input as HTMLSelectElement, 'VENUE_1')
+      expect(venueSelect).toHaveValue('')
+      expect(venueSelect).toHaveDisplayValue('Sélectionner un lieu')
+      expect(venueSelect.children).toHaveLength(3)
+      expect(venueSelect).toBeEnabled()
+      expect(
+        await screen.queryByTestId('error-venueId')
+      ).not.toBeInTheDocument()
 
-      await waitFor(() =>
-        expect(venueSelect.getError()).not.toBeInTheDocument()
-      )
+      expect(
+        screen.queryByRole('heading', {
+          name: 'Type d’offre',
+        })
+      ).not.toBeInTheDocument()
 
-      expect(venueSelect.input).toHaveDisplayValue('Venue 1')
+      await userEvent.click(venueSelect)
+      await userEvent.tab()
 
-      expect(queryOfferTypeTitle()).toBeInTheDocument()
+      expect(
+        await screen.findByText('Veuillez sélectionner un lieu')
+      ).toBeInTheDocument()
+
+      await userEvent.selectOptions(venueSelect, 'VENUE_1')
+
+      expect(
+        screen.queryByText('Veuillez sélectionner un lieu')
+      ).not.toBeInTheDocument()
+
+      expect(venueSelect).toHaveDisplayValue('Venue 1')
+
+      expect(
+        await screen.findByRole('heading', {
+          name: 'Type d’offre',
+        })
+      ).toBeInTheDocument()
     })
   })
 })

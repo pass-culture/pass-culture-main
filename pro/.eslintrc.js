@@ -6,7 +6,7 @@ const comonConfig = {
     'plugin:react/all',
     'plugin:jsx-a11y/strict',
     'plugin:import/errors',
-    'plugin:jest/all',
+    'plugin:jest/recommended',
     'plugin:pass-culture/recommended',
     'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',

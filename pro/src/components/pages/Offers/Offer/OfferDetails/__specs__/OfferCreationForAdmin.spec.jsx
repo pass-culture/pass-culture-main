@@ -137,7 +137,9 @@ describe('offerDetails - Creation - admin user', () => {
         await setOfferValues({ subcategoryId: 'ID' })
 
         // Then
-        expect(screen.getByDisplayValue(offerer.name)).toBeInTheDocument()
+        expect(
+          await screen.findByDisplayValue(offerer.name)
+        ).toBeInTheDocument()
         expect(screen.getByDisplayValue(offerer.name)).toBeDisabled()
       })
 
@@ -154,7 +156,9 @@ describe('offerDetails - Creation - admin user', () => {
         await setOfferValues({ subcategoryId: 'ID' })
 
         // Then
-        expect(screen.getByDisplayValue(venues[0].name)).toBeInTheDocument()
+        expect(
+          await screen.findByDisplayValue(venues[0].name)
+        ).toBeInTheDocument()
       })
     })
   })

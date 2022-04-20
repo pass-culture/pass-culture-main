@@ -46,7 +46,7 @@ describe('venues', () => {
     // When
     await renderVenue(props, store)
 
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     // Then
     expect(pcapi.getVenueStats).toHaveBeenCalledWith(props.id)
@@ -85,7 +85,7 @@ describe('venues', () => {
   it('should contain a link for each stats', async () => {
     // When
     await renderVenue(props, store)
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     const [activeOffersStat] = screen.getAllByTestId('venue-stat')
     await waitFor(() =>
       expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
@@ -98,7 +98,7 @@ describe('venues', () => {
   it('should redirect to filtered bookings when clicking on link', async () => {
     // When
     await renderVenue(props, store)
-    userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
     // Then
     const [
       activeOffersStat,
@@ -133,7 +133,7 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
-      userEvent.click(screen.getByTitle('Afficher'))
+      await userEvent.click(screen.getByTitle('Afficher'))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       await waitFor(() =>
         expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
@@ -153,7 +153,7 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
-      userEvent.click(screen.getByTitle('Afficher'))
+      await userEvent.click(screen.getByTitle('Afficher'))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       await waitFor(() =>
         expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
@@ -171,7 +171,7 @@ describe('venues', () => {
 
       // When
       await renderVenue(props, store)
-      userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
+      await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
       const [activeOffersStat] = screen.getAllByTestId('venue-stat')
       await waitFor(() =>
         expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
