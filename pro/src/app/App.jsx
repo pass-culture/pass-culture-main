@@ -20,6 +20,7 @@ export const App = props => {
   } = props
 
   const [isReady, setIsReady] = useState(false)
+  const [isAnalyticsInitialized, setIsAnalyticsInitialized] = useState(false)
   const { isUserInitialized, currentUser } = useCurrentUser()
   const analytics = useAnalytics()
   const currentPathname = window.location.pathname
@@ -50,7 +51,10 @@ export const App = props => {
 
     if (isUserInitialized && currentUser) {
       setSentryUser({ id: currentUser.id })
-      analytics.setAnalyticsUserId(currentUser.id)
+      if (!isAnalyticsInitialized) {
+        analytics.setAnalyticsUserId(currentUser.id)
+        setIsAnalyticsInitialized(true)
+      }
       setIsReady(true)
     }
   }, [
@@ -60,6 +64,7 @@ export const App = props => {
     history,
     location,
     isUserInitialized,
+    isAnalyticsInitialized,
   ])
 
   useEffect(() => {
