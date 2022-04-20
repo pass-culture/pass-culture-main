@@ -11,6 +11,7 @@ from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -31,6 +32,15 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
 
     if offerer_has_bookings:
         raise CannotDeleteOffererWithBookingsException()
+
+    deleted_activation_codes_count = ActivationCode.query.filter(
+        ActivationCode.stockId == Stock.id,
+        Stock.offerId == Offer.id,
+        Offer.venueId == Venue.id,
+        Venue.managingOffererId == offerer_id,
+        # All bookingId should be None if offerer_has_bookings is False, keep condition to get an exception otherwise
+        ActivationCode.bookingId.is_(None),
+    ).delete(synchronize_session=False)
 
     deleted_stocks_count = Stock.query.filter(
         Stock.offerId == Offer.id, Offer.venueId == Venue.id, Venue.managingOffererId == offerer_id
@@ -160,6 +170,7 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         "deleted_favorites_count": deleted_favorites_count,
         "deleted_offer_criteria_count": deleted_offer_criteria_count,
         "deleted_stocks_count": deleted_stocks_count,
+        "deleted_activation_codes_count": deleted_activation_codes_count,
     }
 
     logger.info("Deleted offerer", extra=recap_data)

@@ -8,6 +8,7 @@ import pcapi.core.criteria.models as criteria_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -43,14 +44,16 @@ def test_delete_cascade_venue_should_abort_when_offerer_has_any_bookings():
 
 
 @pytest.mark.usefixtures("db_session")
-def test_delete_cascade_venue_should_remove_offers_and_stocks():
+def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes():
     # Given
     venue_to_delete = offers_factories.VenueFactory()
     offer_1 = offers_factories.OfferFactory(venue=venue_to_delete)
     offer_2 = offers_factories.OfferFactory(venue=venue_to_delete)
-    stock = offers_factories.StockFactory(offer__venue=venue_to_delete)
-    offers_factories.StockFactory(offer__venue__managingOfferer=venue_to_delete.managingOfferer)
-    items_to_delete = [offer_1.id, offer_2.id, stock.offerId]
+    stock_1 = offers_factories.StockFactory(offer__venue=venue_to_delete)
+    stock_2 = offers_factories.StockFactory(offer__venue__managingOfferer=venue_to_delete.managingOfferer)
+    items_to_delete = [offer_1.id, offer_2.id, stock_1.offerId]
+    offers_factories.ActivationCodeFactory(stock=stock_1)
+    offers_factories.ActivationCodeFactory(stock=stock_2)
 
     # When
     recap_data = delete_cascade_venue_by_id(venue_to_delete.id)
@@ -60,6 +63,7 @@ def test_delete_cascade_venue_should_remove_offers_and_stocks():
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
     assert Stock.query.count() == 1
+    assert ActivationCode.query.count() == 1
     assert sorted(recap_data["offer_ids_to_unindex"]) == sorted(items_to_delete)
 
 
