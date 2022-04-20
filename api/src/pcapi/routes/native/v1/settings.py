@@ -28,6 +28,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
         FeatureToggle.ENABLE_PHONE_VALIDATION,
+        FeatureToggle.ENABLE_USER_PROFILING,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     )
@@ -46,6 +47,7 @@ def get_settings() -> serializers.SettingsResponse:
         enable_phone_validation=features[FeatureToggle.ENABLE_PHONE_VALIDATION],
         # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)
         enable_underage_generalisation=True,
+        enable_user_profiling=features[FeatureToggle.ENABLE_USER_PROFILING],
         id_check_address_autocompletion=features[FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION],
         is_recaptcha_enabled=features[FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA],
         # TODO(antoinewg): remove this after next forced release (> v1.166.3)
