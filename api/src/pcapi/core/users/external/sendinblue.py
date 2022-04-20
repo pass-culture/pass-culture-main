@@ -18,6 +18,7 @@ from sib_api_v3_sdk.models.created_process_id import CreatedProcessId
 from sib_api_v3_sdk.models.get_process import GetProcess
 from sib_api_v3_sdk.models.post_contact_info import PostContactInfo
 from sib_api_v3_sdk.rest import ApiException as SendinblueApiException
+import urllib3.exceptions
 
 from pcapi import settings
 from pcapi.core.users import testing
@@ -335,9 +336,13 @@ def _wait_for_process(api_instance: ProcessApi, process_id: int) -> bool:
     while status in ("queued", "in_process") and seconds < 3600:
         if not settings.IS_RUNNING_TESTS:
             sleep(1)
-        api_response: GetProcess = api_instance.get_process(process_id)
-        logger.info("ProcessApi->get_process(%d) returned: %s", process_id, api_response)
-        status = api_response.status
+        try:
+            api_response: GetProcess = api_instance.get_process(process_id)
+        except urllib3.exceptions.HTTPError:
+            pass
+        else:
+            logger.info("ProcessApi->get_process(%d) returned: %s", process_id, api_response)
+            status = api_response.status
         seconds += 1
 
     return status == "completed"
