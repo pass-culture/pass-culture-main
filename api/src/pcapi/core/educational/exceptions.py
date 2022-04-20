@@ -89,3 +89,7 @@ class CollectiveOfferStockBookedAndBookingNotPending(Exception):
 
 class CollectiveOfferNotFound(Exception):
     pass
+
+
+class CollectiveOfferTemplateNotFound(Exception):
+    pass

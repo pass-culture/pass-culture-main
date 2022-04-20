@@ -231,7 +231,8 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class GetCollectiveOfferResponseModel(BaseModel):
+class GetCollectiveOfferBaseResponseModel(BaseModel):
+    id: str
     bookingEmail: Optional[str]
     dateCreated: datetime
     description: Optional[str]
@@ -241,22 +242,21 @@ class GetCollectiveOfferResponseModel(BaseModel):
     contactEmail: str
     contactPhone: str
     hasBookingLimitDatetimesPassed: bool
-    id: str
+    offerId: Optional[str]
     isActive: bool
-    isBookable: bool
     audioDisabilityCompliant: Optional[bool]
     mentalDisabilityCompliant: Optional[bool]
     motorDisabilityCompliant: Optional[bool]
-    nonHumanizedId: int
     visualDisabilityCompliant: Optional[bool]
+    nonHumanizedId: int
     name: str
-    stock: GetCollectiveOfferCollectiveStockResponseModel = Field(alias="collectiveStock")
     subcategoryId: SubcategoryIdEnum
     venue: GetCollectiveOfferVenueResponseModel
     venueId: str
     status: OfferStatus
 
     _humanize_id = humanize_field("id")
+    _humanize_offerId = humanize_field("offerId")
     _humanize_venue_id = humanize_field("venueId")
 
     @classmethod
@@ -268,6 +268,15 @@ class GetCollectiveOfferResponseModel(BaseModel):
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
+
+
+class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
+    priceDetail: Optional[str]
+
+
+class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
+    isBookable: bool
+    stock: GetCollectiveOfferCollectiveStockResponseModel = Field(alias="collectiveStock")
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
