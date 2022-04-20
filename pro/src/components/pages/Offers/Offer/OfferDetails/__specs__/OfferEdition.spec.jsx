@@ -125,6 +125,8 @@ describe('offerDetails - Edition', () => {
       withdrawalDetails: 'My edited withdrawal details',
       status: 'SOLD_OUT',
       extraData: {
+        musicType: '501',
+        musicSubType: '502',
         isbn: '1234567890123',
       },
       audioDisabilityCompliant: false,
@@ -1115,7 +1117,6 @@ describe('offerDetails - Edition', () => {
           venue: editedOfferVenue,
           withdrawalDetails: 'Offer withdrawal details',
           bookingEmail: null,
-          extraData: null,
           audioDisabilityCompliant: false,
           mentalDisabilityCompliant: false,
           motorDisabilityCompliant: false,
@@ -1149,6 +1150,10 @@ describe('offerDetails - Edition', () => {
         name: 'My edited offer',
         subcategoryId: 'ID',
         description: 'Offer description edited',
+        extraData: {
+          musicType: '501',
+          musicSubType: '502',
+        },
         withdrawalDetails: 'Offer withdrawal details edited',
         audioDisabilityCompliant: true,
         visualDisabilityCompliant: false,
@@ -1210,6 +1215,8 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: {
+          musicType: '501',
+          musicSubType: '502',
           isbn: '1234567890123',
         },
         audioDisabilityCompliant: false,
@@ -1249,6 +1256,8 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: {
+          musicType: '501',
+          musicSubType: '502',
           isbn: '1234567890123',
         },
         audioDisabilityCompliant: false,
@@ -1348,6 +1357,8 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: false,
         mentalDisabilityCompliant: false,
         extraData: {
+          musicType: '501',
+          musicSubType: '502',
           stageDirector: 'Mr Stage Director',
         },
         lastProvider: {
@@ -1386,6 +1397,8 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: {
+          musicType: '501',
+          musicSubType: '502',
           author: 'Mon auteur',
         },
         audioDisabilityCompliant: false,
@@ -1479,6 +1492,8 @@ describe('offerDetails - Edition', () => {
         withdrawalDetails: 'Offer withdrawal details',
         bookingEmail: 'booking@example.net',
         extraData: {
+          musicType: '501',
+          musicSubType: '502',
           isbn: '1234567890123',
         },
         audioDisabilityCompliant: false,
@@ -1559,6 +1574,8 @@ describe('offerDetails - Edition', () => {
         motorDisabilityCompliant: false,
         visualDisabilityCompliant: false,
         extraData: {
+          musicType: '501',
+          musicSubType: '502',
           isbn: '1234567890123',
         },
         status: 'ACTIVE',

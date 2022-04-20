@@ -213,6 +213,10 @@ const OfferForm = ({
     ) {
       mandatoryFields.push('isbn')
     }
+    if (offerSubCategory?.conditionalFields.includes('musicType')) {
+      mandatoryFields.push('musicType')
+      mandatoryFields.push('musicSubType')
+    }
     if (
       WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)
     ) {
@@ -740,6 +744,7 @@ const OfferForm = ({
             }
             isVirtualOffer={initialValues.isVirtualVenue}
             readOnlyFields={readOnlyFields}
+            resetFormError={resetFormError}
             subCategories={subCategories}
             updateCategoriesFormValues={handleFormUpdate}
             updateFormErrors={setFormErrors}

@@ -19,6 +19,7 @@ export const SubtypeSelects = ({
   handleSelection,
   categoriesFormValues,
   currentSubCategoryConditionalFields,
+  getErrorMessage,
 }) => {
   const [subTypesOptions, setSubTypesOptions] = useState(initialSubTypesOptions)
 
@@ -75,6 +76,7 @@ export const SubtypeSelects = ({
               displayName: 'Choisir un genre musical',
               id: DEFAULT_FORM_VALUES.musicType,
             }}
+            error={getErrorMessage('musicType')}
             handleSelection={handleSelection}
             isDisabled={readOnlyFields.includes('musicType')}
             label="Genre musical"
@@ -84,7 +86,6 @@ export const SubtypeSelects = ({
             selectedValue={
               categoriesFormValues.musicType || DEFAULT_FORM_VALUES.musicType
             }
-            subLabel="Optionnel"
           />
         </div>
       )}
@@ -96,6 +97,7 @@ export const SubtypeSelects = ({
               displayName: 'Choisir un sous-genre',
               id: DEFAULT_FORM_VALUES.musicSubType,
             }}
+            error={getErrorMessage('musicSubType')}
             handleSelection={handleSelection}
             isDisabled={readOnlyFields.includes('musicSubType')}
             label="Sous genre"
@@ -106,7 +108,6 @@ export const SubtypeSelects = ({
               categoriesFormValues.musicSubType ||
               DEFAULT_FORM_VALUES.musicSubType
             }
-            sublabel="Optionnel"
           />
         </div>
       )}
@@ -166,6 +167,7 @@ SubtypeSelects.propTypes = {
   }).isRequired,
   currentSubCategoryConditionalFields: PropTypes.arrayOf(PropTypes.string)
     .isRequired,
+  getErrorMessage: PropTypes.string.isRequired,
   handleSelection: PropTypes.func.isRequired,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
 }

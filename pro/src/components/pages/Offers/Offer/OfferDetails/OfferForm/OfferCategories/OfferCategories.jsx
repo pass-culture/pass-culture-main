@@ -15,6 +15,7 @@ const OfferCategories = ({
   isVirtualOffer,
   isTypeOfflineButOnlyVirtualVenues,
   readOnlyFields,
+  resetFormError,
   subCategories,
   updateCategoriesFormValues,
   updateFormErrors,
@@ -122,13 +123,14 @@ const OfferCategories = ({
     event => {
       const fieldName = event.target.name
       const fieldValue = event.target.value
-
       if (categoriesFormValues[fieldName] === fieldValue) {
         return
       }
+      if (fieldValue !== null) {
+        resetFormError(fieldName)
+      }
 
       let newCategoriesFormValues = {}
-
       switch (fieldName) {
         case 'categoryId':
           newCategoriesFormValues = {
@@ -158,6 +160,7 @@ const OfferCategories = ({
             showType: DEFAULT_FORM_VALUES.showType,
             showSubType: DEFAULT_FORM_VALUES.showSubType,
           }
+
           break
         case 'showType':
           newCategoriesFormValues = {
@@ -177,7 +180,12 @@ const OfferCategories = ({
 
       updateCategoriesFormValues(newCategoriesFormValues)
     },
-    [categoriesFormValues, updateCategoriesFormValues, getDefaultSubCategory]
+    [
+      categoriesFormValues,
+      updateCategoriesFormValues,
+      getDefaultSubCategory,
+      resetFormError,
+    ]
   )
 
   return (
@@ -228,6 +236,7 @@ const OfferCategories = ({
           <SubtypeSelects
             categoriesFormValues={categoriesFormValues}
             currentSubCategoryConditionalFields={subCategoryConditionalFields}
+            getErrorMessage={getErrorMessage}
             handleSelection={handleChange}
             readOnlyFields={readOnlyFields}
           />
@@ -255,6 +264,7 @@ OfferCategories.propTypes = {
   isTypeOfflineButOnlyVirtualVenues: PropTypes.bool,
   isVirtualOffer: PropTypes.bool,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
+  resetFormError: PropTypes.func.isRequired,
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   updateCategoriesFormValues: PropTypes.func.isRequired,
   updateFormErrors: PropTypes.func.isRequired,
