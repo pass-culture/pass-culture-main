@@ -102,7 +102,13 @@ describe('src | App', () => {
   it('should initialize firebase only once', () => {
     // When
     const { rerender } = renderApp({ props, store })
-    rerender(renderApp)
+    rerender(
+      <Provider store={store}>
+        <App {...props}>
+          <p>Sub component</p>
+        </App>
+      </Provider>
+    )
     // Then
     expect(mockSetAnalyticsUserId).toHaveBeenCalledTimes(1)
   })
