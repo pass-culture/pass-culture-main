@@ -13,7 +13,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.human_ids import dehumanize_or_raise
 
 from . import blueprint
 
@@ -55,7 +55,7 @@ def list_collective_offers(
 )
 def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
     try:
-        offer = educational_repository.get_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
+        offer = educational_repository.get_collective_offer_by_id(dehumanize_or_raise(offer_id))
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors(
             errors={
@@ -64,6 +64,25 @@ def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollec
             status_code=404,
         )
     return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers-template/<offer_id>", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_collective_offer_template(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
+    try:
+        offer = educational_repository.get_collective_offer_template_by_id(dehumanize_or_raise(offer_id))
+    except educational_exceptions.CollectiveOfferTemplateNotFound:
+        raise ApiErrors(
+            errors={
+                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
+            },
+            status_code=404,
+        )
+    return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers", methods=["POST"])

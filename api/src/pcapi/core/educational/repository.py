@@ -24,6 +24,7 @@ from pcapi.core.bookings.repository import field_to_venue_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CollectiveOfferNotFound
+from pcapi.core.educational.exceptions import CollectiveOfferTemplateNotFound
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.educational.exceptions import StockDoesNotExist
@@ -651,7 +652,7 @@ def get_filtered_collective_booking_report(
     return bookings_query
 
 
-def get_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
+def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
     try:
         return (
             educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
@@ -668,3 +669,18 @@ def get_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
         )
     except NoResultFound:
         raise CollectiveOfferNotFound()
+
+
+def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOfferTemplate:
+    try:
+        query = educational_models.CollectiveOfferTemplate.query
+        query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
+        query = query.options(
+            joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True,).joinedload(
+                Venue.managingOfferer,
+                innerjoin=True,
+            )
+        )
+        return query.one()
+    except NoResultFound:
+        raise CollectiveOfferTemplateNotFound()
