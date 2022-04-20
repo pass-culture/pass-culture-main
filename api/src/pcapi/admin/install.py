@@ -47,6 +47,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.feature import Feature
+from pcapi.models.feature import FeatureToggle
 
 from . import base_configuration
 from . import templating
@@ -213,25 +214,26 @@ def install_views(admin: Admin, session: Session) -> None:
         )
     )
 
-    admin.add_view(
-        offer_view.ValidationCollectiveOfferView(
-            educational_models.CollectiveOffer,
-            session,
-            name="Validation d'offres collectives",
-            endpoint="validation-collective-offer",
-            category=Category.CUSTOM_OPERATIONS,
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        admin.add_view(
+            offer_view.ValidationCollectiveOfferView(
+                educational_models.CollectiveOffer,
+                session,
+                name="Validation d'offres collectives",
+                endpoint="validation-collective-offer",
+                category=Category.CUSTOM_OPERATIONS,
+            )
         )
-    )
 
-    admin.add_view(
-        offer_view.ValidationCollectiveOfferTemplateView(
-            educational_models.CollectiveOfferTemplate,
-            session,
-            name="Validation d'offres collectives vitrines",
-            endpoint="validation-collective-offer-template",
-            category=Category.CUSTOM_OPERATIONS,
+        admin.add_view(
+            offer_view.ValidationCollectiveOfferTemplateView(
+                educational_models.CollectiveOfferTemplate,
+                session,
+                name="Validation d'offres collectives vitrines",
+                endpoint="validation-collective-offer-template",
+                category=Category.CUSTOM_OPERATIONS,
+            )
         )
-    )
 
     admin.add_view(
         offer_view.ImportConfigValidationOfferView(
