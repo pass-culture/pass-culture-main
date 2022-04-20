@@ -69,6 +69,7 @@ describe('pcapi', () => {
     ]
 
     beforeEach(() => {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mockResolvedValue' does not exist on typ... Remove this comment to see the full error message
       client.get.mockResolvedValue(returnedResponse)
     })
 
@@ -83,6 +84,7 @@ describe('pcapi', () => {
     it('should call offers route without query params when provided filters are defaults', async () => {
       // Given
       const filters = {
+        // @ts-expect-error ts-migrate(2339) FIXME: Property 'name' does not exist on type 'TSearchFil... Remove this comment to see the full error message
         name: DEFAULT_SEARCH_FILTERS.name,
         venueId: DEFAULT_SEARCH_FILTERS.venueId,
         status: DEFAULT_SEARCH_FILTERS.status,
@@ -167,6 +169,7 @@ describe('pcapi', () => {
         }
 
         // when
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ isActive: boolean; ids: string... Remove this comment to see the full error message
         await updateOffersActiveStatus(false, body)
 
         // then
@@ -298,6 +301,7 @@ describe('pcapi', () => {
           },
         ],
       }
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mockResolvedValue' does not exist on typ... Remove this comment to see the full error message
       client.get.mockResolvedValue(returnedResponse)
     })
 
@@ -316,6 +320,7 @@ describe('pcapi', () => {
 
     it('should call api with offererId in query params when given', async () => {
       // When
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'null | un... Remove this comment to see the full error message
       await getVenuesForOfferer({ offererId: 'A4' })
 
       // Then
@@ -332,6 +337,7 @@ describe('pcapi', () => {
 
     it('should not add offererId in query params when offererId value is ALL_OFFERERS', async () => {
       // When
+      // @ts-expect-error ts-migrate(2322) FIXME: Type 'string' is not assignable to type 'null | un... Remove this comment to see the full error message
       await getVenuesForOfferer({ offererId: ALL_OFFERERS })
 
       // Then
@@ -343,6 +349,7 @@ describe('pcapi', () => {
     const returnedResponse = "i'm a text response"
 
     beforeEach(() => {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mockResolvedValue' does not exist on typ... Remove this comment to see the full error message
       client.getPlainText.mockResolvedValue(returnedResponse)
     })
 
@@ -399,6 +406,7 @@ describe('pcapi', () => {
     }
 
     beforeEach(() => {
+      // @ts-expect-error ts-migrate(2339) FIXME: Property 'mockResolvedValue' does not exist on typ... Remove this comment to see the full error message
       client.get.mockResolvedValue(returnedResponse)
     })
 
@@ -521,6 +529,7 @@ describe('pcapi', () => {
         const filters = { keywords, page }
 
         // when
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ keywords: string[]; page: stri... Remove this comment to see the full error message
         const result = buildGetOfferersQuery(filters)
 
         // then
@@ -536,6 +545,7 @@ describe('pcapi', () => {
         const filters = { keywords, page }
 
         // when
+        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ keywords: string[]; page: stri... Remove this comment to see the full error message
         const result = buildGetOfferersQuery(filters)
 
         // then

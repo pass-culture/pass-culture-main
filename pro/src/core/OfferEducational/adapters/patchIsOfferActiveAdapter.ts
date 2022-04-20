@@ -14,6 +14,7 @@ export const patchIsOfferActiveAdapter: PatchIsOfferActiveAdapter = async ({
 }) => {
   try {
     await pcapi.updateOffersActiveStatus(false, {
+      // @ts-expect-error type number is not assigable to type never
       ids: [offerId],
       isActive,
     })
