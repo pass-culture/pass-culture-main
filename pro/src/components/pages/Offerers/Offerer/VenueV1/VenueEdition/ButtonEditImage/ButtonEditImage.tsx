@@ -6,26 +6,27 @@ import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
 import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
+import { IVenueBannerMetaProps } from '../ImageVenueUploaderSection/ImageVenueUploaderSection'
 import { VenueImageUploaderModal } from '../ImageVenueUploaderSection/VenueImageUploaderModal'
 
 import styles from './ButtonEditImage.module.scss'
 
 interface IButtonEditImage {
   venueId: string
-  venueCredit?: string
+  venueBanner?: IVenueBannerMetaProps
   venueImage?: string
   onImageUpload: ({
     bannerUrl,
-    credit,
+    bannerMeta,
   }: {
     bannerUrl: string
-    credit: string
+    bannerMeta: IVenueBannerMetaProps
   }) => void
 }
 
 const ButtonEditImage = ({
   venueId,
-  venueCredit,
+  venueBanner,
   venueImage,
   onImageUpload,
 }: IButtonEditImage): JSX.Element => {
@@ -33,7 +34,7 @@ const ButtonEditImage = ({
 
   return (
     <>
-      {venueImage ? (
+      {venueBanner?.original_image_url ? (
         <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
           <Icon
             alt="Modifier l'image du lieu"
@@ -47,11 +48,11 @@ const ButtonEditImage = ({
       )}
       {!!visible && (
         <VenueImageUploaderModal
-          defaultImage={venueImage || undefined}
           onDismiss={hideModal}
           onImageUpload={onImageUpload}
-          venueCredit={venueCredit || ''}
+          venueBanner={venueBanner}
           venueId={venueId}
+          venueImage={venueImage}
         />
       )}
     </>

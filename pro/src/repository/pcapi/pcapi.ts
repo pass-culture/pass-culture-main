@@ -292,6 +292,8 @@ export const postImageToVenue = async ({
   yCropPercent,
   // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'heightCropPercent' implicitly has... Remove this comment to see the full error message
   heightCropPercent,
+  // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'widthCropPercent' implicitly has... Remove this comment to see the full error message
+  widthCropPercent,
   // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'imageCredit' implicitly has an 'a... Remove this comment to see the full error message
   imageCredit,
 }) => {
@@ -302,6 +304,7 @@ export const postImageToVenue = async ({
     x_crop_percent: xCropPercent,
     y_crop_percent: yCropPercent,
     height_crop_percent: heightCropPercent,
+    width_crop_percent: widthCropPercent,
   }
 
   if (imageCredit) {

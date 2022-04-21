@@ -10,21 +10,34 @@ import styles from './ImageVenueUploaderSection.module.scss'
 type ImageVenueUploaderSectionProps = {
   venueId: string
   venueImage: string | null
-  venueCredit: string
+  venueBanner: IVenueBannerMetaProps | null
   onImageUpload: ({
     bannerUrl,
-    credit,
+    bannerMeta,
   }: {
     bannerUrl: string
-    credit: string
+    bannerMeta: IVenueBannerMetaProps
   }) => void
   onDeleteImage: () => void
+}
+
+export interface IVenueBannerMetaProps {
+  image_credit: string
+  original_image_url: string
+  crop_params: IVenueBannerMetaCropParamsProps
+}
+
+export interface IVenueBannerMetaCropParamsProps {
+  x_crop_percent: number
+  y_crop_percent: number
+  height_crop_percent: number
+  width_crop_percent: number
 }
 
 export const ImageVenueUploaderSection = ({
   venueId,
   venueImage,
-  venueCredit,
+  venueBanner,
   onImageUpload,
   onDeleteImage,
 }: ImageVenueUploaderSectionProps): JSX.Element => {
@@ -44,7 +57,7 @@ export const ImageVenueUploaderSection = ({
         <br />
         Elle permettra au public de mieux identifier votre lieu.
       </p>
-      {venueImage ? (
+      {venueImage && venueBanner?.original_image_url ? (
         <div className={styles['image-venue-uploader-section-image-container']}>
           <VenueImage url={venueImage} />
           <div
@@ -52,7 +65,7 @@ export const ImageVenueUploaderSection = ({
           >
             <ButtonEditImage
               onImageUpload={onImageUpload}
-              venueCredit={venueCredit}
+              venueBanner={venueBanner}
               venueId={venueId}
               venueImage={venueImage}
             />
