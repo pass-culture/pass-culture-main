@@ -378,6 +378,18 @@ def get_products_map_by_provider_reference(id_at_providers: list[str]) -> dict[s
     return {product.idAtProviders: product for product in products}
 
 
+def venue_already_has_validated_offer(offer: Offer) -> bool:
+    return (
+        db.session.query(Offer.id)
+        .filter(
+            Offer.venueId == offer.venueId,
+            Offer.validation == OfferValidationStatus.APPROVED,
+        )
+        .first()
+        is not None
+    )
+
+
 def get_offers_map_by_id_at_provider(id_at_provider_list: list[str], venue: Venue) -> dict[str, int]:
     offers_map = {}
     for offer_id, offer_id_at_provider in (

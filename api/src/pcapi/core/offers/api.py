@@ -679,7 +679,7 @@ def upsert_stocks(
 def update_offer_fraud_information(
     offer: Union[educational_models.CollectiveOffer, Offer], user: User, *, silent: bool = False
 ) -> None:
-    venue_already_has_validated_offer = _venue_already_has_validated_offer(offer)
+    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
 
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)  # type: ignore [assignment]
     offer.author = user
@@ -699,17 +699,6 @@ def update_offer_fraud_information(
     ):
         if not send_first_venue_approved_offer_email_to_pro(offer):
             logger.warning("Could not send first venue approved offer email", extra={"offer_id": offer.id})
-
-
-def _venue_already_has_validated_offer(offer: Offer) -> bool:
-    return (
-        Offer.query.filter(
-            Offer.venueId == offer.venueId,
-            Offer.validation == OfferValidationStatus.APPROVED,
-            Offer.lastValidationDate.isnot(None),
-        ).first()
-        is not None
-    )
 
 
 def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user: User) -> Stock:
