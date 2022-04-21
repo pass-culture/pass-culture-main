@@ -6,6 +6,7 @@ def install_routes(app: Flask) -> None:
     from . import bookings
     from . import collective_bookings
     from . import collective_offers
+    from . import collective_stocks
     from . import features
     from . import finance
     from . import offerers
