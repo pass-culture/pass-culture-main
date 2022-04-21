@@ -35,7 +35,7 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["venueId"] == humanize(venue.id)
-        assert response_json[0]["id"] == humanize(offer.offerId)
+        assert response_json[0]["id"] == humanize(offer.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == humanize(stock.stockId)
         assert response_json[0]["isShowcase"] == False
@@ -57,7 +57,7 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 1
         assert response_json[0]["venueId"] == humanize(venue.id)
-        assert response_json[0]["id"] == humanize(offer.offerId)
+        assert response_json[0]["id"] == humanize(offer.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
         assert response_json[0]["isShowcase"] == True
@@ -85,12 +85,12 @@ class Returns200Test:
         assert isinstance(response_json, list)
         assert len(response_json) == 2
         assert response_json[0]["venueId"] == humanize(venue.id)
-        assert response_json[0]["id"] == humanize(template.offerId)
+        assert response_json[0]["id"] == humanize(template.id)
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == ""
         assert response_json[0]["isShowcase"] == True
         assert response_json[1]["venueId"] == humanize(venue.id)
-        assert response_json[1]["id"] == humanize(offer.offerId)
+        assert response_json[1]["id"] == humanize(offer.id)
         assert len(response_json[1]["stocks"]) == 1
         assert response_json[1]["stocks"][0]["id"] == humanize(stock.stockId)
         assert response_json[1]["isShowcase"] == False
@@ -184,4 +184,4 @@ class Returns200Test:
         assert response.status_code == 200
         assert isinstance(response_json, list)
         assert len(response_json) == 1
-        assert response_json[0]["id"] == humanize(offer.offerId)
+        assert response_json[0]["id"] == humanize(offer.id)
