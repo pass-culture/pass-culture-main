@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import { TPreFilters } from 'core/Bookings'
 import { GetBookingsCSVFileAdapter } from 'core/Bookings'
@@ -38,7 +39,9 @@ const PreFilters = ({
   getBookingsCSVFileAdapter,
 }: IPreFiltersProps): JSX.Element => {
   const notify = useNotification()
-
+  const separateIndividualAndCollectiveOffers = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
   const [selectedPreFilters, setSelectedPreFilters] = useState({
     ...appliedPreFilters,
   })
@@ -117,13 +120,15 @@ const PreFilters = ({
                 venuesFormattedAndOrdered={venues}
               />
             </div>
-            <div className="pre-filters-offer-type">
-              <FilterByOfferType
-                isDisabled={isFiltersDisabled}
-                selectedOfferType={selectedPreFilters.offerType}
-                updateFilters={updateSelectedFilters}
-              />
-            </div>
+            {!separateIndividualAndCollectiveOffers && (
+              <div className="pre-filters-offer-type">
+                <FilterByOfferType
+                  isDisabled={isFiltersDisabled}
+                  selectedOfferType={selectedPreFilters.offerType}
+                  updateFilters={updateSelectedFilters}
+                />
+              </div>
+            )}
             <FilterByEventDate
               isDisabled={isFiltersDisabled}
               selectedOfferDate={selectedPreFilters.offerEventDate}
