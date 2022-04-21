@@ -663,7 +663,7 @@ def upsert_stocks(
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:
-        _update_offer_fraud_information(offer, user)
+        update_offer_fraud_information(offer, user)
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
@@ -676,7 +676,7 @@ def upsert_stocks(
     return stocks
 
 
-def _update_offer_fraud_information(
+def update_offer_fraud_information(
     offer: Union[educational_models.CollectiveOffer, Offer], user: User, *, silent: bool = False
 ) -> None:
     venue_already_has_validated_offer = _venue_already_has_validated_offer(offer)
@@ -743,7 +743,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     logger.info("Educational stock has been created", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:
-        _update_offer_fraud_information(offer, user, silent=FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active())
+        update_offer_fraud_information(offer, user, silent=FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active())
 
     search.async_index_offer_ids([offer.id])
 
@@ -1277,7 +1277,7 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
 
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         if offer.validation == OfferValidationStatus.DRAFT:
-            _update_offer_fraud_information(collective_offer_template, user)
+            update_offer_fraud_information(collective_offer_template, user)
     else:
         # the offer validation is copied from the offer. The only problem is when the offer is in draft as the fraud is
         # not enabled of collectiveOfferTemplate it will stay in draft. Therefor we force its status
@@ -1384,7 +1384,7 @@ def create_educational_shadow_stock_and_set_offer_showcase(
     repository.save(offer)
 
     if offer.validation == OfferValidationStatus.DRAFT:
-        _update_offer_fraud_information(offer, user)
+        update_offer_fraud_information(offer, user)
 
     search.async_index_offer_ids([offer.id])
 

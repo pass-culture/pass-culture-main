@@ -211,8 +211,18 @@ get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_i
 )
 
 
-def get_by_offer_id(offer_id: int) -> Optional[models.Offerer]:
+def get_by_offer_id(offer_id: int) -> models.Offerer:
     offerer = models.Offerer.query.join(models.Venue).join(Offer).filter_by(id=offer_id).one_or_none()
+    if not offerer:
+        raise exceptions.CannotFindOffererForOfferId()
+    return offerer
+
+
+def get_by_collective_offer_id(offer_id: int) -> models.Offerer:
+    query = models.Offerer.query.join(models.Offerer.managedVenues)
+    query = query.join(models.Venue.collectiveOffers)
+    query = query.filter_by(id=offer_id)
+    offerer = query.one_or_none()
     if not offerer:
         raise exceptions.CannotFindOffererForOfferId()
     return offerer

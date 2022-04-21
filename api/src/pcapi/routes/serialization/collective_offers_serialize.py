@@ -325,3 +325,28 @@ class PostCollectiveOfferBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class CollectiveOfferTemplateBodyModel(BaseModel):
+    price_detail: Optional[str] = Field(alias="educationalPriceDetail")
+
+    @validator("price_detail")
+    def validate_price_detail(cls, price_detail: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
+        if price_detail and len(price_detail) > 1000:
+            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
+        return price_detail
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class CollectiveOfferTemplateResponseIdModel(BaseModel):
+    id: str
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True

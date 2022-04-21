@@ -681,7 +681,7 @@ def _extract_updatable_fields_from_stock_data(
 def create_collective_stock(
     stock_data: EducationalStockCreationBodyModel, user: User, *, legacy_id: Optional[int] = None
 ) -> Optional[CollectiveStock]:
-    from pcapi.core.offers.api import _update_offer_fraud_information
+    from pcapi.core.offers.api import update_offer_fraud_information
 
     offer_id = stock_data.offer_id
     beginning = stock_data.beginning_datetime
@@ -726,7 +726,7 @@ def create_collective_stock(
 
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         if collective_offer.validation == OfferValidationStatus.DRAFT:
-            _update_offer_fraud_information(collective_offer, user)
+            update_offer_fraud_information(collective_offer, user)
     else:
         collective_offer.validation = OfferValidationStatus.APPROVED
         collective_offer.lastValidationDate = datetime.datetime.utcnow()
@@ -898,3 +898,31 @@ def create_collective_offer(
         extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer_id},
     )
     return collective_offer
+
+
+def create_collective_offer_template_from_collective_offer(
+    price_detail: Optional[str], user: User, offer_id: int
+) -> CollectiveOfferTemplate:
+    from pcapi.core.offers.api import update_offer_fraud_information
+
+    offer = educational_repository.get_collective_offer_by_id(offer_id)
+    if offer.collectiveStock is not None:
+        raise exceptions.EducationalStockAlreadyExists()
+
+    collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_collective_offer(
+        offer, price_detail=price_detail
+    )
+    db.session.delete(offer)
+    db.session.add(collective_offer_template)
+    db.session.commit()
+
+    if offer.validation == OfferValidationStatus.DRAFT:
+        update_offer_fraud_information(collective_offer_template, user)
+
+    search.unindex_collective_offer_ids([offer.id])
+    search.async_index_collective_offer_template_ids([collective_offer_template.id])
+    logger.info(
+        "Collective offer template has been created and regular collective offer deleted",
+        extra={"collectiveOfferTemplate": collective_offer_template.id, "CollectiveOffer": offer.id},
+    )
+    return collective_offer_template
