@@ -68,14 +68,14 @@ def app_fixture():
     with app.app_context():
         app.config["TESTING"] = True
 
-        install_all_routes(app)
-
         app.register_blueprint(test_blueprint, url_prefix="/test-blueprint")
 
         install_database_extensions()
         run_migrations()
         install_feature_flags()
         install_local_providers()
+
+        install_all_routes(app)
 
         yield app
 
