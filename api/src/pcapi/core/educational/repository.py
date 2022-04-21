@@ -721,3 +721,13 @@ def get_collective_bookings_query_for_pricing_generation(window: Tuple[datetime,
             ),
         )
     )
+
+
+def get_collective_stock_for_offer(offer_id: int) -> Optional[CollectiveStock]:
+    return (
+        CollectiveStock.query.options(
+            joinedload(CollectiveStock.collectiveBookings).load_only(CollectiveBooking.status)
+        )
+        .filter(CollectiveStock.collectiveOfferId == offer_id)
+        .one_or_none()
+    )
