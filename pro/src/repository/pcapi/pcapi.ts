@@ -11,6 +11,7 @@ import {
   CreateCollectiveStockPayload,
 } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { CollectiveOfferResponseModel } from 'core/Offers/types'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -147,6 +148,12 @@ const createRequestBody = searchFilters => {
   }
 
   return body
+}
+
+export const getCollectiveOffer = async (
+  offerId: string
+): Promise<CollectiveOfferResponseModel> => {
+  return client.get(`/collective/offers/${offerId}`)
 }
 
 //

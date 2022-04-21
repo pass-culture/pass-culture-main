@@ -2,7 +2,6 @@ import {
   ListCollectiveOffersResponseModel,
   ListOffersOfferResponseModel,
   ListOffersQueryModel,
-  ListOffersResponseModel,
 } from 'api/v1/gen'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Offer, Stock, Venue, TSearchFilters } from 'core/Offers/types'
@@ -26,7 +25,7 @@ const serializeStocks = (
   }))
 
 export const serializeOffers = (
-  offers: ListOffersResponseModel | ListCollectiveOffersResponseModel
+  offers: ListCollectiveOffersResponseModel
 ): Offer[] =>
   offers.map(offer => ({
     id: offer.id,
