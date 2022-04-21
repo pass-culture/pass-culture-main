@@ -89,3 +89,7 @@ class CollectiveOfferStockBookedAndBookingNotPending(Exception):
 
 class CollectiveOfferNotFound(Exception):
     pass
+
+
+class PermissionDenied(Exception):
+    pass
