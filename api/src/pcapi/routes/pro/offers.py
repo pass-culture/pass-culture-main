@@ -342,7 +342,7 @@ def create_shadow_stock_for_educational_showcase_offer(
         offerer = get_by_offer_id(offer_id)  # type: ignore [arg-type]
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [union-attr]
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         stock = offers_api.create_collective_shadow_offer(body, current_user, offer_id)
