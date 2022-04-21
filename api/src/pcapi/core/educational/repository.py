@@ -298,7 +298,14 @@ def find_active_collective_booking_by_offer_id(
     )
 
 
-def get_bookings_for_educational_year(educational_year_id: str) -> list[educational_models.EducationalBooking]:
+def get_paginated_bookings_for_educational_year(
+    educational_year_id: str,
+    page: Optional[int],
+    per_page: Optional[int],
+) -> list[educational_models.EducationalBooking]:
+    page = 1 if page is None else page
+    per_page = 1000 if per_page is None else per_page
+
     return (
         educational_models.EducationalBooking.query.filter(
             educational_models.EducationalBooking.educationalYearId == educational_year_id
@@ -322,6 +329,8 @@ def get_bookings_for_educational_year(educational_year_id: str) -> list[educatio
         )
         .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
         .order_by(educational_models.EducationalBooking.id)
+        .offset((page - 1) * per_page)
+        .limit(per_page)
         .all()
     )
 
