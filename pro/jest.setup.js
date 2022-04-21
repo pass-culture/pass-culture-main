@@ -8,6 +8,13 @@ configure({ adapter: new Adapter() })
 global.fetch = fetch
 const originalGetComputedStyle = window.getComputedStyle
 
+const originalConsoleError = window.console.error
+let nbCalls = 0
+window.console.error = (msg) => {
+  nbCalls += 1
+  originalConsoleError(`[call count: ${nbCalls}] ${msg}`)
+}
+
 // required for setting 0 values and to avoid warnings like "NAN is not a number" within jest tests
 // getComputedStyle is used by react calendar and cause this issue
 const getComputedStyle = (...args) => {
@@ -48,3 +55,4 @@ fetch.mockResponse(req => {
 
 jest.mock('tracking/mediaCampaignsTracking')
 jest.mock('components/hooks/useAnalytics')
+
