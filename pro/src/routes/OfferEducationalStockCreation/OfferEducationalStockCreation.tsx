@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router'
 import { useParams } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -17,6 +18,7 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
+import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 import postEducationalShadowStockAdapter from './adapters/postEducationalShadowStock'
 import postEducationalStockAdapter from './adapters/postEducationalStock'
 
@@ -26,6 +28,9 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
   const history = useHistory()
+  const isNewCollectiveModelEnabled = useActiveFeature(
+    'ENABLE_NEW_COLLECTIVE_MODEL'
+  )
 
   const handleSubmitStock = async (
     offer: GetStockOfferSuccessPayload,
@@ -42,7 +47,10 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       isOk = response.isOk
       message = response.message
     } else {
-      const response = await postEducationalStockAdapter({
+      const adapter = isNewCollectiveModelEnabled
+        ? postCollectiveStockAdapter
+        : postEducationalStockAdapter
+      const response = await adapter({
         offer,
         values,
       })

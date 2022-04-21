@@ -6,6 +6,7 @@ import {
   CollectiveBookingsResponseModel,
   DEFAULT_PRE_FILTERS,
 } from 'core/Bookings'
+import { CreateCollectiveStockPayload } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
@@ -332,6 +333,10 @@ export const deleteStock = stockId => {
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'stock' implicitly has an 'any' type.
 export const createEducationalStock = stock => {
   return client.post(`/stocks/educational`, stock)
+}
+
+export const createCollectiveStock = (stock: CreateCollectiveStockPayload) => {
+  return client.post(`/collective/stocks`, stock)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
