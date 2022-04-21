@@ -61,7 +61,7 @@ def put_resource(
     try:
         url = _build_url(api_url, cinema_id, token, resource)
         headers = {"Content-Type": "application/json"}
-        response = requests.put(url, headers=headers, data=body.json())
+        response = requests.put(url, headers=headers, data=body.json(by_alias=True))
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
