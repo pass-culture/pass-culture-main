@@ -29,6 +29,7 @@ from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_siren_by_offerer_id
 from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
+from pcapi.core.offerers.repository import get_by_collective_offer_id
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
@@ -457,3 +458,7 @@ def get_eligible_for_search_venues(max_venues: typing.Optional[int] = None) -> t
     for venue in query.yield_per(1_000):
         if venue.is_eligible_for_search:
             yield venue
+
+
+def get_offerer_by_collective_offer_id(collective_offer_id: int) -> Offerer:
+    return get_by_collective_offer_id(collective_offer_id)
