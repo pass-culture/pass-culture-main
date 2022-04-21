@@ -659,11 +659,12 @@ def upsert_stocks(
 
             stocks.append(created_stock)
 
-    repository.save(*stocks, *activation_codes)
-    logger.info("Stock has been created or updated", extra={"offer": offer_id})
-
     if offer.validation == OfferValidationStatus.DRAFT:
         update_offer_fraud_information(offer, user)
+        repository.save(offer)
+
+    repository.save(*stocks, *activation_codes)
+    logger.info("Stock has been created or updated", extra={"offer": offer_id})
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
@@ -688,7 +689,7 @@ def update_offer_fraud_information(
 
     if offer.validation in (OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED):
         offer.isActive = False
-    repository.save(offer)
+
     if offer.validation == OfferValidationStatus.APPROVED and not silent:
         admin_emails.send_offer_creation_notification_to_administration(offer)
 

@@ -33,6 +33,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 from pcapi.notifications.push import testing as push_testing
@@ -703,6 +704,22 @@ class UpsertStocksTest:
 
         assert not mocked_offer_creation_notification_to_admin.called
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
+
+    @mock.patch("pcapi.core.offers.repository.venue_already_has_validated_offer", side_effect=Exception)
+    def test_does_not_create_stock_when_error_occured_on_venue_already_has_validated_offer(
+        self,
+        mocked_venue_already_has_validated_offer,
+    ):
+        user = users_factories.ProFactory()
+        offer = factories.ThingOfferFactory(validation=models.OfferValidationStatus.DRAFT)
+        created_stock_data = stock_serialize.StockCreationBodyModel(price=10, quantity=7)
+
+        with pytest.raises(Exception):
+            api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
+
+        db.session.rollback()
+        stock = models.Stock.query.first()
+        assert stock is None
 
 
 @freeze_time("2020-11-17 15:00:00")
