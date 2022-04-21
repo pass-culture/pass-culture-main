@@ -125,6 +125,15 @@ export type StockPayload = {
   educationalPriceDetail: string
 }
 
+export type CreateCollectiveStockPayload = {
+  offerId: string
+  beginningDatetime: Date
+  bookingLimitDatetime: Date | null
+  totalPrice: number
+  numberOfTickets: number
+  educationalPriceDetail: string
+}
+
 export type GetStockOfferSuccessPayload = {
   id: string
   isActive: boolean
