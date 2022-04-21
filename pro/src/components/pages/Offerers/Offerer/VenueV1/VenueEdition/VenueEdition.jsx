@@ -61,14 +61,11 @@ const VenueEdition = () => {
   )
 
   const onImageUpload = useCallback(
-    ({ bannerUrl, credit }) => {
+    ({ bannerUrl, bannerMeta }) => {
       setVenue({
         ...venue,
         bannerUrl,
-        bannerMeta: {
-          ...venue.bannerMeta,
-          image_credit: credit,
-        },
+        bannerMeta,
       })
     },
     [venue]
@@ -120,10 +117,7 @@ const VenueEdition = () => {
     setVenue({
       ...venue,
       bannerUrl: undefined,
-      bannerMeta: {
-        ...venue.bannerMeta,
-        image_credit: undefined,
-      },
+      bannerMeta: undefined,
     })
   }, [venue])
 
@@ -286,9 +280,7 @@ const VenueEdition = () => {
             <ImageVenueUploaderSection
               onDeleteImage={onDeleteImage}
               onImageUpload={onImageUpload}
-              venueCredit={
-                venue.bannerMeta ? venue.bannerMeta.image_credit : undefined
-              }
+              venueBanner={venue.bannerMeta}
               venueId={venue.id}
               venueImage={venue.bannerUrl}
             />

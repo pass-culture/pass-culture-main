@@ -12,19 +12,20 @@ import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
 
 import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
+import { IVenueBannerMetaProps } from './ImageVenueUploaderSection'
 
 interface IVenueImageUploaderModalProps {
   venueId: string
   onDismiss: () => void
-  venueCredit: string
   onImageUpload: ({
     bannerUrl,
-    credit,
+    bannerMeta,
   }: {
     bannerUrl: string
-    credit: string
+    bannerMeta: IVenueBannerMetaProps
   }) => void
-  defaultImage?: string
+  venueBanner?: IVenueBannerMetaProps
+  venueImage?: string
 }
 
 const constraints = [
@@ -36,19 +37,32 @@ const constraints = [
 export const VenueImageUploaderModal = ({
   venueId,
   onDismiss,
-  defaultImage,
-  venueCredit,
+  venueBanner,
+  venueImage,
   onImageUpload,
 }: IVenueImageUploaderModalProps): JSX.Element => {
-  const [image, setImage] = useState<string | undefined>(defaultImage)
-  const [credit, setCredit] = useState(venueCredit)
+  const [image, setImage] = useState<string | undefined>(
+    venueBanner?.original_image_url
+      ? venueBanner?.original_image_url
+      : venueImage
+  )
+  const [credit, setCredit] = useState(venueBanner?.image_credit || '')
   const [croppingRect, setCroppingRect] = useState<CroppedRect>()
   const [editedImage, setEditedImage] = useState('')
   const [isUploading, setIsUploading] = useState(false)
-  const [editorInitialScale, setEditorInitialScale] = useState(1)
+  // First version of the back don't use width_crop_percent which is needed to display the original image with the correct crop
+  const [editorInitialScale, setEditorInitialScale] = useState(
+    venueBanner ? 1 / venueBanner.crop_params.height_crop_percent : 1
+  )
   const [editorInitialPosition, setEditorInitialPosition] = useState({
-    x: 0.5,
-    y: 0.5,
+    x: venueBanner
+      ? venueBanner.crop_params.x_crop_percent +
+        venueBanner.crop_params.width_crop_percent / 2
+      : 0.5,
+    y: venueBanner
+      ? venueBanner.crop_params.y_crop_percent +
+        venueBanner.crop_params.height_crop_percent / 2
+      : 0.5,
   })
   const notification = useNotification()
 
@@ -85,15 +99,16 @@ export const VenueImageUploaderModal = ({
       // so we need to retrieve it if we only have the URL
       const imageDataURL =
         typeof image === 'string' ? await getDataURLFromImageURL(image) : image
-      const { bannerUrl } = await postImageToVenue({
+      const { bannerUrl, bannerMeta } = await postImageToVenue({
         venueId,
         banner: imageDataURL,
         xCropPercent: croppingRect?.x,
         yCropPercent: croppingRect?.y,
         heightCropPercent: croppingRect?.height,
+        widthCropPercent: croppingRect?.width,
         imageCredit: credit,
       })
-      onImageUpload({ bannerUrl, credit })
+      onImageUpload({ bannerUrl, bannerMeta })
       setIsUploading(false)
       onDismiss()
       notification.success('Vos modifications ont bien été prises en compte')
