@@ -55,7 +55,7 @@ const OfferType = (): JSX.Element => {
             <OfferTypeButton
               Icon={LibraryIcon}
               isSelected={offerType === EDUCATIONAL}
-              label="À un groupe scolaire"
+              label="À un groupe collectif"
               onChange={handleOfferTypeChange}
               value={EDUCATIONAL}
             />
