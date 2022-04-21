@@ -26,3 +26,10 @@ class MarkupSafeCheckerTest(CheckerTestCaseBase):
     message_id = pcapi_pylint.MSG_USE_OF_UNCONTROLLED_STRING
     test_filename = "pylint_markupsafe.py"
     expected_error_lines = {25, 26, 28, 29, 31, 32, 34, 35, 37, 38, 41, 42}
+
+
+class DatetimeNowCheckerTest(CheckerTestCaseBase):
+    CHECKER_CLASS = pcapi_pylint.DatetimeNowChecker
+    message_id = pcapi_pylint.MSG_USE_OF_DATETIME_NOW
+    test_filename = "pylint_datetime.py"
+    expected_error_lines = {11, 14, 15, 16, 17, 23, 26, 27, 28, 29}
