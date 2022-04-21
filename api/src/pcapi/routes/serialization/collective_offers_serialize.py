@@ -73,6 +73,7 @@ class CollectiveOfferResponseModel(BaseModel):
     status: str
     venueId: str
     isShowcase: Optional[bool]
+    offerId: Optional[str]
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -84,41 +85,41 @@ class ListCollectiveOffersResponseModel(BaseModel):
 
 def serialize_collective_offers_capped(
     paginated_offers: list[Union[CollectiveOffer, CollectiveOfferTemplate]]
-) -> list[dict]:
+) -> list[CollectiveOfferResponseModel]:
     return [_serialize_offer_paginated(offer) for offer in paginated_offers]
 
 
-def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemplate]) -> dict:
+def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemplate]) -> CollectiveOfferResponseModel:
     # TODO: put back offer.id when we will use new api routes on frontend side
     serialized_stock = [_serialize_stock(offer.offerId, getattr(offer, "collectiveStock", None))]  # type: ignore [arg-type]
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
 
-    return {
-        "hasBookingLimitDatetimesPassed": offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
-        # TODO: put back offer.id when we will use new api routes on frontend side
-        "id": humanize(offer.offerId),  # type: ignore [arg-type]
-        "isActive": offer.isActive,
-        "isEditable": True,
-        "isEvent": True,
-        "isThing": False,
-        "isEducational": True,
-        "productIsbn": None,
-        "name": offer.name,
-        "stocks": serialized_stock,
-        "thumbUrl": None,
-        "subcategoryId": offer.subcategoryId,
-        "venue": _serialize_venue(offer.venue),
-        "venueId": humanize(offer.venue.id),
-        "status": offer.status.name,  # type: ignore [attr-defined]
-        "isShowcase": is_offer_template,
-    }
+    return CollectiveOfferResponseModel(
+        hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
+        id=humanize(offer.id),
+        isActive=offer.isActive,
+        isEditable=True,
+        isEvent=True,
+        isThing=False,
+        isEducational=True,
+        productIsbn=None,
+        name=offer.name,
+        stocks=serialized_stock,
+        thumbUrl=None,
+        subcategoryId=offer.subcategoryId,
+        venue=_serialize_venue(offer.venue),
+        venueId=humanize(offer.venue.id),
+        status=offer.status.name,  # type: ignore [attr-defined]
+        isShowcase=is_offer_template,
+        offerId=humanize(offer.offerId),
+    )
 
 
 def _serialize_stock(offer_id: int, stock: Optional[CollectiveStock] = None) -> dict:
     if stock:
         # TODO: put back stock.id when we will use new api routes on frontend side
         return {
-            "id": humanize(stock.stockId),  # type: ignore [arg-type]
+            "id": humanize(stock.stockId),
             "offerId": humanize(offer_id),
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 1,
