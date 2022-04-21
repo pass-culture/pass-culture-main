@@ -50,6 +50,7 @@ from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.utils import as_utc_without_timezone
@@ -681,7 +682,7 @@ def _extract_updatable_fields_from_stock_data(
 def create_collective_stock(
     stock_data: EducationalStockCreationBodyModel, user: User, *, legacy_id: Optional[int] = None
 ) -> Optional[CollectiveStock]:
-    from pcapi.core.offers.api import _update_offer_fraud_information
+    from pcapi.core.offers.api import update_offer_fraud_information
 
     offer_id = stock_data.offer_id
     beginning = stock_data.beginning_datetime
@@ -726,7 +727,7 @@ def create_collective_stock(
 
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         if collective_offer.validation == OfferValidationStatus.DRAFT:
-            _update_offer_fraud_information(collective_offer, user)
+            update_offer_fraud_information(collective_offer, user)
     else:
         collective_offer.validation = OfferValidationStatus.APPROVED
         collective_offer.lastValidationDate = datetime.datetime.utcnow()
@@ -898,3 +899,14 @@ def create_collective_offer(
         extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer_id},
     )
     return collective_offer
+
+
+def create_collective_offer_template_from_collective_offer(
+    price_detail: Optional[str], user: User, offer_id: int
+) -> CollectiveOfferTemplate:
+    from pcapi.core.offers.api import update_offer_fraud_information
+
+    offerer = offerers_repository.get_by_offer_id(offer_id)
+    if not user.has_access(offerer.id):
+        raise exceptions.PermissionDenied()
+    offer = educational_repository.get_collective_offer_by_id(offer_id)

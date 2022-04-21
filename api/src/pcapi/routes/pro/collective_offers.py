@@ -8,6 +8,7 @@ from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -134,3 +135,33 @@ def create_collective_offer(
         )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers-template/<offer_id>/", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=201, on_error_statuses=[400, 403, 404])
+def create_collective_offer_template_from_collective_offer(
+    offer_id: str, body: collective_offers_serialize.CollectiveOfferTemplateBodyModel
+) -> collective_offers_serialize.CollectiveOfferTemplateResponseIdModel:
+
+    try:
+        collective_offer_template = educational_api.create_collective_offer_template_from_collective_offer(
+            price_detail=body.price_detail, user=current_user, offer_id=offer_id
+        )
+    except educational_exceptions.PermissionDenied:
+        raise ApiErrors(
+            errors={
+                "global": ["Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."],
+            },
+            status_code=403,
+        )
+
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_NOT_FOUND"},
+            status_code=404,
+        )
+
+    return collective_offers_serialize.CollectiveOfferTemplateResponseIdModel.from_orm(collective_offer_template)

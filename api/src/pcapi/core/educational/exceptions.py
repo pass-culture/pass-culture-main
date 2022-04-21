@@ -93,3 +93,7 @@ class CollectiveOfferNotFound(Exception):
 
 class CollectiveOfferTemplateNotFound(Exception):
     pass
+
+
+class PermissionDenied(Exception):
+    pass
