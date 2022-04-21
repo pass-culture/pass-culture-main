@@ -66,6 +66,7 @@ from pcapi.routes.adage_iframe.serialization.adage_authentication import Authent
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
+from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.utils.clean_accents import clean_accents
@@ -679,7 +680,13 @@ def _extract_updatable_fields_from_stock_data(
 
 
 def create_collective_stock(
-    stock_data: EducationalStockCreationBodyModel, user: User, *, legacy_id: Optional[int] = None
+    stock_data: Union[
+        CollectiveStockCreationBodyModel,
+        EducationalStockCreationBodyModel,
+    ],
+    user: User,
+    *,
+    legacy_id: Optional[int] = None,
 ) -> Optional[CollectiveStock]:
     from pcapi.core.offers.api import update_offer_fraud_information
 
