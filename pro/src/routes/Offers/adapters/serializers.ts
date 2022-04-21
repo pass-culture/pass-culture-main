@@ -1,5 +1,4 @@
 import {
-  ListCollectiveOffersResponseModel,
   ListOffersOfferResponseModel,
   ListOffersQueryModel,
   ListOffersResponseModel,
@@ -25,9 +24,7 @@ const serializeStocks = (
     remainingQuantity: stock.remainingQuantity,
   }))
 
-export const serializeOffers = (
-  offers: ListOffersResponseModel | ListCollectiveOffersResponseModel
-): Offer[] =>
+export const serializeOffers = (offers: ListOffersResponseModel): Offer[] =>
   offers.map(offer => ({
     id: offer.id,
     status: offer.status,
