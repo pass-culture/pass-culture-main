@@ -75,7 +75,7 @@ cd $DIR/api
 #
 
 
-ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- 'api/src/pcapi/alembic/versions/*.py' | grep '^api/*' | sed 's|^api\/||g')
+ALEMBIC_STAGED_FILES=$(git diff --staged --name-only -- './src/pcapi/alembic/versions/*.py' | grep '^api/*' | sed 's|^api\/||g')
 
 if [[ "$ALEMBIC_STAGED_FILES" != "" ]]; then
   echo -e "\033[0;96mMigration changes detected: $ALEMBIC_STAGED_FILES \033[0m"
