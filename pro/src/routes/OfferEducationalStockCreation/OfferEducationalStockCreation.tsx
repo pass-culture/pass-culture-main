@@ -18,6 +18,7 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
+import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 import postEducationalShadowStockAdapter from './adapters/postEducationalShadowStock'
 import postEducationalStockAdapter from './adapters/postEducationalStock'
@@ -40,7 +41,10 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     let message: string | null
 
     if (values.educationalOfferType === EducationalOfferType.SHOWCASE) {
-      const response = await postEducationalShadowStockAdapter({
+      const adapter = isNewCollectiveModelEnabled
+        ? postCollectiveOfferTemplateAdapter
+        : postEducationalShadowStockAdapter
+      const response = await adapter({
         offerId: offer.id,
         values,
       })

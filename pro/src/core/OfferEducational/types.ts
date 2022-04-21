@@ -134,6 +134,10 @@ export type CreateCollectiveStockPayload = {
   educationalPriceDetail: string
 }
 
+export type CreateCollectiveOfferTemplatePayload = {
+  educationalPriceDetail: string
+}
+
 export type GetStockOfferSuccessPayload = {
   id: string
   isActive: boolean

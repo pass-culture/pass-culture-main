@@ -6,7 +6,10 @@ import {
   CollectiveBookingsResponseModel,
   DEFAULT_PRE_FILTERS,
 } from 'core/Bookings'
-import { CreateCollectiveStockPayload } from 'core/OfferEducational'
+import {
+  CreateCollectiveOfferTemplatePayload,
+  CreateCollectiveStockPayload,
+} from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
@@ -337,6 +340,13 @@ export const createEducationalStock = stock => {
 
 export const createCollectiveStock = (stock: CreateCollectiveStockPayload) => {
   return client.post(`/collective/stocks`, stock)
+}
+
+export const createCollectiveOfferTemplate = (
+  offerId: string,
+  payload: CreateCollectiveOfferTemplatePayload
+) => {
+  return client.post(`/collective/offers-template/${offerId}/`, payload)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
