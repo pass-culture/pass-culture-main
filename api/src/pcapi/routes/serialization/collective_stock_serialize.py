@@ -3,12 +3,16 @@ from typing import Any
 from typing import Dict
 from typing import Optional
 
+from pydantic import Field
 from pydantic import validator
 
+from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
+from pcapi.utils.date import format_into_utc_date
 
 
 class CollectiveStockIdResponseModel(BaseModel):
@@ -61,3 +65,31 @@ class CollectiveStockCreationBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class CollectiveStockResponseModel(BaseModel):
+    id: str
+    beginningDatetime: Optional[datetime]
+    bookingLimitDatetime: Optional[datetime]
+    price: float
+    numberOfTickets: Optional[int]
+    isEducationalStockEditable: Optional[bool]
+    priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+    stockId: Optional[str]
+
+    _humanize_id = humanize_field("id")
+    _humanize_stock_id = humanize_field("stockId")
+
+    @classmethod
+    def from_orm(cls, stock: CollectiveStock):  # type: ignore
+        stock.isEducationalStockEditable = all(
+            collective_booking.status in (CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CANCELLED)
+            for collective_booking in stock.collectiveBookings
+        )
+        return super().from_orm(stock)
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {datetime: format_into_utc_date}
+        orm_mode = True
