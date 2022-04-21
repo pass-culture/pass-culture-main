@@ -72,3 +72,59 @@ class Returns200Test:
         assert response.json == {
             "bookings": [],
         }
+
+    def test_get_all_bookings_pagination(self, client) -> None:
+        educationalYear = EducationalYearFactory()
+        other_educational_year = EducationalYearFactory(adageId="adageId")
+        first_bookings = EducationalBookingFactory.create_batch(
+            2,
+            educationalBooking__educationalYear=educationalYear,
+        )
+        EducationalBookingFactory(educationalBooking__educationalYear=other_educational_year)
+        last_bookings = EducationalBookingFactory.create_batch(
+            8,
+            educationalBooking__educationalYear=educationalYear,
+        )
+
+        client.with_eac_token()
+        base_url = f"/adage/v1/years/{educationalYear.adageId}/prebookings"
+
+        response = client.get(f"{base_url}?per_page=2")
+        assert response.status_code == 200
+        assert len(response.json["bookings"]) == 2
+        assert {prebooking["id"] for prebooking in response.json["bookings"]} == {
+            first_bookings[0].educationalBooking.id,
+            first_bookings[1].educationalBooking.id,
+        }
+
+        response = client.get(f"{base_url}?per_page=2&page=2")
+        assert response.status_code == 200
+        assert len(response.json["bookings"]) == 2
+        assert {prebooking["id"] for prebooking in response.json["bookings"]} == {
+            last_bookings[0].educationalBooking.id,
+            last_bookings[1].educationalBooking.id,
+        }
+
+        response = client.get(f"{base_url}")
+        assert response.status_code == 200
+        assert {prebooking["id"] for prebooking in response.json["bookings"]} == {
+            prebooking.educationalBooking.id for prebooking in first_bookings + last_bookings
+        }
+
+
+class Returns400Test:
+    def test_non_positive_page_query(self, client):
+        client.with_eac_token()
+        response = client.get("/adage/v1/years/fake/prebookings?page=0")
+        assert response.status_code == 400
+
+        response = client.get("/adage/v1/years/fake/prebookings?page=-1")
+        assert response.status_code == 400
+
+    def test_non_positive_per_page_query(self, client):
+        client.with_eac_token()
+        response = client.get("/adage/v1/years/fake/prebookings?per_page=0")
+        assert response.status_code == 400
+
+        response = client.get("/adage/v1/years/fake/prebookings?per_page=-1")
+        assert response.status_code == 400
