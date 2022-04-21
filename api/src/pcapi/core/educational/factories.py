@@ -196,7 +196,7 @@ class CollectiveBookingFactory(BaseFactory):
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
-    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
 
     @factory.post_generation
     def cancellation_limit_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
@@ -226,7 +226,7 @@ class CollectiveBookingFactory(BaseFactory):
 
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CANCELLED
-    cancellationDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(hours=1))
+    cancellationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(hours=1))
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
@@ -237,13 +237,13 @@ class PendingCollectiveBookingFactory(CollectiveBookingFactory):
 
 class UsedCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.USED
-    dateUsed = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=5))
-    dateCreated = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=20))
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=8))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=12))
+    dateUsed = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
+    dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=20))
+    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=8))
+    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=12))
     confirmationDate = None
 
 
 class ReimbursedCollectiveBookingFactory(UsedCollectiveBookingFactory):
     status = models.CollectiveBookingStatus.REIMBURSED
-    reimbursementDate = factory.LazyFunction(lambda: datetime.datetime.now() - datetime.timedelta(days=1))
+    reimbursementDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
