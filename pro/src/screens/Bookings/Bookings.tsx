@@ -153,7 +153,6 @@ const Bookings = ({
           selectedAudience={audience}
         />
       )}
-      <h2 className="br-title">Affichage des réservations</h2>
       {werePreFiltersCustomized && (
         <button
           className="tertiary-button reset-filters-link"
