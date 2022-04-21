@@ -2680,6 +2680,4 @@ class GetEducationalEventOffersDoneYesterdayTest:
         ]
         educational_bookings = find_educational_bookings_done_yesterday()
         assert len(educational_bookings) == 2
-
-        assert bookings_created[0].educationalBooking == educational_bookings[0]
-        assert bookings_created[1].educationalBooking == educational_bookings[1]
+        assert set(educational_bookings) == {booking.educationalBooking for booking in bookings_created}
