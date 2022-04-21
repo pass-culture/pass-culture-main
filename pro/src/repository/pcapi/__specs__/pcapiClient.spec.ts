@@ -3,7 +3,6 @@ import fetch from 'jest-fetch-mock'
 import { client } from 'repository/pcapi/pcapiClient'
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
-// @ts-expect-error ts-migrate(2790) FIXME: The operand of a 'delete' operator must be optiona... Remove this comment to see the full error message
 delete window.location
 // @ts-expect-error ts-migrate(2740) FIXME: Type '{}' is missing the following properties from... Remove this comment to see the full error message
 window.location = {}

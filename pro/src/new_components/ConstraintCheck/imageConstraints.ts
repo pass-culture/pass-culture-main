@@ -18,7 +18,6 @@ const getImageBitmap = async (file: File): Promise<ImageBitmap | null> => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           resolve(this as any)
         })
-        // @ts-expect-error ImageBitmap is not assignable to type Blob | MediaSource
         img.src = URL.createObjectURL(blob)
       })
   }

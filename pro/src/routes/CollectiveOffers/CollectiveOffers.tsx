@@ -87,7 +87,6 @@ const CollectiveOffers = (): JSX.Element => {
 
   useEffect(() => {
     const loadAllVenuesByProUser = () =>
-      // @ts-expect-error type string | undefined is not assignable to type null | undefined
       fetchAllVenuesByProUser(offerer?.id).then(venues =>
         setVenues(formatAndOrderVenues(venues))
       )
