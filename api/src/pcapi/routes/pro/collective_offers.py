@@ -100,6 +100,10 @@ def create_collective_offer(
 ) -> collective_offers_serialize.CollectiveOfferResponseIdModel:
     try:
         offer = educational_api.create_collective_offer(offer_data=body, user=current_user)
+    except offerers_exceptions.CannotFindOffererSiren:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except CulturalPartnerNotFoundException:
         logger.info(
             "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
