@@ -109,6 +109,6 @@ class CineDigitalServicePutResourceTest:
         request_put.assert_called_once_with(
             "https://test_id.test_url/transaction/cancel?api_token=test_token",
             headers={"Content-Type": "application/json"},
-            data=body.json(),
+            data='{"barcodes": ["111111111111"], "paiementtypeid": 5}',
         )
         assert json_data == response_json
