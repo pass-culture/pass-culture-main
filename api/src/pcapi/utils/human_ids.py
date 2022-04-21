@@ -42,7 +42,7 @@ def dehumanize_or_raise(public_id: Optional[str]) -> int:
     return dehumanized_public_id
 
 
-def humanize(integer: int) -> str:
+def humanize(integer: Optional[int]) -> Optional[str]:
     """Create a human-compatible ID from and integer"""
     if integer is None:
         return None
