@@ -255,6 +255,7 @@ class VenueBannerContentModel(BaseModel):
     x_crop_percent: CropParam
     y_crop_percent: CropParam
     height_crop_percent: CropParam
+    width_crop_percent: CropParam
 
     class Config:
         extra = pydantic.Extra.forbid
@@ -292,6 +293,7 @@ class VenueBannerContentModel(BaseModel):
             x_crop_percent=request.args.get("x_crop_percent"),
             y_crop_percent=request.args.get("y_crop_percent"),
             height_crop_percent=request.args.get("height_crop_percent"),
+            width_crop_percent=request.args.get("width_crop_percent"),
         )
 
     @classmethod
@@ -313,11 +315,12 @@ class VenueBannerContentModel(BaseModel):
 
     @property
     def crop_params(self) -> Optional[CropParams]:
-        if {self.x_crop_percent, self.y_crop_percent, self.height_crop_percent} == {None}:
+        if {self.x_crop_percent, self.y_crop_percent, self.height_crop_percent, self.width_crop_percent} == {None}:
             return None
 
         return CropParams(
             x_crop_percent=self.x_crop_percent,
             y_crop_percent=self.y_crop_percent,
             height_crop_percent=self.height_crop_percent,
+            width_crop_percent=self.width_crop_percent,
         )

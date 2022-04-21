@@ -14,6 +14,7 @@ class CreateThumbnailBodyModel(BaseModel):
     cropping_rect_x: Optional[float]
     cropping_rect_y: Optional[float]
     cropping_rect_height: Optional[float]
+    cropping_rect_width: Optional[float]
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
 
@@ -22,13 +23,14 @@ class CreateThumbnailBodyModel(BaseModel):
 
     @property
     def crop_params(self) -> Optional[CropParams]:
-        if {self.cropping_rect_x, self.cropping_rect_y, self.cropping_rect_height} == {None}:
+        if {self.cropping_rect_x, self.cropping_rect_y, self.cropping_rect_height, self.cropping_rect_width} == {None}:
             return None
 
         return CropParams.build(
             x_crop_percent=self.cropping_rect_x,
             y_crop_percent=self.cropping_rect_y,
             height_crop_percent=self.cropping_rect_height,
+            width_crop_percent=self.cropping_rect_width,
         )
 
     def get_image_as_bytes(self, request) -> bytes:  # type: ignore [no-untyped-def]

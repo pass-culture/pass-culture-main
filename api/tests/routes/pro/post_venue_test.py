@@ -248,7 +248,7 @@ class VenueBannerTest:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         url = f"/venues/{humanize(venue.id)}/banner"
-        url += "?x_crop_percent=0.8&y_crop_percent=0.7&height_crop_percent=0.6&image_credit=none"
+        url += "?x_crop_percent=0.8&y_crop_percent=0.7&height_crop_percent=0.6&width_crop_percent=0.6&image_credit=none"
 
         # Override storage url otherwise it would be, well, an URL
         # (like http://localhost) and make some checks more difficult.
@@ -270,6 +270,7 @@ class VenueBannerTest:
                     "x_crop_percent": 0.8,
                     "y_crop_percent": 0.7,
                     "height_crop_percent": 0.6,
+                    "width_crop_percent": 0.6,
                 },
             }
 

@@ -24,6 +24,7 @@ class ImageConversionTest:
         crop_origin_x = 0.3288307188857965
         crop_origin_y = 0.14834245742092478
         crop_rect_height = 0.7299270072992701
+        crop_rect_width = 0.7299270072992701
 
         image_as_bytes = (IMAGES_DIR / "mosaique.png").read_bytes()
         raw_image = PIL.Image.open(io.BytesIO(image_as_bytes)).convert("RGB")
@@ -32,9 +33,7 @@ class ImageConversionTest:
         expected_image = PIL.Image.open(io.BytesIO(expected_image_as_bytes)).convert("RGB")
 
         # when
-        cropped_image = _crop_image(
-            crop_origin_x, crop_origin_y, crop_rect_height, raw_image, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT
-        )
+        cropped_image = _crop_image(crop_origin_x, crop_origin_y, crop_rect_height, crop_rect_width, raw_image)
 
         # then
         difference = PIL.ImageChops.difference(cropped_image, expected_image)
