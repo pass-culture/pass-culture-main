@@ -160,6 +160,7 @@ export interface CollectiveOfferResponseModel {
     isShowcase?: boolean | null;
     isThing: boolean;
     name: string;
+    offerId?: string | null;
     productIsbn?: string | null;
     status: string;
     stocks: Array<CollectiveOffersStockResponseModel>;
