@@ -4,7 +4,7 @@ from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.repository import find_educational_bookings_for_adage
-from pcapi.core.educational.repository import get_bookings_for_educational_year
+from pcapi.core.educational.repository import get_paginated_bookings_for_educational_year
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
@@ -103,8 +103,13 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
 @adage_api_key_required
 def get_all_bookings_per_year(
     educational_year_id: str,
+    query: prebooking_serialization.GetAllBookingsPerYearQueryModel,
 ) -> prebooking_serialization.EducationalBookingsPerYearResponse:
-    educational_bookings = get_bookings_for_educational_year(educational_year_id)
+    educational_bookings = get_paginated_bookings_for_educational_year(
+        educational_year_id,
+        query.page,
+        query.per_page,
+    )
     serialized_bookings = [
         prebooking_serialization.EducationalBookingPerYearResponse(
             id=educational_booking.id,

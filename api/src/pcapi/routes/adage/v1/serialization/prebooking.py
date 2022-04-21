@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Optional
 from typing import Union
 
+from pydantic import PositiveInt
 from pydantic.fields import Field
 
 from pcapi.core.bookings.models import BookingStatus
@@ -105,6 +106,11 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
 
 class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
     bookings: list[EducationalBookingPerYearResponse]
+
+
+class GetAllBookingsPerYearQueryModel(BaseModel):
+    page: Optional[PositiveInt]
+    per_page: Optional[PositiveInt]
 
 
 class EducationalBookingEdition(EducationalBookingResponse):
