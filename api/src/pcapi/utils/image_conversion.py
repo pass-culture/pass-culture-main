@@ -27,6 +27,7 @@ class CropParams:
     x_crop_percent: CropParam = 0.0
     y_crop_percent: CropParam = 0.0
     height_crop_percent: CropParam = 1.0
+    width_crop_percent: CropParam = 1.0
 
     @classmethod
     def build(cls, **kwargs: Optional[CropParam]) -> "CropParams":
@@ -79,8 +80,8 @@ def standardize_image(content: bytes, ratio: float, crop_params: Optional[CropPa
         crop_params.x_crop_percent,
         crop_params.y_crop_percent,
         crop_params.height_crop_percent,
+        crop_params.width_crop_percent,
         preprocessed_image,
-        ratio,
     )
     resized_image = _resize_image(cropped_image, ratio)
 
@@ -123,7 +124,11 @@ def _transpose_image(raw_image: PIL.Image) -> PIL.Image:
 
 
 def _crop_image(
-    x_crop_percent: CropParam, y_crop_percent: CropParam, height_crop_percent: CropParam, image: Image, ratio: float
+    x_crop_percent: CropParam,
+    y_crop_percent: CropParam,
+    height_crop_percent: CropParam,
+    width_crop_percent: CropParam,
+    image: Image,
 ) -> Image:
     """
     x_crop_percent and y_crop_percent will be used to compute new top left
@@ -132,7 +137,7 @@ def _crop_image(
     height_crop_percent will be used to compute the bottom right corner's
     Y value, since X is computed using a predefined ratio.
     """
-    if (x_crop_percent, y_crop_percent, height_crop_percent) == DO_NOT_CROP:
+    if (x_crop_percent, y_crop_percent, height_crop_percent, width_crop_percent) == DO_NOT_CROP:
         return image
 
     width = image.size[0]
@@ -141,10 +146,10 @@ def _crop_image(
     top_left_corner = Coordinates(x=width * x_crop_percent, y=height * y_crop_percent)
 
     updated_height = height * height_crop_percent
-    updated_width_from_ratio = updated_height * ratio
+    updated_width = width * width_crop_percent
 
     bottom_right_corner = Coordinates(
-        x=min(top_left_corner.x + updated_width_from_ratio, width), y=min(top_left_corner.y + updated_height, height)
+        x=min(top_left_corner.x + updated_width, width), y=min(top_left_corner.y + updated_height, height)
     )
 
     cropped_img = image.crop((top_left_corner.x, top_left_corner.y, bottom_right_corner.x, bottom_right_corner.y))
