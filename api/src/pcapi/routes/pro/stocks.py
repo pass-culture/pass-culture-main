@@ -71,7 +71,14 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     check_user_has_access_to_offerer(current_user, offerer.id)
 
-    stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
+    try:
+        stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)
+    except offers_exceptions.BookingLimitDatetimeTooLate:
+        raise ApiErrors(
+            {"stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'événement"]},
+            status_code=400,
+        )
+
     return StockIdsResponseModel(
         stockIds=[StockIdResponseModel.from_orm(stock) for stock in stocks],
     )

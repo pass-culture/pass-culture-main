@@ -380,6 +380,42 @@ class Returns400Test:
             ],
         }
 
+    @pytest.mark.parametrize("is_update", [False, True])
+    def test_beginning_datetime_after_booking_limit_datetime(self, is_update, client):
+        # Given
+        offer = offers_factories.EventOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [
+                {
+                    "beginningDatetime": "2022-06-11T08:00:00Z",
+                    "bookingLimitDatetime": "2022-06-12T21:59:59Z",
+                    "price": 15,
+                    "quantity": 1000,
+                },
+            ],
+        }
+
+        if is_update:
+            stock = offers_factories.StockFactory(offer=offer)
+            stock_data["stocks"][0]["id"] = humanize(stock.id)
+
+        # When
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+
+        # Then
+        assert response.status_code == 400
+
+        response_dict = response.json
+        assert response_dict == {
+            "stocks": ["La date limite de réservation ne peut être postérieure à la date de début de l'événement"],
+        }
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:

@@ -69,6 +69,7 @@ from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
+from pcapi.core.offers.validation import check_booking_limit_datetime
 from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_offer_withdrawal
@@ -617,6 +618,7 @@ def upsert_stocks(
                 )
                 errors.status_code = 403
                 raise errors
+            check_booking_limit_datetime(stock, stock_data.beginning_datetime, stock_data.booking_limit_datetime)
             edited_stocks_previous_beginnings[stock.id] = stock.beginningDatetime
             edited_stock = _edit_stock(
                 stock,
@@ -628,6 +630,8 @@ def upsert_stocks(
             edited_stocks.append(edited_stock)
             stocks.append(edited_stock)
         else:
+            check_booking_limit_datetime(None, stock_data.beginning_datetime, stock_data.booking_limit_datetime)
+
             activation_codes_exist = stock_data.activation_codes is not None and len(stock_data.activation_codes) > 0
 
             if activation_codes_exist:
