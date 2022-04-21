@@ -1,4 +1,3 @@
-import copy
 from datetime import datetime
 from datetime import timedelta
 from io import BytesIO
@@ -364,13 +363,15 @@ def check_stock_booking_status(booking: Booking) -> Union[None, Exception]:
 
 
 def check_booking_limit_datetime(
-    stock: Union[CollectiveStock, Stock], beginning: Optional[datetime], booking_limit_datetime: Optional[datetime]
+    stock: Optional[Union[CollectiveStock, Stock]],
+    beginning: Optional[datetime],
+    booking_limit_datetime: Optional[datetime],
 ) -> None:
-    beginning = copy.deepcopy(beginning)
-    booking_limit_datetime = copy.deepcopy(booking_limit_datetime)
+    if stock:
+        if beginning is None:
+            beginning = stock.beginningDatetime
+        if booking_limit_datetime is None:
+            booking_limit_datetime = stock.bookingLimitDatetime
 
-    beginning = stock.beginningDatetime if beginning is None else beginning
-    booking_limit_datetime = stock.bookingLimitDatetime if booking_limit_datetime is None else booking_limit_datetime
-
-    if booking_limit_datetime > beginning:  # type: ignore [operator]
+    if beginning and booking_limit_datetime and booking_limit_datetime > beginning:
         raise exceptions.BookingLimitDatetimeTooLate()

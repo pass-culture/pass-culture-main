@@ -544,15 +544,11 @@ class UpsertStocksTest:
         )
 
         # When
-        with pytest.raises(api_errors.ApiErrors) as error:
+        with pytest.raises(exceptions.BookingLimitDatetimeTooLate):
             api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
 
         # Then
-        assert error.value.errors == {
-            "bookingLimitDatetime": [
-                "La date limite de réservation pour cette offre est postérieure à la date de début de l'évènement"
-            ]
-        }
+        assert models.Stock.query.count() == 0
 
     def test_does_not_allow_edition_of_a_past_event_stock(self):
         # Given
