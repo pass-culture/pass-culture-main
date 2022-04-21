@@ -349,6 +349,11 @@ class DeleteDependentPricingsTest:
             booking__stock__offer__venue=booking.venue,
             booking__dateUsed=booking.dateUsed - datetime.timedelta(seconds=1),
         )
+        earlier_pricing_previous_year = factories.PricingFactory(
+            booking__stock__offer__venue=booking.venue,
+            booking__dateUsed=booking.dateUsed - datetime.timedelta(days=365),
+            booking__stock__beginningDatetime=booking.dateUsed + datetime.timedelta(seconds=1),
+        )
         later_pricing = factories.PricingFactory(
             booking__stock__offer__venue=booking.venue,
             booking__dateUsed=booking.dateUsed + datetime.timedelta(seconds=1),
@@ -364,8 +369,8 @@ class DeleteDependentPricingsTest:
             valueDate=booking.dateUsed,
         )
         api._delete_dependent_pricings(booking, "some log message")
-        expected_kept = [earlier_pricing, later_pricing_another_year]
-        assert list(models.Pricing.query.all()) == expected_kept
+        expected_kept = {earlier_pricing_previous_year, earlier_pricing, later_pricing_another_year}
+        assert set(models.Pricing.query.all()) == expected_kept
 
     def test_raise_if_a_pricing_is_not_deletable(self):
         booking = create_booking_with_undeletable_dependent()

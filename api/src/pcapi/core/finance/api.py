@@ -400,7 +400,7 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
     See note in the module docstring for further details.
     """
     siret = booking.venue.siret or booking.venue.businessUnit.siret
-    _start, revenue_period_end = _get_revenue_period(booking.dateUsed)  # type: ignore [arg-type]
+    revenue_period_start, revenue_period_end = _get_revenue_period(booking.dateUsed)  # type: ignore [arg-type]
     pricings = (
         models.Pricing.query.filter(models.Pricing.siret == siret)
         .join(models.Pricing.booking)
@@ -414,7 +414,7 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
             ),
         )
         .filter(
-            models.Pricing.valueDate <= revenue_period_end,
+            models.Pricing.valueDate.between(revenue_period_start, revenue_period_end),
             sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
         )
         .with_entities(
