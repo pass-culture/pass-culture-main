@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -13,12 +14,14 @@ import {
   patchIsOfferActiveAdapter,
   cancelActiveBookingsAdapter,
 } from 'core/OfferEducational'
+import { CollectiveOffer } from 'core/Offers/types'
 import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
+import getCollectiveOfferAdapter from './adapters/getCollectiveOfferAdapter'
 import getOfferAdapter from './adapters/getOfferAdapter'
 import patchOfferAdapter from './adapters/patchOfferAdapter'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
@@ -31,19 +34,25 @@ type AsyncScreenProps = Pick<
 const OfferEducationalEdition = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const history = useHistory()
+  const enableIndividualAndCollectiveSeparation = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
-  const [offer, setOffer] = useState<Offer>()
+  const [offer, setOffer] = useState<Offer | CollectiveOffer>()
 
   const notify = useNotification()
 
-  const editOffer = async (offer: IOfferEducationalFormValues) => {
+  const editOffer = async (offerFormValues: IOfferEducationalFormValues) => {
+    const patchOfferId = enableIndividualAndCollectiveSeparation
+      ? (offer as CollectiveOffer).offerId || ''
+      : offerId
     const offerResponse = await patchOfferAdapter({
-      offerId,
-      offer,
+      offerId: patchOfferId,
+      offer: offerFormValues,
       initialValues,
     })
 
@@ -81,7 +90,12 @@ const OfferEducationalEdition = (): JSX.Element => {
   }
 
   const loadData = useCallback(
-    async (offerResponse: AdapterFailure<null> | AdapterSuccess<Offer>) => {
+    async (
+      offerResponse:
+        | AdapterFailure<null>
+        | AdapterSuccess<Offer>
+        | AdapterSuccess<CollectiveOffer>
+    ) => {
       if (!offerResponse.isOk) {
         return notify.error(offerResponse.message)
       }
@@ -146,14 +160,33 @@ const OfferEducationalEdition = (): JSX.Element => {
 
   useEffect(() => {
     if (!isReady) {
-      getOfferAdapter(offerId).then(offerResponse => {
-        if (offerResponse.isOk && !offerResponse.payload.isEducational) {
-          return history.push(`/offre/${offerId}/individuel/edition`)
+      const _loadData = async () => {
+        let offerResponse:
+          | AdapterFailure<null>
+          | AdapterSuccess<Offer>
+          | AdapterSuccess<CollectiveOffer>
+
+        if (enableIndividualAndCollectiveSeparation) {
+          offerResponse = await getCollectiveOfferAdapter(offerId)
+        } else {
+          offerResponse = await getOfferAdapter(offerId)
+          if (offerResponse.isOk && !offerResponse.payload.isEducational) {
+            return history.push(`/offre/${offerId}/individuel/edition`)
+          }
         }
+
         loadData(offerResponse)
-      })
+      }
+
+      _loadData()
     }
-  }, [isReady, offerId, loadData, history])
+  }, [
+    isReady,
+    offerId,
+    loadData,
+    history,
+    enableIndividualAndCollectiveSeparation,
+  ])
 
   return (
     <OfferEducationalLayout
