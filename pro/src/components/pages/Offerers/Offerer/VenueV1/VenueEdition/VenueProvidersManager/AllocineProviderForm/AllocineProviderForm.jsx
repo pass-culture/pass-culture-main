@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit } from 'react-final-form-utils'
 import ReactTooltip from 'react-tooltip'
 
 import NumberField from 'components/layout/form/fields/NumberField'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
 import { CheckboxField } from 'ui-kit'
+import { getCanSubmit } from 'utils/react-final-form'
 
 const AllocineProviderForm = ({
   saveVenueProvider,
@@ -50,7 +50,13 @@ const AllocineProviderForm = ({
 
   const renderForm = useCallback(
     formProps => {
-      const canSubmit = getCanSubmit(formProps)
+      const canSubmit = getCanSubmit({
+        isLoading: formProps.isLoading,
+        dirtySinceLastSubmit: formProps.dirtySinceLastSubmit,
+        hasSubmitErrors: formProps.hasSubmitErrors,
+        hasValidationErrors: formProps.hasValidationErrors,
+        pristine: formProps.pristine,
+      })
       return (
         <form>
           {!isLoading && (
