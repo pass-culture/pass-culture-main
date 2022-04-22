@@ -2,9 +2,9 @@ import cn from 'classnames'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import { OfferStatus } from 'api/v1/gen'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
-import { OfferStatus } from 'custom_types/offer'
 import { Title } from 'ui-kit'
 
 import styles from './OfferEducationalConfirmation.module.scss'
@@ -56,7 +56,7 @@ const showcaseOffer = {
 }
 
 const mapOfferStatusToData = (status?: OfferStatus, isShowcase?: boolean) => {
-  if (status === OfferStatus.OFFER_STATUS_PENDING) {
+  if (status === OfferStatus.PENDING) {
     return pendingOffer
   }
 

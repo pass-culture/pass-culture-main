@@ -1,8 +1,8 @@
 import { Story } from '@storybook/react'
 import React from 'react'
 
+import { OfferStatus } from 'api/v1/gen'
 import { DEFAULT_EAC_STOCK_FORM_VALUES, Mode } from 'core/OfferEducational'
-import { OfferStatus } from 'custom_types/offer'
 
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
@@ -26,7 +26,7 @@ const Template: Story<{ mode: Mode }> = args => (
     initialValues={DEFAULT_EAC_STOCK_FORM_VALUES}
     offer={{
       id: '1234',
-      status: OfferStatus.OFFER_STATUS_DRAFT,
+      status: OfferStatus.DRAFT,
       venueDepartmentCode: '974',
       isActive: true,
       isBooked: true,
