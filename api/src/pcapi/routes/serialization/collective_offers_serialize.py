@@ -272,7 +272,11 @@ class GetCollectiveOfferBaseResponseModel(BaseModel):
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
-    priceDetail: Optional[str]
+    priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
 
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
