@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import { render, waitFor } from '@testing-library/react'
 import { createBrowserHistory } from 'history'
-import type { History } from 'history'
+import type { Action, History } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import reactRouter from 'react-router'
@@ -56,12 +56,24 @@ describe('src | components | pages | Signup | validation', () => {
   it('should redirect to home page if the user is logged in', async () => {
     const validateUser = jest.spyOn(pcapi, 'validateUser')
     const redirect = jest.fn()
-    jest.spyOn(reactRouter, 'useHistory').mockImplementation(
-      () =>
-        ({
-          push: redirect,
-        } as unknown as History<unknown>)
-    )
+    jest.spyOn(reactRouter, 'useHistory').mockImplementation(() => ({
+      push: redirect,
+      length: 0,
+      action: 'REPLACE' as Action,
+      location: {
+        pathname: '',
+        search: '',
+        state: '',
+        hash: '',
+      },
+      replace: jest.fn(),
+      go: jest.fn(),
+      goBack: jest.fn(),
+      goForward: jest.fn(),
+      block: jest.fn(),
+      listen: jest.fn(),
+      createHref: jest.fn(),
+    }))
     jest.spyOn(useCurrentUser, 'default').mockReturnValue({
       currentUser: {
         id: '123',
