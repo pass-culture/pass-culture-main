@@ -170,7 +170,8 @@ export type CollectiveStockResponseModel = {
   stockId?: string
 }
 
-export type CollectiveOfferResponseModel = {
+type CollectiveOfferBaseResponseModel = {
+  id: string
   bookingEmail?: string | null
   dateCreated: Date
   description?: string | null
@@ -181,29 +182,40 @@ export type CollectiveOfferResponseModel = {
     otherAddress: string
     venueId: string
   }
-  offerId?: string | null
   contactEmail: string
   contactPhone: string
   hasBookingLimitDatetimesPassed: boolean
-  id: string
   isActive: boolean
-  isBookable: boolean
   audioDisabilityCompliant: boolean
   mentalDisabilityCompliant: boolean
   motorDisabilityCompliant: boolean
-  nonHumanizedId: number
   visualDisabilityCompliant: boolean
+  nonHumanizedId: number
   name: string
-  collectiveStock: {
-    id: string
-    isBooked: boolean
-  }
   subcategoryId: string
   venue: GetOfferVenueResponseModel
   venueId: string
   status: OfferStatus
+  offerId?: string | null
+}
+
+export type CollectiveOfferResponseModel = CollectiveOfferBaseResponseModel & {
+  isBookable: boolean
+  collectiveStock: {
+    id: string
+    isBooked: boolean
+  }
 }
 
 export type CollectiveOffer = CollectiveOfferResponseModel & {
+  isBooked: boolean
+}
+
+export type CollectiveOfferTemplateResponseModel =
+  CollectiveOfferBaseResponseModel & {
+    educationalPriceDetails: string
+  }
+
+export type CollectiveOfferTemplate = CollectiveOfferTemplateResponseModel & {
   isBooked: boolean
 }
