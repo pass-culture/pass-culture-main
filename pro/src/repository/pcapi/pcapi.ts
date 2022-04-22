@@ -6,7 +6,10 @@ import {
   CollectiveBookingsResponseModel,
   DEFAULT_PRE_FILTERS,
 } from 'core/Bookings'
-import { CreateCollectiveStockPayload } from 'core/OfferEducational'
+import {
+  CollectiveStockResponseModel,
+  CreateCollectiveStockPayload,
+} from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { CollectiveOfferResponseModel } from 'core/Offers/types'
 import { client } from 'repository/pcapi/pcapiClient'
@@ -367,6 +370,11 @@ export const transformShadowStockIntoEducationalStock = (stockId, stock) =>
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'stockId' implicitly has an 'any' type.
 export const editShadowStock = (stockId, stock) =>
   client.patch(`/stocks/shadow/${stockId}`, stock)
+
+export const getCollectiveStockForOffer = (
+  offerId: string
+): Promise<CollectiveStockResponseModel> =>
+  client.get(`/collective/offers/${offerId}/stock`)
 
 //
 // thumbnail
