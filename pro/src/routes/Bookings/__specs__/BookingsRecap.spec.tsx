@@ -266,8 +266,8 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     expect(
-      screen.queryByText('Réinitialiser les filtres')
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    ).toBeDisabled()
   })
 
   it('should allow user to reset prefilters when some where applied', async () => {
@@ -330,8 +330,8 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // Then
     expect(
-      screen.queryByText('Réinitialiser les filtres')
-    ).not.toBeInTheDocument()
+      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+    ).toBeDisabled()
     const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
     )
