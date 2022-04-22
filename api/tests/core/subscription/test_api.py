@@ -1069,3 +1069,29 @@ class NeedsToPerformeIdentityCheckTest:
         )
 
         assert not subscription_api._needs_to_perform_identity_check(user)
+
+
+@pytest.mark.usefixtures("db_session")
+class GetFirstRegistrationDateTest:
+    def test_get_first_registration_date_no_check(self):
+        user = users_factories.UserFactory()
+        assert subscription_api.get_first_registration_date(user) is None
+
+    def test_get_first_registration_date(self):
+        user = users_factories.UserFactory()
+        d1 = datetime(2020, 1, 1)
+        d2 = datetime(2020, 2, 1)
+        d3 = datetime(2020, 3, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.PHONE_VALIDATION, dateCreated=d2
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.JOUVE, dateCreated=d2, resultContent=None
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=d3,
+            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d1),
+        )
+        assert subscription_api.get_first_registration_date(user) == d1
