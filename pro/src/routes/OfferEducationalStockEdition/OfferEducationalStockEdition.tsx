@@ -14,11 +14,13 @@ import {
   Mode,
   OfferEducationalStockFormValues,
   patchIsOfferActiveAdapter,
+  CollectiveStockResponseModel,
 } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
+import { getCollectiveStockAdapter } from './adapters/getCollectiveStockAdapter'
 import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapter'
 import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
 import patchShadowStockAdapter from './adapters/patchShadowStockAdapter'
@@ -53,7 +55,9 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
-  const [stock, setStock] = useState<StockResponse | null>(null)
+  const [stock, setStock] = useState<
+    StockResponse | CollectiveStockResponseModel | null
+  >(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
@@ -66,13 +70,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
-    const stockId = stock.id
-
     const adapter = getAdapter(offer, values.educationalOfferType)
 
     const stockResponse = await adapter({
       offer,
-      stockId,
+      stockId: stock.id,
       values,
       initialValues,
     })
@@ -128,12 +130,15 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
+        const getStockAdapter = enableIndividualAndCollectiveSeparation
+          ? getCollectiveStockAdapter
+          : getEducationalStockAdapter
         const getOfferAdapter = getGetOfferAdapter(
           enableIndividualAndCollectiveSeparation
         )
         const [offerResponse, stockResponse] = await Promise.all([
           getOfferAdapter(offerId),
-          getEducationalStockAdapter(offerId),
+          getStockAdapter(offerId),
         ])
         if (!offerResponse.isOk) {
           return notify.error(offerResponse.message)
