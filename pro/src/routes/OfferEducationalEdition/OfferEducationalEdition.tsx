@@ -13,8 +13,8 @@ import {
   setInitialFormValues,
   patchIsOfferActiveAdapter,
   cancelActiveBookingsAdapter,
+  CollectiveOffer,
 } from 'core/OfferEducational'
-import { CollectiveOffer } from 'core/Offers/types'
 import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
