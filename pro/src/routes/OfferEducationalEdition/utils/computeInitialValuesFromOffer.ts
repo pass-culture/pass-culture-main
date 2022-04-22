@@ -2,8 +2,8 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   PARTICIPANTS,
+  CollectiveOffer,
 } from 'core/OfferEducational'
-import { CollectiveOffer } from 'core/Offers/types'
 import { Offer } from 'custom_types/offer'
 
 const computeDurationString = (
