@@ -1,5 +1,4 @@
-import { OfferAddressType } from 'api/v1/gen'
-import { Offer } from 'custom_types/offer'
+import { OfferAddressType, OfferStatus } from 'api/v1/gen'
 
 export type IUserVenue = {
   id: string
@@ -137,7 +136,7 @@ export type CreateCollectiveStockPayload = {
 export type GetStockOfferSuccessPayload = {
   id: string
   isActive: boolean
-  status: Offer['status']
+  status: OfferStatus
   isBooked: boolean
   venueDepartmentCode: string
   managingOffererId: string
