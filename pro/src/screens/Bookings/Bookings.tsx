@@ -1,5 +1,5 @@
 import type { Location } from 'history'
-import React, { useCallback, useState, useMemo, useEffect } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 
 import { BookingRecapResponseModel } from 'api/v1/gen'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -71,14 +71,6 @@ const Bookings = ({
   const [venues, setVenues] = useState<{ id: string; displayName: string }[]>(
     []
   )
-
-  const werePreFiltersCustomized = useMemo(() => {
-    const keys = Object.keys(
-      appliedPreFilters
-    ) as (keyof typeof DEFAULT_PRE_FILTERS)[]
-
-    return keys.some(key => appliedPreFilters[key] !== DEFAULT_PRE_FILTERS[key])
-  }, [appliedPreFilters])
 
   const resetPreFilters = useCallback(() => {
     setWereBookingsRequested(false)
@@ -153,15 +145,6 @@ const Bookings = ({
           selectedAudience={audience}
         />
       )}
-      {werePreFiltersCustomized && (
-        <button
-          className="tertiary-button reset-filters-link"
-          onClick={resetPreFilters}
-          type="button"
-        >
-          Réinitialiser les filtres
-        </button>
-      )}
       <PreFilters
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
@@ -171,6 +154,7 @@ const Bookings = ({
         isFiltersDisabled={!hasBooking}
         isLocalLoading={isLocalLoading}
         isTableLoading={isTableLoading}
+        resetPreFilters={resetPreFilters}
         venues={venues}
         wereBookingsRequested={wereBookingsRequested}
       />

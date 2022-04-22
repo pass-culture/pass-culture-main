@@ -43,6 +43,7 @@ describe('filter bookings by bookings period', () => {
       getBookingsCSVFileAdapter: jest.fn(),
       isBookingFiltersActive: true,
       hasResult: true,
+      resetPreFilters: jest.fn(),
       isFiltersDisabled: false,
       isTableLoading: false,
       wereBookingsRequested: true,
