@@ -34,6 +34,7 @@ export const getStockCollectiveOfferAdapter: GetStockCollectiveOfferAdapter =
           isBooked,
           isEducational: true,
           isShowcase: false,
+          offerId: offer.offerId,
         },
       }
     } catch (error) {

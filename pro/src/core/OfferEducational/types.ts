@@ -146,6 +146,7 @@ export type GetStockOfferSuccessPayload = {
   managingOffererId: string
   isEducational: boolean
   isShowcase: boolean
+  offerId?: string | null
 }
 
 export enum EducationalOfferType {
