@@ -74,7 +74,7 @@ def activate_beneficiary_for_eligibility(
     return user
 
 
-def activate_beneficiary(user: users_models.User, deposit_source: str = None) -> users_models.User:
+def activate_beneficiary(user: users_models.User) -> users_models.User:
     fraud_check = users_api.get_activable_identity_fraud_check(user)
     if not fraud_check:
         raise exceptions.BeneficiaryFraudCheckMissingException(
