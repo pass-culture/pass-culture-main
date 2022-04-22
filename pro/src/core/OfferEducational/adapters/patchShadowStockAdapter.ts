@@ -27,7 +27,7 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const patchShadowStockAdapter: PatchShadowStockAdapter = async ({
+export const patchShadowStockAdapter: PatchShadowStockAdapter = async ({
   stockId,
   values,
   initialValues,
@@ -57,5 +57,3 @@ const patchShadowStockAdapter: PatchShadowStockAdapter = async ({
     }
   }
 }
-
-export default patchShadowStockAdapter

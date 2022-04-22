@@ -213,9 +213,19 @@ export type CollectiveOffer = CollectiveOfferResponseModel & {
 
 export type CollectiveOfferTemplateResponseModel =
   CollectiveOfferBaseResponseModel & {
-    educationalPriceDetails: string
+    educationalPriceDetail: string
   }
 
 export type CollectiveOfferTemplate = CollectiveOfferTemplateResponseModel & {
   isBooked: boolean
+}
+
+export type StockResponse = {
+  id: string
+  beginningDatetime?: string
+  bookingLimitDatetime?: string
+  price: number
+  numberOfTickets?: number
+  isEducationalStockEditable?: boolean
+  educationalPriceDetail?: string
 }
