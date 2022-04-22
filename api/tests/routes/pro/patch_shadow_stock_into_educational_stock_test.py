@@ -34,6 +34,7 @@ class Return200Test:
                 "isShowcase": True,
             },
         )
+        educational_factories.CollectiveOfferTemplateFactory(offerId=stock.offer.id)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=stock.offer.venue.managingOfferer,
@@ -57,12 +58,14 @@ class Return200Test:
         response_dict = response.json
         created_stock = Stock.query.get(dehumanize(response_dict["id"]))
         shadow_stock = Stock.query.get(stock.id)
+        collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=stock.offer.id).one()
         assert stock.offer.id == created_stock.offerId
         assert shadow_stock.isSoftDeleted == True
         assert created_stock.price == 1500
         assert created_stock.educationalPriceDetail == "Détail du prix"
         updated_offer = Offer.query.get(stock.offer.id)
         assert updated_offer.extraData["isShowcase"] == False
+        assert dehumanize(response_dict["offerId"]) == collective_offer.id
 
     def test_create_valid_stock_for_collective_offer(self, app, client):
         # Given

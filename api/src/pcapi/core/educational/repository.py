@@ -731,3 +731,7 @@ def get_collective_stock_for_offer(offer_id: int) -> Optional[CollectiveStock]:
         .filter(CollectiveStock.collectiveOfferId == offer_id)
         .one_or_none()
     )
+
+
+def get_collective_offer_by_offer_id(offer_id: int) -> CollectiveOffer:
+    return CollectiveOffer.query.filter(CollectiveOffer.offerId == offer_id).one()

@@ -95,6 +95,13 @@ class StockEditionResponseModel(BaseModel):
         orm_mode = True
 
 
+class PatchShadowStockIntoEducationalStockResponseModel(StockEditionResponseModel):
+    offerId: str
+
+    class Config:
+        orm_mode = True
+
+
 class StockCreationBodyModel(BaseModel):
     activation_codes: Optional[list[str]]
     activation_codes_expiration_datetime: Optional[datetime]
