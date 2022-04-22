@@ -35,13 +35,16 @@ def get_latest_subscription_message(user: users_models.User) -> typing.Optional[
 
 
 def activate_beneficiary_for_eligibility(
-    user: users_models.User, fraud_check: fraud_models.BeneficiaryFraudCheck, eligibility: users_models.EligibilityType
+    user: users_models.User,
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    eligibility: users_models.EligibilityType,
 ) -> users_models.User:
     deposit_source = fraud_check.get_detailed_source()
 
     if eligibility == users_models.EligibilityType.UNDERAGE:
         user.validate_user_identity_15_17()
         user.add_underage_beneficiary_role()
+
     elif eligibility == users_models.EligibilityType.AGE18:
         user.validate_user_identity_18()
         user.add_beneficiary_role()
@@ -56,9 +59,7 @@ def activate_beneficiary_for_eligibility(
         user,
         deposit_source=deposit_source,
         eligibility=eligibility,
-        age_at_registration=users_utils.get_age_at_date(
-            user.dateOfBirth, fraud_check.source_data().get_registration_datetime()  # type: ignore [arg-type, union-attr]
-        ),
+        age_at_registration=get_age_at_first_registration(user),
     )
 
     db.session.add_all((user, deposit))
@@ -187,7 +188,7 @@ def get_identity_check_subscription_status(
     if eligibility is None:
         return models.SubscriptionItemStatus.VOID  # type: ignore [return-value]
 
-    identity_fraud_checks = fraud_repository.get_identity_fraud_checks(user, eligibility)
+    identity_fraud_checks = fraud_repository.get_identity_fraud_checks_for_eligibility(user, eligibility)
 
     dms_checks = [check for check in identity_fraud_checks if check.type == fraud_models.FraudCheckType.DMS]
     educonnect_checks = [
@@ -493,3 +494,17 @@ def _get_jouve_subscription_item_status(
         return models.SubscriptionItemStatus.TODO
 
     return models.SubscriptionItemStatus.VOID
+
+
+def get_first_registration_date(user: users_models.User) -> typing.Optional[datetime.datetime]:
+    fraud_checks = user.beneficiaryFraudChecks
+    if not fraud_checks:
+        return None
+    return min([fraud_check.get_min_date_between_creation_and_registration() for fraud_check in fraud_checks])
+
+
+def get_age_at_first_registration(user: users_models.User) -> typing.Optional[int]:
+    first_registration_date = get_first_registration_date(user)
+    if not first_registration_date or not user.dateOfBirth:
+        return None
+    return users_utils.get_age_at_date(user.dateOfBirth, first_registration_date)

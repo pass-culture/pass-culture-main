@@ -394,6 +394,17 @@ class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
             return f"démarches simplifiées dossier [{self.thirdPartyId}]"
         return f"dossier {self.type} [{self.thirdPartyId}]"
 
+    def get_min_date_between_creation_and_registration(self) -> datetime.datetime:
+        if self.type not in IDENTITY_CHECK_TYPES or not self.resultContent:
+            return self.dateCreated
+        try:
+            registration_datetime = self.source_data().get_registration_datetime()  # type: ignore [union-attr]
+        except ValueError:  # TODO(viconnex) migrate Educonnect fraud checks that do not have registration date in their content
+            return self.dateCreated
+        if registration_datetime:
+            return min(self.dateCreated, registration_datetime)
+        return self.dateCreated
+
 
 class OrphanDmsApplication(PcObject, Model):  # type: ignore [valid-type, misc]
     # This model is used to store fraud checks that were not associated with a user.
