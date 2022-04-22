@@ -27,7 +27,7 @@ class Returns200Test:
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "stock" not in response_json
         assert "dateCreated" in response_json
-        assert "priceDetail" in response_json
+        assert "educationalPriceDetail" in response_json
         assert response_json["name"] == offer.name
         assert response_json["nonHumanizedId"] == offer.id
         assert response_json["venue"]["id"] == humanize(offer.venue.id)
@@ -42,7 +42,7 @@ class Returns200Test:
         client.with_session_auth(email=beneficiary.email)
         humanized_offer_id = humanize(offer.id)
 
-        num_queries = 2
+        num_queries = 1  # select collective offer template
 
-        with testing.assert_num_queries(num_queries):
-            client.get(f"/collective//offers-template/{humanized_offer_id}")
+        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + num_queries):
+            client.get(f"/collective/offers-template/{humanized_offer_id}")
