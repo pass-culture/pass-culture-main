@@ -10,6 +10,7 @@ import {
   CollectiveStockResponseModel,
   CreateCollectiveStockPayload,
   CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
 } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { client } from 'repository/pcapi/pcapiClient'
@@ -154,6 +155,12 @@ export const getCollectiveOffer = async (
   offerId: string
 ): Promise<CollectiveOfferResponseModel> => {
   return client.get(`/collective/offers/${offerId}`)
+}
+
+export const getCollectiveOfferTemplate = async (
+  offerId: string
+): Promise<CollectiveOfferTemplateResponseModel> => {
+  return client.get(`/collective/offers-template/${offerId}`)
 }
 
 //
