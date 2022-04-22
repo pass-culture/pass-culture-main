@@ -474,7 +474,7 @@ class FulfillBeneficiaryDataTest:
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
-        user = fulfill_beneficiary_data(user, "deposit_source", None)
+        user = fulfill_beneficiary_data(user, "deposit_source", EligibilityType.AGE18, None)
 
         # then
         assert isinstance(user, User)
@@ -486,7 +486,7 @@ class FulfillBeneficiaryDataTest:
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
-        user = fulfill_beneficiary_data(user, "deposit_source", 2)
+        user = fulfill_beneficiary_data(user, "deposit_source", EligibilityType.AGE18, 2)
 
         # then
         assert isinstance(user, User)

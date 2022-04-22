@@ -30,6 +30,7 @@ from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.payments.api import create_deposit
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import EligibilityType
 from pcapi.domain.booking_recap import booking_recap_history
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
@@ -2615,7 +2616,7 @@ def test_get_deposit_booking():
         previous_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
         db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
-    create_deposit(user, "test")
+    create_deposit(user, "test", EligibilityType.AGE18)
 
     current_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
     current_deposit_booking_2 = bookings_factories.IndividualBookingFactory(individualBooking__user=user)

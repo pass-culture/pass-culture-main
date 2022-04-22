@@ -127,7 +127,7 @@ class SQLFunctionsTest:
             bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=18)
             db.session.execute("ALTER TABLE booking ENABLE TRIGGER booking_update;")
 
-        payments_api.create_deposit(user, "test")
+        payments_api.create_deposit(user, "test", user_models.EligibilityType.AGE18)
 
         bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, amount=10)
         bookings_factories.IndividualBookingFactory(individualBooking__user=user, amount=1)

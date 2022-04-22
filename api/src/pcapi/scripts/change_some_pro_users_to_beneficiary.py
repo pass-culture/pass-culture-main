@@ -10,7 +10,7 @@ def change_pro_users_to_beneficiary(pro_users_ids: list[int]) -> None:
         user.add_beneficiary_role()
         user.remove_pro_role()
         user.needsToFillCulturalSurvey = True
-        deposit = payments_api.create_deposit(user, "public")
+        deposit = payments_api.create_deposit(user, "public", users_models.EligibilityType.AGE18)
         repository.save(user, deposit)
         user_offerer = offerers_models.UserOfferer.query.filter_by(user=user).all()
         repository.delete(*user_offerer)
