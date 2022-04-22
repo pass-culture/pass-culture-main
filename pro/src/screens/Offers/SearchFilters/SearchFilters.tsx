@@ -1,8 +1,6 @@
-import cn from 'classnames'
 import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
-import React, { useCallback } from 'react'
-import { Link } from 'react-router-dom'
+import React, { MouseEventHandler, useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
@@ -19,6 +17,8 @@ import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
 
 import styles from './SearchFilters.module.scss'
@@ -34,7 +34,7 @@ interface ISearchFiltersProps {
       | ((previousFilters: TSearchFilters) => TSearchFilters)
   ) => void
   disableAllFilters: boolean
-  resetFilters: () => void
+  resetFilters: MouseEventHandler<HTMLAnchorElement>
   venues: Option[]
   categories: Option[]
   audience: Audience
@@ -126,7 +126,9 @@ const SearchFilters = ({
     audience === Audience.INDIVIDUAL
       ? 'Rechercher par nom d’offre ou par ISBN'
       : 'Rechercher par nom d’offre'
-
+  const resetFilterButtonProps = !hasSearchFilters(selectedFilters)
+    ? { ariaCurrent: 'page', isDisabled: true }
+    : {}
   return (
     <>
       {offerer && (
@@ -200,25 +202,19 @@ const SearchFilters = ({
             todayDate={getToday()}
           />
         </div>
-        {hasSearchFilters(selectedFilters) ? (
-          <Link
-            className={styles['reset-filters-link']}
+        <div className={styles['reset-filters']}>
+          <ButtonLink
+            Icon={ResetIcon}
+            {...resetFilterButtonProps}
             onClick={resetFilters}
             to={`/offres${
               audience === Audience.COLLECTIVE ? '/collectives' : ''
             }`}
+            variant={ButtonVariant.TERNARY}
           >
-            <ResetIcon className={styles['reset-filters-link-icon']} />
             Réinitialiser les filtres
-          </Link>
-        ) : (
-          <span
-            className={cn(styles['reset-filters-link'], styles['disabled'])}
-          >
-            <ResetIcon className={styles['reset-filters-link-icon']} />
-            Réinitialiser les filtres
-          </span>
-        )}
+          </ButtonLink>
+        </div>
         <div className={styles['search-separator']}>
           <div className={styles['separator']} />
           <button

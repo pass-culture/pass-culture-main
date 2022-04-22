@@ -14,37 +14,7 @@
   }
 }
 
-.reset-filters-link {
-  @include highlight();
-  display: flex;
-  align-items: center;
+.reset-filters {
   margin-top: rem(36px);
-  justify-content: end;
-
-  color: $primary;
-  line-height: rem(22px);
-
-  &-icon {
-    margin-right: rem(5px);
-    fill: $primary;
-  }
-
-  &:hover,
-  &:focus {
-    text-decoration: underline;
-  }
-
-  &.disabled {
-    color: $grey-dark;
-
-    .reset-filters-link-icon {
-      fill: $grey-dark;
-    }
-
-    &:hover,
-    &:focus {
-      cursor: auto;
-      text-decoration: none;
-    }
-  }
+  text-align: right;
 }

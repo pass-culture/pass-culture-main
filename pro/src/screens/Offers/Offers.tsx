@@ -121,10 +121,10 @@ const Offers = ({
     setAreAllOffersSelected(currentValue => !currentValue)
   }, [])
 
-  const resetFilters = useCallback(() => {
+  const resetFilters = () => {
     setOfferer(null)
     setSearchFilters({ ...DEFAULT_SEARCH_FILTERS })
-  }, [setSearchFilters, setOfferer])
+  }
 
   const numberOfPages = Math.ceil(offers.length / NUMBER_OF_OFFERS_PER_PAGE)
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
