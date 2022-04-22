@@ -23,6 +23,7 @@ import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
+import OfferEducationalStockTemplateEdition from 'routes/OfferEducationalStockTemplateEdition'
 import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
 import SignUpValidation from 'routes/SignUpValidation'
@@ -225,6 +226,13 @@ const routes = [
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition',
     title: 'Edition d’un stock d’une offre scolaire',
+  },
+  {
+    component: OfferEducationalStockTemplateEdition,
+    exact: true,
+    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/stocks/edition',
+    title: 'Edition d’un stock d’une offre scolaire',
+    featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: LostPassword,
