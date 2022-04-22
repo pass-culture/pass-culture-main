@@ -79,6 +79,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       stockId: stock.id,
       values,
       initialValues,
+      enableIndividualAndCollectiveSeparation,
     })
     const offerResponse = await getGetOfferAdapter(
       enableIndividualAndCollectiveSeparation
