@@ -10,7 +10,6 @@ from pcapi.core.payments.models import CustomReimbursementRule
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 from pcapi.core.payments.models import GrantedDeposit
-from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -28,15 +27,15 @@ def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.date
 def get_granted_deposit(
     beneficiary: users_models.User,
     eligibility: users_models.EligibilityType,
-    user_age_at_registration: int,
+    age_at_registration: Optional[int] = None,
     version: Optional[int] = None,
 ) -> Optional[GrantedDeposit]:
     if eligibility == users_models.EligibilityType.UNDERAGE:
-        if user_age_at_registration not in constants.ELIGIBILITY_UNDERAGE_RANGE:
+        if age_at_registration not in constants.ELIGIBILITY_UNDERAGE_RANGE:
             raise exceptions.UserNotGrantable("User is not eligible for underage deposit")
 
         return GrantedDeposit(
-            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[user_age_at_registration],
+            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_UNDERAGE_BY_AGE[age_at_registration],
             expiration_date=_compute_eighteenth_birthday(beneficiary.dateOfBirth),  # type: ignore [arg-type]
             type=DepositType.GRANT_15_17,
             version=1,
@@ -59,19 +58,17 @@ def create_deposit(
     beneficiary: users_models.User,
     deposit_source: str,
     eligibility: Optional[users_models.EligibilityType] = users_models.EligibilityType.AGE18,
-    version: int = None,
+    version: Optional[int] = None,
     age_at_registration: Optional[int] = None,
 ) -> Deposit:
     """Create a new deposit for the user if there is no deposit yet.
 
     The ``version`` argument MUST NOT be used outside (very specific) tests.
     """
-    if age_at_registration is None:
-        age_at_registration = users_api.get_user_age_at_registration(beneficiary)
     granted_deposit = get_granted_deposit(
         beneficiary,
         eligibility,  # type: ignore [arg-type]
-        user_age_at_registration=age_at_registration,  # type: ignore [arg-type]
+        age_at_registration=age_at_registration,
         version=version,
     )
 
