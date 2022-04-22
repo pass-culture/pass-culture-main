@@ -15,18 +15,20 @@ import {
   OfferEducationalStockFormValues,
   patchIsOfferActiveAdapter,
   CollectiveStockResponseModel,
+  StockResponse,
+  extractInitialStockValues,
 } from 'core/OfferEducational'
+import {
+  getEducationalStockAdapter,
+  patchShadowStockAdapter,
+  patchShadowStockIntoEducationalStockAdapter,
+} from 'core/OfferEducational/adapters'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getCollectiveStockAdapter } from './adapters/getCollectiveStockAdapter'
-import { getEducationalStockAdapter } from './adapters/getEducationalStockAdapter'
 import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
-import patchShadowStockAdapter from './adapters/patchShadowStockAdapter'
-import patchShadowStockIntoEducationalStockAdapter from './adapters/patchShadowStockIntoEducationalStockAdapter'
-import { StockResponse } from './types'
-import { extractInitialStockValues } from './utils/extractInitialStockValues'
 
 const getAdapter = (
   offer: GetStockOfferSuccessPayload,

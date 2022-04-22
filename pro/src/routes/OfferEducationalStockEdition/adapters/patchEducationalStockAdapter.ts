@@ -4,10 +4,9 @@ import {
   hasStatusCode,
   OfferEducationalStockFormValues,
   StockPayload,
+  StockResponse,
 } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { StockResponse } from '../types'
 
 type Params = {
   offer: GetStockOfferSuccessPayload

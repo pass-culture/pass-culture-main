@@ -1,13 +1,13 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
   createStockDataPayload,
   GetStockOfferSuccessPayload,
   hasStatusCode,
   OfferEducationalStockFormValues,
   StockPayload,
-} from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { StockResponse } from '../types'
+  StockResponse,
+} from '..'
 
 type Params = {
   offer: GetStockOfferSuccessPayload
@@ -33,7 +33,7 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const patchShadowStockIntoEducationalStockAdapter: PatchShadowStockIntoEducationalStockAdapter =
+export const patchShadowStockIntoEducationalStockAdapter: PatchShadowStockIntoEducationalStockAdapter =
   async ({ offer, stockId, values }: Params) => {
     // We send the whole stock to create a new one in db
     const patchStockPayload: StockPayload = createStockDataPayload(
@@ -44,7 +44,10 @@ const patchShadowStockIntoEducationalStockAdapter: PatchShadowStockIntoEducation
     try {
       const stock = (await pcapi.transformShadowStockIntoEducationalStock(
         stockId,
-        { ...patchStockPayload, offerId: offer.id }
+        {
+          ...patchStockPayload,
+          offerId: offer.id,
+        }
       )) as StockResponse
       return {
         isOk: true,
@@ -59,5 +62,3 @@ const patchShadowStockIntoEducationalStockAdapter: PatchShadowStockIntoEducation
       }
     }
   }
-
-export default patchShadowStockIntoEducationalStockAdapter
