@@ -148,3 +148,14 @@ export enum EducationalOfferType {
   SHOWCASE = 'SHOWCASE',
   CLASSIC = 'CLASSIC',
 }
+
+export type CollectiveStockResponseModel = {
+  id: string
+  beginningDatetime?: string
+  bookingLimitDatetime?: string
+  price: number
+  numberOfTickets?: number
+  isEducationalStockEditable?: boolean
+  educationalPriceDetail?: string
+  stockId?: string
+}
