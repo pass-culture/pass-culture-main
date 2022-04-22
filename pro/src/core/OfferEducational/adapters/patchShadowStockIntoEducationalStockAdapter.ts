@@ -13,6 +13,7 @@ type Params = {
   offer: GetStockOfferSuccessPayload
   stockId: string
   values: OfferEducationalStockFormValues
+  enableIndividualAndCollectiveSeparation: boolean
 }
 
 type PatchShadowStockIntoEducationalStockAdapter = Adapter<
@@ -34,7 +35,12 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
 }
 
 export const patchShadowStockIntoEducationalStockAdapter: PatchShadowStockIntoEducationalStockAdapter =
-  async ({ offer, stockId, values }: Params) => {
+  async ({
+    offer,
+    stockId,
+    values,
+    enableIndividualAndCollectiveSeparation,
+  }: Params) => {
     // We send the whole stock to create a new one in db
     const patchStockPayload: StockPayload = createStockDataPayload(
       values,
@@ -46,7 +52,9 @@ export const patchShadowStockIntoEducationalStockAdapter: PatchShadowStockIntoEd
         stockId,
         {
           ...patchStockPayload,
-          offerId: offer.id,
+          offerId: enableIndividualAndCollectiveSeparation
+            ? offer.offerId || ''
+            : offer.id,
         }
       )) as StockResponse
       return {
