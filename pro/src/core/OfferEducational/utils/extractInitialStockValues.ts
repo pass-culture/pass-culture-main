@@ -6,10 +6,10 @@ import {
 } from 'core/OfferEducational'
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { StockResponse } from '../types'
+import { CollectiveStockResponseModel, StockResponse } from '../types'
 
 export const extractInitialStockValues = (
-  stock: StockResponse | null,
+  stock: StockResponse | CollectiveStockResponseModel | null,
   offer: GetStockOfferSuccessPayload
 ): OfferEducationalStockFormValues => {
   if (!stock) {
