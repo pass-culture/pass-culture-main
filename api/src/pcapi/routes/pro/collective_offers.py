@@ -10,6 +10,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -178,3 +179,42 @@ def create_collective_offer_template_from_collective_offer(
         )
 
     return collective_offers_serialize.CollectiveOfferTemplateResponseIdModel.from_orm(collective_offer_template)
+
+
+@private_api.route("/collective/offers-template/<offer_id>/", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=201,
+    on_error_statuses=[400, 403, 404],
+    api=blueprint.pro_private_schema,
+    response_model=collective_offers_serialize.EditCollectiveOfferTemplateResponseModel,
+)
+def edit_collective_offer_template(
+    offer_id: str, body: collective_offers_serialize.EditCollectiveOfferTemplateBodyModel
+) -> collective_offers_serialize.EditCollectiveOfferTemplateResponseModel:
+    dehumanized_offer_id = dehumanize_or_raise(offer_id)
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        collective_offer_template = offers_api.update_collective_offer_template(
+            dehumanized_offer_id,
+            body.dict(
+                exclude_unset=True,
+                by_alias=True,
+            ),
+        )
+
+    except educational_exceptions.CollectiveOfferNotFound:
+        raise ApiErrors(
+            {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"},
+            status_code=404,
+        )
+    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
+        raise ApiErrors({"code": "INVALID_SUBCATEGORY_FOR_COLLECTIVE_OFFER"}, 400)
+
+    return collective_offers_serialize.EditCollectiveOfferTemplateResponseModel.from_orm(collective_offer_template)

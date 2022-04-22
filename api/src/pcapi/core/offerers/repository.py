@@ -6,6 +6,7 @@ import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
@@ -224,6 +225,18 @@ def get_by_collective_offer_id(collective_offer_id: int) -> models.Offerer:
         models.Offerer.query.join(models.Venue)
         .join(CollectiveOffer)
         .filter(CollectiveOffer.id == collective_offer_id)
+        .one_or_none()
+    )
+    if not offerer:
+        raise exceptions.CannotFindOffererForOfferId()
+    return offerer
+
+
+def get_by_collective_offer_template_id(collective_offer_template_id: int) -> models.Offerer:
+    offerer = (
+        models.Offerer.query.join(models.Venue)
+        .join(CollectiveOfferTemplate)
+        .filter(CollectiveOfferTemplate.id == collective_offer_template_id)
         .one_or_none()
     )
     if not offerer:

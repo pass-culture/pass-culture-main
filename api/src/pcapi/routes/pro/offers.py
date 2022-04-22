@@ -234,7 +234,10 @@ def edit_educational_offer(
 
         offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
         offer_is_showcase = offer.extraData.get("isShowcase")  # type: ignore [union-attr]
-        offers_api.update_collective_offer(offer.id, offer_is_showcase, body.dict(exclude_unset=True))  # type: ignore [arg-type]
+        try:
+            offers_api.update_collective_offer(offer.id, offer_is_showcase, body.dict(exclude_unset=True))  # type: ignore [arg-type]
+        except educational_exceptions.CollectiveOfferNotFound:
+            pass
 
         offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
 

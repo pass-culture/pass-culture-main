@@ -363,25 +363,9 @@ def update_educational_offer(  # type: ignore [return]
     )
 
 
-def update_collective_offer(
-    offer_id: str,
-    is_offer_showcase: bool,
-    new_values: dict,
-) -> None:
-    offer_to_update = (
-        educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.offerId == offer_id
-        ).first()
-        if is_offer_showcase
-        else educational_models.CollectiveOffer.query.filter(
-            educational_models.CollectiveOffer.offerId == offer_id
-        ).first()
-    )
-
-    if offer_to_update is None:
-        # FIXME (MathildeDuboille - 2022-03-07): raise an error once all data has been migrated (PC-13427)
-        return
-
+def _update_offer_attributes(
+    offer_to_update: Union[CollectiveOffer, CollectiveOfferTemplate], new_values: dict
+) -> list[str]:
     validation.check_validation_status(offer_to_update)
     # This variable is meant for Adage mailing
     updated_fields = []
@@ -409,7 +393,28 @@ def update_collective_offer(
 
         setattr(offer_to_update, key, value)
 
-    db.session.add(offer_to_update)
+    return updated_fields
+
+
+def update_collective_offer(
+    offer_id: int,
+    is_offer_showcase: bool,
+    new_values: dict,
+) -> None:
+    offer_to_update = (
+        educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.offerId == offer_id
+        ).first()
+        if is_offer_showcase
+        else educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.offerId == offer_id
+        ).first()
+    )
+
+    if offer_to_update is None:
+        return
+
+    updated_fields = _update_offer_attributes(offer_to_update, new_values)
     db.session.commit()
 
     if is_offer_showcase:
@@ -422,6 +427,26 @@ def update_collective_offer(
             offer_to_update.id,
             updated_fields,
         )
+
+    return
+
+
+def update_collective_offer_template(collective_offer_template_id: int, new_values: dict) -> CollectiveOfferTemplate:
+    offer_to_update = CollectiveOfferTemplate.query.get(collective_offer_template_id)
+
+    if offer_to_update is None:
+        raise educational_exceptions.CollectiveOfferTemplateNotFound()
+
+    updated_fields = _update_offer_attributes(offer_to_update, new_values)
+    db.session.commit()
+
+    search.async_index_collective_offer_template_ids([offer_to_update.id])
+    educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
+        offer_to_update.id,
+        updated_fields,
+    )
+
+    return offer_to_update
 
 
 def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]

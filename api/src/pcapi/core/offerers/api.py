@@ -18,6 +18,7 @@ from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
     send_offerer_attachment_validation_email_to_pro,
 )
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
@@ -462,3 +463,7 @@ def get_eligible_for_search_venues(max_venues: typing.Optional[int] = None) -> t
 
 def get_offerer_by_collective_offer_id(collective_offer_id: int) -> Offerer:
     return get_by_collective_offer_id(collective_offer_id)
+
+
+def get_offerer_by_collective_offer_template_id(collective_offer_id: int) -> Offerer:
+    return offerers_repository.get_by_collective_offer_template_id(collective_offer_id)

@@ -1,5 +1,6 @@
 from datetime import datetime
 import enum
+from typing import Any
 from typing import Optional
 from typing import Union
 
@@ -355,3 +356,66 @@ class CollectiveOfferTemplateResponseIdModel(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+
+
+class CollectiveOfferPartialExtraDataBodyModel(BaseModel):
+    students: Optional[list[str]]
+    offerVenue: Optional[CollectiveOfferExtraDataOfferVenueBodyModel]
+    contactEmail: Optional[str]
+    contactPhone: Optional[str]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class EditCollectiveOfferTemplateBodyModel(BaseModel):
+    booking_email: Optional[str]
+    description: Optional[str]
+    name: Optional[str]
+    extra_data: Optional[CollectiveOfferPartialExtraDataBodyModel]
+    duration_minutes: Optional[int]
+    audio_disability_compliant: Optional[bool]
+    mental_disability_compliant: Optional[bool]
+    motor_disability_compliant: Optional[bool]
+    visual_disability_compliant: Optional[bool]
+    subcategoryId: Optional[SubcategoryIdEnum]
+
+    @validator("name", allow_reuse=True)
+    def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+        assert name is not None and name.strip() != ""
+        check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class EditCollectiveOfferTemplateResponseModel(GetCollectiveOfferTemplateResponseModel):
+    extraData: Any
+    isEducational: bool
+    isBooked: bool
+    stocks: list[Any]
+
+    @classmethod
+    def from_orm(cls, collective_offer_template: CollectiveOfferTemplate) -> "EditCollectiveOfferTemplateResponseModel":
+        collective_offer_template.nonHumanizedId = collective_offer_template.id
+        # FIXME (cgaunet, 2022-04-22): Once frontend is new collective model only, we can handle
+        # students and other extraData separately
+        collective_offer_template.extraData = {
+            "students": [student.value for student in collective_offer_template.students],
+            "contactEmail": collective_offer_template.contactEmail,
+            "contactPhone": collective_offer_template.contactPhone,
+            "offerVenue": {
+                "venueId": collective_offer_template.offerVenue["venueId"],
+                "otherAddress": collective_offer_template.offerVenue["otherAddress"],
+                "addressType": collective_offer_template.offerVenue["addressType"],
+            },
+            "isShowcase": True,
+        }
+        collective_offer_template.isEducational = True
+        collective_offer_template.isBooked = False
+        collective_offer_template.stocks = []
+
+        return super().from_orm(collective_offer_template)
