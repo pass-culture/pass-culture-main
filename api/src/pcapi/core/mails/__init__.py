@@ -30,17 +30,4 @@ def send(
     )
     backend = import_string(get_email_backend(send_with_sendinblue))
     result = backend().send_mail(recipients=recipients, data=data)
-    _save_email(result)
     return result.successful
-
-
-def _save_email(result: models.MailResult):  # type: ignore [no-untyped-def]
-    """Save email to the database with its status"""
-    email = models.Email(
-        content=result.sent_data,
-        status=models.EmailStatus.SENT if result.successful else models.EmailStatus.ERROR,
-    )
-    # FIXME (dbaty, 2020-02-08): avoid import loop. Again. Yes, it's on my todo list.
-    from pcapi.repository import repository
-
-    repository.save(email)
