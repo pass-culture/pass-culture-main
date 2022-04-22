@@ -103,9 +103,12 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
+    const patchOfferId = enableIndividualAndCollectiveSeparation
+      ? offer?.offerId || ''
+      : offerId
     const { isOk, message } = await patchIsOfferActiveAdapter({
       isActive,
-      offerId,
+      offerId: patchOfferId,
     })
 
     if (!isOk) {
@@ -117,7 +120,12 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const cancelActiveBookings = async () => {
-    const { isOk, message } = await cancelActiveBookingsAdapter({ offerId })
+    const patchOfferId = enableIndividualAndCollectiveSeparation
+      ? offer?.offerId || ''
+      : offerId
+    const { isOk, message } = await cancelActiveBookingsAdapter({
+      offerId: patchOfferId,
+    })
 
     if (!isOk) {
       return notify.error(message)
