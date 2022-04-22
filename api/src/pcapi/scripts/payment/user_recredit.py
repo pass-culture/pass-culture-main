@@ -1,16 +1,15 @@
 from datetime import datetime
 import logging
-import typing
 
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.fraud import models as fraud_models
 from pcapi.core.mails.transactional.users.recredit_to_underage_beneficiary import (
     send_recredit_email_to_underage_beneficiary,
 )
 from pcapi.core.payments import models as payments_models
 import pcapi.core.payments.conf as deposit_conf
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -22,31 +21,10 @@ logger = logging.getLogger(__name__)
 RECREDIT_BATCH_SIZE = 1000
 
 
-def _get_first_created_fraud_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
-    user_identity_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-    ]
-    if not user_identity_fraud_checks:
-        return None
-    return min(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated)
-
-
 def has_celebrated_birthday_since_registration(user: users_models.User) -> bool:
-    first_fraud_check = _get_first_created_fraud_check(user)
-    if first_fraud_check is None:
+    first_registration_datetime = subscription_api.get_first_registration_date(user)
+    if first_registration_datetime is None:
         return False
-
-    if first_fraud_check.resultContent:
-        try:
-            first_registration_datetime = first_fraud_check.source_data().get_registration_datetime()  # type: ignore [union-attr]
-            if first_registration_datetime is None:
-                return False
-        except ValueError:  # This will happen for older Educonnect fraud checks that do not have registration date in their content
-            first_registration_datetime = first_fraud_check.dateCreated
-    else:
-        first_registration_datetime = first_fraud_check.dateCreated
 
     return first_registration_datetime.date() < user.latest_birthday
 
