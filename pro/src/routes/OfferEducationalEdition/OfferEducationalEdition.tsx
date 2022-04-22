@@ -65,9 +65,12 @@ const OfferEducationalEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
+    const patchOfferId = enableIndividualAndCollectiveSeparation
+      ? (offer as CollectiveOffer).offerId || ''
+      : offerId
     const { isOk, message } = await patchIsOfferActiveAdapter({
       isActive,
-      offerId,
+      offerId: patchOfferId,
     })
 
     if (!isOk) {
@@ -79,7 +82,12 @@ const OfferEducationalEdition = (): JSX.Element => {
   }
 
   const cancelActiveBookings = async () => {
-    const { isOk, message } = await cancelActiveBookingsAdapter({ offerId })
+    const patchOfferId = enableIndividualAndCollectiveSeparation
+      ? (offer as CollectiveOffer).offerId || ''
+      : offerId
+    const { isOk, message } = await cancelActiveBookingsAdapter({
+      offerId: patchOfferId,
+    })
 
     if (!isOk) {
       return notify.error(message)
