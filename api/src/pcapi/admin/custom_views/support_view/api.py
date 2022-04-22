@@ -90,7 +90,7 @@ def on_admin_review(review: fraud_models.BeneficiaryFraudReview, user: users_mod
         else:
             eligibility = users_models.EligibilityType[data["eligibility"]]
         try:
-            subscription_api.activate_beneficiary_for_eligibility(user, fraud_check, eligibility)
+            subscription_api.activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)
             flask.flash(f"L'utilisateur a bien été activé en tant que bénéficiaire '{eligibility.value}'", "success")
 
         except subscription_exceptions.InvalidEligibilityTypeException:
