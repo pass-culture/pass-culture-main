@@ -18,7 +18,7 @@ def get_last_user_profiling_fraud_check(user: users_models.User) -> Optional[mod
     )
 
 
-def get_identity_fraud_checks(
+def get_identity_fraud_checks_for_eligibility(
     user: users_models.User, eligibilityType: users_models.EligibilityType
 ) -> list[models.BeneficiaryFraudCheck]:
     return models.BeneficiaryFraudCheck.query.filter(
