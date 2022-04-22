@@ -1,10 +1,3 @@
-import {
-  GetOfferVenueResponseModel,
-  OfferAddressType,
-  OfferStatus,
-  StudentLevels,
-} from 'api/v1/gen'
-
 export type TSearchFilters = {
   nameOrIsbn: string
   offererId: string
@@ -53,42 +46,4 @@ export type Offer = {
 export type Option = {
   id: string
   displayName: string
-}
-
-export type CollectiveOfferResponseModel = {
-  bookingEmail?: string | null
-  dateCreated: Date
-  description?: string | null
-  durationMinutes?: number | null
-  students: StudentLevels[]
-  offerVenue: {
-    addressType: OfferAddressType
-    otherAddress: string
-    venueId: string
-  }
-  offerId?: string | null
-  contactEmail: string
-  contactPhone: string
-  hasBookingLimitDatetimesPassed: boolean
-  id: string
-  isActive: boolean
-  isBookable: boolean
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  nonHumanizedId: number
-  visualDisabilityCompliant: boolean
-  name: string
-  collectiveStock: {
-    id: string
-    isBooked: boolean
-  }
-  subcategoryId: string
-  venue: GetOfferVenueResponseModel
-  venueId: string
-  status: OfferStatus
-}
-
-export type CollectiveOffer = CollectiveOfferResponseModel & {
-  isBooked: boolean
 }
