@@ -220,6 +220,7 @@ const routes = [
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/edition',
     title: 'Edition d’une offre scolaire',
+    featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: OfferEducationalStockEdition,
