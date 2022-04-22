@@ -1,8 +1,5 @@
-import { OfferStatus } from 'custom_types/offer'
+import { OfferStatus } from 'api/v1/gen'
 
 export const isOfferDisabled = (status: OfferStatus): boolean => {
-  return [
-    OfferStatus.OFFER_STATUS_REJECTED,
-    OfferStatus.OFFER_STATUS_PENDING,
-  ].includes(status)
+  return [OfferStatus.REJECTED, OfferStatus.PENDING].includes(status)
 }
