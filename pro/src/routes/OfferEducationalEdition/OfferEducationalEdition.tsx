@@ -14,6 +14,8 @@ import {
   patchIsOfferActiveAdapter,
   cancelActiveBookingsAdapter,
   CollectiveOffer,
+  CollectiveOfferTemplate,
+  extractOfferIdAndOfferTypeFromRouteParams,
 } from 'core/OfferEducational'
 import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -22,6 +24,7 @@ import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
 import getCollectiveOfferAdapter from './adapters/getCollectiveOfferAdapter'
+import getCollectiveOfferTemplateAdapter from './adapters/getCollectiveOfferTemplateAdapter'
 import getOfferAdapter from './adapters/getOfferAdapter'
 import patchOfferAdapter from './adapters/patchOfferAdapter'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
@@ -32,7 +35,9 @@ type AsyncScreenProps = Pick<
 >
 
 const OfferEducationalEdition = (): JSX.Element => {
-  const { offerId } = useParams<{ offerId: string }>()
+  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
+  const { offerId, isShowcase } =
+    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const history = useHistory()
   const enableIndividualAndCollectiveSeparation = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
@@ -42,7 +47,9 @@ const OfferEducationalEdition = (): JSX.Element => {
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
-  const [offer, setOffer] = useState<Offer | CollectiveOffer>()
+  const [offer, setOffer] = useState<
+    Offer | CollectiveOffer | CollectiveOfferTemplate
+  >()
 
   const notify = useNotification()
 
@@ -103,6 +110,7 @@ const OfferEducationalEdition = (): JSX.Element => {
         | AdapterFailure<null>
         | AdapterSuccess<Offer>
         | AdapterSuccess<CollectiveOffer>
+        | AdapterSuccess<CollectiveOfferTemplate>
     ) => {
       if (!offerResponse.isOk) {
         return notify.error(offerResponse.message)
@@ -173,9 +181,13 @@ const OfferEducationalEdition = (): JSX.Element => {
           | AdapterFailure<null>
           | AdapterSuccess<Offer>
           | AdapterSuccess<CollectiveOffer>
+          | AdapterSuccess<CollectiveOfferTemplate>
 
         if (enableIndividualAndCollectiveSeparation) {
-          offerResponse = await getCollectiveOfferAdapter(offerId)
+          const getOfferAdapter = isShowcase
+            ? getCollectiveOfferTemplateAdapter
+            : getCollectiveOfferAdapter
+          offerResponse = await getOfferAdapter(offerId)
         } else {
           offerResponse = await getOfferAdapter(offerId)
           if (offerResponse.isOk && !offerResponse.payload.isEducational) {
@@ -194,13 +206,14 @@ const OfferEducationalEdition = (): JSX.Element => {
     loadData,
     history,
     enableIndividualAndCollectiveSeparation,
+    isShowcase,
   ])
 
   return (
     <OfferEducationalLayout
       activeStep={OfferBreadcrumbStep.DETAILS}
       isCreatingOffer={false}
-      offerId={offerId}
+      offerId={offerIdFromParams}
       title="Éditer une offre"
     >
       {isReady && screenProps ? (

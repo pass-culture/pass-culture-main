@@ -3,6 +3,7 @@ import {
   IOfferEducationalFormValues,
   PARTICIPANTS,
   CollectiveOffer,
+  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { Offer } from 'custom_types/offer'
 
@@ -19,11 +20,11 @@ const computeDurationString = (
 }
 
 const offerIsCollectiveOffer = (
-  offer: Offer | CollectiveOffer
-): offer is CollectiveOffer => 'students' in offer
+  offer: Offer | CollectiveOffer | CollectiveOfferTemplate
+): offer is CollectiveOffer | CollectiveOfferTemplate => 'students' in offer
 
 export const computeInitialValuesFromOffer = (
-  offer: Offer | CollectiveOffer,
+  offer: Offer | CollectiveOffer | CollectiveOfferTemplate,
   category: string,
   subCategory: string
 ): Omit<IOfferEducationalFormValues, 'offererId' | 'venueId'> => {

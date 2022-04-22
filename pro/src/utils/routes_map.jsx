@@ -215,6 +215,12 @@ const routes = [
     title: 'Edition d’une offre scolaire',
   },
   {
+    component: OfferEducationalEdition,
+    exact: true,
+    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/edition',
+    title: 'Edition d’une offre scolaire',
+  },
+  {
     component: OfferEducationalStockEdition,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition',
