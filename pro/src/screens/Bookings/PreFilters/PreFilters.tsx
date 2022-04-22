@@ -4,9 +4,12 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
-import { TPreFilters } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
 import { GetBookingsCSVFileAdapter } from 'core/Bookings'
+import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import FilterByOfferType from 'new_components/FilterByOfferType'
+import { Button } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
@@ -22,6 +25,7 @@ export interface IPreFiltersProps {
   isTableLoading: boolean
   wereBookingsRequested: boolean
   isLocalLoading: boolean
+  resetPreFilters: () => void
   venues: { id: string; displayName: string }[]
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
 }
@@ -35,6 +39,7 @@ const PreFilters = ({
   isTableLoading,
   wereBookingsRequested,
   isLocalLoading,
+  resetPreFilters,
   venues,
   getBookingsCSVFileAdapter,
 }: IPreFiltersProps): JSX.Element => {
@@ -42,15 +47,26 @@ const PreFilters = ({
   const separateIndividualAndCollectiveOffers = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
-  const [selectedPreFilters, setSelectedPreFilters] = useState({
+  const [selectedPreFilters, setSelectedPreFilters] = useState<TPreFilters>({
     ...appliedPreFilters,
   })
-  const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
+  const [isDownloadingCSV, setIsDownloadingCSV] = useState<boolean>(false)
 
   useEffect(
     () => setSelectedPreFilters({ ...appliedPreFilters }),
     [appliedPreFilters]
   )
+
+  const [hasPreFilters, setHasPreFilters] = useState<boolean>(false)
+  useEffect(() => {
+    let key: keyof TPreFilters
+    let hasFilters = false
+    for (key in selectedPreFilters) {
+      if (selectedPreFilters[key] !== DEFAULT_PRE_FILTERS[key])
+        hasFilters = true
+    }
+    setHasPreFilters(hasFilters)
+  }, [selectedPreFilters])
 
   const updateSelectedFilters = useCallback(
     updatedFilter => {
@@ -158,6 +174,16 @@ const PreFilters = ({
               />
             </div>
           )}
+        </div>
+        <div className="reset-filters">
+          <Button
+            Icon={ResetIcon}
+            disabled={!hasPreFilters}
+            onClick={resetPreFilters}
+            variant={ButtonVariant.TERNARY}
+          >
+            Réinitialiser les filtres
+          </Button>
         </div>
         <div className="button-group">
           <span className="button-group-separator" />
