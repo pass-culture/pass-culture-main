@@ -237,26 +237,4 @@
   .loading-spinner {
     margin-top: rem(70px);
   }
-
-  .reset-filters-link {
-    @include body-important();
-
-    color: $primary;
-    line-height: rem(22px);
-
-    &:hover,
-    &:focus {
-      text-decoration: underline;
-    }
-
-    &.disabled {
-      color: $grey-dark;
-
-      &:hover,
-      &:focus {
-        cursor: auto;
-        text-decoration: none;
-      }
-    }
-  }
 }

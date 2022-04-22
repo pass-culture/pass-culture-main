@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import React from 'react'
+import React, { MouseEventHandler } from 'react'
 import { Link } from 'react-router-dom'
 
 import styles from './Button.module.scss'
@@ -10,6 +10,7 @@ interface IButtonProps extends SharedButtonProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   isDisabled?: boolean
+  onClick?: MouseEventHandler<HTMLAnchorElement>
 }
 
 const ButtonLink = ({
@@ -17,6 +18,7 @@ const ButtonLink = ({
   children,
   Icon,
   isDisabled = false,
+  onClick,
   variant = ButtonVariant.TERNARY,
   to,
   ...linkAttrs
@@ -30,19 +32,27 @@ const ButtonLink = ({
     className
   )
 
-  return isDisabled ? (
-    // eslint-disable-next-line
-    <a className={classNames} aria-disabled>
-      {Icon && <Icon className={styles['button-icon']} />}
-      {children}
-    </a>
-  ) : isExternal ? (
-    <a className={classNames} href={to} {...linkAttrs}>
+  return isExternal ? (
+    <a
+      className={classNames}
+      href={to}
+      onClick={e => {
+        isDisabled ? e.preventDefault() : onClick?.(e)
+      }}
+      {...linkAttrs}
+      {...(isDisabled ? { 'aria-disabled': true } : {})}
+    >
       {Icon && <Icon className={styles['button-icon']} />}
       {children}
     </a>
   ) : (
-    <Link className={classNames} to={to} {...linkAttrs}>
+    <Link
+      className={classNames}
+      onClick={e => (isDisabled ? e.preventDefault() : onClick?.(e))}
+      to={to}
+      {...linkAttrs}
+      {...(isDisabled ? { 'aria-disabled': true } : {})}
+    >
       {Icon && <Icon className={styles['button-icon']} />}
       {children}
     </Link>

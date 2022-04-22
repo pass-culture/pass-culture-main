@@ -993,7 +993,7 @@ describe('route CollectiveOffers', () => {
         undefined
       )
 
-      fireEvent.click(screen.getByText('Réinitialiser les filtres'))
+      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
       expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(3)
       expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
         3,
