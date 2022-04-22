@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
@@ -8,6 +9,7 @@ import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   getStockOfferAdapter,
+  getStockCollectiveOfferAdapter,
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
@@ -37,8 +39,16 @@ const getAdapter = (
   return patchEducationalStockAdapter
 }
 
+const getGetOfferAdapter = (enableIndividualAndCollectiveSeparation: boolean) =>
+  enableIndividualAndCollectiveSeparation
+    ? getStockCollectiveOfferAdapter
+    : getStockOfferAdapter
+
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
+  const enableIndividualAndCollectiveSeparation = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
@@ -66,7 +76,9 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       values,
       initialValues,
     })
-    const offerResponse = await getStockOfferAdapter(offerId)
+    const offerResponse = await getGetOfferAdapter(
+      enableIndividualAndCollectiveSeparation
+    )(offerId)
     setOffer(offerResponse.payload)
 
     if (!stockResponse.isOk) {
@@ -116,8 +128,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
+        const getOfferAdapter = getGetOfferAdapter(
+          enableIndividualAndCollectiveSeparation
+        )
         const [offerResponse, stockResponse] = await Promise.all([
-          getStockOfferAdapter(offerId),
+          getOfferAdapter(offerId),
           getEducationalStockAdapter(offerId),
         ])
         if (!offerResponse.isOk) {
@@ -149,7 +164,13 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       }
       loadStockAndOffer()
     }
-  }, [offerId, isReady, notify, history])
+  }, [
+    offerId,
+    isReady,
+    notify,
+    history,
+    enableIndividualAndCollectiveSeparation,
+  ])
 
   return (
     <OfferEducationalLayout
