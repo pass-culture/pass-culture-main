@@ -31,7 +31,7 @@ const MiniAppTest = () => (
 
 const renderRouteLeavingGuard = async (
   props: IRouteLeavingGuardProps,
-  history: History<unknown>
+  history: History
 ) => {
   act(() => {
     render(

@@ -10,7 +10,7 @@ const useLogNavigation = (): LocationListener | void => {
   const history = useHistory()
   const location = useLocation()
   useEffect(() => {
-    const unlisten = history.listen((nextLocation: Location<unknown>) => {
+    const unlisten = history.listen((nextLocation: Location) => {
       if (location.pathname !== nextLocation.pathname) {
         analytics.logPageView(nextLocation.pathname)
       }
