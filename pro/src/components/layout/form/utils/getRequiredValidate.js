@@ -1,4 +1,4 @@
-import { createValidateRequiredField } from 'react-final-form-utils'
+import { createValidateRequiredField } from 'utils/react-final-form'
 
 const createValidateRequiredBooleanField = errorMessage => {
   return value => {
