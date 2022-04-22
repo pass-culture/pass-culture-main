@@ -18,7 +18,7 @@ import useOfferStockEditionURL from '../../../../hooks/useOfferStockEditionURL'
 const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
 
-  const editionOfferLink = useOfferEditionURL(isEducational, id)
+  const editionOfferLink = useOfferEditionURL(isEducational, id, isShowcase)
   const editionStockLink = useOfferStockEditionURL(isEducational, id)
 
   function handleOnChangeSelected() {
