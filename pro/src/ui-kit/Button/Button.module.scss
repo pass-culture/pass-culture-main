@@ -46,6 +46,10 @@
       background-color: $primary-disabled;
       border-color: $primary-disabled;
     }
+    &:disabled .button-icon,
+    &.button-disabled .button-icon {
+      fill: $grey-medium;
+    }
   }
 
   &-secondary {
@@ -66,6 +70,10 @@
       border-color: $primary-disabled;
       color: $primary-disabled;
     }
+    &:disabled .button-icon,
+    &.button-disabled .button-icon {
+      fill: $grey-medium;
+    }
   }
 
   &-ternary {
@@ -83,6 +91,10 @@
     &.button-disabled {
       color: $grey-medium;
       text-decoration: none;
+    }
+    &:disabled .button-icon,
+    &.button-disabled .button-icon {
+      fill: $grey-medium;
     }
   }
 }
