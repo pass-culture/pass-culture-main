@@ -1,4 +1,4 @@
-import { removeWhitespaces } from 'react-final-form-utils'
+import { removeWhitespaces } from 'utils/string'
 
 export const SIRET = 'siret'
 export const SIREN = 'siren'

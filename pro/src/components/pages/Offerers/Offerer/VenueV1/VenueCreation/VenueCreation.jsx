@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { useHistory, useParams } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -19,6 +18,7 @@ import {
   getVenueLabels,
   getVenueTypes,
 } from 'repository/pcapi/pcapi'
+import { getCanSubmit, parseSubmitErrors } from 'utils/react-final-form'
 import { sortByLabel } from 'utils/strings'
 
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
@@ -188,7 +188,14 @@ const VenueCreation = () => {
 
   const onHandleRender = formProps => {
     const readOnly = false
-    const canSubmit = getCanSubmit(formProps)
+    const canSubmit = getCanSubmit({
+      isLoading: formProps.isLoading,
+      dirtySinceLastSubmit: formProps.dirtySinceLastSubmit,
+      hasSubmitErrors: formProps.hasSubmitErrors,
+      hasValidationErrors: formProps.hasValidationErrors,
+      pristine: formProps.pristine,
+    })
+
     const { form, handleSubmit, values } = formProps
     const {
       isLocationFrozen: formIsLocationFrozen,
