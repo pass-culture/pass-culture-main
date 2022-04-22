@@ -1,4 +1,4 @@
-import { CollectiveOffer } from 'core/Offers/types'
+import { CollectiveOffer } from 'core/OfferEducational/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 type IPayloadFailure = null
