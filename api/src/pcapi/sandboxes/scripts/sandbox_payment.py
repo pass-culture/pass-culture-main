@@ -10,6 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 import pcapi.core.payments.api as payments_api
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import EligibilityType
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.model_creators.generic_creators import create_stock
 from pcapi.model_creators.generic_creators import create_venue
@@ -33,11 +34,11 @@ def save_users_with_deposits() -> typing.Tuple[users_factories.UserFactory, ...]
     user3 = users_factories.BeneficiaryGrant18Factory(email="user3@test.com")
     user4 = users_factories.BeneficiaryGrant18Factory(email="user4@test.com")
     user5 = users_factories.BeneficiaryGrant18Factory(email="user5@test.com")
-    deposit1 = payments_api.create_deposit(user1, "sandbox")
-    deposit2 = payments_api.create_deposit(user2, "sandbox")
-    deposit3 = payments_api.create_deposit(user3, "sandbox")
-    deposit4 = payments_api.create_deposit(user4, "sandbox")
-    deposit5 = payments_api.create_deposit(user5, "sandbox")
+    deposit1 = payments_api.create_deposit(user1, "sandbox", EligibilityType.AGE18)
+    deposit2 = payments_api.create_deposit(user2, "sandbox", EligibilityType.AGE18)
+    deposit3 = payments_api.create_deposit(user3, "sandbox", EligibilityType.AGE18)
+    deposit4 = payments_api.create_deposit(user4, "sandbox", EligibilityType.AGE18)
+    deposit5 = payments_api.create_deposit(user5, "sandbox", EligibilityType.AGE18)
     repository.save(deposit1, deposit2, deposit3, deposit4, deposit5)
     logger.info("created 5 users with deposits")
     return user1, user2, user3, user4, user5

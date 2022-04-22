@@ -20,6 +20,7 @@ from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 import pcapi.core.users.api as users_api
 from pcapi.core.users.external import update_external_user
+from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 
@@ -262,7 +263,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
             model.add_beneficiary_role()
 
             deposit_version = int(form.depositVersion.data) if not settings.IS_PROD else None
-            users_api.fulfill_beneficiary_data(model, "pass-culture-admin", deposit_version)
+            users_api.fulfill_beneficiary_data(model, "pass-culture-admin", EligibilityType.AGE18, deposit_version)
 
         super().on_model_change(form, model, is_created)
 

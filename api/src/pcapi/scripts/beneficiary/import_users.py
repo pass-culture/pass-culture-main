@@ -34,7 +34,7 @@ def _create_beneficiary(row: dict, role: Optional[UserRole]) -> User:
         remote_updates=False,
     )
     if role == UserRole.BENEFICIARY:
-        deposit = payments_api.create_deposit(user, "import_users (csv)")
+        deposit = payments_api.create_deposit(user, "import_users (csv)", eligibility=EligibilityType.AGE18)
         repository.save(deposit)
         user.add_beneficiary_role()
     elif role == UserRole.UNDERAGE_BENEFICIARY:

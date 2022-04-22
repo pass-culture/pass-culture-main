@@ -303,10 +303,12 @@ def fulfill_account_password(user: User) -> User:
     return user
 
 
-def fulfill_beneficiary_data(user: User, deposit_source: str, deposit_version: int = None) -> User:
+def fulfill_beneficiary_data(
+    user: User, deposit_source: str, eligibility: EligibilityType, deposit_version: int = None
+) -> User:
     _generate_random_password(user)
 
-    deposit = payment_api.create_deposit(user, deposit_source, version=deposit_version)
+    deposit = payment_api.create_deposit(user, deposit_source, eligibility=eligibility, version=deposit_version)
     user.deposits = [deposit]
 
     return user
@@ -607,7 +609,7 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
 
     if settings.IS_INTEGRATION:
         new_pro_user.add_beneficiary_role()
-        deposit = payment_api.create_deposit(new_pro_user, "integration_signup")
+        deposit = payment_api.create_deposit(new_pro_user, "integration_signup", EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
     return new_pro_user
