@@ -336,7 +336,7 @@ class DepositGrantFactory(BaseFactory):
             else models.EligibilityType.AGE18
         )
         granted_deposit = payments_api.get_granted_deposit(
-            kwargs["user"], eligibility, user_age_at_registration=age, version=kwargs.get("version")
+            kwargs["user"], eligibility, age_at_registration=age, version=kwargs.get("version")
         )
 
         if "version" not in kwargs:

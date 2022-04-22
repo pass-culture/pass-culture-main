@@ -414,9 +414,24 @@ class CreateBeneficiaryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        user = subscription_api.activate_beneficiary(user, "test")
+        user = subscription_api.activate_beneficiary(user)
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
+
+    def test_with_eligible_underage_user(self):
+        user = users_factories.UserFactory(roles=[], dateOfBirth=datetime.utcnow() - relativedelta(years=16, months=4))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.utcnow()),
+        )
+        user = subscription_api.activate_beneficiary(user)
+        assert user.has_underage_beneficiary_role
+        assert len(user.deposits) == 1
+        assert user.has_active_deposit
+        assert user.deposit.amount == 30
 
     def test_apps_flyer_called(self):
         apps_flyer_data = {"apps_flyer": {"user": "some-user-id", "platform": "ANDROID"}}
@@ -433,7 +448,7 @@ class CreateBeneficiaryTest:
 
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-            user = subscription_api.activate_beneficiary(user, "test")
+            user = subscription_api.activate_beneficiary(user)
 
             assert posted.last_request.json() == expected
 
@@ -445,7 +460,7 @@ class CreateBeneficiaryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        subscription_api.activate_beneficiary(user, "test")
+        subscription_api.activate_beneficiary(user)
 
         assert len(batch_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1

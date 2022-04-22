@@ -54,7 +54,7 @@ class CreateDepositTest:
                 resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.utcnow()),
             )
 
-        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility)
+        deposit = api.create_deposit(beneficiary, "created by test", beneficiary.eligibility, age_at_registration=age)
 
         assert deposit.type == DepositType.GRANT_15_17
         assert deposit.version == 1
