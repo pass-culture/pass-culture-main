@@ -57,7 +57,7 @@ def get_granted_deposit(
 def create_deposit(
     beneficiary: users_models.User,
     deposit_source: str,
-    eligibility: Optional[users_models.EligibilityType] = users_models.EligibilityType.AGE18,
+    eligibility: users_models.EligibilityType,
     version: Optional[int] = None,
     age_at_registration: Optional[int] = None,
 ) -> Deposit:
@@ -67,7 +67,7 @@ def create_deposit(
     """
     granted_deposit = get_granted_deposit(
         beneficiary,
-        eligibility,  # type: ignore [arg-type]
+        eligibility,
         age_at_registration=age_at_registration,
         version=version,
     )

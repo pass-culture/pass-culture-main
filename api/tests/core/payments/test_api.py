@@ -35,7 +35,7 @@ class CreateDepositTest:
             dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=2)
         )
 
-        deposit = api.create_deposit(beneficiary, "created by test", version=1)
+        deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18, version=1)
 
         assert deposit.version == 1
         assert deposit.amount == Decimal(500)
@@ -67,7 +67,7 @@ class CreateDepositTest:
             dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=4)
         )
 
-        deposit = api.create_deposit(beneficiary, "created by test")
+        deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
         assert deposit.type == DepositType.GRANT_18
         assert deposit.version == 2
@@ -82,7 +82,7 @@ class CreateDepositTest:
         )
 
         # When
-        deposit = api.create_deposit(beneficiary, "integration_signup")
+        deposit = api.create_deposit(beneficiary, "integration_signup", users_models.EligibilityType.AGE18)
 
         # Then
         assert deposit.type == DepositType.GRANT_18
@@ -96,7 +96,7 @@ class CreateDepositTest:
         with freeze_time(datetime.utcnow() - relativedelta(years=3)):
             beneficiary = users_factories.UnderageBeneficiaryFactory(dateOfBirth=birth_date)
 
-        api.create_deposit(beneficiary, "created by test")
+        api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
         assert beneficiary.deposit.type == DepositType.GRANT_18
         assert len(beneficiary.deposits) == 2
@@ -110,7 +110,7 @@ class CreateDepositTest:
 
         # When
         with pytest.raises(exceptions.DepositTypeAlreadyGrantedException) as error:
-            api.create_deposit(beneficiary, "created by test")
+            api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18)
 
         # Then
         assert Deposit.query.filter(Deposit.userId == beneficiary.id).count() == 1
