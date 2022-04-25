@@ -8,6 +8,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers import models as offers_models
@@ -182,7 +183,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         city=venue.city,
         confirmationDate=collective_booking.confirmationDate,
         confirmationLimitDate=collective_booking.confirmationLimitDate,
-        contact=_get_educational_offer_contact(offer),
+        contact=_get_collective_offer_contact(offer),
         coordinates={
             "latitude": venue.latitude,
             "longitude": venue.longitude,
@@ -190,14 +191,14 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         creationDate=collective_booking.dateCreated,
         description=offer.description,
         durationMinutes=offer.durationMinutes,
-        expirationDate=collective_booking.expirationDate,
+        expirationDate=None,
         id=collective_booking.id,
-        isDigital=offer.isDigital,
+        isDigital=False,
         venueName=venue.name,
         name=offer.name,
         numberOfTickets=stock.numberOfTickets,
-        participants=offer.extraData.get("students", []) if offer.extraData is not None else [],
-        priceDetail=stock.educationalPriceDetail,
+        participants=[student.value for student in offer.students],
+        priceDetail=stock.priceDetail,
         postalCode=venue.postalCode,
         price=stock.price,
         quantity=1,
@@ -214,7 +215,7 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         subcategoryLabel=offer.subcategory.app_label,
         totalAmount=stock.price,
         url=offer_app_link(offer),
-        withdrawalDetails=offer.withdrawalDetails,
+        withdrawalDetails=None,
     )
 
 
@@ -259,18 +260,31 @@ def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
     )
 
 
-def _get_educational_offer_address(offer: offers_models.Offer) -> str:
-    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
-    if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:  # type: ignore [union-attr]
-        return default_address
+def _get_collective_offer_contact(offer: CollectiveOffer) -> Contact:
 
-    address_type = offer.extraData["offerVenue"]["addressType"]  # type: ignore [call-overload]
+    return Contact(
+        email=offer.contactEmail,
+        phone=offer.contactPhone,
+    )
+
+
+def _get_educational_offer_address(offer: Union[CollectiveOffer, offers_models.Offer]) -> str:
+    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
+
+    if isinstance(offer, CollectiveOffer):
+        offer_venue = offer.offerVenue
+    else:
+        if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:  # type: ignore [union-attr]
+            return default_address
+        offer_venue = offer.extraData["offerVenue"]  # type: ignore [call-overload]
+
+    address_type = offer_venue["addressType"]
 
     if address_type == "offererVenue":
         return default_address
 
     if address_type == "other":
-        return offer.extraData["offerVenue"]["otherAddress"]  # type: ignore [call-overload]
+        return offer_venue["otherAddress"]
 
     if address_type == "school":
         return "Dans l’établissement scolaire"

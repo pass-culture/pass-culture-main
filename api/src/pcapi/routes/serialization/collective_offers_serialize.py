@@ -295,7 +295,7 @@ class CollectiveOfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class CollectiveOfferExtraDataOfferVenueBodyModel(BaseModel):
+class CollectiveOfferVenueBodyModel(BaseModel):
     addressType: OfferAddressType
     otherAddress: str
     venueId: str
@@ -318,7 +318,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     students: list[StudentLevels]
-    offer_venue: CollectiveOfferExtraDataOfferVenueBodyModel
+    offer_venue: CollectiveOfferVenueBodyModel
     contact_email: str
     contact_phone: str
 
@@ -355,3 +355,29 @@ class CollectiveOfferTemplateResponseIdModel(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
+
+
+class PatchCollectiveOfferBodyModel(BaseModel):
+    bookingEmail: Optional[str]
+    description: Optional[str]
+    name: Optional[str]
+    students: Optional[list[StudentLevels]]
+    offerVenue: Optional[CollectiveOfferVenueBodyModel]
+    contactEmail: Optional[str]
+    contactPhone: Optional[str]
+    durationMinutes: Optional[int]
+    audioDisabilityCompliant: Optional[bool]
+    mentalDisabilityCompliant: Optional[bool]
+    motorDisabilityCompliant: Optional[bool]
+    visualDisabilityCompliant: Optional[bool]
+    subcategoryId: Optional[SubcategoryIdEnum]
+
+    @validator("name", allow_reuse=True)
+    def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+        assert name is not None and name.strip() != ""
+        check_offer_name_length_is_valid(name)
+        return name
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
