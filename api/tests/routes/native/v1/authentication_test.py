@@ -7,6 +7,7 @@ from flask_jwt_extended.utils import create_refresh_token
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
@@ -28,7 +29,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_user_logs_in_and_refreshes_token(client):
-    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"])
 
     # Get the refresh and access token
@@ -67,7 +68,7 @@ def test_user_logs_in_and_refreshes_token(client):
 
 
 def test_user_logs_in_with_wrong_password(client):
-    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"])
 
     # signin with invalid password and ensures the result messsage is generic
@@ -78,7 +79,7 @@ def test_user_logs_in_with_wrong_password(client):
 
 
 def test_unknown_user_logs_in(client):
-    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
 
     # signin with invalid password and ensures the result messsage is generic
     response = client.post("/native/v1/signin", json=data)
@@ -253,7 +254,7 @@ def test_change_password_success(client):
 
     response = client.post(
         "/native/v1/change_password",
-        json={"currentPassword": users_factories.DEFAULT_PASSWORD, "newPassword": new_password},
+        json={"currentPassword": settings.TEST_DEFAULT_PASSWORD, "newPassword": new_password},
     )
 
     assert response.status_code == 204
@@ -278,13 +279,13 @@ def test_change_password_failures(client):
 
     response = client.post(
         "/native/v1/change_password",
-        json={"currentPassword": users_factories.DEFAULT_PASSWORD, "newPassword": "weak_password"},
+        json={"currentPassword": settings.TEST_DEFAULT_PASSWORD, "newPassword": "weak_password"},
     )
 
     assert response.status_code == 400
     assert response.json["code"] == "WEAK_PASSWORD"
     db.session.refresh(user)
-    assert user.password == crypto.hash_password(users_factories.DEFAULT_PASSWORD)
+    assert user.password == crypto.hash_password(settings.TEST_DEFAULT_PASSWORD)
 
 
 @patch("pcapi.core.users.repository.get_user_with_valid_token", return_value=None)
@@ -389,7 +390,7 @@ def test_validate_email_dms_orphan(execute_query, client):
 
 @freeze_time("2020-03-15")
 def test_refresh_token_route_updates_user_last_connection_date(client):
-    data = {"identifier": "user@test.com", "password": users_factories.DEFAULT_PASSWORD}
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     user = users_factories.UserFactory(
         email=data["identifier"], password=data["password"], lastConnectionDate=datetime(1990, 1, 1)
     )

@@ -25,7 +25,6 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.object_storage.testing as object_storage_testing
 import pcapi.core.search.testing as search_testing
 import pcapi.core.testing
-from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.install_database_extensions import install_database_extensions
 from pcapi.local_providers.install import install_local_providers
@@ -281,13 +280,13 @@ class TestClient:
         self.auth_header = {}
 
     def with_session_auth(self, email: str) -> "TestClient":
-        response = self.post("/users/signin", {"identifier": email, "password": users_factories.DEFAULT_PASSWORD})
+        response = self.post("/users/signin", {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD})
         assert response.status_code == 200
         return self
 
     def with_basic_auth(self, email: str) -> "TestClient":
         self.auth_header = {
-            "Authorization": _basic_auth_str(email, users_factories.DEFAULT_PASSWORD),
+            "Authorization": _basic_auth_str(email, settings.TEST_DEFAULT_PASSWORD),
         }
         return self
 

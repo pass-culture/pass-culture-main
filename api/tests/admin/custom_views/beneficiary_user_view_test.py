@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 import pytest
 from requests.auth import _basic_auth_str
 
+from pcapi import settings
 from pcapi.admin.custom_views.beneficiary_user_view import BeneficiaryUserView
 from pcapi.admin.custom_views.mixins.suspension_mixin import _allow_suspension_and_unsuspension
 from pcapi.core import testing
@@ -140,7 +141,7 @@ class BeneficiaryUserViewTest:
         # called, which in turn calls the `form_columns` property,
         # which expects to see an authenticated user.
         admin = users_factories.AdminFactory()
-        headers = {"Authorization": _basic_auth_str(admin.email, users_factories.DEFAULT_PASSWORD)}
+        headers = {"Authorization": _basic_auth_str(admin.email, settings.TEST_DEFAULT_PASSWORD)}
         with app.test_request_context(headers=headers):
             form_class = BeneficiaryUserView(User, db_session)
             form = form_class.get_create_form()
