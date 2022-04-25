@@ -32,6 +32,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_USER_PROFILING,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
+        FeatureToggle.ALLOW_ACCOUNT_REACTIVATION,
     )
 
     return serializers.SettingsResponse(
@@ -57,4 +58,5 @@ def get_settings() -> serializers.SettingsResponse:
         is_webapp_v2_enabled=True,
         object_storage_url=OBJECT_STORAGE_URL,
         pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
+        allow_account_reactivation=features[FeatureToggle.ALLOW_ACCOUNT_REACTIVATION],
     )

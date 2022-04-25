@@ -193,6 +193,7 @@ def test_public_api(client, app):
                         "isWebappV2Enabled": {"title": "Iswebappv2Enabled", "type": "boolean"},
                         "objectStorageUrl": {"title": "Objectstorageurl", "type": "string"},
                         "proDisableEventsQrcode": {"title": "Prodisableeventsqrcode", "type": "boolean"},
+                        "allowAccountReactivation": {"title": "Allowaccountreactivation", "type": "boolean"},
                     },
                     "required": [
                         "accountCreationMinimumAge",
@@ -211,6 +212,7 @@ def test_public_api(client, app):
                         "isWebappV2Enabled",
                         "objectStorageUrl",
                         "proDisableEventsQrcode",
+                        "allowAccountReactivation",
                     ],
                     "title": "SettingsResponse",
                     "type": "object",
