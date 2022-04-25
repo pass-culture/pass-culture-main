@@ -6,14 +6,16 @@ from pcapi.core.permissions import utils as perm_utils
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
+from .serialization import ListPermissionResponseModel
 from .serialization import ListRoleResponseModel
+from .serialization import Permission
 from .serialization import Role
 
 
 logger = logging.getLogger(__name__)
 
 
-@blueprint.backoffice_blueprint.route("/roles")
+@blueprint.backoffice_blueprint.route("roles", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 @spectree_serialize(
     response_model=ListRoleResponseModel,
@@ -23,3 +25,15 @@ logger = logging.getLogger(__name__)
 def list_roles() -> ListRoleResponseModel:
     roles = perm_api.list_roles()
     return ListRoleResponseModel(roles=[Role.from_orm(role) for role in roles])
+
+
+@blueprint.backoffice_blueprint.route("permissions", methods=["GET"])
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+@spectree_serialize(
+    response_model=ListPermissionResponseModel,
+    on_success_status=200,
+    api=blueprint.api,
+)
+def list_permissions() -> ListPermissionResponseModel:
+    permissions = perm_api.list_permissions()
+    return ListPermissionResponseModel(permissions=[Permission.from_orm(perm) for perm in permissions])
