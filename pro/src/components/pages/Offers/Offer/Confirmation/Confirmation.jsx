@@ -3,7 +3,7 @@ import React, { useCallback } from 'react'
 import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom'
 
-import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
+import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
