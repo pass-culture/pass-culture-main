@@ -769,6 +769,72 @@ class RunIntegrationTest:
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
 
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_dms_application_without_city_does_not_validate_profile(self, get_applications_with_details):
+        # instanciate user with validated phone number
+        user = users_factories.UserFactory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
+            city=None,
+        )
+        # Perform user profiling
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        get_applications_with_details.return_value = [
+            fixture.make_parsed_graphql_application(
+                email=user.email,
+                application_id=123,
+                state="accepte",
+            )
+        ]
+        dms_api.import_dms_users(procedure_id=6712558)
+
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
+        )
+
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_complete_dms_application_also_validates_profile(self, get_applications_with_details, client):
+        # instanciate user with validated phone number
+        user = users_factories.UserFactory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
+            city=None,
+        )
+        # Perform user profiling
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        get_applications_with_details.return_value = [
+            fixture.make_parsed_graphql_application(
+                email=user.email,
+                application_id=123,
+                state="accepte",
+                city="Strasbourg",
+            )
+        ]
+        dms_api.import_dms_users(procedure_id=6712558)
+
+        client.with_token(user.email)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json["nextSubscriptionStep"] == None
+        assert users_models.UserRole.BENEFICIARY in user.roles
+
 
 @pytest.mark.usefixtures("db_session")
 class GraphQLSourceProcessApplicationTest:
