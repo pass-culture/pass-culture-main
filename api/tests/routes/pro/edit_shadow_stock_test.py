@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 
+import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Stock
@@ -17,6 +18,7 @@ class Return200Test:
         stock = offers_factories.EducationalEventShadowStockFactory(
             educationalPriceDetail="Détail du prix",
         )
+        educational_factories.CollectiveOfferTemplateFactory(offerId=stock.offerId)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
@@ -41,6 +43,7 @@ class Return200Test:
         stock = offers_factories.EducationalEventShadowStockFactory(
             educationalPriceDetail="Détail du prix",
         )
+        educational_factories.CollectiveOfferTemplateFactory(offerId=stock.offerId)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
 
         # When
@@ -67,6 +70,7 @@ class Return403Test:
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
         )
+        educational_factories.CollectiveOfferTemplateFactory(offerId=stock.offerId)
 
         # When
         stock_edition_payload = {
@@ -90,6 +94,7 @@ class Return400Test:
             educationalPriceDetail="Détail du prix",
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        educational_factories.CollectiveOfferTemplateFactory(offerId=stock.offerId)
 
         # When
         stock_edition_payload = {
@@ -129,6 +134,7 @@ class Return400Test:
             },
         )
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=stock.offer.venue.managingOfferer)
+        educational_factories.CollectiveOfferTemplateFactory(offerId=stock.offerId)
 
         # When
         stock_edition_payload = {
