@@ -2,7 +2,6 @@ import uuid
 
 import markupsafe
 import wtforms.widgets as wtf_widgets
-import wtforms.widgets.html5 as wtf_html5_widgets
 
 
 class AutocompleteSelectWidget(wtf_widgets.Select):
@@ -75,7 +74,7 @@ class AutocompleteSelectWidget(wtf_widgets.Select):
         return markupsafe.Markup(html)  # pylint: disable=markupsafe-uncontrolled-string
 
 
-class DateInputWithConstraint(wtf_html5_widgets.DateInput):
+class DateInputWithConstraint(wtf_widgets.DateInput):
     def __init__(self, input_type=None, min_date=None, max_date=None):  # type: ignore [no-untyped-def]
         super().__init__(input_type=input_type)
         self.min_date = min_date
@@ -95,7 +94,7 @@ class SelectWithOptgroups(wtf_widgets.Select):
         kwargs.setdefault("id", field.id)
         if self.multiple:
             kwargs["multiple"] = True
-        if "required" not in kwargs and "required" in getattr(field, "flags", []):
+        if "required" not in kwargs and "required" in getattr(field, "flags", {}):
             kwargs["required"] = True
         if field.size:
             kwargs.setdefault("size", field.size)

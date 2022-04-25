@@ -26,8 +26,8 @@ from sqlalchemy import func
 import sqlalchemy.orm as sqla_orm
 from werkzeug import Response
 import wtforms
-from wtforms.fields.core import BooleanField
-from wtforms.fields.simple import HiddenField
+from wtforms.fields import BooleanField
+from wtforms.fields import HiddenField
 from wtforms.form import Form
 from wtforms.validators import InputRequired
 from wtforms.validators import ValidationError

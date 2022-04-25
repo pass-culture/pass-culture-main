@@ -1,4 +1,4 @@
-from wtforms.fields.core import StringField
+from wtforms.fields import StringField
 from wtforms.form import Form
 from wtforms.validators import DataRequired
 from wtforms.validators import Length
