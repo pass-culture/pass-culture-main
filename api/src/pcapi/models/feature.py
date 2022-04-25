@@ -77,6 +77,7 @@ class FeatureToggle(enum.Enum):
         "Inclure les anciens modèles de données pour le téléchargement des remboursements "
     )
     PRICE_BOOKINGS = "Active la valorisation des réservations"
+    PRO_DISABLE_EVENTS_QRCODE = "Active la possibilité de différencier le type d’envoi des billets sur une offre et le retrait du QR code sur la réservation"
     SHOW_INVOICES_ON_PRO_PORTAL = "Activer l'affichage des remboursements sur le portail pro"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
@@ -146,6 +147,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.OFFER_FORM_V3,
+    FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
 )
