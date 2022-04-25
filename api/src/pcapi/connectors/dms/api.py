@@ -149,6 +149,7 @@ def parse_beneficiary_information_graphql(
     activity = None
     address = None
     birth_date = None
+    city = None
     department = None
     id_piece_number = None
     phone = None
@@ -203,6 +204,8 @@ def parse_beneficiary_information_graphql(
                 parsing_errors["id_piece_number"] = value
             else:
                 id_piece_number = value
+        elif label in (dms_models.FieldLabel.CITY_FR.value, dms_models.FieldLabel.CITY_ET.value):
+            city = value
 
     if parsing_errors:
         raise subscription_exceptions.DMSParsingError(email, parsing_errors, "Error validating")
@@ -211,6 +214,7 @@ def parse_beneficiary_information_graphql(
         address=address,
         application_id=application_id,
         birth_date=birth_date,
+        city=city,
         civility=civility,
         department=department,
         email=email,
