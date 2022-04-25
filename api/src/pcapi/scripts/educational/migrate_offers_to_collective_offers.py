@@ -1,4 +1,4 @@
-import logging
+from datetime import timedelta
 import time
 from traceback import format_exc
 from typing import Optional
@@ -23,23 +23,19 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 
 # from pcapi.scripts.educational.migrate_offers_to_collective_offers import migrate; migrate()
 
-logger = logging.getLogger(__name__)
-
 
 def migrate(offer_ids_to_migrate: Optional[list[int]] = None) -> None:
     """Main entry point."""
     start = time.time()
     to_migrate = offer_ids_to_migrate or []
-    logger.info("Strating educational offers migration", extra={"script": "migrate_offers_to_collective_offers"})
+    print("Strating educational offers migration")
     _repaire_beginningdatetime()
-    logger.info("removing old collective objects", extra={"script": "migrate_offers_to_collective_offers"})
+    print("removing old collective objects")
     _clean_database(to_migrate=to_migrate)
-    logger.info("Data migration done", extra={"script": "migrate_offers_to_collective_offers"})
+    print("Data migration done")
     _migrate_offers(to_migrate=to_migrate)
-    logger.info("Educational offers migration done", extra={"script": "migrate_offers_to_collective_offers"})
-    msg = f"elapsed time: {time.time() - start} seconds"
-    print(msg)
-    logger.info(msg, extra={"script": "migrate_offers_to_collective_offers"})
+    print("Educational offers migration done")
+    print(f"elapsed time: {time.time() - start} seconds")
 
 
 def _clean_database(to_migrate: list[int]) -> None:
@@ -125,38 +121,29 @@ def _migrate_offers(to_migrate: list[int]) -> None:
 
             stock = _select_stock(offer.stocks)
             if not stock:
-                msg = f"Could not select a stock for Offer {offer.id}. This case should be managed manually"
-                print(msg)
-                logger.warning(msg, extra={"script": "migrate_offers_to_collective_offers"})
+                print(f"Could not select a stock for Offer {offer.id}. This case should be managed manually")
                 not_migrated.append(offer.id)
                 continue
 
             collective_offer = _create_collective_offer(offer, stock)
-
-            db.session.commit()
             if isinstance(collective_offer, CollectiveOfferTemplate):
                 templates_ids.append(collective_offer.id)
                 continue
 
             collective_stock = _create_collective_stock(stock, collective_offer)
-            db.session.commit()
             for booking in stock.bookings:
                 _create_collective_booking(booking, collective_stock)
 
-            db.session.commit()
             offers_ids.append(collective_offer.id)
         except KeyboardInterrupt:
-            logger.error("interrupetd by user", extra={"script": "migrate_offers_to_collective_offers"})
+            print("interrupetd by user")
             break
         except Exception:  # pylint: disable=broad-except
             trace = format_exc()
-            msg = f"Error while migrating Offer {offer.id} stack_trace: \n {trace}"
-            print(msg)
+            print(f"Error while migrating Offer {offer.id} stack_trace: \n {trace}")
             failed.append((offer.id, trace))
 
-            logger.error(msg, extra={"script": "migrate_offers_to_collective_offers"})
-
-    logger.info("indexing in search engine", extra={"script": "migrate_offers_to_collective_offers"})
+    print("indexing in search engine")
     search.async_index_collective_offer_template_ids(templates_ids)
     search.async_index_collective_offer_ids(offers_ids)
     print("not migrated:")
@@ -183,7 +170,7 @@ def _get_email(offer: models.Offer) -> str:
 
 
 def _create_collective_offer(
-    offer: models.Offer, stock: Optional[models.Stock]
+    offer: models.Offer, stock: models.Stock
 ) -> Union[CollectiveOffer, CollectiveOfferTemplate]:
     is_template = offer.extraData and offer.extraData.get("isShowcase", False)  # type: ignore [union-attr]
 
@@ -217,9 +204,10 @@ def _create_collective_offer(
         offerVenue=extra_data.get("offerVenue"),
         students=students,
     )
-    if is_template and stock is not None:
+    if is_template:
         collective_offer.priceDetail = stock.educationalPriceDetail  # type: ignore [attr-defined]
     db.session.add(collective_offer)
+    db.session.commit()
     return collective_offer  # type: ignore [return-value]
 
 
@@ -280,6 +268,7 @@ def _create_collective_stock(stock: models.Stock, collective_offer: CollectiveOf
     collective_stock = CollectiveStock(**attrs_mapping)
     collective_stock.numberOfTickets = number_of_tickets if number_of_tickets is not None else 0
     db.session.add(collective_stock)
+    db.session.commit()
     return collective_stock
 
 
@@ -288,29 +277,44 @@ def _create_collective_booking(booking: Booking, collective_stock: CollectiveSto
     common_attrs = [
         "dateCreated",
         "dateUsed",
-        "venue",
-        "offerer",
+        "venueId",
+        "offererId",
         "cancellationDate",
         "cancellationLimitDate",
         "reimbursementDate",
-        "educationalInstitution",
-        "educationalYear",
+        "educationalInstitutionId",
+        "educationalYearId",
         "confirmationDate",
         "confirmationLimitDate",
-        "educationalRedactor",
+        "educationalRedactorId",
     ]
     for attr_name in common_attrs:
         try:
             attr_value = getattr(booking, attr_name)
         except AttributeError:
-            attr_value = getattr(booking.educationalBooking, attr_name)
+            if getattr(booking, "educationalBooking", None):
+                attr_value = getattr(booking.educationalBooking, attr_name)
+            else:
+                # the two cases of incorect data
+                return
         attrs_mapping[attr_name] = attr_value
     attrs_mapping["status"] = getattr(CollectiveBookingStatus, booking.status.name)  # type: ignore [attr-defined]
     if booking.cancellationReason:
         attrs_mapping["cancellationReason"] = getattr(
             CollectiveBookingCancellationReasons, booking.cancellationReason.name  # type: ignore [attr-defined]
         )
+    if attrs_mapping["status"] == CollectiveBookingStatus.CANCELLED:
+        educational_booking = getattr(booking, "educationalBooking", None)
+        if educational_booking and educational_booking.status is not None:
+            if educational_booking.status.value == "REFUSED":
+                attrs_mapping["cancellationReason"] = CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE
+
+    # dirty fix for better data
+    if booking.cancellationLimitDate is None and booking.cancellationDate is not None:
+        attrs_mapping["cancellationLimitDate"] = booking.cancellationDate + timedelta(days=1)
+
     attrs_mapping["collectiveStock"] = collective_stock
     attrs_mapping["bookingId"] = booking.id
     collective_booking = CollectiveBooking(**attrs_mapping)
     db.session.add(collective_booking)
+    db.session.commit()
