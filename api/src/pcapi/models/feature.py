@@ -94,6 +94,7 @@ class FeatureToggle(enum.Enum):
         "Sépare la visualisation des offres et des remboursements sur le portail PRO"
     )
     OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
+    ALLOW_ACCOUNT_REACTIVATION = "Activer le nouveau parcours de réactivation de compte"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -150,6 +151,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
+    FeatureToggle.ALLOW_ACCOUNT_REACTIVATION,
 )
 
 
