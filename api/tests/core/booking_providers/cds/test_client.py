@@ -394,7 +394,7 @@ class CineDigitalServiceCancelBookingTest:
 
         # When
         try:
-            cine_digital_service.cancel_booking(["3107362853729", "0312079646868"], 5)
+            cine_digital_service.cancel_booking(["3107362853729", "0312079646868"])
         except cds_exceptions.CineDigitalServiceAPIException:
             assert False, "Should not raise exception"
 
@@ -414,7 +414,7 @@ class CineDigitalServiceCancelBookingTest:
         # When
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
             cine_digital_service.cancel_booking(
-                ["111111111111", "222222222222", "333333333333", "444444444444", "555555555555"], 5
+                ["111111111111", "222222222222", "333333333333", "444444444444", "555555555555"]
             )
         sep = "\n"
         assert (

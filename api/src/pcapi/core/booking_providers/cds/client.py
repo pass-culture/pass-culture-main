@@ -10,14 +10,14 @@ import pcapi.connectors.serialization.cine_digital_service_serializers as cds_se
 from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_PAYMENT_TYPE_CDS
 from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_TARIFF_LABEL_CDS
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
+from pcapi.core.booking_providers.models import BookingProviderClientAPI
 from pcapi.core.booking_providers.models import SeatCDS
 
 
-class CineDigitalServiceAPI:
-    def __init__(self, cinema_id: str, token: str, api_url: str):
-        self.token = token
-        self.api_url = api_url
-        self.cinema_id = cinema_id
+class CineDigitalServiceAPI(BookingProviderClientAPI):
+    def get_show_remaining_places(self, show_id: int) -> int:
+        show = self.get_show(show_id)
+        return show.internet_remaining_place
 
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
@@ -65,7 +65,7 @@ class CineDigitalServiceAPI:
         )
 
     def get_available_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> Optional[SeatCDS]:
-        seatmap = self._get_seatmap(show_id)
+        seatmap = self.get_seatmap(show_id)
         available_seats_index = [
             (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] % 10 == 1
         ]
@@ -75,7 +75,7 @@ class CineDigitalServiceAPI:
         return SeatCDS(best_seat, screen, seatmap)
 
     def get_available_duo_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[SeatCDS]:
-        seatmap = self._get_seatmap(show_id)
+        seatmap = self.get_seatmap(show_id)
         seatmap_center = ((seatmap.nb_row - 1) / 2.0, (seatmap.nb_col - 1) / 2.0)
 
         available_seats_index = [
@@ -101,7 +101,7 @@ class CineDigitalServiceAPI:
             SeatCDS(second_seat, screen, seatmap),
         ]
 
-    def _get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
+    def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
         return parse_obj_as(cds_serializers.SeatmapCDS, data)
 
@@ -118,7 +118,8 @@ class CineDigitalServiceAPI:
         index_min_distance = distances_to_center.index(min_distance)
         return seats_index[index_min_distance]
 
-    def cancel_booking(self, barcodes: list[str], paiement_type_id: int) -> None:
+    def cancel_booking(self, barcodes: list[str]) -> None:
+        paiement_type_id = self.get_payment_type().id
         cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes, paiementtypeid=paiement_type_id)
         api_response = put_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
 
@@ -128,3 +129,6 @@ class CineDigitalServiceAPI:
             raise cds_exceptions.CineDigitalServiceAPIException(
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
+
+    def create_booking(self) -> None:
+        raise NotImplementedError("Should be implemented in subclass (abstract method)")
