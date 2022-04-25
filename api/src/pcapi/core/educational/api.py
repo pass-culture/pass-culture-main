@@ -939,3 +939,25 @@ def create_collective_offer_template_from_collective_offer(
 def get_collective_offer_id_from_educational_stock(stock: Stock) -> int:
     collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)
     return collective_offer.id
+
+
+def edit_collective_offer_template_from_stock(stock: Stock, stock_data: dict) -> None:
+    if stock_data.get("educational_price_detail") is None:
+        return
+
+    collective_offer_template = CollectiveOfferTemplate.query.filter_by(offerId=stock.offerId).one_or_none()
+
+    if collective_offer_template is None:
+        raise exceptions.CollectiveOfferTemplateNotFound()
+
+    offer_validation.check_validation_status(collective_offer_template)
+
+    collective_offer_template.priceDetail = stock_data["educational_price_detail"]
+    db.session.add(stock)
+    db.session.commit()
+
+    logger.info(
+        "Collective offer template has been updated", extra={"collective_offer_template": collective_offer_template.id}
+    )
+
+    search.async_index_collective_offer_template_ids([collective_offer_template.id])
