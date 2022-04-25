@@ -48,10 +48,28 @@ class VenueBookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
         UniqueConstraint(
             "venueId",
             "bookingProviderId",
-            "idAtProvider",
             name="unique_venue_booking_provider",
         ),
     )
+
+
+class BookingProviderClientAPI:
+    def __init__(self, cinema_id: str, api_url: str, token: str):
+        self.token = token
+        self.api_url = api_url
+        self.cinema_id = cinema_id
+
+    def get_show_remaining_places(self, show_id: int) -> int:
+        raise NotImplementedError("Should be implemented in subclass (abstract method)")
+
+    def get_seatmap(self, show_id: int) -> list[list[int]]:
+        raise NotImplementedError("Should be implemented in subclass (abstract method)")
+
+    def cancel_booking(self, barcodes: list[str]) -> None:
+        raise NotImplementedError("Should be implemented in subclass (abstract method)")
+
+    def create_booking(self) -> None:
+        raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
 
 class SeatCDS:
