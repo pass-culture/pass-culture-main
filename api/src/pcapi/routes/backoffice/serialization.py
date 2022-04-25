@@ -24,3 +24,10 @@ class ListRoleResponseModel(BaseModel):
         orm_mode = True
 
     roles: list[Role]
+
+
+class ListPermissionResponseModel(BaseModel):
+    class Config:
+        orm_mode = True
+
+    permissions: list[Permission]
