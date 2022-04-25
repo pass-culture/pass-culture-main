@@ -67,6 +67,8 @@ class FieldLabel(enum.Enum):
     ADDRESS_FR = "Quelle est ton adresse de résidence"
     BIRTH_DATE_ET = "Quelle est ta date de naissance ?"
     BIRTH_DATE_FR = "Quelle est votre date de naissance"
+    CITY_FR = "Quelle est ta ville de résidence ?"
+    CITY_ET = "Quelle est ta ville de résidence ?"
     DEPARTMENT_ET = "Veuillez indiquer votre département"
     DEPARTMENT_FR = "Veuillez indiquer votre département"
     ID_PIECE_NUMBER_ET = "Quel est le numéro de la pièce que tu viens de saisir ?"

@@ -191,10 +191,10 @@ def validate_phone_number_and_activate_user(user: User, code: str) -> User:  # t
     subscription_api.activate_beneficiary_if_no_missing_step(user)
 
 
-def update_user_information_from_external_source(  # type: ignore [no-untyped-def]
+def update_user_information_from_external_source(
     user: User,
     data: common_fraud_models.IdentityCheckContent,
-    commit=False,
+    commit: bool = False,
 ) -> User:
     if isinstance(data, fraud_models.DMSContent):
         user.lastName = data.last_name
@@ -212,6 +212,8 @@ def update_user_information_from_external_source(  # type: ignore [no-untyped-de
             user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
         if not user.phoneNumber:
             user.phoneNumber = data.phone
+        if data.city:
+            user.city = data.city
 
     elif isinstance(data, fraud_models.JouveContent):
         if data.activity:
