@@ -264,7 +264,7 @@
     <tr>
         <td>Virement {{ cashflow.bankAccount.iban }}</td>
         <td class="cashflow_id">{{ cashflow.id }}</td>
-        <td class="cashflow_creation_date">{{ cashflow.creationDate.strftime("%d/%m/%Y") }}</td>
+        <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
         <td>{{ cashflow.amount|fr_currency }} €</td>
         <td> {{ invoice.businessUnit.name }}</td>
     </tr>
