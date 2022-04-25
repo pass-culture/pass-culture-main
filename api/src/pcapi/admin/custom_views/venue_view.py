@@ -19,8 +19,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import abort
 from wtforms import Form
-from wtforms.fields.core import BooleanField
-from wtforms.fields.simple import HiddenField
+from wtforms.fields import BooleanField
+from wtforms.fields import HiddenField
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search

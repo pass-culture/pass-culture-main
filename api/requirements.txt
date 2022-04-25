@@ -91,6 +91,6 @@ tzlocal<3.0.0
 weasyprint==54.0
 Werkzeug==2.0.3
 wheel==0.35.1
-WTForms==2.3.3
-WTForms-SQLAlchemy==0.2
+WTForms==3.0.1
+WTForms-SQLAlchemy==0.3
 XlsxWriter

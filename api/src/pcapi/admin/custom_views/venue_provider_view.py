@@ -7,7 +7,7 @@ from markupsafe import Markup
 from markupsafe import escape
 from wtforms import BooleanField
 from wtforms import Form
-from wtforms.fields.core import IntegerField
+from wtforms.fields import IntegerField
 from wtforms.form import BaseForm
 from wtforms.validators import Optional
 from wtforms_sqlalchemy.fields import QuerySelectField
