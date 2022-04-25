@@ -10,6 +10,7 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
@@ -141,6 +142,34 @@ def create_collective_offer(
         )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers/<offer_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def edit_collective_offer(
+    offer_id: str, body: collective_offers_serialize.PatchCollectiveOfferBodyModel
+) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        offers_api.update_collective_offer(
+            offer_id=dehumanized_id, is_offer_showcase=False, new_values=body.dict(exclude_unset=True)
+        )
+    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
+        raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
+    else:
+        offer = educational_api.get_collective_offer_by_id(dehumanized_id)
+        return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
 
 
 @private_api.route("/collective/offers-template/<offer_id>/", methods=["POST"])
