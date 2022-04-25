@@ -1820,7 +1820,7 @@ class GenerateInvoiceHtmlTest:
         )
         expected_invoice_html = expected_invoice_html.replace(
             '<td class="cashflow_creation_date">21/12/2021</td>',
-            f'<td class="cashflow_creation_date">{cashflows[0].creationDate.strftime("%d/%m/%Y")}</td>',
+            f'<td class="cashflow_creation_date">{invoice.date.strftime("%d/%m/%Y")}</td>',
         )
         expected_invoice_html = expected_invoice_html.replace(
             'content: "Relevé n°F220000001 du 30/01/2022";',
