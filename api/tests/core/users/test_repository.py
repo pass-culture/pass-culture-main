@@ -4,6 +4,7 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
+from pcapi import settings
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import exceptions
 from pcapi.core.users import factories as users_factories
@@ -43,21 +44,21 @@ class CheckUserAndCredentialsTest:
     def test_with_inactive_user(self):
         user = users_factories.UserFactory.build(isActive=False)
         with pytest.raises(exceptions.InvalidIdentifier):
-            repository.check_user_and_credentials(user, users_factories.DEFAULT_PASSWORD)
+            repository.check_user_and_credentials(user, settings.TEST_DEFAULT_PASSWORD)
 
     def test_user_pending_validation(self):
         user = users_factories.UserFactory.build(isActive=True, validationToken="123")
         with pytest.raises(exceptions.UnvalidatedAccount):
-            repository.check_user_and_credentials(user, users_factories.DEFAULT_PASSWORD)
+            repository.check_user_and_credentials(user, settings.TEST_DEFAULT_PASSWORD)
 
     def test_user_pending_email_validation(self):
         user = users_factories.UserFactory.build(isActive=True, isEmailValidated=False)
         with pytest.raises(exceptions.UnvalidatedAccount):
-            repository.check_user_and_credentials(user, users_factories.DEFAULT_PASSWORD)
+            repository.check_user_and_credentials(user, settings.TEST_DEFAULT_PASSWORD)
 
     def test_user_with_valid_password(self):
         user = users_factories.UserFactory.build(isActive=True)
-        repository.check_user_and_credentials(user, users_factories.DEFAULT_PASSWORD)
+        repository.check_user_and_credentials(user, settings.TEST_DEFAULT_PASSWORD)
 
 
 class GetNewlyEligibleUsersTest:

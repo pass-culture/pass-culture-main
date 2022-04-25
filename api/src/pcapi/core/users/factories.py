@@ -9,6 +9,7 @@ from dateutil.relativedelta import relativedelta
 import factory
 from factory.declarations import LazyAttribute
 
+from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.payments.api as payments_api
@@ -26,9 +27,6 @@ from pcapi.utils import crypto
 
 from . import constants
 from . import models
-
-
-DEFAULT_PASSWORD = "user@AZERTY123"
 
 
 class BeneficiaryImportStatusFactory(BaseFactory):
@@ -69,18 +67,18 @@ class UserFactory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
 
@@ -101,18 +99,18 @@ class AdminFactory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
 
@@ -138,22 +136,22 @@ class BeneficiaryGrant18Factory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
             kwargs["publicName"] = "%s %s" % (kwargs["firstName"], kwargs["lastName"])
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         if "publicName" not in kwargs and kwargs["firstName"] and kwargs["lastName"]:
             kwargs["publicName"] = "%s %s" % (kwargs["firstName"], kwargs["lastName"])
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
     @factory.post_generation
@@ -260,18 +258,18 @@ class ProFactory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._create(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
     @classmethod
     def _build(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        password = kwargs.get("password", DEFAULT_PASSWORD)
+        password = kwargs.get("password", settings.TEST_DEFAULT_PASSWORD)
         kwargs["password"] = crypto.hash_password(password)
         instance = super()._build(model_class, *args, **kwargs)
-        instance.clearTextPassword = DEFAULT_PASSWORD
+        instance.clearTextPassword = settings.TEST_DEFAULT_PASSWORD
         return instance
 
 

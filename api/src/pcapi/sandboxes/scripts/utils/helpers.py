@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pcapi.core.users import factories as users_factories
+from pcapi import settings
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
 from pcapi.routes.serialization import as_dict
@@ -54,7 +54,7 @@ def get_pro_helper(user):  # type: ignore [no-untyped-def]
         as_dict(user, includes=USER_INCLUDES),
         **{
             "resetPasswordToken": _get_reset_password_token(user),
-            "password": users_factories.DEFAULT_PASSWORD,
+            "password": settings.TEST_DEFAULT_PASSWORD,
             "validationToken": user.validationToken,
         },
     )
