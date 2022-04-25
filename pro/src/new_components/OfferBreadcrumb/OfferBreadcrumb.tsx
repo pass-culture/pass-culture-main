@@ -1,7 +1,9 @@
 import React from 'react'
 
-import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
-import useOfferStockEditionURL from 'components/hooks/useOfferStockEditionURL'
+import {
+  useOfferEditionURL,
+  useOfferStockEditionURL,
+} from 'components/hooks/useOfferEditionURL'
 import Breadcrumb, {
   BreadcrumbStyle,
 } from 'new_components/Breadcrumb/Breadcrumb'

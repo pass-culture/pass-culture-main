@@ -3,7 +3,7 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
-import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
+import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
