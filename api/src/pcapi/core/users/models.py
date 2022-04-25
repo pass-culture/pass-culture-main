@@ -159,6 +159,13 @@ class GenderEnum(enum.Enum):
     F: str = "Mme"
 
 
+class AccountState(enum.Enum):
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    SUSPENDED = "SUSPENDED"
+    DELETED = "DELETED"
+
+
 class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "user"
 
@@ -412,6 +419,28 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
         ):
             return self.suspension_history[-1].eventDate
         return None
+
+    @property
+    def account_state(self) -> AccountState:
+        if self.isActive:
+            return AccountState.ACTIVE
+
+        if self.suspension_history:
+            suspension_event = self.suspension_history[-1]
+
+            if suspension_event.eventType == SuspensionEventType.SUSPENDED:
+
+                # DELETED is a very specific suspension reason
+                if suspension_event.reasonCode == SuspensionReason.DELETED:
+                    return AccountState.DELETED
+
+                return AccountState.SUSPENDED
+
+        return AccountState.INACTIVE
+
+    @property
+    def is_account_deleted(self) -> bool:
+        return self.account_state == AccountState.DELETED
 
     @hybrid_property
     def is_beneficiary(self):

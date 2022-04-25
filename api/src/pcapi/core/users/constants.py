@@ -52,6 +52,7 @@ class SuspensionReason(Enum):
     FRAUD_USURPATION = "usurpating fraud"
     FRAUD_USURPATION_PRO = "usurpating PRO fraud"
     UPON_USER_REQUEST = "upon user request"
+    DELETED = "deleted"
 
 
 SUSPENSION_REASON_CHOICES = (
@@ -70,6 +71,7 @@ SUSPENSION_REASON_CHOICES = (
     (SuspensionReason.FRAUD_CREATION_PRO, "Fraude PRO création"),
     (SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE, "Structure définitivement fermée"),
     (SuspensionReason.CLOSED_STRUCTURE_TEMP, "Structure fermée provisoirement"),
+    (SuspensionReason.DELETED, "Compte supprimé"),
 )
 
 assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)

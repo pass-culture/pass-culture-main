@@ -19,6 +19,24 @@ def yesno(value: typing.Any) -> str:
     )
 
 
+def account_state_format(state: users_models.AccountState) -> str:
+    context = {
+        users_models.AccountState.ACTIVE: {"css_class": "success", "text": "Activé"},
+        users_models.AccountState.INACTIVE: {"css_class": "danger", "text": "Non activé"},
+        users_models.AccountState.SUSPENDED: {"css_class": "info", "text": "Suspendu"},
+        users_models.AccountState.DELETED: {"css_class": "warning", "text": "Supprimé"},
+    }
+
+    return _account_state_format(**context[state])
+
+
+def _account_state_format(css_class: str, text: str) -> str:
+    return Markup("""<span class="badge badge-{css_class}">{text}</span>""").format(
+        css_class=css_class,
+        text=text,
+    )
+
+
 SUBSCRIPTION_STATUS_FORMATS = {
     subscription_models.SubscriptionItemStatus.KO: {"css_class": "danger", "text": "KO"},
     subscription_models.SubscriptionItemStatus.NOT_APPLICABLE: {"css_class": "void", "text": "N/A"},

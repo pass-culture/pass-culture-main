@@ -132,9 +132,9 @@
             </tr>
             <tr>
                 <th scope="row">Compte actif</th>
-                <td>{{ model.isActive|yesno }}</td>
+                <td>{{ model.account_state|account_state_format }}</td>
             </tr>
-            {% if model.suspension_reason %}
+            {% if model.suspension_reason and not model.is_account_deleted %}
             <tr>
                 <th scope="row">L'utilisateur est suspendu</th>
                 <td>{{ model.suspension_reason|suspension_reason_format }}</td>
