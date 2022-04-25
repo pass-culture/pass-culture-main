@@ -30,6 +30,7 @@ class FeatureToggle(enum.Enum):
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING = "Désactiver la validation des noms et prénoms"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
+    ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 18 ans"
@@ -121,11 +122,13 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING,
+    FeatureToggle.ENABLE_CDS_IMPLEMENTATION,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
     FeatureToggle.ENABLE_ID_CHECK_RETENTION,
+    FeatureToggle.ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
     FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
@@ -138,10 +141,9 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
+    FeatureToggle.OFFER_FORM_V3,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
-    FeatureToggle.ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION,
-    FeatureToggle.OFFER_FORM_V3,
 )
 
 
