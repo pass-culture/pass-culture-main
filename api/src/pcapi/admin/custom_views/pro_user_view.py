@@ -8,9 +8,9 @@ from sqlalchemy.sql.expression import distinct
 from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import validators
+from wtforms.fields import Field
 from wtforms.fields import HiddenField
-from wtforms.fields.core import Field
-from wtforms.fields.core import StringField
+from wtforms.fields import StringField
 from wtforms.validators import DataRequired
 from wtforms.validators import ValidationError
 

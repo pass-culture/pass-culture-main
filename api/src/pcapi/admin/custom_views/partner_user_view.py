@@ -7,8 +7,8 @@ from sqlalchemy.sql.functions import func
 from wtforms import Form
 from wtforms import StringField
 from wtforms import validators
-from wtforms.fields.html5 import DateField
-from wtforms.fields.html5 import TelField
+from wtforms.fields import DateField
+from wtforms.fields import TelField
 from wtforms.form import BaseForm
 from wtforms.validators import DataRequired
 from wtforms.validators import Length

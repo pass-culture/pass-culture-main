@@ -8,8 +8,7 @@ import markupsafe
 import pytz
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import Forbidden
-import wtforms.fields.core as wtf_fields
-import wtforms.fields.html5 as wtf_html5_fields
+import wtforms.fields as wtf_fields
 import wtforms.validators as wtf_validators
 
 from pcapi.admin import fields
@@ -78,7 +77,7 @@ class AddForm(SecureForm):
             wtf_validators.NumberRange(0, 100, message="Le taux doit être compris entre %(min)s et %(max)s."),
         ],
     )
-    start_date = wtf_html5_fields.DateField(
+    start_date = wtf_fields.DateField(
         "Date de début d'application",
         description="Cette date ne peut pas être antérieure à demain.",
         validators=[wtf_validators.DataRequired()],
@@ -86,7 +85,7 @@ class AddForm(SecureForm):
             min_date=lambda _field: datetime.date.today() + datetime.timedelta(days=1)
         ),
     )
-    end_date = wtf_html5_fields.DateField(
+    end_date = wtf_fields.DateField(
         "Date de fin d'application (optionnelle)",
         validators=[wtf_validators.Optional()],
         widget=widgets.DateInputWithConstraint(
@@ -96,7 +95,7 @@ class AddForm(SecureForm):
 
 
 class EditForm(SecureForm):
-    end_date = wtf_html5_fields.DateField(
+    end_date = wtf_fields.DateField(
         "Date de fin d'application",
         validators=[wtf_validators.DataRequired()],
         widget=widgets.DateInputWithConstraint(
