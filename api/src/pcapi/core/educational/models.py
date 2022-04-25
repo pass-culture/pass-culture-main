@@ -18,6 +18,7 @@ from sqlalchemy.sql.sqltypes import Boolean
 from sqlalchemy.sql.sqltypes import Numeric
 
 from pcapi.core.bookings import exceptions as booking_exceptions
+from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions
 from pcapi.core.offers.models import Offer
 from pcapi.models import Model
@@ -176,6 +177,12 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
             .where(CollectiveStock.collectiveOfferId == cls.id)
             .where(CollectiveStock.hasBookingLimitDatetimePassed.is_(True))
         )
+
+    @property
+    def subcategory(self) -> subcategories.Subcategory:
+        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
+            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer {self.id}")
+        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @classmethod
     def create_from_offer(cls, offer: Offer) -> CollectiveOffer:

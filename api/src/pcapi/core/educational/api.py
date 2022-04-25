@@ -62,6 +62,7 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
+from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
@@ -569,7 +570,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
         return
 
     data = EducationalBookingEdition(
-        **serialize_educational_booking(active_collective_bookings).dict(),
+        **serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
     try:
@@ -906,6 +907,10 @@ def create_collective_offer(
         extra={"collectiveOfferTemplate": collective_offer.id, "offerId": offer_id},
     )
     return collective_offer
+
+
+def get_collective_offer_by_id(offer_id: int) -> CollectiveOffer:
+    return educational_repository.get_collective_offer_by_id(offer_id)
 
 
 def create_collective_offer_template_from_collective_offer(

@@ -364,19 +364,15 @@ def update_educational_offer(  # type: ignore [return]
 
 
 def update_collective_offer(
-    offer_id: str,
+    offer_id: int,
     is_offer_showcase: bool,
     new_values: dict,
+    legacy: bool = False,
 ) -> None:
-    offer_to_update = (
-        educational_models.CollectiveOfferTemplate.query.filter(
-            educational_models.CollectiveOfferTemplate.offerId == offer_id
-        ).first()
-        if is_offer_showcase
-        else educational_models.CollectiveOffer.query.filter(
-            educational_models.CollectiveOffer.offerId == offer_id
-        ).first()
-    )
+    cls = educational_models.CollectiveOfferTemplate if is_offer_showcase else educational_models.CollectiveOffer
+    id_column = cls.offerId if legacy else cls.id  # type: ignore [attr-defined]
+
+    offer_to_update = cls.query.filter(id_column == offer_id).first()  # type: ignore [attr-defined]
 
     if offer_to_update is None:
         # FIXME (MathildeDuboille - 2022-03-07): raise an error once all data has been migrated (PC-13427)
@@ -388,23 +384,29 @@ def update_collective_offer(
     for key, value in new_values.items():
         updated_fields.append(key)
 
-        # FIXME (MathildeDuboille - 2022-03-07): remove this "if" once ENABLE_NEW_COLLECTIVE_MODEL FF is enabled on production
-        if key == "extraData":
-            for extra_data_key, extra_data_value in value.items():
-                # We denormalize extra_data for Adage mailing
-                updated_fields.append(extra_data_key)
+        if legacy:
+            # FIXME (MathildeDuboille - 2022-03-07): remove this "if" once ENABLE_NEW_COLLECTIVE_MODEL FF is enabled on production
+            if key == "extraData":
+                for extra_data_key, extra_data_value in value.items():
+                    # We denormalize extra_data for Adage mailing
+                    updated_fields.append(extra_data_key)
 
-                if extra_data_key == "students":
-                    students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in extra_data_value]
-                    setattr(offer_to_update, extra_data_key, students)
-                    continue
+                    if extra_data_key == "students":
+                        students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in extra_data_value]
+                        setattr(offer_to_update, extra_data_key, students)
+                        continue
 
-                setattr(offer_to_update, extra_data_key, extra_data_value)
-            continue
+                    setattr(offer_to_update, extra_data_key, extra_data_value)
+                continue
 
         if key == "subcategoryId":
             validation.check_offer_is_eligible_for_educational(value.name, True)
             offer_to_update.subcategoryId = value.name
+            continue
+
+        if key == "students":
+            students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in value]
+            setattr(offer_to_update, key, students)
             continue
 
         setattr(offer_to_update, key, value)
@@ -417,7 +419,7 @@ def update_collective_offer(
     else:
         search.async_index_collective_offer_ids([offer_to_update.id])
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() or not legacy:
         educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
             offer_to_update.id,
             updated_fields,
