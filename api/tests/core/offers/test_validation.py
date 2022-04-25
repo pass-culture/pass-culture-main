@@ -10,6 +10,7 @@ from pcapi.core.offers import validation
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.testing import override_features
 from pcapi.models.api_errors import ApiErrors
 
 import tests
@@ -401,6 +402,7 @@ class CheckOfferWithdrawalTest:
                 subcategory_id=subcategories.CONCERT.id,
             )
 
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     @pytest.mark.parametrize(
         "subcategory_id",
         subcategories.WITHDRAWABLE_SUBCATEGORIES,
@@ -412,6 +414,20 @@ class CheckOfferWithdrawalTest:
             subcategory_id=subcategory_id,
         )
 
+    # @TODO: bruno: remove this test when removing the feature flag PC-14050
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=False)
+    def test_withdrawable_event_offer_can_have_no_withdrawal_type(self):
+        """
+        Test retrocompatibility when disable events QRCode feature toggle is off
+        withdrawable event offer can have no withdrawal type
+        """
+        assert not validation.check_offer_withdrawal(
+            withdrawal_type=None,
+            withdrawal_delay=None,
+            subcategory_id=subcategories.CONCERT.id,
+        )
+
+    @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def test_withdrawable_event_offer_must_have_withdrawal(self):
         with pytest.raises(exceptions.WithdrawableEventOfferMustHaveWithdrawal):
             validation.check_offer_withdrawal(

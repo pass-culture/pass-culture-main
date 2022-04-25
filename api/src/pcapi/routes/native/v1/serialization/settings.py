@@ -28,6 +28,7 @@ class SettingsResponse(BaseModel):
     is_recaptcha_enabled: bool
     is_webapp_v2_enabled: bool
     object_storage_url: str
+    pro_disable_events_qrcode: bool
 
     class Config:
         alias_generator = to_camel
