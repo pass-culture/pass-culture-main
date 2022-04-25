@@ -82,7 +82,11 @@ manières de lancer le backend.
 - se connecter avec les identifiants d'un compte admin, par exemple `pctest.admin93.0@example.com`
 - visiter `http://localhost/pc/back-office/`
 
-Le mot de passe des utilisateurs de la sandbox est : `user@AZERTY123`
+Le mot de passe des utilisateurs de la sandbox dans un environnement de développement est : `user@AZERTY123`
+
+L'environnement de test déployé dans le cloud (*testing*) utilise un mot de passe secret par souci de protection 
+des données manipulées lors des tests ; en interne, le mot de passe « PRO - testing » est disponible dans le coffre-fort
+de l'équipe.   
 
 Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 

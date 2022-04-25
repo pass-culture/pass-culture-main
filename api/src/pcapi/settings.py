@@ -240,6 +240,9 @@ UBBLE_CLIENT_SECRET = os.environ.get("UBBLE_CLIENT_SECRET", "")
 UBBLE_WEBHOOK_SECRET = os.environ.get("UBBLE_WEBHOOK_SECRET")
 UBBLE_SUBSCRIPTION_LIMITATION_DAYS = os.environ.get("UBBLE_SUBSCRIPTION_LIMITATION_DAYS", 90)
 
+# Sandbox users and unit tests default password - overridden by a secret password on cloud environments
+TEST_DEFAULT_PASSWORD = os.environ.get("TEST_DEFAULT_PASSWORD", "user@AZERTY123")
+
 # Test users on staging
 STAGING_TEST_USER_PASSWORD = os.environ.get("STAGING_TEST_USER_PASSWORD", "TestP@ssw0rd")
 
