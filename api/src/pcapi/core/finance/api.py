@@ -234,8 +234,11 @@ def _booking_comparison_tuple(booking: bookings_models.Booking) -> list:
     """Return a list of values, for a particular booking, that can be
     compared to `_PRICE_BOOKINGS_ORDER_CLAUSE`.
     """
+    business_unit_venue_links = [
+        link for link in booking.venue.businessUnit.venue_links if link.venueId == booking.venueId
+    ]
     tupl = (
-        booking.venue.businessUnit.venue_links[-1].timespan.lower,
+        business_unit_venue_links[-1].timespan.lower,
         booking.stock.beginningDatetime or booking.dateUsed,
         booking.dateUsed,
         booking.id,
