@@ -144,8 +144,6 @@ def _db(app):
     mock_db.init_app(app)
     install_database_extensions()
     run_migrations()
-    install_feature_flags()
-    sync_db_permissions(db.session)
 
     install_local_providers()
     clean_all_database()
