@@ -20,6 +20,7 @@ def _get_features(*requested_features: FeatureToggle):  # type: ignore [no-untyp
 @blueprint.native_v1.route("/settings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SettingsResponse)
 def get_settings() -> serializers.SettingsResponse:
+
     features = _get_features(
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
         FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
@@ -30,6 +31,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.ENABLE_PHONE_VALIDATION,
         FeatureToggle.ENABLE_USER_PROFILING,
         FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
+        FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     )
 
     return serializers.SettingsResponse(
@@ -54,4 +56,5 @@ def get_settings() -> serializers.SettingsResponse:
         # the last forced release v1.166.3 was not future proof enough to delete yet in this PR.
         is_webapp_v2_enabled=True,
         object_storage_url=OBJECT_STORAGE_URL,
+        pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
     )
