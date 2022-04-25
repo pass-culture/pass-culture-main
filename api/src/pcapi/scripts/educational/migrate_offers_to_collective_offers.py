@@ -18,6 +18,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offers import models
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationStatus
 
 
 # from pcapi.scripts.educational.migrate_offers_to_collective_offers import migrate; migrate()
@@ -25,15 +26,59 @@ from pcapi.models import db
 logger = logging.getLogger(__name__)
 
 
-def migrate() -> None:
+def migrate(offer_ids_to_migrate: Optional[list[int]] = None) -> None:
     """Main entry point."""
     start = time.time()
+    to_migrate = offer_ids_to_migrate or []
     logger.info("Strating educational offers migration", extra={"script": "migrate_offers_to_collective_offers"})
     _repaire_beginningdatetime()
+    logger.info("removing old collective objects", extra={"script": "migrate_offers_to_collective_offers"})
+    _clean_database(to_migrate=to_migrate)
     logger.info("Data migration done", extra={"script": "migrate_offers_to_collective_offers"})
-    _migrate_offers()
+    _migrate_offers(to_migrate=to_migrate)
     logger.info("Educational offers migration done", extra={"script": "migrate_offers_to_collective_offers"})
-    print(f"elapsed time: {time.time() - start} seconds")
+    msg = f"elapsed time: {time.time() - start} seconds"
+    print(msg)
+    logger.info(msg, extra={"script": "migrate_offers_to_collective_offers"})
+
+
+def _clean_database(to_migrate: list[int]) -> None:
+    # delete bookings
+    query = CollectiveBooking.query.filter(CollectiveBooking.bookingId != None)
+    if to_migrate:
+        subquery = db.session.query(Booking.id)
+        subquery = subquery.join(models.Stock, Booking.stock)
+        subquery = subquery.filter(models.Stock.offerId.in_(to_migrate))
+        query = query.filter(CollectiveBooking.bookingId.in_(subquery))
+    query.delete()
+
+    # delete stocks
+    query = CollectiveStock.query.filter(CollectiveStock.stockId != None)
+    if to_migrate:
+        subquery = db.session.query(models.Stock.id).filter(models.Stock.offerId.in_(to_migrate))
+        query = query.filter(CollectiveStock.stockId.in_(subquery))
+    query.delete()
+
+    # delete offers
+    query = db.session.query(CollectiveOffer.id).filter(CollectiveOffer.offerId != None)
+    if to_migrate:
+        query = query.filter(CollectiveOffer.offerId.in_(to_migrate))
+    search.unindex_collective_offer_ids(map(lambda id: id[0], query.all()))
+    query = CollectiveOffer.query.filter(CollectiveOffer.offerId != None)
+    if to_migrate:
+        query = query.filter(CollectiveOffer.offerId.in_(to_migrate))
+    query.delete()
+
+    # delete offers template
+    query = db.session.query(CollectiveOfferTemplate.id).filter(CollectiveOfferTemplate.offerId != None)
+    if to_migrate:
+        query = query.filter(CollectiveOfferTemplate.offerId.in_(to_migrate))
+    search.unindex_collective_offer_template_ids(map(lambda id: id[0], query.all()))
+    query = CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.offerId != None)
+    if to_migrate:
+        query = query.filter(CollectiveOfferTemplate.offerId.in_(to_migrate))
+    query.delete()
+    db.session.commit()
 
 
 def _repaire_beginningdatetime() -> None:
@@ -52,56 +97,51 @@ def _repaire_beginningdatetime() -> None:
     db.session.commit()
 
 
-def _migrate_offers() -> None:
-
-    already_existing_offers_tuple = list(db.session.query(CollectiveOffer.offerId).all())
-    already_existing_offers_tuple.extend(list(db.session.query(CollectiveOfferTemplate.offerId).all()))
-    already_existing_offers = {offer_id for (offer_id,) in already_existing_offers_tuple}
-    already_existing_stocks = {stock_id for (stock_id,) in db.session.query(CollectiveStock.stockId).all()}
-    already_existing_bookings = {booking_id for (booking_id,) in db.session.query(CollectiveBooking.bookingId).all()}
-
-    offers_query = db.session.query(models.Offer)
-    offers_query = offers_query.filter(models.Offer.isEducational == True)
-    offers_query = offers_query.options(
+def _migrate_offers(to_migrate: list[int]) -> None:
+    failed = []
+    not_migrated = []
+    query = db.session.query(models.Offer)
+    query = query.filter(models.Offer.isEducational == True, models.Offer.validation != OfferValidationStatus.DRAFT)
+    if to_migrate:
+        query = query.filter(models.Offer.id.in_(to_migrate))
+    query = query.options(
         joinedload(models.Offer.stocks),
         joinedload(models.Offer.stocks).joinedload(models.Stock.bookings),
         joinedload(models.Offer.stocks).joinedload(models.Stock.bookings).joinedload(Booking.educationalBooking),
     )
-    offers = offers_query.all()
+    offers = query.all()
 
     templates_ids = []
     offers_ids = []
 
+    nb_offers = len(offers)
+    i = 0
     for offer in offers:
         try:
-            print(".", end="")  # simple progress bar
+            # simple progress bar
+            i += 1
+            if i % 100 == 0:
+                print(i, "/", nb_offers)
+
             stock = _select_stock(offer.stocks)
             if not stock:
                 msg = f"Could not select a stock for Offer {offer.id}. This case should be managed manually"
-                print("\n" + msg)
+                print(msg)
                 logger.warning(msg, extra={"script": "migrate_offers_to_collective_offers"})
+                not_migrated.append(offer.id)
                 continue
 
-            if offer.id in already_existing_offers:
-                collective_offer = _update_collective_offer(offer, stock)
-            else:
-                collective_offer = _create_collective_offer(offer, stock)
+            collective_offer = _create_collective_offer(offer, stock)
 
             db.session.commit()
             if isinstance(collective_offer, CollectiveOfferTemplate):
                 templates_ids.append(collective_offer.id)
                 continue
 
-            if stock.id in already_existing_stocks:
-                collective_stock = _update_collective_stock(stock, collective_offer)
-            else:
-                collective_stock = _create_collective_stock(stock, collective_offer)
+            collective_stock = _create_collective_stock(stock, collective_offer)
             db.session.commit()
             for booking in stock.bookings:
-                if booking.id in already_existing_bookings:
-                    _update_collective_booking(booking, collective_stock)
-                else:
-                    _create_collective_booking(booking, collective_stock)
+                _create_collective_booking(booking, collective_stock)
 
             db.session.commit()
             offers_ids.append(collective_offer.id)
@@ -109,14 +149,21 @@ def _migrate_offers() -> None:
             logger.error("interrupetd by user", extra={"script": "migrate_offers_to_collective_offers"})
             break
         except Exception:  # pylint: disable=broad-except
-            msg = f"Error while migrating Offer {offer.id} stack_trace: \n {format_exc()}"
-            print("\n" + msg)
+            trace = format_exc()
+            msg = f"Error while migrating Offer {offer.id} stack_trace: \n {trace}"
+            print(msg)
+            failed.append((offer.id, trace))
+
             logger.error(msg, extra={"script": "migrate_offers_to_collective_offers"})
 
-    print("done")
-    print("indexing in search engine")
+    logger.info("indexing in search engine", extra={"script": "migrate_offers_to_collective_offers"})
     search.async_index_collective_offer_template_ids(templates_ids)
     search.async_index_collective_offer_ids(offers_ids)
+    print("not migrated:")
+    print(not_migrated)
+    for fail in failed:
+        print("failed to migrate", fail[0])
+        print(fail[1])
 
 
 def _get_phone_number(offer: models.Offer) -> str:
@@ -135,51 +182,11 @@ def _get_email(offer: models.Offer) -> str:
     return email
 
 
-def _update_collective_offer(
-    offer: models.Offer, stock: models.Stock
-) -> Union[CollectiveOffer, CollectiveOfferTemplate]:
-    is_template = offer.extraData and offer.extraData.get("isShowcase", False)  # type: ignore [union-attr]
-    base_class = CollectiveOfferTemplate if is_template else CollectiveOffer
-    collective_offer = db.session.query(base_class).filter(base_class.offerId == offer.id).one()  # type: ignore [attr-defined]
-    list_of_common_attributes = [
-        "isActive",
-        "venue",
-        "name",
-        "description",
-        "durationMinutes",
-        "dateCreated",
-        "subcategoryId",
-        "dateUpdated",
-        "bookingEmail",
-        "lastValidationDate",
-        "validation",
-        "audioDisabilityCompliant",
-        "mentalDisabilityCompliant",
-        "motorDisabilityCompliant",
-        "visualDisabilityCompliant",
-    ]
-    extra_data = getattr(offer, "extraData", {}) or {}
-    students = [StudentLevels(x).name for x in extra_data.get("students", [])]
-    for attr_name in list_of_common_attributes:
-        attr_value = getattr(offer, attr_name)
-        setattr(collective_offer, attr_name, attr_value)
-
-    collective_offer.contactEmail = _get_email(offer)
-    collective_offer.contactPhone = _get_phone_number(offer)
-    collective_offer.offerVenue = extra_data.get("offerVenue")
-    collective_offer.students = students
-
-    if is_template and offer.stocks:
-        collective_offer.priceDetail = stock.educationalPriceDetail
-
-    db.session.add(collective_offer)
-    return collective_offer
-
-
 def _create_collective_offer(
-    offer: models.Offer, stock: models.Stock
+    offer: models.Offer, stock: Optional[models.Stock]
 ) -> Union[CollectiveOffer, CollectiveOfferTemplate]:
     is_template = offer.extraData and offer.extraData.get("isShowcase", False)  # type: ignore [union-attr]
+
     base_class = CollectiveOfferTemplate if is_template else CollectiveOffer
 
     list_of_common_attributes = [
@@ -210,7 +217,7 @@ def _create_collective_offer(
         offerVenue=extra_data.get("offerVenue"),
         students=students,
     )
-    if is_template:
+    if is_template and stock is not None:
         collective_offer.priceDetail = stock.educationalPriceDetail  # type: ignore [attr-defined]
     db.session.add(collective_offer)
     return collective_offer  # type: ignore [return-value]
@@ -251,27 +258,6 @@ def _select_stock(stocks: list[models.Stock]) -> Optional[models.Stock]:
     return None  # TODO find which one to return
 
 
-def _update_collective_stock(stock: models.Stock, collective_offer: CollectiveOffer) -> CollectiveStock:
-    collective_stock = db.session.query(CollectiveStock).filter(CollectiveStock.stockId == stock.id).one()
-    common_attrs = [
-        "dateCreated",
-        "dateModified",
-        "beginningDatetime",
-        "price",
-        "bookingLimitDatetime",
-        "numberOfTickets",
-    ]
-
-    for attr_name in common_attrs:
-        attr_value = getattr(stock, attr_name)
-        setattr(collective_stock, attr_name, attr_value)
-
-    collective_stock.priceDetail = stock.educationalPriceDetail
-    collective_stock.collectiveOffer = collective_offer
-    db.session.add(collective_stock)
-    return collective_stock
-
-
 def _create_collective_stock(stock: models.Stock, collective_offer: CollectiveOffer) -> CollectiveStock:
     attrs_mapping = {}
     common_attrs = [
@@ -287,43 +273,14 @@ def _create_collective_stock(stock: models.Stock, collective_offer: CollectiveOf
         attr_value = getattr(stock, attr_name)
         attrs_mapping[attr_name] = attr_value
 
+    number_of_tickets = stock.numberOfTickets
     attrs_mapping["priceDetail"] = stock.educationalPriceDetail
     attrs_mapping["collectiveOffer"] = collective_offer
     attrs_mapping["stockId"] = stock.id
     collective_stock = CollectiveStock(**attrs_mapping)
+    collective_stock.numberOfTickets = number_of_tickets if number_of_tickets is not None else 0
     db.session.add(collective_stock)
     return collective_stock
-
-
-def _update_collective_booking(booking: Booking, collective_stock: CollectiveStock) -> None:
-    collective_booking = db.session.query(CollectiveBooking).filter(CollectiveBooking.bookingId == booking.id).one()
-    common_attrs = [
-        "dateCreated",
-        "dateUsed",
-        "venue",
-        "offerer",
-        "cancellationDate",
-        "cancellationLimitDate",
-        "reimbursementDate",
-        "educationalInstitution",
-        "educationalYear",
-        "confirmationDate",
-        "confirmationLimitDate",
-        "educationalRedactor",
-    ]
-    for attr_name in common_attrs:
-        try:
-            attr_value = getattr(booking, attr_name)
-        except AttributeError:
-            attr_value = getattr(booking.educationalBooking, attr_name)
-        setattr(collective_booking, attr_name, attr_value)
-    collective_booking.status = getattr(CollectiveBookingStatus, booking.status.name)  # type: ignore [attr-defined]
-    if booking.cancellationReason:
-        collective_booking.cancellationReason = getattr(
-            CollectiveBookingCancellationReasons, booking.cancellationReason.name  # type: ignore [attr-defined]
-        )
-    collective_booking.collectiveStock = collective_stock
-    db.session.add(collective_booking)
 
 
 def _create_collective_booking(booking: Booking, collective_stock: CollectiveStock) -> None:
