@@ -94,7 +94,7 @@ def parse_raw_bic_data(data: dict) -> dict:
             result[ID_TO_NAME_MAPPING[field["id"]]] = field["value"]
         elif field["id"] == "Q2hhbXAtNzgyODAw":
             result["siret"] = field["etablissement"]["siret"]
-            result["siren"] = field["etablissement"]["entreprise"]["siren"]
+            result["siren"] = field["etablissement"]["siret"][:9]
 
     result["annotation_id"] = None
     for annotation in data["dossier"]["annotations"]:
