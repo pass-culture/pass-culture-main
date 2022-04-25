@@ -270,6 +270,7 @@ def edit_shadow_stock(
         offerer = offerers_repository.get_by_offer_id(stock.offerId)
         check_user_has_access_to_offerer(current_user, offerer.id)
         stock = offers_api.edit_shadow_stock(stock, body.dict(exclude_unset=True))
+        educational_api.edit_collective_offer_template_from_stock(stock, body.dict(exclude_unset=True))
 
         return stock_serialize.StockEditionResponseModel.from_orm(stock)
 
@@ -284,3 +285,6 @@ def edit_shadow_stock(
 
     except educational_exceptions.OfferIsNotShowcase:
         raise ApiErrors({"code": "OFFER_IS_NOT_SHOWCASE"}, status_code=400)
+
+    except educational_exceptions.CollectiveOfferTemplateNotFound:
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
