@@ -14,6 +14,7 @@ def make_graphql_application(
     activity: str = "Étudiant",
     birth_date: Optional[datetime.datetime] = datetime.datetime(2004, 1, 1),
     civility: str = "Mme",
+    city: Optional[str] = None,
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
     department_code: str = "67 - Bas-Rhin",
     email: Optional[str] = "young.individual@example.com",
@@ -127,6 +128,10 @@ def make_graphql_application(
             "dateDeNaissance": None,
         },
     }
+    if city is not None:
+        data["champs"].append(
+            {"id": "Q2hhbXAtNTgyMjIy", "label": "Quelle est ta ville de résidence ?", "stringValue": city}
+        )
     if full_graphql_response:
         enveloppe = {
             "demarche": {
