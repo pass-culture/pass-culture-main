@@ -232,7 +232,28 @@ class GetStatusFromDemarchesSimplifieesApplicationStateTest:
 
 
 class ParseRawBicDataTest:
-    def test_parsing_works(self):
+    @pytest.mark.parametrize(
+        "entreprise",
+        [
+            {
+                "capitalSocial": "38130",
+                "codeEffectifEntreprise": "12",
+                "dateCreation": "2001-06-27",
+                "formeJuridique": "SAS, " "société " "par " "actions " "simplifiée",
+                "formeJuridiqueCode": "5710",
+                "inlineAdresse": "2 " "RUE " "LAMENNAIS, " "75008 " "PARIS " "8",
+                "nom": None,
+                "nomCommercial": "",
+                "numeroTvaIntracommunautaire": "FR67438391195",
+                "prenom": None,
+                "raisonSociale": "GAUMONT " "ALESIA",
+                "siren": "438391195",
+                "siretSiegeSocial": "43839119500056",
+            },
+            None,
+        ],
+    )
+    def test_parsing_works(self, entreprise):
         INPUT_DATA = {
             "dossier": {
                 "id": "Q2zzbXAtNzgyODAw",
@@ -311,21 +332,7 @@ class ParseRawBicDataTest:
                                 "type": "housenumber",
                             },
                             "association": None,
-                            "entreprise": {
-                                "capitalSocial": "38130",
-                                "codeEffectifEntreprise": "12",
-                                "dateCreation": "2001-06-27",
-                                "formeJuridique": "SAS, " "société " "par " "actions " "simplifiée",
-                                "formeJuridiqueCode": "5710",
-                                "inlineAdresse": "2 " "RUE " "LAMENNAIS, " "75008 " "PARIS " "8",
-                                "nom": None,
-                                "nomCommercial": "",
-                                "numeroTvaIntracommunautaire": "FR67438391195",
-                                "prenom": None,
-                                "raisonSociale": "GAUMONT " "ALESIA",
-                                "siren": "438391195",
-                                "siretSiegeSocial": "43839119500056",
-                            },
+                            "entreprise": entreprise,
                             "libelleNaf": "Projection de films " "cinématographiques",
                             "naf": "5914Z",
                             "siegeSocial": True,
