@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { OFFER_TYPES } from 'core/Offers'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
@@ -17,15 +18,17 @@ const OfferType = (): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
   const [offerType, setOfferType] = useState(INDIVIDUAL_OR_DUO)
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
 
   const getNextPageHref = () => {
     if (offerType === INDIVIDUAL_OR_DUO) {
       return history.push({
-        pathname: '/offre/creation/individuel',
+        pathname: isOfferFormV3
+          ? '/offre/v3/creation/individuelle/informations'
+          : '/offre/creation/individuel',
         search: location.search,
       })
     }
-
     return history.push({
       pathname: '/offre/creation/collectif',
       search: location.search,
