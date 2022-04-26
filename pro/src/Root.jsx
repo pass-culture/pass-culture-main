@@ -16,8 +16,8 @@ const Root = () => {
   return (
     <Provider store={store}>
       <BrowserRouter>
-        <NavigationLogger />
         <AppContainer>
+          <NavigationLogger />
           <Switch>
             <Redirect
               from="/offres/:offerId([A-Z0-9]+)/edition"

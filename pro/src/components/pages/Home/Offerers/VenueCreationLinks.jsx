@@ -3,7 +3,7 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 
-import useAnalytics from 'components/hooks/useAnalytics'
+import { Events } from 'core/FirebaseEvents/constants'
 import { isAPISireneAvailable } from 'store/features/selectors'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -13,7 +13,7 @@ const VenueCreationLinks = ({
   offererId,
 }) => {
   const isVenueCreationAvailable = useSelector(isAPISireneAvailable)
-  const analytics = useAnalytics()
+  const logEvent = useSelector(state => state.app.logEvent)
   const location = useLocation()
 
   const venueCreationUrl = isVenueCreationAvailable
@@ -25,7 +25,9 @@ const VenueCreationLinks = ({
       <div className="actions-container">
         <Link
           className={insideCard ? 'primary-link' : 'secondary-link'}
-          onClick={() => analytics.logCreateVenueClick(location.pathname)}
+          onClick={() =>
+            logEvent(Events.CLICKED_CREATE_VENUE, { from: location.pathname })
+          }
           to={venueCreationUrl}
         >
           {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
@@ -34,7 +36,10 @@ const VenueCreationLinks = ({
         <Link
           className="secondary-link"
           onClick={() =>
-            analytics.logCreateOfferClick(location.pathname, offererId)
+            logEvent(Events.CLICKED_CREATE_OFFER, {
+              from: location.pathname,
+              offerer_id: offererId,
+            })
           }
           to={`/offre/creation?structure=${offererId}`}
         >

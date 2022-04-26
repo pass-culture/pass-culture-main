@@ -1,7 +1,8 @@
-import { SET_DISPLAY_DOMAIN_BANNER } from './actions'
+import { SET_DISPLAY_DOMAIN_BANNER, SET_LOG_EVENT } from './actions'
 
 export const initialState = {
   displayDomainBanner: false,
+  logEvent: undefined,
 }
 
 export const appReducer = (state = initialState, action) => {
@@ -10,6 +11,11 @@ export const appReducer = (state = initialState, action) => {
       return {
         ...state,
         displayDomainBanner: action.displayDomainBanner,
+      }
+    case SET_LOG_EVENT:
+      return {
+        ...state,
+        logEvent: action.logEvent,
       }
     default:
       return state

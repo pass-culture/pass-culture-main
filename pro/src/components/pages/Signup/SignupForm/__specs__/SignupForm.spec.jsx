@@ -186,9 +186,11 @@ describe('src | components | pages | Signup | SignupForm', () => {
       jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({})
       // Given the signup form
       render(
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
+        <Provider store={store}>
+          <Router history={history}>
+            <SignupForm {...props} />
+          </Router>
+        </Provider>
       )
       const submitButton = screen.getByRole('button', {
         name: /Créer mon compte/,

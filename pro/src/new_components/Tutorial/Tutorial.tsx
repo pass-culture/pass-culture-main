@@ -1,14 +1,16 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
-import useAnalytics from 'components/hooks/useAnalytics'
+import { Events } from 'core/FirebaseEvents/constants'
 import {
   CreateOffer,
   CreateVenue,
   ManageBookings,
   Welcome,
 } from 'new_components/Tutorial/Step'
+import { RootState } from 'store/reducers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -42,7 +44,7 @@ interface ITutorialProps {
 }
 
 const Tutorial = ({ onFinish }: ITutorialProps): JSX.Element => {
-  const analytics = useAnalytics()
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const [activeStepPosition, setActiveStepPosition] = useState<number>(1)
   const hasNextStep: boolean = getStep(activeStepPosition + 1) !== undefined
   const hasPreviousStep: boolean = getStep(activeStepPosition - 1) !== undefined
@@ -53,7 +55,9 @@ const Tutorial = ({ onFinish }: ITutorialProps): JSX.Element => {
   const activeStep = getStep(activeStepPosition) as IStep
 
   useEffect(() => {
-    analytics.logTutoPageView(activeStep.position.toString())
+    logEvent(Events.TUTO_PAGE_VIEW, {
+      page_number: activeStep.position.toString(),
+    })
   }, [activeStep]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
