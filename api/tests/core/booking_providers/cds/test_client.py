@@ -22,6 +22,7 @@ class CineDigitalServiceGetShowTest:
             {
                 "id": 1,
                 "internet_remaining_place": 10,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
@@ -30,24 +31,29 @@ class CineDigitalServiceGetShowTest:
                     {"tariffid": {"id": 3}},
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 2,
                 "internet_remaining_place": 30,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 96}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 3,
                 "internet_remaining_place": 100,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+                "screenid": {"id": 20},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -69,10 +75,12 @@ class CineDigitalServiceGetShowTest:
             {
                 "id": 1,
                 "internet_remaining_place": 10,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
+                "screenid": {"id": 10},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -98,32 +106,38 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
             {
                 "id": 1,
                 "internet_remaining_place": 10,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 2,
                 "internet_remaining_place": 30,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
             {
                 "id": 3,
                 "internet_remaining_place": 100,
+                "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [
                     {"tariffid": {"id": 2}},
                 ],
+                "screenid": {"id": 10},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -521,9 +535,11 @@ class CineDigitalServiceGetVoucherForShowTest:
             id=1,
             is_cancelled=False,
             is_deleted=False,
+            is_disabled_seatmap=True,
             internet_remaining_place=20,
             showtime=datetime.datetime.utcnow(),
             shows_tariff_pos_type_collection=[cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=5))],
+            screen=cds_serializers.IdObjectCDS(id=1),
         )
         json_voucher_types = [
             {"id": 1, "code": "TESTCODE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},
@@ -535,7 +551,7 @@ class CineDigitalServiceGetVoucherForShowTest:
         cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
 
         voucher_type = cine_digital_service.get_voucher_type_for_show(show)
-        print("voucher_type", voucher_type)
+
         assert not voucher_type
 
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
@@ -544,12 +560,14 @@ class CineDigitalServiceGetVoucherForShowTest:
             id=1,
             is_cancelled=False,
             is_deleted=False,
+            is_disabled_seatmap=False,
             internet_remaining_place=20,
             showtime=datetime.datetime.utcnow(),
             shows_tariff_pos_type_collection=[
                 cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=3)),
                 cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
             ],
+            screen=cds_serializers.IdObjectCDS(id=1),
         )
         json_voucher_types = [
             {"id": 1, "code": "PSCULTURE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},

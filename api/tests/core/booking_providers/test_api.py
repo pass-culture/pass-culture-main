@@ -91,6 +91,7 @@ class GetShowStockTest:
             internetremainingplace=15,
             showtime=datetime.utcnow(),
             showsTariffPostypeCollection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+            screenid=IdObjectCDS(id=2),
         )
 
         # When
