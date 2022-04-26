@@ -6,7 +6,7 @@ import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPassword from 'components/pages/LostPassword/LostPassword'
 import OfferersLayout from 'components/pages/Offerers/OfferersLayout'
-import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
+import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import ReimbursementsContainer from 'components/pages/Reimbursements/ReimbursementsContainer'
 import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContainer'
 import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
@@ -169,7 +169,7 @@ const routes = [
     title: 'Selection du type d’offre',
   },
   {
-    component: OfferLayoutContainer,
+    component: OfferLayout,
     exact: false,
     path: [
       '/offre/creation/individuel',

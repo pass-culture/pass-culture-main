@@ -2,6 +2,7 @@ import { setUser as setSentryUser } from '@sentry/browser'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 import { matchPath } from 'react-router'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
@@ -13,10 +14,8 @@ export const App = props => {
   const {
     children,
     isFeaturesInitialized,
-    history,
     isMaintenanceActivated,
     loadFeatures,
-    location,
   } = props
 
   const [isReady, setIsReady] = useState(false)
@@ -24,6 +23,8 @@ export const App = props => {
   const { isUserInitialized, currentUser } = useCurrentUser()
   const analytics = useAnalytics()
   const currentPathname = window.location.pathname
+  const history = useHistory()
+  const location = useLocation()
 
   useEffect(() => {
     if (!isFeaturesInitialized) {
@@ -91,9 +92,7 @@ App.propTypes = {
     PropTypes.arrayOf(PropTypes.shape()),
     PropTypes.shape(),
   ]).isRequired,
-  history: PropTypes.shape().isRequired,
   isFeaturesInitialized: PropTypes.bool.isRequired,
   isMaintenanceActivated: PropTypes.bool.isRequired,
   loadFeatures: PropTypes.func.isRequired,
-  location: PropTypes.shape().isRequired,
 }

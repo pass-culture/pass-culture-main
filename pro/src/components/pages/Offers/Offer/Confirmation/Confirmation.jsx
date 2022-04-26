@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { Redirect } from 'react-router'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
@@ -10,8 +10,9 @@ import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOffe
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 
-const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
+const Confirmation = ({ isCreatingOffer, offer, setOffer }) => {
   const editionUrl = useOfferEditionURL(offer.isEducational, offer.id)
+  const location = useLocation()
 
   const resetOffer = useCallback(() => {
     setOffer(null)
@@ -72,7 +73,6 @@ const Confirmation = ({ isCreatingOffer, location, offer, setOffer }) => {
 
 Confirmation.propTypes = {
   isCreatingOffer: PropTypes.bool.isRequired,
-  location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
   setOffer: PropTypes.func.isRequired,
 }

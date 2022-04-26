@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -8,7 +8,9 @@ import { redirectLoggedUser } from 'components/router/helpers'
 import { parse } from 'utils/query-string'
 
 export const SetPasswordConfirm = props => {
-  const { currentUser, history, location } = props
+  const { currentUser } = props
+  const history = useHistory()
+  const location = useLocation()
   const { error } = parse(location.search)
   const displayErrorMessage = error === 'unvalid-link'
 
@@ -67,6 +69,4 @@ SetPasswordConfirm.defaultProps = {
 
 SetPasswordConfirm.propTypes = {
   currentUser: PropTypes.shape(),
-  history: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
 }

@@ -15,7 +15,7 @@ import { MemoryRouter, Route } from 'react-router'
 import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
+import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import * as computeUrl from 'core/Offers/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -62,7 +62,7 @@ const renderOffers = async (props, store, queryParams = '') => {
         >
           <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
             <>
-              <OfferLayoutContainer {...props} />
+              <OfferLayout {...props} />
               <NotificationContainer />
             </>
           </Route>

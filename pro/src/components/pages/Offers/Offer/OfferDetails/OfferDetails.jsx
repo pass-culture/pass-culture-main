@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -19,16 +20,11 @@ import OfferPreview from './OfferPreview'
 import OfferStatusBanner from './OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail'
 
-const OfferDetails = ({
-  history,
-  isUserAdmin,
-  location,
-  offer,
-  reloadOffer,
-  userEmail,
-}) => {
+const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
   const dispatch = useDispatch()
   const initialValues = {}
+  const history = useHistory()
+  const location = useLocation()
   const queryParams = queryParamsFromOfferer(location)
 
   if (queryParams.structure !== '') {
@@ -248,9 +244,7 @@ OfferDetails.defaultProps = {
 }
 
 OfferDetails.propTypes = {
-  history: PropTypes.shape().isRequired,
   isUserAdmin: PropTypes.bool.isRequired,
-  location: PropTypes.shape().isRequired,
   offer: PropTypes.shape(),
   reloadOffer: PropTypes.func,
   userEmail: PropTypes.string.isRequired,

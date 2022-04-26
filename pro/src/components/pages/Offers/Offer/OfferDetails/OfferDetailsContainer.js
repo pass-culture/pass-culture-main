@@ -1,6 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import {
   selectCurrentUser,
@@ -14,4 +12,4 @@ const mapStateToProps = state => ({
   userEmail: selectCurrentUser(state).email,
 })
 
-export default compose(withRouter, connect(mapStateToProps))(OfferDetails)
+export default connect(mapStateToProps)(OfferDetails)

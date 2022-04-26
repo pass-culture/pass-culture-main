@@ -60,7 +60,6 @@ const LostPassword = (): JSX.Element => {
 
   const submitChangePassword = (values: Record<string, string>) => {
     const { newPasswordValue } = values
-    console.log('SUBMIT NEW password')
     pcapi
       .submitResetPassword(newPasswordValue, token)
       .then(() => setPasswordChanged(true))

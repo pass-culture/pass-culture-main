@@ -3,7 +3,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
-import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
+import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import { configureTestStore } from 'store/testUtils'
 import routes from 'utils/routes_map'
 
@@ -28,7 +28,7 @@ export const renderOffer = async (initialEntries, store) => {
       <Provider store={store ? store : defaultStore}>
         <MemoryRouter initialEntries={[{ ...initialEntries }]}>
           <Route path={path}>
-            <OfferLayoutContainer />
+            <OfferLayout />
           </Route>
         </MemoryRouter>
       </Provider>

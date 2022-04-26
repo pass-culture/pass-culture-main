@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import useOfferEditionURL from 'components/hooks/useOfferEditionURL'
@@ -30,8 +30,6 @@ import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 const EMPTY_STRING_VALUE = ''
 
 const EventStocks = ({
-  history,
-  location,
   offer,
   showErrorNotification,
   showSuccessNotification,
@@ -46,6 +44,8 @@ const EventStocks = ({
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
   const editionOfferLink = useOfferEditionURL(offer.isEducational, offer.id)
+  const history = useHistory()
+  const location = useLocation()
 
   const loadStocks = useCallback(
     (keepCreationStocks = false) => {
@@ -347,8 +347,6 @@ const EventStocks = ({
 }
 
 EventStocks.propTypes = {
-  history: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,

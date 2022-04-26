@@ -1,10 +1,15 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Route, Switch, useHistory } from 'react-router-dom'
+import {
+  Route,
+  Switch,
+  useHistory,
+  useLocation,
+  useRouteMatch,
+} from 'react-router-dom'
 
 import { apiV1 } from 'api/api'
 import Titles from 'components/layout/Titles/Titles'
-import ConfirmationContainer from 'components/pages/Offers/Offer/Confirmation/ConfirmationContainer'
+import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
@@ -32,8 +37,10 @@ const getActiveStepFromLocation = location => {
   return stepName ? mapPathToStep[stepName] : null
 }
 
-const OfferLayout = ({ location, match }) => {
+const OfferLayout = () => {
   const history = useHistory()
+  const location = useLocation()
+  const match = useRouteMatch()
 
   const [offer, setOffer] = useState(null)
   const [isCreatingOffer, setIsCreatingOffer] = useState(true)
@@ -41,7 +48,6 @@ const OfferLayout = ({ location, match }) => {
   const loadOffer = useCallback(
     async (offerId, creationMode = false) => {
       const existingOffer = await apiV1.getOffersGetOffer(offerId)
-
       setOffer(existingOffer)
       setIsCreatingOffer(
         creationMode || existingOffer.status === OFFER_STATUS_DRAFT
@@ -49,7 +55,6 @@ const OfferLayout = ({ location, match }) => {
     },
     [setOffer]
   )
-
   const activeStep = getActiveStepFromLocation(location)
 
   const reloadOffer = useCallback(
@@ -118,9 +123,8 @@ const OfferLayout = ({ location, match }) => {
             />
           </Route>
           <Route exact path={`${match.url}/confirmation`}>
-            <ConfirmationContainer
+            <Confirmation
               isCreatingOffer={isCreatingOffer}
-              location={location}
               offer={offer}
               setOffer={setOffer}
             />
@@ -130,11 +134,6 @@ const OfferLayout = ({ location, match }) => {
       <RouteLeavingGuardOfferCreation when={isCreatingOffer} />
     </div>
   )
-}
-
-OfferLayout.propTypes = {
-  location: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
 }
 
 export default OfferLayout
