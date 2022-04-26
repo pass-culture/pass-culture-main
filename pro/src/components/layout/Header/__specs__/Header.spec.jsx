@@ -5,36 +5,19 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { Events } from 'core/FirebaseEvents/constants'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import Header from '../Header'
 
-const mockLogProClick = jest.fn()
-const mockLogHomeClick = jest.fn()
-const mockLogTicketClick = jest.fn()
-const mockLogOfferClick = jest.fn()
-const mockLogBookingClick = jest.fn()
-const mockLogReimbursementClick = jest.fn()
-const mockLogLogoutClick = jest.fn()
-
-jest.mock('components/hooks/useAnalytics', () => {
-  return jest.fn().mockReturnValue({
-    logProClick: props => mockLogProClick(props),
-    logHomeClick: props => mockLogHomeClick(props),
-    logTicketClick: props => mockLogTicketClick(props),
-    logOfferClick: props => mockLogOfferClick(props),
-    logBookingClick: props => mockLogBookingClick(props),
-    logReimbursementClick: props => mockLogReimbursementClick(props),
-    logLogoutClick: props => mockLogLogoutClick(props),
-  })
-})
-
+const mockLogEvent = jest.fn()
 jest.mock('repository/pcapi/pcapi', () => ({
-  signout: jest.fn().mockResolvedValue({}),
+  signout: jest.fn(),
 }))
 
 const renderHeader = props => {
-  const stubStore = configureTestStore()
+  const stubStore = configureTestStore({ app: { logEvent: mockLogEvent } })
 
   return render(
     <Provider store={stubStore}>
@@ -46,6 +29,9 @@ const renderHeader = props => {
 }
 
 describe('navigation menu', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
   it('should have link to Styleguide when is enabled', () => {
     // When
     renderHeader({ isUserAdmin: false, isStyleguideActive: true })
@@ -99,8 +85,10 @@ describe('navigation menu', () => {
       )
 
       // Then
-      expect(mockLogProClick).toHaveBeenCalledTimes(1)
-      expect(mockLogProClick).toHaveBeenNthCalledWith(1, '/accueil')
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_PRO, {
+        from: '/accueil',
+      })
     })
 
     it('when clicking on Home', async () => {
@@ -111,8 +99,10 @@ describe('navigation menu', () => {
       await userEvent.click(screen.getByText('Accueil'))
 
       // Then
-      expect(mockLogHomeClick).toHaveBeenCalledTimes(1)
-      expect(mockLogHomeClick).toHaveBeenNthCalledWith(1, '/accueil')
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_HOME, {
+        from: '/accueil',
+      })
     })
 
     it('when clicking on Ticket', async () => {
@@ -123,8 +113,10 @@ describe('navigation menu', () => {
       await userEvent.click(screen.getByText('Guichet'))
 
       // Then
-      expect(mockLogTicketClick).toHaveBeenCalledTimes(1)
-      expect(mockLogTicketClick).toHaveBeenNthCalledWith(1, '/accueil')
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_TICKET, {
+        from: '/accueil',
+      })
     })
 
     it('when clicking on Offers', async () => {
@@ -135,8 +127,10 @@ describe('navigation menu', () => {
       await userEvent.click(screen.getByText('Offres'))
 
       // Then
-      expect(mockLogOfferClick).toHaveBeenCalledTimes(1)
-      expect(mockLogOfferClick).toHaveBeenNthCalledWith(1, '/accueil')
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_OFFER, {
+        from: '/accueil',
+      })
     })
 
     it('when clicking on Bookings', async () => {
@@ -147,8 +141,10 @@ describe('navigation menu', () => {
       await userEvent.click(screen.getByText('Réservations'))
 
       // Then
-      expect(mockLogBookingClick).toHaveBeenCalledTimes(1)
-      expect(mockLogBookingClick).toHaveBeenNthCalledWith(1, '/accueil')
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_BOOKING, {
+        from: '/accueil',
+      })
     })
 
     it('when clicking on Reimbursement', async () => {
@@ -159,20 +155,27 @@ describe('navigation menu', () => {
       await userEvent.click(screen.getByText('Remboursements'))
 
       // Then
-      expect(mockLogReimbursementClick).toHaveBeenCalledTimes(1)
-      expect(mockLogReimbursementClick).toHaveBeenNthCalledWith(1, '/accueil')
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_REIMBURSEMENT,
+        { from: '/accueil' }
+      )
     })
 
     it('when clicking on Logout', async () => {
       // given
       renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      pcapi.signout.mockResolvedValue({})
 
       // When
       await userEvent.click(screen.getAllByRole('menuitem')[5])
 
       // Then
-      expect(mockLogLogoutClick).toHaveBeenCalledTimes(1)
-      expect(mockLogLogoutClick).toHaveBeenNthCalledWith(1, '/accueil')
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {
+        from: '/accueil',
+      })
     })
   })
 })

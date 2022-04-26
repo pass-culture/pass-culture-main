@@ -13,7 +13,7 @@ import { initialState as userInitialState } from 'store/user/reducer'
 
 export const configureTestStore = overrideData => {
   const initialData = {
-    app: appInitialState,
+    app: { ...appInitialState, logEvent: jest.fn() },
     bookingSummary: bookingSummaryInitialState,
     data: dataInitialState,
     features: { ...featuresInitialState, initialized: true },

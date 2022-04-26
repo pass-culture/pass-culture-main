@@ -40,13 +40,6 @@ Object.defineProperty(window.location, 'href', {
   set: setHrefSpy,
 })
 
-const mockSetAnalyticsUserId = jest.fn()
-jest.mock('components/hooks/useAnalytics', () => {
-  return jest.fn().mockReturnValue({
-    setAnalyticsUserId: props => mockSetAnalyticsUserId(props),
-  })
-})
-
 describe('src | App', () => {
   let props
   let store
@@ -97,19 +90,5 @@ describe('src | App', () => {
 
     // Then
     expect(loadFeatures).toHaveBeenCalledWith()
-  })
-
-  it('should initialize firebase only once', () => {
-    // When
-    const { rerender } = renderApp({ props, store })
-    rerender(
-      <Provider store={store}>
-        <App {...props}>
-          <p>Sub component</p>
-        </App>
-      </Provider>
-    )
-    // Then
-    expect(mockSetAnalyticsUserId).toHaveBeenCalledTimes(1)
   })
 })

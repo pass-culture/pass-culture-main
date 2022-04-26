@@ -1,8 +1,10 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
+import { Events } from 'core/FirebaseEvents/constants'
+import { RootState } from 'store/reducers'
 
 interface ILegalInfoProps {
   title: string
@@ -11,14 +13,16 @@ interface ILegalInfoProps {
 
 const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
   const location = useLocation()
-  const analytics = useAnalytics()
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
   return (
     <div className={`legal-infos ${className}`}>
       <span>{`En cliquant sur ${title}, vous acceptez nos `}</span>
       <a
         className="quaternary-link"
         href="https://pass.culture.fr/cgu-professionnels/"
-        onClick={() => analytics.logConsultCGUClick(location.pathname)}
+        onClick={() =>
+          logEvent(Events.CLICKED_CONSULT_CGU, { from: location.pathname })
+        }
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -29,7 +33,9 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
       <a
         className="quaternary-link"
         href="https://pass.culture.fr/donnees-personnelles/"
-        onClick={() => analytics.logPersonalDataClick(location.pathname)}
+        onClick={() =>
+          logEvent(Events.CLICKED_PERSONAL_DATA, { from: location.pathname })
+        }
         rel="noopener noreferrer"
         target="_blank"
       >
@@ -44,7 +50,9 @@ const LegalInfos = ({ title, className }: ILegalInfoProps): JSX.Element => {
       <a
         className="quaternary-link"
         href="mailto:support-pro@passculture.app"
-        onClick={() => analytics.logConsultSupportClick(location.pathname)}
+        onClick={() =>
+          logEvent(Events.CLICKED_CONSULT_SUPPORT, { from: location.pathname })
+        }
         rel="noopener noreferrer"
         target="_blank"
       >
