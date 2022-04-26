@@ -302,6 +302,18 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         return None
 
 
+class ExternalBooking(PcObject, Model):  # type: ignore [valid-type, misc]
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
+
+    booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
+
+    barcode = Column(String, nullable=False)
+
+    seat = Column(String)
+
+
 # FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been
 # populated after the deployment of v122, make the column NOT NULLable
 # and remove the filter below (add a migration for _each_ change).
