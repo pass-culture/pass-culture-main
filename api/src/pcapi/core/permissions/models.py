@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 class Permissions(enum.Enum):
+    """
+    This enum is synced with the permission table in DB, thanks to the
+    sync_enum_with_db_field function which is called when the app is deployed
+    """
+
     MANAGE_PERMISSIONS = "gérer les droits"
 
 
@@ -55,14 +60,14 @@ role_permission_table = sa.Table(
 )
 
 
-class Permission(PcObject, Model):
+class Permission(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "permission"
 
     name = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
 
 
-class Role(PcObject, Model):
+class Role(PcObject, Model):  # type: ignore[valid-type]
     __tablename__ = "role"
 
     name = sa.Column(sa.String(140), nullable=False)

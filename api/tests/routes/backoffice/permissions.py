@@ -7,6 +7,7 @@ from pcapi.core.permissions.factories import PermissionFactory
 from pcapi.core.permissions.factories import RoleFactory
 from pcapi.core.permissions.models import Permission
 from pcapi.core.permissions.models import Permissions
+from pcapi.core.permissions.models import Role
 from pcapi.core.users.factories import UserFactory
 from pcapi.repository import repository
 
@@ -14,18 +15,24 @@ from pcapi.repository import repository
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+def create_admin_role():
+    permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
+    role = RoleFactory(name="admin")
+    role.permissions.append(permission)
+    repository.save(role)
+
+    return role
+
+
 class RoleListTest:
     def test_can_list_roles_as_admin(self, client):
         # given
-        permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
-        role = RoleFactory(name="admin")
+        admin_role = create_admin_role()
         RoleFactory(name="test_role")
-        role.permissions.append(permission)
-        repository.save(role)
         user = UserFactory()
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = ["admin"]
+            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -38,15 +45,12 @@ class RoleListTest:
 
     def test_cannot_list_roles_as_non_admin(self, client):
         # given
-        permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
-        role = RoleFactory(name="admin")
-        RoleFactory(name="not_admin")
-        role.permissions.append(permission)
-        repository.save(role)
+        create_admin_role()
+        non_admin_role = RoleFactory(name="not_admin")
         user = UserFactory()
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = ["not_admin"]
+            user.groups = [non_admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -57,11 +61,7 @@ class RoleListTest:
 
     def test_cannot_list_roles_as_anonymous(self, client):
         # given
-        permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
-        role = RoleFactory(name="admin")
-        RoleFactory(name="test_role")
-        role.permissions.append(permission)
-        repository.save(role)
+        create_admin_role()
 
         # when
         response = client.get(url_for("backoffice_blueprint.list_roles"))
@@ -73,15 +73,12 @@ class RoleListTest:
 class PermissionListTest:
     def test_can_list_permissions_as_admin(self, client):
         # given
-        permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
-        role = RoleFactory(name="admin")
+        admin_role = create_admin_role()
         PermissionFactory(name="test_permission")
-        role.permissions.append(permission)
-        repository.save(role)
         user = UserFactory()
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = ["admin"]
+            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -94,15 +91,12 @@ class PermissionListTest:
 
     def test_cannot_list_permissions_as_non_admin(self, client):
         # given
-        permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
-        role = RoleFactory(name="admin")
-        RoleFactory(name="not_admin")
-        role.permissions.append(permission)
-        repository.save(role)
+        create_admin_role()
+        non_admin_role = RoleFactory(name="not_admin")
         user = UserFactory()
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = ["not_admin"]
+            user.groups = [non_admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -113,14 +107,116 @@ class PermissionListTest:
 
     def test_cannot_list_permissions_as_anonymous(self, client):
         # given
-        permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
-        role = RoleFactory(name="admin")
-        RoleFactory(name="test_role")
-        role.permissions.append(permission)
-        repository.save(role)
+        create_admin_role()
 
         # when
         response = client.get(url_for("backoffice_blueprint.list_permissions"))
+
+        # then
+        assert response.status_code == 401
+
+
+class NewRoleTest:
+    def test_can_create_new_role_with_permissions_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        user = UserFactory()
+        permissions = (PermissionFactory(), PermissionFactory())
+        new_role_data = {"name": "dummy_role", "permissionIds": [p.id for p in permissions]}
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).post(
+                url_for("backoffice_blueprint.create_role"),
+                json=new_role_data,
+            )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["name"] == new_role_data["name"]
+        assert {p["id"] for p in response.json["permissions"]} == set(new_role_data["permissionIds"])
+        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        assert new_role_query.count() == 1
+        inserted_role = new_role_query[0]
+        assert inserted_role.name == new_role_data["name"]
+        assert set(inserted_role.permissions) == set(permissions)
+
+    def test_can_create_new_role_with_empty_permissions_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        user = UserFactory()
+        new_role_data = {"name": "dummy_role", "permissionIds": []}
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).post(
+                url_for("backoffice_blueprint.create_role"),
+                json=new_role_data,
+            )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["name"] == new_role_data["name"]
+        assert response.json["permissions"] == []
+        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        assert new_role_query.count() == 1
+        inserted_role = new_role_query[0]
+        assert inserted_role.name == new_role_data["name"]
+        assert inserted_role.permissions == []
+
+    def test_cannot_create_new_role_with_empty_name_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        user = UserFactory()
+        new_role_data = {"name": "", "permissionIds": []}
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).post(
+                url_for("backoffice_blueprint.create_role"),
+                json=new_role_data,
+            )
+
+        # then
+        assert response.status_code == 400
+
+    def test_cannot_create_new_role_as_non_admin(self, client):
+        # given
+        create_admin_role()
+        non_admin_role = RoleFactory(name="not_admin")
+        user = UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [non_admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).post(
+                url_for("backoffice_blueprint.create_role"),
+                json={"name": "should not work", "permissionsIds": []},
+            )
+
+        # then
+        assert response.status_code == 403
+
+    def test_cannot_create_new_role_as_anonymous(self, client):
+        # given
+        create_admin_role()
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.create_role"),
+            json={"name": "should not work", "permissionsIds": []},
+        )
 
         # then
         assert response.status_code == 401
