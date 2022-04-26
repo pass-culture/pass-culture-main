@@ -1,0 +1,13 @@
+.action-bar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions-group {
+  .action {
+    margin-left: rem(8px);
+    &:first-child {
+      margin-left: 0;
+    }
+  }
+}
