@@ -7,10 +7,11 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import factories
 from pcapi.core.educational import models
+from pcapi.core.offerers.factories import OffererFactory
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import EducationalEventOfferFactory
 from pcapi.core.offers.factories import EducationalEventStockFactory
-from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import VenueFactory
+from pcapi.repository import repository
 from pcapi.scripts.educational.verify_collective_data_duplication import verify_collective_bookings_duplication
 from pcapi.scripts.educational.verify_collective_data_duplication import verify_collective_data_duplication
 from pcapi.scripts.educational.verify_collective_data_duplication import verify_collective_offers_duplication
@@ -19,7 +20,7 @@ from pcapi.scripts.educational.verify_collective_data_duplication import verify_
 
 @pytest.mark.usefixtures("db_session")
 class VerifyCollectiveOffersDuplicationTest:
-    def should_return_true_if_there_are_no_difference_and_data_is_present_in_db(self):
+    def should_return_true_if_there_are_no_difference_and_data_is_present_in_db(self) -> None:
         # Given
         educational_offer = EducationalEventOfferFactory(
             extraData={
@@ -109,7 +110,7 @@ class VerifyCollectiveOffersDuplicationTest:
         assert missing_collective_offers_offer_ids == []
         assert invalid_collective_offers_offer_ids == []
 
-    def should_return_false_if_at_least_one_element_does_not_match_original_offer(self):
+    def should_return_false_if_at_least_one_element_does_not_match_original_offer(self) -> None:
         # Given
         educational_offer = EducationalEventOfferFactory(
             extraData={
@@ -202,6 +203,7 @@ class VerifyCollectiveOffersDuplicationTest:
         )
         educational_offer10 = educational_stock2.offer
 
+        # wrong name
         factories.CollectiveOfferFactory(
             offerId=educational_offer.id,
             isActive=educational_offer.isActive,
@@ -216,6 +218,7 @@ class VerifyCollectiveOffersDuplicationTest:
             contactPhone="0601020304",
             offerVenue={"addressType": "school", "otherAddress": "", "venueId": ""},
         )
+        # wrong booking email
         factories.CollectiveOfferFactory(
             offerId=educational_offer2.id,
             isActive=educational_offer2.isActive,
@@ -230,6 +233,7 @@ class VerifyCollectiveOffersDuplicationTest:
             contactPhone="0605060708",
             offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
         )
+        # wrong description
         factories.CollectiveOfferTemplateFactory(
             offerId=educational_offer3.id,
             isActive=educational_offer3.isActive,
@@ -245,6 +249,7 @@ class VerifyCollectiveOffersDuplicationTest:
             offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
             priceDetail=educational_stock.educationalPriceDetail,
         )
+        # wrong durationMinutes
         factories.CollectiveOfferFactory(
             offerId=educational_offer4.id,
             isActive=educational_offer4.isActive,
@@ -255,10 +260,11 @@ class VerifyCollectiveOffersDuplicationTest:
             durationMinutes=20,
             subcategoryId=educational_offer4.subcategoryId,
             students=[models.StudentLevels.COLLEGE3],
-            contactEmail="contact2@email.com",
-            contactPhone="0605060708",
-            offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
+            contactEmail="contact@email.com",
+            contactPhone="0601020304",
+            offerVenue={"addressType": "school", "otherAddress": "", "venueId": ""},
         )
+        # wrong subcategoryId
         factories.CollectiveOfferFactory(
             offerId=educational_offer5.id,
             isActive=educational_offer5.isActive,
@@ -269,10 +275,11 @@ class VerifyCollectiveOffersDuplicationTest:
             durationMinutes=educational_offer5.durationMinutes,
             subcategoryId="EVENEMENT_CINE",
             students=[models.StudentLevels.COLLEGE3],
-            contactEmail="contact2@email.com",
-            contactPhone="0605060708",
-            offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
+            contactEmail="contact@email.com",
+            contactPhone="0601020304",
+            offerVenue={"addressType": "school", "otherAddress": "", "venueId": ""},
         )
+        # wrong students
         factories.CollectiveOfferFactory(
             offerId=educational_offer6.id,
             isActive=educational_offer6.isActive,
@@ -283,10 +290,11 @@ class VerifyCollectiveOffersDuplicationTest:
             durationMinutes=educational_offer6.durationMinutes,
             subcategoryId=educational_offer6.subcategoryId,
             students=[models.StudentLevels.CAP1],
-            contactEmail="contact2@email.com",
-            contactPhone="0605060708",
-            offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
+            contactEmail="contact@email.com",
+            contactPhone="0601020304",
+            offerVenue={"addressType": "school", "otherAddress": "", "venueId": ""},
         )
+        # wrong contactEmail
         factories.CollectiveOfferFactory(
             offerId=educational_offer7.id,
             isActive=educational_offer7.isActive,
@@ -298,9 +306,10 @@ class VerifyCollectiveOffersDuplicationTest:
             subcategoryId=educational_offer7.subcategoryId,
             students=[models.StudentLevels.COLLEGE3],
             contactEmail="mauvaiscontact@email.com",
-            contactPhone="0605060708",
-            offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
+            contactPhone="0601020304",
+            offerVenue={"addressType": "school", "otherAddress": "", "venueId": ""},
         )
+        # wrong contactPhone
         factories.CollectiveOfferFactory(
             offerId=educational_offer8.id,
             isActive=educational_offer8.isActive,
@@ -311,10 +320,11 @@ class VerifyCollectiveOffersDuplicationTest:
             durationMinutes=educational_offer8.durationMinutes,
             subcategoryId=educational_offer8.subcategoryId,
             students=[models.StudentLevels.COLLEGE3],
-            contactEmail="mauvaiscontact@email.com",
+            contactEmail="contact@email.com",
             contactPhone="0000000000",
-            offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
+            offerVenue={"addressType": "school", "otherAddress": "", "venueId": ""},
         )
+        # wrong offerVenue
         factories.CollectiveOfferFactory(
             offerId=educational_offer9.id,
             isActive=educational_offer9.isActive,
@@ -325,10 +335,11 @@ class VerifyCollectiveOffersDuplicationTest:
             durationMinutes=educational_offer9.durationMinutes,
             subcategoryId=educational_offer9.subcategoryId,
             students=[models.StudentLevels.COLLEGE3],
-            contactEmail="mauvaiscontact@email.com",
-            contactPhone="0000000000",
+            contactEmail="contact@email.com",
+            contactPhone="0601020304",
             offerVenue={"addressType": "offererVenue", "otherAddress": "chez moi", "venueId": "VENUE_ID"},
         )
+        # wrong priceDetail
         factories.CollectiveOfferTemplateFactory(
             offerId=educational_offer10.id,
             isActive=educational_offer10.isActive,
@@ -339,8 +350,8 @@ class VerifyCollectiveOffersDuplicationTest:
             durationMinutes=educational_offer10.durationMinutes,
             subcategoryId=educational_offer10.subcategoryId,
             students=[models.StudentLevels.COLLEGE3],
-            contactEmail="mauvaiscontact@email.com",
-            contactPhone="0000000000",
+            contactEmail="contact2@email.com",
+            contactPhone="0605060708",
             offerVenue={"addressType": "other", "otherAddress": "chez moi", "venueId": ""},
             priceDetail="Un mauvais détail",
         )
@@ -357,22 +368,24 @@ class VerifyCollectiveOffersDuplicationTest:
         # Then
         assert success == False
         assert missing_collective_offer_templates_offer_ids == []
-        assert set(invalid_collective_offer_templates_offer_ids) == set([educational_offer3.id, educational_offer10.id])
+        assert set(invalid_collective_offer_templates_offer_ids) == set(
+            [(educational_offer3.id, "description"), (educational_offer10.id, "priceDetail")]
+        )
         assert missing_collective_offers_offer_ids == []
         assert set(invalid_collective_offers_offer_ids) == set(
             [
-                educational_offer.id,
-                educational_offer2.id,
-                educational_offer4.id,
-                educational_offer5.id,
-                educational_offer6.id,
-                educational_offer7.id,
-                educational_offer8.id,
-                educational_offer9.id,
+                (educational_offer.id, "name"),
+                (educational_offer2.id, "bookingEmail"),
+                (educational_offer4.id, "durationMinutes"),
+                (educational_offer5.id, "subcategoryId"),
+                (educational_offer6.id, "students"),
+                (educational_offer7.id, "contactEmail"),
+                (educational_offer8.id, "contactPhone"),
+                (educational_offer9.id, "offerVenue"),
             ]
         )
 
-    def should_fail_when_collective_offer_is_missing(self):
+    def should_fail_when_collective_offer_is_missing(self) -> None:
         # Given
         educational_offer1 = EducationalEventOfferFactory()
         educational_offer2 = EducationalEventOfferFactory(extraData={"isShowcase": True})
@@ -395,7 +408,7 @@ class VerifyCollectiveOffersDuplicationTest:
 
 @pytest.mark.usefixtures("db_session")
 class VerifyCollectiveStocksDuplicationTest:
-    def should_return_true_if_there_are_no_difference_and_data_is_present_in_db(self):
+    def should_return_true_if_there_are_no_difference_and_data_is_present_in_db(self) -> None:
         # Given
         educational_stock = EducationalEventStockFactory()
         factories.CollectiveStockFactory(
@@ -419,7 +432,7 @@ class VerifyCollectiveStocksDuplicationTest:
         assert missing_collective_stocks_stock_ids == []
         assert invalid_collective_stocks_stock_ids == []
 
-    def should_return_False_when_data_does_not_match_original_stock(self):
+    def should_return_False_when_data_does_not_match_original_stock(self) -> None:
         # Given
         educational_stock1 = EducationalEventStockFactory(beginningDatetime=datetime(2022, 6, 12, 10, 0, 0))
         educational_stock2 = EducationalEventStockFactory(price=100)
@@ -482,15 +495,15 @@ class VerifyCollectiveStocksDuplicationTest:
         assert missing_collective_stocks_stock_ids == []
         assert set(invalid_collective_stocks_stock_ids) == set(
             [
-                educational_stock1.id,
-                educational_stock2.id,
-                educational_stock3.id,
-                educational_stock4.id,
-                educational_stock5.id,
+                (educational_stock1.id, "beginningDatetime"),
+                (educational_stock2.id, "price"),
+                (educational_stock3.id, "bookingLimitDatetime"),
+                (educational_stock4.id, "numberOfTickets"),
+                (educational_stock5.id, "priceDetail"),
             ]
         )
 
-    def should_return_False_if_data_is_missing(self):
+    def should_return_False_if_data_is_missing(self) -> None:
         # Given
         educational_stock = EducationalEventStockFactory()
 
@@ -509,7 +522,7 @@ class VerifyCollectiveStocksDuplicationTest:
 
 @pytest.mark.usefixtures("db_session")
 class VerifyCollectiveBookingsDuplicationTest:
-    def should_return_true_if_there_are_no_difference_and_data_is_present_in_db(self):
+    def should_return_true_if_there_are_no_difference_and_data_is_present_in_db(self) -> None:
         # Given
         educational_booking = EducationalBookingFactory(
             status=BookingStatus.CONFIRMED.name, cancellationReason=BookingCancellationReasons.FRAUD.name
@@ -543,7 +556,7 @@ class VerifyCollectiveBookingsDuplicationTest:
         assert missing_collective_bookings_booking_ids == []
         assert invalid_collective_bookings_booking_ids == []
 
-    def should_return_False_when_data_does_not_match_original_stock(self):
+    def should_return_False_when_data_does_not_match_original_booking(self) -> None:
         # Given
         offerer = OffererFactory()
         offerer2 = OffererFactory()
@@ -574,6 +587,8 @@ class VerifyCollectiveBookingsDuplicationTest:
             status=BookingStatus.CONFIRMED.name,
             cancellationReason=BookingCancellationReasons.OFFERER.name,
         )
+        educational_booking4.cancellationDate = datetime(2022, 7, 10)
+        repository.save(educational_booking4)
         educational_booking5 = EducationalBookingFactory(
             cancellationLimitDate=datetime(2022, 7, 10),
             status=BookingStatus.CONFIRMED.name,
@@ -616,6 +631,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             cancellationReason=BookingCancellationReasons.OFFERER.name,
         )
 
+        # wrong dateUsed
         factories.CollectiveBookingFactory(
             dateUsed=datetime(2022, 7, 11),
             venue=educational_booking1.venue,
@@ -632,6 +648,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking1.educationalBooking.educationalRedactor,
             bookingId=educational_booking1.id,
         )
+        # wrong venue
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking2.dateUsed,
             venue=venue2,
@@ -648,6 +665,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking2.educationalBooking.educationalRedactor,
             bookingId=educational_booking2.id,
         )
+        # wrong offerer
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking3.dateUsed,
             venue=educational_booking3.venue,
@@ -664,6 +682,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking3.educationalBooking.educationalRedactor,
             bookingId=educational_booking3.id,
         )
+        # wrong cancellationDate
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking4.dateUsed,
             venue=educational_booking4.venue,
@@ -680,6 +699,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking4.educationalBooking.educationalRedactor,
             bookingId=educational_booking4.id,
         )
+        # wrong cancellationLimitDate
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking5.dateUsed,
             venue=educational_booking5.venue,
@@ -696,6 +716,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking5.educationalBooking.educationalRedactor,
             bookingId=educational_booking5.id,
         )
+        # wrong cancellationReason
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking6.dateUsed,
             venue=educational_booking6.venue,
@@ -712,6 +733,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking6.educationalBooking.educationalRedactor,
             bookingId=educational_booking6.id,
         )
+        # wrong status
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking7.dateUsed,
             venue=educational_booking7.venue,
@@ -728,6 +750,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking7.educationalBooking.educationalRedactor,
             bookingId=educational_booking7.id,
         )
+        # wrong reimbursementDate
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking8.dateUsed,
             venue=educational_booking8.venue,
@@ -744,6 +767,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking8.educationalBooking.educationalRedactor,
             bookingId=educational_booking8.id,
         )
+        # wrong educationalInstitution
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking9.dateUsed,
             venue=educational_booking9.venue,
@@ -760,6 +784,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking9.educationalBooking.educationalRedactor,
             bookingId=educational_booking9.id,
         )
+        # wrong educationalYear
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking10.dateUsed,
             venue=educational_booking10.venue,
@@ -776,6 +801,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking10.educationalBooking.educationalRedactor,
             bookingId=educational_booking10.id,
         )
+        # wrong confirmationDate
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking11.dateUsed,
             venue=educational_booking11.venue,
@@ -792,6 +818,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking11.educationalBooking.educationalRedactor,
             bookingId=educational_booking11.id,
         )
+        # wrong confirmationLimitDate
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking12.dateUsed,
             venue=educational_booking12.venue,
@@ -808,6 +835,7 @@ class VerifyCollectiveBookingsDuplicationTest:
             educationalRedactor=educational_booking12.educationalBooking.educationalRedactor,
             bookingId=educational_booking12.id,
         )
+        # wrong educationalRedactor
         factories.CollectiveBookingFactory(
             dateUsed=educational_booking13.dateUsed,
             venue=educational_booking13.venue,
@@ -836,23 +864,23 @@ class VerifyCollectiveBookingsDuplicationTest:
         assert missing_collective_bookings_booking_ids == []
         assert set(invalid_collective_bookings_booking_ids) == set(
             [
-                educational_booking1.id,
-                educational_booking2.id,
-                educational_booking3.id,
-                educational_booking4.id,
-                educational_booking5.id,
-                educational_booking6.id,
-                educational_booking7.id,
-                educational_booking8.id,
-                educational_booking9.id,
-                educational_booking10.id,
-                educational_booking11.id,
-                educational_booking12.id,
-                educational_booking13.id,
+                (educational_booking1.id, "dateUsed"),
+                (educational_booking2.id, "venueId"),
+                (educational_booking3.id, "offererId"),
+                (educational_booking4.id, "cancellationDate"),
+                (educational_booking5.id, "cancellationLimitDate"),
+                (educational_booking6.id, "cancellationReason"),
+                (educational_booking7.id, "status"),
+                (educational_booking8.id, "reimbursementDate"),
+                (educational_booking9.id, "educationalInstitutionId"),
+                (educational_booking10.id, "educationalYearId"),
+                (educational_booking11.id, "confirmationDate"),
+                (educational_booking12.id, "confirmationLimitDate"),
+                (educational_booking13.id, "educationalRedactorId"),
             ]
         )
 
-    def should_return_False_if_data_is_missing(self):
+    def should_return_False_if_data_is_missing(self) -> None:
         # Given
         educational_booking = EducationalBookingFactory(dateUsed=datetime(2022, 7, 10))
 
@@ -871,7 +899,7 @@ class VerifyCollectiveBookingsDuplicationTest:
 
 @pytest.mark.usefixtures("db_session")
 class VerifyCollectiveDataDuplicationTest:
-    def should_return_true(self):
+    def should_return_true(self) -> None:
         # Given
         educational_booking = EducationalBookingFactory(
             stock__offer__extraData={
@@ -909,7 +937,7 @@ class VerifyCollectiveDataDuplicationTest:
             # Collective offer
             collectiveStock__collectiveOffer__offerId=educational_booking.stock.offer.id,
             collectiveStock__collectiveOffer__isActive=educational_booking.stock.offer.isActive,
-            collectiveStock__collectiveOffer__venue=educational_booking.stock.offer.venue,
+            collectiveStock__collectiveOffer__venue=educational_booking.venue,
             collectiveStock__collectiveOffer__name=educational_booking.stock.offer.name,
             collectiveStock__collectiveOffer__bookingEmail=educational_booking.stock.offer.bookingEmail,
             collectiveStock__collectiveOffer__description=educational_booking.stock.offer.description,
@@ -927,7 +955,7 @@ class VerifyCollectiveDataDuplicationTest:
         # Then
         assert success == True
 
-    def should_return_False_when_one_data_is_wrong(self):
+    def should_return_False_when_one_data_is_wrong(self) -> None:
         # Given
         educational_booking = EducationalBookingFactory(
             stock__offer__extraData={
@@ -965,7 +993,7 @@ class VerifyCollectiveDataDuplicationTest:
             # Collective offer
             collectiveStock__collectiveOffer__offerId=educational_booking.stock.offer.id,
             collectiveStock__collectiveOffer__isActive=educational_booking.stock.offer.isActive,
-            collectiveStock__collectiveOffer__venue=educational_booking.stock.offer.venue,
+            collectiveStock__collectiveOffer__venue=educational_booking.venue,
             collectiveStock__collectiveOffer__name=educational_booking.stock.offer.name,
             collectiveStock__collectiveOffer__bookingEmail=educational_booking.stock.offer.bookingEmail,
             collectiveStock__collectiveOffer__description=educational_booking.stock.offer.description,

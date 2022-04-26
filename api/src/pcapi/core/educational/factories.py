@@ -7,7 +7,6 @@ from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import api
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
-from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 from . import models
@@ -187,40 +186,19 @@ class CollectiveBookingFactory(BaseFactory):
 
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
-    venue = factory.SubFactory(offerers_factories.VenueFactory)
-    offerer = factory.SubFactory(offerers_factories.OffererFactory)
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
+    offerer = factory.SelfAttribute("collectiveStock.collectiveOffer.venue.managingOfferer")
+    venue = factory.SelfAttribute("collectiveStock.collectiveOffer.venue")
+    cancellationLimitDate = factory.LazyAttribute(
+        lambda self: api.compute_educational_booking_cancellation_limit_date(
+            self.collectiveStock.beginningDatetime, self.dateCreated
+        )
+    )
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
     confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
-
-    @factory.post_generation
-    def cancellation_limit_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
-        if extracted:
-            self.cancellationLimitDate = extracted
-        else:
-            self.cancellationLimitDate = api.compute_educational_booking_cancellation_limit_date(
-                self.collectiveStock.beginningDatetime, self.dateCreated
-            )
-        db.session.add(self)
-        db.session.commit()
-
-    @factory.post_generation
-    def cancellation_date(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
-        # the public.save_cancellation_date() psql trigger overrides the extracted cancellationDate
-        if extracted:
-            self.cancellationDate = extracted
-            db.session.add(self)
-            db.session.flush()
-
-    @classmethod
-    def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        kwargs["venue"] = kwargs["collectiveStock"].collectiveOffer.venue
-        kwargs["offerer"] = kwargs["collectiveStock"].collectiveOffer.venue.managingOfferer
-        return super()._create(model_class, *args, **kwargs)
 
 
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
@@ -238,7 +216,6 @@ class UsedCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.USED
     dateUsed = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=20))
-    cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=8))
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=12))
     confirmationDate = None
 
