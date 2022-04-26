@@ -5,6 +5,7 @@ import useNotification from 'components/hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
+import { coordonateToPosition } from 'new_components/ImageEditor/utils'
 import { Button, Divider } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -55,10 +56,6 @@ export const VenueImageEdit = ({
         const canvas = editorRef.current.getImage()
         const croppingRect = editorRef.current.getCroppingRect()
 
-        // croppingRect give us the top left corner of the cropped area
-        // where AvatarEditor expect the center of it
-        const coordonateToPosition = (coordonate: number, size: number) =>
-          coordonate + size / 2
         saveInitialPosition({
           x: coordonateToPosition(croppingRect.x, croppingRect.width),
           y: coordonateToPosition(croppingRect.y, croppingRect.height),
