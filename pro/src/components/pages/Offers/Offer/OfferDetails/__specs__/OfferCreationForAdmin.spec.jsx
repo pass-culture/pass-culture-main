@@ -8,7 +8,7 @@ import NotificationContainer from 'components/layout/Notification/NotificationCo
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
-import OfferLayoutContainer from '../../OfferLayoutContainer'
+import OfferLayout from '../../OfferLayout'
 
 import { setOfferValues } from './helpers'
 
@@ -31,7 +31,7 @@ const renderOffers = async (props, store, queryParams = null) => {
         >
           <Route path="/offre/">
             <>
-              <OfferLayoutContainer {...props} />
+              <OfferLayout {...props} />
               <NotificationContainer />
             </>
           </Route>

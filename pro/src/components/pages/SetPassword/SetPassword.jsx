@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, Fragment, useState } from 'react'
 import { Field, Form } from 'react-final-form'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import PasswordField from 'components/layout/form/fields/PasswordField'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
@@ -17,7 +18,10 @@ export const DIFFERENT_PASSWORDS_ERROR_MESSAGE =
   'Les deux mots de passe ne sont pas identiques'
 
 export const SetPassword = props => {
-  const { currentUser, history, location, match, showNotification } = props
+  const { currentUser, showNotification } = props
+  const history = useHistory()
+  const location = useLocation()
+  const match = useRouteMatch()
 
   redirectLoggedUser(history, location, currentUser)
 
@@ -151,8 +155,5 @@ SetPassword.defaultProps = {
 
 SetPassword.propTypes = {
   currentUser: PropTypes.shape(),
-  history: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
   showNotification: PropTypes.func.isRequired,
 }

@@ -1,6 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import { showNotification } from 'store/reducers/notificationReducer'
 
@@ -30,4 +28,4 @@ const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(withRouter, connect(null, mapDispatchToProps))(Stocks)
+export default connect(null, mapDispatchToProps)(Stocks)

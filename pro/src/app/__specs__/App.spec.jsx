@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
@@ -17,9 +18,11 @@ jest.mock('repository/pcapi/pcapi', () => ({
 const renderApp = ({ props, store }) => {
   return render(
     <Provider store={store}>
-      <App {...props}>
-        <p>Sub component</p>
-      </App>
+      <MemoryRouter>
+        <App {...props}>
+          <p>Sub component</p>
+        </App>
+      </MemoryRouter>
     </Provider>
   )
 }

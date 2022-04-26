@@ -1,6 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
@@ -23,6 +21,4 @@ export const mapDispatchToProps = dispatch => ({
     ),
 })
 
-export default compose(connect(mapStateToProps, mapDispatchToProps))(
-  withRouter(SetPassword)
-)
+export default connect(mapStateToProps, mapDispatchToProps)(SetPassword)
