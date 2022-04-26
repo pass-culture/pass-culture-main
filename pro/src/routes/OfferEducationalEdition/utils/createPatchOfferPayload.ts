@@ -1,18 +1,11 @@
 import isEqual from 'lodash.isequal'
 
 import {
-  EducationalOfferModelPayload,
+  DeepPartialEducationalOfferModelPayload,
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
-
-type DeepPartialEducationalOfferModelPayload = Omit<
-  Partial<EducationalOfferModelPayload>,
-  'extraData'
-> & {
-  extraData?: Partial<EducationalOfferModelPayload['extraData']>
-}
 
 const serializer = {
   title: (

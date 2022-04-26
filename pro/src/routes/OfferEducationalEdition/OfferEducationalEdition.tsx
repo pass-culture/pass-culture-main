@@ -20,6 +20,7 @@ import {
 import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
+import patchCollectiveOfferTemplateAdapter from 'routes/OfferEducationalStockCreation/adapters/patchCollectiveOfferTemplate'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 
@@ -42,6 +43,9 @@ const OfferEducationalEdition = (): JSX.Element => {
   const enableIndividualAndCollectiveSeparation = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
+  const enableNewCollectiveModel = useActiveFeature(
+    'ENABLE_NEW_COLLECTIVE_MODEL'
+  )
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -57,7 +61,11 @@ const OfferEducationalEdition = (): JSX.Element => {
     const patchOfferId = enableIndividualAndCollectiveSeparation
       ? (offer as CollectiveOffer).offerId || ''
       : offerId
-    const offerResponse = await patchOfferAdapter({
+    const adapter =
+      enableNewCollectiveModel && isShowcase
+        ? patchCollectiveOfferTemplateAdapter
+        : patchOfferAdapter
+    const offerResponse = await adapter({
       offerId: patchOfferId,
       offer: offerFormValues,
       initialValues,
@@ -137,8 +145,8 @@ const OfferEducationalEdition = (): JSX.Element => {
 
       const offerCategory = offerSubcategory
         ? categories.payload.educationalCategories.find(
-            ({ id }) => offerSubcategory.categoryId === id
-          )
+          ({ id }) => offerSubcategory.categoryId === id
+        )
         : undefined
 
       const userOfferers = offerers.payload.filter(offerer =>

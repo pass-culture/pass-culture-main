@@ -87,6 +87,13 @@ export enum Mode {
   READ_ONLY,
 }
 
+export type DeepPartialEducationalOfferModelPayload = Omit<
+  Partial<EducationalOfferModelPayload>,
+  'extraData'
+> & {
+  extraData?: Partial<EducationalOfferModelPayload['extraData']>
+}
+
 export type EducationalOfferModelPayload = {
   offererId: string
   venueId: string
