@@ -5,6 +5,10 @@ import { getDataURLFromImageURL } from 'api/utils/api'
 import useNotification from 'components/hooks/useNotification'
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import DialogBox from 'new_components/DialogBox'
+import {
+  coordonateToPosition,
+  heightCropPercentToScale,
+} from 'new_components/ImageEditor/utils'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 
 import { ImportFromComputer } from '../ImportFromComputer/ImportFromComputer'
@@ -52,16 +56,22 @@ export const VenueImageUploaderModal = ({
   const [isUploading, setIsUploading] = useState(false)
   // First version of the back don't use width_crop_percent which is needed to display the original image with the correct crop
   const [editorInitialScale, setEditorInitialScale] = useState(
-    venueBanner ? 1 / venueBanner.crop_params.height_crop_percent : 1
+    venueBanner
+      ? heightCropPercentToScale(venueBanner.crop_params.height_crop_percent)
+      : 1
   )
   const [editorInitialPosition, setEditorInitialPosition] = useState({
     x: venueBanner
-      ? venueBanner.crop_params.x_crop_percent +
-        venueBanner.crop_params.width_crop_percent / 2
+      ? coordonateToPosition(
+          venueBanner.crop_params.x_crop_percent,
+          venueBanner.crop_params.width_crop_percent
+        )
       : 0.5,
     y: venueBanner
-      ? venueBanner.crop_params.y_crop_percent +
-        venueBanner.crop_params.height_crop_percent / 2
+      ? coordonateToPosition(
+          venueBanner.crop_params.y_crop_percent,
+          venueBanner.crop_params.height_crop_percent
+        )
       : 0.5,
   })
   const notification = useNotification()
