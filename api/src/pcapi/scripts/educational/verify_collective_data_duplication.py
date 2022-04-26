@@ -3,16 +3,20 @@ from typing import Tuple
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 
 
-def verify_collective_bookings_duplication() -> Tuple[bool, list[int], list[int]]:
+def verify_collective_bookings_duplication() -> Tuple[bool, list[int], list[Tuple[int, str]]]:
     print("Veryfing bookings...")
 
     missing_collective_bookings_booking_ids = []
@@ -42,8 +46,11 @@ def verify_collective_bookings_duplication() -> Tuple[bool, list[int], list[int]
             "offererId": booking.offererId,
             "cancellationDate": booking.cancellationDate,
             "cancellationLimitDate": booking.cancellationLimitDate,
-            "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,
-            "status": educational_booking.status.value if educational_booking.status else booking.status.value,
+            "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,  # type: ignore [attr-defined]
+            "status": {
+                "educationalBookingStatus": educational_booking.status.value if educational_booking.status else None,  # type: ignore [attr-defined]
+                "bookingStatus": booking.status.value,  # type: ignore [attr-defined]
+            },
             "reimbursementDate": booking.reimbursementDate,
             "educationalInstitutionId": educational_booking.educationalInstitutionId,
             "educationalYearId": educational_booking.educationalYearId,
@@ -51,84 +58,97 @@ def verify_collective_bookings_duplication() -> Tuple[bool, list[int], list[int]
             "confirmationLimitDate": educational_booking.confirmationLimitDate,
             "educationalRedactorId": educational_booking.educationalRedactorId,
         }
-
         for key, value in data_to_verify.items():
             if key == "cancellationReason":
                 is_equal = (
-                    associated_collective_booking.cancellationReason.value == value
+                    associated_collective_booking.cancellationReason.value == value  # type: ignore [attr-defined]
                     if associated_collective_booking.cancellationReason
                     else associated_collective_booking.cancellationReason == value
                 )
                 if not is_equal:
-                    invalid_collective_bookings_booking_ids.append(educational_booking.booking.id)
+                    invalid_collective_bookings_booking_ids.append((educational_booking.booking.id, key))
                     break
-
                 continue
-
             if key == "status":
-                is_equal = associated_collective_booking.status.value == value
+                if (
+                    value["bookingStatus"] == BookingStatus.CANCELLED
+                    and value["educationalBookingStatus"] == EducationalBookingStatus.REFUSED
+                ):
+                    is_equal = (
+                        associated_collective_booking.status.value == CollectiveBookingStatus.CANCELLED.value  # type: ignore [attr-defined]
+                        and associated_collective_booking.cancellationReason.value  # type: ignore [union-attr]
+                        == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE.value
+                    )
+                else:
+                    is_equal = associated_collective_booking.status.value == value["bookingStatus"]  # type: ignore [attr-defined]
                 if not is_equal:
-                    invalid_collective_bookings_booking_ids.append(educational_booking.booking.id)
+                    invalid_collective_bookings_booking_ids.append((educational_booking.booking.id, key))
                     break
-
                 continue
-
+            if key == "cancellationDate":
+                if value is None:
+                    continue
+                value_set_for_date = (value.year, value.month, value.day, value.hour, value.minute)
+                collective_booking_cancellationDate = getattr(associated_collective_booking, key)
+                collective_bookings_set_for_date = (
+                    collective_booking_cancellationDate.year,
+                    collective_booking_cancellationDate.month,
+                    collective_booking_cancellationDate.day,
+                    collective_booking_cancellationDate.hour,
+                    collective_booking_cancellationDate.minute,
+                )
+                is_equal = value_set_for_date == collective_bookings_set_for_date
+                if not is_equal:
+                    invalid_collective_bookings_booking_ids.append((educational_booking.booking.id, key))
+                    break
+                continue
             if getattr(associated_collective_booking, key) != value:
-                invalid_collective_bookings_booking_ids.append(educational_booking.booking.id)
+                invalid_collective_bookings_booking_ids.append((educational_booking.booking.id, key))
                 break
-
     if len(missing_collective_bookings_booking_ids) > 0:
         print(
             f"\033[91mERROR: Missing duplicated collective bookings for ids: {missing_collective_bookings_booking_ids}\033[0m"
         )
-
     if len(invalid_collective_bookings_booking_ids) > 0:
         print(
             f"\033[91mERROR: Invalid duplicated collective bookings for ids: {invalid_collective_bookings_booking_ids}\033[0m"
         )
-
     if len(missing_collective_bookings_booking_ids) > 0 or len(invalid_collective_bookings_booking_ids) > 0:
         return (False, missing_collective_bookings_booking_ids, invalid_collective_bookings_booking_ids)
-
     return (True, missing_collective_bookings_booking_ids, invalid_collective_bookings_booking_ids)
 
 
-def verify_collective_offers_duplication() -> Tuple[bool, list[int], list[int], list[int], list[int]]:
+def verify_collective_offers_duplication() -> Tuple[
+    bool, list[int], list[Tuple[int, str]], list[int], list[Tuple[int, str]]
+]:
     print("Veryfing offers...")
-
     missing_collective_offers_offer_ids: list[int] = []
-    invalid_collective_offers_offer_ids: list[int] = []
+    invalid_collective_offers_offer_ids: list[Tuple[int, str]] = []
     missing_collective_offer_templates_offer_ids: list[int] = []
-    invalid_collective_offer_templates_offer_ids: list[int] = []
-
+    invalid_collective_offer_templates_offer_ids: list[Tuple[int, str]] = []
     educational_offers: list[Offer] = (
         Offer.query.filter(Offer.isEducational == True).options(joinedload(Offer.stocks)).all()
     )
-
     collective_offers: list[CollectiveOffer] = CollectiveOffer.query.all()
     collective_offer_templates: list[CollectiveOfferTemplate] = CollectiveOfferTemplate.query.all()
-
     collective_offers_per_id = {collective_offer.offerId: collective_offer for collective_offer in collective_offers}
     collective_offer_templates_per_id = {
         collective_offer_template.offerId: collective_offer_template
         for collective_offer_template in collective_offer_templates
     }
-
     for educational_offer in educational_offers:
-        is_showcase = educational_offer.extraData.get("isShowcase", False) if educational_offer.extraData else False
-
+        is_showcase = educational_offer.extraData.get("isShowcase", False) if educational_offer.extraData else False  # type: ignore [union-attr]
         array_of_ids = collective_offer_templates_per_id if is_showcase else collective_offers_per_id
         associated_collective_offer_or_offer_template = array_of_ids.get(educational_offer.id)
-
         if associated_collective_offer_or_offer_template is None:
             array_of_missing_ids = (
                 missing_collective_offer_templates_offer_ids if is_showcase else missing_collective_offers_offer_ids
             )
             array_of_missing_ids.append(educational_offer.id)
             continue
-
-        extraData: dict = educational_offer.extraData
-
+        extraData: dict = educational_offer.extraData  # type: ignore [assignment]
+        contact_phone = extraData.get("contactPhone", None) if extraData else None
+        contact_email = extraData.get("contactEmail", None) if extraData else None
         data_to_verify = {
             "isActive": educational_offer.isActive,
             "venueId": educational_offer.venueId,
@@ -138,8 +158,8 @@ def verify_collective_offers_duplication() -> Tuple[bool, list[int], list[int], 
             "durationMinutes": educational_offer.durationMinutes,
             "subcategoryId": educational_offer.subcategoryId,
             "students": set(extraData.get("students", [])) if extraData else [],
-            "contactEmail": extraData.get("contactEmail", None) if extraData else None,
-            "contactPhone": extraData.get("contactPhone", None) if extraData else None,
+            "contactEmail": contact_email.strip() if contact_email else contact_email,
+            "contactPhone": contact_phone.strip() if contact_phone else contact_phone,
             "offerVenue": extraData.get("offerVenue", None) if extraData else None,
         }
 
@@ -155,16 +175,18 @@ def verify_collective_offers_duplication() -> Tuple[bool, list[int], list[int], 
 
             if key == "students":
                 collective_offer_students = set(
-                    student.value for student in associated_collective_offer_or_offer_template.students
+                    student.value for student in associated_collective_offer_or_offer_template.students  # type: ignore [attr-defined]
                 )
 
                 if collective_offer_students != value:
-                    array_if_invalid_ids.append(educational_offer.id)
+                    array_if_invalid_ids.append((educational_offer.id, key))
                     break
 
                 continue
 
             if key == "offerVenue":
+                if associated_collective_offer_or_offer_template.offerVenue is None and value is None:  # type: ignore [attr-defined]
+                    continue
                 offer_venue_data_to_verify = {
                     "addressType": value.get("addressType", None),
                     "otherAddress": value.get("otherAddress", None),
@@ -172,14 +194,17 @@ def verify_collective_offers_duplication() -> Tuple[bool, list[int], list[int], 
                 }
 
                 for offer_venue_key, offer_venue_value in offer_venue_data_to_verify.items():
-                    if associated_collective_offer_or_offer_template.offerVenue[offer_venue_key] != offer_venue_value:
-                        array_if_invalid_ids.append(educational_offer.id)
+                    if associated_collective_offer_or_offer_template.offerVenue[offer_venue_key] != offer_venue_value:  # type: ignore [attr-defined]
+                        array_if_invalid_ids.append((educational_offer.id, key))
                         break
 
                 continue
-
+            if key == "contactEmail" and value is None:
+                continue
+            if key == "contactPhone" and value is None:
+                continue
             if getattr(associated_collective_offer_or_offer_template, key) != value:
-                array_if_invalid_ids.append(educational_offer.id)
+                array_if_invalid_ids.append((educational_offer.id, key))
                 break
 
     if len(missing_collective_offer_templates_offer_ids) > 0:
@@ -225,12 +250,11 @@ def verify_collective_offers_duplication() -> Tuple[bool, list[int], list[int], 
     )
 
 
-def verify_collective_stocks_duplication() -> Tuple[bool, list[int], list[int]]:
+def verify_collective_stocks_duplication() -> Tuple[bool, list[int], list[Tuple[int, str]]]:
     print("Veryfing stocks...")
 
     missing_collective_stocks_stock_ids: list[int] = []
-    invalid_collective_stocks_stock_ids: list[int] = []
-
+    invalid_collective_stocks_stock_ids: list[Tuple[int, str]] = []
     educational_stocks: list[Stock] = (
         Stock.query.join(Stock.offer).filter(Offer.isEducational == True, Stock.isSoftDeleted == False).all()
     )
@@ -240,7 +264,7 @@ def verify_collective_stocks_duplication() -> Tuple[bool, list[int], list[int]]:
 
     for educational_stock in educational_stocks:
         # if offer is showcase we dont check the stock because a CollectiveOfferTemplate does not have any stock
-        if educational_stock.offer.extraData and educational_stock.offer.extraData.get("isShowcase", False) is True:
+        if educational_stock.offer.extraData and educational_stock.offer.extraData.get("isShowcase", False) is True:  # type: ignore [union-attr]
             continue
 
         associated_collective_stock = collective_stocks_per_id.get(educational_stock.id)
@@ -259,7 +283,7 @@ def verify_collective_stocks_duplication() -> Tuple[bool, list[int], list[int]]:
 
         for key, value in data_to_verify.items():
             if getattr(associated_collective_stock, key) != value:
-                invalid_collective_stocks_stock_ids.append(educational_stock.id)
+                invalid_collective_stocks_stock_ids.append((educational_stock.id, key))
                 break
 
     if len(missing_collective_stocks_stock_ids) > 0:
