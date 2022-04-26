@@ -4,7 +4,11 @@ import { useHistory } from 'react-router-dom'
 
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
-import { OfferIndividualForm } from 'new_components/OfferIndividualForm'
+import {
+  OfferIndividualForm,
+  IOfferIndividualFormValues,
+  validationSchema,
+} from 'new_components/OfferIndividualForm'
 import {
   CREATION_STEP_PATTERNS,
   OFFER_FORM_STEP_IDS,
@@ -13,7 +17,11 @@ import {
 import { ActionBar } from '../ActionBar'
 import { buildStepList } from '../utils'
 
-const Informations = (): JSX.Element => {
+interface IInformationsProps {
+  initialValues: IOfferIndividualFormValues
+}
+
+const Informations = ({ initialValues }: IInformationsProps): JSX.Element => {
   const history = useHistory()
 
   const stepList = buildStepList({ stepPatternList: CREATION_STEP_PATTERNS })
@@ -22,11 +30,10 @@ const Informations = (): JSX.Element => {
     const testCreatedOfferId = 'AL4Q'
     history.push(`/offre/${testCreatedOfferId}/v3/creation/individuelle/stocks`)
   }
-  const initialValues = {}
+
   const onSubmit = () => {
     // TODO submit function
   }
-  const validationSchema = {}
 
   const { resetForm, ...formik } = useFormik({
     initialValues,
