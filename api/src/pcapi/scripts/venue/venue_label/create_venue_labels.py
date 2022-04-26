@@ -9,6 +9,7 @@ def create_venue_labels():  # type: ignore [no-untyped-def]
         "CCN - Centre chorégraphique national",
         "CDCN - Centre de développement chorégraphique national",
         "CDN - Centre dramatique national",
+        "Centre Culturel de Rencontre",
         "Cinéma d'art et d'essai",
         "CNAREP - Centre national des arts de la rue et de l'espace public",
         "CNCM - Centre national de création musicale",
