@@ -1,0 +1,21 @@
+.stepper {
+  margin-top: rem(32px);
+}
+.content {
+  margin-top: rem(32px);
+}
+
+.action-bar {
+  background: $white;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  box-shadow: 0 0 3.75rem $black-shadow;
+
+  .inner {
+    width: rem(802px);
+    margin: auto;
+    padding: rem(20px) 0;
+  }
+}
