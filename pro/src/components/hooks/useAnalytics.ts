@@ -1,4 +1,8 @@
-import { getAnalytics, setUserId } from '@firebase/analytics'
+import {
+  getAnalytics,
+  initializeAnalytics,
+  setUserId,
+} from '@firebase/analytics'
 import { logEvent as analyticsLogEvent } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import { useRef } from 'react'
@@ -31,6 +35,11 @@ const useAnalytics = (): IUseAnalyticsReturn => {
 
   if (!app.current) {
     app.current = firebase.initializeApp(firebaseConfig)
+    initializeAnalytics(app.current, {
+      config: {
+        send_page_view: false,
+      },
+    })
   }
 
   const analyticsProvider = getAnalytics(app.current)
