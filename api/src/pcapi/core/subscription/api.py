@@ -346,9 +346,9 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
         user.dateOfBirth,  # type: ignore [arg-type]
         datetime.datetime.utcnow() + datetime.timedelta(days=settings.UBBLE_SUBSCRIPTION_LIMITATION_DAYS),  # type: ignore [arg-type]
     )
-    eligbility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
-    eligbility_ranges = [age + 1 for age in eligbility_ranges]
-    if future_age > user.age and future_age in eligbility_ranges:  # type: ignore [operator]
+    eligibility_ranges = users_constants.ELIGIBILITY_UNDERAGE_RANGE + [users_constants.ELIGIBILITY_AGE_18]
+    eligibility_ranges = [age + 1 for age in eligibility_ranges]
+    if future_age > user.age and future_age in eligibility_ranges:  # type: ignore [operator]
         return True
 
     return False
