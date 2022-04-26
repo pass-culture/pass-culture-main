@@ -25,6 +25,7 @@ from pcapi.routes.serialization.venues_serialize import VenueResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
+from pcapi.utils.image_conversion import DO_NOT_CROP
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
@@ -39,7 +40,15 @@ from . import blueprint
 @spectree_serialize(response_model=GetVenueResponseModel, api=blueprint.pro_private_schema)
 def get_venue(venue_id: str) -> GetVenueResponseModel:
     venue = load_or_404(Venue, venue_id)
+
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+
+    if venue.bannerUrl is not None:  # type: ignore [attr-defined]
+        if venue.bannerMeta is None:  # type: ignore [attr-defined]
+            venue.bannerMeta = {}  # type: ignore [attr-defined]
+
+        if "crop_params" not in venue.bannerMeta:  # type: ignore [attr-defined]
+            venue.bannerMeta["crop_params"] = DO_NOT_CROP  # type: ignore [attr-defined]
 
     return GetVenueResponseModel.from_orm(venue)
 
