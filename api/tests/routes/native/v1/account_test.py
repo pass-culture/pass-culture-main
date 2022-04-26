@@ -36,6 +36,7 @@ from pcapi.core.users import testing as users_testing
 from pcapi.core.users.api import create_phone_validation_token
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.email import update as email_update
+from pcapi.core.users.models import ActivityEnum
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
@@ -230,7 +231,19 @@ class AccountTest:
         to /me returns a generic maintenance message.
         """
         user = users_factories.UserFactory(
-            email=self.identifier, dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5)
+            activity=ActivityEnum.STUDENT.value,
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            email=self.identifier,
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(
+                risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
+            ),
+            eligibilityType=users_models.EligibilityType.AGE18,
+            status=fraud_models.FraudCheckStatus.OK,
         )
         client.with_token(user.email)
 
