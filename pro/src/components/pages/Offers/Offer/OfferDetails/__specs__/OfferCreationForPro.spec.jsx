@@ -19,7 +19,7 @@ import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiCategories } from 'utils/fakeApi'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 
-import OfferLayoutContainer from '../../OfferLayoutContainer'
+import OfferLayout from '../../OfferLayout'
 
 import {
   findInputErrorForField,
@@ -62,7 +62,7 @@ const renderOffers = async (props, store, queryParams = null) => {
           ]}
         >
           <>
-            <OfferLayoutContainer {...props} />
+            <OfferLayout {...props} />
             <NotificationContainer />
           </>
         </Route>

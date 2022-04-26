@@ -8,7 +8,7 @@ import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
-import SignupConfirmationContainer from './SignupConfirmation/SignupConfirmationContainer'
+import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
 import SignupFormContainer from './SignupForm/SignupFormContainer'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
 
@@ -34,7 +34,7 @@ const Signup = ({ location }) => {
         <Switch location={location}>
           <Route component={SignupFormContainer} exact path="/inscription" />
           <Route
-            component={SignupConfirmationContainer}
+            component={SignupConfirmation}
             path="/inscription/confirmation"
           />
         </Switch>

@@ -1,6 +1,4 @@
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router'
-import { compose } from 'redux'
 
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
@@ -15,4 +13,4 @@ export const mapStateToProps = state => {
   }
 }
 
-export default compose(withRouter, connect(mapStateToProps))(Header)
+export default connect(mapStateToProps)(Header)

@@ -6,7 +6,7 @@ import { MemoryRouter, Route } from 'react-router'
 
 import { apiV1 } from 'api/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import OfferLayoutContainer from 'components/pages/Offers/Offer/OfferLayoutContainer'
+import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -49,7 +49,7 @@ const renderOffer = async (props, store, pathname, queryParams = null) => {
           ]}
         >
           <>
-            <OfferLayoutContainer {...props} />
+            <OfferLayout {...props} />
             <NotificationContainer />
           </>
         </Route>

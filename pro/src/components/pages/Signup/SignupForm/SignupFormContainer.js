@@ -1,12 +1,12 @@
 import { removeWhitespaces } from 'react-final-form-utils'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import { compose } from 'redux'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import { removeErrors } from 'store/reducers/errors'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { withRouter } from 'utils/withRouter'
 
 import SignupForm from './SignupForm'
 

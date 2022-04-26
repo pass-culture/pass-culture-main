@@ -17,7 +17,7 @@ const OffererDetailsLayout = () => {
   return (
     <Switch>
       <Route exact path={`${match.path}`}>
-        <OffererDetailsContainer />
+        <OffererDetailsContainer match={match} />
       </Route>
       <Route path={`${match.path}/lieux`}>
         {isVenueV2Enabled ? <VenueLayout /> : <VenueV1Layout />}

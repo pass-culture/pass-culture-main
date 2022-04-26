@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import { v4 as generateRandomUuid } from 'uuid'
 
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
@@ -29,8 +29,6 @@ import PriceErrorHTMLNotification from './PriceErrorHTMLNotification'
 const EMPTY_STRING_VALUE = ''
 
 const ThingStocks = ({
-  history,
-  location,
   offer,
   showErrorNotification,
   showSuccessNotification,
@@ -47,6 +45,9 @@ const ThingStocks = ({
   const [stock, setStock] = useState(null)
   const displayExpirationDatetime =
     stock && stock.activationCodesExpirationDatetime !== null
+  const history = useHistory()
+  const location = useLocation()
+
   const loadStocks = useCallback(() => {
     return pcapi.loadStocks(offerId).then(receivedStocks => {
       if (!receivedStocks.stocks.length) {
@@ -309,8 +310,6 @@ const ThingStocks = ({
 }
 
 ThingStocks.propTypes = {
-  history: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
   offer: PropTypes.shape().isRequired,
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
