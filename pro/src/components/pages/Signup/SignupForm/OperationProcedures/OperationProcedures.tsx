@@ -1,13 +1,16 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'
 
-import useAnalytics from 'components/hooks/useAnalytics'
 import Icon from 'components/layout/Icon'
 import './OperationProcedures.scss'
+import { Events } from 'core/FirebaseEvents/constants'
+import { RootState } from 'store/reducers'
 
 const OperatingProcedures = (): JSX.Element => {
   const location = useLocation()
-  const analytics = useAnalytics()
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+
   return (
     <div className="sign-up-operating-procedures">
       <div>
@@ -17,7 +20,9 @@ const OperatingProcedures = (): JSX.Element => {
       <a
         className="tertiary-link"
         href="https://passculture.zendesk.com/hc/fr/articles/4411999179665"
-        onClick={() => analytics.logHelpCenterClick(location.pathname)}
+        onClick={() =>
+          logEvent(Events.CLICKED_HELP_CENTER, { from: location.pathname })
+        }
         rel="noopener noreferrer"
         target="_blank"
       >

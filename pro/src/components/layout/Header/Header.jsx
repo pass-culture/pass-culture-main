@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { reinitializeData } from 'redux-saga-data'
 
-import useAnalytics from 'components/hooks/useAnalytics'
+import { Events } from 'core/FirebaseEvents/constants'
 import { signout } from 'repository/pcapi/pcapi'
 import { resetIsInitialized } from 'store/user/actions'
 
@@ -21,17 +21,16 @@ import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
 const Header = ({ isStyleguideActive, isUserAdmin }) => {
   const dispatch = useDispatch()
   const history = useHistory()
-  const analytics = useAnalytics()
+  const logEvent = useSelector(state => state.app.logEvent)
   const location = useLocation()
-
   const onSignoutClick = useCallback(() => {
-    analytics.logLogoutClick(location.pathname)
+    logEvent(Events.CLICKED_LOGOUT, { from: location.pathname })
     signout().then(() => {
       dispatch(resetIsInitialized())
       dispatch(reinitializeData())
       history.push('/connexion')
     })
-  }, [dispatch, history, analytics, location.pathname])
+  }, [dispatch, history, logEvent, location.pathname])
 
   return (
     <header className="menu-v2">
@@ -41,7 +40,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
             className="nav-item"
             isUserAdmin={isUserAdmin}
             onClick={() => {
-              analytics.logProClick(location.pathname)
+              logEvent(Events.CLICKED_PRO, { from: location.pathname })
             }}
           />
         </div>
@@ -50,7 +49,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              analytics.logHomeClick(location.pathname)
+              logEvent(Events.CLICKED_HOME, { from: location.pathname })
             }}
             role="menuitem"
             to={isUserAdmin ? '/structures' : '/accueil'}
@@ -62,7 +61,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              analytics.logTicketClick(location.pathname)
+              logEvent(Events.CLICKED_TICKET, { from: location.pathname })
             }}
             role="menuitem"
             to="/guichet"
@@ -74,7 +73,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              analytics.logOfferClick(location.pathname)
+              logEvent(Events.CLICKED_OFFER, { from: location.pathname })
             }}
             role="menuitem"
             to="/offres"
@@ -86,7 +85,7 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              analytics.logBookingClick(location.pathname)
+              logEvent(Events.CLICKED_BOOKING, { from: location.pathname })
             }}
             role="menuitem"
             to="/reservations"
@@ -98,7 +97,9 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
           <NavLink
             className="nav-item"
             onClick={() => {
-              analytics.logReimbursementClick(location.pathname)
+              logEvent(Events.CLICKED_REIMBURSEMENT, {
+                from: location.pathname,
+              })
             }}
             role="menuitem"
             to="/remboursements/justificatifs"

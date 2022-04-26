@@ -1,12 +1,14 @@
 import { setUser as setSentryUser } from '@sentry/browser'
 import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { matchPath } from 'react-router'
 
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
 import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
+import { setLogEvent } from 'store/app/actions'
 import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 export const App = props => {
@@ -18,12 +20,17 @@ export const App = props => {
     loadFeatures,
     location,
   } = props
-
+  const dispatch = useDispatch()
   const [isReady, setIsReady] = useState(false)
-  const [isAnalyticsInitialized, setIsAnalyticsInitialized] = useState(false)
   const { isUserInitialized, currentUser } = useCurrentUser()
-  const analytics = useAnalytics()
+  const { logEvent } = useAnalytics(currentUser?.id)
   const currentPathname = window.location.pathname
+
+  useEffect(() => {
+    if (logEvent) {
+      dispatch(setLogEvent(logEvent))
+    }
+  }, [dispatch, logEvent])
 
   useEffect(() => {
     if (!isFeaturesInitialized) {
@@ -51,21 +58,9 @@ export const App = props => {
 
     if (isUserInitialized && currentUser) {
       setSentryUser({ id: currentUser.id })
-      if (!isAnalyticsInitialized) {
-        analytics.setAnalyticsUserId(currentUser.id)
-        setIsAnalyticsInitialized(true)
-      }
       setIsReady(true)
     }
-  }, [
-    analytics,
-    currentUser,
-    currentPathname,
-    history,
-    location,
-    isUserInitialized,
-    isAnalyticsInitialized,
-  ])
+  }, [currentUser, currentPathname, history, location, isUserInitialized])
 
   useEffect(() => {
     window.scrollTo(0, 0)
