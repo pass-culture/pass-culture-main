@@ -5,27 +5,19 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
+from pcapi.utils.image_conversion import DO_NOT_CROP
 
 from tests.conftest import TestClient
 
 
+@pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    # if bannerMeta is not None, the response should only serialize some
-    # fields, others should be ignored.
-    @pytest.mark.parametrize(
-        "banner_meta_in,banner_meta_out",
-        [
-            ({"image_credit": "someone"}, {"image_credit": "someone"}),
-            ({"random": "content", "should": "be_ignored"}, {}),
-            (None, None),
-        ],
-    )
-    @pytest.mark.usefixtures("db_session")
-    def when_user_has_rights_on_managing_offerer(self, client, banner_meta_in, banner_meta_out):
+    def when_user_has_rights_on_managing_offerer(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offerers_factories.VenueFactory(
-            name="L'encre et la plume", managingOfferer=user_offerer.offerer, bannerMeta=banner_meta_in
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
         )
         bank_information = offers_factories.BankInformationFactory(venue=venue)
 
@@ -95,7 +87,7 @@ class Returns200Test:
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,
             "bannerUrl": venue.bannerUrl,
-            "bannerMeta": banner_meta_out,
+            "bannerMeta": None,
             "nonHumanizedId": venue.id,
         }
 
@@ -106,6 +98,168 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         assert response.json == expected_serialized_venue
+
+    def should_ignore_invalid_banner_metadata(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "crop_params": {
+                    "x_crop_percent": 0.29,
+                    "y_crop_percent": 0.21,
+                    "height_crop_percent": 0.42,
+                    "width_crop_percent": 0.42,
+                },
+                "image_credit": "test",
+                "random": "content",
+                "should": "be_ignored",
+            },
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"] == {
+            "crop_params": {
+                "x_crop_percent": 0.29,
+                "y_crop_percent": 0.21,
+                "height_crop_percent": 0.42,
+                "width_crop_percent": 0.42,
+            },
+            "image_credit": "test",
+        }
+
+    def should_not_have_banner_metadata_when_venue_has_not_picture(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"] is None
+
+    def should_set_default_crop_params_when_venue_picture_has_no_crop_params(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta=None,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"]["crop_params"] == {
+            "x_crop_percent": DO_NOT_CROP.x_crop_percent,
+            "y_crop_percent": DO_NOT_CROP.y_crop_percent,
+            "height_crop_percent": DO_NOT_CROP.height_crop_percent,
+            "width_crop_percent": DO_NOT_CROP.width_crop_percent,
+        }
+
+    def should_not_override_metadata_when_venue_picture_has_no_crop_params(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={"image_credit": "test", "original_image_url": "http://example.com/original_image.png"},
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"] == {
+            "crop_params": {
+                "x_crop_percent": DO_NOT_CROP.x_crop_percent,
+                "y_crop_percent": DO_NOT_CROP.y_crop_percent,
+                "height_crop_percent": DO_NOT_CROP.height_crop_percent,
+                "width_crop_percent": DO_NOT_CROP.width_crop_percent,
+            },
+            "image_credit": "test",
+            "original_image_url": "http://example.com/original_image.png",
+        }
+
+    def should_not_override_metadata_when_venue_picture_has_crop_params(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "crop_params": {
+                    "x_crop_percent": 0.29,
+                    "y_crop_percent": 0.21,
+                    "height_crop_percent": 0.42,
+                    "width_crop_percent": 0.42,
+                },
+                "image_credit": "test 2",
+            },
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"] == {
+            "crop_params": {
+                "x_crop_percent": 0.29,
+                "y_crop_percent": 0.21,
+                "height_crop_percent": 0.42,
+                "width_crop_percent": 0.42,
+            },
+            "image_credit": "test 2",
+        }
+
+    def should_complete_crop_params_when_venue_picture_has_incomplete_crop_params(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={"crop_params": {"x_crop_percent": 0.29, "y_crop_percent": 0.21, "height_crop_percent": 0.42}},
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"]["crop_params"] == {
+            "x_crop_percent": 0.29,
+            "y_crop_percent": 0.21,
+            "height_crop_percent": 0.42,
+            "width_crop_percent": DO_NOT_CROP.width_crop_percent,
+        }
+
+    def should_not_change_crop_params_when_venue_picture_has_complete_crop_params(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={
+                "crop_params": {
+                    "x_crop_percent": 0.29,
+                    "y_crop_percent": 0.21,
+                    "height_crop_percent": 0.42,
+                    "width_crop_percent": 0.42,
+                },
+                "image_credit": "test",
+            },
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"]["crop_params"] == {
+            "x_crop_percent": 0.29,
+            "y_crop_percent": 0.21,
+            "height_crop_percent": 0.42,
+            "width_crop_percent": 0.42,
+        }
 
 
 class Returns403Test:
