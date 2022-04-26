@@ -258,9 +258,7 @@ class UserProfileResponse(BaseModel):
         signup process UNLESS the beneficiary signup process has been
         deactivated: return a generic maintenance message in this case.
         """
-        if not subscription_api.get_allowed_identity_check_methods(user):
-            # no identity check methods found => no beneficiary signup
-            # available
+        if subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.MAINTENANCE:
             return SubscriptionMessage.beneficiary_maintenance_message()
 
         latest_message = subscription_api.get_latest_subscription_message(user)
