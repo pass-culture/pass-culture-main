@@ -197,7 +197,9 @@ describe('screens | OfferEducational : creation offer type step', () => {
         'my description that is valid' +
         Array.from({ length: 50 }).map(() => 'description pour tester')
 
-      await userEvent.type(description, descriptionString)
+      // hack - to be fixed
+      await userEvent.click(description)
+      await userEvent.paste(descriptionString)
 
       expect(descriptionString).toContain(description.textContent)
 
