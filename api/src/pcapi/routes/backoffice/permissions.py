@@ -6,6 +6,7 @@ from pcapi.core.permissions import utils as perm_utils
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
+from ...models.api_errors import ApiErrors
 from .serialization import ListPermissionResponseModel
 from .serialization import ListRoleResponseModel
 from .serialization import Permission
@@ -62,3 +63,16 @@ def create_role(body: RoleRequestModel) -> Role:
 def update_role(id_: int, body: RoleRequestModel) -> Role:
     updated_role = perm_api.update_role(id_=id_, name=body.name, permission_ids=body.permissionIds)
     return Role.from_orm(updated_role)
+
+
+@blueprint.backoffice_blueprint.route("roles/<int:id_>", methods=["DELETE"])
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.api,
+)
+def delete_role(id_: int) -> None:
+    try:
+        perm_api.delete_role(id_=id_)
+    except ValueError as err:
+        raise ApiErrors(errors={"id": str(err)})
