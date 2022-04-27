@@ -774,13 +774,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       // Edition read only fields
-      const disabledFields = [
-        'categoryId',
-        'musicSubType',
-        'musicType',
-        'offererId',
-        'venueId',
-      ]
+      const disabledFields = ['categoryId', 'musicType', 'offererId', 'venueId']
 
       for (let i = 0; i < disabledFields.length; i++) {
         const input = await screen.findByLabelText(
@@ -1398,7 +1392,6 @@ describe('offerDetails - Edition', () => {
         bookingEmail: 'booking@example.net',
         extraData: {
           musicType: '501',
-          musicSubType: '502',
           author: 'Mon auteur',
         },
         audioDisabilityCompliant: false,
@@ -1414,7 +1407,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ author: DEFAULT_FORM_VALUES.author })
 
       // Then
-      userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
       await waitFor(() =>
         expect(pcapi.updateOffer).toHaveBeenCalledWith(
           editedOffer.id,
