@@ -7,7 +7,6 @@ import pydantic
 from pydantic.class_validators import validator
 import pydantic.datetime_parse
 import pydantic.errors
-import pytz
 import sqlalchemy as sa
 
 from pcapi.connectors.dms import models as dms_models
@@ -222,9 +221,7 @@ class DMSContent(common_models.IdentityCheckContent):
         return None
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
-        return (
-            self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
-        )
+        return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
 
 
 class UserProfilingRiskRating(enum.Enum):

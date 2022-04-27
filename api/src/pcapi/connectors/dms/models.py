@@ -6,6 +6,10 @@ import pydantic
 import pytz
 
 
+def parse_dms_datetime(value: datetime.datetime) -> datetime.datetime:
+    return value.astimezone(pytz.utc).replace(tzinfo=None)
+
+
 class DmsApplicationStates(enum.Enum):
     closed = enum.auto()
     initiated = enum.auto()
@@ -97,11 +101,7 @@ class DMSMessage(pydantic.BaseModel):
     class Config:
         allow_population_by_field_name = True
 
-    @pydantic.validator("created_at")
-    def validate_created_at(  # pylint: disable=no-self-argument
-        cls: typing.Any, value: datetime.datetime
-    ) -> datetime.datetime:
-        return value.astimezone(pytz.utc).replace(tzinfo=None)
+    _format_created_at = pydantic.validator("created_at", allow_reuse=True)(parse_dms_datetime)
 
 
 class DmsApplicationResponse(pydantic.BaseModel):
@@ -121,6 +121,8 @@ class DmsApplicationResponse(pydantic.BaseModel):
     on_going_date: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="datePassageEnInstruction")
     profile: Profile = pydantic.Field(alias="usager")
     state: GraphQLApplicationStates
+
+    _format_modification_date = pydantic.validator("latest_modification_date", allow_reuse=True)(parse_dms_datetime)
 
 
 class DmsProcessApplicationsResponse(pydantic.BaseModel):
