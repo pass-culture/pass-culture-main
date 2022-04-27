@@ -230,3 +230,10 @@ export type StockResponse = {
   educationalPriceDetail?: string
   offerId?: string
 }
+
+export type EditEducationalOfferPayload = Omit<
+  Partial<EducationalOfferModelPayload>,
+  'extraData'
+> & {
+  extraData?: Partial<EducationalOfferModelPayload['extraData']>
+}

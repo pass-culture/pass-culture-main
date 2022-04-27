@@ -34,10 +34,7 @@ const patchOfferAdapter: PostOfferAdapter = async ({
 }) => {
   try {
     const payload = createPatchOfferPayload(offer, initialValues)
-    const updatedOffer = (await pcapi.updateEducationalOffer(
-      offerId,
-      payload
-    )) as Offer
+    const updatedOffer = await pcapi.updateEducationalOffer(offerId, payload)
     const isBooked = updatedOffer.stocks[0]?.bookingsQuantity > 0
 
     return {
