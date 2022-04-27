@@ -10,6 +10,7 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.bookings.repository import find_educational_bookings_done_yesterday
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
+import pcapi.core.fraud.api as fraud_api
 from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro import (
     send_eac_satisfaction_study_email_to_pro,
 )
@@ -27,6 +28,7 @@ from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.users import api as users_api
+import pcapi.core.users.constants as users_constants
 from pcapi.core.users.external import user_automations
 from pcapi.core.users.repository import get_newly_eligible_age_18_users
 from pcapi.local_providers.provider_api import provider_api_stocks
@@ -284,3 +286,14 @@ def notify_users_bookings_not_retrieved() -> None:
                 booking.id,
                 extra={"booking": booking.id, "user": booking.userId},
             )
+
+
+@blueprint.cli.command("delete_suspended_accounts_after_withdrawal_period")
+@log_cron_with_transaction
+def delete_suspended_accounts_after_withdrawal_period() -> None:
+    if not FeatureToggle.ALLOW_ACCOUNT_REACTIVATION:
+        return
+
+    users = fraud_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
+    for user in users:
+        users_api.suspend_account(user, users_constants.SuspensionReason.DELETED, None)
