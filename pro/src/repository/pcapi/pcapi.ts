@@ -12,8 +12,10 @@ import {
   CreateCollectiveStockPayload,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
+  EditEducationalOfferPayload,
 } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { Offer } from 'custom_types/offer'
 import { client } from 'repository/pcapi/pcapiClient'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -47,9 +49,10 @@ export const updateOffer = (offerId, offer) => {
   return client.patch(`/offers/${offerId}`, offer)
 }
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
-export const updateEducationalOffer = (offerId, offer) =>
-  client.patch(`/offers/educational/${offerId}`, offer)
+export const updateEducationalOffer = (
+  offerId: string,
+  offer: EditEducationalOfferPayload
+): Promise<Offer> => client.patch(`/offers/educational/${offerId}`, offer)
 
 export const loadFilteredOffers = async ({
   nameOrIsbn = DEFAULT_SEARCH_FILTERS.nameOrIsbn,
