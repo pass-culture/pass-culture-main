@@ -145,7 +145,10 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ig
     threshold = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
     window = (min_date, threshold)
     bookings = (
-        bookings_models.Booking.query.filter(bookings_models.Booking.dateUsed.between(*window))
+        bookings_models.Booking.query.filter(
+            bookings_models.Booking.status == bookings_models.BookingStatus.USED,
+            bookings_models.Booking.dateUsed.between(*window),
+        )
         .join(bookings_models.Booking.stock)
         .outerjoin(
             models.Pricing,
