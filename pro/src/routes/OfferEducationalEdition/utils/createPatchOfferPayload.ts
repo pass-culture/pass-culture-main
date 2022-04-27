@@ -100,14 +100,47 @@ const serializer = {
   },
   // Unchanged keys
   // Need to put them here for ts not to raise an error
-  offererId: (payload: DeepPartialEducationalOfferModelPayload) => payload,
-  venueId: (payload: DeepPartialEducationalOfferModelPayload) => payload,
-  category: (payload: DeepPartialEducationalOfferModelPayload) => payload,
+  offererId: (payload: EditEducationalOfferPayload) => payload,
+  venueId: (payload: EditEducationalOfferPayload) => payload,
+  category: (payload: EditEducationalOfferPayload) => payload,
+}
+
+const collectiveOfferSerializer = {
+  ...serializer,
+  eventAddress: (
+    payload: EditEducationalOfferPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    offerVenue: offer.eventAddress,
+  }),
+  participants: (
+    payload: EditEducationalOfferPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    students: serializeParticipants(offer.participants),
+  }),
+  phone: (
+    payload: EditEducationalOfferPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    contactPhone: offer.phone,
+  }),
+  email: (
+    payload: EditEducationalOfferPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    contactEmail: offer.email,
+  }),
 }
 
 export const createPatchOfferPayload = (
   offer: IOfferEducationalFormValues,
-  initialValues: IOfferEducationalFormValues
+  initialValues: IOfferEducationalFormValues,
+  useCollectiveSerializer = false
 ): EditEducationalOfferPayload => {
   let changedValues: EditEducationalOfferPayload = {}
 
@@ -115,7 +148,9 @@ export const createPatchOfferPayload = (
 
   offerKeys.forEach(key => {
     if (!isEqual(offer[key], initialValues[key])) {
-      changedValues = serializer[key](changedValues, offer)
+      changedValues = (
+        useCollectiveSerializer ? collectiveOfferSerializer : serializer
+      )[key](changedValues, offer)
     }
   })
 
