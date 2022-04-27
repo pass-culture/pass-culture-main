@@ -200,7 +200,6 @@ describe('screens | OfferEducational : creation offer type step', () => {
       // hack - to be fixed
       await userEvent.click(description)
       await userEvent.paste(descriptionString)
-
       expect(descriptionString).toContain(description.textContent)
 
       expect(screen.getByTestId('counter-description')).toHaveTextContent(

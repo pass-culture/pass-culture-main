@@ -34,7 +34,10 @@ export const App = props => {
   }, [dispatch, logEvent])
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('isFeaturesInitialized', isFeaturesInitialized)
     if (!isFeaturesInitialized) {
+      console.log('ok')
       loadFeatures()
     }
   }, [isFeaturesInitialized, loadFeatures])

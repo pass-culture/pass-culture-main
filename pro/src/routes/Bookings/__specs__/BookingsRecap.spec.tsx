@@ -26,7 +26,6 @@ import {
 import { getNthCallNthArg } from 'utils/testHelpers'
 
 import BookingsRecapContainer, { BookingsRouterState } from '../Bookings'
-
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getFilteredBookingsCSV: jest.fn(),
@@ -44,7 +43,6 @@ jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),
   getToday: jest.fn().mockReturnValue(new Date('2020-06-15T12:00:00Z')),
 }))
-
 const FORMATTED_DEFAULT_BEGINNING_DATE = formatBrowserTimezonedDateAsUTC(
   DEFAULT_PRE_FILTERS.bookingBeginningDate,
   FORMAT_ISO_DATE_ONLY
@@ -76,6 +74,7 @@ const renderBookingsRecap = async (
       </MemoryRouter>
     </Provider>
   )
+
   const { hasBoookings } = await getUserHasBookings()
   const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
   const downloadBookingsCsvButton = screen.getByRole('button', {
@@ -87,9 +86,7 @@ const renderBookingsRecap = async (
     await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
   }
   const submitDownloadFilters = async () => {
-    fireEvent.click(downloadBookingsCsvButton)
-    expect(downloadBookingsCsvButton).toBeDisabled()
-    await waitFor(() => expect(downloadBookingsCsvButton).toBeEnabled())
+    await userEvent.click(downloadBookingsCsvButton)
   }
 
   if (waitDomReady || waitDomReady === undefined) {
@@ -348,13 +345,32 @@ describe('components | BookingsRecap | Pro user', () => {
     ).toBeInTheDocument()
   })
 
-  it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
+  it.only('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
     // Given
-    const { submitDownloadFilters } = await renderBookingsRecap(store)
+
+    const { submitDownloadFilters } = await renderBookingsRecap(
+      configureTestStore({
+        ...store,
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              name: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
+              nameKey: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
+            },
+          ],
+        },
+      })
+    )
 
     // When
     // submit utils method wait for button to become disabled then enabled.
     await submitDownloadFilters()
+    const downloadSubButton = await screen.findByRole('button', {
+      name: 'Fichier CSV (.CSV)',
+    })
+    await userEvent.click(downloadSubButton)
 
     // Then
     expect(pcapi.getFilteredBookingsCSV).toHaveBeenCalledWith({
@@ -368,7 +384,7 @@ describe('components | BookingsRecap | Pro user', () => {
     })
   })
 
-  it('should display an error message on CSV download when API returns a status other than 200', async () => {
+  it.only('should display an error message on CSV download when API returns a status other than 200', async () => {
     // Given
     ;(pcapi.getFilteredBookingsCSV as jest.Mock).mockImplementation(() =>
       Promise.reject(new Error('An error happened.'))
@@ -378,6 +394,10 @@ describe('components | BookingsRecap | Pro user', () => {
 
     // When
     await submitDownloadFilters()
+    const downloadSubButton = await screen.findByRole('button', {
+      name: 'Fichier CSV (.CSV)',
+    })
+    await userEvent.click(downloadSubButton)
 
     // Then
     await expect(

@@ -25,6 +25,9 @@ import {
 import { stringify } from 'utils/query-string'
 
 export const loadFeatures = async () => {
+  client.get('/features').then(result => console.log('result', result))
+  // eslint-disable-next-line no-console
+
   return client.get('/features')
 }
 
@@ -596,6 +599,12 @@ export const getUserHasCollectiveBookings = async () => {
 export const getFilteredBookingsCSV = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getPlainText(`/bookings/csv?${queryParams}`)
+}
+
+// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
+export const getFilteredBookingsXLS = async filters => {
+  const queryParams = buildBookingsRecapQuery(filters)
+  return client.getExcelFile(`/bookings/excel?${queryParams}`)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.

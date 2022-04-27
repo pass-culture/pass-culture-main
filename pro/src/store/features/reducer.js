@@ -6,6 +6,7 @@ export const initialState = {
 }
 
 export const featuresReducer = (state = initialState, action) => {
+  console.log('states', state)
   switch (action.type) {
     case SET_FEATURES_IS_INITIALIZED:
       return { ...state, initialized: true }

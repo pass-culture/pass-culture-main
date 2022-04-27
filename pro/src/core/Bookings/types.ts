@@ -49,6 +49,12 @@ export type GetBookingsCSVFileAdapter = Adapter<
   null
 >
 
+export type GetBookingsXLSFileAdapter = Adapter<
+  TPreFilters & { page?: number },
+  null,
+  null
+>
+
 export type GetUserHasBookingsAdapter = Adapter<void, boolean, boolean>
 
 export type VenuesPayload = { venues: { id: string; displayName: string }[] }
