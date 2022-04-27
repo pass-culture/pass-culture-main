@@ -12,9 +12,7 @@ import pcapi.core.offerers.api as offerers_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
-from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
-from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockIdResponseModel
-from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockResponseModel
+from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -25,8 +23,10 @@ logger = logging.getLogger(__name__)
 
 @private_api.route("/collective/offers/<offer_id>/stock", methods=["GET"])
 @login_required
-@spectree_serialize(response_model=CollectiveStockResponseModel, api=blueprint.pro_private_schema)
-def get_collective_stock(offer_id: str) -> CollectiveStockResponseModel:
+@spectree_serialize(
+    response_model=collective_stock_serialize.CollectiveStockResponseModel, api=blueprint.pro_private_schema
+)
+def get_collective_stock(offer_id: str) -> collective_stock_serialize.CollectiveStockResponseModel:
     try:
         offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanize_or_raise(offer_id))
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -38,15 +38,19 @@ def get_collective_stock(offer_id: str) -> CollectiveStockResponseModel:
     if stock is None:
         raise ApiErrors({"stock": ["Aucun stock trouvé à partir de cette offre"]}, status_code=404)
 
-    return CollectiveStockResponseModel.from_orm(stock)
+    return collective_stock_serialize.CollectiveStockResponseModel.from_orm(stock)
 
 
 @private_api.route("/collective/stocks", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=CollectiveStockIdResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201,
+    response_model=collective_stock_serialize.CollectiveStockIdResponseModel,
+    api=blueprint.pro_private_schema,
 )
-def create_collective_stock(body: CollectiveStockCreationBodyModel) -> CollectiveStockIdResponseModel:
+def create_collective_stock(
+    body: collective_stock_serialize.CollectiveStockCreationBodyModel,
+) -> collective_stock_serialize.CollectiveStockIdResponseModel:
     try:
         offerer = offerers_repository.get_by_collective_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -58,4 +62,4 @@ def create_collective_stock(body: CollectiveStockCreationBodyModel) -> Collectiv
     except educational_exceptions.CollectiveStockAlreadyExists:
         raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=409)
 
-    return CollectiveStockIdResponseModel.from_orm(collective_stock)
+    return collective_stock_serialize.CollectiveStockIdResponseModel.from_orm(collective_stock)
