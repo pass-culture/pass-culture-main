@@ -18,6 +18,8 @@ from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
+from pcapi.core.booking_providers.api import get_shows_stock
+from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.api import cancel_bookings_from_stock_by_offerer
 from pcapi.core.bookings.api import cancel_collective_booking_from_stock_by_offerer
 from pcapi.core.bookings.api import mark_as_unused
@@ -1485,3 +1487,24 @@ def edit_shadow_stock(stock: Stock, stock_data: dict) -> Stock:
     search.async_index_offer_ids([stock.offerId])
 
     return stock
+
+
+def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer) -> None:
+    booking_provider = VenueBookingProvider.query.filter(
+        VenueBookingProvider.venueId == offer.venueId, VenueBookingProvider.isActive
+    ).one_or_none()
+
+    if booking_provider:
+        shows_id = []
+        for stock in offer.activeStocks:
+            if stock.idAtProviders and stock.idAtProviders.isdigit():
+                shows_id.append(int(stock.idAtProviders))
+        shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
+
+        for show_id, remaining_places in shows_remaining_places.items():
+            stock = next((s for s in offer.activeStocks if s.idAtProviders == str(show_id)))
+            if stock:
+                if remaining_places <= 0:
+                    stock_to_update = offers_repository.get_and_lock_stock(stock.id)
+                    stock_to_update.quantity = stock_to_update.dnBookedQuantity
+                    repository.save(stock_to_update)
