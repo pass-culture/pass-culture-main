@@ -24,3 +24,14 @@ def create_role(name: str, permission_ids: typing.Iterable[int]) -> Role:
     role = Role(name=name, permissions=permissions.all())
     repository.save(role)
     return role
+
+
+def update_role(id_: int, name: str, permission_ids: typing.Iterable[int]) -> Role:
+    if not name:
+        raise ValueError("Role name cannot be empty")
+    permissions = Permission.query.filter(Permission.id.in_(permission_ids))
+    role = Role.query.get(id_)
+    role.name = name
+    role.permissions = permissions.all()
+    repository.save(role)
+    return role

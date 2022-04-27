@@ -8,9 +8,9 @@ from pcapi.serialization.decorator import spectree_serialize
 from . import blueprint
 from .serialization import ListPermissionResponseModel
 from .serialization import ListRoleResponseModel
-from .serialization import NewRoleRequestModel
 from .serialization import Permission
 from .serialization import Role
+from .serialization import RoleRequestModel
 
 
 logger = logging.getLogger(__name__)
@@ -47,6 +47,18 @@ def list_permissions() -> ListPermissionResponseModel:
     on_success_status=200,
     api=blueprint.api,
 )
-def create_role(body: NewRoleRequestModel) -> Role:
+def create_role(body: RoleRequestModel) -> Role:
     new_role = perm_api.create_role(name=body.name, permission_ids=body.permissionIds)
     return Role.from_orm(new_role)
+
+
+@blueprint.backoffice_blueprint.route("roles/<int:id_>", methods=["PUT"])
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
+@spectree_serialize(
+    response_model=Role,
+    on_success_status=200,
+    api=blueprint.api,
+)
+def update_role(id_: int, body: RoleRequestModel) -> Role:
+    updated_role = perm_api.update_role(id_=id_, name=body.name, permission_ids=body.permissionIds)
+    return Role.from_orm(updated_role)
