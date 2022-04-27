@@ -400,3 +400,11 @@ class UserSuspensionFactory(BaseFactory):
     eventType = users_models.SuspensionEventType.SUSPENDED
     eventDate = factory.LazyFunction(lambda: datetime.utcnow() - relativedelta(days=1))
     reasonCode = users_constants.SuspensionReason.FRAUD_SUSPICION
+
+
+class UnsuspendedSuspensionFactory(UserSuspensionFactory):
+    eventType = users_constants.SuspensionEventType.SUSPENDED
+
+
+class SuspendedUponUserRequestFactory(UserSuspensionFactory):
+    reasonCode = users_constants.SuspensionReason.UPON_USER_REQUEST
