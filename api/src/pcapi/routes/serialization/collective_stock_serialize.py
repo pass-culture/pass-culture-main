@@ -24,13 +24,17 @@ class CollectiveStockIdResponseModel(BaseModel):
         orm_mode = True
 
 
-def validate_number_of_tickets(number_of_tickets: int) -> int:
+def validate_number_of_tickets(number_of_tickets: Optional[int]) -> int:
+    if number_of_tickets is None:
+        raise ValueError("Le nombre de places ne peut pas être nul.")
     if number_of_tickets < 0:
         raise ValueError("Le nombre de places ne peut pas être négatif.")
     return number_of_tickets
 
 
-def validate_price(price: float) -> float:
+def validate_price(price: Optional[float]) -> float:
+    if price is None:
+        raise ValueError("Le prix ne peut pas être nul.")
     if price < 0:
         raise ValueError("Le prix ne peut pas être négatif.")
     return price
@@ -50,20 +54,20 @@ def validate_price_detail(educational_price_detail: Optional[str]) -> Optional[s
     return educational_price_detail
 
 
-def number_of_tickets_validator(field_name: str, pre: bool) -> classmethod:
-    return validator(field_name, pre=pre, allow_reuse=True)(validate_number_of_tickets)
+def number_of_tickets_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True, pre=True)(validate_number_of_tickets)
 
 
-def price_validator(field_name: str, pre: bool) -> classmethod:
-    return validator(field_name, pre=pre, allow_reuse=True)(validate_price)
+def price_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True, pre=True)(validate_price)
 
 
-def booking_limit_datetime_validator(field_name: str, pre: bool = False) -> classmethod:
-    return validator(field_name, pre=pre, allow_reuse=True)(validate_booking_limit_datetime)
+def booking_limit_datetime_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_booking_limit_datetime)
 
 
-def price_detail_validator(field_name: str, pre: bool = False) -> classmethod:
-    return validator(field_name, pre=pre, allow_reuse=True)(validate_price_detail)
+def price_detail_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_price_detail)
 
 
 class CollectiveStockCreationBodyModel(BaseModel):
@@ -75,10 +79,46 @@ class CollectiveStockCreationBodyModel(BaseModel):
     educational_price_detail: Optional[str]
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
-    _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets", pre=True)
-    _validate_total_price = price_validator("total_price", pre=True)
+    _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
+    _validate_total_price = price_validator("total_price")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class CollectiveStockEditionBodyModel(BaseModel):
+    beginningDatetime: Optional[datetime]
+    bookingLimitDatetime: Optional[datetime]
+    price: Optional[float] = Field(alias="totalPrice")
+    numberOfTickets: Optional[int]
+    educationalPriceDetail: Optional[str]
+
+    _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
+    _validate_total_price = price_validator("price")
+    _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
+
+    # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
+    # we can use the same interface as for creation and thus reuse the validator defined above.
+    @validator("bookingLimitDatetime")
+    def validate_booking_limit_datetime(  # pylint: disable=no-self-argument
+        cls, booking_limit_datetime: Optional[datetime], values: Dict[str, Any]
+    ) -> Optional[datetime]:
+        if booking_limit_datetime and booking_limit_datetime > values["beginningDatetime"]:
+            raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
+        return booking_limit_datetime
+
+    # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
+    # we can use the same interface as for creation and thus reuse the validator defined above.
+    @validator("beginningDatetime", pre=True)
+    def validate_beginning_limit_datetime(  # pylint: disable=no-self-argument
+        cls, beginningDatetime: Optional[datetime]
+    ) -> Optional[datetime]:
+        if beginningDatetime is None:
+            raise ValueError("La date de début de l'événement ne peut pas être nulle.")
+        return beginningDatetime
 
     class Config:
         alias_generator = to_camel
@@ -93,6 +133,7 @@ class CollectiveStockResponseModel(BaseModel):
     numberOfTickets: Optional[int]
     isEducationalStockEditable: Optional[bool]
     priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+    # FIXME (cgaunet, 2022-04-22): Remove this field once ENABLE_NEW_EAC_MODEL is activated
     stockId: Optional[str]
 
     _humanize_id = humanize_field("id")

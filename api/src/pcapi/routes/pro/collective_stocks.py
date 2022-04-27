@@ -5,10 +5,12 @@ from flask_login import login_required
 
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.repository import get_collective_stock_for_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
 import pcapi.core.offerers.api as offerers_api
+from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
@@ -63,3 +65,41 @@ def create_collective_stock(
         raise ApiErrors({"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}, status_code=409)
 
     return collective_stock_serialize.CollectiveStockIdResponseModel.from_orm(collective_stock)
+
+
+@private_api.route("/collective/stocks/<collective_stock_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422], api=blueprint.pro_private_schema)
+def edit_collective_stock(
+    collective_stock_id: str, body: collective_stock_serialize.CollectiveStockEditionBodyModel
+) -> collective_stock_serialize.CollectiveStockResponseModel:
+    collective_stock = CollectiveStock.query.get(dehumanize_or_raise(collective_stock_id))
+    if collective_stock is None:
+        raise ApiErrors({"code": "COLLECTIVE_STOCK_NOT_FOUND"}, status_code=404)
+
+    try:
+        offerer = offerers_repository.get_by_collective_stock_id(collective_stock.id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        collective_stock = educational_api.edit_collective_stock(
+            collective_stock,
+            body.dict(exclude_unset=True),
+        )
+        return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
+    except offers_exceptions.BookingLimitDatetimeTooLate:
+        raise ApiErrors(
+            {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
+            status_code=400,
+        )
+    except offers_exceptions.EducationalOfferStockBookedAndBookingNotPending as error:
+        raise ApiErrors(
+            {
+                "educationalStockEdition": [
+                    f"Un stock lié à une offre éducationnelle, dont la réservation associée a le statut {error.booking_status.value}, ne peut être édité "
+                ]
+            },
+            status_code=400,
+        )
