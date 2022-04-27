@@ -9,13 +9,11 @@ import {
   IOfferIndividualFormValues,
   validationSchema,
 } from 'new_components/OfferIndividualForm'
-import {
-  CREATION_STEP_PATTERNS,
-  OFFER_FORM_STEP_IDS,
-} from 'screens/OfferIndividual/constants'
+import { OFFER_FORM_STEP_IDS } from 'screens/OfferIndividual/constants'
 
 import { ActionBar } from '../ActionBar'
-import { buildStepList } from '../utils'
+import { fakeOffer } from '../constants'
+import { getStepsOffer } from '../utils/steps'
 
 interface IInformationsProps {
   initialValues: IOfferIndividualFormValues
@@ -24,11 +22,11 @@ interface IInformationsProps {
 const Informations = ({ initialValues }: IInformationsProps): JSX.Element => {
   const history = useHistory()
 
-  const stepList = buildStepList({ stepPatternList: CREATION_STEP_PATTERNS })
+  // call getStep with offer when this screen get it as prop
+  const { stepList, activeSteps } = getStepsOffer(fakeOffer)
   const handleNextStep = () => {
     // TODO get a real id after offer creation form submit
-    const testCreatedOfferId = 'AL4Q'
-    history.push(`/offre/${testCreatedOfferId}/v3/creation/individuelle/stocks`)
+    history.push(`/offre/${fakeOffer.id}/v3/creation/individuelle/stocks`)
   }
 
   const onSubmit = () => {
@@ -61,7 +59,10 @@ const Informations = ({ initialValues }: IInformationsProps): JSX.Element => {
             <OfferIndividualForm />
 
             <OfferFormLayout.ActionBar>
-              <ActionBar onClickNext={handleNextStep} />
+              <ActionBar
+                disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.STOCKS)}
+                onClickNext={handleNextStep}
+              />
             </OfferFormLayout.ActionBar>
           </form>
         </FormikProvider>

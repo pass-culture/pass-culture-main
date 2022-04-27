@@ -6,13 +6,9 @@ export type Step = {
   hash?: string
 }
 
-export type TStepList = { [key: string]: Step }
-
 export interface IStepPattern {
   id: string
   label: string
-  path: string
-  url?: string
+  path?: string
+  isActive: boolean
 }
-
-export type TStepPatternList = { [key: string]: IStepPattern }

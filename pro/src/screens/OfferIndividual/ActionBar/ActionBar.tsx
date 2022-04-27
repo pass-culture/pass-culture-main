@@ -17,39 +17,37 @@ const ActionBar = ({
   onClickNext,
   disablePrevious = false,
   disableNext = false,
-}: IActionBarProps) => {
-  return (
-    <div className={style['action-bar']}>
-      <div className={style['actions-group']}>
-        {onClickPrevious && (
-          <Button
-            className={style['action']}
-            disabled={disablePrevious}
-            onClick={onClickPrevious}
-          >
-            Précédent
-          </Button>
-        )}
-        <ButtonLink
-          className={style['action']}
-          to="/offres"
-          variant={ButtonVariant.SECONDARY}
-        >
-          Annuler
-        </ButtonLink>
-      </div>
-      {onClickNext && (
+}: IActionBarProps) => (
+  <div className={style['action-bar']}>
+    <div className={style['actions-group']}>
+      {onClickPrevious && (
         <Button
           className={style['action']}
-          disabled={disableNext}
-          onClick={onClickNext}
-          style={{ justifySelf: 'flex-end' }}
+          disabled={disablePrevious}
+          onClick={onClickPrevious}
         >
-          Suivant
+          Précédent
         </Button>
       )}
+      <ButtonLink
+        className={style['action']}
+        to="/offres"
+        variant={ButtonVariant.SECONDARY}
+      >
+        Annuler
+      </ButtonLink>
     </div>
-  )
-}
+    {onClickNext && (
+      <Button
+        className={style['action']}
+        disabled={disableNext}
+        onClick={onClickNext}
+        style={{ justifySelf: 'flex-end' }}
+      >
+        Suivant
+      </Button>
+    )}
+  </div>
+)
 
 export default ActionBar
