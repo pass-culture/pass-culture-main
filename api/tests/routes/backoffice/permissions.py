@@ -331,3 +331,92 @@ class UpdateRoleTest:
 
         # then
         assert response.status_code == 401
+
+
+class DeleteRoleTest:
+    def test_can_delete_role_with_permissions_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        permissions = (PermissionFactory(), PermissionFactory())
+        role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
+        user = UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).delete(
+                url_for("backoffice_blueprint.delete_role", id_=role.id)
+            )
+
+        # then
+        assert response.status_code == 204
+        assert Role.query.filter_by(id=role.id).count() == 0
+
+    def test_can_delete_role_with_empty_permissions_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        role = RoleFactory(name="dummy_role")
+        user = UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).delete(
+                url_for("backoffice_blueprint.delete_role", id_=role.id)
+            )
+
+        # then
+        assert response.status_code == 204
+        assert Role.query.filter_by(id=role.id).count() == 0
+
+    def test_cannot_delete_admin_role_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        user = UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).delete(
+                url_for("backoffice_blueprint.delete_role", id_=admin_role.id)
+            )
+
+        # then
+        assert response.status_code == 400
+        assert "Cannot delete admin role" in response.json.values()
+
+    def test_cannot_delete_role_as_non_admin(self, client):
+        # given
+        create_admin_role()
+        non_admin_role = RoleFactory(name="not_admin")
+        role = RoleFactory(name="dummy_role")
+        user = UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [non_admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).delete(
+                url_for("backoffice_blueprint.delete_role", id_=role.id)
+            )
+
+        # then
+        assert response.status_code == 403
+
+    def test_cannot_delete_role_as_anonymous(self, client):
+        # given
+        create_admin_role()
+        role = RoleFactory(name="dummy_role")
+
+        # when
+        response = client.delete(url_for("backoffice_blueprint.delete_role", id_=role.id))
+
+        # then
+        assert response.status_code == 401

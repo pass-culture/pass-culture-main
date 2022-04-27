@@ -4,6 +4,7 @@ from sqlalchemy.orm import joinedload
 
 from pcapi.core.permissions.models import Permission
 from pcapi.core.permissions.models import Role
+from pcapi.models import db
 from pcapi.repository import repository
 
 
@@ -35,3 +36,12 @@ def update_role(id_: int, name: str, permission_ids: typing.Iterable[int]) -> Ro
     role.permissions = permissions.all()
     repository.save(role)
     return role
+
+
+def delete_role(id_: int) -> None:
+    role = Role.query.get(id_)
+    if role.name == "admin":
+        raise ValueError("Cannot delete admin role")
+    role.permissions = []
+    repository.save()
+    db.session.delete(role)
