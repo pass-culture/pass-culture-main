@@ -24,6 +24,48 @@ class CollectiveStockIdResponseModel(BaseModel):
         orm_mode = True
 
 
+def validate_number_of_tickets(number_of_tickets: int) -> int:
+    if number_of_tickets < 0:
+        raise ValueError("Le nombre de places ne peut pas être négatif.")
+    return number_of_tickets
+
+
+def validate_price(price: float) -> float:
+    if price < 0:
+        raise ValueError("Le prix ne peut pas être négatif.")
+    return price
+
+
+def validate_booking_limit_datetime(
+    booking_limit_datetime: Optional[datetime], values: Dict[str, Any]
+) -> Optional[datetime]:
+    if booking_limit_datetime and booking_limit_datetime > values["beginning_datetime"]:
+        raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
+    return booking_limit_datetime
+
+
+def validate_price_detail(educational_price_detail: Optional[str]) -> Optional[str]:
+    if educational_price_detail and len(educational_price_detail) > 1000:
+        raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
+    return educational_price_detail
+
+
+def number_of_tickets_validator(field_name: str, pre: bool) -> classmethod:
+    return validator(field_name, pre=pre, allow_reuse=True)(validate_number_of_tickets)
+
+
+def price_validator(field_name: str, pre: bool) -> classmethod:
+    return validator(field_name, pre=pre, allow_reuse=True)(validate_price)
+
+
+def booking_limit_datetime_validator(field_name: str, pre: bool = False) -> classmethod:
+    return validator(field_name, pre=pre, allow_reuse=True)(validate_booking_limit_datetime)
+
+
+def price_detail_validator(field_name: str, pre: bool = False) -> classmethod:
+    return validator(field_name, pre=pre, allow_reuse=True)(validate_price_detail)
+
+
 class CollectiveStockCreationBodyModel(BaseModel):
     offer_id: int
     beginning_datetime: datetime
@@ -32,35 +74,11 @@ class CollectiveStockCreationBodyModel(BaseModel):
     number_of_tickets: int
     educational_price_detail: Optional[str]
 
-    _dehumanize_id = dehumanize_field("offer_id")
-
-    @validator("number_of_tickets", pre=True)
-    def validate_number_of_tickets(cls, number_of_tickets: int) -> int:  # pylint: disable=no-self-argument
-        if number_of_tickets < 0:
-            raise ValueError("Le nombre de places ne peut pas être négatif.")
-        return number_of_tickets
-
-    @validator("total_price", pre=True)
-    def validate_price(cls, price: float) -> float:  # pylint: disable=no-self-argument
-        if price < 0:
-            raise ValueError("Le prix ne peut pas être négatif.")
-        return price
-
-    @validator("booking_limit_datetime")
-    def validate_booking_limit_datetime(  # pylint: disable=no-self-argument
-        cls, booking_limit_datetime: Optional[datetime], values: Dict[str, Any]
-    ) -> Optional[datetime]:
-        if booking_limit_datetime and booking_limit_datetime > values["beginning_datetime"]:
-            raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
-        return booking_limit_datetime
-
-    @validator("educational_price_detail")
-    def validate_price_detail(  # pylint: disable=no-self-argument
-        cls, educational_price_detail: Optional[str]
-    ) -> Optional[str]:
-        if educational_price_detail and len(educational_price_detail) > 1000:
-            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
-        return educational_price_detail
+    _dehumanize_offer_id = dehumanize_field("offer_id")
+    _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets", pre=True)
+    _validate_total_price = price_validator("total_price", pre=True)
+    _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
+    _validate_educational_price_detail = price_detail_validator("educational_price_detail")
 
     class Config:
         alias_generator = to_camel
