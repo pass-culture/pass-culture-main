@@ -1,45 +1,38 @@
 import isEqual from 'lodash.isequal'
 
 import {
-  EducationalOfferModelPayload,
+  EditEducationalOfferPayload,
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
 
-type DeepPartialEducationalOfferModelPayload = Omit<
-  Partial<EducationalOfferModelPayload>,
-  'extraData'
-> & {
-  extraData?: Partial<EducationalOfferModelPayload['extraData']>
-}
-
 const serializer = {
   title: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, name: offer.title }),
   description: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, description: offer.description }),
   duration: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, durationMinutes: parseDuration(offer.duration) }),
   subCategory: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, subcategoryId: offer.subCategory }),
   eventAddress: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
     extraData: { ...payload.extraData, offerVenue: offer.eventAddress },
   }),
   participants: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
@@ -49,7 +42,7 @@ const serializer = {
     },
   }),
   accessibility: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
@@ -59,7 +52,7 @@ const serializer = {
     visualDisabilityCompliant: offer.accessibility.visual,
   }),
   phone: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
@@ -69,7 +62,7 @@ const serializer = {
     },
   }),
   email: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
@@ -79,7 +72,7 @@ const serializer = {
     },
   }),
   notificationEmail: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => {
     if (offer.notifications) {
@@ -91,7 +84,7 @@ const serializer = {
     return payload
   },
   notifications: (
-    payload: DeepPartialEducationalOfferModelPayload,
+    payload: EditEducationalOfferPayload,
     offer: IOfferEducationalFormValues
   ) => {
     if (offer.notifications) {
@@ -115,8 +108,8 @@ const serializer = {
 export const createPatchOfferPayload = (
   offer: IOfferEducationalFormValues,
   initialValues: IOfferEducationalFormValues
-): DeepPartialEducationalOfferModelPayload => {
-  let changedValues: DeepPartialEducationalOfferModelPayload = {}
+): EditEducationalOfferPayload => {
+  let changedValues: EditEducationalOfferPayload = {}
 
   const offerKeys = Object.keys(offer) as (keyof IOfferEducationalFormValues)[]
 
