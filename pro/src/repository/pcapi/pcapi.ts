@@ -54,6 +54,12 @@ export const updateEducationalOffer = (
   offer: EditEducationalOfferPayload
 ): Promise<Offer> => client.patch(`/offers/educational/${offerId}`, offer)
 
+export const updateCollectiveOffer = (
+  offerId: string,
+  offer: EditEducationalOfferPayload
+): Promise<CollectiveOfferResponseModel> =>
+  client.patch(`/collective/offers/${offerId}`, offer)
+
 export const loadFilteredOffers = async ({
   nameOrIsbn = DEFAULT_SEARCH_FILTERS.nameOrIsbn,
   offererId = DEFAULT_SEARCH_FILTERS.offererId,
