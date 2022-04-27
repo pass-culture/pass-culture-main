@@ -71,6 +71,22 @@ export const client = {
     }
   },
   // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'path' implicitly has an 'any' type.
+  getExcelFile: async (path, withCredentials = true) => {
+    const options = buildOptions(GET_HTTP_METHOD, withCredentials)
+    // @ts-expect-error ts-migrate(7053) FIXME: Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
+    options['headers'] = { 'Content-Type': 'application/vnd.ms-excel' }
+
+    try {
+      const response = await fetch(buildUrl(path), options)
+      if (response.status !== 200) {
+        throw Error('An error happened.')
+      }
+      return Promise.resolve(await response.arrayBuffer())
+    } catch (e) {
+      return Promise.reject(e)
+    }
+  },
+  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'path' implicitly has an 'any' type.
   get: async (path, withCredentials = true) => {
     return await fetchWithErrorHandler(
       path,
