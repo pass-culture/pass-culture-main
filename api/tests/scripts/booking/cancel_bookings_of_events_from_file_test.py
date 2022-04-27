@@ -5,10 +5,9 @@ from pcapi.core.bookings.factories import UsedBookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.offers.factories import OffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.offers.factories import VenueFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.scripts.booking.cancel_bookings_of_events_from_file import _cancel_bookings_of_offers_from_rows
 
@@ -18,11 +17,15 @@ class CancelBookingsOfEventsFromFileTest:
     def test_cancel_bookings_of_offers_from_rows(self):
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="user@example.net")
 
-        offerer_to_cancel = OffererFactory(name="Librairie les petits parapluies gris", siren="123456789")
-        offerer_to_not_cancel = OffererFactory(name="L'amicale du club de combat", siren="987654321")
+        offerer_to_cancel = offerers_factories.OffererFactory(
+            name="Librairie les petits parapluies gris", siren="123456789"
+        )
+        offerer_to_not_cancel = offerers_factories.OffererFactory(name="L'amicale du club de combat", siren="987654321")
 
-        venue_to_cancel = VenueFactory(managingOfferer=offerer_to_cancel, siret="12345678912345")
-        venue_to_not_cancel = VenueFactory(managingOfferer=offerer_to_not_cancel, siret="54321987654321")
+        venue_to_cancel = offerers_factories.VenueFactory(managingOfferer=offerer_to_cancel, siret="12345678912345")
+        venue_to_not_cancel = offerers_factories.VenueFactory(
+            managingOfferer=offerer_to_not_cancel, siret="54321987654321"
+        )
 
         offer_to_cancel = ThingOfferFactory(venue=venue_to_cancel)
         offer_to_not_cancel = ThingOfferFactory(venue=venue_to_not_cancel)

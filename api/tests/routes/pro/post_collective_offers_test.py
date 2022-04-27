@@ -6,7 +6,6 @@ from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
@@ -16,7 +15,7 @@ from pcapi.utils.human_ids import humanize
 class Returns200Test:
     def test_create_collective_offer(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -75,7 +74,7 @@ class Returns403Test:
     def test_create_collective_offer_random_user(self, client):
         # Given
         user = users_factories.UserFactory()
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -112,7 +111,7 @@ class Returns403Test:
         def raise_ac(*args, **kwargs):
             raise CulturalPartnerNotFoundException("pouet")
 
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -147,7 +146,7 @@ class Returns403Test:
     def test_create_collective_offer_unknown_category(self, client):
         # Given
         user = users_factories.UserFactory()
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -182,7 +181,7 @@ class Returns403Test:
     def test_create_collective_offer_unselectable_category(self, client):
         # Given
         user = users_factories.UserFactory()
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -217,7 +216,7 @@ class Returns403Test:
     def test_create_collective_offer_no_collective__category(self, client):
         # Given
         user = users_factories.UserFactory()
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 

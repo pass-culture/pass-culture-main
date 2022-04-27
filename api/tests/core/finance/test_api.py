@@ -343,7 +343,7 @@ class GetRevenuePeriodTest:
 
 class GetSiretAndCurrentRevenueTest:
     def test_use_venue_siret(self):
-        venue = offers_factories.VenueFactory(siret="123456")
+        venue = offerers_factories.VenueFactory(siret="123456")
         booking1 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue, amount=20)
         _pricing1 = factories.PricingFactory(booking=booking1)
         booking2 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue)
@@ -354,7 +354,7 @@ class GetSiretAndCurrentRevenueTest:
         assert current_revenue == 2000
 
     def test_use_business_unit_siret(self):
-        venue = offers_factories.VirtualVenueFactory(siret=None, businessUnit__siret="654321")
+        venue = offerers_factories.VirtualVenueFactory(siret=None, businessUnit__siret="654321")
         booking = bookings_factories.UsedBookingFactory(stock__offer__venue=venue, amount=20)
 
         siret, current_revenue = api._get_siret_and_current_revenue(booking)
@@ -362,7 +362,7 @@ class GetSiretAndCurrentRevenueTest:
         assert current_revenue == 0
 
     def test_use_booking_quantity(self):
-        venue = offers_factories.VenueFactory(siret="123456")
+        venue = offerers_factories.VenueFactory(siret="123456")
         factories.PricingFactory(
             booking__stock__offer__venue=venue,
             booking__amount=10,
@@ -821,7 +821,7 @@ def test_generate_payment_files():
 
 @clean_temporary_files
 def test_generate_business_units_file():
-    venue1 = offers_factories.VenueFactory(
+    venue1 = offerers_factories.VenueFactory(
         name='Venue 1 only name "doublequote" \n',
         publicName=None,
         siret='siret 1 "t"',
@@ -830,8 +830,8 @@ def test_generate_business_units_file():
         businessUnit__bankAccount__iban='iban 1 "t"\n',
     )
     business_unit1 = venue1.businessUnit
-    offers_factories.VenueFactory(businessUnit=business_unit1)
-    venue2 = offers_factories.VenueFactory(
+    offerers_factories.VenueFactory(businessUnit=business_unit1)
+    venue2 = offerers_factories.VenueFactory(
         name="dummy, we should use publicName instead",
         siret="siret 2\n",
         publicName="Venue 2 public name\n",
@@ -871,7 +871,7 @@ def test_generate_payments_file():
     used_date = datetime.datetime(2020, 1, 2)
     # This pricing belong to a business unit whose venue is the same
     # as the venue of the offer.
-    venue1 = offers_factories.VenueFactory(
+    venue1 = offerers_factories.VenueFactory(
         name='Le Petit Rintintin "test"\n',
         siret='123456 "test"\n',
     )
@@ -894,12 +894,12 @@ def test_generate_payments_file():
     )
     # These other pricings belong to a business unit whose venue is
     # NOT the venue of the offers.
-    business_unit_venue2 = offers_factories.VenueFactory(
+    business_unit_venue2 = offerers_factories.VenueFactory(
         siret="22222222233333",
         name="BU du Gigantesque Cubitus\n",
     )
     business_unit2 = business_unit_venue2.businessUnit
-    offer_venue2 = offers_factories.VenueFactory(
+    offer_venue2 = offerers_factories.VenueFactory(
         name="Le Gigantesque Cubitus\n",
         siret="99999999999999",
         businessUnit=business_unit2,
@@ -1096,7 +1096,7 @@ def test_generate_new_payments_file():
     used_date = datetime.datetime(2020, 1, 2)
     # This pricing belong to a business unit whose venue is the same
     # as the venue of the offer.
-    venue1 = offers_factories.VenueFactory(
+    venue1 = offerers_factories.VenueFactory(
         name='Le Petit Rintintin "test"\n',
         siret='123456 "test"\n',
     )
@@ -1119,12 +1119,12 @@ def test_generate_new_payments_file():
     )
     # These other pricings belong to a business unit whose venue is
     # NOT the venue of the offers.
-    business_unit_venue2 = offers_factories.VenueFactory(
+    business_unit_venue2 = offerers_factories.VenueFactory(
         siret="22222222233333",
         name="BU du Gigantesque Cubitus\n",
     )
     business_unit2 = business_unit_venue2.businessUnit
-    offer_venue2 = offers_factories.VenueFactory(
+    offer_venue2 = offerers_factories.VenueFactory(
         name="Le Gigantesque Cubitus\n",
         siret="99999999999999",
         businessUnit=business_unit2,
@@ -1317,7 +1317,7 @@ def test_generate_wallets_file():
 def test_genererate_invoice_file():
     first_siret = "12345678900"
     business_unit1 = factories.BusinessUnitFactory(siret=first_siret)
-    venue1 = offers_factories.VenueFactory(businessUnit=business_unit1, siret=first_siret)
+    venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1, siret=first_siret)
 
     pc_line1 = factories.PricingLineFactory()
     pc_line2 = factories.PricingLineFactory(amount=150000, category=models.PricingLineCategory.OFFERER_CONTRIBUTION)
@@ -1342,7 +1342,7 @@ def test_genererate_invoice_file():
     # This second invoice should not appear.
     second_siret = "12345673900"
     business_unit2 = factories.BusinessUnitFactory(siret=second_siret)
-    offers_factories.VenueFactory(businessUnit=business_unit2, siret=second_siret)
+    offerers_factories.VenueFactory(businessUnit=business_unit2, siret=second_siret)
 
     pc_line3 = factories.PricingLineFactory()
     pricing2 = factories.PricingFactory(
@@ -1428,7 +1428,7 @@ class EditBusinessUnitTest:
 
 @pytest.fixture(name="invoice_data")
 def invoice_test_data():
-    venue = offers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory(
         siret="85331845900023",
         bookingEmail="pro@example.com",
         businessUnit__name="SARL LIBRAIRIE BOOKING",
@@ -1509,7 +1509,7 @@ class GenerateInvoiceTest:
     )
 
     def test_reference_scheme_increments(self):
-        venue = offers_factories.VenueFactory(siret="85331845900023")
+        venue = offerers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[1, 2])
         second_invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[1, 2])
@@ -1518,7 +1518,7 @@ class GenerateInvoiceTest:
         assert second_invoice.reference == "F220000002"
 
     def test_one_regular_rule_one_rate(self):
-        venue = offers_factories.VenueFactory(siret="85331845900023")
+        venue = offerers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=20)
@@ -1548,7 +1548,7 @@ class GenerateInvoiceTest:
         assert line.label == "Montant remboursé"
 
     def test_two_regular_rules_two_rates(self):
-        venue = offers_factories.VenueFactory(siret="85331845900023")
+        venue = offerers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
@@ -1593,7 +1593,7 @@ class GenerateInvoiceTest:
         assert line_rate_0_95.label == "Montant remboursé"
 
     def test_one_custom_rule(self):
-        venue = offers_factories.VenueFactory(siret="85331845900023")
+        venue = offerers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=23)

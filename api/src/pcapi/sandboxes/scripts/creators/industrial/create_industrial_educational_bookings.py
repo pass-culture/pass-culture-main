@@ -4,11 +4,10 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.factories import UsedEducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.educational.factories as educational_factories
-from pcapi.core.offerers.factories import UserOffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.core.offers.factories import MediationFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
@@ -76,20 +75,20 @@ def create_industrial_educational_bookings() -> None:
 
     now = datetime.datetime.utcnow()
     stocks = []
-    venue = VenueFactory(
+    venue = offerers_factories.VenueFactory(
         name="Opéra Royal de Versailles",
         isPermanent=True,
         siret="95046949400021",
         managingOfferer__siren="950469494",
         venueTypeCode=VenueTypeCode.PERFORMING_ARTS,  # type: ignore [attr-defined]
     )
-    UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
+    offerers_factories.UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
     educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
-    user_offerer_reimbursements = UserOffererFactory(
+    user_offerer_reimbursements = offerers_factories.UserOffererFactory(
         validationToken=None, user__email="pc.test.payments.eac@example.com"
     )
-    venue_reimbursements = VenueFactory(
+    venue_reimbursements = offerers_factories.VenueFactory(
         name="Théâtre des potirons",
         isPermanent=True,
         managingOfferer=user_offerer_reimbursements.offerer,

@@ -10,15 +10,13 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance.factories import PaymentFactory
 from pcapi.core.finance.factories import PaymentStatusFactory
 from pcapi.core.finance.models import TransactionStatus
-from pcapi.core.offerers.factories import UserOffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventProductFactory
 from pcapi.core.offers.factories import EventStockFactory
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.core.users.factories import ProFactory
 from pcapi.repository import repository
@@ -54,12 +52,16 @@ def save_bookings_recap_sandbox():  # type: ignore [no-untyped-def]
         lastName="Picsou",
         email="balthazar.picsou@example.com",
     )
-    offerer = OffererFactory(siren="645389012")
-    UserOffererFactory(user=pro, offerer=offerer)
-    venue1 = VenueFactory(managingOfferer=offerer, name="Cinéma Le Monde Perdu", siret="64538901265877")
-    venue2 = VenueFactory(managingOfferer=offerer, name="Librairie Atlantis", siret="64538901201379")
-    venue3 = VenueFactory(managingOfferer=offerer, name="Théatre Mordor", siret="64538954601379")
-    venue4_virtual = VenueFactory(managingOfferer=offerer, name="Un lieu virtuel", siret=None, isVirtual=True)
+    offerer = offerers_factories.OffererFactory(siren="645389012")
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+    venue1 = offerers_factories.VenueFactory(
+        managingOfferer=offerer, name="Cinéma Le Monde Perdu", siret="64538901265877"
+    )
+    venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, name="Librairie Atlantis", siret="64538901201379")
+    venue3 = offerers_factories.VenueFactory(managingOfferer=offerer, name="Théatre Mordor", siret="64538954601379")
+    venue4_virtual = offerers_factories.VenueFactory(
+        managingOfferer=offerer, name="Un lieu virtuel", siret=None, isVirtual=True
+    )
 
     product1_venue1 = EventProductFactory(name="Jurassic Park", subcategoryId=subcategories.SEANCE_CINE.id)
     offer1_venue1 = EventOfferFactory(product=product1_venue1, venue=venue1, isDuo=True)

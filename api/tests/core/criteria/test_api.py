@@ -2,6 +2,7 @@ import pytest
 
 from pcapi.core.criteria import api
 from pcapi.core.criteria import factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
@@ -52,9 +53,9 @@ def test_venues_update():
     crit2 = factories.CriterionFactory(name="crit2")
     crit3 = factories.CriterionFactory(name="crit3")
 
-    venue1 = offers_factories.VenueFactory(criteria=[crit1, crit2, crit3])
-    venue2 = offers_factories.VenueFactory(criteria=[crit2, crit3])
-    venue3 = offers_factories.VenueFactory(criteria=[crit3])
+    venue1 = offerers_factories.VenueFactory(criteria=[crit1, crit2, crit3])
+    venue2 = offerers_factories.VenueFactory(criteria=[crit2, crit3])
+    venue3 = offerers_factories.VenueFactory(criteria=[crit3])
 
     new_crit1 = factories.CriterionFactory(name="new1")
     new_crit2 = factories.CriterionFactory(name="new2")

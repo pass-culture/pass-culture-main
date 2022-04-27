@@ -5,7 +5,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import UserRole
 
@@ -36,7 +35,7 @@ class Returns202Test:
 
     def expect_offerer_to_be_validated_even_when_user_offerer_has_already_been_activated(self, app):
         # Given
-        offerer = offers_factories.OffererFactory(validationToken="TOKEN")
+        offerer = offerers_factories.OffererFactory(validationToken="TOKEN")
         user_offerer1 = offerers_factories.UserOffererFactory(offerer=offerer)
         user_offerer2 = offerers_factories.UserOffererFactory(validationToken=None, offerer=offerer)
 

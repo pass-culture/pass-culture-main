@@ -4,14 +4,10 @@ from datetime import datetime
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.offerers.factories import VenueTypeFactory
-from pcapi.core.offerers.factories import VirtualVenueTypeFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.offers.factories import VirtualVenueFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import User
@@ -103,8 +99,8 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_map_a_venue_from_ordered_dict(self, app):
         # given
-        offerer = OffererFactory(siren="828768000")
-        VenueTypeFactory(label="Librairie")
+        offerer = offerers_factories.OffererFactory(siren="828768000")
+        offerers_factories.VenueTypeFactory(label="Librairie")
         csv_row = OrderedDict(
             [
                 ("Street Address", "46 AV DE LA ROUE"),
@@ -139,8 +135,8 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_use_Postal_code_when_no_SIRENE_code_postal(self, app):
         # given
-        offerer = OffererFactory(siren="828768000")
-        VenueTypeFactory(label="Librairie")
+        offerer = offerers_factories.OffererFactory(siren="828768000")
+        offerers_factories.VenueTypeFactory(label="Librairie")
         csv_row = OrderedDict(
             [
                 ("Street Address", "46 AV DE LA ROUE"),
@@ -167,8 +163,8 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_have_a_venue_type(self, app):
         # given
-        offerer = OffererFactory(siren="828768000")
-        VenueTypeFactory(label="Librairie")
+        offerer = offerers_factories.OffererFactory(siren="828768000")
+        offerers_factories.VenueTypeFactory(label="Librairie")
         csv_row = OrderedDict(
             [
                 ("Street Address", "46 AV DE LA ROUE"),
@@ -195,9 +191,9 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_create_venue_name_when_information_missing(self, app):
         # given
-        offerer = OffererFactory(siren="828768000")
-        VenueTypeFactory(label="Librairie")
-        VenueFactory()
+        offerer = offerers_factories.OffererFactory(siren="828768000")
+        offerers_factories.VenueTypeFactory(label="Librairie")
+        offerers_factories.VenueFactory()
         csv_row = OrderedDict(
             [
                 ("Street Address", "46 AV DE LA ROUE"),
@@ -223,9 +219,9 @@ class CreateVenueFromCSVTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_geolocation_is_missing(self, app):
         # given
-        offerer = OffererFactory(siren="828768000")
-        VenueTypeFactory(label="Librairie")
-        VenueFactory()
+        offerer = offerers_factories.OffererFactory(siren="828768000")
+        offerers_factories.VenueTypeFactory(label="Librairie")
+        offerers_factories.VenueFactory()
         csv_row = OrderedDict(
             [
                 ("Street Address", "46 AV DE LA ROUE"),
@@ -326,11 +322,11 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_created_pro_is_activated_with_90_days_reset_password(self, app):
         # Given
-        VirtualVenueTypeFactory()
-        VenueTypeFactory(label="Librairie")
-        offerer = OffererFactory(siren="636710003")
-        VenueFactory(managingOfferer=offerer)
-        VirtualVenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueTypeFactory()
+        offerers_factories.VenueTypeFactory(label="Librairie")
+        offerer = offerers_factories.OffererFactory(siren="636710003")
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         csv_row = OrderedDict(
             [
                 ("", "104"),
@@ -372,8 +368,8 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_is_a_new_offerer(self, app):
         # Given
-        VenueTypeFactory(label="Librairie")
-        VirtualVenueTypeFactory()
+        offerers_factories.VenueTypeFactory(label="Librairie")
+        offerers_factories.VirtualVenueTypeFactory()
         csv_row = OrderedDict(
             [
                 ("", "104"),
@@ -414,11 +410,11 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_is_already_existing_offerer(self, app):
         # Given
-        VirtualVenueTypeFactory()
-        VenueTypeFactory(label="Librairie")
-        offerer = OffererFactory(siren="636710003")
-        VenueFactory(managingOfferer=offerer)
-        VirtualVenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueTypeFactory()
+        offerers_factories.VenueTypeFactory(label="Librairie")
+        offerer = offerers_factories.OffererFactory(siren="636710003")
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         csv_row = OrderedDict(
             [
                 ("", "104"),
@@ -457,7 +453,7 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_no_siret_for_venue_creation(self, app):
         # Given
-        VirtualVenueTypeFactory()
+        offerers_factories.VirtualVenueTypeFactory()
         csv_row = OrderedDict(
             [
                 ("", "104"),
@@ -498,7 +494,7 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_user_already_exists(self, app):
         # Given
-        VirtualVenueTypeFactory()
+        offerers_factories.VirtualVenueTypeFactory()
         ProFactory(email="librairie.fictive@example.com")
         csv_row = OrderedDict(
             [
@@ -540,7 +536,7 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_ignore_when_user_has_no_postal(self, app):
         # Given
-        VirtualVenueTypeFactory()
+        offerers_factories.VirtualVenueTypeFactory()
         csv_row = OrderedDict(
             [
                 ("", "104"),
@@ -581,8 +577,8 @@ class CreateAnEntireOffererFromCSVRowTest:
     @pytest.mark.usefixtures("db_session")
     def test_when_siret_wrong(self, app):
         # Given
-        VenueTypeFactory(label="Librairie")
-        VirtualVenueTypeFactory()
+        offerers_factories.VenueTypeFactory(label="Librairie")
+        offerers_factories.VirtualVenueTypeFactory()
         ProFactory(email="librairie.fictive@example.com")
         csv_row = OrderedDict(
             [

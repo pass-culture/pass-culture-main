@@ -4,7 +4,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import User
 
@@ -89,7 +88,7 @@ class Returns204Test:
 
     def when_successful_and_existing_offerer_creates_editor_user_offerer_and_does_not_log_in(self, app):
         # Given
-        offerer = OffererFactory(siren="349974931", validationToken="not_validated")
+        offerer = offerers_factories.OffererFactory(siren="349974931", validationToken="not_validated")
         pro = ProFactory(email="bobby@test.com", publicName="bobby")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
@@ -111,7 +110,7 @@ class Returns204Test:
 
     def when_successful_and_existing_offerer_but_no_user_offerer_does_not_signin(self, app):
         # Given
-        OffererFactory(siren="349974931")
+        offerers_factories.OffererFactory(siren="349974931")
 
         data = BASE_DATA_PRO.copy()
 
@@ -131,7 +130,7 @@ class Returns204Test:
 
     def when_successful_and_mark_pro_user_as_no_cultural_survey_needed(self, app):
         # Given
-        OffererFactory(siren="349974931")
+        offerers_factories.OffererFactory(siren="349974931")
 
         data = BASE_DATA_PRO.copy()
 

@@ -5,7 +5,7 @@ from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_expiration_to_pro import send_bookings_expiration_to_pro_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers.factories import OffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -13,7 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class SendExpiredBookingsRecapEmailToOffererTest:
     def test_should_send_email_to_offerer_when_expired_bookings_cancelled(self, app):
-        offerer = OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
             stock__offer__bookingEmail="offerer.booking@example.com"
         )
@@ -29,7 +29,7 @@ class SendExpiredBookingsRecapEmailToOffererTest:
         assert mails_testing.outbox[0].sent_data["params"]
 
     def test_should_send_two_emails_to_offerer_when_expired_books_bookings_and_other_bookings_cancelled(self):
-        offerer = OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         expired_today_dvd_booking = bookings_factories.IndividualBookingFactory(
             stock__offer__name="Intouchables",
             stock__offer__bookingEmail="offerer.booking@example.com",

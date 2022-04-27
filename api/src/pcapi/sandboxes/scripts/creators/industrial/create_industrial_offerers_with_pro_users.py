@@ -176,7 +176,7 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
 
         if create_educational_offerer:
             offerer.siren = MOCK_ADAGE_ELIGIBLE_SIREN
-            offers_factories.VenueFactory(
+            offerers_factories.VenueFactory(
                 managingOfferer=offerer,
                 address=offerer.address,
                 bookingEmail="fake@email.com",

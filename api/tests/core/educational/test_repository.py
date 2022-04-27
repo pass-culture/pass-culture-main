@@ -15,7 +15,6 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.educational.repository import get_confirmed_educational_bookings_amount
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -328,7 +327,7 @@ class FindByProUserTest:
         # Given
         booking_date = datetime.utcnow() - timedelta(days=5)
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         educational_factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__managingOfferer=user_offerer.offerer,
             dateCreated=booking_date,

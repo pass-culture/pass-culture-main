@@ -7,7 +7,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.offerers import factories as offerers_factories
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -216,7 +215,7 @@ class UserTest:
         offerer = offerers_factories.UserOffererFactory(user=user).offerer
         assert not user.hasPhysicalVenues
 
-        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         assert not user.hasPhysicalVenues
 
         offerers_factories.VenueFactory(managingOfferer=offerer)

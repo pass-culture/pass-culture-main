@@ -4,7 +4,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.human_ids import humanize
 
@@ -13,7 +12,7 @@ from pcapi.utils.human_ids import humanize
 class Returns200Test:
     def test_create_collective_offer_template_with_educational_price_detail(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
 
@@ -39,7 +38,7 @@ class Returns200Test:
 
     def test_create_collective_offer_template_without_price_detail(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
 
@@ -65,7 +64,7 @@ class Returns200Test:
 class Returns400Test:
     def test_create_collective_offer_template_from_offer_with_stock(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(venue=venue, collectiveStock=stock)
@@ -85,7 +84,7 @@ class Returns403Test:
     def test_create_collective_offer_template_random_user(self, client):
         # Given
         offerers_factories.UserOffererFactory(user__email="azerty@example.com")
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
 
@@ -103,7 +102,7 @@ class Returns403Test:
 class Returns404Test:
     def test_create_collective_offer_template_without_collective_offer(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
 

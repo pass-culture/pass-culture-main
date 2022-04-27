@@ -7,10 +7,9 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import AllocineVenueProviderFactory
@@ -95,7 +94,9 @@ class AllocineStocksTest:
             # Given
             theater_token = "test"
 
-            venue = VenueFactory(managingOfferer__siren="775671464", name="Cinéma Allociné", siret="77567146400110")
+            venue = offerers_factories.VenueFactory(
+                managingOfferer__siren="775671464", name="Cinéma Allociné", siret="77567146400110"
+            )
             allocine_venue_provider = AllocineVenueProviderFactory(venue=venue, venueIdAtOfferProvider=theater_token)
 
             # When
@@ -129,7 +130,7 @@ class AllocineStocksTest:
                 ]
             )
 
-            venue = VenueFactory(
+            venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
                 name="Cinema Allocine",
                 siret="77567146400110",
@@ -195,7 +196,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -309,7 +310,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -393,7 +394,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -454,7 +455,7 @@ class UpdateObjectsTest:
             idAtProviders="TW92aWU6Mzc4MzI=",
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinéma Allociné",
             siret="77567146400110",
@@ -531,7 +532,7 @@ class UpdateObjectsTest:
             idAtProviders="TW92aWU6Mzc4MzI=",
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -579,7 +580,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -660,7 +661,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
         AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
@@ -712,7 +713,7 @@ class UpdateObjectsTest:
             thumbCount=0,
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -771,7 +772,7 @@ class UpdateObjectsTest:
             thumbCount=1,
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -829,7 +830,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -923,7 +924,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        venue = VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer__siren="775671464",
             name="Cinema Allocine",
             siret="77567146400110",
@@ -1028,7 +1029,7 @@ class UpdateObjectsTest:
                 ),
             ]
 
-            venue = VenueFactory(
+            venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
                 name="Cinema Allocine",
                 siret="77567146400110",
@@ -1086,14 +1087,14 @@ class UpdateObjectsTest:
             ]
             mock_call_allocine_api.side_effect = [iter(allocine_api_response), iter(allocine_api_response)]
             mock_poster_get_allocine.return_value = bytes()
-            offerer = OffererFactory(siren="775671464")
-            venue1 = VenueFactory(
+            offerer = offerers_factories.OffererFactory(siren="775671464")
+            venue1 = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
                 name="Cinema Allocine 1",
                 siret="77567146400110",
                 bookingEmail="toto1@example.com",
             )
-            venue2 = VenueFactory(
+            venue2 = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
                 name="Cinema Allocine 2",
                 siret="98765432345677",
@@ -1186,7 +1187,7 @@ class UpdateObjectsTest:
                 ),
             ]
 
-            venue = VenueFactory(
+            venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
                 name="Cinema Allocine",
                 siret="77567146400110",
@@ -1283,7 +1284,7 @@ class UpdateObjectsTest:
                 ),
             ]
 
-            venue = VenueFactory(
+            venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
                 name="Cinema Allocine",
                 siret="77567146400110",
@@ -1354,7 +1355,9 @@ class UpdateObjectsTest:
                 ),
             ]
 
-            venue = VenueFactory(managingOfferer__siren="775671464", name="Cinema Allocine", siret="77567146400110")
+            venue = offerers_factories.VenueFactory(
+                managingOfferer__siren="775671464", name="Cinema Allocine", siret="77567146400110"
+            )
 
             allocine_venue_provider = AllocineVenueProviderFactory(venue=venue)
             AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
@@ -1430,7 +1433,7 @@ class UpdateObjectsTest:
                 ),
             ]
 
-            venue = VenueFactory(
+            venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
                 name="Cinema Allocine",
                 siret="77567146400110",
@@ -1475,7 +1478,7 @@ class UpdateObjectsTest:
                 )
             ]
 
-            venue = VenueFactory(
+            venue = offerers_factories.VenueFactory(
                 managingOfferer__siren="775671464",
                 name="Cinema Allocine",
                 siret="77567146400110",

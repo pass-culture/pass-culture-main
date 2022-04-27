@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from pcapi.core.offers.factories import VenueFactory
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.domain.price_rule import PriceRule
@@ -47,7 +47,7 @@ class ModifyAllocinePriceRuleForVenueTest:
     def should_not_update_allocine_price_rule_when_there_is_no_venue_provider_associated_to_the_venue(self, app):
         # Given
         new_price = Decimal(8)
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # When
         modify_allocine_price_rule_for_venue_by_siret(venue.siret, new_price)
@@ -59,7 +59,7 @@ class ModifyAllocinePriceRuleForVenueTest:
     def should_not_update_allocine_price_rule_when_there_is_no_allocine_price_rule_associated_to_the_venue(self, app):
         # Given
         new_price = Decimal(8)
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         providers_factories.AllocineVenueProviderFactory(venue=venue)
 
         # When

@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import pytest
 
 from pcapi import settings
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -78,7 +79,7 @@ class MakeOfferCreationNotificationEmailTest:
         offer = offers_factories.EventOfferFactory(
             author=author,
             product=offers_factories.DigitalProductFactory(name="Les lièvres pas malins"),
-            venue=offers_factories.VirtualVenueFactory(),
+            venue=offerers_factories.VirtualVenueFactory(),
         )
 
         # When
@@ -155,7 +156,7 @@ class MakeOfferRejectionNotificationEmailTest:
         offer = offers_factories.EventOfferFactory(
             author=author,
             product=offers_factories.DigitalProductFactory(name="Les lièvres pas malins"),
-            venue=offers_factories.VirtualVenueFactory(),
+            venue=offerers_factories.VirtualVenueFactory(),
         )
 
         # When

@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.providers.factories import AllocineProviderFactory
 from pcapi.core.providers.factories import AllocineVenueProviderFactory
 from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
@@ -46,7 +46,7 @@ class EditModelTest:
     ):
         # Given
         AdminFactory(email="user@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         old_provider = ProviderFactory(
             name="old provider", enabledForPro=True, localClass=None, apiUrl="https://example.com"
         )
@@ -91,7 +91,7 @@ class EditModelTest:
     def test_provider_not_synchronizable(self, mock_siret_can_be_synchronized, validate_csrf_token, client):
         # Given
         AdminFactory(email="user@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         old_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example.com")
         new_provider = ProviderFactory(enabledForPro=True, localClass=None, apiUrl="https://example2.com")
         venue_provider = VenueProviderFactory(provider=old_provider, venue=venue, venueIdAtOfferProvider="old-siret")
@@ -117,7 +117,7 @@ class EditModelTest:
     def test_allocine_provider(self, synchronize_venue_provider, validate_csrf_token, client):
         # Given
         AdminFactory(email="user@example.com")
-        venue = VenueFactory(siret="siret-pivot")
+        venue = offerers_factories.VenueFactory(siret="siret-pivot")
         provider = AllocineProviderFactory(enabledForPro=True)
 
         venue_provider = AllocineVenueProviderFactory(provider=provider, venue=venue, isDuo=False, quantity=111)

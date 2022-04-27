@@ -2,7 +2,7 @@ from unittest import mock
 
 import pytest
 
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_offers_in_algolia_from_database
 from pcapi.scripts.algolia_indexing.indexing import batch_indexing_venues_in_algolia_from_database
 
@@ -60,8 +60,8 @@ class BatchIndexingOffersInAlgoliaFromDatabaseTest:
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.search.reindex_venue_ids")
 def test_batch_indexing_venues_in_algolia_from_database(mock_reindex_venue_ids) -> None:
-    offers_factories.VenueFactory.create_batch(3, isPermanent=True)  # eligible venues
-    offers_factories.VenueFactory.create_batch(1, isPermanent=False)  # non-eligible venues
+    offerers_factories.VenueFactory.create_batch(3, isPermanent=True)  # eligible venues
+    offerers_factories.VenueFactory.create_batch(1, isPermanent=False)  # non-eligible venues
 
     batch_size = 2
     batch_indexing_venues_in_algolia_from_database(algolia_batch_size=batch_size, max_venues=10)

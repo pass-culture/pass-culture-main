@@ -57,7 +57,7 @@ class Returns204Test:
     def should_update_offers_by_given_filters(self, app):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         matching_offer1 = offers_factories.OfferFactory(name="OKAY 1", venue=venue)
         offers_factories.StockFactory(offer=matching_offer1, beginningDatetime=datetime(2020, 10, 10, 12, 0, 0))
         matching_offer2 = offers_factories.OfferFactory(name="OKAY 2", venue=venue)
@@ -158,7 +158,7 @@ class Returns204Test:
     ):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         matching_offer1 = offers_factories.EducationalEventOfferFactory(name="OKAY 1", venue=venue)
         matching_collective_offer = CollectiveOfferFactory(name="OKAY 1", venue=venue, offerId=matching_offer1.id)
         stock1 = offers_factories.StockFactory(

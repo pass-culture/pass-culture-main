@@ -85,7 +85,7 @@ class FindByTest:
         def test_returns_booking_if_token_is_known(self, app: fixture):
             # given
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -101,7 +101,7 @@ class FindByTest:
         def test_raises_an_exception_if_token_is_unknown(self, app: fixture):
             # given
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
             beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -237,10 +237,10 @@ class FindByProUserTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -279,9 +279,9 @@ class FindByProUserTest:
 
     def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
 
@@ -312,9 +312,9 @@ class FindByProUserTest:
 
     def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = offers_factories.ThingStockFactory(offer__venue=venue, price=10)
 
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
@@ -354,10 +354,10 @@ class FindByProUserTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -378,7 +378,7 @@ class FindByProUserTest:
     ):
         # Given
         admin = users_factories.AdminFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer)
@@ -401,10 +401,10 @@ class FindByProUserTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(
@@ -451,10 +451,10 @@ class FindByProUserTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(
@@ -481,10 +481,10 @@ class FindByProUserTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
@@ -514,10 +514,10 @@ class FindByProUserTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
@@ -550,20 +550,20 @@ class FindByProUserTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
         bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
-        offerer2 = offers_factories.OffererFactory(siren="8765432")
+        offerer2 = offerers_factories.OffererFactory(siren="8765432")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
 
-        venue2 = offers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
         offer2 = offers_factories.ThingOfferFactory(venue=venue2)
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
         bookings_factories.IndividualBookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
@@ -580,10 +580,10 @@ class FindByProUserTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory(email="beneficiary@example.com")
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue)
         stock = offers_factories.EventStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
@@ -609,10 +609,10 @@ class FindByProUserTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken="token")
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -630,10 +630,10 @@ class FindByProUserTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
         stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
@@ -657,10 +657,10 @@ class FindByProUserTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.EventOfferFactory(venue=venue, isDuo=True)
         stock = offers_factories.EventStockFactory(offer=offer, price=0, beginningDatetime=datetime.utcnow())
         today = datetime.utcnow()
@@ -685,10 +685,10 @@ class FindByProUserTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -714,10 +714,10 @@ class FindByProUserTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -902,10 +902,10 @@ class FindByProUserTest:
     def test_should_set_educational_booking_confirmation_date_in_history(self, app: fixture) -> None:
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
@@ -931,10 +931,10 @@ class FindByProUserTest:
     def test_should_set_booking_recap_pending_in_history(self, app: fixture) -> None:
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(
             offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
@@ -965,9 +965,9 @@ class FindByProUserTest:
     def test_should_return_token_as_none_when_educational_booking(self, app: fixture):
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         bookings_factories.EducationalBookingFactory(
             stock__offer__venue=venue,
@@ -1029,10 +1029,10 @@ class GetCsvReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -1093,10 +1093,10 @@ class GetCsvReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -1152,9 +1152,9 @@ class GetCsvReportTest:
 
     def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
 
@@ -1199,9 +1199,9 @@ class GetCsvReportTest:
 
     def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         booking_date = datetime(2020, 1, 1, 10, 0, 0)
 
@@ -1252,10 +1252,10 @@ class GetCsvReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -1275,7 +1275,7 @@ class GetCsvReportTest:
     ):
         # Given
         admin = users_factories.AdminFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer)
         offerers_factories.UserOffererFactory(offerer=offerer)
@@ -1297,10 +1297,10 @@ class GetCsvReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(
@@ -1360,10 +1360,10 @@ class GetCsvReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(
@@ -1391,10 +1391,10 @@ class GetCsvReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=5)
@@ -1426,10 +1426,10 @@ class GetCsvReportTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product)
         stock = offers_factories.EventStockFactory(offer=offer, price=5)
@@ -1460,20 +1460,20 @@ class GetCsvReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
         today = datetime.utcnow()
         bookings_factories.BookingFactory(user=beneficiary, stock=stock, dateCreated=today, token="ABCD")
 
-        offerer2 = offers_factories.OffererFactory(siren="8765432")
+        offerer2 = offerers_factories.OffererFactory(siren="8765432")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
 
-        venue2 = offers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer, siret="8765432098765")
         offer2 = offers_factories.ThingOfferFactory(venue=venue2)
         stock2 = offers_factories.ThingStockFactory(offer=offer2, price=0)
         bookings_factories.BookingFactory(user=beneficiary, stock=stock2, dateCreated=today, token="FGHI")
@@ -1491,10 +1491,10 @@ class GetCsvReportTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken="token")
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -1513,10 +1513,10 @@ class GetCsvReportTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -1543,10 +1543,10 @@ class GetCsvReportTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory(postalCode="97300")
+        offerer = offerers_factories.OffererFactory(postalCode="97300")
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, isVirtual=True, siret=None)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product, extraData=dict({"isbn": "9876543234"}))
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -1573,10 +1573,10 @@ class GetCsvReportTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue_for_event = offers_factories.VenueFactory(
+        venue_for_event = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un événement", siret="11816909600069"
         )
         product = offers_factories.EventProductFactory(name="Shutter Island")
@@ -1589,7 +1589,7 @@ class GetCsvReportTest:
             token="BBBBBB",
         )
 
-        venue_for_book = offers_factories.VenueFactory(
+        venue_for_book = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un livre", siret="41816609600069"
         )
         product_book = offers_factories.ThingProductFactory(name="Harry Potter")
@@ -1604,7 +1604,7 @@ class GetCsvReportTest:
             token="AAAAAA",
         )
 
-        venue_for_thing = offers_factories.VenueFactory(
+        venue_for_thing = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un bien qui n'est pas un livre", siret="83994784300018"
         )
         product_thing = offers_factories.ThingProductFactory(name="Harry Potter")
@@ -1634,10 +1634,10 @@ class GetCsvReportTest:
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue_for_event = offers_factories.VenueFactory(
+        venue_for_event = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Opéra paris", publicName="Super Opéra de Paris", siret="11816909600069"
         )
         product = offers_factories.EventProductFactory(name="Shutter Island")
@@ -1650,7 +1650,7 @@ class GetCsvReportTest:
             token="BBBBBB",
         )
 
-        venue_for_book = offers_factories.VenueFactory(
+        venue_for_book = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Lieu pour un livre", publicName="Librairie Châtelet", siret="41816609600069"
         )
         product_book = offers_factories.ThingProductFactory(name="Harry Potter")
@@ -1665,7 +1665,7 @@ class GetCsvReportTest:
             token="AAAAAA",
         )
 
-        venue_for_thing = offers_factories.VenueFactory(
+        venue_for_thing = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             name="Lieu pour un bien qui n'est pas un livre",
             publicName="Guitar Center",
@@ -1857,9 +1857,9 @@ class GetCsvReportTest:
     def test_should_output_the_correct_offer_type_depending_wether_offer_educational_or_not(self, app: fixture):
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         booking_1 = bookings_factories.EducationalBookingFactory(
             stock__offer__venue=venue,
@@ -1900,9 +1900,9 @@ class GetCsvReportTest:
     def test_should_not_return_token_for_educational_bookings(self, app: fixture):
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         bookings_factories.EducationalBookingFactory(
             stock__offer__venue=venue,
@@ -1984,9 +1984,9 @@ class GetCsvReportTest:
             date_created = datetime.utcnow() - timedelta(hours=6)
 
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
             bookings_factories.CancelledIndividualBookingFactory(
                 stock__offer__venue=venue,
@@ -2017,9 +2017,9 @@ class GetCsvReportTest:
             date_created = datetime.utcnow() - timedelta(days=10)
 
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
             bookings_factories.CancelledIndividualBookingFactory(
                 stock__offer__venue=venue,
@@ -2060,9 +2060,9 @@ class GetCsvReportTest:
             event_date = datetime.utcnow() + timedelta(days=2)
 
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             event_stock = offers_factories.EventStockFactory(beginningDatetime=event_date, offer__venue=venue)
             bookings_factories.CancelledIndividualBookingFactory(
                 stock=event_stock,
@@ -2104,10 +2104,10 @@ class GetCsvReportTest:
             event_date = datetime.utcnow() + timedelta(days=25)
 
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             bookings_factories.RefusedEducationalBookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
@@ -2151,10 +2151,10 @@ class GetCsvReportTest:
             event_date = datetime.utcnow() + timedelta(days=10)
 
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             bookings_factories.RefusedEducationalBookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
@@ -2198,10 +2198,10 @@ class GetCsvReportTest:
             event_date = datetime.utcnow() - timedelta(days=1)
 
             pro = users_factories.ProFactory()
-            offerer = offers_factories.OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             bookings_factories.RefusedEducationalBookingFactory(
                 stock__offer__venue=venue,
                 dateCreated=date_created,
@@ -2262,10 +2262,10 @@ class GetExcelReportTest:
             email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
         )
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.ThingProductFactory(name="Harry Potter")
         offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
         stock = offers_factories.ThingStockFactory(offer=offer, price=0)
@@ -2418,7 +2418,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
 
     def test_return_0_when_no_bookings_exist(self):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # When
         active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
@@ -2447,7 +2447,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
         # Given
         booking = bookings_factories.IndividualBookingFactory()
         venue = booking.venue
-        another_venue = offers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        another_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         bookings_factories.IndividualBookingFactory(stock__offer__venue=another_venue)
 
         # When
@@ -2484,7 +2484,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
 
     def test_return_0_when_no_bookings_exist(self):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # When
         validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
@@ -2509,7 +2509,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
         # Given
         booking = bookings_factories.UsedIndividualBookingFactory()
         venue = booking.venue
-        another_venue = offers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        another_venue = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=another_venue)
 
         # When

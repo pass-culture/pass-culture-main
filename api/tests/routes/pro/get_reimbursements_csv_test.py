@@ -6,7 +6,6 @@ import pytest
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -17,9 +16,9 @@ from tests.conftest import TestClient
 def test_with_venue_filter(app):
     beginning_date_iso_format = (date.today() - timedelta(days=2)).isoformat()
     ending_date_iso_format = (date.today() + timedelta(days=2)).isoformat()
-    offerer = offers_factories.OffererFactory()
-    venue1 = offers_factories.VenueFactory(managingOfferer=offerer)
-    venue2 = offers_factories.VenueFactory(managingOfferer=offerer)
+    offerer = offerers_factories.OffererFactory()
+    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
     for venue in (venue1, venue2):
         finance_factories.PaymentStatusFactory(
             payment__booking__stock__offer__venue=venue,

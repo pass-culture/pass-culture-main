@@ -5,11 +5,10 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
-from pcapi.core.offers.factories import OffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
@@ -428,8 +427,8 @@ class TiteliveThingsTest:
         titelive_provider = providers_factories.ProviderFactory(localClass="TiteLiveThings")
         repository.save(titelive_provider)
 
-        offerer = OffererFactory(siren="123456789")
-        venue = VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = ThingProductFactory(
             idAtProviders="9782895026310",
             name="Presse papier",
@@ -495,8 +494,8 @@ class TiteliveThingsTest:
         repository.save(titelive_provider)
         titelive_things = TiteLiveThings()
 
-        offerer = OffererFactory(siren="123456789")
-        venue = VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory(siren="123456789")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = ThingProductFactory(
             idAtProviders=book_isbn,
             name="Presse papier",

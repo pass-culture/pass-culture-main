@@ -5,6 +5,7 @@ import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offers.factories as offers_factories
@@ -46,7 +47,7 @@ def test_delete_cascade_venue_should_abort_when_offerer_has_any_bookings():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes():
     # Given
-    venue_to_delete = offers_factories.VenueFactory()
+    venue_to_delete = offerers_factories.VenueFactory()
     offer_1 = offers_factories.OfferFactory(venue=venue_to_delete)
     offer_2 = offers_factories.OfferFactory(venue=venue_to_delete)
     stock_1 = offers_factories.StockFactory(offer__venue=venue_to_delete)
@@ -70,7 +71,7 @@ def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes()
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_bank_informations_of_venue():
     # Given
-    venue_to_delete = offers_factories.VenueFactory(businessUnit=None)
+    venue_to_delete = offerers_factories.VenueFactory(businessUnit=None)
     offers_factories.BankInformationFactory(venue=venue_to_delete)
     offers_factories.BankInformationFactory()
 
@@ -86,8 +87,8 @@ def test_delete_cascade_venue_should_remove_bank_informations_of_venue():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_mediations_of_managed_offers():
     # Given
-    venue = offers_factories.VenueFactory()
-    venue_to_delete = offers_factories.VenueFactory()
+    venue = offerers_factories.VenueFactory()
+    venue_to_delete = offerers_factories.VenueFactory()
     offers_factories.MediationFactory(offer__venue=venue_to_delete)
     offers_factories.MediationFactory(offer__venue=venue)
 
@@ -104,8 +105,8 @@ def test_delete_cascade_venue_should_remove_mediations_of_managed_offers():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_favorites_of_managed_offers():
     # Given
-    venue = offers_factories.VenueFactory()
-    venue_to_delete = offers_factories.VenueFactory()
+    venue = offerers_factories.VenueFactory()
+    venue_to_delete = offerers_factories.VenueFactory()
     users_factories.FavoriteFactory(offer__venue=venue_to_delete)
     users_factories.FavoriteFactory(offer__venue=venue)
 
@@ -122,8 +123,8 @@ def test_delete_cascade_venue_should_remove_favorites_of_managed_offers():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_criterions():
     # Given
-    venue = offers_factories.VenueFactory()
-    venue_to_delete = offers_factories.VenueFactory()
+    venue = offerers_factories.VenueFactory()
+    venue_to_delete = offerers_factories.VenueFactory()
     criteria_factories.OfferCriterionFactory(offer__venue=venue_to_delete)
     criteria_factories.OfferCriterionFactory(offer__venue=venue)
 
@@ -141,8 +142,8 @@ def test_delete_cascade_venue_should_remove_criterions():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_synchronization_to_provider():
     # Given
-    venue = offers_factories.VenueFactory()
-    venue_to_delete = offers_factories.VenueFactory()
+    venue = offerers_factories.VenueFactory()
+    venue_to_delete = offerers_factories.VenueFactory()
     providers_factories.VenueProviderFactory(venue=venue_to_delete)
     providers_factories.VenueProviderFactory(venue=venue)
 
@@ -159,8 +160,8 @@ def test_delete_cascade_venue_should_remove_synchronization_to_provider():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider():
     # Given
-    venue = offers_factories.VenueFactory()
-    venue_to_delete = offers_factories.VenueFactory()
+    venue = offerers_factories.VenueFactory()
+    venue_to_delete = offerers_factories.VenueFactory()
     providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue_to_delete)
     providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider__venue=venue)
 

@@ -210,16 +210,16 @@ On peut ensuite se connecter avec ce mail et le mot de passe par défaut en loca
 ```
 >>> from pcapi.core.users.factories import UserFactory;
 >>> user = UserFactory(email='marie2@app.com’)
->>> from pcapi.core.offers.factories import OffererFactory;
+>>> from pcapi.core.offerers.factories import OffererFactory
 >>> factory = OffererFactory(siren=444444444)
->>> from pcapi.core.offerers.factories import UserOffererFactory;
+>>> from pcapi.core.offerers.factories import UserOffererFactory
 >>> UserOffererFactory(user, offerer)
 ```
 
 On peut aussi surcharger directement les arguments des factories appelées par d'autres factories, en préfixant l'argument avec le nom de la factory secondaire suivie d'un double underscore. Les deux lignes suivantes sont équivalentes à celles qui précèdent:
 
 ```
->>> from pcapi.core.offerers.factories import UserOffererFactory;
+>>> from pcapi.core.offerers.factories import UserOffererFactory
 >>> UserOffererFactory(user__email='marie2@app.com’, offerer__siren=444444444)
 ```
 

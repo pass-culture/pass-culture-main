@@ -8,6 +8,7 @@ import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import get_reminder_7_days_before_event_email_data
 from pcapi.core.mails.transactional.pro.reminder_before_event_to_pro import send_reminder_7_days_before_event_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 
 
@@ -17,8 +18,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Reminder7DaysBeforeEventToProEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given
-        offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="offer@bookingEmail.com")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 5, 1, 14, 10))
@@ -45,8 +46,8 @@ class Reminder7DaysBeforeEventToProEmailTest:
 
     def test_sends_email_to_pro_venue_booking_email_when_offer_booking_email_is_missing(self):
         # Given
-        offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail=None)
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 5, 1, 14, 10))
@@ -71,8 +72,8 @@ class Reminder7DaysBeforeEventToProEmailTest:
         }
 
     def test_get_email_metadata(self):
-        offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@bookingEmail.com")
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="offer@bookingEmail.com")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 2, 14, 20))

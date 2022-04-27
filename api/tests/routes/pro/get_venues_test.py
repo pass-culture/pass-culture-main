@@ -4,7 +4,6 @@ import pytest
 
 from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -17,7 +16,7 @@ def test_response_serialization(app):
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="user.pro@test.com",
     )
-    venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     # when
     response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
@@ -53,7 +52,7 @@ def test_default_call(mock_get_filtered_venues, app):
     user_offerer = offerers_factories.UserOffererFactory(
         user__email="user.pro@test.com",
     )
-    offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
     # when
     response = TestClient(app.test_client()).with_session_auth(user_offerer.user.email).get("/venues")
@@ -97,9 +96,9 @@ def test_admin_call_num_queries(app):
 
     user_offerers = offerers_factories.UserOffererFactory.create_batch(3)
 
-    offers_factories.VenueFactory(managingOfferer=user_offerers[0].offerer)
-    offers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
-    offers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
+    offerers_factories.VenueFactory(managingOfferer=user_offerers[0].offerer)
+    offerers_factories.VenueFactory(managingOfferer=user_offerers[1].offerer)
+    offerers_factories.VenueFactory(managingOfferer=user_offerers[2].offerer)
 
     client = TestClient(app.test_client()).with_session_auth(admin_user.email)
 
@@ -118,9 +117,9 @@ def test_admin_call_num_queries(app):
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_invalid_offerer_id(mock_get_filtered_venues, app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
-    offerer = offers_factories.OffererFactory()
+    offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-    offers_factories.VenueFactory(managingOfferer=offerer)
+    offerers_factories.VenueFactory(managingOfferer=offerer)
 
     query_params = [
         f"offererId={humanize(666)}",
@@ -149,7 +148,7 @@ def test_invalid_offerer_id(mock_get_filtered_venues, app):
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_full_valid_call(mock_get_filtered_venues, app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
-    offerer = offers_factories.OffererFactory()
+    offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
     query_params = [
@@ -178,7 +177,7 @@ def test_full_valid_call(mock_get_filtered_venues, app):
 @patch("pcapi.core.offerers.repository.get_filtered_venues")
 def test_full_valid_call_with_false(mock_get_filtered_venues, app):
     pro_user = users_factories.ProFactory(email="user.pro@test.com")
-    offerer = offers_factories.OffererFactory()
+    offerer = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
     query_params = [

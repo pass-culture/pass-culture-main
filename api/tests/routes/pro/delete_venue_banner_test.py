@@ -4,7 +4,6 @@ import pytest
 
 from pcapi import settings
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.utils.human_ids import humanize
 
 
@@ -14,7 +13,7 @@ class VenueBannerTest:
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_delete_banner(self, mock_search_async_index_venue_ids, mock_delete_public_object, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         timestamp = 1602720000
         expected_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}_{timestamp}"
@@ -39,7 +38,7 @@ class VenueBannerTest:
     @patch("pcapi.core.search.async_index_venue_ids")
     def test_delete_banner_legacy_url(self, mock_search_async_index_venue_ids, mock_delete_public_object, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         expected_thumb_base_path = f"{venue.thumb_path_component}/{humanize(venue.id)}"
         venue.bannerUrl = f"{settings.OBJECT_STORAGE_URL}/{expected_thumb_base_path}"
@@ -61,7 +60,7 @@ class VenueBannerTest:
         the venue does not have any (DELETE method must be idempotent)
         """
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer, bannerUrl=None)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, bannerUrl=None)
 
         client = client.with_session_auth(email=user_offerer.user.email)
 
@@ -80,7 +79,7 @@ class VenueBannerTest:
     @patch("pcapi.core.offerers.api.delete_venue_banner")
     def test_no_access_rights(self, mock_delete_venue_banner, client):
         user = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory()  # user has no rights to do anything with this venue
+        venue = offerers_factories.VenueFactory()  # user has no rights to do anything with this venue
 
         client = client.with_session_auth(email=user.user.email)
 

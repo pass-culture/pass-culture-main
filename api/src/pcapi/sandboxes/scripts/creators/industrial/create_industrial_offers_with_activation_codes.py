@@ -1,8 +1,8 @@
 from datetime import datetime
 import logging
 
+from pcapi.core.offerers.factories import VirtualVenueFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
-from pcapi.core.offers.factories import VirtualVenueFactory
 
 
 logger = logging.getLogger(__name__)

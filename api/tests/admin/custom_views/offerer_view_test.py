@@ -20,7 +20,7 @@ class OffererViewTest:
     def test_edit_offerer_add_tags(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         tag1 = offers_factories.OffererTagFactory(name="test_tag_1")
         tag2 = offers_factories.OffererTagFactory(name="test_tag_2")
 
@@ -49,7 +49,7 @@ class OffererViewTest:
     def test_edit_offerer_remove_tags(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offers_factories.OffererTagMappingFactory(offerer=offerer)
         offers_factories.OffererTagMappingFactory(offerer=offerer)
 
@@ -80,7 +80,7 @@ class OffererViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_deactivate_offerer(self, mocked_validate_csrf_token, client, booking_status):
         admin = users_factories.AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -114,7 +114,7 @@ class OffererViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_deactivate_offerer_rejected(self, mocked_validate_csrf_token, client, booking_status):
         admin = users_factories.AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer)
         booking_factories.BookingFactory(stock__offer__venue=venue, status=booking_status)
@@ -148,8 +148,8 @@ class OffererViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_reactivate_offerer(self, mocked_validate_csrf_token, client):
         admin = users_factories.AdminFactory(email="user@example.com")
-        offerer = offers_factories.OffererFactory(isActive=False)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory(isActive=False)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
@@ -180,7 +180,7 @@ class OffererViewTest:
     def test_delete_offerer(self, mocked_validate_csrf_token, client):
         # Can delete offerer because there is no booking
         admin = users_factories.AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(bookingEmail="booking@example.com")
+        venue = offerers_factories.VenueFactory(bookingEmail="booking@example.com")
         pro_user = users_factories.ProFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
 
@@ -211,7 +211,7 @@ class OffererViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_delete_offerer_rejected(self, mocked_validate_csrf_token, client, booking_status):
         admin = users_factories.AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         booking_factories.BookingFactory(stock__offer__venue=venue, status=booking_status)
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 

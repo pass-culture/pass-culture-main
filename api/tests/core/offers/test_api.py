@@ -131,10 +131,10 @@ class UpsertStocksTest:
     def test_sends_email_if_beginning_date_changes_on_edition(self):
         # Given
         user = users_factories.ProFactory()
-        offerer = factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        venue = factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
         offer = factories.EventOfferFactory(venue=venue, bookingEmail="offer@bookingemail.fr")
         existing_stock = factories.StockFactory(offer=offer, price=10)
         beginning = datetime.utcnow() + timedelta(days=10)
@@ -1409,7 +1409,7 @@ class CreateMediationV2Test:
 
 class CreateOfferTest:
     def test_create_offer_from_scratch(self):
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
@@ -1447,7 +1447,7 @@ class CreateOfferTest:
             extraData={"isbn": "9782207300893", "author": "Asimov", "bookFormat": "Soft cover"},
             isGcuCompatible=True,
         )
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
@@ -1483,7 +1483,7 @@ class CreateOfferTest:
             isGcuCompatible=False,
         )
 
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
@@ -1506,7 +1506,7 @@ class CreateOfferTest:
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_product_not_exists_should_fail(self):
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
@@ -1528,7 +1528,7 @@ class CreateOfferTest:
         assert error.value.errors["isbn"] == ["Ce produit n’est pas éligible au pass Culture."]
 
     def test_cannot_create_activation_offer(self):
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.SubCategoryIsInactive) as error:
             data = offers_serialize.PostOfferBodyModel(
@@ -1547,7 +1547,7 @@ class CreateOfferTest:
         ]
 
     def test_cannot_create_offer_when_invalid_subcategory(self):
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         with pytest.raises(exceptions.UnknownOfferSubCategory) as error:
             data = offers_serialize.PostOfferBodyModel(
@@ -1564,7 +1564,7 @@ class CreateOfferTest:
         assert error.value.errors["subcategory"] == ["La sous-catégorie de cette offre est inconnue"]
 
     def test_create_educational_offer(self):
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
@@ -1587,7 +1587,7 @@ class CreateOfferTest:
 
         # Given
         unauthorized_subcategory_id = "BON_ACHAT_INSTRUMENT"
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
         user = user_offerer.user
@@ -1627,7 +1627,7 @@ class CreateOfferTest:
         assert error.value.errors["global"] == [err]
 
     def test_fail_if_user_not_related_to_offerer(self):
-        venue = factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         user = users_factories.ProFactory()
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
@@ -1654,7 +1654,7 @@ class UpdateOfferTest:
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
-        offerer = factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         product = factories.ProductFactory(owningOfferer=offerer)
         offer = factories.OfferFactory(product=product, venue__managingOfferer=offerer)
 
@@ -1860,7 +1860,7 @@ class UpdateStockIdAtProvidersTest:
     def test_update_and_stock_id_at_providers(self):
         # Given
         current_siret = "88888888888888"
-        venue = factories.VenueFactory(siret=current_siret)
+        venue = offerers_factories.VenueFactory(siret=current_siret)
         offer = factories.OfferFactory(venue=venue, idAtProvider="1111111111111")
         stock = factories.StockFactory(offer=offer, idAtProviders="1111111111111@22222222222222")
 
@@ -2355,7 +2355,7 @@ class ComputeOfferValidationScoreTest:
 
     def test_offer_validation_with_emails_blacklist(self):
 
-        venue = factories.VenueFactory(siret="12345678912345", bookingEmail="fake@yopmail.com")
+        venue = offerers_factories.VenueFactory(siret="12345678912345", bookingEmail="fake@yopmail.com")
         offer = factories.OfferFactory(name="test offer", venue=venue)
         factories.StockFactory(offer=offer, price=15)
         validation_item_1 = offer_validation.OfferValidationItem(

@@ -19,7 +19,6 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
@@ -136,7 +135,7 @@ class OfferValidationViewTest:
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -184,7 +183,7 @@ class OfferValidationViewTest:
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
 
         pro_user = users_factories.ProFactory(email="pro@example.com")
@@ -224,7 +223,7 @@ class OfferValidationViewTest:
         # Given
         users_factories.AdminFactory(email="admin@example.com")
 
-        venue = VenueFactory(bookingEmail=None)
+        venue = offerers_factories.VenueFactory(bookingEmail=None)
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -258,7 +257,7 @@ class OfferValidationViewTest:
         # Given
         users_factories.AdminFactory(email="admin@example.com")
 
-        venue = VenueFactory(bookingEmail="venue@example.com")
+        venue = offerers_factories.VenueFactory(bookingEmail="venue@example.com")
 
         offer = offers_factories.OfferFactory(validation=OfferValidationStatus.PENDING, isActive=True, venue=venue)
 
@@ -531,8 +530,8 @@ class OfferValidationViewTest:
 
     def test_get_query_and_count(self, db_session):
         offer_view = ValidationOfferView(model=Offer, session=db_session)
-        validated_offerer = offers_factories.OffererFactory()
-        non_validated_offerer = offers_factories.OffererFactory(validationToken="token")
+        validated_offerer = offerers_factories.OffererFactory()
+        non_validated_offerer = offerers_factories.OffererFactory(validationToken="token")
         offer_1 = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING,
             venue__managingOfferer=validated_offerer,
@@ -594,7 +593,7 @@ class OfferValidationViewTest:
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -643,7 +642,7 @@ class OfferValidationViewTest:
         client,
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -813,8 +812,8 @@ class OfferValidationViewTest:
         offer_view = ValidationCollectiveOfferTemplateView(
             model=educational_models.CollectiveOfferTemplate, session=db_session
         )
-        validated_offerer = offers_factories.OffererFactory()
-        non_validated_offerer = offers_factories.OffererFactory(validationToken="token")
+        validated_offerer = offerers_factories.OffererFactory()
+        non_validated_offerer = offerers_factories.OffererFactory(validationToken="token")
         offer_1 = educational_factories.CollectiveOfferTemplateFactory(
             validation=OfferValidationStatus.PENDING,
             venue__managingOfferer=validated_offerer,
@@ -841,7 +840,7 @@ class OfferValidationViewTest:
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -892,7 +891,7 @@ class OfferValidationViewTest:
         client,
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -1060,8 +1059,8 @@ class OfferValidationViewTest:
     @pytest.mark.skip
     def test_get_query_and_count_on_collective_offer(self, db_session):
         offer_view = ValidationCollectiveOfferView(model=educational_models.CollectiveOffer, session=db_session)
-        validated_offerer = offers_factories.OffererFactory()
-        non_validated_offerer = offers_factories.OffererFactory(validationToken="token")
+        validated_offerer = offerers_factories.OffererFactory()
+        non_validated_offerer = offerers_factories.OffererFactory(validationToken="token")
         offer_1 = educational_factories.CollectiveOfferFactory(
             validation=OfferValidationStatus.PENDING,
             venue__managingOfferer=validated_offerer,
@@ -1127,7 +1126,7 @@ class OfferValidationViewTest:
         self, mocked_get_offerer_legal_category, mocked_validate_csrf_token, action, expected, client
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -1178,7 +1177,7 @@ class OfferValidationViewTest:
         client,
     ):
         users_factories.AdminFactory(email="admin@example.com")
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
@@ -1233,7 +1232,7 @@ class GetOfferValidationViewTest:
     def test_offer_validation_legal_category_api_calls(self, mocked_get_offerer_legal_category, app):
         import_offer_validation_config(self.CONFIG_YAML)
         users_factories.AdminFactory(email="admin@example.com")
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offer = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
         )
@@ -1261,7 +1260,7 @@ class GetOfferValidationViewTest:
     def test_view_form_loads_if_wrong_siren(self, mocked_get_by_offerer, app, client, caplog):
         import_offer_validation_config(self.CONFIG_YAML)
         users_factories.AdminFactory(email="admin@example.com")
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offer = offers_factories.OfferFactory(
             validation=OfferValidationStatus.PENDING, isActive=False, venue__managingOfferer=offerer
         )

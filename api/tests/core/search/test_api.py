@@ -4,6 +4,7 @@ import pytest
 
 from pcapi.core import search
 from pcapi.core.offerers import models as offerers_models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_settings
@@ -39,8 +40,8 @@ def test_async_index_venue_ids(app):
     Ensure that both permanent and non permanent venues are enqueues.
     The permanent/non-permanent filter comes after, during indexing.
     """
-    permanent_venue = offers_factories.VenueFactory(isPermanent=True)
-    other_venue = offers_factories.VenueFactory(isPermanent=False)
+    permanent_venue = offerers_factories.VenueFactory(isPermanent=True)
+    other_venue = offerers_factories.VenueFactory(isPermanent=False)
 
     search.async_index_venue_ids([permanent_venue.id, other_venue.id])
 
@@ -72,8 +73,8 @@ def test_index_offers_of_venues_in_queue(app):
 
 @override_settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
 def test_index_venues_in_queue(app):
-    venue1 = offers_factories.VenueFactory()
-    venue2 = offers_factories.VenueFactory()
+    venue1 = offerers_factories.VenueFactory()
+    venue2 = offerers_factories.VenueFactory()
     queue = "search:algolia:venue-ids-to-index"
     app.redis_client.sadd(queue, venue1.id, venue2.id)
 
@@ -121,19 +122,19 @@ class ReindexOfferIdsTest:
 
 class ReindexVenueIdsTest:
     def test_index_new_venue(self):
-        venue = offers_factories.VenueFactory(isPermanent=True)
+        venue = offerers_factories.VenueFactory(isPermanent=True)
         assert search_testing.search_store["venues"] == {}
         search.reindex_venue_ids([venue.id])
         assert venue.id in search_testing.search_store["venues"]
 
     def test_unindex_ineligible_venues(self):
-        indexable_venue = offers_factories.VenueFactory(
+        indexable_venue = offerers_factories.VenueFactory(
             isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE
         )
 
-        venue1 = offers_factories.VenueFactory(isPermanent=False)
-        venue2 = offers_factories.VenueFactory(isPermanent=True, managingOfferer__isActive=False)
-        venue3 = offers_factories.VenueFactory(
+        venue1 = offerers_factories.VenueFactory(isPermanent=False)
+        venue2 = offerers_factories.VenueFactory(isPermanent=True, managingOfferer__isActive=False)
+        venue3 = offerers_factories.VenueFactory(
             isPermanent=True, managingOfferer__isActive=True, venueTypeCode=offerers_models.VenueTypeCode.ADMINISTRATIVE
         )
 

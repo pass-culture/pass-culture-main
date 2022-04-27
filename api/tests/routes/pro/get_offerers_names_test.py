@@ -1,7 +1,6 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -10,17 +9,17 @@ from tests.conftest import TestClient
 
 class Returns200ForProUserTest:
     def _setup_offerers_for_pro_user(self, user):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=user, offerer=offerer)
 
-        offerer_not_validated = offers_factories.OffererFactory(validationToken="token")
+        offerer_not_validated = offerers_factories.OffererFactory(validationToken="token")
         offerers_factories.UserOffererFactory(user=user, offerer=offerer_not_validated)
 
-        offerer_validated_for_user = offers_factories.OffererFactory()
+        offerer_validated_for_user = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer_validated_for_user)
         offerers_factories.UserOffererFactory(user=user, offerer=offerer_validated_for_user)
 
-        offerer_not_validated_for_user = offers_factories.OffererFactory()
+        offerer_not_validated_for_user = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(offerer=offerer_not_validated_for_user)
         offerers_factories.UserOffererFactory(
             user=user,
@@ -28,10 +27,10 @@ class Returns200ForProUserTest:
             validationToken="user_token",
         )
 
-        other_offerer = offers_factories.OffererFactory()
+        other_offerer = offerers_factories.OffererFactory()
         other_user_offerer = offerers_factories.UserOffererFactory(offerer=other_offerer)
 
-        other_offerer_not_validated = offers_factories.OffererFactory(validationToken="other_token")
+        other_offerer_not_validated = offerers_factories.OffererFactory(validationToken="other_token")
         offerers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
 
         return {
@@ -47,7 +46,7 @@ class Returns200ForProUserTest:
     def test_response_serializer(self, app):
         # given
         pro_user = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         # when
@@ -162,16 +161,16 @@ class Returns200ForProUserTest:
 
 class Returns200ForAdminTest:
     def _setup_offerers_for_users(self):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
 
-        offerer_not_validated = offers_factories.OffererFactory(validationToken="token")
+        offerer_not_validated = offerers_factories.OffererFactory(validationToken="token")
         offerers_factories.UserOffererFactory(user=user_offerer.user, offerer=offerer_not_validated)
 
-        other_offerer = offers_factories.OffererFactory()
+        other_offerer = offerers_factories.OffererFactory()
         other_user_offerer = offerers_factories.UserOffererFactory(offerer=other_offerer)
 
-        other_offerer_not_validated = offers_factories.OffererFactory(validationToken="other_token")
+        other_offerer_not_validated = offerers_factories.OffererFactory(validationToken="other_token")
         offerers_factories.UserOffererFactory(user=other_user_offerer.user, offerer=other_offerer_not_validated)
         return {
             "offerer": offerer,

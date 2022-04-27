@@ -3,12 +3,11 @@ import random
 import re
 
 import pcapi.core.offerers.api as offerers_api
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import BankInformationFactory
-from pcapi.core.offers.factories import VenueFactory
-from pcapi.core.offers.factories import VirtualVenueFactory
 from pcapi.core.providers import factories as providers_factories
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
@@ -93,7 +92,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             venue_type = random.choice(venue_types)
             venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]
 
-            venue = VenueFactory(
+            venue = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
                 bookingEmail="fake@example.com",
                 latitude=float(geoloc_match.group(2)),  # type: ignore [union-attr]
@@ -123,11 +122,11 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
         mock_index += 1
 
         virtual_venue_name = "{} (Offre numérique)"
-        venue_by_name[virtual_venue_name] = VirtualVenueFactory(
+        venue_by_name[virtual_venue_name] = offerers_factories.VirtualVenueFactory(
             managingOfferer=offerer, name=virtual_venue_name.format(venue_name), businessUnit__name=offerer.name
         )
 
-    venue_synchronized_with_allocine = VenueFactory(
+    venue_synchronized_with_allocine = offerers_factories.VenueFactory(
         name="Lieu synchro allociné", siret="87654321", businessUnit__name="Business Unit du Lieu synchro allociné"
     )
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)

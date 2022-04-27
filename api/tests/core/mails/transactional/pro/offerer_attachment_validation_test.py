@@ -10,15 +10,14 @@ from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
     send_offerer_attachment_validation_email_to_pro,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offerers.factories import UserOffererFactory
-from pcapi.core.offers.factories import OffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 
 
 @pytest.mark.usefixtures("db_session")
 class ProOffererAttachmentValidationEmailTest:
     def test_email_data(self):
         # given
-        offerer = OffererFactory(name="Le Théâtre SAS")
+        offerer = offerers_factories.OffererFactory(name="Le Théâtre SAS")
         # when
         mail_data = get_offerer_attachment_validation_email_data(offerer)
         # then
@@ -27,7 +26,7 @@ class ProOffererAttachmentValidationEmailTest:
 
     def test_send_email(self):
         # given
-        user_offerer = UserOffererFactory(offerer__name="Le Théâtre SAS")
+        user_offerer = offerers_factories.UserOffererFactory(offerer__name="Le Théâtre SAS")
         # when
         send_offerer_attachment_validation_email_to_pro(user_offerer)
         # then

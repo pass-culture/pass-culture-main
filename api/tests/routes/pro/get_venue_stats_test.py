@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -37,7 +36,7 @@ class Returns403Test:
     def when_pro_user_does_not_have_rights(self, app):
         # given
         pro_user = users_factories.ProFactory()
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
 

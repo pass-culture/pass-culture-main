@@ -6,7 +6,6 @@ from pcapi.core.finance.factories import BusinessUnitFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.utils.human_ids import humanize
 
@@ -39,7 +38,7 @@ class Returns200Test:
     def test_should_update_venue(self, app) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(name="old name", managingOfferer=user_offerer.offerer)
 
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
 
@@ -74,7 +73,7 @@ class Returns200Test:
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
     def test_edit_venue_booking_email_with_applied_on_all_offers(self, mocked_update_all_venue_offers_email_job, app):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old name", managingOfferer=user_offerer.offerer, bookingEmail="old.venue@email.com"
         )
 
@@ -123,7 +122,7 @@ class Returns200Test:
         self, mocked_update_all_venue_offers_withdrawal_details_job, app
     ):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old name",
             managingOfferer=user_offerer.offerer,
         )
@@ -156,7 +155,7 @@ class Returns200Test:
         self, mocked_update_all_venue_offers_accessibility_job, app
     ):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old name",
             managingOfferer=user_offerer.offerer,
         )
@@ -191,7 +190,7 @@ class Returns200Test:
     def when_siret_does_not_change(self, app) -> None:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
         venue_data = populate_missing_data_from_venue({}, venue)
@@ -207,7 +206,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_add_business_unit_id(self, app) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
             businessUnit=None,
         )
@@ -228,7 +227,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_remove_business_unit_id(self, app) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
         venue_data = populate_missing_data_from_venue(
@@ -246,7 +245,7 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_error_add_business_unit_id(self, app) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
             businessUnit=None,
         )
@@ -267,7 +266,7 @@ class Returns200Test:
 @pytest.mark.parametrize("data, key", venue_malformed_test_data)
 def test_update_venue_malformed(app, client, data, key):
     user_offerer = offerers_factories.UserOffererFactory()
-    venue = offers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory(
         managingOfferer=user_offerer.offerer,
     )
 

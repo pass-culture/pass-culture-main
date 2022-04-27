@@ -1,7 +1,6 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
@@ -11,11 +10,11 @@ class GetEducationalOfferersTest:
     def test_response_serializer_for_multiple_educational_offerers(self, client):
         # given
         pro_user = users_factories.ProFactory()
-        offerer_1 = offers_factories.OffererFactory()
-        offerer_2 = offers_factories.OffererFactory()
-        not_validated_offerer = offers_factories.OffererFactory(validationToken="validationToken")
-        venue_offerer_1 = offers_factories.VenueFactory(managingOfferer=offerer_1)
-        venue_offerer_2 = offers_factories.VenueFactory(managingOfferer=offerer_2)
+        offerer_1 = offerers_factories.OffererFactory()
+        offerer_2 = offerers_factories.OffererFactory()
+        not_validated_offerer = offerers_factories.OffererFactory(validationToken="validationToken")
+        venue_offerer_1 = offerers_factories.VenueFactory(managingOfferer=offerer_1)
+        venue_offerer_2 = offerers_factories.VenueFactory(managingOfferer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_1)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer_2)
         offerers_factories.UserOffererFactory(user=pro_user, offerer=not_validated_offerer)
@@ -72,11 +71,11 @@ class GetEducationalOfferersTest:
     def test_error_when_missing_offerer_id_query_param_for_admin_user(self, client):
         # given
         admin_user = users_factories.AdminFactory()
-        offerer_1 = offers_factories.OffererFactory()
-        offerer_2 = offers_factories.OffererFactory()
-        offers_factories.OffererFactory(validationToken="validationToken")
-        offers_factories.VenueFactory(managingOfferer=offerer_1)
-        offers_factories.VenueFactory(managingOfferer=offerer_2)
+        offerer_1 = offerers_factories.OffererFactory()
+        offerer_2 = offerers_factories.OffererFactory()
+        offerers_factories.OffererFactory(validationToken="validationToken")
+        offerers_factories.VenueFactory(managingOfferer=offerer_1)
+        offerers_factories.VenueFactory(managingOfferer=offerer_2)
 
         # when
         response = client.with_session_auth(admin_user.email).get("/offerers/educational")
@@ -88,10 +87,10 @@ class GetEducationalOfferersTest:
     def test_response_serializer_for_admin(self, client):
         # given
         admin_user = users_factories.AdminFactory()
-        offerer_1 = offers_factories.OffererFactory()
-        offerer_2 = offers_factories.OffererFactory()
-        offers_factories.VenueFactory(managingOfferer=offerer_1)
-        venue_offerer_2 = offers_factories.VenueFactory(managingOfferer=offerer_2)
+        offerer_1 = offerers_factories.OffererFactory()
+        offerer_2 = offerers_factories.OffererFactory()
+        offerers_factories.VenueFactory(managingOfferer=offerer_1)
+        venue_offerer_2 = offerers_factories.VenueFactory(managingOfferer=offerer_2)
 
         # when
         api_url = f"/offerers/educational?offerer_id={humanize(offerer_2.id)}"

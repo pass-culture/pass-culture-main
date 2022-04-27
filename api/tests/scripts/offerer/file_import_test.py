@@ -4,9 +4,9 @@ from unittest.mock import patch
 from freezegun import freeze_time
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.models import User
@@ -60,7 +60,7 @@ class IterateRowForUserOfferersTest:
 def test_create_activated_user_offerer():
     # given
     pro = ProFactory(id=123, email="jsmith@example.com")
-    offerer = OffererFactory(siren="123456789")
+    offerer = offerers_factories.OffererFactory(siren="123456789")
     row = [
         "Smith",
         "Jane",
@@ -94,7 +94,7 @@ class FillUserOffererFromTest:
     def test_returns_a_user_offerer_built_with_user_and_offerer_relative_to_csv_row(self):
         # given
         blake = ProFactory(email="fblake@bletchley.co.uk", id=123)
-        blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
+        blakes_company = offerers_factories.OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
 
         # when
         user_offerer = fill_user_offerer_from(UserOfferer(), blake, blakes_company)
@@ -106,7 +106,7 @@ class FillUserOffererFromTest:
     def test_raise_error_when_user_relative_to_csv_not_created(self):
         # given
         blake = User(email="fblake@bletchley.co.uk")
-        blakes_company = OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
+        blakes_company = offerers_factories.OffererFactory(siren="362521879", name="MyBletcheyCompany", id=234)
 
         # when
         with pytest.raises(UserNotCreatedException):

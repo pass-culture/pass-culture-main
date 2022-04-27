@@ -5,9 +5,8 @@ import pytest
 
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.offerers.factories import UserOffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.models import OfferValidationStatus
 import pcapi.core.users.factories as users_factories
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
@@ -31,8 +30,8 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
     )
     mock_api_entreprise.return_value = response_return_value
     user = users_factories.UserFactory()
-    offerer = OffererFactory(validationToken="12356")
-    user_offerer = UserOffererFactory(offerer=offerer, user=user)
+    offerer = offerers_factories.OffererFactory(validationToken="12356")
+    user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
     # When
     maybe_send_offerer_validation_email(offerer, user_offerer)
@@ -46,8 +45,8 @@ def test_maybe_send_offerer_validation_email_sends_email_to_pass_culture_when_ob
 def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validated(app):
     # Given
     user = users_factories.UserFactory()
-    offerer = OffererFactory()
-    user_offerer = UserOffererFactory(offerer=offerer, user=user)
+    offerer = offerers_factories.OffererFactory()
+    user_offerer = offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
     # When
     maybe_send_offerer_validation_email(offerer, user_offerer)

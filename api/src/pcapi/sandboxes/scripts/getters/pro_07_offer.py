@@ -11,7 +11,7 @@ def get_existing_pro_validated_user_with_validated_offerer_validated_user_offere
         offerer__validationToken=None,
         user__validationToken=None,
     )
-    venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offers_factories.OfferFactory(venue=venue, isActive=True)
 
     return {

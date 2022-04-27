@@ -29,7 +29,7 @@ class VenueViewTest:
     ):
         AdminFactory(email="user@example.com")
         business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
-        venue = offers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
+        venue = offerers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
         id_at_provider = "11111"
         old_id_at_providers = f"{id_at_provider}@{venue.siret}"
         stock = offers_factories.StockFactory(
@@ -69,7 +69,7 @@ class VenueViewTest:
     ):
         AdminFactory(email="user@example.com")
         finance_factories.BusinessUnitFactory(siret="33333333333333", name="Superstore")
-        venue = offers_factories.VenueFactory(siret="22222222222222")
+        venue = offerers_factories.VenueFactory(siret="22222222222222")
 
         data = dict(
             name=venue.name,
@@ -103,7 +103,7 @@ class VenueViewTest:
     ):
         AdminFactory(email="user@example.com")
         bu = finance_factories.BusinessUnitFactory(siret="22222222222222", name="Superstore")
-        venue = offers_factories.VenueFactory(siret="22222222222222", businessUnit=bu)
+        venue = offerers_factories.VenueFactory(siret="22222222222222", businessUnit=bu)
 
         data = dict(
             name=venue.name,
@@ -134,7 +134,7 @@ class VenueViewTest:
     def test_update_venue_other_offer_id_at_provider(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
-        venue = offers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
+        venue = offerers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
         id_at_providers = "id_at_provider_ne_contenant_pas_le_siret"
         stock = offers_factories.StockFactory(
             offer__venue=venue, idAtProviders=id_at_providers, offer__idAtProvider=id_at_providers
@@ -170,7 +170,7 @@ class VenueViewTest:
     def test_update_venue_without_siret(self, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
         business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             siret=None, comment="comment to allow null siret", businessUnit=business_unit
         )
 
@@ -196,7 +196,7 @@ class VenueViewTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def test_update_venue_reindex_all(self, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app):
         AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(isPermanent=False)
+        venue = offerers_factories.VenueFactory(isPermanent=False)
 
         new_name = venue.name + "(updated)"
         data = dict(
@@ -230,7 +230,7 @@ class VenueViewTest:
         self, mocked_async_index_venue_ids, mocked_async_index_offers_of_venue_ids, mocked_validate_csrf_token, app
     ):
         AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(isPermanent=False)
+        venue = offerers_factories.VenueFactory(isPermanent=False)
 
         data = dict(
             name=venue.name,
@@ -269,7 +269,7 @@ class VenueViewTest:
         client,
     ):
         admin = AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(isPermanent=True)
+        venue = offerers_factories.VenueFactory(isPermanent=True)
         tag = criteria_factories.CriterionFactory()
         data = {
             "criteria": [tag.id],
@@ -297,7 +297,7 @@ class VenueViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_delete_venue(self, mocked_validate_csrf_token, client):
         admin = AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory(bookingEmail="booking@example.com")
+        venue = offerers_factories.VenueFactory(bookingEmail="booking@example.com")
         user_offerer1 = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         user_offerer2 = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
 
@@ -329,7 +329,7 @@ class VenueViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_delete_venue_rejected(self, mocked_validate_csrf_token, client, booking_status):
         admin = AdminFactory(email="user@example.com")
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
         BookingFactory(stock__offer__venue=venue, status=booking_status)
 
@@ -353,7 +353,7 @@ class GetVenueProviderLinkTest:
     @pytest.mark.usefixtures("db_session")
     def test_return_empty_link_when_no_venue_provider(self, app):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # When
         link = _format_venue_provider(None, None, venue, None)
@@ -379,10 +379,10 @@ class VenueForOffererSubviewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_list_venues_for_offerer(self, mocked_validate_csrf_token, client):
         admin = AdminFactory(email="user@example.com")
-        offerer = offers_factories.OffererFactory()
-        venue1 = offers_factories.VenueFactory(managingOfferer=offerer)
-        venue2 = offers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.VenueFactory()  # not expected result
+        offerer = offerers_factories.OffererFactory()
+        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory()  # not expected result
 
         api_client = client.with_session_auth(admin.email)
         response = api_client.get(f"/pc/back-office/venue_for_offerer/?id={offerer.id}")

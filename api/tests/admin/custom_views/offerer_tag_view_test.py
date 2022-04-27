@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import OffererTag
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -58,7 +59,7 @@ class OffererTagViewTest:
     def test_delete_tag(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         tag = offers_factories.OffererTagFactory(name="test_delete_tag")
         offers_factories.OffererTagMappingFactory(offerer=offerer, tag=tag)
 

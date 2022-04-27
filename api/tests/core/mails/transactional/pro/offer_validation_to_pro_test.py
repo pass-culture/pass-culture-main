@@ -5,9 +5,8 @@ from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import retrieve_data_for_offer_rejection_email
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.settings import PRO_URL
 from pcapi.utils.human_ids import humanize
@@ -36,8 +35,8 @@ class SendinblueSendOfferValidationTest:
         self,
     ):
         # Given
-        venue = VenueFactory(name="Sibérie orientale")
-        offer = OfferFactory(name="Michel Strogoff", venue=venue)
+        venue = offerers_factories.VenueFactory(name="Sibérie orientale")
+        offer = offers_factories.OfferFactory(name="Michel Strogoff", venue=venue)
 
         # When
         send_offer_validation_status_update_email(offer, OfferValidationStatus.APPROVED, ["jules.verne@example.com"])
@@ -71,8 +70,8 @@ class SendinblueSendOfferValidationTest:
         self,
     ):
         # Given
-        venue = VenueFactory(name="Sibérie orientale")
-        offer = OfferFactory(name="Michel Strogoff", venue=venue)
+        venue = offerers_factories.VenueFactory(name="Sibérie orientale")
+        offer = offers_factories.OfferFactory(name="Michel Strogoff", venue=venue)
 
         # When
         send_offer_validation_status_update_email(offer, OfferValidationStatus.REJECTED, ["jules.verne@example.com"])
