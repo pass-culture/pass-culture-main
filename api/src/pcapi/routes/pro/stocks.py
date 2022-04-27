@@ -129,6 +129,10 @@ def update_stocks(venue_id: int, body: UpdateVenueStocksBodyModel) -> None:
     venue = Venue.query.join(Offerer).filter(Venue.id == venue_id, Offerer.id == offerer_id).first_or_404()
 
     stock_details = _build_stock_details_from_body(body.stocks, venue.id)
+    if any(stock.price is None for stock in body.stocks):
+        # FIXME (dbaty, 2022-04-27): temporary log until we make the
+        # price mandatory (if we decide to do so).
+        logger.info("Stock API is used without a price", extra={"venue": venue_id})
     synchronize_stocks_job.delay(stock_details, venue.id)
 
 
