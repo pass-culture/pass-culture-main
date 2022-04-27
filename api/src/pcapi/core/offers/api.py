@@ -35,6 +35,7 @@ import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.models import ADAGE_STUDENT_LEVEL_MAPPING
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+from pcapi.core.educational.models import StudentLevels
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
@@ -405,7 +406,7 @@ def update_collective_offer(
             continue
 
         if key == "students":
-            students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in value]
+            students = [StudentLevels(student) for student in value]
             setattr(offer_to_update, key, students)
             continue
 
