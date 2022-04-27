@@ -18,6 +18,9 @@ fragment DossierFragment on Dossier {
     id
     email
   }
+  messages {
+    ...MessageFragment
+  }
   groupeInstructeur {
     id
     number
@@ -98,4 +101,9 @@ fragment AddressFragment on Address {
   departmentCode
   regionName
   regionCode
+}
+
+fragment MessageFragment on Message {
+  createdAt
+  email
 }
