@@ -48,7 +48,7 @@ const FormVenue = ({
           options={offerersOptions}
         />
       </FormLayout.Row>
-      {isEligible === false && (
+      {isEligible === false && offerersOptions.length !== 0 && (
         <Banner
           href="https://passculture.typeform.com/to/WHrAY5KB"
           linkTitle="Faire une demande de référencement"
@@ -58,13 +58,20 @@ const FormVenue = ({
           du ministère de la Culture.
         </Banner>
       )}
-      {venuesOptions.length === 0 && (
+
+      {venuesOptions.length === 0 && offerersOptions.length !== 0 && (
         <Banner
           href={`/structures/${values.offererId}/lieux/creation`}
           linkTitle="Renseigner un lieu"
         >
           Pour proposer des offres à destination d’un groupe scolaire, vous
           devez renseigner un lieu pour pouvoir être remboursé.
+        </Banner>
+      )}
+      {offerersOptions.length === 0 && (
+        <Banner>
+          Vous ne pouvez pas créer d’offre collective tant que votre structure
+          n’est pas validée.
         </Banner>
       )}
       {isEligible === true && venuesOptions.length > 0 && (
