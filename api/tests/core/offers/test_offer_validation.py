@@ -3,6 +3,7 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
@@ -79,14 +80,14 @@ class GetModelTest:
             _get_model(offer, "CollectiveStock")
 
     def test_collective_offer_template_venue(self):
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         model = _get_model(offer, "Venue")
         assert model is venue
         assert isinstance(model, offerers_models.Venue)
 
     def test_collective_offer_venue(self):
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock, venue=venue)
         model = _get_model(offer, "Venue")
@@ -94,31 +95,31 @@ class GetModelTest:
         assert isinstance(model, offerers_models.Venue)
 
     def test_offer_venue(self):
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offer = offers_factories.OfferFactory(venue=venue)
         model = _get_model(offer, "Venue")
         assert model is venue
         assert isinstance(model, offerers_models.Venue)
 
     def test_offer_offerer(self):
-        offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = offers_factories.OfferFactory(venue=venue)
         model = _get_model(offer, "Offerer")
         assert model is offerer
         assert isinstance(model, offerers_models.Offerer)
 
     def test_collective_offer_template_offerer(self):
-        offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue)
         model = _get_model(offer, "Offerer")
         assert model is offerer
         assert isinstance(model, offerers_models.Offerer)
 
     def test_collective_offer_offerer(self):
-        offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         stock = educational_factories.CollectiveStockFactory()
         offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock, venue=venue)
         model = _get_model(offer, "Offerer")

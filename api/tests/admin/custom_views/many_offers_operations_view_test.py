@@ -6,6 +6,7 @@ from pcapi.admin.custom_views.many_offers_operations_view import _get_current_cr
 from pcapi.admin.custom_views.many_offers_operations_view import _get_products_compatible_status
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
@@ -207,11 +208,11 @@ class ManyOffersOperationsViewTest:
     ):
         # Given
         users_factories.AdminFactory(email="admin@example.com")
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         product_1 = offers_factories.ThingProductFactory(
             description="premier produit inapproprié", extraData={"isbn": "isbn-de-test"}
         )
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.OfferFactory(product=product_1, venue=venue)
         offers_factories.OfferFactory(product=product_1, venue=venue)
 

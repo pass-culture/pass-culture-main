@@ -8,7 +8,6 @@ import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BusinessUnit
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.factories import ApiKeyFactory
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -34,7 +33,7 @@ from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_of
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_abort_when_offerer_has_any_bookings():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     offers_factories.OfferFactory(venue__managingOfferer=offerer_to_delete)
     bookings_factories.BookingFactory(stock__offer__venue__managingOfferer=offerer_to_delete)
 
@@ -56,7 +55,7 @@ def test_delete_cascade_offerer_should_abort_when_offerer_has_any_bookings():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_managed_venues_offers_stocks_and_activation_codes():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     offers_factories.OfferFactory(venue__managingOfferer=offerer_to_delete)
     stock_1 = offers_factories.StockFactory(offer__venue__managingOfferer=offerer_to_delete)
     stock_2 = offers_factories.StockFactory()
@@ -78,7 +77,7 @@ def test_delete_cascade_offerer_should_remove_managed_venues_offers_stocks_and_a
 def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_offerer():
     # Given
     pro = users_factories.ProFactory()
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer_to_delete)
     offerers_factories.UserOffererFactory(user=pro)
 
@@ -94,9 +93,9 @@ def test_delete_cascade_offerer_should_remove_all_user_attachments_to_deleted_of
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_api_key_of_offerer():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
-    ApiKeyFactory(offerer=offerer_to_delete)
-    ApiKeyFactory(prefix="other-prefix")
+    offerer_to_delete = offerers_factories.OffererFactory()
+    offerers_factories.ApiKeyFactory(offerer=offerer_to_delete)
+    offerers_factories.ApiKeyFactory(prefix="other-prefix")
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
@@ -109,7 +108,7 @@ def test_delete_cascade_offerer_should_remove_api_key_of_offerer():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_products_owned_by_offerer():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     offers_factories.ProductFactory(owningOfferer=offerer_to_delete)
     offers_factories.ProductFactory()
 
@@ -124,7 +123,7 @@ def test_delete_cascade_offerer_should_remove_products_owned_by_offerer():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_bank_informations_of_offerer():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     offers_factories.BankInformationFactory(offerer=offerer_to_delete)
     offers_factories.BankInformationFactory()
 
@@ -139,8 +138,8 @@ def test_delete_cascade_offerer_should_remove_bank_informations_of_offerer():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_offers_of_offerer():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
-    venue = offers_factories.VenueFactory(managingOfferer=offerer_to_delete)
+    offerer_to_delete = offerers_factories.OffererFactory()
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer_to_delete)
     event_offer = offers_factories.EventOfferFactory(venue=venue)
     thing_offer = offers_factories.ThingOfferFactory(venue=venue)
     items_to_delete = [event_offer.id, thing_offer.id]
@@ -157,7 +156,7 @@ def test_delete_cascade_offerer_should_remove_offers_of_offerer():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_business_unit_of_managed_venue():
     # Given
-    venue = offers_factories.VenueFactory()
+    venue = offerers_factories.VenueFactory()
     assert BusinessUnit.query.count() == 1
     offerer_to_delete = venue.managingOfferer
     finance_factories.BusinessUnitFactory()
@@ -174,7 +173,7 @@ def test_delete_cascade_offerer_should_remove_business_unit_of_managed_venue():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue():
     # Given
-    venue = offers_factories.VenueFactory()
+    venue = offerers_factories.VenueFactory()
     offerer_to_delete = venue.managingOfferer
     offers_factories.BankInformationFactory()
     assert BankInformation.query.count() == 2
@@ -191,7 +190,7 @@ def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_mediations_of_managed_offers():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     offers_factories.MediationFactory(offer__venue__managingOfferer=offerer_to_delete)
     offers_factories.MediationFactory()
 
@@ -208,7 +207,7 @@ def test_delete_cascade_offerer_should_remove_mediations_of_managed_offers():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_favorites_of_managed_offers():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     users_factories.FavoriteFactory(offer__venue__managingOfferer=offerer_to_delete)
     users_factories.FavoriteFactory()
 
@@ -225,7 +224,7 @@ def test_delete_cascade_offerer_should_remove_favorites_of_managed_offers():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     criteria_factories.OfferCriterionFactory(offer__venue__managingOfferer=offerer_to_delete)
     criteria_factories.OfferCriterionFactory()
 
@@ -243,7 +242,7 @@ def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_of
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     providers_factories.VenueProviderFactory(venue__managingOfferer=offerer_to_delete)
     providers_factories.VenueProviderFactory()
 
@@ -260,7 +259,7 @@ def test_delete_cascade_offerer_should_remove_venue_synchronization_to_provider(
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_offerer_should_remove_venue_synchronization_to_allocine_provider():
     # Given
-    offerer_to_delete = offers_factories.OffererFactory()
+    offerer_to_delete = offerers_factories.OffererFactory()
     providers_factories.AllocineVenueProviderPriceRuleFactory(
         allocineVenueProvider__venue__managingOfferer=offerer_to_delete
     )

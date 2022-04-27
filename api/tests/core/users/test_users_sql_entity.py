@@ -10,7 +10,6 @@ import sqlalchemy.exc
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.payments import api as payments_api
 from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
@@ -33,7 +32,7 @@ def test_cannot_create_admin_that_can_book():
 @pytest.mark.usefixtures("db_session")
 class HasAccessTest:
     def test_does_not_have_access_if_not_attached(self):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         user = users_factories.UserFactory()
 
         assert not user.has_access(offerer.id)
@@ -54,7 +53,7 @@ class HasAccessTest:
 
     def test_has_access_if_admin(self):
         # given
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         admin = users_factories.AdminFactory()
 
         assert admin.has_access(offerer.id)

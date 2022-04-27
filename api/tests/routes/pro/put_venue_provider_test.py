@@ -1,7 +1,6 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as user_factories
 from pcapi.utils.human_ids import humanize
@@ -16,7 +15,7 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
         venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue,
@@ -55,7 +54,7 @@ class Returns400Test:
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.ProviderFactory()
         providers_factories.VenueProviderFactory(venue=venue, provider=provider)
 
@@ -93,7 +92,7 @@ class Returns403Test:
         user = user_factories.ProFactory()
         owner_offerer = offerers_factories.UserOffererFactory()
         offerer = owner_offerer.offerer
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
         venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue,

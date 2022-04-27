@@ -5,8 +5,6 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.factories import ApiKeyFactory
-from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
 from pcapi.core.users import factories as users_factories
 
 
@@ -15,13 +13,13 @@ class Returns204Test:
     class WithApiKeyAuthTest:
         def test_when_api_key_provided_is_related_to_regular_offer_with_rights(self, client):
             booking = bookings_factories.UsedIndividualBookingFactory()
-            ApiKeyFactory(offerer=booking.offerer)
+            offerers_factories.ApiKeyFactory(offerer=booking.offerer)
 
             url = f"/v2/bookings/keep/token/{booking.token}"
             response = client.patch(
                 url,
                 headers={
-                    "Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}",
+                    "Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY,
                 },
             )
 
@@ -96,10 +94,10 @@ class Returns403Test:
         def test_when_the_api_key_is_not_linked_to_the_right_offerer(self, client):
             # Given
             booking = bookings_factories.BookingFactory()
-            ApiKeyFactory()  # another offerer's API key
+            offerers_factories.ApiKeyFactory()  # another offerer's API key
 
             # When
-            wrong_auth = f"Bearer {DEFAULT_CLEAR_API_KEY}"
+            wrong_auth = "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY
             url = f"/v2/bookings/keep/token/{booking.token}"
             response = client.patch(url, headers={"Authorization": wrong_auth})
 

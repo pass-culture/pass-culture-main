@@ -23,10 +23,10 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
     def test_sends_email_to_pro_user(self):
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, bookingEmail="venue@postponed.net")
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="test@bookingEmail.fr")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 1))
@@ -49,10 +49,10 @@ class SendEventOfferPosponedConfirmationToProEmailTest:
 
     def test_get_email_metadata(self):
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         product = offers_factories.EventProductFactory()
         offer = offers_factories.EventOfferFactory(venue=venue, product=product, bookingEmail="test@bookingEmail.fr")
         stock = offers_factories.EventStockFactory(offer=offer, price=5, beginningDatetime=datetime(2022, 3, 2))

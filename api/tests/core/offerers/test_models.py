@@ -16,7 +16,7 @@ from pcapi.repository import repository
 @pytest.mark.usefixtures("db_session")
 class VenueModelConstraintsTest:
     def test_virtual_venue_cannot_have_address(self):
-        venue = offers_factories.VirtualVenueFactory()
+        venue = factories.VirtualVenueFactory()
 
         with pytest.raises(IntegrityError) as err:
             venue.address = "1 test address"
@@ -25,7 +25,7 @@ class VenueModelConstraintsTest:
         assert "check_is_virtual_xor_has_address" in str(err.value)
 
     def test_virtual_venue_cannot_have_siret(self):
-        venue = offers_factories.VirtualVenueFactory()
+        venue = factories.VirtualVenueFactory()
         with pytest.raises(IntegrityError) as err:
             venue.siret = "siret"
             db.session.add(venue)
@@ -34,10 +34,10 @@ class VenueModelConstraintsTest:
 
     def test_non_virtual_with_siret_can_have_null_address(self):
         # The following statement should not fail.
-        offers_factories.VenueFactory(siret="siret", address=None)
+        factories.VenueFactory(siret="siret", address=None)
 
     def test_non_virtual_with_siret_must_have_postal_code_and_city(self):
-        venue = offers_factories.VenueFactory(siret="siret")
+        venue = factories.VenueFactory(siret="siret")
         venue.postal_code = None
         venue.city = None
         with pytest.raises(IntegrityError) as err:
@@ -46,7 +46,7 @@ class VenueModelConstraintsTest:
         assert "check_is_virtual_xor_has_address" in str(err.value)
 
     def test_non_virtual_without_siret_must_have_full_address(self):
-        venue = offers_factories.VenueFactory(siret=None, comment="no siret, it's ok")
+        venue = factories.VenueFactory(siret=None, comment="no siret, it's ok")
         venue.address = None
         venue.postal_code = None
         venue.city = None
@@ -56,7 +56,7 @@ class VenueModelConstraintsTest:
         assert "check_is_virtual_xor_has_address" in str(err.value)
 
     def test_non_virtual_without_siret_must_have_comment(self):
-        venue = offers_factories.VenueFactory(siret=None, comment="no siret, it's ok")
+        venue = factories.VenueFactory(siret=None, comment="no siret, it's ok")
         with pytest.raises(IntegrityError) as err:
             venue.comment = None
             db.session.add(venue)
@@ -64,18 +64,18 @@ class VenueModelConstraintsTest:
         assert "check_has_siret_xor_comment_xor_isVirtual" in str(err.value)
 
     def test_at_most_one_virtual_venue_per_offerer(self):
-        virtual_venue1 = offers_factories.VirtualVenueFactory()
+        virtual_venue1 = factories.VirtualVenueFactory()
         offerer = virtual_venue1.managingOfferer
-        offers_factories.VenueFactory(managingOfferer=offerer)
+        factories.VenueFactory(managingOfferer=offerer)
 
         # Cannot add new venue (or change the offerer of an existing one).
-        virtual_venue2 = offers_factories.VirtualVenueFactory.build(managingOfferer=offerer)
+        virtual_venue2 = factories.VirtualVenueFactory.build(managingOfferer=offerer)
         with pytest.raises(ApiErrors) as err:
             repository.save(virtual_venue2)
         assert err.value.errors["isVirtual"] == ["Un lieu pour les offres numériques existe déjà pour cette structure"]
 
         # Cannot change isVirtual on an existing one.
-        venue3 = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue3 = factories.VenueFactory(managingOfferer=offerer)
         venue3.isVirtual = True
         venue3.address = venue3.postalCode = venue3.city = venue3.departementCode = None
         venue3.siret = None
@@ -87,17 +87,17 @@ class VenueModelConstraintsTest:
 @pytest.mark.usefixtures("db_session")
 class VenueTimezonePropertyTest:
     def test_europe_paris_is_default_timezone(self):
-        venue = offers_factories.VenueFactory(postalCode="75000")
+        venue = factories.VenueFactory(postalCode="75000")
 
         assert venue.timezone == "Europe/Paris"
 
     def test_return_timezone_given_venue_departement_code(self):
-        venue = offers_factories.VenueFactory(postalCode="97300")
+        venue = factories.VenueFactory(postalCode="97300")
 
         assert venue.timezone == "America/Cayenne"
 
     def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
-        venue = offers_factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
+        venue = factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
 
         assert venue.timezone == "America/Cayenne"
 
@@ -105,15 +105,15 @@ class VenueTimezonePropertyTest:
 @pytest.mark.usefixtures("db_session")
 class VenueTimezoneSqlQueryTest:
     def test_europe_paris_is_default_timezone(self):
-        offers_factories.VenueFactory(postalCode="75000")
+        factories.VenueFactory(postalCode="75000")
         assert models.Venue.query.filter_by(timezone="Europe/Paris").count() == 1
 
     def test_return_timezone_given_venue_departement_code(self):
-        offers_factories.VenueFactory(postalCode="97300")
+        factories.VenueFactory(postalCode="97300")
         assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
 
     def test_return_managing_offerer_timezone_when_venue_is_virtual(self):
-        offers_factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
+        factories.VirtualVenueFactory(managingOfferer__postalCode="97300")
         assert models.Venue.query.filter_by(timezone="America/Cayenne").count() == 1
 
 
@@ -124,7 +124,7 @@ class OffererDepartementCodePropertyTest:
         assert offerer.departementCode == "75"
 
     def test_drom_postal_code(self):
-        offerer = offers_factories.OffererFactory.build(postalCode="97300")
+        offerer = factories.OffererFactory.build(postalCode="97300")
 
         assert offerer.departementCode == "973"
 

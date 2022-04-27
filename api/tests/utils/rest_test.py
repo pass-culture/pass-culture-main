@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.models.api_errors import ApiErrors
@@ -17,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class CheckUserHasAccessToOffererTest:
     def test_check_user_has_access_to_offerer(self, app):
         pro = users_factories.UserFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         # fmt: off
         n_queries = (
@@ -31,7 +30,7 @@ class CheckUserHasAccessToOffererTest:
 
     def test_raises_if_user_cannot_access_offerer(self, app):
         user = users_factories.UserFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         with pytest.raises(ApiErrors) as error:
             check_user_has_access_to_offerer(user, offerer.id)
 
@@ -52,6 +51,6 @@ class TestLoadOrRaiseErrorTest:
         assert error.value.status_code == 404
 
     def test_raises_api_error_if_no_object(self, app):
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         load_or_raise_error(Venue, humanize(venue.id))  # should not raise

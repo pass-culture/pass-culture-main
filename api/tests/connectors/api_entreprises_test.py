@@ -8,7 +8,7 @@ from pcapi.connectors.api_entreprises import ApiEntrepriseException
 from pcapi.connectors.api_entreprises import get_by_offerer
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
 from pcapi.connectors.utils.legal_category_code_to_labels import CODE_TO_CATEGORY_MAPPING
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
 from pcapi.model_creators.generic_creators import create_offerer
 
@@ -319,7 +319,7 @@ class GetOffererLegalCategoryTest:
                 "categorie_juridique": "5202",
             }
         }
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
 
         assert get_offerer_legal_category(offerer) == {
             "legal_category_code": "5202",
@@ -330,7 +330,7 @@ class GetOffererLegalCategoryTest:
     @override_settings(IS_PROD=True)
     def test_handle_error_get_by_offerer_on_prod_env(self, mocked_get_by_offerer):
         mocked_get_by_offerer.side_effect = [ApiEntrepriseException()]
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
 
         assert get_offerer_legal_category(offerer) == {
             "legal_category_code": "Donnée indisponible",
@@ -340,7 +340,7 @@ class GetOffererLegalCategoryTest:
     @patch("pcapi.connectors.api_entreprises.get_by_offerer")
     def test_handle_error_get_by_offerer_on_non_prod_env(self, mocked_get_by_offerer):
         mocked_get_by_offerer.side_effect = [ApiEntrepriseException]
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
 
         assert get_offerer_legal_category(offerer) == {
             "legal_category_code": "Donnée indisponible",

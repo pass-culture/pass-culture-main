@@ -3,14 +3,11 @@ from dataclasses import asdict
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
-from pcapi.core.offerers.factories import UserOffererFactory
-from pcapi.core.offerers.factories import VenueLabelFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.users.external import get_pro_attributes
 from pcapi.core.users.factories import ProFactory
@@ -68,14 +65,14 @@ def test_update_external_pro_user_attributes(
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=enable_subscription)),
     )
 
-    venue_label_a = VenueLabelFactory(label="Cinéma d'art et d'essai")
-    venue_label_b = VenueLabelFactory(label="Scènes conventionnées")
+    venue_label_a = offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai")
+    venue_label_b = offerers_factories.VenueLabelFactory(label="Scènes conventionnées")
 
-    offerer1 = OffererFactory(siren="111222333", name="Plage Culture")
+    offerer1 = offerers_factories.OffererFactory(siren="111222333", name="Plage Culture")
     if attached in ("one", "all"):
-        UserOffererFactory(user=ProFactory(), offerer=offerer1)
-    UserOffererFactory(user=pro_user, offerer=offerer1)
-    venue1 = VenueFactory(
+        offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer1)
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer1)
+    venue1 = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         name="Cinéma de la plage",
         departementCode="06",
@@ -87,7 +84,7 @@ def test_update_external_pro_user_attributes(
         venueTypeCode=VenueTypeCode.MOVIE,
         venueLabelId=venue_label_a.id,
     )
-    venue1b = VenueFactory(
+    venue1b = offerers_factories.VenueFactory(
         managingOfferer=offerer1,
         name="Théâtre de la plage",
         departementCode="06",
@@ -105,11 +102,11 @@ def test_update_external_pro_user_attributes(
         BankInformationFactory(venue=venue1b, status=BankInformationStatus.ACCEPTED)
 
     if create_virtual:
-        offerer2 = OffererFactory(siren="444555666", name="Culture en ligne")
+        offerer2 = offerers_factories.OffererFactory(siren="444555666", name="Culture en ligne")
         if attached == "all":
-            UserOffererFactory(user=ProFactory(), offerer=offerer2)
-        UserOffererFactory(user=pro_user, offerer=offerer2)
-        venue2 = VenueFactory(
+            offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer2)
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer2)
+        venue2 = offerers_factories.VenueFactory(
             managingOfferer=offerer2,
             name="Théâtre en ligne",
             departementCode=None,
@@ -127,8 +124,8 @@ def test_update_external_pro_user_attributes(
             BankInformationFactory(venue=venue2, status=BankInformationStatus.ACCEPTED)
 
     # Offerer not linked to user email but with the same booking email
-    offerer3 = OffererFactory(siren="777888999", name="Plage Events")
-    venue3 = VenueFactory(
+    offerer3 = offerers_factories.OffererFactory(siren="777888999", name="Plage Events")
+    venue3 = offerers_factories.VenueFactory(
         managingOfferer=offerer3,
         name="Festival de la mer",
         departementCode="83",
@@ -156,11 +153,11 @@ def test_update_external_pro_user_attributes(
         BankInformationFactory(venue=venue3, status=BankInformationStatus.ACCEPTED)
 
     # This offerer is managed by pro user but venue has a different email address
-    offerer4 = OffererFactory(siren="001002003", name="Juste Libraire")
+    offerer4 = offerers_factories.OffererFactory(siren="001002003", name="Juste Libraire")
     if attached == "all":
-        UserOffererFactory(user=ProFactory(), offerer=offerer4)
-    UserOffererFactory(user=pro_user, offerer=offerer4)
-    venue4 = VenueFactory(
+        offerers_factories.UserOffererFactory(user=ProFactory(), offerer=offerer4)
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer4)
+    venue4 = offerers_factories.VenueFactory(
         managingOfferer=offerer4,
         name="Librairie du port",
         departementCode="13",
@@ -182,9 +179,9 @@ def test_update_external_pro_user_attributes(
         BankInformationFactory(venue=venue1, status=BankInformationStatus.REJECTED)
 
     # Create inactive offerer and its venue, linked to email, which should not be taken into account in any attribute
-    inactive_offerer = OffererFactory(siren="999999999", name="Structure désactivée", isActive=False)
-    UserOffererFactory(user=pro_user, offerer=inactive_offerer)
-    VenueFactory(
+    inactive_offerer = offerers_factories.OffererFactory(siren="999999999", name="Structure désactivée", isActive=False)
+    offerers_factories.UserOffererFactory(user=pro_user, offerer=inactive_offerer)
+    offerers_factories.VenueFactory(
         managingOfferer=inactive_offerer,
         name="Salle de concert des calanques",
         departementCode="13",  # different from others
@@ -276,8 +273,8 @@ def test_update_external_pro_user_attributes_no_offerer_no_venue():
 
 def test_update_external_pro_booking_email_attributes():
     email = "musee@example.net"
-    offerer = OffererFactory(siren="123456789", name="Musée")
-    venue = VenueFactory(
+    offerer = offerers_factories.OffererFactory(siren="123456789", name="Musée")
+    venue = offerers_factories.VenueFactory(
         managingOfferer=offerer,
         name="Musée de la châtaigne",
         departementCode="06",

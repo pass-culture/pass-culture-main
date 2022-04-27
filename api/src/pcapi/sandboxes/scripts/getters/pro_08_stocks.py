@@ -14,7 +14,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
         user__validationToken=None,
     )
     offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
-    venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.EventOfferFactory(venue=venue, isActive=True)
 
     return {
@@ -32,7 +32,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
         user__validationToken=None,
     )
     offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
-    venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.EventOfferFactory(venue=venue, isActive=True)
     stock = offers_factories.EventStockFactory(offer=offer)
 
@@ -52,8 +52,8 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
         user__validationToken=None,
     )
     offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
-    venue = offers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
-    venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.ThingOfferFactory(venue=venue, isActive=True)
     stock = offers_factories.ThingStockFactory(offer=offer)
 

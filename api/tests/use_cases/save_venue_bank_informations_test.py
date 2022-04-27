@@ -6,7 +6,7 @@ import pytest
 
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
 import pcapi.core.finance.models as finance_models
-from pcapi.core.offerers.factories import OffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
@@ -60,8 +60,8 @@ class SaveVenueBankInformationsTest:
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", side_effect=ApiEntrepriseException())
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_api_entreprise_errored(self, siret_is_active):
-            offerer = OffererFactory()
-            offers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
+            offerer = offerers_factories.OffererFactory()
+            offerers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
             application_details = ApplicationDetail(
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
@@ -78,7 +78,7 @@ class SaveVenueBankInformationsTest:
 
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_no_venue_found_by_name(self):
-            offerer = OffererFactory()
+            offerer = offerers_factories.OffererFactory()
             application_details = ApplicationDetail(
                 siren="999999999",
                 status=BankInformationStatus.ACCEPTED,
@@ -95,8 +95,8 @@ class SaveVenueBankInformationsTest:
 
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_more_than_one_venue_found(self):
-            offerer = OffererFactory()
-            offers_factories.VenueFactory.build_batch(
+            offerer = offerers_factories.OffererFactory()
+            offerers_factories.VenueFactory.build_batch(
                 2, managingOfferer=offerer, name="venuedemo", siret=None, comment="No siret"
             )
             application_details = ApplicationDetail(
@@ -314,7 +314,7 @@ class SaveVenueBankInformationsTest:
                 # Given
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
-                offers_factories.VenueFactory(
+                offerers_factories.VenueFactory(
                     siret="79387503012345", managingOfferer__siren="123456789", businessUnit=None
                 )
                 bank_information_count = BankInformation.query.count()
@@ -938,8 +938,8 @@ class SaveVenueBankInformationsTest:
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_when_bank_information_data_is_invalid(self, mock_application_details, app):
             application_id = "8"
-            offerer = OffererFactory(siren="793875030")
-            offers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
+            offerer = offerers_factories.OffererFactory(siren="793875030")
+            offerers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
                 siret="79387503012345", bic="SOG", iban="FR76", idx=8
             )
@@ -956,8 +956,8 @@ class SaveVenueBankInformationsTest:
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_when_no_bank_information_data_is_provided(self, mock_application_details, app):
             application_id = "8"
-            offerer = OffererFactory(siren="793875030")
-            offers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
+            offerer = offerers_factories.OffererFactory(siren="793875030")
+            offerers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
                 siret="79387503012345", bic="", iban="", idx=8
             )
@@ -1037,7 +1037,7 @@ class SaveVenueBankInformationsTest:
 
         @pytest.mark.usefixtures("db_session")
         def test_update_text_venue_not_found(self, mock_application_details, mock_update_text_annotation, app):
-            OffererFactory(siren="999999999")
+            offerers_factories.OffererFactory(siren="999999999")
             mock_application_details.return_value = self.build_application_detail()
 
             self.save_venue_bank_informations.execute(self.application_id)
@@ -1048,8 +1048,8 @@ class SaveVenueBankInformationsTest:
 
         @pytest.mark.usefixtures("db_session")
         def test_update_text_venue_multiple_found(self, mock_application_details, mock_update_text_annotation, app):
-            offerer = OffererFactory(siren="999999999")
-            offers_factories.VenueFactory.build_batch(
+            offerer = offerers_factories.OffererFactory(siren="999999999")
+            offerers_factories.VenueFactory.build_batch(
                 2, name="venuedemo", managingOfferer=offerer, siret=None, comment="No siret", businessUnit=None
             )
             mock_application_details.return_value = self.build_application_detail()
@@ -1065,7 +1065,7 @@ class SaveVenueBankInformationsTest:
         def test_update_text_no_venue_with_same_siret_found(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
+            offerers_factories.OffererFactory(siren="999999999")
             mock_application_details.return_value = self.build_application_detail({"siret": "36252187900034"})
 
             self.save_venue_bank_informations.execute(self.application_id)
@@ -1079,8 +1079,8 @@ class SaveVenueBankInformationsTest:
         def test_update_text_siret_no_longer_active(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
-            offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offerers_factories.OffererFactory(siren="999999999")
+            offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
             mock_application_details.return_value = self.build_application_detail({"siret": "36252187900034"})
 
             self.save_venue_bank_informations.execute(self.application_id)
@@ -1094,8 +1094,8 @@ class SaveVenueBankInformationsTest:
         def test_update_text_application_details_older_than_saved(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
-            venue = offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offerers_factories.OffererFactory(siren="999999999")
+            venue = offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
             offers_factories.BankInformationFactory(dateModified=datetime.utcnow(), venue=venue)
             yesterday = datetime.utcnow() - timedelta(days=1)
             mock_application_details.return_value = self.build_application_detail(
@@ -1115,8 +1115,8 @@ class SaveVenueBankInformationsTest:
         def test_update_text_application_details_has_more_advanced_status(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
-            venue = offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offerers_factories.OffererFactory(siren="999999999")
+            venue = offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
             offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
             mock_application_details.return_value = self.build_application_detail(
                 {"siret": "36252187900034", "status": BankInformationStatus.DRAFT}
@@ -1135,8 +1135,8 @@ class SaveVenueBankInformationsTest:
         def test_update_text_application_details_is_rejected_status(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
-            venue = offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offerers_factories.OffererFactory(siren="999999999")
+            venue = offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
             offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
             mock_application_details.return_value = self.build_application_detail(
                 {"siret": "36252187900034", "status": BankInformationStatus.REJECTED}
@@ -1155,8 +1155,8 @@ class SaveVenueBankInformationsTest:
         def test_update_text_application_details_on_bank_information_error(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
-            offers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
+            offerers_factories.OffererFactory(siren="999999999")
+            offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
             mock_application_details.return_value = self.build_application_detail(
                 {"siret": "36252187900034", "bic": "", "iban": "INVALID"}
             )
@@ -1202,8 +1202,8 @@ class SaveVenueBankInformationsTest:
         def test_update_text_application_details_on_validated_bank_information(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
-            offers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
+            offerers_factories.OffererFactory(siren="999999999")
+            offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
             mock_application_details.return_value = self.build_application_detail()
 
             self.save_venue_bank_informations.execute(1)
@@ -1221,8 +1221,8 @@ class SaveVenueBankInformationsTest:
         def test_update_text_application_details_on_draft_bank_information(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
-            OffererFactory(siren="999999999")
-            offers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
+            offerers_factories.OffererFactory(siren="999999999")
+            offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034", businessUnit=None)
             mock_application_details.return_value = self.build_application_detail(
                 {"status": BankInformationStatus.DRAFT}
             )

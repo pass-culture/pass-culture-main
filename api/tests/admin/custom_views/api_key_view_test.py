@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import ApiKey
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 
 from tests.conftest import TestClient
@@ -13,7 +13,7 @@ class ApiKeyViewTest:
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_api_key_creation(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="admin@example.com")
-        offerer = offers_factories.OffererFactory(siren=123456789)
+        offerer = offerers_factories.OffererFactory(siren=123456789)
 
         data = dict(
             offererSiren=offerer.siren,

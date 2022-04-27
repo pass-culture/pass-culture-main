@@ -3,8 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.offerers.factories import ApiKeyFactory
-from pcapi.core.offerers.factories import DEFAULT_CLEAR_API_KEY
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 
@@ -14,17 +13,17 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def test_accepts_request(client):
     providers_factories.ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
-    offerer = offers_factories.OffererFactory(siren=123456789)
-    venue = offers_factories.VenueFactory(managingOfferer=offerer, id=3)
+    offerer = offerers_factories.OffererFactory(siren=123456789)
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, id=3)
     offer_to_update = offers_factories.OfferFactory(
         product__idAtProviders="123456789",
         product__subcategoryId="LIVRE_PAPIER",
         idAtProvider="123456789",
         venue=venue,
     )
-    ApiKeyFactory(offerer=offerer)
+    offerers_factories.ApiKeyFactory(offerer=offerer)
 
-    client.auth_header = {"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"}
+    client.auth_header = {"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY}
 
     response = client.post(
         f"/v2/venue/{venue.id}/stocks",
@@ -48,8 +47,8 @@ def test_accepts_request(client):
 )
 def test_accepts_request_with_price(price, expected_price, client):
     providers_factories.ProviderFactory(name="Pass Culture API Stocks", localClass="PCAPIStocks")
-    offerer = offers_factories.OffererFactory(siren=123456789)
-    venue = offers_factories.VenueFactory(managingOfferer=offerer)
+    offerer = offerers_factories.OffererFactory(siren=123456789)
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer)
     offer_to_update = offers_factories.OfferFactory(
         product__idAtProviders="123456789",
         product__subcategoryId="LIVRE_PAPIER",
@@ -57,9 +56,9 @@ def test_accepts_request_with_price(price, expected_price, client):
         product__extraData={"prix_livre": expected_price},
         venue=venue,
     )
-    ApiKeyFactory(offerer=offerer)
+    offerers_factories.ApiKeyFactory(offerer=offerer)
 
-    client.auth_header = {"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"}
+    client.auth_header = {"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY}
 
     response = client.post(
         f"/v2/venue/{venue.id}/stocks", json={"stocks": [{"ref": "123456789", "available": 4, "price": price}]}
@@ -71,8 +70,8 @@ def test_accepts_request_with_price(price, expected_price, client):
 
 @patch("pcapi.core.providers.api.synchronize_stocks")
 def test_requires_an_api_key(mock_synchronize_stocks, client):
-    offerer = offers_factories.OffererFactory(siren=123456789)
-    offers_factories.VenueFactory(managingOfferer=offerer, id=3)
+    offerer = offerers_factories.OffererFactory(siren=123456789)
+    offerers_factories.VenueFactory(managingOfferer=offerer, id=3)
 
     mock_synchronize_stocks.return_value = {}
 
@@ -84,15 +83,15 @@ def test_requires_an_api_key(mock_synchronize_stocks, client):
 
 @patch("pcapi.core.providers.api.synchronize_stocks")
 def test_returns_404_if_api_key_cant_access_venue(mock_synchronize_stocks, client):
-    offerer = offers_factories.OffererFactory(siren=123456789)
-    offers_factories.VenueFactory(managingOfferer=offerer, id=3)
+    offerer = offerers_factories.OffererFactory(siren=123456789)
+    offerers_factories.VenueFactory(managingOfferer=offerer, id=3)
 
-    offerer2 = offers_factories.OffererFactory(siren=123456780)
-    ApiKeyFactory(offerer=offerer2)
+    offerer2 = offerers_factories.OffererFactory(siren=123456780)
+    offerers_factories.ApiKeyFactory(offerer=offerer2)
 
     mock_synchronize_stocks.return_value = {}
 
-    client.auth_header = {"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"}
+    client.auth_header = {"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY}
 
     response1 = client.post("/v2/venue/3/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
     response2 = client.post("/v2/venue/123/stocks", json={"stocks": [{"ref": "123456789", "available": 4}]})
@@ -104,11 +103,11 @@ def test_returns_404_if_api_key_cant_access_venue(mock_synchronize_stocks, clien
 
 @patch("pcapi.core.providers.api.synchronize_stocks")
 def test_returns_comprehensive_errors(mock_synchronize_stocks, client):
-    ApiKeyFactory()
+    offerers_factories.ApiKeyFactory()
 
     mock_synchronize_stocks.return_value = {}
 
-    client.auth_header = {"Authorization": f"Bearer {DEFAULT_CLEAR_API_KEY}"}
+    client.auth_header = {"Authorization": "Bearer " + offerers_factories.DEFAULT_CLEAR_API_KEY}
 
     response1 = client.post("/v2/venue/3/stocks", json={})
     response2 = client.post(

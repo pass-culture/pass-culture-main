@@ -4,10 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.offerers.factories import VenueTypeFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.factories import OffererFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.scripts.update_venue_type import _read_venue_type_from_file
 from pcapi.scripts.update_venue_type import update_venue_type
 
@@ -19,9 +17,9 @@ class UpdateVenueTypeTest:
         self, stub_read_venue_type_from_file, app, capsys
     ):
         # Given
-        VenueTypeFactory(label="old_type", id=1)
-        VenueTypeFactory(label="new_type", id=2)
-        VenueFactory(id=121, venueTypeId=1)
+        offerers_factories.VenueTypeFactory(label="old_type", id=1)
+        offerers_factories.VenueTypeFactory(label="new_type", id=2)
+        offerers_factories.VenueFactory(id=121, venueTypeId=1)
 
         stub_read_venue_type_from_file.return_value = [("121", "new_type")]
 
@@ -40,11 +38,11 @@ class UpdateVenueTypeTest:
         self, stub_read_venue_type_from_file, app
     ):
         # Given
-        offerer = OffererFactory(siren=None)
-        old_venue_type = VenueTypeFactory(label="old_type")
-        VenueTypeFactory(label="new_type")
-        venue1 = VenueFactory(managingOfferer=offerer, name="CMOI", venueType=old_venue_type)
-        venue2 = VenueFactory(
+        offerer = offerers_factories.OffererFactory(siren=None)
+        old_venue_type = offerers_factories.VenueTypeFactory(label="old_type")
+        offerers_factories.VenueTypeFactory(label="new_type")
+        venue1 = offerers_factories.VenueFactory(managingOfferer=offerer, name="CMOI", venueType=old_venue_type)
+        venue2 = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="AUSSI MOI", siret="12345678912354", venueType=old_venue_type
         )
 
@@ -65,9 +63,9 @@ class UpdateVenueTypeTest:
         self, stub_read_venue_type_from_file, app
     ):
         # Given
-        old_venue_type = VenueTypeFactory(label="old_type")
-        VenueTypeFactory(label="new_type", id=2)
-        VenueFactory(venueType=old_venue_type)
+        old_venue_type = offerers_factories.VenueTypeFactory(label="old_type")
+        offerers_factories.VenueTypeFactory(label="new_type", id=2)
+        offerers_factories.VenueFactory(venueType=old_venue_type)
 
         stub_read_venue_type_from_file.return_value = [("666", "new_type")]
 
@@ -84,8 +82,8 @@ class UpdateVenueTypeTest:
         self, stub_read_venue_type_from_file, app
     ):
         # Given
-        old_venue_type = VenueTypeFactory(label="old_type")
-        VenueFactory(venueType=old_venue_type)
+        old_venue_type = offerers_factories.VenueTypeFactory(label="old_type")
+        offerers_factories.VenueFactory(venueType=old_venue_type)
 
         stub_read_venue_type_from_file.return_value = [("121", "other_type")]
 

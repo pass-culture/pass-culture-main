@@ -1,6 +1,6 @@
 import pytest
 
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.scripts.business_unit.rename_bu_not_matching_venue_public_name import (
     rename_bu_not_matching_venue_public_name,
 )
@@ -10,19 +10,19 @@ from pcapi.scripts.business_unit.rename_bu_not_matching_venue_public_name import
 class RenameBuNotMatchingVenuePublicNameTest:
     def test_rename_bu_not_matching_venue_public_name(self):
         # Given
-        venue1 = offers_factories.VenueFactory(
+        venue1 = offerers_factories.VenueFactory(
             businessUnit__name="Point de remboursement #1",
             businessUnit__siret="11111111100000",
             managingOfferer__siren="111111111",
             siret="11111111100000",
         )
-        venue2 = offers_factories.VenueFactory(
+        venue2 = offerers_factories.VenueFactory(
             businessUnit__name="Point de remboursement #2",
             businessUnit__siret=None,
             managingOfferer__siren="222222222",
             siret="22222222200000",
         )
-        venue3 = offers_factories.VenueFactory(
+        venue3 = offerers_factories.VenueFactory(
             businessUnit__name="Point de remboursement #3",
             businessUnit__siret="33333333300000",
             managingOfferer__siren="333333333",

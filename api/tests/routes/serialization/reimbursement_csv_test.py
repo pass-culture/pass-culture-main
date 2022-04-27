@@ -9,7 +9,7 @@ import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.repository import repository
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
@@ -282,9 +282,9 @@ def test_generate_reimbursement_details_csv():
 
 @pytest.mark.usefixtures("db_session")
 def test_find_all_offerer_reimbursement_details():
-    offerer = offers_factories.OffererFactory()
-    venue1 = offers_factories.VenueFactory(managingOfferer=offerer)
-    venue2 = offers_factories.VenueFactory(managingOfferer=offerer)
+    offerer = offerers_factories.OffererFactory()
+    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
+    venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
     booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue1)
     booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue2)
     booking3 = bookings_factories.UsedEducationalBookingFactory(

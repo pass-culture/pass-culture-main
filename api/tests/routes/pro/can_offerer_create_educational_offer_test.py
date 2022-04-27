@@ -1,7 +1,7 @@
 import pytest
 import requests_mock
 
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
@@ -15,7 +15,7 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class CanOffererCreateEducationalOfferTest:
     def test_offerer_can_create_educational_offer(self, app):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
         with requests_mock.Mocker() as request_mock:
@@ -61,7 +61,7 @@ class CanOffererCreateEducationalOfferTest:
         assert response.status_code == 204
 
     def test_offerer_cannot_create_educational_offer_because_not_in_adage(self, app):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
         with requests_mock.Mocker() as request_mock:
@@ -83,7 +83,7 @@ class CanOffererCreateEducationalOfferTest:
         assert response.json == {"offerer": "not found in adage"}
 
     def test_offerer_cannot_create_educational_offer_because_adage_failed(self, app):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
         with requests_mock.Mocker() as request_mock:

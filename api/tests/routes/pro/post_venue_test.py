@@ -8,7 +8,6 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import ProFactory
@@ -94,7 +93,7 @@ def test_should_register_new_venue_with_a_business_unit(app):
     auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
     venue_data = create_valid_venue_data(user)
     offerer = offerers_models.Offerer.query.all()[0]
-    existing_venue = offers_factories.VenueFactory(managingOfferer=offerer)
+    existing_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
     venue_data["businessUnitId"] = existing_venue.businessUnit.id
 
     # when
@@ -242,7 +241,7 @@ class VenueBannerTest:
             * venue's banner information are sent back to the client
         """
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         image_content = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
@@ -276,7 +275,7 @@ class VenueBannerTest:
 
     def test_upload_image_missing(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         client = client.with_session_auth(email=user_offerer.user.email)
         url = f"/venues/{humanize(venue.id)}/banner"
@@ -287,7 +286,7 @@ class VenueBannerTest:
 
     def test_upload_image_invalid_query_param(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         url = f"/venues/{humanize(venue.id)}/banner"
         url += "?x_crop_percent=0.8&y_crop_percent=invalid_value"

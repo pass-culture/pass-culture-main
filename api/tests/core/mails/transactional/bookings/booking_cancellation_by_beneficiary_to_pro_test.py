@@ -12,6 +12,7 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_beneficiary
     send_booking_cancellation_by_beneficiary_to_pro_email,
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 
 
@@ -92,7 +93,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_return_numerique_when_venue_is_virtual(self):
         # Given
-        virtual_venue = offers_factories.VirtualVenueFactory()
+        virtual_venue = offerers_factories.VirtualVenueFactory()
         stock = offers_factories.ThingStockFactory(offer__venue=virtual_venue)
         booking1 = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
 

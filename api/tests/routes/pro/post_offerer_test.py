@@ -4,11 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.offerers.factories import UserOffererFactory
-from pcapi.core.offerers.factories import VirtualVenueTypeFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.factories import AdminFactory
 from pcapi.core.users.factories import ProFactory
@@ -32,7 +30,7 @@ class Returns201Test:
         )
 
         pro = ProFactory()
-        VirtualVenueTypeFactory()
+        offerers_factories.VirtualVenueTypeFactory()
 
         body = {
             "name": "Test Offerer",
@@ -62,7 +60,7 @@ class Returns201Test:
         )
 
         pro = ProFactory()
-        VirtualVenueTypeFactory()
+        offerers_factories.VirtualVenueTypeFactory()
         body = {"name": "Test Offerer", "siren": "418166096", "postalCode": "93100", "city": "Montreuil"}
 
         # when
@@ -83,7 +81,7 @@ class Returns201Test:
         )
 
         admin = AdminFactory()
-        VirtualVenueTypeFactory()
+        offerers_factories.VirtualVenueTypeFactory()
         body = {
             "name": "Test Offerer",
             "siren": "418166096",
@@ -107,7 +105,7 @@ class Returns201Test:
         )
 
         pro = ProFactory()
-        VirtualVenueTypeFactory()
+        offerers_factories.VirtualVenueTypeFactory()
         body = {
             "name": "Test Offerer",
             "siren": "418166096",
@@ -137,9 +135,9 @@ class Returns201Test:
         )
 
         pro = ProFactory()
-        offerer = OffererFactory()
-        UserOffererFactory(offerer=offerer, validationToken=None)
-        VirtualVenueTypeFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(offerer=offerer, validationToken=None)
+        offerers_factories.VirtualVenueTypeFactory()
         body = {
             "name": offerer.name,
             "siren": offerer.siren,

@@ -509,9 +509,9 @@ class GetCappedOffersForFiltersTest:
 
     class StatusFiltersTest:
         def init_test_data(self):
-            self.venue = offers_factories.VenueFactory()
+            self.venue = offerers_factories.VenueFactory()
             self.offerer = self.venue.managingOfferer
-            self.other_venue = offers_factories.VenueFactory(managingOfferer=self.offerer)
+            self.other_venue = offerers_factories.VenueFactory(managingOfferer=self.offerer)
             self.pro = users_factories.ProFactory()
             self.user_offerer = offerers_factories.UserOffererFactory(user=self.pro, offerer=self.offerer)
 
@@ -1040,7 +1040,7 @@ class GetOffersByIdsTest:
 class GetActiveOffersCountForVenueTest:
     def test_counts_active_offers_for_venue(self):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         active_offer = offers_factories.ThingOfferFactory(venue=venue)
         offers_factories.StockFactory(offer=active_offer)
@@ -1073,7 +1073,7 @@ class GetActiveOffersCountForVenueTest:
 class GetSoldOutOffersCountForVenueTest:
     def test_counts_sold_out_offers_for_venue(self):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         active_offer = offers_factories.ThingOfferFactory(venue=venue)
         offers_factories.StockFactory(offer=active_offer)

@@ -14,7 +14,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
@@ -33,7 +32,7 @@ class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
             city="old City",
@@ -49,7 +48,7 @@ class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_public_name_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
             city="old City",
@@ -65,7 +64,7 @@ class EditVenueTest:
     @patch("pcapi.core.search.async_index_offers_of_venue_ids")
     def when_changes_on_city_algolia_indexing_is_triggered(self, mocked_async_index_offers_of_venue_ids):
         # Given
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
             city="old City",
@@ -83,7 +82,7 @@ class EditVenueTest:
         self, mocked_async_index_offers_of_venue_ids
     ):
         # Given
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
             city="old City",
@@ -102,7 +101,7 @@ class EditVenueTest:
         self, mocked_async_index_offers_of_venue_ids
     ):
         # Given
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
             city="old City",
@@ -117,7 +116,7 @@ class EditVenueTest:
 
     def test_empty_siret_is_editable(self, app) -> None:
         # Given
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             comment="Pas de siret",
             siret=None,
         )
@@ -134,7 +133,7 @@ class EditVenueTest:
 
     def test_existing_siret_is_not_editable(self, app) -> None:
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # when
         venue_data = {
@@ -148,7 +147,7 @@ class EditVenueTest:
 
     def test_latitude_and_longitude_wrong_format(self, app) -> None:
         # given
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             isVirtual=False,
         )
 
@@ -166,7 +165,7 @@ class EditVenueTest:
 
     def test_accessibility_fields_are_updated(self, app) -> None:
         # given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # when
         venue_data = {
@@ -186,7 +185,7 @@ class EditVenueTest:
 
     def test_no_modifications(self, app) -> None:
         # given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # when
         venue_data = {
@@ -209,7 +208,7 @@ class EditVenueTest:
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@test.com",
         )
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         contact_data = serialize_base.VenueContactModel(email="other.contact@venue.com", phone_number="0788888888")
 
@@ -221,21 +220,21 @@ class EditVenueTest:
         assert venue.contact.email == contact_data.email
 
     def test_update_venue_holder_business_unit(self):
-        offerer = offers_factories.OffererFactory(siren="000000000")
-        venue = offers_factories.VenueFactory(
+        offerer = offerers_factories.OffererFactory(siren="000000000")
+        venue = offerers_factories.VenueFactory(
             siret="00000000000011", businessUnit__siret="00000000000011", managingOfferer=offerer
         )
         deleted_business_unit = venue.businessUnit
-        offers_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             siret="00000000000012", businessUnit=deleted_business_unit, managingOfferer=offerer
         )
-        offers_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             siret="00000000000013", businessUnit=deleted_business_unit, managingOfferer=offerer
         )
-        offers_factories.VenueFactory(
+        offerers_factories.VenueFactory(
             siret="00000000000014", businessUnit=deleted_business_unit, managingOfferer=offerer
         )
-        offers_factories.VenueFactory(siret="00000000000015", managingOfferer=offerer)
+        offerers_factories.VenueFactory(siret="00000000000015", managingOfferer=offerer)
 
         business_unit = finance_factories.BusinessUnitFactory(siret="00000000000013")
 
@@ -248,9 +247,9 @@ class EditVenueTest:
         assert offerers_models.Venue.query.filter(offerers_models.Venue.businessUnitId.is_(None)).count() == 3
 
     def test_update_virtual_venue_business_unit(self):
-        offerer = offers_factories.OffererFactory(siren="000000000")
-        venue = offers_factories.VenueFactory(siret="00000000000011", managingOfferer=offerer)
-        virtual_venue = offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory(siren="000000000")
+        venue = offerers_factories.VenueFactory(siret="00000000000011", managingOfferer=offerer)
+        virtual_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         venue_data = {"businessUnitId": venue.businessUnitId}
 
@@ -264,7 +263,7 @@ class EditVenueContactTest:
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@test.com",
         )
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         contact_data = serialize_base.VenueContactModel(
             email="contact@venue.com",
             phone_number="+33766778899",
@@ -282,7 +281,7 @@ class EditVenueContactTest:
         user_offerer = offerers_factories.UserOffererFactory(
             user__email="user.pro@test.com",
         )
-        venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
 
         contact_data = serialize_base.VenueContactModel(
             email="other.contact@venue.com", socialMedias={"instagram": "https://instagram.com/@venue"}
@@ -298,7 +297,7 @@ class EditVenueContactTest:
 
 class ApiKeyTest:
     def test_generate_and_save_api_key(self):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
 
         generated_key = offerers_api.generate_and_save_api_key(offerer.id)
 
@@ -307,7 +306,7 @@ class ApiKeyTest:
         assert found_api_key.offerer == offerer
 
     def test_legacy_api_key(self):
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         value = "a very secret key"
         ApiKey(value=value, offerer=offerer)
 
@@ -644,7 +643,7 @@ def move_venue_banner_to_legacy_location(venue, directory, timestamp):
 
 class GetEligibleForSearchVenuesTest:
     def test_get_all_eligibles_venues_by_default(self) -> None:
-        eligible_venues = offers_factories.VenueFactory.create_batch(3, isPermanent=True)
+        eligible_venues = offerers_factories.VenueFactory.create_batch(3, isPermanent=True)
 
         with assert_num_queries(1):
             venues = list(offerers_api.get_eligible_for_search_venues())
@@ -652,7 +651,7 @@ class GetEligibleForSearchVenuesTest:
         assert {venue.id for venue in venues} == {venue.id for venue in eligible_venues}
 
     def test_max_limit_number_of_venues(self) -> None:
-        eligible_venues = offers_factories.VenueFactory.create_batch(3, isPermanent=True)
+        eligible_venues = offerers_factories.VenueFactory.create_batch(3, isPermanent=True)
 
         with assert_num_queries(1):
             venues = list(offerers_api.get_eligible_for_search_venues(max_venues=1))
@@ -660,8 +659,8 @@ class GetEligibleForSearchVenuesTest:
         assert venues[0].id in {venue.id for venue in eligible_venues}
 
     def test_only_permantent_venues_are_eligibles(self) -> None:
-        eligible_venues = offers_factories.VenueFactory.create_batch(3, isPermanent=True)
-        offers_factories.VirtualVenueFactory.create_batch(2)  # non-eligible venues
+        eligible_venues = offerers_factories.VenueFactory.create_batch(3, isPermanent=True)
+        offerers_factories.VirtualVenueFactory.create_batch(2)  # non-eligible venues
 
         venues = list(offerers_api.get_eligible_for_search_venues())
 

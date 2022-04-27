@@ -17,16 +17,16 @@ class Returns200Test:
     ):
         # Given
         admin = users_factories.AdminFactory()
-        offerer = offers_factories.OffererFactory(name="My Offerer")
+        offerer = offerers_factories.OffererFactory(name="My Offerer")
         departement_code = "12"
-        requested_venue = offers_factories.VenueFactory(
+        requested_venue = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             siret="12345678912345",
             postalCode=departement_code + "000",
             name="My Venue",
             publicName="My public name",
         )
-        other_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
+        other_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
         offer_on_requested_venue = offers_factories.ThingOfferFactory(
             venue=requested_venue, extraData={"isbn": "123456789"}, name="My Offer"
         )
@@ -85,10 +85,10 @@ class Returns200Test:
     ):
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        requested_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="12345678912345")
-        other_venue = offers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
+        requested_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="12345678912345")
+        other_venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="54321987654321")
         offers_factories.ThingOfferFactory(venue=requested_venue)
         offers_factories.ThingOfferFactory(venue=other_venue)
 
@@ -108,9 +108,9 @@ class Returns200Test:
     def should_filter_offers_by_given_venue_id(self, mocked_list_offers, app, db_session):
         # given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
         response = (
@@ -138,7 +138,7 @@ class Returns200Test:
     def should_filter_offers_by_given_status(self, mocked_list_offers, app, db_session):
         # given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
@@ -163,9 +163,9 @@ class Returns200Test:
     def should_filter_offers_by_given_offerer_id(self, mocked_list_offers, app, db_session):
         # given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
         response = (
@@ -193,7 +193,7 @@ class Returns200Test:
     def should_filter_offers_by_given_creation_mode(self, mocked_list_offers, app, db_session):
         # given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
@@ -218,7 +218,7 @@ class Returns200Test:
     def test_results_are_filtered_by_given_period_beginning_date(self, mocked_list_offers, app, db_session):
         # given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
@@ -247,7 +247,7 @@ class Returns200Test:
     def test_results_are_filtered_by_given_period_ending_date(self, mocked_list_offers, app, db_session):
         # given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
@@ -276,7 +276,7 @@ class Returns200Test:
     def should_filter_offers_by_given_category_id(self, mocked_list_offers, app, db_session):
         # given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
         # when
@@ -313,8 +313,8 @@ class Returns404Test:
     def should_return_no_offers_when_user_has_no_rights_on_requested_venue(self, app, db_session):
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerer = offerers_factories.OffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         # when
         response = (
@@ -330,9 +330,9 @@ class Returns404Test:
     def should_return_no_offers_when_user_offerer_is_not_validated(self, app, db_session):
         # Given
         pro = users_factories.ProFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer, validationToken=secrets.token_urlsafe(20))
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.ThingOfferFactory(venue=venue)
 
         # when

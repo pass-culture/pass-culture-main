@@ -5,8 +5,7 @@ import factory
 
 from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
 from pcapi.core.educational import api
-from pcapi.core.offerers.factories import OffererFactory
-from pcapi.core.offerers.factories import VenueFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -27,7 +26,7 @@ class CollectiveOfferFactory(BaseFactory):
     subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES)
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
-    venue = factory.SubFactory(VenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
@@ -61,7 +60,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     subcategoryId = factory.Iterator(COLLECTIVE_SUBCATEGORIES)
     name = factory.Sequence("CollectiveOffer {}".format)
     description = factory.Sequence("A passionate description of collectiveoffer {}".format)
-    venue = factory.SubFactory(VenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False
@@ -188,8 +187,8 @@ class CollectiveBookingFactory(BaseFactory):
 
     collectiveStock = factory.SubFactory(CollectiveStockFactory)
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=2))
-    venue = factory.SubFactory(VenueFactory)
-    offerer = factory.SubFactory(OffererFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
+    offerer = factory.SubFactory(offerers_factories.OffererFactory)
     cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)

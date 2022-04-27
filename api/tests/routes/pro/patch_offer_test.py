@@ -97,7 +97,7 @@ class Returns400Test:
 
     def should_fail_when_url_has_no_scheme(self, app, client):
         # Given
-        virtual_venue = offers_factories.VirtualVenueFactory()
+        virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -117,7 +117,7 @@ class Returns400Test:
 
     def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, app, client):
         # Given
-        virtual_venue = offers_factories.VirtualVenueFactory()
+        virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -137,7 +137,7 @@ class Returns400Test:
 
     def should_fail_when_url_has_no_host(self, app, client):
         # Given
-        virtual_venue = offers_factories.VirtualVenueFactory()
+        virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -157,7 +157,7 @@ class Returns400Test:
 
     def should_fail_when_externalTicketOfficeUrl_has_no_host(self, app, client):
         # Given
-        virtual_venue = offers_factories.VirtualVenueFactory()
+        virtual_venue = offerers_factories.VirtualVenueFactory()
         offer = offers_factories.OfferFactory(venue=virtual_venue)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",

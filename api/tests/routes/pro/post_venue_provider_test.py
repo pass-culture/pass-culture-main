@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users import factories as user_factories
@@ -23,7 +23,7 @@ class Returns201Test:
     ):
         # Given
         user = user_factories.AdminFactory()
-        venue = offers_factories.VenueFactory(siret="12345678912345")
+        venue = offerers_factories.VenueFactory(siret="12345678912345")
 
         provider = providers_factories.APIProviderFactory()
 
@@ -52,7 +52,7 @@ class Returns201Test:
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self, mock_synchronize_venue_provider, app):
         # Given
-        venue = offers_factories.VenueFactory(managingOfferer__siren="775671464")
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
         providers_factories.AllocinePivotFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
@@ -75,7 +75,7 @@ class Returns201Test:
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
     def when_add_allocine_stocks_provider_with_default_settings_at_import(self, mock_synchronize_venue_provider, app):
         # Given
-        venue = offers_factories.VenueFactory(managingOfferer__siren="775671464")
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
         providers_factories.AllocinePivotFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
@@ -107,7 +107,7 @@ class Returns201Test:
     def when_no_regression_on_format(self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app):
         # Given
         user = user_factories.AdminFactory()
-        venue = offers_factories.VenueFactory(siret="12345678912345")
+        venue = offerers_factories.VenueFactory(siret="12345678912345")
 
         provider = providers_factories.APIProviderFactory()
 
@@ -158,7 +158,7 @@ class Returns201Test:
     ):
         # Given
         user = user_factories.AdminFactory()
-        venue = offers_factories.VenueFactory(siret="12345678912345")
+        venue = offerers_factories.VenueFactory(siret="12345678912345")
 
         provider = providers_factories.APIProviderFactory()
 
@@ -225,7 +225,7 @@ class Returns400Test:
     @clean_database
     def when_add_allocine_stocks_provider_with_wrong_format_price(self, app):
         # Given
-        venue = offers_factories.VenueFactory(managingOfferer__siren="775671464")
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
         providers_factories.AllocinePivotFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
@@ -249,7 +249,7 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_add_allocine_stocks_provider_with_no_price(self, app):
         # Given
-        venue = offers_factories.VenueFactory(managingOfferer__siren="775671464")
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
         providers_factories.AllocinePivotFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
@@ -304,7 +304,7 @@ class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_add_allocine_pivot_is_missing(self, app):
         # Given
-        venue = offers_factories.VenueFactory(managingOfferer__siren="775671464")
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
         provider = providers_factories.AllocineProviderFactory()
 
@@ -334,7 +334,7 @@ class Returns422Test:
     def when_provider_api_not_available(self, mock_siret_can_be_synchronized, app):
         # Given
         user = user_factories.AdminFactory()
-        venue = offers_factories.VenueFactory(siret="12345678912345")
+        venue = offerers_factories.VenueFactory(siret="12345678912345")
 
         provider = providers_factories.APIProviderFactory()
 
@@ -373,7 +373,7 @@ class ConnectProviderToVenueTest:
     ):
         # Given
         user = user_factories.AdminFactory()
-        venue = offers_factories.VenueFactory(siret="12345678912345")
+        venue = offerers_factories.VenueFactory(siret="12345678912345")
 
         provider = providers_factories.APIProviderFactory()
 
@@ -398,7 +398,7 @@ class ConnectProviderToVenueTest:
     ):
         # Given
         user = user_factories.AdminFactory()
-        venue = offers_factories.VenueFactory(siret="12345678912345")
+        venue = offerers_factories.VenueFactory(siret="12345678912345")
         providers_factories.AllocinePivotFactory(siret=venue.siret)
         provider = providers_factories.AllocineProviderFactory()
 

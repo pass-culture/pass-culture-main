@@ -11,7 +11,6 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_timezoned_date
@@ -70,7 +69,7 @@ class GetAllBookingsTest:
     def test_call_repository_with_venue_id(self, find_by_pro_user, app):
         # Given
         pro = users_factories.ProFactory()
-        venue = VenueFactory()
+        venue = offerers_factories.VenueFactory()
 
         # When
         TestClient(app.test_client()).with_session_auth(pro.email).get(

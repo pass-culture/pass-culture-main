@@ -7,9 +7,9 @@ import requests_mock
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import StockDetail
@@ -81,7 +81,7 @@ class ProviderAPICronTest:
     def test_execution(self, mocked_async_index_offer_ids):
         # Given
         provider = providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
-        venue = VenueFactory(withdrawalDetails="Modalité de retrait")
+        venue = offerers_factories.VenueFactory(withdrawalDetails="Modalité de retrait")
         venue_provider = providers_factories.VenueProviderFactory(
             isActive=True,
             provider=provider,

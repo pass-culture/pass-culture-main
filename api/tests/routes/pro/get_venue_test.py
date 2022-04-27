@@ -24,7 +24,7 @@ class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client, banner_meta_in, banner_meta_out):
         # given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume", managingOfferer=user_offerer.offerer, bannerMeta=banner_meta_in
         )
         bank_information = offers_factories.BankInformationFactory(venue=venue)
@@ -113,7 +113,7 @@ class Returns403Test:
     def when_current_user_doesnt_have_rights(self, app):
         # given
         pro = users_factories.ProFactory(email="user.pro@example.com")
-        venue = offers_factories.VenueFactory(name="L'encre et la plume")
+        venue = offerers_factories.VenueFactory(name="L'encre et la plume")
 
         # when
         auth_request = TestClient(app.test_client()).with_session_auth(email=pro.email)

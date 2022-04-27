@@ -5,7 +5,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.testing import override_features
@@ -19,7 +18,7 @@ from pcapi.utils.human_ids import humanize
 class Returns200Test:
     def test_create_event_offer(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -58,7 +57,7 @@ class Returns200Test:
 
     def when_creating_new_thing_offer(self, client):
         # Given
-        venue = offers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -100,7 +99,7 @@ class Returns200Test:
 
     def test_create_valid_collective_offer_in_old_offer_model(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -134,7 +133,7 @@ class Returns200Test:
     @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def test_create_valid_educational_offer_with_new_route_on_old_offer_model(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -219,7 +218,7 @@ class Returns200Test:
     @override_settings(ADAGE_API_KEY="adage-api-key")
     @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
     def test_create_collective_offer_on_draft_offer_creation(self, client):
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -289,7 +288,7 @@ class Returns200Test:
 
     def test_withdrawable_event_offer_can_have_no_ticket_to_withdraw(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -337,7 +336,7 @@ class Returns400Test:
 
     def test_fail_if_name_too_long(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -356,7 +355,7 @@ class Returns400Test:
 
     def test_fail_if_unknown_subcategory(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -374,7 +373,7 @@ class Returns400Test:
 
     def test_fail_if_inactive_subcategory(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -394,7 +393,7 @@ class Returns400Test:
 
     def test_fail_when_educational_and_non_eligible_subcategory(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -413,7 +412,7 @@ class Returns400Test:
 
     def test_fail_when_offer_subcategory_is_offline_only_and_venue_is_virtuel(self, client):
         # Given
-        venue = offers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -437,7 +436,7 @@ class Returns400Test:
 
     def should_fail_when_url_has_no_scheme(self, client):
         # Given
-        venue = offers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -456,7 +455,7 @@ class Returns400Test:
 
     def should_fail_when_externalTicketOfficeUrl_has_no_scheme(self, client):
         # Given
-        venue = offers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -475,7 +474,7 @@ class Returns400Test:
 
     def should_fail_when_url_has_no_host(self, client):
         # Given
-        venue = offers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -494,7 +493,7 @@ class Returns400Test:
 
     def should_fail_when_externalTicketOfficeUrl_has_no_host(self, client):
         # Given
-        venue = offers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -514,7 +513,7 @@ class Returns400Test:
     @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def test_create_educational_offer_with_wrong_extra_data(self, app, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -576,7 +575,7 @@ class Returns400Test:
 
     def test_non_withdrawable_event_offer_cant_have_withdrawal(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 
@@ -598,7 +597,7 @@ class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, client):
         # Given
         users_factories.ProFactory(email="user@example.com")
-        venue = offers_factories.VirtualVenueFactory()
+        venue = offerers_factories.VirtualVenueFactory()
 
         # When
         data = {
@@ -622,7 +621,7 @@ class Returns403Test:
     @override_features(PRO_DISABLE_EVENTS_QRCODE=True)
     def when_offerer_cannot_create_educational_offer(self, client):
         # Given
-        venue = offers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
 

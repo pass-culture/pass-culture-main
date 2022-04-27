@@ -11,20 +11,20 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_access_by_pro(client):
-    offerer1 = offers_factories.OffererFactory(name="offreur B")
-    offerer2 = offers_factories.OffererFactory(name="offreur A")
-    offerer3 = offers_factories.OffererFactory(name="offreur C")
-    inactive = offers_factories.OffererFactory(name="inactive, ignored", isActive=False)
-    venue1 = offers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A1")
+    offerer1 = offerers_factories.OffererFactory(name="offreur B")
+    offerer2 = offerers_factories.OffererFactory(name="offreur A")
+    offerer3 = offerers_factories.OffererFactory(name="offreur C")
+    inactive = offerers_factories.OffererFactory(name="inactive, ignored", isActive=False)
+    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A1")
     offers_factories.OfferFactory.create_batch(1, venue=venue1)
-    venue2 = offers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A2")
+    venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A2")
     offers_factories.OfferFactory.create_batch(2, venue=venue2)
-    offers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
+    offerers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2, inactive])
     # Non-validated offerers should be included, too.
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken="TOKEN")
     # Offerer that belongs to another user should not be returned.
-    offers_factories.OffererFactory(name="not returned")
+    offerers_factories.OffererFactory(name="not returned")
 
     client = client.with_session_auth(pro.email)
     n_queries = testing.AUTHENTICATION_QUERIES
@@ -51,16 +51,16 @@ def test_access_by_pro(client):
 
 
 def test_access_by_admin(client):
-    offerer_b = offers_factories.OffererFactory(name="offreur B")
+    offerer_b = offerers_factories.OffererFactory(name="offreur B")
     offerers_factories.VenueFactory(managingOfferer=offerer_b)
-    offerer_a = offers_factories.OffererFactory(name="offreur A")
+    offerer_a = offerers_factories.OffererFactory(name="offreur A")
     offerers_factories.VenueFactory(managingOfferer=offerer_a)
     offerers_factories.VenueFactory(managingOfferer=offerer_a)
     offerers_factories.VenueFactory(managingOfferer=offerer_a)
     offerers_factories.UserOffererFactory(offerer=offerer_a)
     offerers_factories.UserOffererFactory(offerer=offerer_a)
     offerers_factories.UserOffererFactory(offerer=offerer_a)
-    offerer_c = offers_factories.OffererFactory(name="offreur C")
+    offerer_c = offerers_factories.OffererFactory(name="offreur C")
     offerers_factories.VenueFactory(managingOfferer=offerer_c)
     admin = users_factories.AdminFactory()
 
@@ -86,9 +86,9 @@ def test_access_by_admin(client):
 
 
 def test_filter_on_keywords(client):
-    offerer1 = offers_factories.OffererFactory(name="Cinema")
-    offerer2 = offers_factories.OffererFactory(name="Encore Un Cinema")
-    offerer3 = offers_factories.OffererFactory(name="not matching")
+    offerer1 = offerers_factories.OffererFactory(name="Cinema")
+    offerer2 = offerers_factories.OffererFactory(name="Encore Un Cinema")
+    offerer3 = offerers_factories.OffererFactory(name="not matching")
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2, offerer3])
 
     response = client.with_session_auth(pro.email).get("/offerers?keywords=cinéma")

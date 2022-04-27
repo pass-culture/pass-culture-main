@@ -37,7 +37,7 @@ def create_specific_invoice():  # type: ignore [no-untyped-def]
     offerer = offerers_factories.OffererFactory(name="0 - Structure avec justificatif copieux")
     pro = users_factories.ProFactory(email="pctest.pro.justificatif.copieux@example.com")
     offerers_factories.UserOffererFactory(offerer=offerer, user=pro)
-    venue = offers_factories.VenueFactory(
+    venue = offerers_factories.VenueFactory(
         name="0 - Lieu avec justificatif copieux",
         siret=business_unit.siret,
         businessUnit=business_unit,

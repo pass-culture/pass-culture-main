@@ -1,7 +1,6 @@
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
@@ -13,7 +12,7 @@ class Returns200Test:
         # given
         user1 = users_factories.ProFactory(email="patrick.fiori@example.com")
         user2 = users_factories.ProFactory(email="celine.dion@example.com")
-        offerer = offers_factories.OffererFactory(siren="123456781")
+        offerer = offerers_factories.OffererFactory(siren="123456781")
         user_offerer1 = offerers_factories.UserOffererFactory(user=user1, offerer=offerer)
         user_offerer2 = offerers_factories.UserOffererFactory(user=user2, offerer=offerer)
         repository.save(user_offerer1, user_offerer2)
@@ -32,7 +31,7 @@ class Returns200Test:
         # given
         user1 = users_factories.ProFactory(email="patrick.fiori@example.com")
         user2 = users_factories.ProFactory(email="celine.dion@example.com")
-        offerer = offers_factories.OffererFactory(siren="123456781")
+        offerer = offerers_factories.OffererFactory(siren="123456781")
         user_offerer1 = offerers_factories.UserOffererFactory(user=user1, offerer=offerer)
         user_offerer2 = offerers_factories.UserOffererFactory(user=user2, offerer=offerer)
         repository.save(user_offerer1, user_offerer2)

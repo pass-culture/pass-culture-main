@@ -4,6 +4,7 @@ from datetime import timedelta
 import pytest
 
 from pcapi.core.bookings import factories as bookings_factories
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_settings
@@ -43,8 +44,8 @@ class GetTest:
             yesterday = today - timedelta(days=1)
             tomorow = today + timedelta(days=1)
             user, test_client = utils.create_user_and_test_client(app)
-            offerer = offers_factories.OffererFactory()
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
             # Event offer with 1 expired stock, 2 futures ones and a mediation
             offer1 = offers_factories.EventOfferFactory(venue=venue)
@@ -174,8 +175,8 @@ class GetTest:
             user, test_client = utils.create_user_and_test_client(app)
             user.add_beneficiary_role()
             users_factories.DepositGrantFactory(user=user)
-            offerer = offers_factories.OffererFactory()
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
             # Event offer future stock
             offer1 = offers_factories.EventOfferFactory(venue=venue)
@@ -319,8 +320,8 @@ class PostTest:
         def when_user_creates_a_favorite_twice(self, app):
             # Given
             _, test_client = utils.create_user_and_test_client(app)
-            offerer = offers_factories.OffererFactory()
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer1 = offers_factories.EventOfferFactory(venue=venue)
             assert Favorite.query.count() == 0
 
@@ -363,8 +364,8 @@ class DeleteTest:
         def when_user_delete_its_favorite(self, app):
             # Given
             user, test_client = utils.create_user_and_test_client(app)
-            offerer = offers_factories.OffererFactory()
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
             favorite = users_factories.FavoriteFactory(offer=offer, user=user)
             assert Favorite.query.count() == 1
@@ -380,8 +381,8 @@ class DeleteTest:
             # Given
             _, test_client = utils.create_user_and_test_client(app)
             other_beneficiary = users_factories.BeneficiaryGrant18Factory()
-            offerer = offers_factories.OffererFactory()
-            venue = offers_factories.VenueFactory(managingOfferer=offerer)
+            offerer = offerers_factories.OffererFactory()
+            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
             offer = offers_factories.ThingOfferFactory(venue=venue)
             favorite = users_factories.FavoriteFactory(offer=offer, user=other_beneficiary)
             assert Favorite.query.count() == 1

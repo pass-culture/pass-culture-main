@@ -6,6 +6,7 @@ import schwifty
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -15,76 +16,6 @@ from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 
 from . import models
-
-
-class OffererFactory(BaseFactory):
-    class Meta:
-        model = offerers_models.Offerer
-
-    name = factory.Sequence("Le Petit Rintintin Management {}".format)
-    address = "1 boulevard Poissonnière"
-    postalCode = "75000"
-    city = "Paris"
-    siren = factory.Sequence(lambda n: f"{n:09}")
-    isActive = True
-
-
-class VenueFactory(BaseFactory):
-    class Meta:
-        model = offerers_models.Venue
-
-    name = factory.Sequence("Le Petit Rintintin {}".format)
-    departementCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75")
-    latitude = 48.87004
-    longitude = 2.37850
-    managingOfferer = factory.SubFactory(OffererFactory)
-    address = factory.LazyAttribute(lambda o: None if o.isVirtual else "1 boulevard Poissonnière")
-    postalCode = factory.LazyAttribute(lambda o: None if o.isVirtual else "75000")
-    city = factory.LazyAttribute(lambda o: None if o.isVirtual else "Paris")
-    publicName = factory.SelfAttribute("name")
-    siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
-    isVirtual = False
-    venueTypeCode = offerers_models.VenueTypeCode.OTHER  # type: ignore[attr-defined]
-    venueType = factory.SubFactory(
-        "pcapi.core.offerers.factories.VenueTypeFactory", label=factory.SelfAttribute("..venueTypeCode.value")
-    )
-    description = factory.Faker("text", max_nb_chars=64)
-    audioDisabilityCompliant = False
-    mentalDisabilityCompliant = False
-    motorDisabilityCompliant = False
-    visualDisabilityCompliant = False
-    businessUnit = factory.SubFactory(
-        "pcapi.core.finance.factories.BusinessUnitFactory",
-        siret=factory.LazyAttribute(lambda bu: bu.factory_parent.siret),
-    )
-    contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
-    bookingEmail = factory.Sequence("venue{}@example.net".format)
-
-    @factory.post_generation
-    def venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        import pcapi.core.finance.factories as finance_factories
-
-        if not create:
-            return None
-        if not venue.businessUnit:
-            return None
-        return finance_factories.BusinessUnitVenueLinkFactory(venue=venue, businessUnit=venue.businessUnit)
-
-
-class VirtualVenueFactory(VenueFactory):
-    isVirtual = True
-    address = None
-    departementCode = None
-    postalCode = None
-    city = None
-    latitude = None  # type: ignore [assignment]
-    longitude = None  # type: ignore [assignment]
-    siret = None
-    audioDisabilityCompliant = False
-    mentalDisabilityCompliant = False
-    motorDisabilityCompliant = False
-    visualDisabilityCompliant = False
-    venueTypeCode = offerers_models.VenueTypeCode.DIGITAL  # type: ignore[attr-defined]
 
 
 class ProductFactory(BaseFactory):
@@ -123,7 +54,7 @@ class OfferFactory(BaseFactory):
         model = models.Offer
 
     product = factory.SubFactory(ThingProductFactory)
-    venue = factory.SubFactory(VenueFactory)
+    venue = factory.SubFactory(offerers_factories.VenueFactory)
     subcategoryId = factory.SelfAttribute("product.subcategoryId")
     name = factory.SelfAttribute("product.name")
     description = factory.SelfAttribute("product.description")
@@ -190,7 +121,7 @@ class ThingOfferFactory(OfferFactory):
 
 class DigitalOfferFactory(OfferFactory):
     product = factory.SubFactory(DigitalProductFactory)
-    venue = factory.SubFactory(VirtualVenueFactory)
+    venue = factory.SubFactory(offerers_factories.VirtualVenueFactory)
 
 
 class StockFactory(BaseFactory):
@@ -315,5 +246,5 @@ class OffererTagMappingFactory(BaseFactory):
     class Meta:
         model = offerers_models.OffererTagMapping
 
-    offerer = factory.SubFactory(OffererFactory)
+    offerer = factory.SubFactory(offerers_factories.OffererFactory)
     tag = factory.SubFactory(OffererTagFactory)

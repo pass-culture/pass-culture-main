@@ -25,7 +25,7 @@ class GetAllOfferersForUserTest:
     def should_return_all_offerers_for_an_admin(self) -> None:
         # Given
         admin = users_factories.AdminFactory()
-        offerer = offers_factories.OffererFactory()
+        offerer = offerers_factories.OffererFactory()
 
         # When
         offerers = repository.get_all_offerers_for_user(user=admin).all()
@@ -38,7 +38,7 @@ class GetAllOfferersForUserTest:
         # Given
         pro = users_factories.ProFactory()
         pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
-        other_offerer = offers_factories.OffererFactory()
+        other_offerer = offerers_factories.OffererFactory()
 
         # When
         offerers = repository.get_all_offerers_for_user(user=pro).all()
@@ -78,7 +78,7 @@ class GetAllOfferersForUserTest:
     def should_not_return_deactivated_offerers(self) -> None:
         # Given
         admin = users_factories.AdminFactory()
-        offers_factories.OffererFactory(isActive=False)
+        offerers_factories.OffererFactory(isActive=False)
 
         # When
         offerers = repository.get_all_offerers_for_user(user=admin).all()
@@ -87,8 +87,8 @@ class GetAllOfferersForUserTest:
         assert len(offerers) == 0
 
     def test_search_keywords_in_offerer_name(self):
-        offerer1 = offers_factories.OffererFactory(name="cinéma")
-        offerer2 = offers_factories.OffererFactory(name="théâtre")
+        offerer1 = offerers_factories.OffererFactory(name="cinéma")
+        offerer2 = offerers_factories.OffererFactory(name="théâtre")
         pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
         offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
@@ -97,10 +97,10 @@ class GetAllOfferersForUserTest:
         assert offerers == [offerer1]
 
     def test_search_keywords_in_venue_name(self):
-        offerer1 = offers_factories.OffererFactory(name="dummy")
-        offers_factories.VenueFactory(managingOfferer=offerer1, name="cinéma")
-        offerer2 = offers_factories.OffererFactory(name="dummy")
-        offers_factories.VenueFactory(managingOfferer=offerer2, name="théâtre")
+        offerer1 = offerers_factories.OffererFactory(name="dummy")
+        offerers_factories.VenueFactory(managingOfferer=offerer1, name="cinéma")
+        offerer2 = offerers_factories.OffererFactory(name="dummy")
+        offerers_factories.VenueFactory(managingOfferer=offerer2, name="théâtre")
         pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
 
         offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
@@ -279,32 +279,32 @@ class FilterOfferersWithKeywordsStringTest:
         offerer_with_both_venues_offer_on_virtual = offerers_factories.OffererFactory(siren="123456783")
         offerer_with_both_venues_offer_on_not_virtual = offerers_factories.OffererFactory(siren="123456784")
 
-        virtual_venue_with_offer_1 = offers_factories.VenueFactory(
+        virtual_venue_with_offer_1 = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_only_virtual_venue_with_offer, isVirtual=True, siret=None
         )
-        virtual_venue_with_offer_3 = offers_factories.VenueFactory(
+        virtual_venue_with_offer_3 = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_both_venues_offer_on_both,
             isVirtual=True,
             siret=None,
             publicName="Librairie des mots perdus",
         )
-        venue_with_offer_3 = offers_factories.VenueFactory(
+        venue_with_offer_3 = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_both_venues_offer_on_both,
             siret="12345678212345",
             publicName="Librairie des mots perdus",
         )
-        virtual_venue_with_offer_4 = offers_factories.VenueFactory(
+        virtual_venue_with_offer_4 = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_both_venues_offer_on_virtual,
             isVirtual=True,
             siret=None,
             publicName="Librairie des mots perdus",
         )
-        venue_with_offer_5 = offers_factories.VenueFactory(
+        venue_with_offer_5 = offerers_factories.VenueFactory(
             managingOfferer=offerer_with_both_venues_offer_on_not_virtual,
             siret="12345678412345",
             publicName="Librairie des mots perdus",
         )
-        offers_factories.VenueFactory(publicName="something else")
+        offerers_factories.VenueFactory(publicName="something else")
 
         offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_1, url="http://url.com")
         offers_factories.ThingOfferFactory(venue=virtual_venue_with_offer_3, url="http://url.com")
@@ -372,28 +372,28 @@ def test_filter_query_where_user_is_user_offerer_and_is_validated():
 class HasVenueWithoutDraftOrAcceptedBankInformationTest:
     def test_venue_with_accepted_bank_information(self):
         offerer = offerers_factories.OffererFactory()
-        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
 
         assert not repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
 
     def test_venue_with_draft_bank_information(self):
         offerer = offerers_factories.OffererFactory()
-        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.DRAFT)
 
         assert not repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer_id=offerer.id)
 
     def test_venues_with_rejected_and_accepted_bank_information(self):
         offerer = offerers_factories.OffererFactory()
-        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue_with_rejected_bank_information = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        venue_with_rejected_bank_information = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.BankInformationFactory(
             venue=venue_with_rejected_bank_information, status=BankInformationStatus.REJECTED
         )
-        venue_with_rejected_bank_information = offers_factories.VenueFactory(managingOfferer=offerer)
+        venue_with_rejected_bank_information = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.BankInformationFactory(
             venue=venue_with_rejected_bank_information, status=BankInformationStatus.ACCEPTED
         )
@@ -402,9 +402,9 @@ class HasVenueWithoutDraftOrAcceptedBankInformationTest:
 
     def test_venues_with_missing_and_accepted_bank_information(self):
         offerer = offerers_factories.OffererFactory()
-        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        offers_factories.VenueFactory(managingOfferer=offerer)
-        venue_with_rejected_bank_information = offers_factories.VenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue_with_rejected_bank_information = offerers_factories.VenueFactory(managingOfferer=offerer)
         offers_factories.BankInformationFactory(
             venue=venue_with_rejected_bank_information, status=BankInformationStatus.ACCEPTED
         )
@@ -415,14 +415,14 @@ class HasVenueWithoutDraftOrAcceptedBankInformationTest:
 class HasDigitalVenueWithAtLeastOneOfferTest:
     def test_digital_venue_with_offer(self):
         offerer = offerers_factories.OffererFactory()
-        digital_venue = offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        digital_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         offers_factories.DigitalOfferFactory(venue=digital_venue)
 
         assert repository.has_digital_venue_with_at_least_one_offer(offerer.id)
 
     def test_digital_venue_without_offer(self):
         offerer = offerers_factories.OffererFactory()
-        offers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
 
         assert not repository.has_digital_venue_with_at_least_one_offer(offerer.id)
 

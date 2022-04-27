@@ -10,7 +10,7 @@ def get_pro_user():  # type: ignore [no-untyped-def]
         user__validationToken=None,
         user__phoneNumber="01 00 00 00 00",
     )
-    venue = offers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+    venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offers_factories.ThingOfferFactory(venue=venue, isActive=True)
 
     return {"user": get_pro_helper(user_offerer.user)}

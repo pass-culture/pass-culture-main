@@ -4,13 +4,11 @@ from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.offerers.factories import UserOffererFactory
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import OffererFactory
 from pcapi.core.offers.factories import StockFactory
-from pcapi.core.offers.factories import VenueFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.factories import AdminFactory
@@ -27,8 +25,8 @@ def test_suspend_pros_in_given_emails_providers_list():
     fraudulent_user = ProFactory(
         email="jesuisunefraude@example.com",
     )
-    offerer = OffererFactory()
-    UserOffererFactory(user=fraudulent_user, offerer=offerer)
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=fraudulent_user, offerer=offerer)
 
     # When
     suspend_fraudulent_pro_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -45,10 +43,10 @@ def test_only_suspend_pro_users_in_given_emails_providers_list():
     pro_fraudulent_user_with_uppercase_domain = ProFactory(email="jesuisunefraude@EXAmple.com")
     pro_fraudulent_user_with_subdomain = ProFactory(email="jesuisunefraude@sub.example.com")
     beneficiary_fraudulent_user = BeneficiaryGrant18Factory(email="jesuisuneautrefraude@example.com")
-    offerer1 = OffererFactory()
-    UserOffererFactory(user=pro_fraudulent_user_with_uppercase_domain, offerer=offerer1)
-    offerer2 = OffererFactory()
-    UserOffererFactory(user=pro_fraudulent_user_with_subdomain, offerer=offerer2)
+    offerer1 = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_fraudulent_user_with_uppercase_domain, offerer=offerer1)
+    offerer2 = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro_fraudulent_user_with_subdomain, offerer=offerer2)
 
     # When
     suspend_fraudulent_pro_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -82,10 +80,10 @@ def test_suspend_pro_user_with_many_offerers_and_delete_all_offerers():
     fraudulent_user = ProFactory(
         email="jesuisunefraude@example.com",
     )
-    first_offerer = OffererFactory()
-    UserOffererFactory(user=fraudulent_user, offerer=first_offerer)
-    second_offerer = OffererFactory()
-    UserOffererFactory(user=fraudulent_user, offerer=second_offerer)
+    first_offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=fraudulent_user, offerer=first_offerer)
+    second_offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=fraudulent_user, offerer=second_offerer)
 
     suspend_fraudulent_pro_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
 
@@ -101,9 +99,9 @@ def test_delete_offerer_and_venue():
     fraudulent_user = ProFactory(
         email="jesuisunefraude@example.com",
     )
-    offerer = OffererFactory()
-    UserOffererFactory(user=fraudulent_user, offerer=offerer)
-    VenueFactory(managingOfferer=offerer)
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=fraudulent_user, offerer=offerer)
+    offerers_factories.VenueFactory(managingOfferer=offerer)
 
     # When
     suspend_fraudulent_pro_by_email_providers(fraudulent_emails_providers, admin_user, dry_run=False)
@@ -123,8 +121,8 @@ def test_cancel_bookings_when_offerer_has_one_or_more():
     fraudulent_user = ProFactory(
         email="jesuisunefraude@example.com",
     )
-    offerer_with_bookings = OffererFactory()
-    UserOffererFactory(user=fraudulent_user, offerer=offerer_with_bookings)
+    offerer_with_bookings = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=fraudulent_user, offerer=offerer_with_bookings)
     offer1 = OfferFactory(venue__managingOfferer=offerer_with_bookings)
     offer2 = OfferFactory(venue__managingOfferer=offerer_with_bookings)
     stock1 = StockFactory(offer=offer1)

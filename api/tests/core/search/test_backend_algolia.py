@@ -4,6 +4,7 @@ import pytest
 import requests_mock
 
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
 
@@ -331,7 +332,7 @@ def test_unindex_all_offers(app):
 
 def test_index_venues(app):
     backend = get_backend()
-    venue = offers_factories.VenueFactory.build()
+    venue = offerers_factories.VenueFactory.build()
     with requests_mock.Mocker() as mock:
         posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
         backend.index_venues([venue])
