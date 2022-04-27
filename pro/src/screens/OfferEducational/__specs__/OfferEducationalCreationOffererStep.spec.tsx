@@ -80,6 +80,37 @@ describe('screens | OfferEducational : creation offerer step', () => {
       ).not.toBeInTheDocument()
     })
   })
+  describe('when the offerer is not validated', () => {
+    beforeEach(() => {
+      props = {
+        ...props,
+        userOfferers: userOfferersFactory([
+          {
+            managedVenues: managedVenuesFactory([{}]),
+          },
+        ]),
+      }
+    })
+
+    it('should display specific banner instead of place and referencing banner', async () => {
+      renderEACOfferForm({ ...props, userOfferers: [] })
+      expect(
+        await screen.findByText(
+          /Vous ne pouvez pas créer d’offre collective tant que votre structure n’est pas validée./
+        )
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          /Pour proposer des offres à destination d’un groupe scolaire, vous devez renseigner un lieu pour pouvoir être remboursé./
+        )
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          /Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé/
+        )
+      ).not.toBeInTheDocument()
+    })
+  })
   describe('when there is only one managed venue associated with the offerer and offerer is eligible', () => {
     beforeEach(() => {
       props = {
