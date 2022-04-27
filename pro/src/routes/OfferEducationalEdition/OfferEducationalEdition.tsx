@@ -26,6 +26,7 @@ import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducationa
 import getCollectiveOfferAdapter from './adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from './adapters/getCollectiveOfferTemplateAdapter'
 import getOfferAdapter from './adapters/getOfferAdapter'
+import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
 import patchOfferAdapter from './adapters/patchOfferAdapter'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 
@@ -42,6 +43,7 @@ const OfferEducationalEdition = (): JSX.Element => {
   const enableIndividualAndCollectiveSeparation = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
+  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -54,10 +56,16 @@ const OfferEducationalEdition = (): JSX.Element => {
   const notify = useNotification()
 
   const editOffer = async (offerFormValues: IOfferEducationalFormValues) => {
-    const patchOfferId = enableIndividualAndCollectiveSeparation
-      ? (offer as CollectiveOffer).offerId || ''
-      : offerId
-    const offerResponse = await patchOfferAdapter({
+    let patchOfferId = offerId
+
+    if (enableIndividualAndCollectiveSeparation && !isNewModelEnabled) {
+      patchOfferId = (offer as CollectiveOffer).offerId || ''
+    }
+
+    const patchAdapter = isNewModelEnabled
+      ? patchCollectiveOfferAdapter
+      : patchOfferAdapter
+    const offerResponse = await patchAdapter({
       offerId: patchOfferId,
       offer: offerFormValues,
       initialValues,
