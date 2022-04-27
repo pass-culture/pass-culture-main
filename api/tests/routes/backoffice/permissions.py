@@ -220,3 +220,114 @@ class NewRoleTest:
 
         # then
         assert response.status_code == 401
+
+
+class UpdateRoleTest:
+    def test_can_update_role_with_permissions_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        user = UserFactory()
+        permissions = (PermissionFactory(), PermissionFactory())
+        existing_role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
+        new_role_data = {"name": "updated_role", "permissionIds": [p.id for p in permissions]}
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).put(
+                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+                json=new_role_data,
+            )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["name"] == new_role_data["name"]
+        assert {p["id"] for p in response.json["permissions"]} == set(new_role_data["permissionIds"])
+        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        assert new_role_query.count() == 1
+        inserted_role = new_role_query[0]
+        assert inserted_role.name == new_role_data["name"]
+        assert set(inserted_role.permissions) == set(permissions)
+
+    def test_can_update_role_with_empty_permissions_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        user = UserFactory()
+        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+        new_role_data = {"name": "updated_role", "permissionIds": []}
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).put(
+                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+                json=new_role_data,
+            )
+
+        # then
+        assert response.status_code == 200
+        assert response.json["name"] == new_role_data["name"]
+        assert response.json["permissions"] == []
+        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        assert new_role_query.count() == 1
+        inserted_role = new_role_query[0]
+        assert inserted_role.name == new_role_data["name"]
+        assert inserted_role.permissions == []
+
+    def test_cannot_update_role_with_empty_name_as_admin(self, client):
+        # given
+        admin_role = create_admin_role()
+        user = UserFactory()
+        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+        new_role_data = {"name": "", "permissionIds": []}
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).put(
+                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+                json=new_role_data,
+            )
+
+        # then
+        assert response.status_code == 400
+
+    def test_cannot_update_role_as_non_admin(self, client):
+        # given
+        create_admin_role()
+        non_admin_role = RoleFactory(name="not_admin")
+        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+        user = UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [non_admin_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).put(
+                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+                json={"name": "should not work", "permissionsIds": []},
+            )
+
+        # then
+        assert response.status_code == 403
+
+    def test_cannot_update_role_as_anonymous(self, client):
+        # given
+        create_admin_role()
+        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+
+        # when
+        response = client.put(
+            url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+            json={"name": "should not work", "permissionsIds": []},
+        )
+
+        # then
+        assert response.status_code == 401
