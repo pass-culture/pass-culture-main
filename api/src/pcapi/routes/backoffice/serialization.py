@@ -37,6 +37,6 @@ class ListPermissionResponseModel(BaseModel):
     permissions: list[Permission]
 
 
-class NewRoleRequestModel(BaseModel):
+class RoleRequestModel(BaseModel):
     name: str = pydantic.Field(..., min_length=1)
     permissionIds: list[int]
