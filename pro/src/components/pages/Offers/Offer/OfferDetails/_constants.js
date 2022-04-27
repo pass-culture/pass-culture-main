@@ -52,11 +52,7 @@ export const BASE_OFFER_FIELDS = [
 export const EDITED_OFFER_READ_ONLY_FIELDS = [
   'categoryId',
   'subcategoryId',
-  'musicType',
-  'musicSubType',
   'offererId',
-  'showType',
-  'showSubType',
   'venueId',
 ]
 export const EXTRA_DATA_FIELDS = [
