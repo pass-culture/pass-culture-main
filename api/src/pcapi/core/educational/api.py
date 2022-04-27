@@ -634,7 +634,6 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
         if stock_data.get("price"):
             collective_stock_unique_booking.amount = stock_data.get("price")
 
-        # db.session.add(collective_stock_unique_booking)
     validation.check_collective_stock_is_editable(stock)
 
     with transaction():
@@ -646,9 +645,6 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
         db.session.commit()
 
     logger.info("Stock has been updated", extra={"stock": stock.id})
-
-    # FIXME (rpaoloni, 2022-03-09): Uncomment for when pc-13428 is merged
-    # search.async_index_offer_ids([stock.collectiveOfferId])
 
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         notify_educational_redactor_on_collective_offer_or_stock_edit(
