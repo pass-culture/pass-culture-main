@@ -3,6 +3,7 @@ import enum
 import typing
 
 import pydantic
+import pytz
 
 
 class DmsApplicationStates(enum.Enum):
@@ -87,6 +88,22 @@ class ApplicationPageInfo(pydantic.BaseModel):
     has_next_page: bool = pydantic.Field(alias="hasNextPage")
 
 
+class DMSMessage(pydantic.BaseModel):
+    """https://demarches-simplifiees-graphql.netlify.app/message.doc.html"""
+
+    created_at: datetime.datetime = pydantic.Field(alias="createdAt")
+    email: str
+
+    class Config:
+        allow_population_by_field_name = True
+
+    @pydantic.validator("created_at")
+    def validate_created_at(  # pylint: disable=no-self-argument
+        cls: typing.Any, value: datetime.datetime
+    ) -> datetime.datetime:
+        return value.astimezone(pytz.utc).replace(tzinfo=None)
+
+
 class DmsApplicationResponse(pydantic.BaseModel):
     """Response from DMS API.
     https://demarches-simplifiees-graphql.netlify.app/dossier.doc.html
@@ -99,6 +116,7 @@ class DmsApplicationResponse(pydantic.BaseModel):
     filing_date: datetime.datetime = pydantic.Field(alias="dateDepot")
     id: str
     latest_modification_date: datetime.datetime = pydantic.Field(alias="dateDerniereModification")
+    messages: list[DMSMessage]
     number: int
     on_going_date: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="datePassageEnInstruction")
     profile: Profile = pydantic.Field(alias="usager")
