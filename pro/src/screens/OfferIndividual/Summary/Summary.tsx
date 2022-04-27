@@ -3,26 +3,21 @@ import { useHistory } from 'react-router-dom'
 
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
-import { CREATION_STEP_PATTERNS } from 'screens/OfferIndividual/constants'
 
 import { ActionBar } from '../ActionBar'
-import { OFFER_FORM_STEP_IDS } from '../constants'
-import { buildStepList } from '../utils'
+import { fakeOffer, OFFER_FORM_STEP_IDS } from '../constants'
+import { getStepsOffer } from '../utils/steps'
 
 const Summary = (): JSX.Element => {
   const history = useHistory()
-  const stepList = buildStepList({ stepPatternList: CREATION_STEP_PATTERNS })
+  const { stepList } = getStepsOffer(fakeOffer)
   const handleNextStep = () => {
     // TODO get offerId from url query string
-    const testCreatedOfferId = 'AL4Q'
-    history.push(
-      `/offre/${testCreatedOfferId}/v3/creation/individuelle/confirmation`
-    )
+    history.push(`/offre/${fakeOffer.id}/v3/creation/individuelle/confirmation`)
   }
   const handlePreviousStep = () => {
     // TODO get offerId from url query string
-    const testCreatedOfferId = 'AL4Q'
-    history.push(`/offre/${testCreatedOfferId}/v3/creation/individuelle/stocks`)
+    history.push(`/offre/${fakeOffer.id}/v3/creation/individuelle/stocks`)
   }
 
   return (
