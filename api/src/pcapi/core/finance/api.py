@@ -260,9 +260,9 @@ def lock_business_unit(business_unit_id: int):  # type: ignore [no-untyped-def]
 
     The lock is automatically released at the end of the transaction.
     """
-    logger.info("Acquiring lock on business unit", extra={"business_unit": business_unit_id})
-    models.BusinessUnit.query.with_for_update(nowait=False).get(business_unit_id)
-    logger.info("Acquired lock on business unit", extra={"business_unit": business_unit_id})
+    log_extra = {"business_unit": business_unit_id}
+    with log_elapsed(logger, "Acquired lock on business unit", log_extra):
+        models.BusinessUnit.query.with_for_update(nowait=False).get(business_unit_id)
 
 
 def get_non_cancelled_pricing_from_booking(
