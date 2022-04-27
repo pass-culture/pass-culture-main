@@ -215,7 +215,9 @@ const OfferForm = ({
     }
     if (offerSubCategory?.conditionalFields.includes('musicType')) {
       mandatoryFields.push('musicType')
-      mandatoryFields.push('musicSubType')
+    }
+    if (offerSubCategory?.conditionalFields.includes('showType')) {
+      mandatoryFields.push('showType')
     }
     if (
       WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)

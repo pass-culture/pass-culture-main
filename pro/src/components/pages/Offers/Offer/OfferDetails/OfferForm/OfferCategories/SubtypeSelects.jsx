@@ -119,6 +119,7 @@ export const SubtypeSelects = ({
               displayName: 'Choisir un type de spectacle',
               id: DEFAULT_FORM_VALUES.showType,
             }}
+            error={getErrorMessage('showType')}
             handleSelection={handleSelection}
             isDisabled={readOnlyFields.includes('showType')}
             label="Type de spectacle"
@@ -128,7 +129,6 @@ export const SubtypeSelects = ({
             selectedValue={
               categoriesFormValues.showType || DEFAULT_FORM_VALUES.showType
             }
-            subLabel="Optionnel"
           />
         </div>
       )}
@@ -140,6 +140,7 @@ export const SubtypeSelects = ({
               displayName: 'Choisir un sous type',
               id: DEFAULT_FORM_VALUES.showSubType,
             }}
+            error={getErrorMessage('showSubType')}
             handleSelection={handleSelection}
             isDisabled={readOnlyFields.includes('showSubType')}
             label="Sous type"
@@ -150,7 +151,6 @@ export const SubtypeSelects = ({
               categoriesFormValues.showSubType ||
               DEFAULT_FORM_VALUES.showSubType
             }
-            sublabel="Optionnel"
           />
         </div>
       )}
