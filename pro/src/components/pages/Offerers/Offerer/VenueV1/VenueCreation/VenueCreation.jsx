@@ -2,13 +2,23 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
-import { NavLink } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { NavLink, useHistory, useLocation, useParams } from 'react-router-dom'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { unhumanizeSiret } from 'core/Venue/utils'
+import {
+  createVenue,
+  getOfferer,
+  getVenueLabels,
+  getVenueTypes,
+} from 'repository/pcapi/pcapi'
+import { showNotification } from 'store/reducers/notificationReducer'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
@@ -27,22 +37,53 @@ import LocationFields, {
   FRANCE_POSITION,
 } from '../fields/LocationFields'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
+import NotificationMessage from '../Notification'
+import { formatVenuePayload } from '../utils/formatVenuePayload'
+import VenueLabel from '../ValueObjects/VenueLabel'
+import VenueType from '../ValueObjects/VenueType'
 
+/* eslint-disable */
+const withRouter = Component => {
+  return props => (
+    <Component
+      {...props}
+      currentUser={useSelector(state => selectCurrentUser(state))}
+      dispatch={useDispatch()}
+      history={useHistory()}
+      isBankInformationWithSiretActive={useActiveFeature(
+        'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+      )}
+      isEntrepriseApiDisabled={useActiveFeature('DISABLE_ENTERPRISE_API')}
+      location={useLocation()}
+      params={useParams()}
+    />
+  )
+}
+/* eslint-enable */
+
+// TO FIX:: the above component is temporary, in order to
+// allow react-router upgrade before the below component is refactored as function component
+// eslint-disable-next-line react/no-multi-comp
 class VenueCreation extends PureComponent {
-  constructor() {
+  constructor(props) {
     super()
+    const { offererId } = props.params
     this.state = {
       isReady: false,
       offerer: null,
       venueTypes: null,
       venueLabels: null,
+      formInitialValues: {
+        managingOffererId: offererId,
+        bookingEmail: props.currentUser.email,
+      },
+      isBankInformationWithSiretActive: props.isBankInformationWithSiretActive,
+      isEntrepriseApiDisabled: props.isEntrepriseApiDisabled,
     }
   }
 
   componentDidMount() {
-    const { handleInitialRequest } = this.props
-
-    handleInitialRequest().then(({ offerer, venueTypes, venueLabels }) => {
+    this.handleInitialRequest().then(({ offerer, venueTypes, venueLabels }) => {
       this.setState({
         isReady: true,
         offerer,
@@ -52,22 +93,77 @@ class VenueCreation extends PureComponent {
     })
   }
 
+  async handleInitialRequest() {
+    const offererRequest = getOfferer(
+      this.state.formInitialValues.managingOffererId
+    )
+    const venueTypesRequest = getVenueTypes().then(venueTypes => {
+      return venueTypes.map(type => new VenueType(type))
+    })
+    const venueLabelsRequest = getVenueLabels().then(labels => {
+      return labels.map(label => new VenueLabel(label))
+    })
+    const [offerer, venueTypes, venueLabels] = await Promise.all([
+      offererRequest,
+      venueTypesRequest,
+      venueLabelsRequest,
+    ])
+    return {
+      offerer,
+      venueTypes,
+      venueLabels,
+    }
+  }
+
+  async handleSubmitRequest({ formValues, handleFail, handleSuccess }) {
+    const body = formatVenuePayload(formValues, true)
+    try {
+      const response = await createVenue(body)
+      handleSuccess(response)
+    } catch (responseError) {
+      handleFail(responseError)
+    }
+  }
+
+  handleSubmitFailNotification(errors) {
+    let text = 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+    if (errors.global) {
+      text = `${text} ${errors.global[0]}`
+    }
+
+    this.props.dispatch(
+      showNotification({
+        text,
+        type: 'error',
+      })
+    )
+  }
+
+  handleSubmitSuccessNotification(payload) {
+    const { offererId } = this.props.params
+    const notificationMessageProps = {
+      venueId: payload.id,
+      offererId,
+    }
+
+    this.props.dispatch(
+      showNotification({
+        text: <NotificationMessage {...notificationMessageProps} />,
+        type: 'success',
+      })
+    )
+  }
+
   handleFormFail = formResolver => payload => {
-    const { handleSubmitFailNotification } = this.props
     const errors = parseSubmitErrors(payload.errors)
-    handleSubmitFailNotification(payload.errors)
+    this.handleSubmitFailNotification(payload.errors)
     formResolver(errors)
   }
 
   handleFormSuccess = formResolver => payload => {
-    const {
-      handleSubmitSuccessNotification,
-      history,
-      match: {
-        params: { offererId },
-      },
-    } = this.props
-    handleSubmitSuccessNotification(payload)
+    const { history, params } = this.props
+    const { offererId } = params
+    this.handleSubmitSuccessNotification(payload)
     formResolver()
 
     const next = `/accueil?structure=${offererId}`
@@ -75,9 +171,8 @@ class VenueCreation extends PureComponent {
   }
 
   handleOnFormSubmit = formValues => {
-    const { handleSubmitRequest } = this.props
     return new Promise(formResolver => {
-      handleSubmitRequest({
+      this.handleSubmitRequest({
         formValues,
         handleFail: this.handleFormFail(formResolver),
         handleSuccess: this.handleFormSuccess(formResolver),
@@ -86,14 +181,14 @@ class VenueCreation extends PureComponent {
   }
 
   onHandleRender = formProps => {
+    const { history, params } = this.props
+    const { offererId } = params
     const {
-      history,
-      match: {
-        params: { offererId },
-      },
       isBankInformationWithSiretActive,
-    } = this.props
-    const { venueTypes, venueLabels, offerer } = this.state
+      venueTypes,
+      venueLabels,
+      offerer,
+    } = this.state
     const readOnly = false
     const canSubmit = getCanSubmit(formProps)
     const { form, handleSubmit, values } = formProps
@@ -162,13 +257,8 @@ class VenueCreation extends PureComponent {
   }
 
   render() {
-    const {
-      formInitialValues,
-      match: {
-        params: { offererId },
-      },
-      isEntrepriseApiDisabled,
-    } = this.props
+    const { location } = this.props
+    const queryParams = new URLSearchParams(location.search)
     const { isReady } = this.state
 
     const decorators = [
@@ -176,7 +266,7 @@ class VenueCreation extends PureComponent {
       bindGetSuggestionsToLatitude,
       bindGetSuggestionsToLongitude,
     ]
-    if (!isEntrepriseApiDisabled) {
+    if (!this.state.isEntrepriseApiDisabled) {
       decorators.push(bindGetSiretInformationToSiret)
     }
 
@@ -184,7 +274,7 @@ class VenueCreation extends PureComponent {
       <div className="venue-page">
         <NavLink
           className="back-button has-text-primary"
-          to={`/accueil?structure=${offererId}`}
+          to={`/accueil?structure=${queryParams.get('offererId')}`}
         >
           <Icon svg="ico-back" />
           Accueil
@@ -198,7 +288,7 @@ class VenueCreation extends PureComponent {
         {isReady && (
           <Form
             decorators={decorators}
-            initialValues={formInitialValues}
+            initialValues={this.state.formInitialValues}
             name="venue"
             onSubmit={this.handleOnFormSubmit}
             render={this.onHandleRender}
@@ -210,15 +300,14 @@ class VenueCreation extends PureComponent {
 }
 
 VenueCreation.propTypes = {
+  currentUser: PropTypes.shape().isRequired,
+  dispatch: PropTypes.func.isRequired,
   formInitialValues: PropTypes.shape().isRequired,
-  handleInitialRequest: PropTypes.func.isRequired,
-  handleSubmitFailNotification: PropTypes.func.isRequired,
-  handleSubmitRequest: PropTypes.func.isRequired,
-  handleSubmitSuccessNotification: PropTypes.func.isRequired,
   history: PropTypes.shape().isRequired,
   isBankInformationWithSiretActive: PropTypes.bool.isRequired,
   isEntrepriseApiDisabled: PropTypes.bool.isRequired,
-  match: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
+  params: PropTypes.shape().isRequired,
 }
 
-export default VenueCreation
+export default withRouter(VenueCreation)

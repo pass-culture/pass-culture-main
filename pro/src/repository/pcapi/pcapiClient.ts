@@ -33,20 +33,24 @@ const buildUrl = path => `${API_URL}${path}`
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'path' implicitly has an 'any' type.
 const fetchWithErrorHandler = async (path, options) => {
-  const response = await fetch(buildUrl(path), options)
-  const results = NOT_JSON_BODY_RESPONSE_STATUS.includes(response.status)
-    ? null
-    : await response.json()
-  if (!response.ok) {
-    if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
-      // @ts-expect-error ts-migrate(2322) FIXME: Type 'string | undefined' is not assignable to typ... Remove this comment to see the full error message
-      window.location.href = URL_FOR_MAINTENANCE
+  try {
+    const response = await fetch(buildUrl(path), options)
+    const results = NOT_JSON_BODY_RESPONSE_STATUS.includes(response.status)
+      ? null
+      : await response.json()
+    if (!response.ok) {
+      if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
+        // @ts-expect-error ts-migrate(2322) FIXME: Type 'string | undefined' is not assignable to typ... Remove this comment to see the full error message
+        window.location.href = URL_FOR_MAINTENANCE
+      }
+      return Promise.reject(
+        results ? { errors: results, status: response.status } : null
+      )
     }
-    return Promise.reject(
-      results ? { errors: results, status: response.status } : null
-    )
+    return Promise.resolve(results)
+  } catch (err) {
+    return Promise.reject(null)
   }
-  return Promise.resolve(results)
 }
 
 export const client = {

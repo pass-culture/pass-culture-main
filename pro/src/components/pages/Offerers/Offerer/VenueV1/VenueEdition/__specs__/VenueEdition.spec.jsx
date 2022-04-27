@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom'
 import {
-  act,
   fireEvent,
   render,
   screen,
@@ -8,10 +7,10 @@ import {
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
+import * as reactRouter from 'react-router-dom'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as usersSelectors from 'store/selectors/data/usersSelectors'
@@ -26,6 +25,14 @@ jest.mock('../../fields/LocationFields/utils/fetchAddressData', () => ({
   fetchAddressData: jest.fn(),
 }))
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({
+    offererId: 'BQ',
+    venueId: 'AQ',
+  }),
+}))
+
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),
   getBusinessUnits: jest.fn().mockResolvedValue([]),
@@ -33,6 +40,9 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadVenueProviders: jest.fn().mockResolvedValue([]),
   getOfferer: jest.fn().mockResolvedValue([]),
   getVenue: jest.fn().mockResolvedValue([]),
+  getVenueTypes: jest.fn().mockResolvedValue([]),
+  getVenueLabels: jest.fn().mockResolvedValue([]),
+  editVenue: jest.fn(),
 }))
 
 jest.mock('utils/config', () => ({
@@ -42,25 +52,18 @@ jest.mock('utils/config', () => ({
 const renderVenueEdition = async ({
   props,
   storeOverrides = {},
-  url = '/structures/AE/lieux/AQ?modification',
-  waitFormRender = true,
+  waitFormRender,
 }) => {
   const store = configureTestStore(storeOverrides)
-  const history = createBrowserHistory()
-  history.push(url)
 
-  let rtlRenderReturn
-  await act(async () => {
-    rtlRenderReturn = await render(
-      <Provider store={store}>
-        <Router history={history}>
-          <VenueEditon {...props} />
-        </Router>
-      </Provider>
-    )
-  })
+  let rtlRenderReturn = render(
+    <Provider store={store}>
+      <reactRouter.BrowserRouter>
+        <VenueEditon {...props} />
+      </reactRouter.BrowserRouter>
+    </Provider>
+  )
 
-  screen.queryByText('Importation d’offres')
   waitFormRender && (await screen.findByTestId('venue-edition-form'))
 
   const spinner = screen.queryByTestId('spinner')
@@ -69,16 +72,14 @@ const renderVenueEdition = async ({
   }
 
   return {
-    history,
     rtlRenderReturn,
   }
 }
 
 describe('test page : VenueEdition', () => {
-  let push
-  let props
+  let props = {}
 
-  const defaultVenue = {
+  const venue = {
     noDisabilityCompliant: false,
     isAccessibilityAppliedOnAllOffers: true,
     audioDisabilityCompliant: true,
@@ -113,7 +114,6 @@ describe('test page : VenueEdition', () => {
       phoneNumber: '+33102030405',
     },
   }
-  let venue = { ...defaultVenue }
   let offerer = {
     id: 'BQ',
     name: 'Maison du chocolat',
@@ -127,38 +127,10 @@ describe('test page : VenueEdition', () => {
   const venueLabels = []
 
   beforeEach(() => {
-    push = jest.fn()
-    props = {
-      history: {
-        location: {
-          pathname: '/fake',
-        },
-        push: push,
-      },
-      handleInitialRequest: jest.fn().mockResolvedValue({
-        offerer,
-        venue,
-        venueTypes,
-        venueLabels,
-      }),
-      handleSubmitRequest: jest.fn(),
-      handleSubmitRequestSuccess: jest.fn(),
-      handleSubmitRequestFail: jest.fn(),
-      match: {
-        params: {
-          offererId: 'APEQ',
-          venueId: 'AQYQ',
-        },
-      },
-      query: {
-        changeToReadOnly: jest.fn(),
-        context: jest.fn().mockReturnValue({
-          isCreatedEntity: true,
-          isModifiedEntity: false,
-          readOnly: false,
-        }),
-      },
-    }
+    pcapi.getOfferer.mockResolvedValue(offerer)
+    pcapi.getVenue.mockResolvedValue(venue)
+    pcapi.getVenueTypes.mockResolvedValue(venueTypes)
+    pcapi.getVenueLabels.mockResolvedValue(venueLabels)
 
     pcapi.getOfferer.mockResolvedValue(offerer)
     pcapi.getVenue.mockResolvedValue(venue)
@@ -169,10 +141,11 @@ describe('test page : VenueEdition', () => {
       },
     ])
     pcapi.getBusinessUnits.mockResolvedValue([{}])
-  })
-
-  afterEach(() => {
-    venue = { ...defaultVenue }
+    window.history.pushState(
+      {},
+      'Test page',
+      '/structures/AE/lieux/AE?modification'
+    )
   })
 
   describe('render', () => {
@@ -185,13 +158,13 @@ describe('test page : VenueEdition', () => {
         screen.queryByRole('link', { name: 'Terminer' })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: 'Valider' })
+        await screen.findByRole('button', { name: 'Valider' })
       ).toBeInTheDocument()
     })
 
     it('should not render a Form when venue is virtual', async () => {
       // given
-      venue.isVirtual = true
+      pcapi.getVenue.mockResolvedValue({ ...venue, isVirtual: true })
 
       // when
       await renderVenueEdition({ props, waitFormRender: false })
@@ -208,8 +181,11 @@ describe('test page : VenueEdition', () => {
 
     it('should render readonly form when venue is virtual and feature flag active', async () => {
       // given
-      venue.isVirtual = true
-      venue.businessUnit = null
+      pcapi.getVenue.mockResolvedValue({
+        ...venue,
+        isVirtual: true,
+        businessUnit: true,
+      })
       const storeOverrides = {
         features: {
           list: [
@@ -221,7 +197,7 @@ describe('test page : VenueEdition', () => {
       // when
       await renderVenueEdition({ props, storeOverrides })
 
-      expect(screen.getByText('Informations lieu')).toBeInTheDocument()
+      expect(await screen.findByText('Informations lieu')).toBeInTheDocument()
       await expect(
         screen.findByText('Coordonnées bancaires du lieu')
       ).resolves.toBeInTheDocument()
@@ -259,9 +235,6 @@ describe('test page : VenueEdition', () => {
           venueId: 'AQYQ',
         },
       }
-      props.query.context = () => ({
-        readOnly: false,
-      })
     })
 
     it('should display contact fields', async () => {
@@ -304,7 +277,6 @@ describe('test page : VenueEdition', () => {
       screen.getByText('Valider').click()
 
       const expectedRequestParams = {
-        ...venue,
         contact: {
           email: contactInfos.email,
           phoneNumber: contactInfos.phoneNumber,
@@ -313,8 +285,9 @@ describe('test page : VenueEdition', () => {
       }
 
       await waitFor(() => {
-        expect(props.handleSubmitRequest).toHaveBeenCalledWith(
-          expect.objectContaining({ formValues: expectedRequestParams })
+        expect(pcapi.editVenue).toHaveBeenCalledWith(
+          'AQ',
+          expect.objectContaining(expectedRequestParams)
         )
       })
     })
@@ -328,7 +301,7 @@ describe('test page : VenueEdition', () => {
         screen.queryByRole('link', { name: 'Terminer' })
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByRole('button', { name: 'Valider' })
+        await screen.findByRole('button', { name: 'Valider' })
       ).toBeInTheDocument()
     })
 
@@ -338,21 +311,21 @@ describe('test page : VenueEdition', () => {
         .spyOn(usersSelectors, 'selectCurrentUser')
         .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
-      venue.siret = null
+      pcapi.getVenue.mockResolvedValue({
+        ...venue,
+        siret: null,
+      })
 
       await renderVenueEdition({ props })
-      const addressInput = screen.getByLabelText('Numéro et voie :', {
-        exact: false,
+      const addressInput = await screen.findByLabelText(/Numéro et voie :/)
+      fireEvent.change(addressInput, {
+        target: { value: 'Addresse de test' },
       })
-      await act(
-        async () =>
-          await fireEvent.change(addressInput, {
-            target: { value: 'Addresse de test' },
-          })
-      )
 
       // then
-      expect(screen.getByDisplayValue('Addresse de test')).toBeInTheDocument()
+      expect(
+        await screen.findByDisplayValue('Addresse de test')
+      ).toBeInTheDocument()
     })
 
     it('should show apply booking checkbox on all existing offers when booking email field is edited', async () => {
@@ -361,40 +334,42 @@ describe('test page : VenueEdition', () => {
         .spyOn(usersSelectors, 'selectCurrentUser')
         .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
-      const getApplyEmailBookingOnAllOffersLabel = () =>
-        screen.queryByText(
-          'Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu.',
-          { exact: false }
-        )
-
       // when
       await renderVenueEdition({ props })
 
       // then
-      expect(getApplyEmailBookingOnAllOffersLabel()).not.toBeInTheDocument()
+      expect(
+        screen.queryByText(
+          /Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu./
+        )
+      ).not.toBeInTheDocument()
 
-      const informationsNode = screen.getByText('Informations lieu').parentNode
-      const emailBookingField = within(informationsNode).getByLabelText(
+      const informationsNode = await (
+        await screen.findByText('Informations lieu')
+      ).parentNode
+
+      // console.log(informationsNode)
+      const emailBookingField = await within(informationsNode).findByLabelText(
         'Mail :',
         {
           exact: false,
         }
       )
       // react-final-form interactions need to be wrap into a act()
-      await act(
-        async () =>
-          await fireEvent.change(emailBookingField, {
-            target: { value: 'newbookingemail@example.com' },
-          })
-      )
-      expect(getApplyEmailBookingOnAllOffersLabel()).toBeInTheDocument()
+      fireEvent.change(emailBookingField, {
+        target: { value: 'newbookingemail@example.com' },
+      })
+
+      expect(
+        await screen.findByText(
+          /Utiliser cet email pour me notifier des réservations de toutes les offres déjà postées dans ce lieu./
+        )
+      ).toBeInTheDocument()
     })
 
     it('should reset url search params and and track venue modification.', async () => {
       // jest
-      props.handleSubmitRequest.mockImplementation(({ handleSuccess }) => {
-        handleSuccess(jest.fn(), false)()
-      })
+      pcapi.editVenue.mockResolvedValue(true)
 
       // when
       await renderVenueEdition({ props })
@@ -402,10 +377,10 @@ describe('test page : VenueEdition', () => {
       fireEvent.change(await screen.findByLabelText('Téléphone :'), {
         target: { value: '0101010101' },
       })
-      fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+      await userEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
       await waitFor(() => {
-        expect(props.query.changeToReadOnly).toHaveBeenCalledWith(null)
+        expect(window.location.href).not.toContain('modification')
       })
     })
 
@@ -442,90 +417,107 @@ describe('test page : VenueEdition', () => {
         await renderVenueEdition({ props, storeOverrides })
 
         // When
-        await act(async () =>
-          fireEvent.change(
-            await screen.findByLabelText(
-              'Coordonnées bancaires pour vos remboursements :'
-            ),
-            { target: { value: 21 } }
-          )
+
+        fireEvent.change(
+          await screen.findByLabelText(
+            'Coordonnées bancaires pour vos remboursements :'
+          ),
+          { target: { value: 21 } }
         )
 
-        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+        await userEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
         // Then
-        const expectedRequestParams = {
-          ...venue,
-          businessUnitId: '21',
-        }
 
-        expect(props.handleSubmitRequest).toHaveBeenCalledWith(
-          expect.objectContaining({ formValues: expectedRequestParams })
+        await waitFor(() =>
+          expect(pcapi.editVenue).toHaveBeenCalledWith(
+            'AQ',
+            expect.objectContaining({
+              address: venue.address,
+              businessUnitId: '21',
+            })
+          )
         )
       })
 
       it('should display confirmation dialog when edit business unit main venue', async () => {
         // Given
-        venue.isBusinessUnitMainVenue = true
+        pcapi.getVenue.mockResolvedValue({
+          ...venue,
+          isBusinessUnitMainVenue: true,
+        })
 
         await renderVenueEdition({ props, storeOverrides })
 
         // When
-        await act(async () =>
-          fireEvent.change(
-            await screen.findByLabelText(
-              'Coordonnées bancaires pour vos remboursements :'
-            ),
-            { target: { value: 21 } }
-          )
+
+        fireEvent.change(
+          await screen.findByLabelText(
+            'Coordonnées bancaires pour vos remboursements :'
+          ),
+          { target: { value: 21 } }
         )
 
-        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+        await userEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
         // Then
-        expect(props.handleSubmitRequest).not.toHaveBeenCalled()
+        expect(pcapi.editVenue).not.toHaveBeenCalled()
 
         expect(
-          screen.getByText(
+          await screen.findByText(
             'Vous allez modifier les coordonnées bancaires associées à ce lieu'
           )
         ).toBeInTheDocument()
-        fireEvent.click(screen.getByRole('button', { name: 'Continuer' }))
-        expect(props.handleSubmitRequest).toHaveBeenCalledTimes(1)
+        await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+        expect(pcapi.editVenue).toHaveBeenCalledTimes(1)
       })
 
       it('should not submit data when cancel edition of business unit main venue', async () => {
         // Given
-        venue.isBusinessUnitMainVenue = true
-
+        pcapi.getBusinessUnits.mockResolvedValue([
+          {
+            id: 20,
+            iban: 'FR0000000000000002',
+            name: 'Business unit #1',
+            siret: '22222222311111',
+          },
+          {
+            id: 21,
+            iban: 'FR0000000000000003',
+            name: 'Business unit #2',
+            siret: '22222222311222',
+          },
+        ])
+        pcapi.getVenue.mockResolvedValue({
+          ...venue,
+          isBusinessUnitMainVenue: true,
+        })
         await renderVenueEdition({ props, storeOverrides })
 
         // When
-        await act(async () =>
-          fireEvent.change(
-            await screen.findByLabelText(
-              'Coordonnées bancaires pour vos remboursements :'
-            ),
-            { target: { value: 21 } }
-          )
+
+        fireEvent.change(
+          await screen.findByLabelText(
+            'Coordonnées bancaires pour vos remboursements :'
+          ),
+          { target: { value: 21 } }
         )
 
-        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+        await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
         expect(
-          screen.getByText(
+          await screen.findByText(
             'Vous allez modifier les coordonnées bancaires associées à ce lieu'
           )
         ).toBeInTheDocument()
 
-        fireEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+        await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
 
         // Then
-        expect(props.handleSubmitRequest).not.toHaveBeenCalled()
+        expect(pcapi.editVenue).not.toHaveBeenCalled()
       })
 
       it('should not display confirmation dialog when edit business unit not main venue', async () => {
         // Given
-        venue.isBusinessUnitMainVenue = false
         await renderVenueEdition({ props, storeOverrides })
 
         const bankSelect = await screen.findByLabelText(
@@ -534,19 +526,17 @@ describe('test page : VenueEdition', () => {
 
         // When
         fireEvent.change(bankSelect, { target: { value: 21 } })
-        fireEvent.click(screen.queryByRole('button', { name: 'Valider' }))
+        await userEvent.click(screen.queryByRole('button', { name: 'Valider' }))
 
         // Then
         await waitFor(() => {
-          expect(props.handleSubmitRequest).toHaveBeenCalledTimes(1)
+          expect(pcapi.editVenue).toHaveBeenCalledTimes(1)
         })
       })
     })
 
     describe('image uploader', () => {
       it('hides when venue is not permanent', async () => {
-        venue.isPermanent = false
-
         await renderVenueEdition({ props })
 
         expect(
@@ -555,28 +545,23 @@ describe('test page : VenueEdition', () => {
       })
 
       it('displays when feature flag is enabled and venue is permanent', async () => {
-        venue.isPermanent = true
-
+        pcapi.getVenue.mockResolvedValue({
+          ...venue,
+          isPermanent: true,
+        })
         await renderVenueEdition({ props })
 
         expect(
-          screen.queryByTestId('image-venue-uploader-section')
+          await screen.findByTestId('image-venue-uploader-section')
         ).toBeInTheDocument()
       })
     })
   })
 
   describe('when reading', () => {
-    beforeEach(() => {
-      props.query.context = () => ({
-        isCreatedEntity: false,
-        isModifiedEntity: false,
-        readOnly: true,
-      })
-    })
-
     it('should display disabled contact fields', async () => {
-      await renderVenueEdition({ props })
+      window.history.pushState({}, 'Test page', '/structures/AE/lieux/AE')
+      await renderVenueEdition({})
       const { contactPhoneNumber, contactMail, contactUrl } =
         await getContactInputs()
 
@@ -594,13 +579,14 @@ describe('test page : VenueEdition', () => {
     })
 
     it('should render component with correct state values', async () => {
+      window.history.pushState({}, 'Test page', '/structures/AE/lieux/AE')
       // when
-      await renderVenueEdition({ props })
+      await renderVenueEdition({})
 
       // then
       // todo: check submit button state
       expect(
-        screen.queryByRole('link', { name: 'Terminer' })
+        await screen.findByRole('link', { name: 'Terminer' })
       ).toBeInTheDocument()
       expect(
         screen.queryByRole('button', { name: 'Valider' })
@@ -609,26 +595,18 @@ describe('test page : VenueEdition', () => {
 
     describe('create new offer link', () => {
       it('should redirect to offer creation page', async () => {
+        pcapi.getVenue.mockResolvedValue({ ...venue, id: 'CM' })
+        window.history.pushState({}, 'Test page', '/structures/AE/lieux/AE')
         // given
-        jest
-          .spyOn(usersSelectors, 'selectCurrentUser')
-          .mockReturnValue({ currentUser: 'fakeUser' })
-
-        venue.id = 'CM'
-
-        const { history } = await renderVenueEdition({
-          props,
-          url: '/structures/APEQ/lieux/CM',
-        })
-        const createOfferLink = screen.getByText('Créer une offre')
-
+        await renderVenueEdition({})
         // when
-        fireEvent.click(createOfferLink)
-
+        const createOfferLink = await screen.findByRole('link', {
+          name: /Créer une offre/,
+        })
         // then
-        // todo: check location url or add a text in a fake offer creation route and test that it's displayed
-        expect(`${history.location.pathname}${history.location.search}`).toBe(
-          '/offre/creation?lieu=CM&structure=APEQ'
+        expect(createOfferLink).toHaveAttribute(
+          'href',
+          '/offre/creation?lieu=CM&structure=BQ'
         )
       })
     })
