@@ -320,7 +320,17 @@ def _generate_random_password(user):  # type: ignore [no-untyped-def]
     user.password = random_hashed_password()
 
 
-def suspend_account(user: User, reason: constants.SuspensionReason, actor: User) -> dict[str, int]:
+def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optional[User]) -> dict[str, int]:
+    """
+    Suspend a user's account:
+        * mark as suspended (suspension history);
+        * prevent it to log in and remove its admin role if any;
+        * cancel its bookings;
+
+    Note:
+        `actor` can be None if and only if this function is called from
+        an automated task (eg cron).
+    """
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
     user.isActive = False
@@ -365,7 +375,7 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: User)
     logger.info(
         "Account has been suspended",
         extra={
-            "actor": actor.id,
+            "actor": actor.id if actor else None,
             "user": user.id,
             "reason": str(reason),
         },

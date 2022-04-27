@@ -9,6 +9,7 @@ import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
+from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
@@ -721,3 +722,38 @@ class DecideEligibilityTest:
             user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
         )
         assert result == users_models.EligibilityType.AGE18
+
+
+@pytest.mark.usefixtures("db_session")
+class GetSuspendedAccountsUponUserRequestSinceTest:
+    def test_get_suspended_upon_user_request_accounts_since(self) -> None:
+        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        expected_suspension = users_factories.SuspendedUponUserRequestFactory(eventDate=one_week_ago)
+
+        # not suspended upon user request: should be ignored
+        users_factories.UserSuspensionFactory(eventDate=one_week_ago)
+
+        # suspended less than 5 days ago (see below): should be ignored
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        users_factories.SuspendedUponUserRequestFactory(eventDate=yesterday)
+
+        expected_user_ids = {expected_suspension.userId}
+
+        with assert_num_queries(1):
+            users = fraud_api.get_suspended_upon_user_request_accounts_since(5)
+            user_ids = {user.id for user in users}
+            assert user_ids == expected_user_ids
+
+    def test_unsuspended_account(self) -> None:
+        """
+        Test that an unsuspended account is ignored, even if the
+        suspension event occurred more than N days ago.
+        """
+        one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
+        user_suspension = users_factories.UserSuspensionFactory(eventDate=one_week_ago)
+
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        users_factories.UnsuspendedSuspensionFactory(user=user_suspension.user, eventDate=yesterday)
+
+        with assert_num_queries(1):
+            assert not list(fraud_api.get_suspended_upon_user_request_accounts_since(5))

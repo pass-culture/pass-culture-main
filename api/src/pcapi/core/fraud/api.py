@@ -633,3 +633,38 @@ def decide_eligibility(
         return users_models.EligibilityType.AGE18
 
     return eligibility_at_registration
+
+
+UserGenerator = typing.Generator[users_models.User, None, None]
+
+
+def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> UserGenerator:
+    start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
+
+    # distinct keeps the first row if duplicates are found. Since rows
+    # are ordered by userId and eventDate, this query will fetch the
+    # latest event for each userId.
+    user_ids_and_latest_events = (
+        users_models.User.query.distinct(users_models.UserSuspension.userId)
+        .join(users_models.User.suspension_history)
+        .order_by(users_models.UserSuspension.userId, users_models.UserSuspension.eventDate.desc())
+        .with_entities(
+            users_models.User.id,
+            users_models.UserSuspension.eventDate,
+            users_models.UserSuspension.eventType,
+            users_models.UserSuspension.reasonCode,
+        )
+    ).subquery()
+
+    # Deletion is a special case of suspension, no need to delete again
+    # an already deleted account.
+    query = users_models.User.query.join(
+        user_ids_and_latest_events, users_models.User.id == user_ids_and_latest_events.c.id
+    ).filter(
+        user_ids_and_latest_events.c.eventDate <= start,
+        user_ids_and_latest_events.c.eventType == users_models.SuspensionEventType.SUSPENDED,
+        user_ids_and_latest_events.c.reasonCode == users_models.SuspensionReason.UPON_USER_REQUEST,
+    )
+
+    for user in query.yield_per(1_000):
+        yield user
