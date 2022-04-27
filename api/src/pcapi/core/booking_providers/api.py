@@ -12,10 +12,10 @@ def get_show_stock(venue_id: int, show_id: int) -> int:
     return client.get_show_remaining_places(show_id)
 
 
-
 def get_shows_stock(venue_id: int, shows_id: list[int]) -> dict[int, int]:
     client = _get_booking_provider_client_api(venue_id)
     return client.get_shows_remaining_places(shows_id)
+
 
 def get_available_seats(venue_id: int, show_id: int) -> SeatMap:
     client = _get_booking_provider_client_api(venue_id)
