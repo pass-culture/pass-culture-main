@@ -1,17 +1,21 @@
-query getApplication($demarcheNumber: Int!, $after: String $state: DossierState) {
-    demarche(number: $demarcheNumber) {
-        id
-        number
-        dossiers(first: 100, archived: false, state: $state, after: $after) {
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
-            nodes {
-                ...DossierFragment
-            }
-        }
+query getApplication(
+  $demarcheNumber: Int!
+  $after: String
+  $state: DossierState
+) {
+  demarche(number: $demarcheNumber) {
+    id
+    number
+    dossiers(first: 100, archived: false, state: $state, after: $after) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        ...DossierFragment
+      }
     }
+  }
 }
 
 fragment DossierFragment on Dossier {
@@ -24,6 +28,9 @@ fragment DossierFragment on Dossier {
   datePassageEnConstruction
   datePassageEnInstruction
   dateTraitement
+  messages {
+    ...MessageFragment
+  }
   motivation
   motivationAttachment {
     ...FileFragment
@@ -69,6 +76,11 @@ fragment DossierFragment on Dossier {
 fragment FileFragment on File {
   filename
   url
+}
+
+fragment MessageFragment on Message {
+  createdAt
+  email
 }
 
 fragment RootChampFragment on Champ {

@@ -1,3 +1,4 @@
+import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -40,6 +41,11 @@ class GraphqlResponseTest:
         results = list(client.get_applications_with_details(123, dms_models.GraphQLApplicationStates.accepted))
         assert client.execute_query.call_count == 2
         assert len(results) == 2
+        assert results[0].messages == [
+            dms_models.DMSMessage(
+                created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact@demarches-simplifiees.fr"
+            )
+        ]
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_archive_application(self, execute_query):
@@ -57,9 +63,14 @@ class GraphqlResponseTest:
         execute_query.return_value = make_single_application(12, state="accepte")
 
         client = api_dms.DMSGraphQLClient()
-        client.get_single_application_details(42)
+        result = client.get_single_application_details(42)
 
         assert client.execute_query.call_count == 1
+        assert result.messages == [
+            dms_models.DMSMessage(
+                created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact@demarches-simplifiees.fr"
+            )
+        ]
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_update_annotations(self, execute_query):

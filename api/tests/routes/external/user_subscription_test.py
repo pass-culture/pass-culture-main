@@ -222,6 +222,7 @@ class DmsWebhookApplicationTest:
                         "stringValue": "",
                     },
                 ],
+                "messages": [],
                 "annotations": [],
                 "usager": {"id": "VXNlci0yMzA4Mjg0", "email": "young@example.com"},
                 "demandeur": {
