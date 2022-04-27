@@ -58,11 +58,10 @@ def standardize_image(content: bytes, ratio: float, crop_params: Optional[CropPa
 
     The cropping sets a new top left corner position, the crop_params
     are used to compute its new coordinates. The bottom right corner's
-    coordinates will be computed using the top left's ones using some
-    predifined ratio and max height (see constants below).
+    coordinates will be computed using the top left's ones using width
+    and max height (see constants below).
 
-    crop_params is a three-float tuple. All values must be between 0.0
-    and 1.0.
+    crop_params values must be between 0.0 and 1.0.
 
     The first value will be used to set the top left corner's abscissa
     (X): width * <first_value> = new X value. The second value will be
@@ -135,7 +134,6 @@ def _crop_image(
     corner coordinates.
 
     height_crop_percent will be used to compute the bottom right corner's
-    Y value, since X is computed using a predefined ratio.
     """
     if (x_crop_percent, y_crop_percent, height_crop_percent, width_crop_percent) == DO_NOT_CROP:
         return image
