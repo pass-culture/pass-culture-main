@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Form } from 'react-final-form'
 import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-import { Link } from 'react-router-dom'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
@@ -18,9 +18,20 @@ import OffererItemContainer from './OffererItem/OffererItemContainer'
 import PendingOffererItem from './OffererItem/PendingOffererItem'
 import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
+/* eslint-disable */
+function withRouter(Component) {
+  return props => (
+    <Component {...props} history={useHistory()} location={useLocation()} />
+  )
+}
+/* eslint-enable */
+
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"
  */
+// TO FIX:: the above component is temporary, in order to
+// allow react-router upgrade before the below component is refactored as function component
+// eslint-disable-next-line react/no-multi-comp
 class Offerers extends PureComponent {
   constructor(props) {
     super(props)
@@ -34,17 +45,11 @@ class Offerers extends PureComponent {
   }
 
   componentDidMount() {
-    const { query } = this.props
     // We need to use this system because of this issue:
     // https://github.com/danbovey/react-infinite-scroller/issues/12#issuecomment-339375017
     this.forceRenderKey = 0
 
-    const queryParams = query.parse()
-    if (queryParams.page) {
-      query.change({ page: null })
-    } else {
-      this.handleRequestData()
-    }
+    this.handleRequestData()
   }
 
   componentDidUpdate(prevProps) {
@@ -85,14 +90,17 @@ class Offerers extends PureComponent {
 
   handleRequestData = async () => {
     this.setState({ isLoading: true, hasMore: true })
-    const { query } = this.props
-    const queryParams = query.parse()
-    let searchKeyWords = queryParams['mots-cles'] || []
+    const { location } = this.props
+    const queryParams = new URLSearchParams(location.search)
+
+    const searchKeyWords = queryParams.get('mots-cles')
+      ? queryParams.get('mots-cles').split(' ')
+      : []
 
     const filters = {
       keywords:
         typeof searchKeyWords === 'string' ? [searchKeyWords] : searchKeyWords,
-      page: queryParams['page'] || '1',
+      page: queryParams.get('page') || '1',
     }
 
     await pcapi
@@ -102,17 +110,14 @@ class Offerers extends PureComponent {
   }
 
   handleOnKeywordsSubmit = () => {
-    const { query } = this.props
+    const { history, location } = this.props
     const { keywordsInputValue } = this.state
     const keywords = keywordsInputValue
-    const queryParams = query.parse()
 
-    const isEmptyKeywords = typeof keywords === 'undefined' || keywords === ''
+    const queryParams = new URLSearchParams(location.search)
 
-    query.change({
-      [mapApiToBrowser.keywords]: isEmptyKeywords ? null : keywords,
-      page: null,
-    })
+    history.replace('/structures?mots-cles=' + keywords || '')
+
     this.forceRenderKey++ // See variable declaration for more information
 
     if (queryParams[mapApiToBrowser.keywords] !== keywords)
@@ -139,18 +144,22 @@ class Offerers extends PureComponent {
   }
 
   onPageChange = page => {
-    const { query } = this.props
-    query.change({ page }, { historyMethod: 'replace' })
+    const { history, location } = this.props
+    const queryParams = new URLSearchParams(location.search)
+    queryParams.set('page', page)
+    history.replace(`structures?${queryParams.toString()}`)
   }
 
   onPageReset = () => {
-    const { query } = this.props
-    query.change({ page: null })
+    const { history, location } = this.props
+    const queryParams = new URLSearchParams(location.search)
+    queryParams.delete('page')
+    history.replace(`structures?${queryParams.toString()}`)
   }
 
   render() {
-    const { query, isOffererCreationAvailable } = this.props
-    const queryParams = query.parse()
+    const { isOffererCreationAvailable, location } = this.props
+    const queryParams = new URLSearchParams(location.search)
     const { hasMore, isLoading, offerers } = this.state
     const sectionTitle =
       offerers.length > 1 ? 'Structures juridiques' : 'Structure juridique'
@@ -226,9 +235,9 @@ class Offerers extends PureComponent {
 }
 
 Offerers.propTypes = {
+  history: PropTypes.shape().isRequired,
   isOffererCreationAvailable: PropTypes.bool.isRequired,
   location: PropTypes.shape().isRequired,
-  query: PropTypes.shape().isRequired,
 }
 
-export default Offerers
+export default withRouter(Offerers)

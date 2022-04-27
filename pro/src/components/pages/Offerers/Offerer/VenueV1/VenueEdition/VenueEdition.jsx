@@ -1,14 +1,22 @@
-import PropTypes from 'prop-types'
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { Form } from 'react-final-form'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
-import { Link, NavLink } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import {
+  Link,
+  NavLink,
+  useHistory,
+  useLocation,
+  useParams,
+} from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner } from 'ui-kit'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
@@ -25,23 +33,16 @@ import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/b
 import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
+import { formatVenuePayload } from '../utils/formatVenuePayload'
+import VenueLabel from '../ValueObjects/VenueLabel'
+import VenueType from '../ValueObjects/VenueType'
 
 import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
 import { DisplayVenueInAppLink } from './DisplayVenueInAppLink'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
 import VenueProvidersManager from './VenueProvidersManager'
 
-const VenueEdition = ({
-  handleInitialRequest,
-  handleSubmitRequest,
-  handleSubmitRequestFail,
-  handleSubmitRequestSuccess,
-  history,
-  match: {
-    params: { offererId, venueId },
-  },
-  query,
-}) => {
+const VenueEdition = () => {
   const [isRequestPending, setIsRequestPending] = useState(false)
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false)
   const [isReady, setIsReady] = useState(false)
@@ -50,6 +51,10 @@ const VenueEdition = ({
   const [venueTypes, setVenueTypes] = useState(null)
   const [venueLabels, setVenueLabels] = useState(null)
   const deleteBusinessUnitConfirmed = useRef(false)
+  const { offererId, venueId } = useParams()
+  const history = useHistory()
+  const dispatch = useDispatch()
+  const location = useLocation()
 
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
@@ -69,6 +74,48 @@ const VenueEdition = ({
     [venue]
   )
 
+  const handleSubmitRequest = async ({
+    formValues,
+    handleFail,
+    handleSuccess,
+  }) => {
+    const body = formValues.isVirtual
+      ? { businessUnitId: formValues.businessUnitId }
+      : formatVenuePayload(formValues, false)
+    try {
+      const response = await pcapi.editVenue(venueId, body)
+      handleSuccess(response)
+    } catch (responseError) {
+      handleFail(responseError)
+    }
+  }
+
+  const handleSubmitRequestFail = ({ payload: { errors } }) => {
+    let text = 'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+    if (errors.global) {
+      text = `${text} ${errors.global[0]}`
+    }
+
+    dispatch(
+      showNotification({
+        text,
+        type: 'error',
+      })
+    )
+  }
+
+  const handleSubmitRequestSuccess = (_action, { hasDelayedUpdates }) => {
+    const text = hasDelayedUpdates
+      ? 'Vos modifications ont bien été prises en compte, cette opération peut durer plusieurs minutes'
+      : 'Vos modifications ont bien été prises en compte'
+    dispatch(
+      showNotification({
+        text,
+        type: hasDelayedUpdates ? 'pending' : 'success',
+      })
+    )
+  }
+
   const onDeleteImage = useCallback(() => {
     setVenue({
       ...venue,
@@ -83,22 +130,47 @@ const VenueEdition = ({
   const shouldDisplayImageVenueUploaderSection = venue?.isPermanent
 
   useEffect(() => {
-    function loadInitialData() {
-      handleInitialRequest().then(
-        ({ offerer, venue, venueTypes, venueLabels }) => {
-          setOfferer(offerer)
-          setVenue(venue)
-          setVenueTypes(venueTypes)
-          setVenueLabels(venueLabels)
-          setIsReady(true)
-        }
-      )
+    const handleInitialRequest = async () => {
+      const offererRequest = pcapi.getOfferer(offererId)
+      const venueRequest = pcapi.getVenue(venueId)
+      const venueTypesRequest = pcapi.getVenueTypes().then(venueTypes => {
+        return venueTypes.map(type => new VenueType(type))
+      })
+      const venueLabelsRequest = pcapi.getVenueLabels().then(labels => {
+        return labels.map(label => new VenueLabel(label))
+      })
+
+      const [offerer, venue, venueTypes, venueLabels] = await Promise.all([
+        offererRequest,
+        venueRequest,
+        venueTypesRequest,
+        venueLabelsRequest,
+      ])
+
+      return {
+        offerer,
+        venue,
+        venueTypes,
+        venueLabels,
+      }
     }
+    handleInitialRequest().then(
+      ({ offerer, venue, venueTypes, venueLabels }) => {
+        setOfferer(offerer)
+        setVenue(venue)
+        setVenueTypes(venueTypes)
+        setVenueLabels(venueLabels)
+        setIsReady(true)
+      }
+    )
+  }, [offererId, venueId])
 
-    loadInitialData()
-  }, [handleInitialRequest])
-
-  const pageNotFoundRedirect = () => history.push('/404')
+  useEffect(() => {
+    if (venue?.initialIsVirtual && !isBankInformationWithSiretActive) {
+      history.push('/404')
+      return null
+    }
+  }, [venue?.initialIsVirtual, history, isBankInformationWithSiretActive])
 
   const onConfirmDeleteBusinessUnit = submit => {
     deleteBusinessUnitConfirmed.current = true
@@ -116,9 +188,11 @@ const VenueEdition = ({
 
   const handleFormSuccess =
     (formResolver, hasDelayedUpdates) => (_state, action) => {
+      const queryParams = new URLSearchParams(location.search)
+      queryParams.delete('modification')
       handleSubmitRequestSuccess(action, { hasDelayedUpdates })
       formResolver()
-      query.changeToReadOnly(null)
+      history.replace(`${location.path}?${queryParams.toString()}`)
       setIsRequestPending(false)
     }
 
@@ -149,9 +223,9 @@ const VenueEdition = ({
   }
 
   const onHandleRender = formProps => {
-    const { readOnly } = query.context({
-      id: venueId,
-    })
+    const queryParams = new URLSearchParams(location.search)
+    const readOnly = queryParams.get('modification') === null
+
     const {
       siret: initialSiret,
       isVirtual: initialIsVirtual,
@@ -176,6 +250,7 @@ const VenueEdition = ({
     }
 
     const isDirtyFieldBookingEmail = bookingEmail !== venue.bookingEmail
+
     const siretValidOnModification = initialSiret !== null
     const fieldReadOnlyBecauseFrozenFormSiret =
       !readOnly && siretValidOnModification
@@ -211,7 +286,9 @@ const VenueEdition = ({
             <ImageVenueUploaderSection
               onDeleteImage={onDeleteImage}
               onImageUpload={onImageUpload}
-              venueCredit={venue.bannerMeta?.image_credit}
+              venueCredit={
+                venue.bannerMeta ? venue.bannerMeta.image_credit : undefined
+              }
               venueId={venue.id}
               venueImage={venue.bannerUrl}
             />
@@ -329,10 +406,8 @@ const VenueEdition = ({
       />
     )
   }
-
-  const { readOnly } = query.context({
-    id: venueId,
-  })
+  const queryParams = new URLSearchParams(location.search)
+  const readOnly = queryParams.get('modification') === null
 
   const {
     id: initialId,
@@ -351,11 +426,6 @@ const VenueEdition = ({
       <span>Créer une offre</span>
     </Link>
   )
-
-  if (initialIsVirtual && !isBankInformationWithSiretActive) {
-    pageNotFoundRedirect()
-    return null
-  }
 
   const pageSubtitle = initialIsVirtual ? getVirtualVenueName() : initialName
 
@@ -398,16 +468,6 @@ const VenueEdition = ({
       {venue && offerer && isReady && renderForm()}
     </div>
   )
-}
-
-VenueEdition.propTypes = {
-  handleInitialRequest: PropTypes.func.isRequired,
-  handleSubmitRequest: PropTypes.func.isRequired,
-  handleSubmitRequestFail: PropTypes.func.isRequired,
-  handleSubmitRequestSuccess: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
-  query: PropTypes.shape().isRequired,
 }
 
 export default VenueEdition
