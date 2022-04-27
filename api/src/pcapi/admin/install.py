@@ -34,7 +34,6 @@ from pcapi.admin.custom_views.venue_provider_view import VenueProviderView
 from pcapi.admin.custom_views.venue_view import VenueForOffererSubview
 from pcapi.admin.custom_views.venue_view import VenueView
 import pcapi.core.criteria.models as criteria_models
-import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import OfferValidationConfig
@@ -51,9 +50,6 @@ from pcapi.models.feature import Feature
 from . import base_configuration
 from . import templating
 from .custom_views.suspend_fraudulent_users_by_ids import SuspendFraudulentUsersByUserIdsView
-
-
-# from pcapi.models.feature import FeatureToggle
 
 
 class Category(Enum):
@@ -212,28 +208,6 @@ def install_views(admin: Admin, session: Session) -> None:
             session,
             name="Validation",
             endpoint="validation",
-            category=Category.CUSTOM_OPERATIONS,
-        )
-    )
-
-    # FIXME (cgaunet, 2020-04-27): this is very temporary
-    # if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-    admin.add_view(
-        offer_view.ValidationCollectiveOfferView(
-            educational_models.CollectiveOffer,
-            session,
-            name="Validation d'offres collectives",
-            endpoint="validation-collective-offer",
-            category=Category.CUSTOM_OPERATIONS,
-        )
-    )
-
-    admin.add_view(
-        offer_view.ValidationCollectiveOfferTemplateView(
-            educational_models.CollectiveOfferTemplate,
-            session,
-            name="Validation d'offres collectives vitrines",
-            endpoint="validation-collective-offer-template",
             category=Category.CUSTOM_OPERATIONS,
         )
     )
