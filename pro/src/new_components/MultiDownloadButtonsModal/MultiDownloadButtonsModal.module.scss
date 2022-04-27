@@ -1,0 +1,45 @@
+.downloadModalButton > button {
+  padding-left: 45px;
+  &:after {
+    border-right: rem(1px) solid white;
+    content: '';
+    left: rem(-30px);
+    position: relative;
+  }
+
+  .dropIcon {
+    margin-left: rem(50px);
+    margin-bottom: rem(2px);
+  }
+}
+
+.downloadModalOption{
+  background: white;
+  border-radius: rem(6px);
+  box-shadow: 0 2px 16px rgba(37, 2, 108, 0.15);
+  display: inline-block;
+  overflow: hidden;
+  padding: rem(12px) 0;
+  position: absolute;
+  right: rem(382px);
+  top: rem(45px);
+
+  .insideModalButton {
+    background: white;
+    border: none;
+    display: flex;
+    text-align: left;
+    font-style: normal;
+    font-weight: 600;
+    font-size: rem(15px);
+    padding: rem(8px) rem(16px);
+    width: 100%;
+    &:hover {
+      background: $grey-medium;
+    }
+
+    svg {
+      margin-right: rem(10px);
+    }
+  }
+}
