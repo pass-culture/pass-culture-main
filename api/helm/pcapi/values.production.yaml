@@ -64,3 +64,5 @@ secrets:
   - name: USER_PROFILING_API_KEY
   - name: USER_PROFILING_ORG_ID
   - name: USER_PROFILING_URL
+  - name: ZENDESK_API_EMAIL
+  - name: ZENDESK_API_TOKEN
