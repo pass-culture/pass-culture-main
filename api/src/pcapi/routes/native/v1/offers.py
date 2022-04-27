@@ -9,6 +9,7 @@ from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Reason
 from pcapi.core.users.models import User
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.product import Product
 from pcapi.routes.native.security import authenticated_user_required
@@ -23,7 +24,7 @@ from .serialization import offers as serializers
 @blueprint.native_v1.route("/offer/<int:offer_id>", methods=["GET"])
 @spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
 def get_offer(offer_id: str) -> serializers.OfferResponse:
-    offer = (
+    offer: Offer = (
         Offer.query.options(joinedload(Offer.stocks))
         .options(
             joinedload(Offer.venue)
@@ -35,6 +36,12 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
         .filter(Offer.id == offer_id)
         .first_or_404()
     )
+
+    if (
+        feature.FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
+        and offer.subcategory.id == subcategories.SEANCE_CINE.id
+    ):
+        api.update_stock_quantity_to_match_booking_provider_remaining_place(offer)
 
     return serializers.OfferResponse.from_orm(offer)
 
