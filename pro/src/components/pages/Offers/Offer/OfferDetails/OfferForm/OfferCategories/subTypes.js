@@ -306,6 +306,7 @@ export const showOptionsTree = [
       { code: 104, label: 'Parade' },
       { code: 105, label: 'Théâtre de Rue' },
       { code: 106, label: 'Théâtre Promenade' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -321,6 +322,7 @@ export const showOptionsTree = [
       { code: 207, label: 'Mentaliste' },
       { code: 208, label: 'Spectacle de Magie' },
       { code: 209, label: 'Spectacle Équestre' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -339,6 +341,7 @@ export const showOptionsTree = [
       { code: 312, label: 'Swing' },
       { code: 313, label: 'Tango' },
       { code: 314, label: 'Urbaine' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -351,6 +354,7 @@ export const showOptionsTree = [
       { code: 404, label: 'Sketch' },
       { code: 405, label: 'Stand Up' },
       { code: 406, label: 'Ventriloque' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -365,6 +369,7 @@ export const showOptionsTree = [
       { code: 1111, label: 'Burlesque' },
       { code: 1112, label: 'Comédie-Ballet' },
       { code: 1115, label: 'Théâtre musical' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -379,6 +384,7 @@ export const showOptionsTree = [
       { code: 1206, label: 'Marionettes' },
       { code: 1207, label: 'Comédie musicale jeunesse' },
       { code: 1208, label: 'Théâtre d’Ombres' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -394,6 +400,7 @@ export const showOptionsTree = [
       { code: 1307, label: 'Théâtre Experimental' },
       { code: 1308, label: 'Théâtre d’Objet' },
       { code: 1309, label: 'Tragédie' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -402,6 +409,7 @@ export const showOptionsTree = [
     children: [
       { code: 1401, label: 'Performance' },
       { code: 1402, label: 'Poésie' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -412,6 +420,7 @@ export const showOptionsTree = [
       { code: 1502, label: 'Spectacle sur glace' },
       { code: 1503, label: 'Spectacle historique' },
       { code: 1504, label: 'Spectacle aquatique' },
+      { code: -1, label: 'Autre' },
     ],
   },
   {
@@ -424,6 +433,12 @@ export const showOptionsTree = [
       { code: 1514, label: 'Opéra comique' },
       { code: 1515, label: 'Opéra-ballet' },
       { code: 1516, label: 'Singspiel' },
+      { code: -1, label: 'Autre' },
     ],
+  },
+  {
+    code: -1,
+    label: 'Autre',
+    children: [{ code: -1, label: 'Autre' }],
   },
 ]

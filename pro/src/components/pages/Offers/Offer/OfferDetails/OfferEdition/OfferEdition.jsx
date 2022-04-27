@@ -79,7 +79,20 @@ const OfferEdition = ({
           isFieldReadOnlyForSynchronizedOffer(fieldName, offer.lastProvider)
         )
       } else {
-        return EDITED_OFFER_READ_ONLY_FIELDS
+        let readOnlyFields = [...EDITED_OFFER_READ_ONLY_FIELDS]
+        if (
+          !readOnlyFields.includes('showType') &&
+          offer?.extraData?.showType
+        ) {
+          readOnlyFields.push('showType')
+        }
+        if (
+          !readOnlyFields.includes('musicType') &&
+          offer?.extraData?.musicType
+        ) {
+          readOnlyFields.push('musicType')
+        }
+        return readOnlyFields
       }
     }
 
@@ -117,6 +130,7 @@ const OfferEdition = ({
       providerName={providerName}
       readOnlyFields={readOnlyFields}
       setOfferPreviewData={setOfferPreviewData}
+      setReadOnlyFields={setReadOnlyFields}
       showErrorNotification={showErrorNotification}
       subCategories={subCategories}
       submitErrors={submitErrors}
