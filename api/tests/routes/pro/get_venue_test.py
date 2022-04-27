@@ -15,10 +15,7 @@ class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
-            name="L'encre et la plume",
-            managingOfferer=user_offerer.offerer,
-        )
+        venue = offerers_factories.VenueFactory(name="L'encre et la plume", managingOfferer=user_offerer.offerer)
         bank_information = offers_factories.BankInformationFactory(venue=venue)
 
         expected_serialized_venue = {
@@ -101,7 +98,7 @@ class Returns200Test:
 
     def should_ignore_invalid_banner_metadata(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",
@@ -129,11 +126,12 @@ class Returns200Test:
                 "width_crop_percent": 0.42,
             },
             "image_credit": "test",
+            "original_image_url": None,
         }
 
     def should_not_have_banner_metadata_when_venue_has_not_picture(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
         )
@@ -145,7 +143,7 @@ class Returns200Test:
 
     def should_set_default_crop_params_when_venue_picture_has_no_crop_params(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",
@@ -164,7 +162,7 @@ class Returns200Test:
 
     def should_not_override_metadata_when_venue_picture_has_no_crop_params(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",
@@ -187,7 +185,7 @@ class Returns200Test:
 
     def should_not_override_metadata_when_venue_picture_has_crop_params(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",
@@ -213,11 +211,12 @@ class Returns200Test:
                 "width_crop_percent": 0.42,
             },
             "image_credit": "test 2",
+            "original_image_url": None,
         }
 
     def should_complete_crop_params_when_venue_picture_has_incomplete_crop_params(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",
@@ -236,7 +235,7 @@ class Returns200Test:
 
     def should_not_change_crop_params_when_venue_picture_has_complete_crop_params(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offers_factories.VenueFactory(
+        venue = offerers_factories.VenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
             bannerUrl="http://example.com/image_cropped.png",

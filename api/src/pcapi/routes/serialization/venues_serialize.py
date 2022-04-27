@@ -10,7 +10,6 @@ from PIL import Image
 import pydantic
 from pydantic import root_validator
 from pydantic import validator
-from typing_extensions import TypedDict
 
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
@@ -123,10 +122,10 @@ class GetVenueManagingOffererResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class BannerMetaModel(TypedDict, total=False):
+class BannerMetaModel(BaseModel):
     image_credit: Optional[base.VenueImageCredit]  # type: ignore [valid-type]
     original_image_url: Optional[str]
-    crop_params: Optional[CropParams]
+    crop_params: CropParams = CropParams()
 
 
 class GetVenueResponseModel(base.BaseVenueResponse):
@@ -166,6 +165,22 @@ class GetVenueResponseModel(base.BaseVenueResponse):
     class Config:
         orm_mode = True
         json_encoders = {datetime: format_into_utc_date}
+
+    @validator("bannerMeta")
+    @classmethod
+    def validate_banner_meta(cls, meta: Optional[BannerMetaModel], values: dict) -> Optional[BannerMetaModel]:
+        """
+        Old venues might have a banner url without banner meta, or an
+        incomplete banner meta.
+        """
+        # do not get a default banner meta object if there is no banner
+        if not values["bannerUrl"]:
+            return None
+
+        if not meta:
+            return BannerMetaModel()
+
+        return meta
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetVenueResponseModel":
