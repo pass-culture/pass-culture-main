@@ -868,38 +868,6 @@ def _write_csv(
     return path
 
 
-def _append_csv(
-    path: pathlib.Path,
-    rows: typing.Iterable = None,
-    batched_rows: typing.Iterable = None,
-    row_formatter: typing.Callable[typing.Any, typing.Iterable] = lambda row: row,  # type: ignore [misc]
-    compress: bool = False,
-) -> pathlib.Path:
-    assert (rows is not None) ^ (batched_rows is not None)
-    # Store file in a dedicated directory within "/tmp". It's easier
-    # to clean files in tests that way.
-    with open(path, "a", encoding="utf-8") as fp:
-        writer = csv.writer(fp, quoting=csv.QUOTE_NONNUMERIC)
-        if rows is not None:
-            writer.writerows(row_formatter(row) for row in rows)
-        if batched_rows is not None:
-            for rows_ in batched_rows:
-                writer.writerows(row_formatter(row) for row in rows_)
-
-    if compress:
-        compressed_path = pathlib.Path(str(path) + ".zip")
-        with zipfile.ZipFile(
-            compressed_path,
-            "w",
-            compression=zipfile.ZIP_DEFLATED,
-            compresslevel=9,
-        ) as zfile:
-            zfile.write(path, arcname=path.name)
-        path = compressed_path
-
-    return path
-
-
 def _generate_business_units_file() -> pathlib.Path:
     header = (
         "Identifiant de la BU",
@@ -1145,22 +1113,13 @@ def _generate_new_payments_file(batch_id: int) -> pathlib.Path:
         .yield_per(1000)
     )
 
-    csv_file = _write_csv(
+    return _write_csv(
         "payment_details",
         header,
-        rows=bookings_query,
-        row_formatter=_new_payment_details_row_formatter,
-        compress=False,
-    )
-
-    csv_file = _append_csv(
-        csv_file,
-        rows=collective_bookings_query,
+        rows=itertools.chain(bookings_query, collective_bookings_query),
         row_formatter=_new_payment_details_row_formatter,
         compress=True,  # it's a large CSV file (> 100 Mb), we should compress it
     )
-
-    return csv_file
 
 
 def _payment_details_row_formatter(sql_row):  # type: ignore [no-untyped-def]
