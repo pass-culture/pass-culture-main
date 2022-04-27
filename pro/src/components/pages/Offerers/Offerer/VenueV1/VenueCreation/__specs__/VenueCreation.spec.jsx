@@ -9,14 +9,11 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
 import VenueType from '../../ValueObjects/VenueType'
-import VenueCreationContainer from '../VenueCreationContainer'
+import VenueCreation from '../VenueCreation'
 
 import { setVenueValues } from './helpers'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn().mockResolvedValue([]),
-  createVenue: jest.fn(),
-}))
+jest.mock('repository/pcapi/pcapi')
 
 jest.mock(
   'components/pages/Offerers/Offerer/VenueV1/fields/LocationFields/utils/fetchAddressData.js',
@@ -32,7 +29,7 @@ const renderVenueCreation = async ({ props, storeOverrides = {} }) => {
     <Provider store={store}>
       <MemoryRouter initialEntries={['/structure/BQ/lieux/creation']}>
         <Route path="/structure/:offererId/lieux/creation">
-          <VenueCreationContainer {...props} />
+          <VenueCreation {...props} />
         </Route>
         <Route path="/accueil">Bienvenue sur l'accueil</Route>
       </MemoryRouter>
@@ -46,7 +43,6 @@ const renderVenueCreation = async ({ props, storeOverrides = {} }) => {
 
 describe('venue form', () => {
   let push
-  let venueTypes
   let props
   let storeOverrides = {
     data: {
@@ -57,18 +53,6 @@ describe('venue form', () => {
   }
 
   beforeEach(() => {
-    const offerer = {
-      id: 'BQ',
-      name: 'Maison du chocolat',
-    }
-    venueTypes = [
-      new VenueType({
-        id: 'VISUAL_ARTS',
-        label: 'Arts visuels, arts plastiques et galeries',
-      }),
-    ]
-    const venueLabels = []
-
     push = jest.fn()
     props = {
       formInitialValues: {
@@ -80,33 +64,25 @@ describe('venue form', () => {
         },
         push: push,
       },
-      handleInitialRequest: jest.fn().mockResolvedValue({
-        offerer,
-        venueTypes,
-        venueLabels,
-      }),
-      handleSubmitSuccessNotification: jest.fn(),
-      handleSubmitFailNotification: jest.fn(),
       isEntrepriseApiDisabled: false,
       isBankInformationWithSiretActive: true,
-      match: {
-        params: {
-          offererId: 'APEQ',
-          venueId: 'AQYQ',
-        },
+      params: {
+        offererId: 'APEQ',
+        venueId: 'AQYQ',
       },
-
-      query: {
-        changeToReadOnly: jest.fn(),
-        context: jest.fn().mockReturnValue({
-          isCreatedEntity: true,
-          isModifiedEntity: false,
-          readOnly: false,
-        }),
-      },
-      venueTypes: [],
-      venueLabels: [],
     }
+    pcapi.getOfferer.mockResolvedValue({
+      id: 'BQ',
+      name: 'Maison du chocolat',
+    })
+    pcapi.getVenueTypes.mockResolvedValue([
+      new VenueType({
+        id: 'VISUAL_ARTS',
+        label: 'Arts visuels, arts plastiques et galeries',
+      }),
+    ])
+    pcapi.getVenueLabels.mockResolvedValue([])
+    pcapi.getBusinessUnits.mockResolvedValue([])
   })
 
   describe('when submiting a valide form', () => {
@@ -123,9 +99,8 @@ describe('venue form', () => {
 
       formValues = {
         name: 'Librairie de test',
-        bookingEmail: 'rené@example.com',
         comment: 'Pas de siret',
-        venueTypeCode: venueTypes[0].id,
+        venueTypeCode: 'VISUAL_ARTS',
         address: `Addresse de test ${testId}`,
         city: 'Paris',
         postalCode: '75001',
@@ -152,6 +127,7 @@ describe('venue form', () => {
         description: '',
         latitude: formValues['latitude'],
         longitude: formValues['longitude'],
+        managingOffererId: 'BQ',
         mentalDisabilityCompliant: false,
         motorDisabilityCompliant: false,
         name: formValues['name'],
@@ -160,7 +136,6 @@ describe('venue form', () => {
         venueTypeCode: formValues['venueTypeCode'],
         visualDisabilityCompliant: false,
       })
-      expect(props.handleSubmitSuccessNotification).toHaveBeenCalledTimes(1)
       await expect(
         screen.findByText("Bienvenue sur l'accueil")
       ).resolves.toBeInTheDocument()
@@ -186,6 +161,7 @@ describe('venue form', () => {
           description: '',
           latitude: formValues['latitude'],
           longitude: formValues['longitude'],
+          managingOffererId: 'BQ',
           mentalDisabilityCompliant: false,
           motorDisabilityCompliant: false,
           name: formValues['name'],
@@ -194,7 +170,6 @@ describe('venue form', () => {
           venueTypeCode: formValues['venueTypeCode'],
           visualDisabilityCompliant: false,
         })
-        expect(props.handleSubmitFailNotification).toHaveBeenCalledTimes(1)
         expect(screen.getByText(errors['name'])).toBeInTheDocument()
         expect(
           screen.queryByText("Bienvenue sur l'accueil")
