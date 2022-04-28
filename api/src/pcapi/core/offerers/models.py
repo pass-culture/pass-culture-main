@@ -123,7 +123,7 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 )
 
 
-class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, NeedsValidationMixin):  # type: ignore [valid-type, misc]
+class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
     id = Column(BigInteger, primary_key=True)
@@ -146,9 +146,11 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
 
     bookingEmail = Column(String(120), nullable=True)
 
-    postalCode = Column(String(6), nullable=True)  # type: ignore [assignment]
+    address = Column(String(200), nullable=True)
 
-    city = Column(String(50), nullable=True)  # type: ignore [assignment]
+    postalCode = Column(String(6), nullable=True)
+
+    city = Column(String(50), nullable=True)
 
     publicName = Column(String(255), nullable=True)
 
@@ -227,7 +229,9 @@ class Venue(PcObject, Model, HasThumbMixin, HasAddressMixin, ProvidableMixin, Ne
         return self.isPermanent and self.managingOfferer.isActive and self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE  # type: ignore [return-value, attr-defined]
 
     def store_departement_code(self) -> None:
-        self.departementCode = PostalCode(self.postalCode).get_departement_code()  # type: ignore [has-type]
+        if not self.postalCode:
+            return
+        self.departementCode = PostalCode(self.postalCode).get_departement_code()
 
     @property
     def bic(self) -> Optional[str]:
@@ -380,7 +384,7 @@ ts_indexes = [
     ),
     ("idx_venue_fts_address", Venue.address),
     ("idx_venue_fts_siret", Venue.siret),
-    ("idx_venue_fts_city", Venue.city),  # type: ignore [has-type]
+    ("idx_venue_fts_city", Venue.city),
 ]
 
 (Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)

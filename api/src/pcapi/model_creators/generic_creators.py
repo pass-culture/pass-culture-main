@@ -119,11 +119,11 @@ def create_venue(
 
     if not is_virtual:
         venue.address = address
-        venue.city = city  # type: ignore [has-type]
+        venue.city = city
         venue.departementCode = departement_code
         venue.latitude = latitude  # type: ignore [assignment]
         venue.longitude = longitude  # type: ignore [assignment]
-        venue.postalCode = postal_code  # type: ignore [has-type]
+        venue.postalCode = postal_code
 
     return venue
 

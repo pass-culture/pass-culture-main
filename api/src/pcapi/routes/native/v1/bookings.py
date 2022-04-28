@@ -113,8 +113,8 @@ def get_bookings(user: User) -> BookingsResponse:
             .load_only(
                 Venue.name,
                 Venue.address,
-                Venue.postalCode,  # type: ignore [has-type]
-                Venue.city,  # type: ignore [has-type]
+                Venue.postalCode,
+                Venue.city,
                 Venue.latitude,
                 Venue.longitude,
                 Venue.publicName,
