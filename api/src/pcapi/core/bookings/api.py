@@ -236,8 +236,6 @@ def _cancel_collective_booking(
         },
     )
 
-    # FIXME (MathildeDuboille - 2022-03-03): decomment this once algolia is set up with new models (13428)
-    # search.async_index_offer_ids([collective_booking.stock.offerId])
     return True
 
 
@@ -256,7 +254,7 @@ def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCance
 
 def _cancel_collective_booking_from_stock(
     collective_stock: CollectiveStock, reason: CollectiveBookingCancellationReasons
-) -> list[CollectiveBooking]:
+) -> typing.Optional[CollectiveBooking]:
     """
     Cancel booking.
     Note that this will not reindex the stock.offer in Algolia
@@ -273,7 +271,7 @@ def _cancel_collective_booking_from_stock(
     if booking_to_cancel is not None:
         _cancel_collective_booking(booking_to_cancel, reason)
 
-    return booking_to_cancel  # type: ignore [return-value]
+    return booking_to_cancel
 
 
 def cancel_booking_by_beneficiary(user: User, booking: Booking) -> None:
@@ -304,10 +302,7 @@ def cancel_collective_booking_from_stock_by_offerer(
     cancelled_booking = _cancel_collective_booking_from_stock(
         collective_stock, CollectiveBookingCancellationReasons.OFFERER
     )
-
-    # FIXME (MathildeDuboille - 2022-03-03): decomment this once algolia is set up with new models (13428)
-    # search.async_index_offer_ids([collective_stock.offerId])
-    return cancelled_booking  # type: ignore [return-value]
+    return cancelled_booking
 
 
 def cancel_bookings_from_rejected_offer(offer: offers_models.Offer) -> list[Booking]:
