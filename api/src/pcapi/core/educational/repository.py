@@ -758,3 +758,24 @@ def get_collective_stock_for_offer(offer_id: int) -> Optional[CollectiveStock]:
 
 def get_collective_offer_by_offer_id(offer_id: int) -> CollectiveOffer:
     return CollectiveOffer.query.filter(CollectiveOffer.offerId == offer_id).one()
+
+
+def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:
+    return (
+        educational_models.CollectiveOffer.query.filter(educational_models.CollectiveOffer.id == offer_id)
+        .options(
+            joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            )
+        )
+        .options(
+            joinedload(educational_models.CollectiveOffer.venue)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.validationToken,
+                offerers_models.Offerer.isActive,
+            )
+        )
+        .one()
+    )

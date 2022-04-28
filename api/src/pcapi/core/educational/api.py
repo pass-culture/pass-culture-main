@@ -962,3 +962,6 @@ def edit_collective_offer_template_from_stock(stock: Stock, stock_data: dict) ->
     )
 
     search.async_index_collective_offer_template_ids([collective_offer_template.id])
+
+def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:
+    return educational_repository.get_collective_offer_by_id_for_adage(offer_id)
