@@ -26,7 +26,6 @@ from sqlalchemy.orm import load_only
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import not_
 from sqlalchemy.sql.functions import coalesce
-from sqlalchemy.util._collections import AbstractKeyedTuple
 import xlsxwriter
 
 from pcapi.core.bookings import constants
@@ -632,7 +631,8 @@ def _duplicate_booking_when_quantity_is_two(bookings_recap_query: BaseQuery) -> 
     return bookings_recap_query.union_all(bookings_recap_query.filter(Booking.quantity == 2))
 
 
-def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
+# TODO (ASK, SA1.4): préciser le typehint booking
+def _serialize_booking_recap(booking: object) -> BookingRecap:
     return BookingRecap(
         offer_identifier=booking.offerId,  # type: ignore [attr-defined]
         offer_name=booking.offerName,  # type: ignore [attr-defined]

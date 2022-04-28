@@ -2621,7 +2621,7 @@ def test_get_deposit_booking():
     current_deposit_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
     current_deposit_booking_2 = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
     bookings_factories.IndividualBookingFactory(
-        individualBooking__user=user, individualBooking__attached_deposit="forced_none", amount=0
+        individualBooking__user=user, individualBooking__deposit=None, amount=0
     )
 
     previous_deposit_id = user.deposits[0].id

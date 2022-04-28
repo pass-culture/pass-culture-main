@@ -11,13 +11,11 @@ def insert_chunk(chunk_to_insert: dict):  # type: ignore [no-untyped-def]
     db.session.commit()
 
 
-def update_chunk(chunk_to_update: dict):  # type: ignore [no-untyped-def]
-    # Access `Model._decl_class_registry` here, not at module-scope,
+def update_chunk(chunk_to_update: dict):
+    # Access `Model.registry` here, not at module-scope,
     # because it may not be populated yet if this module is imported
     # too early.
-    # Use `getattr()` because the registry also contains things that
-    # are not models and don't have a `__name__` attribute.
-    MODELS = {getattr(klass, "__name__", None): klass for klass in Model._decl_class_registry.values()}
+    MODELS = {mapper.class_.__name__: mapper.class_ for mapper in Model.registry.mappers}
 
     models_in_chunk = set(_extract_model_name_from_chunk_key(key) for key in chunk_to_update.keys())
 

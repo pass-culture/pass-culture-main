@@ -1,7 +1,10 @@
 from dataclasses import asdict
 from datetime import datetime
 from datetime import timedelta
+import pytest
 from unittest.mock import patch
+
+from flask import url_for
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
@@ -19,8 +22,9 @@ from tests.conftest import clean_database
 class AdminUserViewTest:
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_admin_user_creation(self, mocked_validate_csrf_token, app):
-        users_factories.AdminFactory(email="admin@example.com")
+    def test_admin_user_creation(self, mocked_validate_csrf_token, client):
+        admin_email = "admin@example.com"
+        users_factories.AdminFactory(email=admin_email)
 
         data = dict(
             email="NEW-ADMIN@example.com",
@@ -30,10 +34,14 @@ class AdminUserViewTest:
             postalCode="76001",
         )
 
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.post("/pc/back-office/admin_users/new", form=data)
+        assert User.query.filter_by(email="new-admin@example.com").count() == 0
 
-        assert response.status_code == 302
+        response = (
+            client.with_session_auth(admin_email)
+            .post(url_for('admin_users.create_view'), form=data)
+        )
+
+        assert response.status_code == 200
 
         user_created = User.query.filter_by(email="new-admin@example.com").one()
         assert user_created.firstName == "Powerfull"

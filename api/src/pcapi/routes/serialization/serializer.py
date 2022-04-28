@@ -17,8 +17,8 @@ def serialize(value, column=None):  # type: ignore [no-untyped-def]
 
 
 @serialize.register(int)
-def _(value, column=None):  # type: ignore [no-untyped-def]
-    if column is not None and isinstance(column.type, Integer) and column.key.lower().endswith("id"):
+def _(value, column=None):
+    if column is not None and isinstance(column.expression.type, Integer) and column.key.lower().endswith("id"):
         return humanize(value)
 
     return value

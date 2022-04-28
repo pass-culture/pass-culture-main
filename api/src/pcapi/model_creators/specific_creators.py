@@ -10,6 +10,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.criteria.models import Criterion
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.factories import OfferFactory
+from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
@@ -111,62 +113,67 @@ def create_offer_with_thing_product(
     date_modified_at_last_provider: Optional[datetime] = datetime.utcnow(),
     validation: OfferValidationStatus = OfferValidationStatus.APPROVED,
 ) -> Offer:
-    offer = Offer()
+    offer_params = {
+        "venue": venue,
+        "dateCreated": date_created,
+        "dateModifiedAtLastProvider": date_modified_at_last_provider,
+        "bookingEmail": booking_email,
+        "isActive": is_active,
+        "lastProvider": last_provider,
+        "id": idx,
+        "withdrawalDetails": withdrawal_details,
+        "isDuo": False,
+        "validation": validation,
+    }
+
     if product:
-        offer.product = product
-        offer.productId = product.id
-        offer.name = product.name
-        offer.subcategoryId = product.subcategoryId
-        offer.mediaUrls = product.mediaUrls
-        offer.extraData = product.extraData
-        offer.url = product.url
-        offer.isNational = product.isNational
-        offer.description = product.description
+        offer_params |= {
+            "product": product,
+            "name": product.name,
+            "subcategoryId": product.subcategoryId,
+            "mediaUrls": product.mediaUrls,
+            "extraData": product.extraData,
+            "url": product.url,
+            "isNational": product.isNational,
+            "description": product.description,
+        }
     else:
         if is_digital:
             url = "fake/url"
         if is_offline_only:
             thing_subcategory_id = subcategories.CARTE_CINE_MULTISEANCES.id
 
-        offer.product = create_product_with_thing_subcategory(
-            thing_name=thing_name,  # type: ignore [arg-type]
-            thing_subcategory_id=thing_subcategory_id,
-            media_urls=media_urls,
-            idx=product_idx,
-            author_name=author_name,
+        product = ThingProductFactory.build(
+            name=thing_name,
+            subcategoryId=thing_subcategory_id,
+            mediaUrls=media_urls,
+            id=product_idx,
+            extraData={"author": author_name},
             url=url,
-            thumb_count=thumb_count,
-            is_national=is_national,
+            thumbCount=thumb_count,
+            isNational=is_national,
             description=description,
+            idAtProviders="".join(random.choices(string.digits, k=13)),
         )
-        offer.name = thing_name  # type: ignore [assignment]
-        offer.subcategoryId = thing_subcategory_id  # type: ignore [assignment]
-        offer.mediaUrls = media_urls  # type: ignore [assignment]
-        offer.extraData = {"author": author_name}
-        offer.url = url
-        offer.isNational = is_national
-        offer.description = description
-    offer.venue = venue
-    offer.dateCreated = date_created
-    offer.dateModifiedAtLastProvider = date_modified_at_last_provider
-    offer.bookingEmail = booking_email
-    offer.isActive = is_active
-    offer.lastProviderId = last_provider_id
-    offer.lastProvider = last_provider
-    offer.id = idx  # type: ignore [assignment]
-    offer.withdrawalDetails = withdrawal_details
-    offer.isDuo = False
-    offer.validation = validation  # type: ignore [assignment]
+        offer_params |= {
+            "product": product,
+            "name": thing_name,
+            "subcategoryId": thing_subcategory_id,
+            "mediaUrls": media_urls,
+            "url": url,
+            "isNational": is_national,
+            "description": description,
+        }
 
     if extra_data:
-        offer.extraData = extra_data
+        offer_params |= {"extraData": extra_data}
 
     if id_at_provider:
-        offer.idAtProvider = id_at_provider
+        offer_params |= {"idAtProvider": id_at_provider}
     elif venue is not None:
-        offer.idAtProvider = "%s" % offer.product.idAtProviders
+        offer_params |= {"idAtProvider": str(product.idAtProviders)}
 
-    return offer
+    return OfferFactory.build(**offer_params)
 
 
 def create_product_with_event_subcategory(
