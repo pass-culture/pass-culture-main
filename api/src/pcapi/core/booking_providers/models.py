@@ -1,4 +1,5 @@
 import enum
+from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -54,7 +55,7 @@ class VenueBookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
 
 
 class BookingProviderClientAPI:
-    def __init__(self, cinema_id: str, api_url: str, token: str):
+    def __init__(self, cinema_id: str, api_url: str, token: Optional[str]):
         self.token = token
         self.api_url = api_url
         self.cinema_id = cinema_id

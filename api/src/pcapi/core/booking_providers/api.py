@@ -27,9 +27,7 @@ def _get_booking_provider_client_api(venue_id: int) -> BookingProviderClientAPI:
     token = venue_booking_provider.token
     api_url = venue_booking_provider.bookingProvider.apiUrl
     if venue_booking_provider.bookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE:
-        if not token:
-            raise Exception(f"No token found for {BookingProviderName.CINE_DIGITAL_SERVICE} provider")
-        return CineDigitalServiceAPI(cinema_id, api_url, str(token))
+        return CineDigitalServiceAPI(cinema_id, api_url, token)
     raise Exception(f"No booking provider named : {venue_booking_provider.bookingProvider.name}")
 
 
