@@ -29,7 +29,7 @@ export default {
     const data = response.etablissement
 
     return {
-      address: data.geo_l4,
+      address: data.geo_l4 || data.unite_legale.etablissement_siege.geo_l4,
       city: data.libelle_commune,
       latitude: data.latitude !== null ? parseFloat(data.latitude) : null,
       longitude: data.longitude !== null ? parseFloat(data.longitude) : null,

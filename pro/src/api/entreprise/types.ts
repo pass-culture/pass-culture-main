@@ -48,6 +48,9 @@ export interface IEntrepriseApiJson {
       nom: string | null
       denomination: string | null
       etat_administratif: string
+      etablissement_siege: {
+        geo_l4: string
+      }
       siren: string
     }
     etat_administratif: string
