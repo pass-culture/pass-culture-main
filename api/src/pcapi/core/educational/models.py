@@ -319,6 +319,12 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     is_eligible_for_search = isReleased
 
+    @property
+    def subcategory(self) -> subcategories.Subcategory:
+        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
+            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
+        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+
     @classmethod
     def create_from_collective_offer(
         cls, collective_offer: CollectiveOffer, price_detail: str = None
