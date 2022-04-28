@@ -3,6 +3,7 @@ import os
 import pathlib
 import re
 from typing import Any
+from typing import Optional
 
 from dateutil import parser as date_parser
 import gql
@@ -26,6 +27,7 @@ ARCHIVE_APPLICATION_QUERY_NAME = "archive_application"
 GET_BIC_QUERY_NAME = "pro/get_banking_info_v2"
 GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_details"
 GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME = "beneficiaries/get_applications_with_details"
+MAKE_ON_GOING_MUTATION_NAME = "make_on_going"
 MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_wihtout_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
@@ -60,7 +62,7 @@ class DMSGraphQLClient:
     def build_query(self, query_name: str) -> str:
         return (GRAPHQL_DIRECTORY / f"{query_name}.graphql").read_text()
 
-    def execute_query(self, query_name: str, variables: dict[str, Any]) -> Any:
+    def execute_query(self, query_name: str, variables: dict[str, Any]) -> dict:
         query = self.build_query(query_name)
         logger.info("Executing dms query %s", query_name, extra=variables)
 
@@ -113,6 +115,31 @@ class DMSGraphQLClient:
             variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}},
         )
 
+    def make_on_going(
+        self, application_techid: str, instructeur_techid: str, disable_notification: Optional[bool] = False
+    ) -> Any:
+        try:
+            response = self.execute_query(
+                MAKE_ON_GOING_MUTATION_NAME,
+                variables={
+                    "input": {
+                        "dossierId": application_techid,
+                        "instructeurId": instructeur_techid,
+                        "disableNotification": disable_notification,
+                    }
+                },
+            )
+        except Exception:
+            logger.exception("Unexpected error when making on going", extra={"application_techid": application_techid})
+            raise exceptions.DmsGraphQLApiException()
+        if response["dossierPasserEnInstruction"]["errors"]:  # pylint: disable=unsubscriptable-object
+            logger.error(
+                "Error while making application on going %s",
+                response["dossierPasserEnInstruction"]["errors"],  # pylint: disable=unsubscriptable-object
+                extra={"application_techid": application_techid},
+            )
+            raise exceptions.DmsGraphQLApiException()
+
     def mark_without_continuation(self, application_techid: str, instructeur_techid: str, motivation: str) -> Any:
         try:
             response = self.execute_query(
@@ -130,10 +157,10 @@ class DMSGraphQLClient:
                 "Unexpected error when marking without continuation", extra={"application_techid": application_techid}
             )
             raise exceptions.DmsGraphQLApiException()
-        if response["dossierClasserSansSuite"]["errors"]:
+        if response["dossierClasserSansSuite"]["errors"]:  # pylint: disable=unsubscriptable-object
             logger.error(
                 "Error while marking application without continuation %s",
-                response["dossierClasserSansSuite"]["errors"],
+                response["dossierClasserSansSuite"]["errors"],  # pylint: disable=unsubscriptable-object
                 extra={"application_techid": application_techid},
             )
             raise exceptions.DmsGraphQLApiException()
@@ -143,7 +170,7 @@ class DMSGraphQLClient:
             GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": application_id}
         )
 
-        return dms_models.DmsApplicationResponse(**response["dossier"])
+        return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint disable=unsubscriptable-object
 
     def get_bic(self, dossier_id: int) -> Any:
         variables = {"dossierNumber": dossier_id}
