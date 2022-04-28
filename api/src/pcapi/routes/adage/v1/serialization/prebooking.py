@@ -5,12 +5,13 @@ from typing import Union
 from pydantic.fields import Field
 
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
@@ -171,12 +172,12 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
 
 
 def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
-    stock = collective_booking.collectiveStock
-    offer = stock.collectiveOffer
-    venue = offer.venue
+    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
+    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    venue: offerers_models.Venue = offer.venue
     return EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
-        address=_get_educational_offer_address(offer),
+        address=_get_collective_offer_address(offer),
         beginningDatetime=stock.beginningDatetime,
         cancellationDate=collective_booking.cancellationDate,
         cancellationLimitDate=collective_booking.cancellationLimitDate,
@@ -260,23 +261,20 @@ def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
     )
 
 
-def _get_collective_offer_contact(offer: CollectiveOffer) -> Contact:
-
+def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> Contact:
     return Contact(
         email=offer.contactEmail,
         phone=offer.contactPhone,
     )
 
 
-def _get_educational_offer_address(offer: Union[CollectiveOffer, offers_models.Offer]) -> str:
+# FIXME (cgaunet, 2022-04-28): Remove this method once cleaning old model is done
+def _get_educational_offer_address(offer: offers_models.Offer) -> str:
     default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
 
-    if isinstance(offer, CollectiveOffer):
-        offer_venue = offer.offerVenue
-    else:
-        if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:  # type: ignore [union-attr]
-            return default_address
-        offer_venue = offer.extraData["offerVenue"]  # type: ignore [call-overload]
+    if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:  # type: ignore [union-attr]
+        return default_address
+    offer_venue = offer.extraData["offerVenue"]  # type: ignore [call-overload]
 
     address_type = offer_venue["addressType"]
 
@@ -292,7 +290,29 @@ def _get_educational_offer_address(offer: Union[CollectiveOffer, offers_models.O
     return default_address
 
 
-def _get_educational_offer_accessibility(offer: offers_models.Offer) -> str:
+def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> str:
+    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
+
+    address_type = offer.offerVenue["addressType"]
+
+    if address_type == "offererVenue":
+        return default_address
+
+    if address_type == "other":
+        return offer.offerVenue["otherAddress"]
+
+    if address_type == "school":
+        return "Dans l’établissement scolaire"
+
+    return default_address
+
+
+def _get_educational_offer_accessibility(
+    offer: Union[
+        educational_models.CollectiveOffer,
+        offers_models.Offer,
+    ]
+) -> str:
     disability_compliance = []
     if offer.audioDisabilityCompliant:
         disability_compliance.append("Auditif")
