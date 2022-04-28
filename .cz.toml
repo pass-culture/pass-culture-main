@@ -16,13 +16,30 @@ message = "'BSR' or Jira ticket number. e.g. PC-XXXX"
 [[tool.commitizen.customize.questions]]
 type = "list"
 name = "affected_repository"
-choices = [{value = "API", name = "API"}, {value = "PRO", name = "PRO"}, {value = "ADAGE", name = "ADAGE"}, {value = "", name = "None of the above"}]
+choices = [
+    {value = "API", name = "API"}, 
+    {value = "PRO", name = "PRO"}, 
+    {value = "ADAGE", name = "ADAGE"}, 
+    {value = "", name = "None of the above"}
+]
 message = "Select the repository affected by the change you are committing"
 
 [[tool.commitizen.customize.questions]]
 type = "list"
 name = "change_type"
-choices = [{value = "fix", name = "fix: A bug fix."}, {value = "feat",name = "feat: A new feature."}, {value = "docs", name = "docs: Documentation only changes"},{value = "style",name = "style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)"},{value = "refactor",name = "refactor: A code change that neither fixes a bug nor adds a feature"},{value = "perf",name = "perf: A code change that improves performance"},{value = "test",name = "test: Adding missing or correcting existing tests"},{value = "build",name = "build: Changes that affect the build system or external dependencies (example scopes: pip, docker, npm)"},{value = "ci",name = "ci: Changes to our CI configuration files and scripts (example scopes: GitLabCI)"},]
+choices = [
+    {value = "fix", name = "fix: A bug fix."}, 
+    {value = "feat",name = "feat: A new feature."}, 
+    {value = "docs", name = "docs: Documentation only changes"},
+    {value = "style",name = "style: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)"},
+    {value = "refactor",name = "refactor: A code change that neither fixes a bug nor adds a feature"},
+    {value = "perf",name = "perf: A code change that improves performance"},
+    {value = "test",name = "test: Adding missing or correcting existing tests"},
+    {value = "build",name = "build: Changes that affect the build system or external dependencies (example scopes: pip, docker, npm)"},
+    {value = "ci",name = "ci: Changes to our CI configuration files and scripts (example scopes: GitLabCI)"},
+    {value = "bump",name="bump: Dependencies version bump"},
+    {value = "revert",name="revert: Revert a commit"}
+]
 message = "Select the type of changes you are committing"
 
 [[tool.commitizen.customize.questions]]
