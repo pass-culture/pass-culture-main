@@ -18,6 +18,7 @@ class TransactionalEmail(Enum):
         id_prod=225, id_not_prod=37, tags=["jeunes_offre_annulee_pros"]
     )
     BOOKING_CONFIRMATION_BY_BENEFICIARY = Template(id_prod=219, id_not_prod=29, tags=["jeunes_reservation_confirmee"])
+    BOOKING_EVENT_REMINDER_TO_BENEFICIARY = Template(id_prod=0, id_not_prod=82, tags=["jeunes_rappel_j-1"])
     BOOKING_POSTPONED_BY_PRO_TO_BENEFICIARY = Template(id_prod=224, id_not_prod=36, tags=["jeunes_offre_reportee_pro"])
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = Template(
         id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]

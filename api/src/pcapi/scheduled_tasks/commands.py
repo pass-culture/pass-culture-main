@@ -11,6 +11,9 @@ from pcapi.core.bookings.repository import find_educational_bookings_done_yester
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.fraud.api as fraud_api
+from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
+    send_individual_booking_event_reminder_email_to_beneficiary,
+)
 from pcapi.core.mails.transactional.educational.eac_satisfaction_study_to_pro import (
     send_eac_satisfaction_study_email_to_pro,
 )
@@ -193,6 +196,15 @@ def send_email_reminder_7_days_before_event() -> None:
     stocks = find_event_stocks_happening_in_x_days(7).options(sqla_orm.joinedload(Stock.offer).joinedload(Offer.venue))
     for stock in stocks:
         send_reminder_7_days_before_event_to_pro(stock)
+
+
+@blueprint.cli.command("send_email_reminder_tomorrow_event_to_beneficiaries")
+@log_cron_with_transaction
+def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
+    """Triggers email reminder to beneficiaries for events happening tomorrow"""
+    individual_bookings = bookings_repository.find_individual_bookings_event_happening_tomorrow_query()
+    for individual_booking in individual_bookings:
+        send_individual_booking_event_reminder_email_to_beneficiary(individual_booking)
 
 
 @blueprint.cli.command("clean_past_draft_offers")

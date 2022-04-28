@@ -853,3 +853,32 @@ def find_educational_bookings_done_yesterday() -> list[EducationalBooking]:
         )
         .all()
     )
+
+
+def find_individual_bookings_event_happening_tomorrow_query() -> list[IndividualBooking]:
+    tomorrow = datetime.utcnow() + timedelta(days=1)
+    tomorrow_min = datetime.combine(tomorrow, time.min)
+    tomorrow_max = datetime.combine(tomorrow, time.max)
+    return (
+        IndividualBooking.query.filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
+        .join(Booking)
+        .filter(Offer.isEvent)
+        .options(contains_eager(IndividualBooking.user).load_only(User.firstName, User.departementCode))
+        .options(
+            contains_eager(IndividualBooking.booking)
+            .load_only(Booking.id, Booking.stockId, Booking.quantity, Booking.token)
+            .joinedload(Booking.stock, innerjoin=True)
+            .load_only(Stock.beginningDatetime)
+            .joinedload(Stock.offer, innerjoin=True)
+            .load_only(
+                Offer.name,
+                Offer.subcategoryId,
+                Offer.withdrawalDelay,
+                Offer.withdrawalType,
+                Offer.withdrawalDetails,
+            )
+            .joinedload(Offer.venue, innerjoin=True)
+            .load_only(Venue.name, Venue.publicName, Venue.address, Venue.city, Venue.postalCode)
+        )
+        .all()
+    )
