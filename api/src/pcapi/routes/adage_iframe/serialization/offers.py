@@ -1,10 +1,14 @@
 from datetime import datetime
+import enum
 import logging
 from typing import Any
 from typing import Optional
 
+from pydantic import Field
 from pydantic.class_validators import validator
 
+from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
@@ -119,3 +123,60 @@ class CategoriesResponseModel(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class OfferAddressType(enum.Enum):
+    OFFERER_VENUE = "offererVenue"
+    SCHOOL = "school"
+    OTHER = "other"
+
+
+class CollectiveOfferOfferVenue(BaseModel):
+    addressType: OfferAddressType
+    otherAddress: str
+    venueId: str
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class CollectiveOfferResponseModel(BaseModel):
+    id: int
+    subcategoryLabel: str
+    description: Optional[str]
+    isExpired: bool
+    isSoldOut: bool
+    name: str
+    collectiveStock: OfferStockResponse = Field(alias="stock")
+    venue: OfferVenueResponse
+    students: list[str]
+    offerVenue: CollectiveOfferOfferVenue
+    contactEmail: str
+    contactPhone: str
+    durationMinutes: Optional[int]
+    motorDisabilityCompliant: bool
+    visualDisabilityCompliant: bool
+    audioDisabilityCompliant: bool
+    mentalDisabilityCompliant: bool
+    offerId: Optional[str]
+    educationalPriceDetail: Optional[str]
+
+    @classmethod
+    def from_orm(cls: Any, offer: CollectiveOffer):  # type: ignore
+        offer.subcategoryLabel = offer.subcategory.app_label
+        offer.isExpired = offer.hasBookingLimitDatetimesPassed
+        offer.students = [student.value for student in offer.students]
+
+        result = super().from_orm(offer)
+
+        result.isSoldOut = offer.collectiveStock.isSoldOut
+        result.educationalPriceDetail = offer.collectiveStock.priceDetail
+
+        return result
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+        allow_population_by_field_name = True
+        json_encoders = {datetime: format_into_utc_date}
