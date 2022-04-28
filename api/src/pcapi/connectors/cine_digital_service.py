@@ -20,7 +20,7 @@ class ResourceCDS(enum.Enum):
     SHOWS = "shows"
     PAYMENT_TYPE = "paiementtype"
     SCREENS = "screens"
-    SEATMAP = "shows/:showid/seatmap"
+    SEATMAP = "shows/:show_id/seatmap"
     CANCEL_BOOKING = "transaction/cancel"
 
 
