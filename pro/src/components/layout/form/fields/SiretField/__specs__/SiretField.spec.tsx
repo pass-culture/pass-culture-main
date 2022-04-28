@@ -1,8 +1,59 @@
 import fetch from 'jest-fetch-mock'
 
+import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
+
 import siretApiValidate from '../validators/siretApiValidate'
 
 describe('components | SiretField', () => {
+  describe('getSiretData', () => {
+    beforeEach(() => {
+      fetch.resetMocks()
+    })
+    it('should have a latitude and longitude if provided', async () => {
+      fetch.mockResponseOnce(
+        JSON.stringify({
+          etablissement: {
+            geo_l4: '19 RUE LAITIERE',
+            libelle_commune: 'BAYEUX',
+            latitude: null,
+            longitude: null,
+            enseigne_1: 'MUSEE DE LA TAPISSERIE DE BAYEUX',
+            code_postal: '14400',
+            siret: '12345178901834',
+            etat_administratif: 'A',
+            unite_legale: {
+              etat_administratif: 'A',
+              etablissement_siege: {
+                geo_l4: '19 RUE LAITIERE',
+                longitude: '1.9',
+                latitude: '1.9',
+              },
+            },
+          },
+        })
+      )
+      const siret = '12345178901834'
+      const values = await getSiretData(siret)
+
+      expect(values).toStrictEqual({
+        isOk: true,
+        message: `Informations récupéré avec success pour le SIRET: ${siret} :`,
+        payload: {
+          values: {
+            address: '19 RUE LAITIERE',
+            city: 'BAYEUX',
+            companyStatus: 'A',
+            latitude: 1.9,
+            legalUnitStatus: 'A',
+            longitude: 1.9,
+            name: 'MUSEE DE LA TAPISSERIE DE BAYEUX',
+            postalCode: '14400',
+            siret: siret,
+          },
+        },
+      })
+    })
+  })
   describe('siretApiValidate', () => {
     beforeEach(() => {
       fetch.resetMocks()
