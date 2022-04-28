@@ -2,7 +2,7 @@ import factory
 
 from pcapi.core.booking_providers.models import BookingProvider
 from pcapi.core.booking_providers.models import VenueBookingProvider
-from pcapi.core.offers.factories import VenueFactory
+from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import BaseFactory
 from pcapi.utils.token import random_token
 

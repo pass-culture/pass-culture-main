@@ -71,7 +71,7 @@ class GetBookingProviderClientApiTest:
             _get_booking_provider_client_api(venue_id)
 
         # Then
-        assert str(e.value) == f"No token found for {BookingProviderName.CINE_DIGITAL_SERVICE} provider"
+        assert str(e.value) == f"Missing token for {venue_booking_provider.idAtProvider}"
 
 
 @pytest.mark.usefixtures("db_session")

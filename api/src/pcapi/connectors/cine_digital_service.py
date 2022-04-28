@@ -35,7 +35,11 @@ MOCKS: dict[ResourceCDS, Union[dict, list[dict], list]] = {
 
 
 def get_resource(
-    api_url: str, cinema_id: str, token: str, resource: ResourceCDS, path_params: Optional[dict[str, Any]] = None
+    api_url: str,
+    cinema_id: str,
+    token: Optional[str],
+    resource: ResourceCDS,
+    path_params: Optional[dict[str, Any]] = None,
 ) -> Union[dict, list[dict], list]:
 
     if settings.IS_DEV:
@@ -53,7 +57,7 @@ def get_resource(
 
 
 def put_resource(
-    api_url: str, cinema_id: str, token: str, resource: ResourceCDS, body: BaseModel
+    api_url: str, cinema_id: str, token: Optional[str], resource: ResourceCDS, body: BaseModel
 ) -> Union[dict, list[dict], list]:
     if settings.IS_DEV:
         return MOCKS[resource]
@@ -71,7 +75,11 @@ def put_resource(
 
 
 def _build_url(
-    api_url: str, cinema_id: str, token: str, resource: ResourceCDS, path_params: Optional[dict[str, Any]] = None
+    api_url: str,
+    cinema_id: str,
+    token: Optional[str],
+    resource: ResourceCDS,
+    path_params: Optional[dict[str, Any]] = None,
 ) -> str:
     resource_url = resource.value
     if path_params:
