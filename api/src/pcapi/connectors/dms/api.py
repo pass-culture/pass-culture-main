@@ -16,6 +16,8 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.utils import requests
 from pcapi.utils.date import FrenchParserInfo
 
+from . import exceptions
+
 
 logger = logging.getLogger(__name__)
 GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
@@ -24,6 +26,7 @@ ARCHIVE_APPLICATION_QUERY_NAME = "archive_application"
 GET_BIC_QUERY_NAME = "pro/get_banking_info_v2"
 GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_details"
 GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME = "beneficiaries/get_applications_with_details"
+MARK_WITHOUT_CONTINUATION_MUTATION_NAME = "mark_wihtout_continuation"
 SEND_USER_MESSAGE_QUERY_NAME = "send_user_message"
 UPDATE_TEXT_ANNOTATION_QUERY_NAME = "update_text_annotation"
 
@@ -110,12 +113,37 @@ class DMSGraphQLClient:
             variables={"input": {"dossierId": application_techid, "instructeurId": instructeur_techid}},
         )
 
+    def mark_without_continuation(self, application_techid: str, instructeur_techid: str, motivation: str) -> Any:
+        try:
+            response = self.execute_query(
+                MARK_WITHOUT_CONTINUATION_MUTATION_NAME,
+                variables={
+                    "input": {
+                        "dossierId": application_techid,
+                        "instructeurId": instructeur_techid,
+                        "motivation": motivation,
+                    }
+                },
+            )
+        except Exception:
+            logger.exception(
+                "Unexpected error when marking without continuation", extra={"application_techid": application_techid}
+            )
+            raise exceptions.DmsGraphQLApiException()
+        if response["dossierClasserSansSuite"]["errors"]:
+            logger.error(
+                "Error while marking application without continuation %s",
+                response["dossierClasserSansSuite"]["errors"],
+                extra={"application_techid": application_techid},
+            )
+            raise exceptions.DmsGraphQLApiException()
+
     def get_single_application_details(self, application_id: int) -> dms_models.DmsApplicationResponse:
         response = self.execute_query(
             GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": application_id}
         )
 
-        return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
+        return dms_models.DmsApplicationResponse(**response["dossier"])
 
     def get_bic(self, dossier_id: int) -> Any:
         variables = {"dossierNumber": dossier_id}
