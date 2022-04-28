@@ -5,8 +5,7 @@ import pytest
 import pcapi.core.bookings.factories as booking_factories
 from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import Offerer
-import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users import testing as sendinblue_testing
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -21,8 +20,8 @@ class OffererViewTest:
         users_factories.AdminFactory(email="admin@example.com")
 
         offerer = offerers_factories.OffererFactory()
-        tag1 = offers_factories.OffererTagFactory(name="test_tag_1")
-        tag2 = offers_factories.OffererTagFactory(name="test_tag_2")
+        tag1 = offerers_factories.OffererTagFactory(name="test_tag_1")
+        tag2 = offerers_factories.OffererTagFactory(name="test_tag_2")
 
         api_client = client.with_session_auth("admin@example.com")
 
@@ -50,8 +49,8 @@ class OffererViewTest:
         users_factories.AdminFactory(email="admin@example.com")
 
         offerer = offerers_factories.OffererFactory()
-        offers_factories.OffererTagMappingFactory(offerer=offerer)
-        offers_factories.OffererTagMappingFactory(offerer=offerer)
+        offerers_factories.OffererTagMappingFactory(offerer=offerer)
+        offerers_factories.OffererTagMappingFactory(offerer=offerer)
 
         api_client = client.with_session_auth("admin@example.com")
 
@@ -190,7 +189,7 @@ class OffererViewTest:
         )
 
         assert response.status_code == 302
-        assert len(Offerer.query.all()) == 0
+        assert len(offerers_models.Offerer.query.all()) == 0
         assert len(sendinblue_testing.sendinblue_requests) == 2
         assert {req["email"] for req in sendinblue_testing.sendinblue_requests} == {
             pro_user.email,
@@ -228,5 +227,5 @@ class OffererViewTest:
             in list_response.data.decode("utf8")
         )
 
-        assert len(Offerer.query.all()) == 1
+        assert len(offerers_models.Offerer.query.all()) == 1
         assert len(sendinblue_testing.sendinblue_requests) == 0

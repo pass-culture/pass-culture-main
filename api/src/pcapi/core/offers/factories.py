@@ -7,7 +7,6 @@ import schwifty
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.bank_information import BankInformation
@@ -233,18 +232,3 @@ class OfferValidationConfigFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.UserFactory)
     specs = factory.LazyAttribute(lambda config: {"minimum_score": 0.1, "rules": []})
-
-
-class OffererTagFactory(BaseFactory):
-    class Meta:
-        model = offerers_models.OffererTag
-
-    name = factory.Sequence("OffererTag_{}".format)
-
-
-class OffererTagMappingFactory(BaseFactory):
-    class Meta:
-        model = offerers_models.OffererTagMapping
-
-    offerer = factory.SubFactory(offerers_factories.OffererFactory)
-    tag = factory.SubFactory(OffererTagFactory)
