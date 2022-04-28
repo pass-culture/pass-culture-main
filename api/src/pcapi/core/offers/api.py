@@ -43,6 +43,9 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_bene
 from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
     send_booking_cancellation_confirmation_by_pro_email,
 )
+from pcapi.core.mails.transactional.bookings.booking_cancellation_confirmation_by_pro import (
+    send_collective_booking_cancellation_confirmation_by_pro_email,
+)
 from pcapi.core.mails.transactional.bookings.booking_postponed_by_pro_to_beneficiary import (
     send_batch_booking_postponement_email_to_users,
 )
@@ -1297,18 +1300,22 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
     )
 
 
-def cancel_collective_offer_booking(offer: Offer) -> None:
-    collective_offer = CollectiveOffer.query.filter(CollectiveOffer.offerId == offer.id).first()
+def cancel_collective_offer_booking(offer_id: int, *, legacy: bool = False) -> None:
+    search_field = CollectiveOffer.offerId if legacy else CollectiveOffer.id
+    collective_offer = CollectiveOffer.query.filter(search_field == offer_id).first()
 
     if collective_offer is None:
         # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
         # and all data has been migrated to the new models
+        # NOTE (Raphael Paoloni - 2022-04-28): this case cannot append outside of legacy mode
         return
 
     if collective_offer.collectiveStock is None:
-        # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
-        # and all data has been migrated to the new models
-        return
+        if legacy:
+            # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
+            # and all data has been migrated to the new models
+            return
+        raise offers_exceptions.StockNotFound()
 
     collective_stock = collective_offer.collectiveStock
 
@@ -1316,16 +1323,20 @@ def cancel_collective_offer_booking(offer: Offer) -> None:
     cancelled_booking = cancel_collective_booking_from_stock_by_offerer(collective_stock)
 
     if cancelled_booking is None:
-        # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
-        # and all data has been migrated to the new models
-        return
+        if legacy:
+            # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
+            # and all data has been migrated to the new models
+            return
+        raise offers_exceptions.NoBookingToCancel()
+
+    search.async_index_collective_offer_ids([offer_id])
 
     logger.info(
         "Deleted collective stock and cancelled its collective booking",
         extra={"stock": collective_stock.id, "collective_booking": cancelled_booking.id},
     )
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() or not legacy:
         try:
             adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
         except AdageException as adage_error:
@@ -1345,7 +1356,7 @@ def cancel_collective_offer_booking(offer: Offer) -> None:
                     "collectiveBookingId": cancelled_booking.id,
                 },
             )
-        if not send_booking_cancellation_confirmation_by_pro_email([cancelled_booking]):
+        if not send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
             logger.warning(
                 "Could not notify offerer about deletion of stock",
                 extra={"collectiveStock": collective_stock.id},
