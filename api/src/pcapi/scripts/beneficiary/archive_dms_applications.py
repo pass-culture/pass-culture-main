@@ -32,7 +32,7 @@ def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
         if bi and bi.beneficiary.has_beneficiary_role:
             instructeur_techid = settings.DMS_ENROLLMENT_INSTRUCTOR
             if not dry_run:
-                client.archive_application(application_techid, instructeur_techid)  # type: ignore [arg-type]
+                client.archive_application(application_techid, instructeur_techid)
             logger.info(
                 "Archiving application %d on procedure %d for user_id %d",
                 application_number,
