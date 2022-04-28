@@ -50,6 +50,8 @@ export interface IEntrepriseApiJson {
       etat_administratif: string
       etablissement_siege: {
         geo_l4: string
+        longitude: string
+        latitude: string
       }
       siren: string
     }
