@@ -98,7 +98,8 @@ const OfferDetails = ({
             thumbUrl,
             croppingRect?.x,
             croppingRect?.y,
-            croppingRect?.height
+            croppingRect?.height,
+            croppingRect?.width
           )
         } catch (error) {
           setThumbnailError(true)
