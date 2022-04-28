@@ -381,3 +381,17 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
+    priceDetail: Optional[str]
+
+    @validator("priceDetail")
+    def validate_price_detail(cls, price_detail: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
+        if price_detail and len(price_detail) > 1000:
+            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
+        return price_detail
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"

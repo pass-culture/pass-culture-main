@@ -389,41 +389,7 @@ def update_collective_offer(
         # FIXME (MathildeDuboille - 2022-03-07): raise an error once all data has been migrated (PC-13427)
         return
 
-    validation.check_validation_status(offer_to_update)
-    # This variable is meant for Adage mailing
-    updated_fields = []
-    for key, value in new_values.items():
-        updated_fields.append(key)
-
-        if legacy:
-            # FIXME (MathildeDuboille - 2022-03-07): remove this "if" once ENABLE_NEW_COLLECTIVE_MODEL FF is enabled on production
-            if key == "extraData":
-                for extra_data_key, extra_data_value in value.items():
-                    # We denormalize extra_data for Adage mailing
-                    updated_fields.append(extra_data_key)
-
-                    if extra_data_key == "students":
-                        students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in extra_data_value]
-                        setattr(offer_to_update, extra_data_key, students)
-                        continue
-
-                    setattr(offer_to_update, extra_data_key, extra_data_value)
-                continue
-
-        if key == "subcategoryId":
-            validation.check_offer_is_eligible_for_educational(value.name, True)
-            offer_to_update.subcategoryId = value.name
-            continue
-
-        if key == "students":
-            students = [StudentLevels(student) for student in value]
-            setattr(offer_to_update, key, students)
-            continue
-
-        setattr(offer_to_update, key, value)
-
-    db.session.add(offer_to_update)
-    db.session.commit()
+    updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
     if is_offer_showcase:
         search.async_index_collective_offer_template_ids([offer_to_update.id])
@@ -431,10 +397,57 @@ def update_collective_offer(
         search.async_index_collective_offer_ids([offer_to_update.id])
 
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() or not legacy:
-        educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
-            offer_to_update.id,
-            updated_fields,
-        )
+        if not is_offer_showcase:
+            educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
+                offer_to_update.id,
+                updated_fields,
+            )
+
+
+def update_collective_offe_template(offer_id: int, new_values: dict) -> None:
+    query = educational_models.CollectiveOfferTemplate.query
+    query = query.filter(educational_models.CollectiveOfferTemplate.id == offer_id)
+    offer_to_update = query.first()
+    _update_collective_offer(offer=offer_to_update, new_values=new_values)
+    search.async_index_collective_offer_template_ids([offer_to_update.id])
+
+
+def _update_collective_offer(offer: Union[CollectiveOffer, CollectiveOfferTemplate], new_values: dict) -> list[str]:
+    validation.check_validation_status(offer)
+    # This variable is meant for Adage mailing
+    updated_fields = []
+    for key, value in new_values.items():
+        updated_fields.append(key)
+
+        # FIXME (MathildeDuboille - 2022-03-07): remove this "if" once ENABLE_NEW_COLLECTIVE_MODEL FF is enabled on production
+        if key == "extraData":
+            for extra_data_key, extra_data_value in value.items():
+                # We denormalize extra_data for Adage mailing
+                updated_fields.append(extra_data_key)
+
+                if extra_data_key == "students":
+                    students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in extra_data_value]
+                    setattr(offer, extra_data_key, students)
+                    continue
+
+                setattr(offer, extra_data_key, extra_data_value)
+            continue
+
+        if key == "subcategoryId":
+            validation.check_offer_is_eligible_for_educational(value.name, True)
+            offer.subcategoryId = value.name
+            continue
+
+        if key == "students":
+            students = [StudentLevels(student) for student in value]
+            setattr(offer, key, students)
+            continue
+
+        setattr(offer, key, value)
+
+    db.session.add(offer)
+    db.session.commit()
+    return updated_fields
 
 
 def batch_update_offers(query, update_fields):  # type: ignore [no-untyped-def]
