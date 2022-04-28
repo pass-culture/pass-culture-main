@@ -138,6 +138,14 @@ export type CreateCollectiveStockPayload = {
   educationalPriceDetail: string
 }
 
+export type EditCollectiveStockPayload = {
+  beginningDatetime: Date | undefined | null
+  bookingLimitDatetime: Date | undefined | null
+  totalPrice: number | undefined | null
+  numberOfTickets: number | undefined | null
+  educationalPriceDetail: string | undefined | null
+}
+
 export type CreateCollectiveOfferTemplatePayload = {
   educationalPriceDetail: string
 }
