@@ -417,9 +417,13 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
         end = max([stock.beginningDatetime for stock in self.activeStocks])  # type: ignore [type-var]
         return DateTimes(start, end)
 
-    @property
+    @sa.ext.hybrid.hybrid_property
     def isEvent(self) -> bool:
         return self.subcategory.is_event
+
+    @isEvent.expression  # type: ignore [no-redef]
+    def isEvent(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.subcategoryId.in_(subcategories.EVENT_SUBCATEGORIES)
 
     @property
     def isThing(self) -> bool:
