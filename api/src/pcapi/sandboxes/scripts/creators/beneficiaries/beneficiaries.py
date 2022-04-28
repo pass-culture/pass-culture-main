@@ -51,7 +51,15 @@ def create_beneficiary_with_empty_deposit() -> None:
         hasSeenTutorials=True,
     )
     bookings_factories.IndividualBookingFactory(
-        individualBooking__user=beneficiary_user, amount=beneficiary_user.deposit.amount
+        amount=beneficiary_user.deposit.amount,
+        individualBooking__user=beneficiary_user,
+        # OffererFactory and VenueFactory would set the siren and
+        # siret to '000000000[00000]', which we sometimes use in our
+        # prod database for (probably dubious) reasons. That would make
+        # the prod->staging dump crash because of a unicity constraint
+        # violation.
+        stock__offer__venue__siret="55555555500000",
+        stock__offer__venue__managingOfferer__siren="555555555",
     )
 
     logger.info("created 1 beneficiary with empty deposit")
