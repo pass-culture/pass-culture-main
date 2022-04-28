@@ -322,7 +322,7 @@ def cancel_educational_offer_booking(offer_id: str) -> None:
     check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     try:
         offers_api.cancel_educational_offer_booking(offer)
-        offers_api.cancel_collective_offer_booking(offer)
+        offers_api.cancel_collective_offer_booking(offer.id, legacy=True)
     except exceptions.StockNotFound:
         raise ApiErrors(
             {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404

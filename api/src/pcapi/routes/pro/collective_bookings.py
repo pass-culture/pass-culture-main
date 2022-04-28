@@ -8,10 +8,17 @@ from flask_login import login_required
 
 from pcapi.core.educational import api as collective_api
 from pcapi.core.educational import repository as collective_repository
+from pcapi.core.offerers import api as offerers_api
+from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offers import api as offers_api
+from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.routes.serialization.bookings_serialize import UserHasBookingResponse
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils.human_ids import dehumanize_or_raise
+from pcapi.utils.rest import check_user_has_access_to_offerer
 
 from . import blueprint
 from ..serialization.collective_bookings_serialize import serialize_collective_booking
@@ -95,3 +102,34 @@ def get_collective_bookings_csv(query: collective_bookings_serialize.ListCollect
 def get_user_has_collective_bookings() -> UserHasBookingResponse:
     user = current_user._get_current_object()
     return UserHasBookingResponse(hasBookings=collective_repository.user_has_bookings(user))
+
+
+@private_api.route("/collective/offers/<offer_id>/cancel_booking", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    on_error_statuses=[400, 403, 404],
+    api=blueprint.pro_private_schema,
+)
+def cancel_collective_offer_booking(offer_id: str) -> None:
+
+    dehumanized_offer_id = dehumanize_or_raise(offer_id)
+
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors(
+            {"code": "NO_EDUCATIONAL_OFFER_FOUND", "message": "No educational offer has been found with this id"}, 404
+        )
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        offers_api.cancel_collective_offer_booking(dehumanized_offer_id)
+    except offers_exceptions.StockNotFound:
+        raise ApiErrors(
+            {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404
+        )
+    except offers_exceptions.NoBookingToCancel:
+        raise ApiErrors({"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}, 400)
+    return
