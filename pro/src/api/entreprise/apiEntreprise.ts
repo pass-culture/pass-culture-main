@@ -28,11 +28,15 @@ export default {
     )
     const data = response.etablissement
 
+    const latitude =
+      data.latitude || data.unite_legale.etablissement_siege.latitude
+    const longitude =
+      data.longitude || data.unite_legale.etablissement_siege.longitude
     return {
       address: data.geo_l4 || data.unite_legale.etablissement_siege.geo_l4,
       city: data.libelle_commune,
-      latitude: data.latitude !== null ? parseFloat(data.latitude) : null,
-      longitude: data.longitude !== null ? parseFloat(data.longitude) : null,
+      latitude: latitude !== null ? parseFloat(latitude) : null,
+      longitude: longitude !== null ? parseFloat(longitude) : null,
       name:
         data.enseigne_1 ||
         data.unite_legale.denomination ||
