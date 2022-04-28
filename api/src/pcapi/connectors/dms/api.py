@@ -170,7 +170,7 @@ class DMSGraphQLClient:
             GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": application_id}
         )
 
-        return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint disable=unsubscriptable-object
+        return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object
 
     def get_bic(self, dossier_id: int) -> Any:
         variables = {"dossierNumber": dossier_id}
