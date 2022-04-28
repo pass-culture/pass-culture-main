@@ -24,7 +24,7 @@ class CineDigitalServiceBuildUrlTest:
         api_url = "test_url/"
         token = "test_token"
         resource = ResourceCDS.SEATMAP
-        path_params = {"showid": 1}
+        path_params = {"show_id": 1}
 
         url = _build_url(api_url, cinema_id, token, resource, path_params)
 
@@ -77,7 +77,7 @@ class CineDigitalServiceGetResourceTest:
         api_url = "test_url/"
         token = "test_token"
         resource = ResourceCDS.SEATMAP
-        path_params = {"showid": 1}
+        path_params = {"show_id": 1}
 
         # When
         get_resource(api_url, cinema_id, token, resource, path_params)
