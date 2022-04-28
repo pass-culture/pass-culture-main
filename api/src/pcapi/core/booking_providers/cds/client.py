@@ -15,6 +15,11 @@ from pcapi.core.booking_providers.models import SeatCDS
 
 
 class CineDigitalServiceAPI(BookingProviderClientAPI):
+    def __init__(self, cinema_id: str, api_url: str, token: Optional[str]):
+        if not token:
+            raise ValueError(f"Missing token for {cinema_id}")
+        super().__init__(cinema_id, api_url, token)
+
     def get_show_remaining_places(self, show_id: int) -> int:
         show = self.get_show(show_id)
         return show.internet_remaining_place
