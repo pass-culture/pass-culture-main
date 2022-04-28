@@ -28,11 +28,13 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getCollectiveStockAdapter } from './adapters/getCollectiveStockAdapter'
+import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
 
 const getAdapter = (
   offer: GetStockOfferSuccessPayload,
-  educationalOfferType: EducationalOfferType
+  educationalOfferType: EducationalOfferType,
+  isNewCollectiveModelEnabled: boolean
 ) => {
   if (offer.isShowcase) {
     return educationalOfferType === EducationalOfferType.CLASSIC
@@ -40,7 +42,9 @@ const getAdapter = (
       : patchShadowStockAdapter
   }
 
-  return patchEducationalStockAdapter
+  return isNewCollectiveModelEnabled
+    ? patchCollectiveStockAdapter
+    : patchEducationalStockAdapter
 }
 
 const getGetOfferAdapter = (enableIndividualAndCollectiveSeparation: boolean) =>
@@ -52,6 +56,9 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
   const enableIndividualAndCollectiveSeparation = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
+  const isNewCollectiveModelEnabled = useActiveFeature(
+    'ENABLE_NEW_COLLECTIVE_MODEL'
   )
 
   const [initialValues, setInitialValues] =
@@ -72,7 +79,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
-    const adapter = getAdapter(offer, values.educationalOfferType)
+    const adapter = getAdapter(
+      offer,
+      values.educationalOfferType,
+      isNewCollectiveModelEnabled
+    )
 
     const stockResponse = await adapter({
       offer,

@@ -13,6 +13,7 @@ import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
   EditEducationalOfferPayload,
+  EditCollectiveStockPayload,
 } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Offer } from 'custom_types/offer'
@@ -379,6 +380,13 @@ export const createEducationalShadowStock = (offerId, stock) =>
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'stockId' implicitly has an 'any' type.
 export const editEducationalStock = (stockId, stock) => {
+  return client.patch(`/stocks/educational/${stockId}`, stock)
+}
+
+export const editCollectiveStock = (
+  stockId: string,
+  stock: Partial<EditCollectiveStockPayload>
+) => {
   return client.patch(`/stocks/educational/${stockId}`, stock)
 }
 
