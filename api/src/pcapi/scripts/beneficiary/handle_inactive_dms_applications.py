@@ -2,11 +2,14 @@ import datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
+from sqlalchemy.orm import exc as sqla_exc
 
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.fraud import models as fraud_models
+from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
@@ -23,6 +26,7 @@ def handle_inactive_dms_applications(procedure_id: int) -> None:
         try:
             if _has_inactivity_delay_expired(draft_application):
                 _mark_without_continuation_a_draft_application(draft_application)
+                _mark_cancel_dms_fraud_check(draft_application.number)
         except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
             logger.exception("Could not mark application %s without continuation", draft_application.number)
             continue
@@ -68,3 +72,18 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
     )
 
     logger.info("Marked application %s without continuation", dms_application.number)
+
+
+def _mark_cancel_dms_fraud_check(application_number: int) -> None:
+    try:
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            type=fraud_models.FraudCheckType.DMS, thirdPartyId=str(application_number)
+        ).one_or_none()
+    except sqla_exc.MultipleResultsFound:
+        logger.exception("Multiple fraud checks found for application %s", application_number)
+        return
+
+    if fraud_check:
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
+        fraud_check.reason = f"Automatiquement classé sans_suite car aucune activité n'a eu lieu depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours"
+        repository.save(fraud_check)
