@@ -909,6 +909,10 @@ def get_collective_offer_by_id(offer_id: int) -> CollectiveOffer:
     return educational_repository.get_collective_offer_by_id(offer_id)
 
 
+def get_collective_offer_template_by_id(offer_id: int) -> CollectiveOffer:
+    return educational_repository.get_collective_offer_template_by_id(offer_id)
+
+
 def create_collective_offer_template_from_collective_offer(
     price_detail: Optional[str], user: User, offer_id: int
 ) -> CollectiveOfferTemplate:
