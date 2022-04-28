@@ -222,3 +222,31 @@ def create_collective_offer_template_from_collective_offer(
         )
 
     return collective_offers_serialize.CollectiveOfferTemplateResponseIdModel.from_orm(collective_offer_template)
+
+
+@private_api.route("/collective/offers-template/<offer_id>", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    response_model=collective_offers_serialize.GetCollectiveOfferTemplateResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def edit_collective_offer_template(
+    offer_id: str, body: collective_offers_serialize.PatchCollectiveOfferTemplateBodyModel
+) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        offers_api.update_collective_offer(
+            offer_id=dehumanized_id, is_offer_showcase=True, new_values=body.dict(exclude_unset=True)
+        )
+    except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
+        raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
+    else:
+        offer = educational_api.get_collective_offer_template_by_id(dehumanized_id)
+        return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)

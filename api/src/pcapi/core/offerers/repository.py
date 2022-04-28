@@ -245,6 +245,18 @@ def get_by_collective_stock_id(collective_stock_id: int) -> models.Offerer:
     return offerer
 
 
+def get_by_collective_offer_template_id(collective_offer_id: int) -> models.Offerer:
+    offerer = (
+        models.Offerer.query.join(models.Venue)
+        .join(CollectiveOfferTemplate)
+        .filter(CollectiveOfferTemplate.id == collective_offer_id)
+        .one_or_none()
+    )
+    if not offerer:
+        raise exceptions.CannotFindOffererForOfferId()
+    return offerer
+
+
 def find_new_offerer_user_email(offerer_id: int) -> str:
     result_tuple = models.UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()
     if result_tuple:
