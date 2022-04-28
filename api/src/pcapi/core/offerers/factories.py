@@ -134,3 +134,18 @@ class ApiKeyFactory(BaseFactory):
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
         kwargs["secret"] = crypto.hash_password(kwargs.get("secret", DEFAULT_SECRET))
         return super()._create(model_class, *args, **kwargs)
+
+
+class OffererTagFactory(BaseFactory):
+    class Meta:
+        model = models.OffererTag
+
+    name = factory.Sequence("OffererTag_{}".format)
+
+
+class OffererTagMappingFactory(BaseFactory):
+    class Meta:
+        model = models.OffererTagMapping
+
+    offerer = factory.SubFactory(OffererFactory)
+    tag = factory.SubFactory(OffererTagFactory)
