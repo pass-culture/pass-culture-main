@@ -120,7 +120,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
     admin.add_admin_role()
     admin.firstName = "Jeanne"
     admin.lastName = "Admin"
-    admin.publicName = f"{user.firstName} {user.lastName}"  # type: ignore [union-attr]
+    admin.publicName = f"{admin.firstName} {admin.lastName}"
     repository.save(admin)
     logger.info("Created or updated admin user=%s", admin.id)
     return users
