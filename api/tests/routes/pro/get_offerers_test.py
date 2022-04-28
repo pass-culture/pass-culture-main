@@ -10,6 +10,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.skip
 def test_access_by_pro(client):
     offerer1 = offerers_factories.OffererFactory(name="offreur B")
     offerer2 = offerers_factories.OffererFactory(name="offreur A")
@@ -48,6 +49,7 @@ def test_access_by_pro(client):
     assert offerers[1]["nOffers"] == 0
 
 
+@pytest.mark.skip
 def test_access_by_admin(client):
     offerer_b = offerers_factories.OffererFactory(name="offreur B")
     offerers_factories.VenueFactory(managingOfferer=offerer_b)
@@ -83,6 +85,7 @@ def test_access_by_admin(client):
     assert response.json["nbTotalResults"] == 3
 
 
+@pytest.mark.skip
 def test_filter_on_keywords(client):
     offerer1 = offerers_factories.OffererFactory(name="Cinema")
     offerer2 = offerers_factories.OffererFactory(name="Encore Un Cinema")

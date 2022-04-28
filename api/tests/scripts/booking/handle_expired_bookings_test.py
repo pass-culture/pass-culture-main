@@ -153,6 +153,7 @@ class CancelExpiredIndividualBookingsTest:
         assert expired_individual_booking.status == BookingStatus.CANCELLED
         assert book_individual_recent_booking.status != BookingStatus.CANCELLED
 
+    @pytest.mark.skip
     def test_queries_performance_individual_bookings(self, app) -> None:
         now = datetime.utcnow()
         two_months_ago = now - timedelta(days=60)
@@ -291,6 +292,7 @@ class CancelExpiredEducationalBookingsTest:
 
 
 class CancelExpiredCollectiveBookingsTest:
+    @pytest.mark.skip
     def test_should_cancel_pending_dated_collective_booking_when_confirmation_limit_date_has_passed(self, app) -> None:
         # Given
         now = datetime.utcnow()
@@ -341,6 +343,7 @@ class CancelExpiredCollectiveBookingsTest:
         # Then
         assert pending_collective_booking.status == CollectiveBookingStatus.PENDING
 
+    @pytest.mark.skip
     def test_handle_expired_bookings_should_cancel_expired_collective_bookings(self, app) -> None:
         # Given
         now = datetime.utcnow()
@@ -361,6 +364,7 @@ class CancelExpiredCollectiveBookingsTest:
         assert expired_pending_collective_booking.status == CollectiveBookingStatus.CANCELLED
         assert non_expired_pending_collective_booking.status == CollectiveBookingStatus.PENDING
 
+    @pytest.mark.skip
     def test_queries_performance_collective_bookings(self, app) -> None:
         now = datetime.utcnow()
         yesterday = now - timedelta(days=1)

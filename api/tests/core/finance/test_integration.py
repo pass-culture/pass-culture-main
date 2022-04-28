@@ -12,6 +12,7 @@ from pcapi.models import db
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.skip
 def test_integration():
     booking = bookings_factories.IndividualBookingFactory()
     bookings_api.mark_as_used(booking)

@@ -16,6 +16,7 @@ def _run_command(app, *args):
     return runner.invoke(args=args)
 
 
+@pytest.mark.skip
 def test_basics(app):
     stock = offers_factories.StockFactory(price=24.68)
     offer = stock.offer
@@ -36,6 +37,7 @@ def test_basics(app):
     assert rule.amount == decimal.Decimal("12.34")
 
 
+@pytest.mark.skip
 def test_warnings(app):
     stock = offers_factories.StockFactory(price=24.68)
     offer = stock.offer
@@ -56,6 +58,7 @@ def test_warnings(app):
     assert payments_models.CustomReimbursementRule.query.count() == 0
 
 
+@pytest.mark.skip
 def test_force_with_warnings(app):
     stock = offers_factories.StockFactory(price=24.68)
     offer = stock.offer
