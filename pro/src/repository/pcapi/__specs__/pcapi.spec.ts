@@ -249,11 +249,12 @@ describe('pcapi', () => {
       body.append('croppingRectX', '12')
       body.append('croppingRectY', '32')
       body.append('croppingRectHeight', '350')
+      body.append('croppingRectWidth', '220')
       body.append('thumb', file)
       body.append('thumbUrl', '')
 
       // when
-      postThumbnail('AA', 'Mon crédit', file, '', '12', '32', '350')
+      postThumbnail('AA', 'Mon crédit', file, '', '12', '32', '350', '220')
 
       // then
       expect(client.postWithFormData).toHaveBeenCalledWith(

@@ -94,7 +94,8 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
             thumbUrl,
             croppingRect?.x,
             croppingRect?.y,
-            croppingRect?.height
+            croppingRect?.height,
+            croppingRect?.width
           )
         } catch (error) {
           setThumbnailError(true)

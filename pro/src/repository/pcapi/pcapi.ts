@@ -433,7 +433,9 @@ export const postThumbnail = (
   // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'y' implicitly has an 'any' type.
   y,
   // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'height' implicitly has an 'any' type.
-  height
+  height,
+  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'width' implicitly has an 'any' type.
+  width
 ) => {
   const body = new FormData()
   body.append('offerId', offerId)
@@ -441,6 +443,7 @@ export const postThumbnail = (
   body.append('croppingRectX', x)
   body.append('croppingRectY', y)
   body.append('croppingRectHeight', height)
+  body.append('croppingRectWidth', width)
   body.append('thumb', thumb)
   body.append('thumbUrl', thumbUrl)
 
