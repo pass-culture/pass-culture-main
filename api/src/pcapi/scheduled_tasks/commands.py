@@ -46,6 +46,8 @@ from pcapi.tasks import batch_tasks
 from pcapi.utils.blueprint import Blueprint
 from pcapi.workers.push_notification_job import send_today_stock_notification
 
+from .clock import DMS_OLD_PROCEDURE_ID
+
 
 blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
@@ -94,7 +96,7 @@ def import_dms_users_beneficiaries() -> None:
 def import_dms_users_beneficiaries_from_old_dms() -> None:
     if not settings.IS_PROD:
         return
-    procedure_id = 44623
+    procedure_id = DMS_OLD_PROCEDURE_ID
     dms_api.import_dms_users(procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
