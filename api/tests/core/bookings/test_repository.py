@@ -2682,3 +2682,63 @@ class GetEducationalEventOffersDoneYesterdayTest:
         educational_bookings = find_educational_bookings_done_yesterday()
         assert len(educational_bookings) == 2
         assert set(educational_bookings) == {booking.educationalBooking for booking in bookings_created}
+
+
+class GetTomorrowEventOfferTest:
+    @freeze_time("2020-10-15 09:00:00")
+    def test_find_tomorrow_event_offer(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        bookings_factories.IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=tomorrow,
+            )
+        )
+
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 1
+
+    def should_not_select_given_before_tomorrow_booking_event(self):
+        yesterday = datetime.utcnow() - timedelta(days=1)
+        bookings_factories.IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=yesterday,
+            )
+        )
+
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 0
+
+    def should_not_select_given_after_tomorrow_booking_event(self):
+        after_tomorrow = datetime.utcnow() + timedelta(days=2)
+        bookings_factories.IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=after_tomorrow,
+            )
+        )
+
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 0
+
+    def should_not_select_given_not_booking_event(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        bookings_factories.IndividualBookingFactory(stock__beginningDatetime=tomorrow)
+
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 0
+
+    def should_do_only_one_query(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        bookings_factories.IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=tomorrow,
+            )
+        )
+
+        with assert_num_queries(1):
+            bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 1
