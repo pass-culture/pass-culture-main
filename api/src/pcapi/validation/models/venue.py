@@ -8,7 +8,7 @@ def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
     if venue.siret and len(venue.siret) != 14:
         api_errors.add_error("siret", f"Ce code SIRET est invalide : {venue.siret}")
 
-    if venue.postalCode and len(venue.postalCode) != 5:  # type: ignore [has-type]
+    if venue.postalCode and len(venue.postalCode) != 5:
         api_errors.add_error("postalCode", "Ce code postal est invalide")
 
     if venue.managingOffererId:
