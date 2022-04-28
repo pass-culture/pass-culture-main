@@ -5,7 +5,8 @@ FROM python:3.9-slim AS builder
 RUN apt-get update \
 	&& apt-get -y install \
 		gcc \
-		libpq-dev
+		libpq-dev \
+    git
 
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 

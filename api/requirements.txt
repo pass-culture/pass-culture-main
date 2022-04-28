@@ -24,7 +24,7 @@ Flask-Cors==3.0.10
 Flask-JWT-Extended==4.3.1
 Flask-Limiter==1.4
 Flask-Login==0.5.0
-Flask-SQLAlchemy==2.4.4
+Flask-SQLAlchemy==2.5.1
 freezegun==0.3.12
 google-auth==2.6.2
 google-api-python-client==2.41.0
@@ -51,7 +51,7 @@ pysaml2
 pytest==6.2.5
 pytest-cov==2.10.1
 pytest-flask==1.0.0
-pytest-flask-sqlalchemy==1.0.2
+git+https://github.com/jeancochrane/pytest-flask-sqlalchemy@ea5c5ee935ed2d9cdc56061c243a6004d7c8fe7e#egg=pytest-flask-sqlalchemy
 python-keystoneclient==3.22.0
 pytest-mock==3.3.1
 pytest-dotenv==0.5.2
@@ -66,7 +66,7 @@ sentry-sdk==0.18.0
 sib-api-v3-sdk
 simplejson==3.17.2
 spectree==0.7.2
-SQLAlchemy==1.3.*
+SQLAlchemy==1.4.*
 sqlalchemy-stubs
 slack-sdk==3.13.0
 # FIXME (xordoquy, 2021-08-16): current apscheduler version (3.6.3)

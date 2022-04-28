@@ -676,7 +676,7 @@ def _paginated_bookings_sql_entities_to_bookings_recap(
     total_bookings_recap: int,
 ) -> BookingsRecapPaginated:
     return BookingsRecapPaginated(
-        bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings],  # type: ignore [arg-type]
+        bookings_recap=[_serialize_booking_recap(booking) for booking in paginated_bookings],
         page=page,
         pages=int(math.ceil(total_bookings_recap / per_page_limit)),
         total=total_bookings_recap,
