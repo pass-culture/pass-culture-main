@@ -95,6 +95,7 @@ class FeatureToggle(enum.Enum):
     )
     OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
     ALLOW_ACCOUNT_REACTIVATION = "Activer le nouveau parcours de réactivation de compte"
+    ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE = "Active l'utilisation des nouveaux indexes algolia sur adage"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -152,6 +153,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.ALLOW_ACCOUNT_REACTIVATION,
+    FeatureToggle.ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE,
 )
 
 
