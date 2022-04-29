@@ -640,7 +640,9 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content)
+        result = fraud_api.decide_eligibility(
+            user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
+        )
         assert result == users_models.EligibilityType.AGE18
 
     @freeze_time("2020-01-02")
@@ -655,7 +657,9 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content)
+        result = fraud_api.decide_eligibility(
+            user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
+        )
         assert result == None
 
     @freeze_time("2020-01-02")
@@ -675,7 +679,9 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content)
+        result = fraud_api.decide_eligibility(
+            user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
+        )
         assert result == None
 
     @freeze_time("2020-01-02")
@@ -695,7 +701,9 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content)
+        result = fraud_api.decide_eligibility(
+            user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
+        )
         assert result == users_models.EligibilityType.AGE18
 
     @freeze_time("2020-01-02")
@@ -709,5 +717,7 @@ class DecideEligibilityTest:
             user=user, type=fraud_models.FraudCheckType.DMS, resultContent=dms_content
         )
 
-        result = fraud_api.decide_eligibility(user, dms_content)
+        result = fraud_api.decide_eligibility(
+            user, dms_content.get_birth_date(), dms_content.get_registration_datetime()
+        )
         assert result == users_models.EligibilityType.AGE18

@@ -3,16 +3,17 @@ import logging
 
 import flask
 
-import pcapi.core.fraud.api as fraud_api
-import pcapi.core.fraud.models as fraud_models
+from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import models as fraud_models
+from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
-import pcapi.core.payments.exceptions as payment_exceptions
+from pcapi.core.payments import exceptions as payment_exceptions
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
-import pcapi.core.subscription.exceptions as subscription_exceptions
 from pcapi.core.subscription.models import SubscriptionItemStatus
-import pcapi.core.users.api as users_api
-import pcapi.core.users.models as users_models
+from pcapi.core.users import api as users_api
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
@@ -76,11 +77,13 @@ def on_admin_review(review: fraud_models.BeneficiaryFraudReview, user: users_mod
             flask.flash("Pas de vérification d'identité effectuée", "error")
             return flask.redirect(flask.url_for(".details_view", id=user.id))
 
-        source_data = fraud_check.source_data()
+        source_data: common_fraud_models.IdentityCheckContent = fraud_check.source_data()  # type: ignore [assignment]
 
-        users_api.update_user_information_from_external_source(user, source_data)  # type: ignore [arg-type]
+        users_api.update_user_information_from_external_source(user, source_data)
         if data["eligibility"] == "Par défaut":
-            eligibility = fraud_api.decide_eligibility(user, source_data)  # type: ignore [arg-type]
+            eligibility = fraud_api.decide_eligibility(
+                user, source_data.get_birth_date(), source_data.get_registration_datetime()
+            )
 
             if not eligibility:
                 flask.flash(
