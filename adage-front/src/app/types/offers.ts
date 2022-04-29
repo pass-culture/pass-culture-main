@@ -61,3 +61,34 @@ export interface StockType {
   numberOfTickets?: number
   educationalPriceDetail?: string
 }
+
+export type CollectiveOfferBaseModel = {
+  id: number
+  subcategoryLabel: string
+  description?: string
+  isExpired: boolean
+  isSoldOut: boolean
+  name: string
+  venue: VenueType
+  students: string[]
+  offerVenue: {
+    addressType: ADRESS_TYPE
+    otherAddress: string
+    venueId: string
+  }
+  contactEmail: string
+  contactPhone: string
+  durationMinutes?: number
+  motorDisabilityCompliant: boolean
+  visualDisabilityCompliant: boolean
+  audioDisabilityCompliant: boolean
+  mentalDisabilityCompliant: boolean
+  offerId?: string
+  educationalPriceDetail?: string
+}
+
+export type CollectiveOffer = CollectiveOfferBaseModel & {
+  stock: StockType
+}
+
+export type CollectiveOfferTemplate = CollectiveOfferBaseModel

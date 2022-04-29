@@ -1,10 +1,10 @@
-type AdapterSuccess<T> = {
+export type AdapterSuccess<T> = {
   isOk: true
   message: string | null
   payload: T
 }
 
-type AdapterFailure<T> = {
+export type AdapterFailure<T> = {
   isOk: false
   message: string
   payload: T
