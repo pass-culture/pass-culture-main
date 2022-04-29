@@ -3,9 +3,9 @@ import React, { useContext } from 'react'
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Option } from 'app/types'
+import { VenueFilterType } from 'app/types/offers'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ResetIcon } from 'assets/reset.svg'
-import { VenueFilterType } from 'utils/types'
 
 import './OfferFiltersTags.scss'
 

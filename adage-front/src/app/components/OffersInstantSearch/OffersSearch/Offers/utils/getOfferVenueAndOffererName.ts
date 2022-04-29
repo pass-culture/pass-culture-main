@@ -1,4 +1,4 @@
-import { VenueType } from 'utils/types'
+import { VenueType } from 'app/types/offers'
 
 const formatToReadableString = (input: string): string => {
   const lowerCasedInput = input.toLowerCase()

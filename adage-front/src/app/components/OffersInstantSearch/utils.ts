@@ -2,7 +2,7 @@ import flatMap from 'lodash/flatMap'
 
 import { LEGACY_INITIAL_FACET_FILTERS } from 'app/constants'
 import { Facets, Option } from 'app/types'
-import { VenueFilterType } from 'utils/types'
+import { VenueFilterType } from 'app/types/offers'
 
 export const populateFacetFilters = ({
   departments,

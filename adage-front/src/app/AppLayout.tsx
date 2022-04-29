@@ -4,7 +4,9 @@ import * as React from 'react'
 import { OffersInstantSearch } from 'app/components/OffersInstantSearch/OffersInstantSearch'
 import { ReactComponent as Download } from 'assets/download.svg'
 import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
-import { Role, VenueFilterType } from 'utils/types'
+import { Role } from 'utils/types'
+
+import { VenueFilterType } from './types/offers'
 
 export const AppLayout = ({
   userRole,
