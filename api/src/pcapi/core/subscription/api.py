@@ -108,9 +108,9 @@ def _has_completed_profile(user: users_models.User) -> bool:
     return all(elem is not None for elem in mandatory_fields)
 
 
-def has_completed_profile(user: users_models.User) -> bool:
+def should_complete_profile(user: users_models.User) -> bool:
     if _has_completed_profile(user):
-        return True
+        return False
     # if the user has a pending DMS subscription, we consider the profile as potentially completed
     # (it will be completed when the subscription is activated)
     user_pending_dms_fraud_checks = [
@@ -122,9 +122,9 @@ def has_completed_profile(user: users_models.User) -> bool:
         and fraud_check.resultContent["city"] is not None  # TODO: remove when all DMS applications ask for city
     ]
     if user_pending_dms_fraud_checks:
-        return True
+        return False
 
-    return False
+    return True
 
 
 def is_eligibility_activable(
@@ -204,7 +204,7 @@ def get_user_profiling_subscription_item(
 def get_profile_completion_subscription_item(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
-    if has_completed_profile(user):
+    if not should_complete_profile(user):
         status = models.SubscriptionItemStatus.OK
     elif is_eligibility_activable(user, eligibility):
         status = models.SubscriptionItemStatus.TODO
@@ -294,7 +294,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if user_profiling_item.status == models.SubscriptionItemStatus.KO:
         return None
 
-    if not has_completed_profile(user):
+    if should_complete_profile(user):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
     if _needs_to_perform_identity_check(user):
