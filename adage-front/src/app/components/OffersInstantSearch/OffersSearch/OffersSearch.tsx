@@ -4,7 +4,7 @@ import { useEffect, useContext, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import { INITIAL_FACET_FILTERS, INITIAL_QUERY } from 'app/constants'
+import { LEGACY_INITIAL_FACET_FILTERS, INITIAL_QUERY } from 'app/constants'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters } from 'app/types'
@@ -47,13 +47,16 @@ export const OffersSearchComponent = ({
     removeQuery()
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
-    setFacetFilters([...INITIAL_FACET_FILTERS])
+    setFacetFilters([...LEGACY_INITIAL_FACET_FILTERS])
     refine(INITIAL_QUERY)
   }
 
   useEffect(() => {
     if (venueFilter?.id) {
-      setFacetFilters([...INITIAL_FACET_FILTERS, `venue.id:${venueFilter.id}`])
+      setFacetFilters([
+        ...LEGACY_INITIAL_FACET_FILTERS,
+        `venue.id:${venueFilter.id}`,
+      ])
     }
   }, [setFacetFilters, venueFilter])
 

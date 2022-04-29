@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useMemo, useState } from 'react'
 
-import { INITIAL_FACET_FILTERS } from 'app/constants'
+import { LEGACY_INITIAL_FACET_FILTERS } from 'app/constants'
 import { Facets } from 'app/types'
 
 export type FacetFiltersContextType = {
@@ -9,7 +9,7 @@ export type FacetFiltersContextType = {
 }
 
 export const facetFiltersContextInitialValues: FacetFiltersContextType = {
-  facetFilters: INITIAL_FACET_FILTERS,
+  facetFilters: LEGACY_INITIAL_FACET_FILTERS,
   setFacetFilters: () => null,
 }
 
@@ -23,7 +23,7 @@ export const FacetFiltersContextProvider = ({
   children: ReactNode | ReactNode[]
 }): JSX.Element => {
   const [facetFilters, setFacetFilters] = useState<Facets>([
-    ...INITIAL_FACET_FILTERS,
+    ...LEGACY_INITIAL_FACET_FILTERS,
   ])
 
   const value = useMemo(
