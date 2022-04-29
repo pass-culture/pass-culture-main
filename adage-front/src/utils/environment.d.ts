@@ -4,6 +4,7 @@ declare namespace NodeJS {
     REACT_APP_ALGOLIA_APP_ID: string
     REACT_APP_ALGOLIA_API_KEY: string
     REACT_APP_ALGOLIA_OFFERS_INDEX: string
+    REACT_APP_ALGOLIA_COLLECTIVE_OFFERS_INDEX: string
     REACT_APP_ENVIRONMENT_NAME:
       | 'Local'
       | 'testing'
