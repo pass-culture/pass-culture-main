@@ -1,5 +1,10 @@
 import { Category, Feature, SubCategory } from 'app/types'
-import { OfferType, VenueFilterType } from 'app/types/offers'
+import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
+  OfferType,
+  VenueFilterType,
+} from 'app/types/offers'
 import { client } from 'repository/pcapi/pcapiClient'
 import { Role } from 'utils/types'
 
@@ -14,6 +19,16 @@ export const getOffer = async (
 ): Promise<OfferType> => {
   return client.get(`/adage-iframe/offer/${offerId}`)
 }
+
+export const getCollectiveOffer = async (
+  offerId: number | string
+): Promise<CollectiveOffer> =>
+  client.get(`/adage-iframe/collective/offers/${offerId}`)
+
+export const getCollectiveOfferTemplate = async (
+  offerId: number | string
+): Promise<CollectiveOfferTemplate> =>
+  client.get(`/adage-iframe/collective/offers-template/${offerId}`)
 
 export const getVenueBySiret = async (
   siret: string
