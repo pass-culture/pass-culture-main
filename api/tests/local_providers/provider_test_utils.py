@@ -4,7 +4,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import Model
-import pcapi.sandboxes
+
+import tests
 
 
 class TestLocalProvider(LocalProvider):
@@ -65,7 +66,7 @@ class TestLocalProviderWithThumb(LocalProvider):
         self.venue_provider = venue_provider
 
     def get_object_thumb(self) -> bytes:
-        file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as f:
             return f.read()
 
@@ -89,7 +90,7 @@ class TestLocalProviderWithThumbIndexAt4(LocalProvider):
         self.venue_provider = venue_provider
 
     def get_object_thumb(self) -> bytes:
-        file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as f:
             return f.read()
 

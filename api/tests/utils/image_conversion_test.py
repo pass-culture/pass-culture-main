@@ -4,8 +4,9 @@ import pathlib
 import PIL
 import pytest
 
-from pcapi.utils.image_conversion import IMAGE_RATIO_LANDSCAPE_DEFAULT
-from pcapi.utils.image_conversion import IMAGE_RATIO_PORTRAIT_DEFAULT
+from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import ImageRatio
+from pcapi.utils.image_conversion import ImageRatioError
 from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _resize_image
 from pcapi.utils.image_conversion import _transpose_image
@@ -61,7 +62,7 @@ class ImageConversionTest:
         expected_image = PIL.Image.open(io.BytesIO(image_as_bytes)).convert("RGB")
 
         # when
-        resized_image = _resize_image(expected_image, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT)
+        resized_image = _resize_image(expected_image, ratio=ImageRatio.PORTRAIT)
 
         # then
         difference = PIL.ImageChops.difference(resized_image, expected_image)
@@ -70,18 +71,25 @@ class ImageConversionTest:
     def test_image_ratio_portrait(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 
-        standardized_image = standardize_image(image_as_bytes, ratio=IMAGE_RATIO_PORTRAIT_DEFAULT)
+        standardized_image = standardize_image(image_as_bytes, ratio=ImageRatio.PORTRAIT)
 
         result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
-        assert (result_image.width / result_image.height) == pytest.approx(IMAGE_RATIO_PORTRAIT_DEFAULT, 0.01)
+        assert (result_image.width / result_image.height) == pytest.approx(ImageRatio.PORTRAIT.value, 0.01)
 
     def test_image_ratio_landscape(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
 
-        standardized_image = standardize_image(image_as_bytes, ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT)
+        standardized_image = standardize_image(image_as_bytes, ratio=ImageRatio.LANDSCAPE)
 
         result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
-        assert (result_image.width / result_image.height) == pytest.approx(IMAGE_RATIO_LANDSCAPE_DEFAULT, 0.01)
+        assert (result_image.width / result_image.height) == pytest.approx(ImageRatio.LANDSCAPE.value, 0.01)
+
+    def test_crop_with_incorrect_ratio(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+
+        with pytest.raises(ImageRatioError):
+            crop_params = CropParams(height_crop_percent=0.3, width_crop_percent=0.3)
+            standardize_image(image_as_bytes, crop_params=crop_params, ratio=ImageRatio.LANDSCAPE)
 
     def test_image_shrink_with_same_ratio(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()

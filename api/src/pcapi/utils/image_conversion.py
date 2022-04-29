@@ -6,7 +6,9 @@ from the PIL library:
     https://pillow.readthedocs.io/
 """
 from dataclasses import dataclass
+import enum
 import io
+import math
 from typing import Optional
 from typing import TYPE_CHECKING
 
@@ -40,6 +42,20 @@ class Coordinates:
     y: float
 
 
+class ImageRatio(enum.Enum):
+    """Ratio is width / height"""
+
+    PORTRAIT: float = 6 / 9
+    LANDSCAPE: float = 3 / 2
+
+
+class ImageRatioError(Exception):
+    def __init__(self, expected: float, found: float):
+        self.expected = expected
+        self.found = found
+        super().__init__(f"expected {expected}, found {found}")
+
+
 MAX_THUMB_WIDTH = 750
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = CropParams()
@@ -48,7 +64,7 @@ IMAGE_RATIO_PORTRAIT_DEFAULT = 6 / 9
 IMAGE_RATIO_LANDSCAPE_DEFAULT = 3 / 2
 
 
-def standardize_image(content: bytes, ratio: float, crop_params: Optional[CropParams] = None) -> bytes:
+def standardize_image(content: bytes, ratio: ImageRatio, crop_params: Optional[CropParams] = None) -> bytes:
     """
     Standardization steps are:
         * transpose image
@@ -71,7 +87,6 @@ def standardize_image(content: bytes, ratio: float, crop_params: Optional[CropPa
     better understanding of how the cropping works:
         https://pillow.readthedocs.io/en/stable/handbook/concepts.html#coordinate-system
     """
-
     preprocessed_image = _pre_process_image(content)
 
     crop_params = crop_params or DO_NOT_CROP
@@ -83,6 +98,7 @@ def standardize_image(content: bytes, ratio: float, crop_params: Optional[CropPa
         preprocessed_image,
     )
     resized_image = _resize_image(cropped_image, ratio)
+    resized_image = _check_ratio(resized_image, ratio)
 
     return _post_process_image(resized_image)
 
@@ -122,6 +138,13 @@ def _transpose_image(raw_image: PIL.Image) -> PIL.Image:
     return ImageOps.exif_transpose(raw_image)
 
 
+def _check_ratio(image: PIL.Image, ratio: ImageRatio) -> PIL.Image:
+    image_ratio = image.width / image.height
+    if not math.isclose(image_ratio, ratio.value, abs_tol=0.04):
+        raise ImageRatioError(expected=ratio.value, found=image_ratio)
+    return image
+
+
 def _crop_image(
     x_crop_percent: CropParam,
     y_crop_percent: CropParam,
@@ -155,14 +178,14 @@ def _crop_image(
     return cropped_img
 
 
-def _resize_image(image: Image, ratio: float) -> Image:
+def _resize_image(image: Image, ratio: ImageRatio) -> Image:
     """
     Resize image, adapt ratio if image is too wide
     """
     if image.width <= MAX_THUMB_WIDTH:
         return image
 
-    height_to_width_ratio = 1 / ratio
+    height_to_width_ratio = 1 / ratio.value
     new_height = int(MAX_THUMB_WIDTH * height_to_width_ratio)
     return image.resize([MAX_THUMB_WIDTH, new_height])
 
