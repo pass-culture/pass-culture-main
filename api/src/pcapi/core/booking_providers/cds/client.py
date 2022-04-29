@@ -125,6 +125,12 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
 
     def cancel_booking(self, barcodes: list[str]) -> None:
         paiement_type_id = self.get_payment_type().id
+        barcodes_int = []
+        for barcode in barcodes:
+            if not barcode.isdigit():
+                raise ValueError(f"Barcode {barcode} contains one or more invalid char (only digit allowed)")
+            barcodes_int.append(int(barcode))
+
         cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes, paiementtypeid=paiement_type_id)
         api_response = put_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
 
