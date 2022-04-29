@@ -98,9 +98,19 @@ def reset_password(body: ResetPasswordRequest) -> None:
         raise ApiErrors({"token": ["Le token de changement de mot de passe est invalide."]})
 
     user.setPassword(body.new_password)
-    user.isEmailValidated = True
+
+    if not user.isEmailValidated:
+        user.isEmailValidated = True
+        try:
+            dms_subscription_api.try_dms_orphan_adoption(user)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception(
+                "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
+            )
+
     if user.is_subscriptionState_account_created():
         user.validate_email()
+
     repository.save(user)
 
 
@@ -142,7 +152,9 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     try:
         dms_subscription_api.try_dms_orphan_adoption(user)
     except Exception:  # pylint: disable=broad-except
-        logger.exception("An unexpected error occurred while trying to link dms orphan to user")
+        logger.exception(
+            "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
+        )
 
     response = ValidateEmailResponse(
         access_token=users_api.create_user_access_token(user),
