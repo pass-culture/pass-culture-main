@@ -74,23 +74,14 @@ def activate_beneficiary_for_eligibility(
 
 
 def get_activable_identity_fraud_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
-    """Finds first created activable identity fraud check for a user.
-
-    Args:
-        user (User): user to find activable identity fraud check for.
-
-    Returns:
-        BeneficiaryFraudCheck: activable identity fraud check for a user.
-    """
+    """Finds latest created activable identity fraud check for a user."""
     user_identity_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.status == fraud_models.FraudCheckStatus.OK
         and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
         and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
-        and not (
-            fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE and user.age >= users_constants.ELIGIBILITY_AGE_18  # type: ignore [operator]
-        )  # TODO: put this condition inside is_eligible_for_beneficiary_upgrade
+        and users_api.is_user_age_compatible_with_eligibility(user, fraud_check.eligibilityType)
     ]
     if not user_identity_fraud_checks:
         return None
