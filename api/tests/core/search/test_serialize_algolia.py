@@ -197,6 +197,7 @@ def test_serialize_collective_offer():
             "name": "La Moyenne Librairie SA",
             "publicName": "La Moyenne Librairie",
         },
+        "isTemplate": False,
     }
 
 
@@ -215,7 +216,7 @@ def test_serialize_collective_offer_template():
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
     assert serialized == {
-        "objectID": collective_offer_template.id,
+        "objectID": f"T-{collective_offer_template.id}",
         "offer": {
             "dateCreated": 1641031200.0,
             "name": "Titre formidable",
@@ -231,4 +232,5 @@ def test_serialize_collective_offer_template():
             "name": "La Moyenne Librairie SA",
             "publicName": "La Moyenne Librairie",
         },
+        "isTemplate": True,
     }
