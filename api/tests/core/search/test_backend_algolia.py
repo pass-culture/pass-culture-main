@@ -384,21 +384,17 @@ def test_index_collective_offers_templates():
     backend = get_backend()
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.build()
     with requests_mock.Mocker() as mock:
-        posted = mock.post(
-            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers-templates/batch", json={}
-        )
+        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
         backend.index_collective_offer_templates([collective_offer_template])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "updateObject"
-        assert posted_json["requests"][0]["body"]["objectID"] == collective_offer_template.id
+        assert posted_json["requests"][0]["body"]["objectID"] == f"T-{collective_offer_template.id}"
 
 
 def test_unindex_collective_offer__templatesids():
     backend = get_backend()
     with requests_mock.Mocker() as mock:
-        posted = mock.post(
-            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers-templates/batch", json={}
-        )
+        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
         backend.unindex_collective_offer_template_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
@@ -408,9 +404,7 @@ def test_unindex_collective_offer__templatesids():
 def test_unindex_all_collective_offers_templates():
     backend = get_backend()
     with requests_mock.Mocker() as mock:
-        posted = mock.post(
-            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers-templates/clear", json={}
-        )
+        posted = mock.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear", json={})
         backend.unindex_all_collective_offers_templates()
         assert posted.called
 

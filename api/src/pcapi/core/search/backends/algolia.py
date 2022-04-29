@@ -81,7 +81,7 @@ class AlgoliaBackend(base.SearchBackend):
         self.algolia_offers_client = client.init_index(settings.ALGOLIA_OFFERS_INDEX_NAME)
         self.algolia_collective_offers_client = client.init_index(settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME)
         self.algolia_collective_offers_templates_client = client.init_index(
-            settings.ALGOLIA_COLLECTIVE_OFFERS_TEMPLATES_INDEX_NAME
+            settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME
         )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
         self.redis_client = current_app.redis_client
@@ -483,6 +483,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
+            "isTemplate": False,
         }
 
     @classmethod
@@ -494,7 +495,7 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = collective_offer_template.dateCreated.timestamp()
 
         return {
-            "objectID": collective_offer_template.id,
+            "objectID": f"T-{collective_offer_template.id}",
             "offer": {
                 "dateCreated": date_created,
                 "name": collective_offer_template.name,
@@ -510,6 +511,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": venue.name,
                 "publicName": venue.publicName,
             },
+            "isTemplate": True,
         }
 
     def redis_lpop(self, queue_name: str, count: int) -> set[int]:
