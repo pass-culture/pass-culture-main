@@ -85,6 +85,7 @@ export const OffersSearchComponent = ({
         <Offers
           handleResetFiltersAndLaunchSearch={handleResetFiltersAndLaunchSearch}
           setIsLoading={setIsLoading}
+          useNewAlgoliaIndex={useNewAlgoliaIndex}
           userRole={userRole}
         />
       </div>

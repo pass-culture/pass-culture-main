@@ -6,6 +6,8 @@ import { connectHits } from 'react-instantsearch-core'
 import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
+import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapter'
+import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
 import { OfferType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -17,10 +19,21 @@ import { Offer } from './Offer'
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
 
+const extractOfferIdFromObjectId = (offerId: string): string => {
+  const splitResult = offerId.split('T-')
+
+  if (splitResult.length === 2) {
+    return splitResult[1]
+  }
+
+  return offerId
+}
+
 export interface OffersComponentProps extends HitsProvided<ResultType> {
   userRole: Role
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
+  useNewAlgoliaIndex: boolean
 }
 
 export const OffersComponent = ({
@@ -28,6 +41,7 @@ export const OffersComponent = ({
   setIsLoading,
   handleResetFiltersAndLaunchSearch,
   hits,
+  useNewAlgoliaIndex,
 }: OffersComponentProps): JSX.Element => {
   const offersThumbById = {}
   hits.forEach(hit => {
@@ -39,7 +53,21 @@ export const OffersComponent = ({
       queryKey: ['offer', hit.objectID],
       queryFn: async () => {
         try {
-          const offer = await pcapi.getOffer(hit.objectID)
+          let offer: OfferType
+          if (useNewAlgoliaIndex) {
+            const offerId = extractOfferIdFromObjectId(hit.objectID)
+            const { isOk, payload } = await (hit.isTemplate
+              ? getCollectiveOfferTemplateAdapter(offerId)
+              : getCollectiveOfferAdapter(offerId))
+
+            if (!isOk) {
+              return
+            }
+
+            offer = payload as OfferType
+          } else {
+            offer = await pcapi.getOffer(hit.objectID)
+          }
           if (offer && offerIsBookable(offer)) return offer
         } catch (e) {
           captureException(e)
