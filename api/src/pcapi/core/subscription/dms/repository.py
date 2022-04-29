@@ -38,9 +38,9 @@ def _get_already_processed_applications_ids_from_fraud_checks(procedure_id: int)
     fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter(
         fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
         or_(
-            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer) == procedure_id,
             fraud_models.BeneficiaryFraudCheck.resultContent
             == None,  # If there was a parsing error, a fraudCheck exists but no resultContent
+            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer) == procedure_id,
         ),
         fraud_models.BeneficiaryFraudCheck.status.notin_(
             [

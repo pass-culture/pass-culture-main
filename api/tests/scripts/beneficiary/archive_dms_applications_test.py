@@ -1,12 +1,11 @@
-import logging
 from unittest.mock import patch
 
 import pytest
 
 from pcapi.connectors.dms import api as api_dms
 from pcapi.core import testing
-from pcapi.core.users import factories as users_factories
-from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
 from pcapi.scripts.beneficiary import archive_dms_applications
 
 from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
@@ -14,67 +13,35 @@ from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 
 @pytest.mark.usefixtures("db_session")
 class ArchiveDMSApplicationsTest:
-
-    PROCEDURE_ID = 123
-
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    @patch.object(api_dms.DMSGraphQLClient, "archive_application")
-    def test_archive_applications(self, dms_archive, dms_applications):
-        application_id = 42
-        user = users_factories.BeneficiaryGrant18Factory()
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            sourceId=self.PROCEDURE_ID, applicationId=application_id, beneficiary=user
-        )
-        users_factories.BeneficiaryImportStatusFactory(
-            beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED
-        )
-        dms_applications.return_value = [make_parsed_graphql_application(application_id, "accepte", email=user.email)]
-
-        archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=False)
-        assert dms_archive.call_count == 1
-
-    @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
-    @patch.object(api_dms.DMSGraphQLClient, "archive_application")
-    def test_archive_applications_dry_run(self, dms_archive, dms_applications):
-        application_id = 42
-        user = users_factories.BeneficiaryGrant18Factory()
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            sourceId=self.PROCEDURE_ID, applicationId=application_id, beneficiary=user
-        )
-        users_factories.BeneficiaryImportStatusFactory(
-            beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED
-        )
-        dms_applications.return_value = [make_parsed_graphql_application(application_id, "accepte", email=user.email)]
-
-        archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=True)
-
-        assert dms_archive.call_count == 0
-
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     @patch.object(api_dms.DMSGraphQLClient, "archive_application")
     @testing.override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
-    def test_archive_applications_only_archive_beneficiary(self, dms_archive, dms_applications, caplog):
-        caplog.set_level(logging.INFO)
-        application_id = 42
-        user_to_archive = users_factories.BeneficiaryGrant18Factory()
-        beneficiary_import = users_factories.BeneficiaryImportFactory(
-            sourceId=self.PROCEDURE_ID, applicationId=application_id, beneficiary=user_to_archive
-        )
-        users_factories.BeneficiaryImportStatusFactory(
-            beneficiaryImport=beneficiary_import, status=ImportStatus.CREATED
-        )
-        user_to_not_archive = users_factories.UserFactory()
-        application_to_archive = make_parsed_graphql_application(application_id, "accepte", email=user_to_archive.email)
-        dms_applications.return_value = [
-            make_parsed_graphql_application(20, "accepte", email=user_to_not_archive.email),
-            application_to_archive,
-        ]
-        archive_dms_applications.archive_applications(self.PROCEDURE_ID, dry_run=False)
-        assert dms_archive.call_count == 1
-        assert dms_archive.call_args == [(application_to_archive.id, "SomeInstructorId")]
+    def test_archive_applications(self, dms_archive, dms_applications):
+        to_archive_applications_id = 123
+        pending_applications_id = 456
+        procedure_id = 1
 
-        assert (
-            caplog.messages[0]
-            == f"Archiving application {application_id} on procedure {self.PROCEDURE_ID} for user_id {user_to_archive.id}"
+        content = fraud_factories.DMSContentFactory(procedure_id=procedure_id)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            resultContent=content,
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(to_archive_applications_id),
         )
-        assert caplog.messages[1] == "script ran : total applications : 2 to archive applications : 1"
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            resultContent=content,
+            status=fraud_models.FraudCheckStatus.STARTED,
+            type=fraud_models.FraudCheckType.DMS,
+            thirdPartyId=str(pending_applications_id),
+        )
+        dms_applications.return_value = [
+            make_parsed_graphql_application(
+                to_archive_applications_id, "accepte", application_techid="TO_ARCHIVE_TECHID"
+            ),
+            make_parsed_graphql_application(pending_applications_id, "accepte", application_techid="PENDING_ID"),
+        ]
+
+        archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+
+        dms_archive.assert_called_once()
+        assert dms_archive.call_args[0] == ("TO_ARCHIVE_TECHID", "SomeInstructorId")
