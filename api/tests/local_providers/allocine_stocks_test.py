@@ -17,8 +17,9 @@ from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.local_providers import AllocineStocks
 from pcapi.models.product import Product
 from pcapi.repository import repository
-import pcapi.sandboxes
 from pcapi.utils.human_ids import humanize
+
+import tests
 
 
 MOVIE_INFO = {
@@ -701,7 +702,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
-        file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
             mock_get_object_thumb.return_value = thumb_file.read()
 
@@ -760,7 +761,7 @@ class UpdateObjectsTest:
                 }
             ]
         )
-        file_path = Path(pcapi.sandboxes.__path__[0]) / "providers" / "titelive_mocks" / "provider_thumb.jpeg"
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(file_path, "rb") as thumb_file:
             mock_get_object_thumb.return_value = thumb_file.read()
 

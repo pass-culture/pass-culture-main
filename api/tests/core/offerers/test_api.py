@@ -594,7 +594,7 @@ class VenueBannerTest:
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
@@ -619,7 +619,7 @@ class VenueBannerTest:
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         first_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
-        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        second_image_content = (VenueBannerTest.IMAGES_DIR / "mouette_landscape.jpg").read_bytes()
         directory = pathlib.Path(tmpdir.dirname) / "thumbs" / "venues"
 
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):

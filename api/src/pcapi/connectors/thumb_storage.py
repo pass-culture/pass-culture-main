@@ -4,7 +4,7 @@ from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.models import Model
 from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.image_conversion import IMAGE_RATIO_PORTRAIT_DEFAULT
+from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
 
@@ -14,7 +14,7 @@ def create_thumb(
     image_as_bytes: bytes,
     image_index: int,
     crop_params: typing.Optional[CropParams] = None,
-    ratio: float = IMAGE_RATIO_PORTRAIT_DEFAULT,
+    ratio: ImageRatio = ImageRatio.PORTRAIT,
     keep_ratio: bool = False,
 ) -> None:
     if keep_ratio:
