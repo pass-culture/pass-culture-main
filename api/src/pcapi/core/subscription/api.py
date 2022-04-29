@@ -103,9 +103,28 @@ def activate_beneficiary(user: users_models.User) -> users_models.User:
     return activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)  # type: ignore [arg-type]
 
 
-def has_completed_profile(user: users_models.User) -> bool:
+def _has_completed_profile(user: users_models.User) -> bool:
     mandatory_fields = [user.city, user.activity, user.firstName, user.lastName]
     return all(elem is not None for elem in mandatory_fields)
+
+
+def has_completed_profile(user: users_models.User) -> bool:
+    if _has_completed_profile(user):
+        return True
+    # if the user has a pending DMS subscription, we consider the profile as potentially completed
+    # (it will be completed when the subscription is activated)
+    user_pending_dms_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == fraud_models.FraudCheckType.DMS
+        and fraud_check.status in (fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.STARTED)
+        and fraud_check.resultContent
+        and fraud_check.resultContent["city"] is not None  # TODO: remove when all DMS applications ask for city
+    ]
+    if user_pending_dms_fraud_checks:
+        return True
+
+    return False
 
 
 def is_eligibility_activable(
