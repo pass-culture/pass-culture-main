@@ -21,6 +21,7 @@ export interface SearchProps extends SearchBoxProvided {
   userRole: Role
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null
+  useNewAlgoliaIndex: boolean
 }
 
 export const OffersSearchComponent = ({
@@ -28,6 +29,7 @@ export const OffersSearchComponent = ({
   removeVenueFilter,
   venueFilter,
   refine,
+  useNewAlgoliaIndex,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -47,18 +49,26 @@ export const OffersSearchComponent = ({
     removeQuery()
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
-    setFacetFilters([...LEGACY_INITIAL_FACET_FILTERS])
+    if (useNewAlgoliaIndex) {
+      setFacetFilters([])
+    } else {
+      setFacetFilters([...LEGACY_INITIAL_FACET_FILTERS])
+    }
     refine(INITIAL_QUERY)
   }
 
   useEffect(() => {
     if (venueFilter?.id) {
-      setFacetFilters([
-        ...LEGACY_INITIAL_FACET_FILTERS,
-        `venue.id:${venueFilter.id}`,
-      ])
+      if (useNewAlgoliaIndex) {
+        setFacetFilters([`venue.id:${venueFilter.id}`])
+      } else {
+        setFacetFilters([
+          ...LEGACY_INITIAL_FACET_FILTERS,
+          `venue.id:${venueFilter.id}`,
+        ])
+      }
     }
-  }, [setFacetFilters, venueFilter])
+  }, [setFacetFilters, venueFilter, useNewAlgoliaIndex])
 
   return (
     <>
