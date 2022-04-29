@@ -1,4 +1,4 @@
-import { Category, SubCategory } from 'app/types'
+import { Category, Feature, SubCategory } from 'app/types'
 import { client } from 'repository/pcapi/pcapiClient'
 import { OfferType, Role, VenueFilterType } from 'utils/types'
 
@@ -36,3 +36,6 @@ export const getEducationalCategories = async (): Promise<{
 }> => {
   return client.get('/adage-iframe/offers/categories')
 }
+
+export const getFeatures = async (): Promise<Feature[]> =>
+  client.get('/adage-iframe/features')
