@@ -9,6 +9,7 @@ import {
   FiltersContextProvider,
   FacetFiltersContextProvider,
 } from 'app/providers'
+import { FeaturesContextProvider } from 'app/providers/FeaturesContextProvider'
 import {
   ENVIRONMENT_NAME,
   SENTRY_SERVER_URL,
@@ -32,13 +33,15 @@ if (SENTRY_SERVER_URL) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <FiltersContextProvider>
-      <AlgoliaQueryContextProvider>
-        <FacetFiltersContextProvider>
-          <App />
-        </FacetFiltersContextProvider>
-      </AlgoliaQueryContextProvider>
-    </FiltersContextProvider>
+    <FeaturesContextProvider>
+      <FiltersContextProvider>
+        <AlgoliaQueryContextProvider>
+          <FacetFiltersContextProvider>
+            <App />
+          </FacetFiltersContextProvider>
+        </AlgoliaQueryContextProvider>
+      </FiltersContextProvider>
+    </FeaturesContextProvider>
   </React.StrictMode>,
   document.getElementById('root')
 )
