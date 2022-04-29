@@ -73,8 +73,33 @@ def activate_beneficiary_for_eligibility(
     return user
 
 
+def get_activable_identity_fraud_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+    """Finds first created activable identity fraud check for a user.
+
+    Args:
+        user (User): user to find activable identity fraud check for.
+
+    Returns:
+        BeneficiaryFraudCheck: activable identity fraud check for a user.
+    """
+    user_identity_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.status == fraud_models.FraudCheckStatus.OK
+        and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
+        and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
+        and not (
+            fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE and user.age >= users_constants.ELIGIBILITY_AGE_18  # type: ignore [operator]
+        )  # TODO: put this condition inside is_eligible_for_beneficiary_upgrade
+    ]
+    if not user_identity_fraud_checks:
+        return None
+
+    return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]
+
+
 def activate_beneficiary(user: users_models.User) -> users_models.User:
-    fraud_check = users_api.get_activable_identity_fraud_check(user)
+    fraud_check = get_activable_identity_fraud_check(user)
     if not fraud_check:
         raise exceptions.BeneficiaryFraudCheckMissingException(
             f"No validated Identity fraudCheck found when trying to activate user {user.id}"
@@ -449,7 +474,7 @@ def update_user_birth_date(user: users_models.User, birth_date: typing.Optional[
 
 
 def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool:
-    fraud_check = users_api.get_activable_identity_fraud_check(user)
+    fraud_check = get_activable_identity_fraud_check(user)
     if not fraud_check:
         return False
 
