@@ -901,13 +901,3 @@ def get_activable_identity_fraud_check(user: User) -> typing.Optional[fraud_mode
         return None
 
     return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]
-
-
-def get_user_age_at_registration(user: User) -> Optional[int]:
-    fraud_check = get_activable_identity_fraud_check(user)
-    if not fraud_check:
-        return None
-    registration_datetime = fraud_check.source_data().get_registration_datetime()  # type: ignore [union-attr]
-    if registration_datetime is None:
-        return None
-    return users_utils.get_age_at_date(user.dateOfBirth, registration_datetime)  # type: ignore [arg-type]
