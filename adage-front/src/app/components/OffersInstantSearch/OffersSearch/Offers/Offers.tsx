@@ -7,8 +7,9 @@ import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
+import { OfferType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { OfferType, ResultType, Role } from 'utils/types'
+import { ResultType, Role } from 'utils/types'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import { Offer } from './Offer'

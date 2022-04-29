@@ -6,10 +6,10 @@ import {
   NotificationComponent,
   NotificationType,
 } from 'app/components/Layout/Notification/Notification'
+import { StockType } from 'app/types/offers'
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import { preBookStock } from 'repository/pcapi/pcapi'
-import { StockType } from 'utils/types'
 
 import './PrebookingButton.scss'
 import PrebookingModal from './PrebookingModal'

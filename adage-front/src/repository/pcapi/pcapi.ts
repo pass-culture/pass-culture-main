@@ -1,6 +1,7 @@
 import { Category, Feature, SubCategory } from 'app/types'
+import { OfferType, VenueFilterType } from 'app/types/offers'
 import { client } from 'repository/pcapi/pcapiClient'
-import { OfferType, Role, VenueFilterType } from 'utils/types'
+import { Role } from 'utils/types'
 
 export const authenticate = async (): Promise<Role> => {
   return client

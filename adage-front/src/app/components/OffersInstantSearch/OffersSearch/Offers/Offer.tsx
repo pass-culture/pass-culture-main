@@ -2,9 +2,9 @@ import './Offer.scss'
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import { OfferType } from 'app/types/offers'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
-import { OfferType } from 'utils/types'
 
 import ContactButton from './ContactButton'
 import OfferDetails from './OfferDetails/OfferDetails'

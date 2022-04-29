@@ -2,7 +2,7 @@ import React from 'react'
 
 import './OfferDetails.scss'
 
-import { OfferType } from 'utils/types'
+import { OfferType } from 'app/types/offers'
 
 import OfferSection from './OfferSection'
 import OfferVenue from './OfferVenue'

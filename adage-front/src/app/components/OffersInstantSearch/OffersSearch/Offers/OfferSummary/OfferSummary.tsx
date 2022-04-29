@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { ADRESS_TYPE, OfferType } from 'app/types/offers'
 import { ReactComponent as BuildingIcon } from 'assets/building.svg'
 import { ReactComponent as DateIcon } from 'assets/date.svg'
 import { ReactComponent as EuroIcon } from 'assets/euro.svg'
@@ -8,7 +9,6 @@ import { ReactComponent as SubcategoryIcon } from 'assets/subcategory.svg'
 import { ReactComponent as UserIcon } from 'assets/user.svg'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
-import { ADRESS_TYPE, OfferType } from 'utils/types'
 
 import './OfferSummary.scss'
 

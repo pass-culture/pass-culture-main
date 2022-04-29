@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { ADRESS_TYPE, OfferType } from 'utils/types'
+import { ADRESS_TYPE, OfferType } from 'app/types/offers'
 
 interface IOfferVenue {
   offerVenue?: {

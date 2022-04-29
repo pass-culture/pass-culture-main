@@ -22,7 +22,9 @@ const addMailItemWithSpace = (value: string, list: WordOrLinkItem[]) => {
   list.push({ type: 'word', value: ' ' })
 }
 
-export const formatDescription = (description: string): React.ReactNode => {
+export const formatDescription = (description?: string): React.ReactNode => {
+  if (!description) return
+
   const descriptionWordsItems: WordOrLinkItem[] = []
 
   description.split('\n').forEach(descriptionBloc => {
