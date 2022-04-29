@@ -876,28 +876,3 @@ def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional
     return (eligibility == EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
         eligibility == EligibilityType.AGE18 and not user.has_beneficiary_role
     )
-
-
-def get_activable_identity_fraud_check(user: User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
-    """Finds first created activable identity fraud check for a user.
-
-    Args:
-        user (User): user to find activable identity fraud check for.
-
-    Returns:
-        BeneficiaryFraudCheck: activable identity fraud check for a user.
-    """
-    user_identity_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.status == fraud_models.FraudCheckStatus.OK
-        and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
-        and is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
-        and not (
-            fraud_check.eligibilityType == EligibilityType.UNDERAGE and user.age >= constants.ELIGIBILITY_AGE_18  # type: ignore [operator]
-        )  # TODO: put this condition inside is_eligible_for_beneficiary_upgrade
-    ]
-    if not user_identity_fraud_checks:
-        return None
-
-    return sorted(user_identity_fraud_checks, key=lambda fraud_check: fraud_check.dateCreated, reverse=True)[0]

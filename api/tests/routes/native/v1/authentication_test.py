@@ -12,10 +12,10 @@ from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.mails.testing as mails_testing
+from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
-import pcapi.core.users.api as users_api
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.models import db
@@ -384,7 +384,7 @@ def test_validate_email_dms_orphan(execute_query, client):
     assert user.isEmailValidated
     assert response.status_code == 200
 
-    fraud_check = users_api.get_activable_identity_fraud_check(user)
+    fraud_check = subscription_api.get_activable_identity_fraud_check(user)
     assert fraud_check is not None
 
 
