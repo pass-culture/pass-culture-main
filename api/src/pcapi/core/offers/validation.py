@@ -52,7 +52,6 @@ ACCEPTED_THUMBNAIL_FORMATS = (
     "jpeg",
 )
 
-
 KEY_VALIDATION_CONFIG = {
     "init": ["minimum_score", "rules"],
     "rules": ["name", "factor", "conditions"],
@@ -70,6 +69,11 @@ VALUE_VALIDATION_CONFIG = {
     "operator": [">", ">=", "<", "<=", "==", "!=", "is", "in", "not in", "contains", "contains-exact"],
     "comparated": [str, bool, float, int, list, None],
     "minimum_score": [float, int],
+}
+
+OFFER_EXTRA_DATA_MANDATORY_FIELDS = {
+    "showType",
+    "musicType",
 }
 
 
@@ -375,3 +379,20 @@ def check_booking_limit_datetime(
 
     if beginning and booking_limit_datetime and booking_limit_datetime > beginning:
         raise exceptions.BookingLimitDatetimeTooLate()
+
+
+def check_offer_extra_data(offer: Optional[Offer], subcategory_id: str, extra_data: dict) -> dict:
+    api_errors = ApiErrors()
+    subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
+    mandatory_fields = OFFER_EXTRA_DATA_MANDATORY_FIELDS & set(subcategory.conditional_fields)
+
+    for field in mandatory_fields:
+        if offer and offer.extraData and offer.extraData.get(field):  # type: ignore [union-attr]
+            extra_data[field] = offer.extraData.get(field)  # type: ignore [union-attr]
+        elif not extra_data or not extra_data.get(field):
+            api_errors.add_error(field, "Ce champ est obligatoire")
+
+    if api_errors.errors:
+        raise api_errors
+
+    return extra_data

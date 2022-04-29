@@ -248,6 +248,8 @@ def _check_offer_data_is_valid(
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
     check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)  # type: ignore [arg-type]
+    if not offer_is_educational:
+        validation.check_offer_extra_data(None, offer_data.subcategory_id, offer_data.extra_data)  # type: ignore [arg-type]
 
 
 def update_offer(
@@ -277,6 +279,9 @@ def update_offer(
     visualDisabilityCompliant: bool = UNCHANGED,  # type: ignore [assignment]
 ) -> Offer:
     validation.check_validation_status(offer)
+    if extraData != UNCHANGED:
+        extraData = validation.check_offer_extra_data(offer, offer.subcategoryId, extraData)
+
     # fmt: off
     modifications = {
         field: new_value
