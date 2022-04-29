@@ -10,6 +10,7 @@ export interface ResultType {
     name: string
     publicName: string
   }
+  isTemplate: boolean
 }
 
 export enum Role {
