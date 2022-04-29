@@ -111,7 +111,11 @@ def has_completed_profile(user: users_models.User) -> bool:
 def is_eligibility_activable(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> bool:
-    return user.eligibility == eligibility and users_api.is_eligible_for_beneficiary_upgrade(user, eligibility)
+    return (
+        user.eligibility == eligibility
+        and users_api.is_eligible_for_beneficiary_upgrade(user, eligibility)
+        and users_api.is_user_age_compatible_with_eligibility(user, eligibility)
+    )
 
 
 def get_email_validation_subscription_item(
