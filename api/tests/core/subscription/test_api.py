@@ -59,7 +59,7 @@ class EduconnectFlowTest:
 
         assert user.city == "Uneville"
         assert user.activity == "Lycéen"
-        assert subscription_api.has_completed_profile(user)
+        assert not subscription_api.should_complete_profile(user)
 
         # Get educonnect login form with saml protocol
         response = client.get("/saml/educonnect/login")
@@ -426,21 +426,21 @@ class NextSubscriptionStepTest:
         with override_features(**feature_flags):
             assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
 
-    def test_has_completed_profile_names_mandatory(self):
+    def test_should_complete_profile_names_mandatory(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             address="3 rue du quai",
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
-        assert subscription_api.has_completed_profile(user)
+        assert not subscription_api.should_complete_profile(user)
 
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             firstName=None,
             lastName=None,
         )
-        assert not subscription_api.has_completed_profile(user)
+        assert subscription_api.should_complete_profile(user)
 
     @pytest.mark.parametrize(
         "feature_flags,user_age,expected_result",
