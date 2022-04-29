@@ -20,7 +20,6 @@ from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
 from . import models
-from .common import models as common_models
 from .dms import api as dms_api
 from .ubble import api as ubble_api
 
@@ -68,7 +67,7 @@ def on_dms_fraud_result(
     user: users_models.User,
     dms_content: models.DMSContent,
 ) -> models.BeneficiaryFraudCheck:
-    eligibility_type = decide_eligibility(user, dms_content)
+    eligibility_type = decide_eligibility(user, dms_content.get_birth_date(), dms_content.get_registration_datetime())
     fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_id))  # type: ignore [arg-type]
     if not fraud_check:
         logger.warning("DMS fraud check from user %d not previously created", user.id)
@@ -598,14 +597,16 @@ def has_performed_honor_statement(user: users_models.User, eligibility_type: use
     )
 
 
-# use this for asynchronous identity check methods (DMS, ubble, admin review)
 def decide_eligibility(
-    user: users_models.User, identity_content: common_models.IdentityCheckContent
+    user: users_models.User,
+    birth_date: typing.Union[datetime.date, datetime.datetime, None],
+    registration_datetime: typing.Optional[datetime.datetime],
 ) -> typing.Optional[users_models.EligibilityType]:
+    """Returns the applicable eligibility of the user.
+    It may be the current eligibility of the user if the age is between 15 and 18, or it may be the eligibility AGE18
+    if the user is over 19 and had previously tried to register when the age was 18.
+    """
     from pcapi.core.users import api as users_api
-
-    registration_datetime = identity_content.get_registration_datetime()
-    birth_date = identity_content.get_birth_date()
 
     if registration_datetime is None or birth_date is None:
         return None

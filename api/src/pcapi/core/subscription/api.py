@@ -412,8 +412,12 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
 ) -> fraud_models.BeneficiaryFraudCheck:
+    identity_content: common_fraud_models.IdentityCheckContent = fraud_check.source_data()  # type: ignore [assignment]
+
     declared_eligibility = fraud_check.eligibilityType
-    id_provider_detected_eligibility = fraud_api.decide_eligibility(user, fraud_check.source_data())  # type: ignore [arg-type]
+    id_provider_detected_eligibility = fraud_api.decide_eligibility(
+        user, identity_content.get_birth_date(), identity_content.get_registration_datetime()
+    )
 
     if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
         return fraud_check
