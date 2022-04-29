@@ -10,6 +10,6 @@ function test_backend {
         docker rm -v pc-postgres-pytest;
         docker-compose -f "$ROOT_PATH"/docker-compose-app.yml up -d postgres-test;
         while ! docker-compose -f "$ROOT_PATH"/docker-compose-app.yml logs postgres-test 2> /dev/null | grep -q "listening on IPv4 address"; do echo "waiting for test-database"; sleep 0.5; done;
-        docker exec pc-flask bash -c "cd /usr/src/app/ && rm -rf static/object_store_data/thumbs/* && RUN_ENV=tests pytest --durations=5 --color=yes -rsx -v $PYTEST_ARGS"
+        docker exec -it pc-flask bash -c "cd /usr/src/app/ && rm -rf static/object_store_data/thumbs/* && RUN_ENV=tests pytest --durations=5 --color=yes -rsx -v $PYTEST_ARGS"
         '
 }
