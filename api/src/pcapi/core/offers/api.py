@@ -1282,6 +1282,9 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
             collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
             collective_offer_template.lastValidationType = OfferValidationType.AUTO  # type: ignore [assignment]
 
+    search.unindex_collective_offer_ids([collective_offer.id])
+    search.async_index_collective_offer_template_ids([collective_offer_template.id])
+
     logger.info(
         "Collective offer template has been created and regular collective offer deleted if applicable",
         extra={"collectiveOfferTemplate": collective_offer_template.id, "offer": offer.id},
