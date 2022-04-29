@@ -11,5 +11,9 @@
     "-vv",
     "-s"
   ],
-  "python.formatting.provider": "black"
+  "python.formatting.provider": "black",
+  "liveshare.languages.allowGuestCommandControl": true,
+  "liveshare.allowGuestDebugControl": true,
+  "liveshare.allowGuestTaskControl": true,
+  "liveshare.guestApprovalRequired": true,
 }
