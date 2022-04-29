@@ -351,9 +351,9 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
 
     @property
     def eligibility(self) -> Optional[EligibilityType]:
-        from pcapi.core.users import api as users_api
+        from pcapi.core.fraud import api as fraud_api
 
-        return users_api.get_eligibility_at_date(self.dateOfBirth, datetime.utcnow())
+        return fraud_api.decide_eligibility(self, self.dateOfBirth, datetime.utcnow())
 
     @property
     def has_active_deposit(self):  # type: ignore [no-untyped-def]

@@ -474,6 +474,17 @@ class NextSubscriptionStepTest:
         with override_features(**feature_flags):
             assert subscription_api.get_maintenance_page_type(user) == expected_result
 
+    @freeze_time("2019-01-01")
+    def test_next_step_phone_validation_after_dms_succeded_at_19(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2000, 1, 1))
+        with freeze_time("2018-01-01"):
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
+            )
+        assert (
+            subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        )
+
 
 @pytest.mark.usefixtures("db_session")
 class OnSuccessfulDMSApplicationTest:
@@ -608,6 +619,7 @@ class OnSuccessfulDMSApplicationTest:
             subscription_api.on_successful_application(user=applicant, source_data=information)
         assert applicant.has_beneficiary_role
 
+    @freeze_time("2020-03-01")
     def test_activate_beneficiary_when_confirmation_happens_after_18_birthday_requires_phone_validation(self):
         with freeze_time("2020-01-01"):
             applicant = users_factories.UserFactory()
@@ -630,26 +642,25 @@ class OnSuccessfulDMSApplicationTest:
                 registration_datetime=datetime.today(),
             )
 
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=applicant,
-                type=fraud_models.FraudCheckType.DMS,
-                status=fraud_models.FraudCheckStatus.OK,
-            )
-            fraud_factories.BeneficiaryFraudCheckFactory(
-                user=applicant,
-                type=fraud_models.FraudCheckType.HONOR_STATEMENT,
-                status=fraud_models.FraudCheckStatus.OK,
-            )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=applicant,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        # the DMS application is confirmed after the user turns 18
+        subscription_api.on_successful_application(user=applicant, source_data=information)
 
         assert applicant.has_beneficiary_role is False
-
-        with freeze_time("2020-03-01"):
-            # the DMS application is confirmed after the user turns 18
-            subscription_api.on_successful_application(user=applicant, source_data=information)
-
-        # TODO: requires 19yo fixes : PC-12560
-        assert applicant.has_beneficiary_role is False
-        assert subscription_api.get_next_subscription_step(applicant) == None
+        assert (
+            subscription_api.get_next_subscription_step(applicant)
+            == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        )
 
 
 @pytest.mark.usefixtures("db_session")
