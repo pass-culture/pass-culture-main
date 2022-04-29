@@ -23,6 +23,7 @@ const attributesToRetrieve = [
   'offer.thumbUrl',
   'venue.name',
   'venue.publicName',
+  'isTemplate',
 ]
 
 export const OffersInstantSearch = ({
