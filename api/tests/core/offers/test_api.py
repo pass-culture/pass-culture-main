@@ -1641,6 +1641,23 @@ class CreateOfferTest:
         err = "Vous n'avez pas les droits d'accès suffisant pour accéder à cette information."
         assert error.value.errors["global"] == [err]
 
+    def test_raise_error_if_extra_data_mandatory_fields_not_provided(self):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+        user = user_offerer.user
+
+        data = offers_serialize.PostOfferBodyModel(
+            venueId=humanize(venue.id),
+            name="A pretty good offer",
+            subcategoryId=subcategories.CONCERT.id,
+        )
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.create_offer(data, user)
+
+        assert error.value.errors["musicType"] == ["Ce champ est obligatoire"]
+
 
 class UpdateOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
@@ -1652,6 +1669,23 @@ class UpdateOfferTest:
         assert offer.isDuo
         assert offer.bookingEmail == "new@example.com"
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
+    def test_update_extra_data_should_not_erase_mandatory_fields(self):
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
+        )
+
+        offer = api.update_offer(offer, extraData={"author": "Asimov"})
+
+        assert offer.extraData == {"author": "Asimov", "showType": 200}
+
+    def test_update_extra_data_should_raise_error_when_mandatory_field_not_provided(self):
+        offer = factories.OfferFactory(subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.update_offer(offer, extraData={"author": "Asimov"})
+
+        assert error.value.errors == {"showType": ["Ce champ est obligatoire"]}
 
     def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
         offerer = offerers_factories.OffererFactory()
