@@ -2,11 +2,13 @@ import algoliasearch from 'algoliasearch/lite'
 import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
+import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext } from 'app/providers'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_OFFERS_INDEX,
+  ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
 import { Role, VenueFilterType } from 'utils/types'
 
@@ -32,9 +34,19 @@ export const OffersInstantSearch = ({
   venueFilter: VenueFilterType | null
 }): JSX.Element => {
   const { facetFilters } = useContext(FacetFiltersContext)
+  const useNewAlgoliaIndex = useActiveFeature(
+    'ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE'
+  )
 
   return (
-    <InstantSearch indexName={ALGOLIA_OFFERS_INDEX} searchClient={searchClient}>
+    <InstantSearch
+      indexName={
+        useNewAlgoliaIndex
+          ? ALGOLIA_COLLECTIVE_OFFERS_INDEX
+          : ALGOLIA_OFFERS_INDEX
+      }
+      searchClient={searchClient}
+    >
       <Configure
         attributesToHighlight={[]}
         attributesToRetrieve={attributesToRetrieve}
@@ -43,6 +55,7 @@ export const OffersInstantSearch = ({
       />
       <OffersSearch
         removeVenueFilter={removeVenueFilter}
+        useNewAlgoliaIndex={useNewAlgoliaIndex}
         userRole={userRole}
         venueFilter={venueFilter}
       />

@@ -1,6 +1,12 @@
-import React, { createContext, ReactNode, useMemo, useState } from 'react'
+import React, {
+  createContext,
+  ReactNode,
+  useMemo,
+  useState,
+} from 'react'
 
 import { LEGACY_INITIAL_FACET_FILTERS } from 'app/constants'
+import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { Facets } from 'app/types'
 
 export type FacetFiltersContextType = {
@@ -9,7 +15,7 @@ export type FacetFiltersContextType = {
 }
 
 export const facetFiltersContextInitialValues: FacetFiltersContextType = {
-  facetFilters: LEGACY_INITIAL_FACET_FILTERS,
+  facetFilters: [],
   setFacetFilters: () => null,
 }
 
@@ -22,9 +28,13 @@ export const FacetFiltersContextProvider = ({
 }: {
   children: ReactNode | ReactNode[]
 }): JSX.Element => {
-  const [facetFilters, setFacetFilters] = useState<Facets>([
-    ...LEGACY_INITIAL_FACET_FILTERS,
-  ])
+  const useNewAlgoliaIndex = useActiveFeature(
+    'ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE'
+  )
+
+  const [facetFilters, setFacetFilters] = useState<Facets>(
+    useNewAlgoliaIndex ? [] : [...LEGACY_INITIAL_FACET_FILTERS]
+  )
 
   const value = useMemo(
     () => ({
