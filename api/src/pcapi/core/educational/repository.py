@@ -779,3 +779,21 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:
         )
         .one()
     )
+
+
+def get_collective_offer_template_by_id_for_adage(offer_id: int) -> CollectiveOffer:
+    return (
+        educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.id == offer_id
+        )
+        .options(
+            joinedload(educational_models.CollectiveOfferTemplate.venue)
+            .joinedload(offerers_models.Venue.managingOfferer)
+            .load_only(
+                offerers_models.Offerer.name,
+                offerers_models.Offerer.validationToken,
+                offerers_models.Offerer.isActive,
+            )
+        )
+        .one()
+    )

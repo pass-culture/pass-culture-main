@@ -1,14 +1,13 @@
 import logging
-from pcapi.models.api_errors import ApiErrors
 
 from sqlalchemy.orm import contains_eager
+from sqlalchemy.orm import exc as orm_exc
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.educational import api as educational_api
-from sqlalchemy.orm import exc as orm_exc
-
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
@@ -74,3 +73,19 @@ def get_collective_offer(
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
 
     return serializers.CollectiveOfferResponseModel.from_orm(offer)
+
+
+@blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>", methods=["GET"])
+@adage_jwt_required
+@spectree_serialize(
+    response_model=serializers.CollectiveOfferTemplateResponseModel, api=blueprint.api, on_error_statuses=[404]
+)
+def get_collective_offer_template(
+    authenticated_information: AuthenticatedInformation, offer_id: int
+) -> serializers.OfferResponse:
+    try:
+        offer = educational_api.get_collective_offer_template_by_id_for_adage(offer_id)
+    except orm_exc.NoResultFound:
+        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
+
+    return serializers.CollectiveOfferTemplateResponseModel.from_orm(offer)

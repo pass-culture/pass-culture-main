@@ -322,7 +322,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
     @property
     def subcategory(self) -> subcategories.Subcategory:
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
-            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
+            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for collective offer template {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @classmethod
