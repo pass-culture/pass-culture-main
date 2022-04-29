@@ -485,6 +485,57 @@ class NextSubscriptionStepTest:
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
+    def test_user_with_pending_dms_application_should_not_fill_profile(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
+        # User profiling
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            resultContent=fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted"),
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+        # Pending DMS application
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.AGE18,
+            resultContent=fraud_factories.DMSContentFactory(city="Brockton Bay"),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            resultContent=None,
+            user=user,
+            status=fraud_models.FraudCheckStatus.OK,
+        )
+
+        assert subscription_api.get_next_subscription_step(user) is None
+
+    def test_underage_user_with_pending_dms_application_should_not_fill_profile(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.fifteen_years_ago,
+        )
+        # Pending DMS application
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.PENDING,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.DMSContentFactory(city="Brockton Bay"),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=None,
+        )
+
+        assert subscription_api.get_next_subscription_step(user) is None
+
 
 @pytest.mark.usefixtures("db_session")
 class OnSuccessfulDMSApplicationTest:
