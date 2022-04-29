@@ -4,8 +4,8 @@ import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducatio
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters, Option } from 'app/types'
+import { VenueFilterType } from 'app/types/offers'
 import { Button, MultiSelectAutocomplete } from 'app/ui-kit'
-import { VenueFilterType } from 'utils/types'
 
 import { departmentOptions } from './departmentOptions'
 import OfferFiltersTags from './OfferFiltersTags'

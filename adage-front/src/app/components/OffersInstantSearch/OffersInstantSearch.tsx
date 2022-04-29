@@ -4,13 +4,14 @@ import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext } from 'app/providers'
+import { VenueFilterType } from 'app/types/offers'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
   ALGOLIA_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
-import { Role, VenueFilterType } from 'utils/types'
+import { Role } from 'utils/types'
 
 import { OffersSearch } from './OffersSearch/OffersSearch'
 

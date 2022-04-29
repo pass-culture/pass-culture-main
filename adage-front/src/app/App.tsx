@@ -8,7 +8,7 @@ import '@fontsource/barlow/700.css'
 import '@fontsource/barlow/300.css'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { Role, VenueFilterType } from 'utils/types'
+import { Role } from 'utils/types'
 
 import { AppLayout } from './AppLayout'
 import {
@@ -17,6 +17,7 @@ import {
   NotificationType,
 } from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
+import { VenueFilterType } from './types/offers'
 
 export const queryCache = new QueryCache()
 export const queryClient = new QueryClient({
