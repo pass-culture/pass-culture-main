@@ -6,6 +6,8 @@ from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
 import pytest
 
+from pcapi.core.fraud import factories as fraud_factories
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.payments.models import DepositType
 from pcapi.core.testing import override_settings
@@ -207,6 +209,22 @@ class UserTest:
         def test_get_birthday_with_leap_year(self, birth_date, today, latest_birthday):
             with freeze_time(today):
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
+
+    class EligibilityTest:
+        def test_not_eligible_when_19(self):
+            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19))
+            assert user.eligibility is None
+
+        def test_eligible_when_19_with_subscription_attempt_at_18(self):
+            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19))
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=datetime.utcnow() - relativedelta(years=1),
+                user=user,
+                type=fraud_models.FraudCheckType.DMS,
+                status=fraud_models.FraudCheckStatus.KO,
+                eligibilityType=user_models.EligibilityType.AGE18,
+            )
+            assert user.eligibility is user_models.EligibilityType.AGE18
 
     def test_hasPhysicalVenue(self):
         user = users_factories.UserFactory()

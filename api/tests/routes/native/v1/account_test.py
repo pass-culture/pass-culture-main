@@ -869,7 +869,7 @@ class ShowEligibleCardTest:
     def test_against_different_age(self, age, expected):
         date_of_birth = datetime.utcnow() - relativedelta(years=age, days=5)
         date_of_creation = datetime.utcnow() - relativedelta(years=4)
-        user = users_factories.UserFactory.build(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
+        user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == expected
 
     @pytest.mark.parametrize("beneficiary,expected", [(False, True), (True, False)])
@@ -877,7 +877,7 @@ class ShowEligibleCardTest:
         date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
         date_of_creation = datetime.utcnow() - relativedelta(years=4)
         roles = [UserRole.BENEFICIARY] if beneficiary else []
-        user = users_factories.UserFactory.build(
+        user = users_factories.UserFactory(
             dateOfBirth=date_of_birth,
             dateCreated=date_of_creation,
             roles=roles,
@@ -887,7 +887,7 @@ class ShowEligibleCardTest:
     def test_user_eligible_but_created_after_18(self):
         date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
         date_of_creation = datetime.utcnow()
-        user = users_factories.UserFactory.build(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
+        user = users_factories.UserFactory(dateOfBirth=date_of_birth, dateCreated=date_of_creation)
         assert account_serializers.UserProfileResponse._show_eligible_card(user) == False
 
 
