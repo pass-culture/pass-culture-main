@@ -35,12 +35,13 @@ def make_graphql_application(
     postal_code: int = 67200,
     processed_datetime: Optional[str] = "2020-05-13T10:41:21+02:00",
     messages: Optional[list] = None,
+    application_techid: Optional[str] = None,
 ) -> dict:
     if messages is None:
         messages = DEFAULT_MESSAGES
 
     data = {
-        "id": "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)),
+        "id": application_techid or "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)),
         "number": application_id,
         "archived": False,
         "state": state,

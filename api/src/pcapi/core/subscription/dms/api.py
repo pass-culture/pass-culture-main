@@ -83,7 +83,7 @@ def import_dms_users(procedure_id: int) -> None:
         procedure_id,
     )
 
-    existing_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
+    already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
     processed_count = 0
 
@@ -91,7 +91,7 @@ def import_dms_users(procedure_id: int) -> None:
         procedure_id, dms_models.GraphQLApplicationStates.accepted
     ):
         application_id = application_details.number
-        if application_id in existing_applications_ids:
+        if application_id in already_processed_applications_ids:
             continue
         processed_count += 1
         try:
