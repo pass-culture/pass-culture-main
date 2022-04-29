@@ -42,7 +42,7 @@ from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.image_conversion import IMAGE_RATIO_LANDSCAPE_DEFAULT
+from pcapi.utils.image_conversion import ImageRatio
 
 from . import validation
 from .exceptions import ApiKeyCountMaxReached
@@ -379,7 +379,7 @@ def save_venue_banner(
         image_as_bytes=content,
         image_index=banner_timestamp,
         crop_params=crop_params,
-        ratio=IMAGE_RATIO_LANDSCAPE_DEFAULT,
+        ratio=ImageRatio.LANDSCAPE,
     )
 
     original_image_timestamp = banner_timestamp + 1
