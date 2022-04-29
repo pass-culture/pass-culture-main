@@ -94,7 +94,7 @@ class CineDigitalServicePutResourceTest:
         api_url = "test_url/"
         token = "test_token"
         resource = ResourceCDS.CANCEL_BOOKING
-        body = CancelBookingCDS(barcodes=["111111111111"], paiementtypeid=5)
+        body = CancelBookingCDS(barcodes=[111111111111], paiementtypeid=5)
 
         response_json = {"111111111111": "BARCODE_NOT_FOUND"}
 
@@ -109,6 +109,6 @@ class CineDigitalServicePutResourceTest:
         request_put.assert_called_once_with(
             "https://test_id.test_url/transaction/cancel?api_token=test_token",
             headers={"Content-Type": "application/json"},
-            data='{"barcodes": ["111111111111"], "paiementtypeid": 5}',
+            data='{"barcodes": [111111111111], "paiementtypeid": 5}',
         )
         assert json_data == response_json

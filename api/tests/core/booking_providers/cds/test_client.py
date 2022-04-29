@@ -394,7 +394,7 @@ class CineDigitalServiceCancelBookingTest:
 
         # When
         try:
-            cine_digital_service.cancel_booking(["3107362853729", "0312079646868"])
+            cine_digital_service.cancel_booking(["3107362853729", "1312079646868"])
         except cds_exceptions.CineDigitalServiceAPIException:
             assert False, "Should not raise exception"
 
