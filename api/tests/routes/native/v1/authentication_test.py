@@ -206,13 +206,14 @@ def test_reset_password_success(client):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
-    assert user.is_subscriptionState_email_validated()
 
     token = Token.query.get(token.id)
     assert token.isUsed
+    assert user.is_subscriptionState_email_validated()
 
 
-def test_reset_password_for_unvalidated_email(client):
+@patch("pcapi.core.subscription.dms.api.try_dms_orphan_adoption")
+def test_reset_password_for_unvalidated_email(try_dms_orphan_adoption_mock, client):
     new_password = "New_password1998!"
 
     user = users_factories.UserFactory(isEmailValidated=False)
@@ -224,6 +225,7 @@ def test_reset_password_for_unvalidated_email(client):
     assert response.status_code == 204
     db.session.refresh(user)
     assert user.password == crypto.hash_password(new_password)
+    try_dms_orphan_adoption_mock.assert_called_once_with(user)
     assert user.isEmailValidated
     assert user.is_subscriptionState_email_validated()
 
