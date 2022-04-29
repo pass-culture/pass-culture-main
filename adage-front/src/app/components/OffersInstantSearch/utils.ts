@@ -1,6 +1,6 @@
 import flatMap from 'lodash/flatMap'
 
-import { INITIAL_FACET_FILTERS } from 'app/constants'
+import { LEGACY_INITIAL_FACET_FILTERS } from 'app/constants'
 import { Facets, Option } from 'app/types'
 import { VenueFilterType } from 'utils/types'
 
@@ -15,7 +15,7 @@ export const populateFacetFilters = ({
   students: Option[]
   venueFilter: VenueFilterType | null
 }): Facets => {
-  const updatedFilters: Facets = [...INITIAL_FACET_FILTERS]
+  const updatedFilters: Facets = [...LEGACY_INITIAL_FACET_FILTERS]
   const filteredDepartments: string[] = departments.map(
     department => `venue.departmentCode:${department.value}`
   )
