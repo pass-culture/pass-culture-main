@@ -1,7 +1,11 @@
-.bank-instructions-label {
-  @include highlight();
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
 
-  color: $primary;
+.bank-instructions-label {
+  @include fonts.highlight();
+
+  color: colors.$primary;
   line-height: normal;
-  margin-bottom: rem(18px);
+  margin-bottom: rem.torem(18px);
 }

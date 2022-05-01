@@ -1,31 +1,33 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .confirmation {
   text-align: center;
   margin: auto;
-  max-width: rem(712px);
+  max-width: rem.torem(712px);
 
   &-icon {
-    height: rem(56px);
-    margin-bottom: rem(19px);
+    height: rem.torem(56px);
+    margin-bottom: rem.torem(19px);
   }
 
   &-section {
-    margin-bottom: rem(32px);
+    margin-bottom: rem.torem(32px);
 
     &-header {
-      margin-bottom: rem(24px);
+      margin-bottom: rem.torem(24px);
     }
   }
 
   &-actions {
-    max-width: rem(486px);
-    margin: rem(64px) auto 0;
+    max-width: rem.torem(486px);
+    margin: rem.torem(64px) auto 0;
     display: flex;
     justify-content: center;
   }
 
   &-action {
     flex: 1;
-    margin-left: rem(24px);
+    margin-left: rem.torem(24px);
     text-align: center;
 
     &:first-child {

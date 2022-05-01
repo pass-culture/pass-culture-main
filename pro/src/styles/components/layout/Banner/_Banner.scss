@@ -1,23 +1,26 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .bi-banner {
   &.attention {
-    background: $attention;
+    background: colors.$attention;
   }
 
   &.notification-info {
-    background: $notification-info;
+    background: colors.$notification-info;
   }
 
   &.light {
-    background: $grey-light;
-    color: $grey-dark;
+    background: colors.$grey-light;
+    color: colors.$grey-dark;
   }
 
   border-radius: 6px;
-  margin: rem(16px) 0;
-  padding: rem(7px) rem(15px);
+  margin: rem.torem(16px) 0;
+  padding: rem.torem(7px) rem.torem(15px);
 
   > p {
-    margin: rem(5px) 0;
+    margin: rem.torem(5px) 0;
   }
 
   button {
@@ -31,10 +34,10 @@
   &.bi-external-link--mod-topright {
     position: absolute;
     right: 0;
-    top: rem(-6px);
+    top: rem.torem(-6px);
   }
 }
 
 .domain-name-banner {
-  margin: rem(0px) 0 rem(32px) 0;
+  margin: rem.torem(0px) 0 rem.torem(32px) 0;
 }

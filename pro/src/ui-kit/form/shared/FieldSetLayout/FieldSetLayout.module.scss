@@ -1,12 +1,15 @@
+@use 'styles/variables/_forms.scss' as forms;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .fieldset-layout {
   border: none;
-  
+
   &-legend {
-    margin-bottom: rem(16px);
+    margin-bottom: rem.torem(16px);
   }
-  
+
   &-error {
-    margin-top: rem($input-space-before-error);
-    min-height: rem($input-error-reserved-space);
+    margin-top: rem.torem(forms.$input-space-before-error);
+    min-height: rem.torem(forms.$input-error-reserved-space);
   }
 }

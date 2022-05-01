@@ -1,3 +1,7 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/variables/_forms.scss' as forms;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .base-radio {
   display: inline-flex;
   cursor: pointer;
@@ -7,7 +11,7 @@
     line-height: 1em;
 
     :disabled + & {
-      color: $input-text-color-disabled;
+      color: forms.$input-text-color-disabled;
       cursor: default;
     }
   }
@@ -15,48 +19,45 @@
   &-input {
     -webkit-appearance: none;
     appearance: none;
-    border: 2px solid $input-border-color;
+    border: 2px solid forms.$input-border-color;
     border-radius: 50%;
-    box-shadow: inset 0 0 0 10px $white;
-    background-color: $white;
-   
-    transition: 
-      border 150ms ease,
-      background 150ms ease,
-      box-shadow 150ms ease;
+    box-shadow: inset 0 0 0 10px colors.$white;
+    background-color: colors.$white;
+
+    transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
 
     &:hover,
     &:focus {
-      border-color: $input-border-color-focus;
+      border-color: forms.$input-border-color-focus;
     }
 
     &:checked {
-      box-shadow: inset 0 0 0 2px $white;
+      box-shadow: inset 0 0 0 2px colors.$white;
     }
 
     &:hover:checked,
     &:focus:checked {
-      box-shadow: inset 0 0 0 2px $white;
-      background-color: $input-border-color-focus;
+      box-shadow: inset 0 0 0 2px colors.$white;
+      background-color: forms.$input-border-color-focus;
     }
 
     &.has-error {
-      border-color: $input-border-color-error;
+      border-color: forms.$input-border-color-error;
     }
 
     &:checked.has-error {
-      box-shadow: inset 0 0 0 2px $white;
-      background-color: $input-border-color-error;
+      box-shadow: inset 0 0 0 2px colors.$white;
+      background-color: forms.$input-border-color-error;
     }
 
-    &:disabled  {
+    &:disabled {
       cursor: default;
-      border-color: $input-border-color-disabled;
+      border-color: forms.$input-border-color-disabled;
     }
 
-    &:checked:disabled  {
-      box-shadow: inset 0 0 0 2px $white;
-      background-color: $input-border-color-disabled;
+    &:checked:disabled {
+      box-shadow: inset 0 0 0 2px colors.$white;
+      background-color: forms.$input-border-color-disabled;
     }
   }
 }

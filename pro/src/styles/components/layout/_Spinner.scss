@@ -1,19 +1,22 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .loading-spinner {
-  color: $grey-dark;
+  color: colors.$grey-dark;
   text-align: center;
 
   @media screen and (prefers-reduced-motion: reduce) {
     img,
     svg {
       animation: none;
-      margin-bottom: rem(15px);
+      margin-bottom: rem.torem(15px);
     }
   }
 
   img,
   svg {
     animation: rotation 3s infinite linear;
-    margin-bottom: rem(15px);
+    margin-bottom: rem.torem(15px);
   }
 
   .content::after {

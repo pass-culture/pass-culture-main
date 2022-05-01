@@ -1,3 +1,6 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .sign-up-form-page {
   height: 100%;
   overflow: auto;
@@ -10,8 +13,8 @@
 
     .field-password > img {
       position: absolute;
-      right: rem(16px);
-      top: rem(37px);
+      right: rem.torem(16px);
+      top: rem.torem(37px);
     }
 
     .sign-page-form {
@@ -20,17 +23,17 @@
     }
 
     h1 {
-      margin-bottom: rem(16px);
+      margin-bottom: rem.torem(16px);
     }
 
     h2 {
-      margin-bottom: rem(16px);
+      margin-bottom: rem.torem(16px);
       word-break: break-word;
     }
 
     .sign-up-tips {
-      color: $grey-dark;
-      margin-bottom: rem(32px);
+      color: colors.$grey-dark;
+      margin-bottom: rem.torem(32px);
     }
 
     .tertiary-link {
@@ -39,7 +42,7 @@
     }
 
     label {
-      margin-bottom: rem(16px);
+      margin-bottom: rem.torem(16px);
     }
 
     .field-password {
@@ -53,34 +56,34 @@
     }
 
     .siren-field {
-      margin-bottom: rem(16px);
+      margin-bottom: rem.torem(16px);
     }
 
     .sign-up-infos-before-signup {
-      margin-top: rem(40px);
+      margin-top: rem.torem(40px);
     }
 
     .sign-up-form {
-      margin: rem(16px) 0 rem(40px) 0;
+      margin: rem.torem(16px) 0 rem.torem(40px) 0;
     }
 
     .buttons-field {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
-      margin-top: rem(16px);
+      margin-top: rem.torem(16px);
 
       a,
       button {
-        margin-bottom: rem(5px);
+        margin-bottom: rem.torem(5px);
       }
 
       .button {
-        padding: 0 rem(45px);
+        padding: 0 rem.torem(45px);
 
         &:focus {
           border: none;
-          padding: 0 rem(45px);
+          padding: 0 rem.torem(45px);
         }
       }
     }

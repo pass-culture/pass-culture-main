@@ -1,3 +1,5 @@
+@use 'styles/variables/_colors.scss' as colors;
+
 .beneficiary-subtitle {
-  color: $grey-dark;
+  color: colors.$grey-dark;
 }

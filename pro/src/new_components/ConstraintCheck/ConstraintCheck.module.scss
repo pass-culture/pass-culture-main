@@ -1,22 +1,26 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .constraint-check {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
-  @include caption();
+  @include fonts.caption();
 
-  color: $grey-dark;
+  color: colors.$grey-dark;
 
   &-failing-constraint {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: $red-error;
+    color: colors.$red-error;
 
     img {
-      margin: rem(3px);
-      width: rem(14px);
+      margin: rem.torem(3px);
+      width: rem.torem(14px);
     }
   }
 }

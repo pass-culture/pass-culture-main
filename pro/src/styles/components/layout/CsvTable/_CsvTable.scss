@@ -1,3 +1,8 @@
+@use 'styles/mixins/_dotted.scss' as dotted;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 #csv-container {
   display: flex;
   flex-direction: column;
@@ -6,26 +11,26 @@
 
 #csv-table tr:focus,
 #csv-table tr:hover {
-  background-color: $grey-medium;
+  background-color: colors.$grey-medium;
 }
 
 #csv-table {
   thead {
     th {
-      padding: rem(10px);
+      padding: rem.torem(10px);
     }
   }
 
   tbody {
     td {
-      color: $grey-dark;
+      color: colors.$grey-dark;
       line-height: normal;
-      padding: rem(10px);
+      padding: rem.torem(10px);
       vertical-align: middle;
     }
 
     tr {
-      @include dotted($primary);
+      @include dotted.dotted(colors.$primary);
     }
   }
 }
@@ -38,20 +43,20 @@
 
 .no-data-container {
   align-items: center;
-  background-color: $white;
+  background-color: colors.$white;
   display: flex;
-  font-size: rem(20px);
+  font-size: rem.torem(20px);
   grid-column-start: col-main;
   grid-row-start: row-header;
   justify-content: center;
 
   p {
-    margin: rem(15px) 0;
+    margin: rem.torem(15px) 0;
   }
 }
 
 #main-container {
-  background-color: $white;
+  background-color: colors.$white;
   grid-column-end: end-line;
   grid-column-start: col-start;
   grid-row-start: row-header;
@@ -59,7 +64,7 @@
 
 #spinner-container {
   align-items: center;
-  background-color: $white;
+  background-color: colors.$white;
   display: flex;
   grid-column-start: col-main;
   grid-row-start: row-header;

@@ -1,16 +1,20 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .period-filter {
   .period-filter-inputs {
-    border-radius: rem(20px);
+    border-radius: rem.torem(20px);
     display: flex;
-    height: rem(40px);
-    margin-top: rem(16px);
+    height: rem.torem(40px);
+    margin-top: rem.torem(16px);
 
     button {
       outline: none;
     }
 
     &.disabled {
-      background-color: $grey-light;
+      background-color: colors.$grey-light;
       box-shadow: none;
     }
   }
@@ -20,10 +24,10 @@
     background: url(/icons/ico-calendar.svg) no-repeat 90% center;
     box-shadow: none;
     display: flex;
-    height: rem(40px);
+    height: rem.torem(40px);
 
     &:focus-within {
-      border-color: $primary;
+      border-color: colors.$primary;
     }
 
     &.disabled {
@@ -33,8 +37,8 @@
 
   .field-date-begin,
   .field-date-end {
-    height: rem(40px);
-    padding: 0 rem(1px);
+    height: rem.torem(40px);
+    padding: 0 rem.torem(1px);
   }
 
   .field-date-begin {
@@ -51,27 +55,27 @@
 
   .period-filter-begin-picker:focus-within .field-date-begin,
   .period-filter-end-picker:focus-within .field-date-end {
-    border-color: $primary;
-    border-width: rem(2px);
+    border-color: colors.$primary;
+    border-width: rem.torem(2px);
     padding: 0;
   }
 
   .period-filter-input {
-    @include body();
+    @include fonts.body();
 
     background: none;
     border: 0;
     outline: none;
-    padding-left: rem(10px);
-    width: rem(135px);
+    padding-left: rem.torem(10px);
+    width: rem.torem(135px);
 
     &:disabled {
-      color: $grey-dark;
+      color: colors.$grey-dark;
       cursor: initial;
       opacity: 1;
 
       &::placeholder {
-        color: $grey-dark;
+        color: colors.$grey-dark;
       }
     }
   }
@@ -79,7 +83,7 @@
 
 .period-filter:focus-within {
   .vertical-bar {
-    background-color: $primary;
-    width: rem(2px);
+    background-color: colors.$primary;
+    width: rem.torem(2px);
   }
 }

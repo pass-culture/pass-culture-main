@@ -1,3 +1,6 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .location-viewer {
   margin-bottom: 1.125rem;
   width: 100%;
@@ -7,8 +10,8 @@
     width: 90%;
 
     .menu {
-      background: $white;
-      border: 2px solid $grey-medium;
+      background: colors.$white;
+      border: 2px solid colors.$grey-medium;
       border-bottom-left-radius: 1.125em;
       border-bottom-right-radius: 1.125em;
       border-top: none;
@@ -32,7 +35,7 @@
 
           &:focus,
           &:hover {
-            background-color: $grey-light;
+            background-color: colors.$grey-light;
           }
         }
       }

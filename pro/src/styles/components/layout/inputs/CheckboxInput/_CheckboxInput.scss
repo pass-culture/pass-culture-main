@@ -1,11 +1,15 @@
-input[type="checkbox"] {
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+input[type='checkbox'] {
   appearance: none;
-  border: 2px solid $grey-dark;
+  border: 2px solid colors.$grey-dark;
   border-radius: 4px;
   flex: 0 0 auto;
   font-size: inherit;
   height: 1.1875em;
-  margin-right: rem(8px);
+  margin-right: rem.torem(8px);
   outline: none;
   padding: 0;
   position: relative;
@@ -13,49 +17,49 @@ input[type="checkbox"] {
   width: 1.1875em;
 
   &:checked {
-    background-color: $grey-dark;
+    background-color: colors.$grey-dark;
 
     &::after {
       background-image: url(/icons/checkbox-check.svg);
       background-position: center;
       background-repeat: no-repeat;
-      content: "";
+      content: '';
       height: 100%;
       position: absolute;
       width: 100%;
     }
 
     &:hover {
-      background-color: $primary;
-      border-color: $primary;
+      background-color: colors.$primary;
+      border-color: colors.$primary;
     }
 
     &:focus {
-      background-color: $primary-dark;
-      border-color: $primary-dark;
+      background-color: colors.$primary-dark;
+      border-color: colors.$primary-dark;
     }
 
     &:disabled {
-      background-color: $grey-medium;
-      border-color: $grey-medium;
+      background-color: colors.$grey-medium;
+      border-color: colors.$grey-medium;
       cursor: not-allowed;
       opacity: 1;
     }
   }
 
   &:not(:checked) {
-    background-color: $white;
+    background-color: colors.$white;
 
     &:hover {
-      border-color: $primary;
+      border-color: colors.$primary;
     }
 
     &:focus {
-      border-color: $primary-dark;
+      border-color: colors.$primary-dark;
     }
 
     &:disabled {
-      border-color: $grey-medium;
+      border-color: colors.$grey-medium;
       opacity: 1;
     }
   }
@@ -70,13 +74,13 @@ input[type="checkbox"] {
   }
 
   .ic-sub-label {
-    @include caption();
+    @include fonts.caption();
 
-    color: $grey-dark;
-    margin-top: rem(8px);
+    color: colors.$grey-dark;
+    margin-top: rem.torem(8px);
 
     &.disabled {
-      color: $grey-medium;
+      color: colors.$grey-medium;
     }
   }
 }
@@ -88,26 +92,26 @@ input[type="checkbox"] {
   }
 
   svg {
-    margin-right: rem(5px);
+    margin-right: rem.torem(5px);
   }
 
   &.error {
-    input[type="checkbox"] {
-      border-color: $red-error;
+    input[type='checkbox'] {
+      border-color: colors.$red-error;
     }
 
     svg .svg-color {
-      fill: $red-error;
+      fill: colors.$red-error;
     }
 
     .input-checkbox-label {
-      color: $red-error;
+      color: colors.$red-error;
       font-weight: 700;
     }
   }
 
   &.disabled {
-    color: $grey-medium;
-    fill: $grey-medium;
+    color: colors.$grey-medium;
+    fill: colors.$grey-medium;
   }
 }

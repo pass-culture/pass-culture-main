@@ -1,14 +1,18 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .styleguide-page {
   h2 {
-    @include title2();
+    @include fonts.title2();
 
-    margin-bottom: rem(20px);
+    margin-bottom: rem.torem(20px);
   }
 
   h3 {
-    @include title3();
+    @include fonts.title3();
 
-    margin-bottom: rem(10px);
+    margin-bottom: rem.torem(10px);
   }
 
   input {
@@ -16,35 +20,35 @@
   }
 
   ul {
-    background-color: $grey-light;
-    margin: rem(10px);
-    padding: rem(10px);
+    background-color: colors.$grey-light;
+    margin: rem.torem(10px);
+    padding: rem.torem(10px);
   }
 
   li {
-    padding: rem(2px) 0;
-    text-align: rem(10px);
+    padding: rem.torem(2px) 0;
+    text-align: rem.torem(10px);
   }
 
   li:hover a,
   li:focus a {
-    color: $primary;
+    color: colors.$primary;
   }
 
   hr.separator {
-    border: 1px solid $grey-medium;
+    border: 1px solid colors.$grey-medium;
   }
 
   .flex-block {
     align-items: center;
     display: flex;
     justify-content: space-between;
-    padding: 0 rem(20px);
+    padding: 0 rem.torem(20px);
 
     .class-name {
-      @include body-important();
+      @include fonts.body-important();
 
-      color: $primary;
+      color: colors.$primary;
       font-style: italic;
     }
   }
@@ -62,13 +66,13 @@
 
 .it-description {
   flex: 3;
-  margin-left: rem(10px);
+  margin-left: rem.torem(10px);
   text-align: center;
   text-align: center;
 }
 
 .it-icon-snippet {
-  background-color: $grey-light;
+  background-color: colors.$grey-light;
   border-radius: 5px;
   padding: 0;
   text-align: left;

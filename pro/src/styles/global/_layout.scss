@@ -1,3 +1,8 @@
+@use 'styles/mixins/_dotted.scss' as dotted;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,9 +10,9 @@
 }
 
 html {
-  @include body();
+  @include fonts.body();
 
-  color: $black;
+  color: colors.$black;
   height: 100%;
 }
 
@@ -25,8 +30,10 @@ body {
 
 #root {
   display: grid;
-  grid-template-columns: [col-start] 1fr [col-main] rem(850px)  1fr;
-  grid-template-rows: [row-nav] rem(72px) [row-header] rem(80px) [row-main] 1fr [row-footer] rem(48px);
+  grid-template-columns: [col-start] 1fr [col-main] rem.torem(850px) 1fr;
+  grid-template-rows: [row-nav] rem.torem(72px) [row-header] rem.torem(80px) [row-main] 1fr [row-footer] rem.torem(
+      48px
+    );
   min-height: 100%;
 }
 
@@ -36,15 +43,15 @@ table {
 }
 
 hr {
-  @include dotted($primary);
+  @include dotted.dotted(colors.$primary);
 
   border: none;
-  height: rem(2px);
-  margin: rem(24px) 0;
+  height: rem.torem(2px);
+  margin: rem.torem(24px) 0;
 }
 
 a {
-  color: $black;
+  color: colors.$black;
   text-decoration: none;
 }
 
@@ -57,11 +64,11 @@ ul {
 }
 
 pre {
-  background-color: $grey-medium;
+  background-color: colors.$grey-medium;
 }
 
-input[type="radio"],
-input[type="date"],
+input[type='radio'],
+input[type='date'],
 select,
 button {
   cursor: pointer;
@@ -79,7 +86,7 @@ button {
       margin-bottom: 0;
     }
 
-    @include dotted($primary, bottom);
+    @include dotted.dotted(colors.$primary, bottom);
 
     > * {
       align-items: center;
@@ -113,13 +120,13 @@ button {
     }
 
     .name {
-      font-size: rem(20px);
+      font-size: rem.torem(20px);
       font-weight: 700;
       margin-bottom: 0.5rem;
     }
 
     ul.actions {
-      @include body();
+      @include fonts.body();
 
       display: flex;
       justify-content: space-between;

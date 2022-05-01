@@ -1,14 +1,16 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .offer-form {
   .form-section {
-    margin-top: rem(32px);
+    margin-top: rem.torem(32px);
 
     &:first-child {
       margin-top: 0;
     }
 
     .section-description {
-      margin-bottom: rem(24px);
-      margin-top: rem(16px);
+      margin-bottom: rem.torem(24px);
+      margin-top: rem.torem(16px);
     }
 
     &.accessibility-section {

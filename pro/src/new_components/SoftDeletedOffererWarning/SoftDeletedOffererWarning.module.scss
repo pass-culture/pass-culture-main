@@ -1,29 +1,33 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .soft-deleted-offerer-warning {
-  border: rem(1px) solid $grey-medium;
-  border-radius: rem(8px);
-  box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: rem.torem(8px);
+  box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 rgba(colors.$black, 0.15);
   overflow: hidden;
-  margin-top: rem(16px);
+  margin-top: rem.torem(16px);
 
   .soft-deleted-offerer-warning-inner {
     align-items: center;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    min-height: rem(205px);
-    border-left: rem(8px) solid $grey-medium;
+    min-height: rem.torem(205px);
+    border-left: rem.torem(8px) solid colors.$grey-medium;
     height: 100%;
-    padding: rem(16px) rem(16px) rem(24px);
+    padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
     width: 100%;
 
     p {
-      color: $black;
+      color: colors.$black;
       text-align: center;
     }
 
     div {
       a:first-child {
-        margin-right: rem(16px);
+        margin-right: rem.torem(16px);
       }
     }
   }

@@ -1,6 +1,8 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .checkbox-group {
   &-item {
-    margin-bottom: rem(8px);
+    margin-bottom: rem.torem(8px);
 
     &:last-of-type {
       margin-bottom: 0;

@@ -1,3 +1,5 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
 .preferred-orientation {
   display: flex;
   flex-direction: column;
@@ -7,12 +9,12 @@
   &-image-container {
     display: flex;
     align-items: center;
-    height: rem(128px);
+    height: rem.torem(128px);
   }
 
   &-label {
-    color: $grey-dark;
-    margin-bottom: rem(40px);
-    margin-top: rem(8px);
+    color: colors.$grey-dark;
+    margin-bottom: rem.torem(40px);
+    margin-top: rem.torem(8px);
   }
 }

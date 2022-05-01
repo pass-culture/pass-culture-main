@@ -1,16 +1,20 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .blue-insert {
-  @include body();
+  @include fonts.body();
 
   align-items: center;
-  background-color: $notification-info;
-  color: $black;
+  background-color: colors.$notification-info;
+  color: colors.$black;
   display: flex;
   flex-grow: 1;
   justify-content: flex-start;
-  padding: rem(18px);
+  padding: rem.torem(18px);
 
   span {
-    margin-left: rem(12px);
+    margin-left: rem.torem(12px);
   }
 
   img {

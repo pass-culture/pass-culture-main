@@ -1,12 +1,15 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .search-no-results {
-  color: $grey-dark;
+  color: colors.$grey-dark;
   text-align: center;
 
   &-icon {
-    margin: rem(10px) 0 rem(30px);
+    margin: rem.torem(10px) 0 rem.torem(30px);
   }
 
   &-text {
-    margin-bottom: rem(20px);
+    margin-bottom: rem.torem(20px);
   }
 }

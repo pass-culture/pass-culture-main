@@ -1,19 +1,23 @@
-@mixin secondary {
-  @include button();
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
 
-  background-color: $white;
-  border: 2px solid $primary;
-  border-radius: rem(24px);
-  color: $primary;
-  height: rem(40px);
-  line-height: rem(36px);
-  padding: 0 rem(16px);
+@mixin secondary {
+  @include fonts.button();
+
+  background-color: colors.$white;
+  border: 2px solid colors.$primary;
+  border-radius: rem.torem(24px);
+  color: colors.$primary;
+  height: rem.torem(40px);
+  line-height: rem.torem(36px);
+  padding: 0 rem.torem(16px);
 
   svg {
-    height: rem(25px);
-    margin-right: rem(16px);
+    height: rem.torem(25px);
+    margin-right: rem.torem(16px);
     vertical-align: middle;
-    width: rem(25px);
+    width: rem.torem(25px);
   }
 
   &.with-icon {
@@ -22,17 +26,17 @@
     justify-content: center;
 
     img {
-      height: rem(24px);
-      margin-right: rem(4px);
+      height: rem.torem(24px);
+      margin-right: rem.torem(4px);
     }
   }
 
   &:active,
   &:hover,
   &:focus {
-    background-color: $primary-dark;
-    border: 2px solid $primary-dark;
-    color: $white;
+    background-color: colors.$primary-dark;
+    border: 2px solid colors.$primary-dark;
+    color: colors.$white;
 
     img,
     svg {
@@ -49,9 +53,9 @@
   @include secondary();
 
   &:disabled {
-    background-color: $white;
-    border: 2px solid $primary-disabled;
-    color: $primary-disabled;
+    background-color: colors.$white;
+    border: 2px solid colors.$primary-disabled;
+    color: colors.$primary-disabled;
     cursor: not-allowed;
     opacity: 1;
   }
@@ -63,6 +67,6 @@
   display: inline-block;
 
   &:active {
-    color: $white;
+    color: colors.$white;
   }
 }

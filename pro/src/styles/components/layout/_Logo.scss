@@ -1,15 +1,18 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 a.logo {
   align-items: center;
-  color: $white;
+  color: colors.$white;
   display: flex;
   flex-direction: column;
   height: 100%;
   justify-content: center;
 
   img {
-    height: rem(45px);
-    margin: rem(-10px) 0;
-    max-height: rem(45px);
+    height: rem.torem(45px);
+    margin: rem.torem(-10px) 0;
+    max-height: rem.torem(45px);
     vertical-align: middle;
   }
 

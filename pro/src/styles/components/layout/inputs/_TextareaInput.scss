@@ -1,5 +1,7 @@
+@use 'styles/components/layout/inputs/TextInput/_TextInput.scss' as textinput;
+
 .input-textarea {
-  @include input-text();
+  @include textinput.input-text();
 
   resize: none;
   width: 100%;

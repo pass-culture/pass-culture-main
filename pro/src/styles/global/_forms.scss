@@ -1,3 +1,7 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .field-group {
   display: table;
   margin-bottom: 1rem;
@@ -5,16 +9,16 @@
 }
 
 .field-control {
-  padding: rem(8px) 0;
+  padding: rem.torem(8px) 0;
 }
 
 .field-label {
-  @include title4();
+  @include fonts.title4();
 
-  color: $black;
-  margin-bottom: rem(12px);
-  padding-bottom: rem(6px);
-  padding-right: rem(12px);
+  color: colors.$black;
+  margin-bottom: rem.torem(12px);
+  padding-bottom: rem.torem(6px);
+  padding-right: rem.torem(12px);
   white-space: nowrap;
 
   &.empty {
@@ -25,47 +29,47 @@
 }
 
 .field-asterisk {
-  color: $accent;
-  margin-left: rem(2px);
+  color: colors.$accent;
+  margin-left: rem.torem(2px);
 }
 
 .field-inner {
-  background-color: $white;
+  background-color: colors.$white;
 }
 
 .checkbox-field {
   display: flex;
 
   svg {
-    margin-top: rem(-2px);
+    margin-top: rem.torem(-2px);
   }
 }
 
 .checkbox-field,
 .checkboxes-field {
   .field-inner {
-    @include body-important();
+    @include fonts.body-important();
 
     border: none;
     border-radius: 0;
-    color: $black;
-    padding-left: rem(4px);
+    color: colors.$black;
+    padding-left: rem.torem(4px);
   }
 }
 
 .field-select {
-  @include body-important();
+  @include fonts.body-important();
 
   appearance: none;
   background-position: 97.5% 50%;
   background-repeat: no-repeat;
   border: none;
   border-radius: 16px;
-  min-height: rem(36px);
-  min-width: rem(250px);
+  min-height: rem.torem(36px);
+  min-width: rem.torem(250px);
   outline: none !important;
-  padding-left: rem(24px);
-  width: rem(250px);
+  padding-left: rem.torem(24px);
+  width: rem.torem(250px);
 }
 
 .field-textarea {
@@ -84,21 +88,21 @@
 .field-input,
 .field-textarea,
 .field-select {
-  color: $black;
+  color: colors.$black;
 }
 
 .field-input,
 .field-textarea {
-  @include body-important();
+  @include fonts.body-important();
 
-  border: 1px solid $grey-medium;
+  border: 1px solid colors.$grey-medium;
   border-radius: 1.125em;
   flex: 1;
   outline: none !important;
-  padding: rem(6px) rem(18px);
+  padding: rem.torem(6px) rem.torem(18px);
 
   &:focus {
-    border-color: $primary;
+    border-color: colors.$primary;
   }
 
   &::placeholder {
@@ -107,14 +111,14 @@
 }
 
 .field-date {
-  height: rem(32px);
-  padding: rem(6px);
+  height: rem.torem(32px);
+  padding: rem.torem(6px);
 
   input.date {
-    @include preview-text();
+    @include fonts.preview-text();
 
     border: 0;
-    min-width: rem(60px);
+    min-width: rem.torem(60px);
     text-align: center;
     width: 100%;
 
@@ -124,8 +128,8 @@
   }
 
   img {
-    height: rem(15px);
-    width: rem(15px);
+    height: rem.torem(15px);
+    width: rem.torem(15px);
   }
 }
 
@@ -137,7 +141,7 @@
 .textarea-field,
 .texteditor-field {
   .field-label {
-    padding-top: rem(8px);
+    padding-top: rem.torem(8px);
     vertical-align: middle;
   }
 
@@ -146,7 +150,7 @@
   }
 
   .character-count {
-    @include preview-text();
+    @include fonts.preview-text();
   }
 }
 
@@ -156,27 +160,27 @@
     overflow-y: hidden;
 
     button {
-      border: 2px solid $grey-medium;
+      border: 2px solid colors.$grey-medium;
       border-radius: 0;
       margin-right: 0;
 
       &:first-child {
-        border-radius: rem(5px) 0 0 rem(5px);
+        border-radius: rem.torem(5px) 0 0 rem.torem(5px);
         border-right: 0;
       }
 
       &:last-child {
         border-left: 0;
-        border-radius: 0 rem(5px) rem(5px) 0;
+        border-radius: 0 rem.torem(5px) rem.torem(5px) 0;
       }
 
       .icon {
-        height: rem(30px);
-        width: rem(30px);
+        height: rem.torem(30px);
+        width: rem.torem(30px);
       }
 
       &.clicked {
-        background-color: $grey-medium;
+        background-color: colors.$grey-medium;
       }
     }
   }
@@ -191,7 +195,7 @@
     .field-inner {
       background-color: transparent;
       border: none;
-      padding-left: rem(4px);
+      padding-left: rem.torem(4px);
       resize: none;
 
       .field-checkbox,
@@ -206,7 +210,7 @@
       .field-input,
       .field-textarea,
       .field-select {
-        @include body-important();
+        @include fonts.body-important();
 
         background-color: transparent;
         border: 0;
@@ -234,7 +238,7 @@
     }
 
     .field-label {
-      padding-bottom: rem(32px);
+      padding-bottom: rem.torem(32px);
     }
 
     .field-control {
@@ -247,7 +251,7 @@
         .field-inner {
           .field-input {
             border-radius: 20px;
-            height: rem(36px);
+            height: rem.torem(36px);
             width: inherit;
           }
         }
@@ -257,36 +261,36 @@
 }
 
 .field-errors {
-  @include caption();
+  @include fonts.caption();
 
-  color: $primary;
+  color: colors.$primary;
   display: flex;
-  min-height: rem(24px);
+  min-height: rem.torem(24px);
 
   .field-error-icon {
     flex-shrink: 0;
-    margin-right: rem(12px);
-    margin-top: rem(2px);
-    width: rem(16px);
+    margin-right: rem.torem(12px);
+    margin-top: rem.torem(2px);
+    width: rem.torem(16px);
   }
 }
 
 .input[type='email'],
 .input[type='text'],
 .input[type='url'] {
-  @include body();
+  @include fonts.body();
 
   align-items: center;
   appearance: none;
-  border: rem(1px) solid $grey-medium;
-  border-radius: rem(20px);
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: rem.torem(20px);
   box-shadow: none;
   display: inline-flex;
-  height: rem(36px);
+  height: rem.torem(36px);
   justify-content: flex-start;
   line-height: 1.5;
   outline: none;
-  padding: rem(6px) rem(18px);
+  padding: rem.torem(6px) rem.torem(18px);
   position: relative;
   vertical-align: top;
 }
