@@ -1,3 +1,7 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .h-card {
   .od-header {
     align-items: center;
@@ -5,8 +9,8 @@
     flex-direction: row;
     height: 100%;
     justify-content: space-between;
-    margin-top: rem(-8px);
-    padding-bottom: rem(8px);
+    margin-top: rem.torem(-8px);
+    padding-bottom: rem.torem(8px);
 
     .input-select {
       width: 70%;
@@ -17,41 +21,41 @@
     }
 
     .tertiary-button.od-primary {
-      color: $primary;
+      color: colors.$primary;
 
       & .svg-color {
-        fill: $primary;
+        fill: colors.$primary;
       }
     }
   }
 
   .od-separator {
-    background-color: $grey-medium;
+    background-color: colors.$grey-medium;
 
     &.horizontal {
       height: 1px;
-      margin-left: rem(-16px);
-      margin-right: rem(-16px);
+      margin-left: rem.torem(-16px);
+      margin-right: rem.torem(-16px);
     }
 
     &.vertical {
       align-self: stretch;
-      margin-bottom: rem(-8px);
-      margin-top: rem(-8px);
+      margin-bottom: rem.torem(-8px);
+      margin-top: rem.torem(-8px);
       width: 1px;
 
       &.small {
         align-self: center;
-        height: rem(20px);
+        height: rem.torem(20px);
       }
     }
   }
 
   .od-address {
-    margin-left: rem(8px);
+    margin-left: rem.torem(8px);
   }
 
   .bi-banner.notification-info {
-    margin: rem(24px) 0;
+    margin: rem.torem(24px) 0;
   }
 }

@@ -1,38 +1,42 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .homepage {
   .bi-banner {
     p {
-      color: $black;
+      color: colors.$black;
     }
   }
   .bi-link {
     display: flex;
-    margin-top: rem(8px);
+    margin-top: rem.torem(8px);
 
     img {
       display: block;
-      flex: 0 1 rem(25px);
+      flex: 0 1 rem.torem(25px);
     }
   }
 
   .pc-breadcrumb {
-    margin-bottom: rem(32px);
-    margin-top: rem(24px);
+    margin-bottom: rem.torem(32px);
+    margin-top: rem.torem(24px);
   }
 
   .h-description-list {
     .h-dl-row {
       display: flex;
       flex-direction: row;
-      margin-top: rem(8px);
+      margin-top: rem.torem(8px);
     }
 
     .h-dl-title {
-      color: $grey-dark;
+      color: colors.$grey-dark;
       flex-shrink: 0;
     }
 
     .h-dl-description {
-      margin-left: rem(8px);
+      margin-left: rem.torem(8px);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -40,26 +44,26 @@
   }
 
   .h-card {
-    border: rem(1px) solid $grey-medium;
-    border-radius: rem(8px);
-    box-shadow: 0 rem(2px) rem(6px) 0 rgba($black, 0.15);
+    border: rem.torem(1px) solid colors.$grey-medium;
+    border-radius: rem.torem(8px);
+    box-shadow: 0 rem.torem(2px) rem.torem(6px) 0 rgba(colors.$black, 0.15);
     overflow: hidden;
 
     &.h-card-placeholder {
-      min-height: rem(205px);
+      min-height: rem.torem(205px);
 
       .h-card-inner {
         align-items: center;
         display: flex;
         justify-content: center;
-        min-height: rem(205px);
+        min-height: rem.torem(205px);
       }
     }
 
     .h-card-inner {
-      border-left: rem(8px) solid $grey-medium;
+      border-left: rem.torem(8px) solid colors.$grey-medium;
       height: 100%;
-      padding: rem(16px) rem(16px) rem(24px);
+      padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
       width: 100%;
 
       &.h-no-bottom {
@@ -80,68 +84,68 @@
 
     &.h-card-primary {
       .h-card-inner {
-        border-color: $primary;
+        border-color: colors.$primary;
       }
     }
 
     &.h-card-secondary {
       .h-card-inner {
-        border-color: $secondary;
+        border-color: colors.$secondary;
       }
     }
 
     &.h-card-secondary-hover {
       &:focus,
       &:hover {
-        border-color: $secondary;
+        border-color: colors.$secondary;
 
         .h-card-inner {
-          border-color: $secondary;
+          border-color: colors.$secondary;
         }
       }
     }
 
     .h-card-title {
-      @include title4();
+      @include fonts.title4();
 
       align-items: center;
       display: flex;
       flex-direction: row;
 
       .h-card-title-ico {
-        margin-left: rem(-8px);
-        margin-right: rem(3px);
+        margin-left: rem.torem(-8px);
+        margin-right: rem.torem(3px);
       }
     }
 
     .h-card-secondary-title {
-      @include body();
+      @include fonts.body();
 
       .ico-bank-warning {
-        margin-left: rem(8px);
+        margin-left: rem.torem(8px);
         vertical-align: middle;
       }
     }
 
     .h-card-content {
-      margin-top: rem(16px);
+      margin-top: rem.torem(16px);
 
       p {
-        color: $black;
+        color: colors.$black;
       }
     }
 
     .h-card-cols {
       display: flex;
       flex-direction: row;
-      margin-top: rem(16px);
+      margin-top: rem.torem(16px);
 
       .h-card-col {
-        border-left: rem(1px) solid $grey-medium;
+        border-left: rem.torem(1px) solid colors.$grey-medium;
         flex: 1 1;
         overflow: hidden;
-        padding-left: rem(24px);
-        padding-right: rem(24px);
+        padding-left: rem.torem(24px);
+        padding-right: rem.torem(24px);
 
         &:first-child {
           border: 0;
@@ -156,19 +160,19 @@
   }
 
   .h-section {
-    margin-top: rem(40px);
+    margin-top: rem.torem(40px);
 
     &:first-child {
       margin-top: 0;
     }
 
     .h-section-title {
-      @include title3();
+      @include fonts.title3();
     }
 
     > .h-card,
     > .h-section {
-      margin-top: rem(24px); // in case it's just after section title
+      margin-top: rem.torem(24px); // in case it's just after section title
 
       &:first-child {
         margin-top: 0;
@@ -179,19 +183,21 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
-      margin-top: rem(16px);
+      margin-top: rem.torem(16px);
 
       &:first-child {
         margin-top: 0;
       }
 
       &.nested {
-        margin-left: rem(14px);
+        margin-left: rem.torem(14px);
       }
 
       .h-card {
         flex: 1 1;
-        margin-left: rem(24px); // in case it's inside a section-row with multiple cards
+        margin-left: rem.torem(
+          24px
+        ); // in case it's inside a section-row with multiple cards
 
         &:first-child {
           margin-left: 0;
@@ -202,7 +208,7 @@
 
   .venue-banner,
   .offerer-banner {
-    margin-top: rem(24px);
+    margin-top: rem.torem(24px);
 
     .h-card-content {
       text-align: center;
@@ -211,13 +217,13 @@
     .actions-container {
       display: flex;
       justify-content: center;
-      margin-top: rem(24px);
+      margin-top: rem.torem(24px);
       text-align: center;
 
       a {
         flex: 1;
-        margin-left: rem(16px);
-        max-width: rem(240px);
+        margin-left: rem.torem(16px);
+        max-width: rem.torem(240px);
 
         &:first-child {
           margin-left: 0;
@@ -229,13 +235,13 @@
   .offerer-banner {
     .actions-container {
       a {
-        max-width: rem(255px);
+        max-width: rem.torem(255px);
       }
     }
   }
 
   .h-venue-list {
-    margin-top: rem(16px);
+    margin-top: rem.torem(16px);
 
     .loading-spinner {
       img {
@@ -244,7 +250,9 @@
     }
 
     .h-card-inner {
-      padding-bottom: rem(16px); // FIXME: remove this fix when venue list card get content.
+      padding-bottom: rem.torem(
+        16px
+      ); // FIXME: remove this fix when venue list card get content.
     }
   }
 }

@@ -1,22 +1,26 @@
 @use 'sass:math';
 
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .image-upload-button {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 16px;
-  $height: rem(176px);
-  width: math.div($height * 3, 2);
+  $height: rem.torem(176px);
+  width: div($height * 3, 2);
   height: $height;
-  border: 1px solid $grey-medium;
-  background-color: $grey-light;
-  color: $black;
-  box-shadow: 0px 1px 8px rgba($black-with-transparency, $alpha: 0.15);
+  border: 1px solid colors.$grey-medium;
+  background-color: colors.$grey-light;
+  color: colors.$black;
+  box-shadow: 0px 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.15);
   border-radius: 4px;
 
   &:hover {
-    box-shadow: 0px 1px 8px rgba($black-with-transparency, $alpha: 0.3);
+    box-shadow: 0px 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.3);
 
     .image-upload-button-label {
       text-decoration: underline;
@@ -24,12 +28,12 @@
   }
 
   &:active {
-    background-color: $grey-medium;
+    background-color: colors.$grey-medium;
   }
 
   &-icon {
-    height: rem(32px);
-    width: rem(32px);
+    height: rem.torem(32px);
+    width: rem.torem(32px);
   }
 
   &-label {

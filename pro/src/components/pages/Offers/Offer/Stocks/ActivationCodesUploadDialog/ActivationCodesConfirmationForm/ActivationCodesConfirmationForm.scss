@@ -1,3 +1,7 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .activation-codes-upload-confirmation-form {
   align-items: center;
   display: flex;
@@ -10,48 +14,48 @@
   }
 
   .it-sub-label {
-    @include caption();
+    @include fonts.caption();
 
-    color: $grey-dark;
+    color: colors.$grey-dark;
   }
 
   .expiration-date-information-message {
-    margin-top: rem(8px);
+    margin-top: rem.torem(8px);
   }
 
   .activation-codes-upload-information-message {
-    @include body();
+    @include fonts.body();
 
-    margin-top: rem(8px);
+    margin-top: rem.torem(8px);
   }
 
   .activation-codes-upload-confirmation-message {
-    @include body();
+    @include fonts.body();
 
     display: grid;
-    grid-row-gap: rem(32px);
-    margin-top: rem(16px);
+    grid-row-gap: rem.torem(32px);
+    margin-top: rem.torem(16px);
   }
 
   .expiration-datetime-input-container {
-    margin-top: rem(24px);
+    margin-top: rem.torem(24px);
     text-align: left;
-    width: rem(250px);
+    width: rem.torem(250px);
   }
 
   .expiration-datetime-label {
-    @include body();
+    @include fonts.body();
 
     display: inline-block;
-    margin-bottom: rem(8px);
+    margin-bottom: rem.torem(8px);
     width: 100%;
   }
 
   .activation-codes-upload-confirmation-buttons {
     display: grid;
-    grid-column-gap: rem(24px);
+    grid-column-gap: rem.torem(24px);
     grid-template-columns: 1fr 1fr;
-    margin-top: rem(32px);
+    margin-top: rem.torem(32px);
     width: 100%;
 
     .activation-codes-upload-confirmation-button {

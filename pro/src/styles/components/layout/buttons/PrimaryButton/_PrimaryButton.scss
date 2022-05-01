@@ -1,25 +1,29 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 @mixin primary-focus {
-  background-color: $primary-dark;
-  border: 3px solid $primary-dark;
+  background-color: colors.$primary-dark;
+  border: 3px solid colors.$primary-dark;
 }
 
 @mixin primary {
-  @include button();
+  @include fonts.button();
 
-  background-color: $primary;
-  border: 3px solid $primary;
-  border-radius: rem(24px);
-  color: $white;
-  height: rem(40px);
-  line-height: rem(34px);
-  padding: 0 rem(16px);
+  background-color: colors.$primary;
+  border: 3px solid colors.$primary;
+  border-radius: rem.torem(24px);
+  color: colors.$white;
+  height: rem.torem(40px);
+  line-height: rem.torem(34px);
+  padding: 0 rem.torem(16px);
 
   &:active,
   &:hover,
   &:focus {
     @include primary-focus();
 
-    color: $white;
+    color: colors.$white;
   }
 
   &:focus {
@@ -31,8 +35,8 @@
   @include primary();
 
   &:disabled {
-    background-color: $primary-disabled;
-    border: 3px solid $primary-disabled;
+    background-color: colors.$primary-disabled;
+    border: 3px solid colors.$primary-disabled;
     cursor: not-allowed;
     opacity: 1;
   }
@@ -44,8 +48,8 @@
 
     img,
     svg {
-      height: rem(24px);
-      margin-right: rem(4px);
+      height: rem.torem(24px);
+      margin-right: rem.torem(4px);
     }
   }
 }
@@ -56,6 +60,6 @@
   display: inline-block;
 
   &:active {
-    color: $white;
+    color: colors.$white;
   }
 }

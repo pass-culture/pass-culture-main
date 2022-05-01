@@ -1,12 +1,16 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .image-preview-previews {
-  background: $grey-light;
+  background: colors.$grey-light;
   display: flex;
   justify-content: center;
-  padding: rem(16px) 0;
+  padding: rem.torem(16px) 0;
 
   svg {
-    height: rem(600px);
-    margin-bottom: rem(12px);
+    height: rem.torem(600px);
+    margin-bottom: rem.torem(12px);
   }
 
   & > div {
@@ -18,17 +22,17 @@
 .image-preview-previews-wrapper {
   display: flex;
   flex-direction: column;
-  margin: 0 rem(60px);
+  margin: 0 rem.torem(60px);
   position: relative;
   align-items: center;
 
   figcaption {
-    @include caption();
+    @include fonts.caption();
   }
 }
 
 .image-preview-screen {
   position: absolute;
-  left: rem(26px);
-  top: rem(34px);
+  left: rem.torem(26px);
+  top: rem.torem(34px);
 }

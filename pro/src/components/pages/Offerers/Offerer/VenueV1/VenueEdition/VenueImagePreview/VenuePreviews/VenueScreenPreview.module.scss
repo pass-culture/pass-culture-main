@@ -1,23 +1,26 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .image-preview-shell {
-  top: rem(180px);
+  top: rem.torem(180px);
   position: absolute;
   height: 335px;
 }
 
 .image-preview-blur-venue-preview {
-  background-color: $white;
+  background-color: colors.$white;
   filter: blur(2px);
-  left: rem(1px);
+  left: rem.torem(1px);
   position: absolute;
-  top: rem(1px);
+  top: rem.torem(1px);
   height: 191px;
 }
 
 .image-preview-venue-preview {
-  background-color: $white;
-  border-radius: rem(5px);
-  left: rem(12px);
+  background-color: colors.$white;
+  border-radius: rem.torem(5px);
+  left: rem.torem(12px);
   position: absolute;
-  top: rem(76px);
+  top: rem.torem(76px);
   height: 176px;
 }

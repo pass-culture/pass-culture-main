@@ -1,11 +1,11 @@
-/* @debt devtools "Gaël : webpack's sass-resources-loader doest not seem to load settings properly using css modules, also, we need to import settings manually. */
-@import '../../styles/settings';
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
 
 .submitButton {
   /* @debt duplicated "Gaël : regroup all buttons and delete global styles to avoid important"*/
-  color: $white !important;
+  color: colors.$white !important;
 
   svg {
-    height: rem(32px);
+    height: rem.torem(32px);
   }
 }

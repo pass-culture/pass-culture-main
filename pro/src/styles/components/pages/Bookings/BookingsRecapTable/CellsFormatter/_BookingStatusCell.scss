@@ -1,35 +1,39 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .bookings-table {
   .booking-status-label {
-    @include caption();
+    @include fonts.caption();
 
-    border-radius: rem(5px);
-    color: $white;
-    padding: rem(5px) rem(7px);
+    border-radius: rem.torem(5px);
+    color: colors.$white;
+    padding: rem.torem(5px) rem.torem(7px);
   }
 
   .booking-status-booked {
-    background-color: $secondary;
+    background-color: colors.$secondary;
   }
 
   .booking-status-pending {
-    background-color: $booking-pending-status;
-    color: $black;
+    background-color: colors.$booking-pending-status;
+    color: colors.$black;
   }
 
   .booking-status-validated {
-    background-color: $accent;
+    background-color: colors.$accent;
   }
 
   .booking-status-cancelled {
-    background-color: $grey-dark;
+    background-color: colors.$grey-dark;
   }
 
   .booking-status-reimbursed {
-    background-color: $green-valid;
+    background-color: colors.$green-valid;
   }
 
   .booking-status-confirmed {
-    background-color: $black;
+    background-color: colors.$black;
   }
 
   .booking-status-wrapper {
@@ -38,7 +42,7 @@
   }
 
   .booking-status-wrapper img {
-    padding-right: rem(4px);
+    padding-right: rem.torem(4px);
     vertical-align: middle;
   }
 
@@ -48,83 +52,83 @@
 
   .booking-status-wrapper:focus .bs-tooltip,
   .booking-status-wrapper:hover .bs-tooltip {
-    background-color: $white;
-    border-radius: rem(4px);
-    box-shadow: 0 rem(2px) rem(10px) 0 $black-shadow;
-    color: $black;
+    background-color: colors.$white;
+    border-radius: rem.torem(4px);
+    box-shadow: 0 rem.torem(2px) rem.torem(10px) 0 colors.$black-shadow;
+    color: colors.$black;
     display: block;
-    padding: rem(16px) rem(24px) rem(16px) rem(24px);
+    padding: rem.torem(16px) rem.torem(24px) rem.torem(16px) rem.torem(24px);
     position: absolute;
     right: 0;
-    top: rem(30px);
-    width: rem(340px);
+    top: rem.torem(30px);
+    width: rem.torem(340px);
     z-index: 1;
   }
 
   .bs-offer-title {
-    @include button();
+    @include fonts.button();
 
     display: block;
   }
 
   .bs-offer-amount {
-    @include caption();
+    @include fonts.caption();
 
     display: block;
-    margin-top: rem(7px);
+    margin-top: rem.torem(7px);
   }
 
   .bs-history-title {
-    @include body();
+    @include fonts.body();
 
-    margin-top: rem(16px);
+    margin-top: rem.torem(16px);
   }
 
   .bs-history-label {
-    @include body();
+    @include fonts.body();
 
-    margin-top: rem(12px);
+    margin-top: rem.torem(12px);
   }
 
   .bs-history-datetime {
-    margin: rem(6px);
+    margin: rem.torem(6px);
   }
 
   .booking-status-history li {
     align-items: center;
     display: flex;
     list-style-type: none;
-    margin-top: rem(16px);
+    margin-top: rem.torem(16px);
   }
 
   .colored-disc {
-    border-radius: rem(9px);
-    height: rem(14px);
-    margin-right: rem(16px);
-    width: rem(14px);
+    border-radius: rem.torem(9px);
+    height: rem.torem(14px);
+    margin-right: rem.torem(16px);
+    width: rem.torem(14px);
 
     &.bs-history-booked {
-      background-color: $secondary;
+      background-color: colors.$secondary;
     }
 
     &.bs-history-pending {
-      background-color: $booking-pending-status;
+      background-color: colors.$booking-pending-status;
     }
 
     &.bs-history-cancelled {
-      background-color: $grey-dark;
+      background-color: colors.$grey-dark;
     }
 
     &.bs-history-confirmed {
-      background-color: $black;
+      background-color: colors.$black;
     }
 
     &.bs-history-reimbursed {
-      background-color: $green-valid;
+      background-color: colors.$green-valid;
     }
 
     &.bs-history-validated {
-      background-color: $accent;
+      background-color: colors.$accent;
     }
   }
 }

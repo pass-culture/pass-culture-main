@@ -1,26 +1,30 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 p.tw-numbers {
-  margin-bottom: rem(8px);
+  margin-bottom: rem.torem(8px);
 }
 
 .tw-strong {
-  @include body-important();
+  @include fonts.body-important();
 }
 
 .tco-italic {
-  color: $grey-dark;
+  color: colors.$grey-dark;
   font-style: italic;
 }
 
 .tw-steps {
   display: grid;
-  grid-column-gap: rem(16px);
-  grid-row-gap: rem(24px);
+  grid-column-gap: rem.torem(16px);
+  grid-row-gap: rem.torem(24px);
   grid-template-columns: 1fr 1fr;
 }
 
 .mb-content {
   display: grid;
-  grid-row-gap: rem(8px);
+  grid-row-gap: rem.torem(8px);
   grid-template-columns: 2fr 2fr 3fr 3fr;
 
   svg {
@@ -28,15 +32,19 @@ p.tw-numbers {
   }
 
   .header-example {
-    @include button();
+    @include fonts.button();
 
-    background-image: linear-gradient(97deg, $primary, $secondary);
-    color: $white;
+    background-image: linear-gradient(
+      97deg,
+      colors.$primary,
+      colors.$secondary
+    );
+    color: colors.$white;
     display: grid;
     grid-column-end: 5;
     grid-column-start: 1;
     grid-template-columns: 2fr 2fr 3fr 3fr;
-    height: rem(80px);
+    height: rem.torem(80px);
 
     .header-element {
       align-items: center;
@@ -44,7 +52,7 @@ p.tw-numbers {
       justify-content: center;
 
       img {
-        margin-right: rem(8px);
+        margin-right: rem.torem(8px);
       }
     }
 

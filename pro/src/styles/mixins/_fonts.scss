@@ -1,88 +1,90 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 /* stylelint-disable pass-culture/no-font-properties */
 @mixin hero() {
-  font-size: rem(40px);
+  font-size: rem.torem(40px);
   font-style: normal;
   font-weight: 500;
 }
 
 @mixin exception() {
-  font-size: rem(32px);
+  font-size: rem.torem(32px);
   font-weight: 300;
 }
 
 @mixin title1() {
-  font-size: rem(32px);
+  font-size: rem.torem(32px);
   font-style: italic;
   font-weight: 800;
 }
 
 @mixin title2() {
-  font-size: rem(24px);
+  font-size: rem.torem(24px);
   font-style: italic;
   font-weight: 500;
 }
 
 @mixin title3() {
-  font-size: rem(22px);
+  font-size: rem.torem(22px);
   font-style: normal;
   font-weight: 600;
 }
 
 @mixin title4() {
-  font-size: rem(18px);
+  font-size: rem.torem(18px);
   font-style: normal;
   font-weight: 500;
 }
 
 @mixin button() {
-  font-size: rem(16px);
+  font-size: rem.torem(16px);
   font-weight: 600;
 }
 
 @mixin body() {
-  font-size: rem(16px);
+  font-size: rem.torem(16px);
   font-weight: 400;
 }
 
 @mixin body-important() {
-  font-size: rem(16px);
+  font-size: rem.torem(16px);
   font-weight: 500;
 }
 
 @mixin caption() {
-  font-size: rem(14px);
+  font-size: rem.torem(14px);
   font-weight: 500;
 }
 
 // seems future captions will be smaller
 @mixin small-caption() {
-  font-size: rem(12px);
+  font-size: rem.torem(12px);
   font-weight: 500;
 }
 
 @mixin preview-text() {
-  font-size: rem(12px);
+  font-size: rem.torem(12px);
   font-weight: 400;
 }
 
 @mixin highlight() {
-  font-size: rem(12px);
+  font-size: rem.torem(12px);
   font-weight: 600;
 }
 
 @mixin mini-highlight() {
-  font-size: rem(10px);
+  font-size: rem.torem(10px);
   font-weight: 600;
 }
 
 @mixin gabarit() {
-  font-size: rem(18px);
+  font-size: rem.torem(18px);
   font-style: normal;
   font-weight: 300;
 }
 
 @mixin placeholder() {
-  font-size: rem(15px);
+  font-size: rem.torem(15px);
   font-style: italic;
   font-weight: 300;
 }

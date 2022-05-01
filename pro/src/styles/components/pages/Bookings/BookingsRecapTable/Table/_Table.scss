@@ -1,3 +1,5 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .bookings-table-wrapper {
   display: flex;
   flex-direction: column;
@@ -5,36 +7,36 @@
   .bookings-table {
     display: flex;
     flex-direction: column;
-    margin-bottom: rem(10px);
+    margin-bottom: rem.torem(10px);
 
     .column-offer-name {
-      width: rem(160px);
+      width: rem.torem(160px);
     }
 
     .column-booking-duo {
       align-items: center;
       display: flex;
-      padding: rem(10px) 0;
-      width: rem(35px);
+      padding: rem.torem(10px) 0;
+      width: rem.torem(35px);
     }
 
     .column-beneficiary {
-      width: rem(225px);
+      width: rem.torem(225px);
       word-break: break-word;
     }
 
     .column-booking-date {
-      width: rem(135px);
+      width: rem.torem(135px);
     }
 
     .column-booking-token {
-      width: rem(120px);
+      width: rem.torem(120px);
       word-break: break-word;
     }
 
     .column-booking-status {
       padding-left: 0;
-      padding-right: rem(5px);
+      padding-right: rem.torem(5px);
       vertical-align: middle;
     }
   }

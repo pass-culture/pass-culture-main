@@ -1,6 +1,8 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .price300-error-message {
   a {
-    line-height: rem(22px);
+    line-height: rem.torem(22px);
 
     img {
       vertical-align: bottom;

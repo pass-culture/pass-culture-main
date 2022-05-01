@@ -1,11 +1,14 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .divider {
-  border-bottom: rem(1px) solid $grey-medium;
+  border-bottom: rem.torem(1px) solid colors.$grey-medium;
 
   &.divider-medium {
-    margin: rem(16px) 0 rem(16px) 0;
+    margin: rem.torem(16px) 0 rem.torem(16px) 0;
   }
 
   &.divider-large {
-    margin: rem(24px) 0 rem(24px) 0;
+    margin: rem.torem(24px) 0 rem.torem(24px) 0;
   }
 }

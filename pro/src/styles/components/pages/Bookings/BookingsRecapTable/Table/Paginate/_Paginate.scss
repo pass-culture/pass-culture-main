@@ -1,8 +1,12 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .paginate-wrapper {
-  @include body-important();
+  @include fonts.body-important();
 
   align-items: center;
-  color: $black;
+  color: colors.$black;
   display: flex;
   height: 100%;
   justify-content: center;
@@ -19,9 +23,9 @@
   }
 
   span {
-    @include caption();
+    @include fonts.caption();
 
     height: inherit;
-    margin: 0 rem(16px);
+    margin: 0 rem.torem(16px);
   }
 }

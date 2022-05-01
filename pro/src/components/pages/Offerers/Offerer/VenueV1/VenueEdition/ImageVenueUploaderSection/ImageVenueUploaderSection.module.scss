@@ -1,7 +1,10 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .image-venue-uploader-section {
   &-subtitle {
-    color: $grey-dark;
-    margin: rem(16px) 0;
+    color: colors.$grey-dark;
+    margin: rem.torem(16px) 0;
   }
 
   &-image-container {
@@ -13,6 +16,6 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: space-evenly;
-    margin-left: rem(32px);
+    margin-left: rem.torem(32px);
   }
 }

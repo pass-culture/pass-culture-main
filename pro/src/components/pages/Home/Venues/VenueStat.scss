@@ -1,24 +1,28 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .venue-stats {
   display: flex;
   align-items: center;
-  margin-bottom: rem(35px);
-  padding-top: rem(24px);
+  margin-bottom: rem.torem(35px);
+  padding-top: rem.torem(24px);
 
   .separator {
-    background-color: $grey-medium;
+    background-color: colors.$grey-medium;
   }
 
   .h-card-col {
-    flex:  0 0 20%;
-    padding: 0 rem(24px);
+    flex: 0 0 20%;
+    padding: 0 rem.torem(24px);
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: rem(110px);
+    height: rem.torem(110px);
     justify-content: space-between;
     text-align: center;
 
-    border-right: solid 1px $grey-medium;
+    border-right: solid 1px colors.$grey-medium;
 
     &:last-child {
       border-right: none;
@@ -29,14 +33,14 @@
     }
 
     .venue-stat-count {
-      @include title3();
+      @include fonts.title3();
     }
 
     a {
-      color: $primary;
+      color: colors.$primary;
 
       svg .ico-plus {
-        fill: $primary;
+        fill: colors.$primary;
       }
     }
 
