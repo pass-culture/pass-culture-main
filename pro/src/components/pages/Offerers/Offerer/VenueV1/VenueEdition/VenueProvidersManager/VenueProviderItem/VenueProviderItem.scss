@@ -1,3 +1,7 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .venue-provider-row {
   align-items: center;
   display: flex;
@@ -11,27 +15,27 @@
   }
 
   .provider-name-container {
-    @include caption();
+    @include fonts.caption();
 
     align-content: center;
     display: flex;
     flex: 2;
     flex-direction: column;
     justify-content: center;
-    margin-left: rem(20px);
+    margin-left: rem.torem(20px);
     text-transform: uppercase;
   }
 
   .venue-id-at-offer-provider-container-with-message {
-    @include caption();
+    @include fonts.caption();
 
     display: inline;
     flex: 4;
-    margin-left: rem(20px);
+    margin-left: rem.torem(20px);
   }
 
   .venue-id-at-offer-provider-container {
-    @include caption();
+    @include fonts.caption();
 
     align-items: center;
     display: flex;
@@ -39,7 +43,7 @@
     flex-direction: row;
 
     .venue-id-at-offer-provider {
-      @include caption();
+      @include fonts.caption();
 
       flex: 1.5;
     }
@@ -47,11 +51,11 @@
     .offers-container-counter {
       flex: 1;
       justify-content: flex-end;
-      padding-top: rem(8px);
+      padding-top: rem.torem(8px);
 
       .number-of-offers-label {
         display: inline-block;
-        padding-left: rem(5px);
+        padding-left: rem.torem(5px);
         vertical-align: top;
       }
     }
@@ -60,7 +64,7 @@
   .offers-container-message {
     flex: 1.5;
     justify-content: flex-end;
-    padding-top: rem(8px);
+    padding-top: rem.torem(8px);
   }
 
   .venue-informations {
@@ -68,33 +72,33 @@
 
     &-sync-item {
       align-items: center;
-      color: $grey-dark;
+      color: colors.$grey-dark;
       display: inline-flex;
 
       &::before {
-        background-color: $green-valid;
+        background-color: colors.$green-valid;
         border-radius: 50%;
         content: '';
         display: inline-block;
-        height: rem(8px);
-        margin-right: rem(8px);
-        width: rem(8px);
+        height: rem.torem(8px);
+        margin-right: rem.torem(8px);
+        width: rem.torem(8px);
       }
 
-      @include caption();
+      @include fonts.caption();
     }
 
     li {
-      margin-top: rem(8px);
+      margin-top: rem.torem(8px);
 
       :first-child {
-        color: $grey-dark;
+        color: colors.$grey-dark;
       }
     }
 
     button {
-      margin-top: rem(32px);
-      padding: 0 rem(32px);
+      margin-top: rem.torem(32px);
+      padding: 0 rem.torem(32px);
     }
   }
 }

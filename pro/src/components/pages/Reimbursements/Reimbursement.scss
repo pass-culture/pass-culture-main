@@ -1,21 +1,23 @@
-
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'src/styles/variables/_colors.scss' as colors;
 .reimbursements-page {
   .header {
     display: flex;
     justify-content: space-between;
-    margin-top: rem(34px);
-    padding-bottom: rem(36px);
+    margin-top: rem.torem(34px);
+    padding-bottom: rem.torem(36px);
 
     &-title {
-      @include title3();
+      @include fonts.title3();
     }
   }
 
   .reset-filters {
-    @include body-important();
+    @include fonts.body-important();
 
-    color: $primary;
-    line-height: rem(22px);
+    color: colors.$primary;
+    line-height: rem.torem(22px);
 
     &:hover,
     &:focus {
@@ -23,7 +25,7 @@
     }
 
     &:disabled {
-      color: $grey-dark;
+      color: colors.$grey-dark;
 
       &:hover,
       &:focus {
@@ -37,11 +39,11 @@
     align-content: stretch;
     display: flex;
     justify-content: space-between;
-    padding-bottom: rem(32px);
+    padding-bottom: rem.torem(32px);
 
     .input-select {
       flex: 1;
-      margin-right: rem(24px);
+      margin-right: rem.torem(24px);
 
       select {
         width: 100%;
@@ -49,16 +51,16 @@
     }
 
     .period-filter-inputs {
-      margin-top: rem(8px);
+      margin-top: rem.torem(8px);
     }
   }
 
   .button-group {
-    margin-bottom: rem(16px);
+    margin-bottom: rem.torem(16px);
     position: relative;
 
     .search-button {
-      padding: 0 rem(32px);
+      padding: 0 rem.torem(32px);
     }
 
     &-buttons {
@@ -67,13 +69,13 @@
       position: relative;
 
       > button {
-        margin: 0 rem(12px);
-        min-width: rem(148px);
+        margin: 0 rem.torem(12px);
+        min-width: rem.torem(148px);
       }
     }
 
     &-separator {
-      border-bottom: 1px solid $grey-medium;
+      border-bottom: 1px solid colors.$grey-medium;
       display: block;
       position: absolute;
       top: 50%;
@@ -91,14 +93,14 @@
     flex-direction: column;
 
     &.admin-view {
-      margin-top: rem(32px);
+      margin-top: rem.torem(32px);
     }
   }
 
   .no-refunds-title {
-    @include title4();
+    @include fonts.title4();
 
-    margin: rem(16px) 0;
+    margin: rem.torem(16px) 0;
   }
 
   .no-refunds-description {
@@ -107,13 +109,13 @@
     flex-direction: column;
 
     button {
-      margin: rem(8px) 0;
+      margin: rem.torem(8px) 0;
     }
   }
 
   .admin-view-description {
-    color: $grey-dark;
-    margin-top: rem(18px);
+    color: colors.$grey-dark;
+    margin-top: rem.torem(18px);
     text-align: center;
     width: 52%;
   }

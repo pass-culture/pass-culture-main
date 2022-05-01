@@ -1,15 +1,19 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .button {
   background-color: transparent;
-  border: 1px solid $black;
+  border: 1px solid colors.$black;
   border-radius: 8px;
-  padding: rem(32px) rem(16px) rem(16px);
+  padding: rem.torem(32px) rem.torem(16px) rem.torem(16px);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
-  width: rem(231px);
-  font-size: rem(15px);
+  width: rem.torem(231px);
+  font-size: rem.torem(15px);
 
   &-radio {
     z-index: -1;
@@ -17,37 +21,37 @@
 
   &-check-mark {
     position: absolute;
-    top: rem(16px);
-    left: rem(16px);
-    fill: $primary;
+    top: rem.torem(16px);
+    left: rem.torem(16px);
+    fill: colors.$primary;
   }
 
   &-icon {
-    fill: $black;
-    margin-bottom: rem(12px);
+    fill: colors.$black;
+    margin-bottom: rem.torem(12px);
   }
 
   &.is-selected {
-    border: 1px solid $primary;
+    border: 1px solid colors.$primary;
     font-weight: 700;
-    color: $primary;
+    color: colors.$primary;
 
     .button-icon {
-      fill: $primary;
+      fill: colors.$primary;
     }
   }
 
   &.is-disabled {
-    background-color: $grey-light;
-    color: $grey-dark;
-    border-color: $grey-dark;
+    background-color: colors.$grey-light;
+    color: colors.$grey-dark;
+    border-color: colors.$grey-dark;
 
     .button-icon {
-      fill: $grey-dark;
+      fill: colors.$grey-dark;
     }
 
     .button-check-mark {
-      fill: $grey-dark;
+      fill: colors.$grey-dark;
     }
   }
 }

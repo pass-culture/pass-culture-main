@@ -1,20 +1,24 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .activation-codes-upload {
   align-items: center;
   display: flex;
   flex-direction: column;
   text-align: center;
-  width: rem(540px);
+  width: rem.torem(540px);
 
   .activation-codes-upload-icon {
-    height: rem(120px);
-    margin-top: rem(20px);
-    width: rem(200px);
+    height: rem.torem(120px);
+    margin-top: rem.torem(20px);
+    width: rem.torem(200px);
   }
 
   .activation-codes-upload-title {
-    @include title4();
+    @include fonts.title4();
 
-    margin-top: rem(8px);
+    margin-top: rem.torem(8px);
   }
 
   .activation-codes-upload-section {
@@ -24,9 +28,9 @@
   }
 
   .activation-codes-upload-separator {
-    border: 1px solid $grey-medium;
-    margin-bottom: rem(16px);
-    margin-top: rem(24px);
+    border: 1px solid colors.$grey-medium;
+    margin-bottom: rem.torem(16px);
+    margin-top: rem.torem(24px);
     width: 100%;
   }
 
@@ -36,8 +40,8 @@
   }
 
   .activation-codes-upload-gabarit {
-    @include gabarit();
+    @include fonts.gabarit();
 
-    margin-bottom: rem(10px);
+    margin-bottom: rem.torem(10px);
   }
 }

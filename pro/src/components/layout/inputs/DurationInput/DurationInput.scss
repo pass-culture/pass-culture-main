@@ -1,3 +1,7 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .input-time {
   display: flex;
   flex-direction: column;
@@ -7,11 +11,11 @@
   }
 
   .itime-sub-label {
-    @include caption();
+    @include fonts.caption();
 
-    color: $grey-dark;
+    color: colors.$grey-dark;
     float: right;
-    margin-left: rem(5px);
+    margin-left: rem.torem(5px);
   }
 
   .itime-field-container {
@@ -20,35 +24,35 @@
   }
 
   .itime-field {
-    @include body();
+    @include fonts.body();
 
-    border: 1px solid $grey-medium;
+    border: 1px solid colors.$grey-medium;
     border-radius: 22px;
-    box-shadow: 0 2px 6px 0 $black-shadow;
-    color: $black;
+    box-shadow: 0 2px 6px 0 colors.$black-shadow;
+    color: colors.$black;
     display: block;
-    height: rem(40px);
-    margin-top: rem(8px);
-    padding: rem(10px) rem(16px);
+    height: rem.torem(40px);
+    margin-top: rem.torem(8px);
+    padding: rem.torem(10px) rem.torem(16px);
     text-align: center;
-    width: rem(150px);
+    width: rem.torem(150px);
 
     &:focus {
-      border: 1px solid $primary;
-      box-shadow: 0 0 0 1px $primary inset;
+      border: 1px solid colors.$primary;
+      box-shadow: 0 0 0 1px colors.$primary inset;
       outline: none;
       outline-offset: 0;
     }
 
     &:disabled {
-      background-color: $grey-light;
+      background-color: colors.$grey-light;
       border: none;
-      color: $grey-dark;
+      color: colors.$grey-dark;
       opacity: 1;
     }
 
     &.error:not(:focus-within) {
-      border: 2px solid $red-error;
+      border: 2px solid colors.$red-error;
     }
   }
 }

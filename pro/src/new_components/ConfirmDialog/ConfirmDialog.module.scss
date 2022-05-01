@@ -1,44 +1,48 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .confirm-dialog {
   align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: rem(532px);
+  max-width: rem.torem(532px);
   text-align: center;
 
   &-title {
-    @include gabarit();
+    @include fonts.gabarit();
 
-    margin-top: rem(32px);
+    margin-top: rem.torem(32px);
   }
 
   &-icon {
-    height: rem(80px);
-    width: rem(80px);
+    height: rem.torem(80px);
+    width: rem.torem(80px);
   }
 
   &-explanation {
-    margin-top: rem(32px);
+    margin-top: rem.torem(32px);
   }
 
   .tertiary-link {
-    color: $primary;
+    color: colors.$primary;
 
     &:hover,
     &:focus {
-      color: $primary;
+      color: colors.$primary;
     }
   }
 
   &-actions {
     display: flex;
     flex-wrap: wrap;
-    margin-top: rem(48px);
-    gap: rem(24px);
+    margin-top: rem.torem(48px);
+    gap: rem.torem(24px);
 
     button {
-      min-width: rem(150px);
-      padding: 0 rem(40px);
+      min-width: rem.torem(150px);
+      padding: 0 rem.torem(40px);
     }
   }
 }

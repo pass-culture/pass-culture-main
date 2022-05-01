@@ -1,21 +1,25 @@
-.it-errors {
-  @include caption();
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
 
-  color: $red-error;
+.it-errors {
+  @include fonts.caption();
+
+  color: colors.$red-error;
   display: flex;
-  line-height: rem(16px);
-  margin-top: rem(8px);
+  line-height: rem.torem(16px);
+  margin-top: rem.torem(8px);
   text-align: left;
 
   img {
-    height: rem(15px);
-    margin-right: rem(4px);
-    width: rem(15px);
+    height: rem.torem(15px);
+    margin-right: rem.torem(4px);
+    width: rem.torem(15px);
   }
 
   pre {
     background: none;
-    color: $red-error;
+    color: colors.$red-error;
     font-family: inherit;
     font-size: inherit;
     padding: 0;

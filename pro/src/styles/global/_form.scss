@@ -1,3 +1,7 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .field-group {
   display: table;
   margin-bottom: 1rem;
@@ -7,9 +11,9 @@
 input.input,
 .select select,
 textarea.textarea {
-  @include body();
+  @include fonts.body();
 
-  &[readonly]:not([type="checkbox"]) {
+  &[readonly]:not([type='checkbox']) {
     background-color: transparent;
     border: none;
     padding-left: 0.125rem;
@@ -32,9 +36,9 @@ textarea.textarea {
     }
 
     .display-name {
-      @include button();
+      @include fonts.button();
 
-      color: $black;
+      color: colors.$black;
       display: inline-block;
       padding-left: 0.25rem;
       padding-top: 0.5rem;
@@ -49,7 +53,7 @@ textarea.textarea {
 
   &.has-addons {
     &:focus-within .button {
-      border-color: $primary;
+      border-color: colors.$primary;
     }
 
     .control {
@@ -58,7 +62,7 @@ textarea.textarea {
         height: 100%;
 
         &:focus {
-          border-color: $grey-medium;
+          border-color: colors.$grey-medium;
 
           &:not(:active) {
             box-shadow: none;
@@ -131,7 +135,7 @@ textarea.textarea {
       white-space: nowrap;
 
       .label {
-        color: $black;
+        color: colors.$black;
         margin-bottom: 0;
       }
 
@@ -151,7 +155,7 @@ textarea.textarea {
         select[disabled] {
           background-color: transparent;
           border: none;
-          color: $black;
+          color: colors.$black;
           cursor: default;
           opacity: 1;
           padding-left: 0.125rem;
@@ -198,15 +202,15 @@ textarea.textarea {
 
   .required:not(.readOnly) {
     &::after {
-      color: $accent;
-      content: " *";
+      color: colors.$accent;
+      content: ' *';
       display: inline;
     }
   }
 }
 
 .required-legend {
-  color: $accent;
+  color: colors.$accent;
 }
 
 div.control.control-duration {

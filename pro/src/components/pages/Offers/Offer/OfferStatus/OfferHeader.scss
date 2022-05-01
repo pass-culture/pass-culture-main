@@ -1,7 +1,10 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .offer-header {
   align-items: center;
   display: grid;
-  grid-column-gap: rem(24px);
+  grid-column-gap: rem.torem(24px);
   grid-template-columns: auto 1px auto;
   height: 100%;
 
@@ -10,7 +13,7 @@
   }
 
   .separator {
-    background-color: $grey-medium;
-    height: rem(24px);
+    background-color: colors.$grey-medium;
+    height: rem.torem(24px);
   }
 }

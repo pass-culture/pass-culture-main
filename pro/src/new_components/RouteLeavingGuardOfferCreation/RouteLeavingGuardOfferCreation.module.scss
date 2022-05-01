@@ -1,12 +1,14 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .exit-offer-creation-dialog {
   text-align: center;
 
   p {
-    margin-top: rem(16px);
-    width: rem(500px);
+    margin-top: rem.torem(16px);
+    width: rem.torem(500px);
   }
 }
 
 .route-leaving-guard-icon {
-  margin-bottom: rem(40px);
+  margin-bottom: rem.torem(40px);
 }

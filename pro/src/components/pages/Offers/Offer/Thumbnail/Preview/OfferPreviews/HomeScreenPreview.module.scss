@@ -1,13 +1,16 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .image-preview-shell {
   position: absolute;
   height: 515px;
 }
 
 .image-preview-home-preview {
-  background-color: $white;
-  border-radius: rem(5px);
-  left: rem(16px);
+  background-color: colors.$white;
+  border-radius: rem.torem(5px);
+  left: rem.torem(16px);
   position: absolute;
-  top: rem(152px);
+  top: rem.torem(152px);
   height: 228px;
 }

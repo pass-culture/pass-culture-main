@@ -1,3 +1,6 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .sign-up-confirmation-page {
   min-height: 600px;
   overflow: auto;
@@ -12,25 +15,25 @@
     width: 500px;
 
     a.quaternary-link {
-      color: $primary;
+      color: colors.$primary;
     }
 
     .information-text {
       align-items: flex-start;
       display: flex;
       flex-direction: row;
-      margin-top: rem(24px);
+      margin-top: rem.torem(24px);
 
       img {
-        height: rem(21px);
-        margin-right: rem(6px);
-        margin-top: rem(3px);
+        height: rem.torem(21px);
+        margin-right: rem.torem(6px);
+        margin-top: rem.torem(3px);
       }
 
       p {
-        color: $grey-dark;
-        font-size: rem(13px);
-        line-height: rem(16px);
+        color: colors.$grey-dark;
+        font-size: rem.torem(13px);
+        line-height: rem.torem(16px);
         text-align: justify;
       }
     }
@@ -40,11 +43,11 @@
     }
 
     .confirmation-text {
-      font-size: rem(20px);
+      font-size: rem.torem(20px);
       font-style: italic;
       font-weight: 500;
-      line-height: rem(24px);
-      margin-bottom: rem(12px);
+      line-height: rem.torem(24px);
+      margin-bottom: rem.torem(12px);
 
       span {
         font-weight: 700;
@@ -52,7 +55,7 @@
     }
 
     h1 {
-      margin-bottom: rem(16px);
+      margin-bottom: rem.torem(16px);
     }
   }
 }

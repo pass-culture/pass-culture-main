@@ -1,15 +1,17 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .title-1 {
-  @include title1();
+  @include fonts.title1();
 }
 
 .title-2 {
-  @include title2();
+  @include fonts.title2();
 }
 
 .title-3 {
-  @include title3();
+  @include fonts.title3();
 }
 
 .title-4 {
-  @include title4();
+  @include fonts.title4();
 }

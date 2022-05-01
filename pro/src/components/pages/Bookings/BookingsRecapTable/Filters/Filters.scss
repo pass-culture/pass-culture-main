@@ -1,18 +1,22 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .vertical-bar {
-  background-color: $grey-medium;
-  height: rem(40px);
-  width: rem(1px);
+  background-color: colors.$grey-medium;
+  height: rem.torem(40px);
+  width: rem.torem(1px);
 }
 
 .filters-wrapper {
-  margin-top: rem(16px);
+  margin-top: rem.torem(16px);
 
   .fw-first-line {
     border-radius: 20px;
-    box-shadow: 2px 2px 6px 0 $black-shadow;
+    box-shadow: 2px 2px 6px 0 colors.$black-shadow;
     display: flex;
     justify-content: flex-start;
-    margin-bottom: rem(32px);
+    margin-bottom: rem.torem(32px);
 
     &.disabled {
       box-shadow: none;
@@ -20,71 +24,71 @@
 
     &:focus-within {
       .vertical-bar {
-        background-color: $primary;
+        background-color: colors.$primary;
         margin-right: 0;
-        width: rem(2px);
+        width: rem.torem(2px);
       }
     }
 
     .vertical-bar {
-      margin-right: rem(1px);
+      margin-right: rem.torem(1px);
     }
 
     .fw-booking-text-filters-select {
-      @include button();
+      @include fonts.button();
 
       appearance: none;
       background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
-      border: 1px solid $grey-medium;
+      border: 1px solid colors.$grey-medium;
       border-radius: 20px 0 0 20px;
       border-right: none;
-      height: rem(40px);
+      height: rem.torem(40px);
       outline: none;
-      padding-left: rem(16px);
-      width: rem(200px);
+      padding-left: rem.torem(16px);
+      width: rem.torem(200px);
 
       &:focus {
-        border-color: $primary;
+        border-color: colors.$primary;
         border-width: 2px;
-        padding-left: rem(16px);
+        padding-left: rem.torem(16px);
       }
 
       &:disabled {
-        @include body-important();
+        @include fonts.body-important();
 
-        background-color: $grey-light;
+        background-color: colors.$grey-light;
         background-image: url(/icons/dropdown-disclosure-down-b-disabled.svg);
-        border-color: $grey-light;
-        color: $grey-dark;
+        border-color: colors.$grey-light;
+        color: colors.$grey-dark;
         cursor: initial;
         opacity: 1;
       }
     }
 
     .fw-booking-text-filters-input {
-      @include body();
+      @include fonts.body();
 
-      border: 1px solid $grey-medium;
+      border: 1px solid colors.$grey-medium;
       border-left: none;
       border-radius: 0 20px 20px 0;
       flex-grow: 1;
-      height: rem(40px);
-      padding: rem(8px) rem(16px);
+      height: rem.torem(40px);
+      padding: rem.torem(8px) rem.torem(16px);
 
       &:focus {
-        border-color: $primary;
+        border-color: colors.$primary;
         border-width: 2px;
         outline: none;
       }
 
       &:disabled {
-        background-color: $grey-light;
-        border-color: $grey-light;
-        color: $grey-dark;
+        background-color: colors.$grey-light;
+        border-color: colors.$grey-light;
+        color: colors.$grey-dark;
         opacity: 1;
 
         &::placeholder {
-          color: $grey-dark;
+          color: colors.$grey-dark;
         }
       }
     }
@@ -93,7 +97,7 @@
   .fw-second-line {
     display: flex;
     justify-content: space-between;
-    margin-bottom: rem(32px);
+    margin-bottom: rem.torem(32px);
 
     .field-date {
       align-items: center;
@@ -103,10 +107,10 @@
       background-repeat: no-repeat;
       border-radius: 20px;
       display: flex;
-      height: rem(40px);
+      height: rem.torem(40px);
 
       &:focus-within {
-        border-color: $primary;
+        border-color: colors.$primary;
         border-width: 2px;
       }
 
@@ -125,11 +129,11 @@
       }
 
       .field-date {
-        border: 1px solid $grey-medium;
-        box-shadow: 2px 2px 6px 0 $black-shadow;
-        margin-top: rem(16px);
+        border: 1px solid colors.$grey-medium;
+        box-shadow: 2px 2px 6px 0 colors.$black-shadow;
+        margin-top: rem.torem(16px);
         padding: 0 1px;
-        width: rem(233px);
+        width: rem.torem(233px);
 
         &.disabled {
           box-shadow: none;
@@ -138,32 +142,32 @@
 
       .fw-offer-date-picker:focus-within {
         .field-date {
-          border-color: $primary;
+          border-color: colors.$primary;
           border-width: 2px;
           padding: 0;
         }
       }
 
       .fw-offer-date-label {
-        margin-bottom: rem(16px);
+        margin-bottom: rem.torem(16px);
       }
 
       .fw-offer-date-input {
-        @include body();
+        @include fonts.body();
 
         background: none;
         border: 0;
         outline: none;
-        padding-left: rem(8px);
-        width: rem(150px);
+        padding-left: rem.torem(8px);
+        width: rem.torem(150px);
 
         &:disabled {
-          color: $grey-dark;
+          color: colors.$grey-dark;
           cursor: initial;
           opacity: 1;
 
           &::placeholder {
-            color: $grey-dark;
+            color: colors.$grey-dark;
           }
         }
       }
@@ -174,39 +178,39 @@
       flex-direction: column;
 
       .fw-offer-venue-label {
-        @include body();
+        @include fonts.body();
       }
 
       select {
-        @include body();
+        @include fonts.body();
 
         appearance: none;
         background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
-        border: 1px solid $grey-medium;
+        border: 1px solid colors.$grey-medium;
         border-radius: 20px;
-        box-shadow: 1px 2px 6px 0 $black-shadow;
-        height: rem(40px);
-        margin-top: rem(16px);
+        box-shadow: 1px 2px 6px 0 colors.$black-shadow;
+        height: rem.torem(40px);
+        margin-top: rem.torem(16px);
         outline: none;
         overflow-y: scroll;
-        padding-left: rem(16px);
-        padding-right: rem(32px);
+        padding-left: rem.torem(16px);
+        padding-right: rem.torem(32px);
         text-overflow: ellipsis;
         white-space: nowrap;
-        width: rem(233px);
+        width: rem.torem(233px);
         word-wrap: break-word;
 
         &:focus {
-          border-color: $primary;
+          border-color: colors.$primary;
           border-width: 2px;
         }
 
         &:disabled {
-          background-color: $grey-light;
+          background-color: colors.$grey-light;
           background-image: url(/icons/dropdown-disclosure-down-b-disabled.svg);
-          border-color: $grey-light;
+          border-color: colors.$grey-light;
           box-shadow: none;
-          color: $grey-dark;
+          color: colors.$grey-dark;
           cursor: initial;
           opacity: 1;
         }
@@ -214,7 +218,7 @@
     }
 
     .field-date-only {
-      border: 1px solid $grey-medium;
+      border: 1px solid colors.$grey-medium;
     }
   }
 }
@@ -223,28 +227,28 @@
   position: relative;
 
   .bs-filter-label {
-    @include caption();
+    @include fonts.caption();
 
-    color: $grey-dark;
-    padding-bottom: rem(8px);
+    color: colors.$grey-dark;
+    padding-bottom: rem.torem(8px);
     white-space: nowrap;
   }
 
   .bs-filter-tooltip {
-    background-color: $white;
+    background-color: colors.$white;
     border-radius: 4px;
     box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.3);
-    left: rem(-90px);
-    margin-top: rem(8px);
-    padding: rem(16px);
+    left: rem.torem(-90px);
+    margin-top: rem.torem(8px);
+    padding: rem.torem(16px);
     position: absolute;
     z-index: 1;
   }
 
   label {
     display: flex;
-    padding-bottom: rem(8px);
-    padding-top: rem(8px);
+    padding-bottom: rem.torem(8px);
+    padding-top: rem.torem(8px);
     text-transform: capitalize;
   }
 }
@@ -252,12 +256,12 @@
 .bs-filter-button {
   background-color: transparent;
   border: none;
-  line-height: rem(20px);
+  line-height: rem.torem(20px);
   vertical-align: middle;
 
   img {
-    height: rem(20px);
+    height: rem.torem(20px);
     vertical-align: middle;
-    width: rem(20px);
+    width: rem.torem(20px);
   }
 }

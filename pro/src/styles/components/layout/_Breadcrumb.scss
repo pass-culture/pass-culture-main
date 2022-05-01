@@ -1,30 +1,34 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .pc-breadcrumb {
-  color: $grey-medium;
+  color: colors.$grey-medium;
   display: flex;
 
   .bc-step {
-    @include caption();
+    @include fonts.caption();
 
-    color: $grey-medium;
+    color: colors.$grey-medium;
     display: flex;
     align-items: center;
 
     a {
-      color: $black;
+      color: colors.$black;
     }
 
     &.active,
     &.active a {
-      color: $primary;
+      color: colors.$primary;
       position: relative;
 
       &::after {
-        border-bottom: rem(2px) solid $primary;
+        border-bottom: rem.torem(2px) solid colors.$primary;
         content: '';
         left: 0;
         position: absolute;
-        top: rem(24px);
-        width: rem(56px);
+        top: rem.torem(24px);
+        width: rem.torem(56px);
       }
     }
 
@@ -32,29 +36,29 @@
       align-items: center;
       display: flex;
       justify-content: center;
-      width: rem(24px);
+      width: rem.torem(24px);
 
       path {
-        fill: $grey-medium;
+        fill: colors.$grey-medium;
       }
     }
 
     &.active .separator path {
-      fill: $black;
+      fill: colors.$black;
     }
   }
 
   &.bc-tab {
-    color: $black;
+    color: colors.$black;
 
     .bc-step {
-      @include button();
+      @include fonts.button();
 
-      margin-left: rem(24px);
+      margin-left: rem.torem(24px);
 
       a:hover,
       a:focus {
-        color: $primary;
+        color: colors.$primary;
       }
 
       &:first-child {
@@ -66,7 +70,7 @@
   &.bc-disabled {
     .bc-step:nth-child(1) {
       a {
-        color: $grey-dark;
+        color: colors.$grey-dark;
       }
     }
   }

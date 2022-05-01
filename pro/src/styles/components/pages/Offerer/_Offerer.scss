@@ -1,29 +1,33 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .offerer-page {
-  position:relative;
-  padding-top: rem(50px);
+  position: relative;
+  padding-top: rem.torem(50px);
 
   .op-teaser {
-    margin-bottom: rem(24px);
+    margin-bottom: rem.torem(24px);
   }
 
   .has-text-primary {
     align-items: center;
-    color: $primary;
+    color: colors.$primary;
     display: flex;
     justify-content: center;
 
     svg {
-      height: rem(24px);
-      margin-right: rem(4px);
+      height: rem.torem(24px);
+      margin-right: rem.torem(4px);
     }
 
     svg .ico-plus {
-      fill: $primary;
+      fill: colors.$primary;
     }
   }
 
   .has-text-grey {
-    color: $grey-dark;
+    color: colors.$grey-dark;
   }
 
   .has-text-centered {
@@ -35,23 +39,23 @@
   }
 
   .op-detail {
-    margin: rem(8px) 0;
+    margin: rem.torem(8px) 0;
 
     > :first-child {
-      color: $grey-dark;
-      margin-right: rem(5px);
+      color: colors.$grey-dark;
+      margin-right: rem.torem(5px);
     }
   }
 
   .field-siren {
     display: flex;
-    margin: rem(8px) 0;
+    margin: rem.torem(8px) 0;
 
     > :first-child {
-      @include body();
+      @include fonts.body();
 
-      color: $black;
-      margin-right: rem(5px);
+      color: colors.$black;
+      margin-right: rem.torem(5px);
     }
   }
 
@@ -59,13 +63,13 @@
     @extend .field-label;
 
     flex: 0;
-    margin: rem(6px) 0 0;
+    margin: rem.torem(6px) 0 0;
     padding-bottom: 0;
   }
 
   .field-siren-control {
     flex: 1;
-    margin-bottom: rem(20px);
+    margin-bottom: rem.torem(20px);
   }
 
   .field-siren-error {
@@ -73,23 +77,23 @@
   }
 
   .op-subtitle {
-    @include body();
+    @include fonts.body();
   }
 
   .op-content-section {
-    margin-bottom: rem(48px);
+    margin-bottom: rem.torem(48px);
   }
 
   .op-creation-form {
-    margin: rem(60px) 0 rem(48px);
+    margin: rem.torem(60px) 0 rem.torem(48px);
   }
 
   .op-detail-creation-form {
-    margin: rem(8px) 0 rem(30px) 0;
+    margin: rem.torem(8px) 0 rem.torem(30px) 0;
 
     > :first-child {
-      color: $grey-dark;
-      margin-right: rem(5px);
+      color: colors.$grey-dark;
+      margin-right: rem.torem(5px);
     }
   }
 }

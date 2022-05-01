@@ -1,58 +1,67 @@
-$actionsPaddingTop: rem(20px);
-$actionsPaddingBottom: rem(20px);
-$buttonHeight: rem(40px);
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+$actionsPaddingTop: rem.torem(20px);
+$actionsPaddingBottom: rem.torem(20px);
+$buttonHeight: rem.torem(40px);
 
 .stocks-page {
   h2 {
-    @include title3();
+    @include fonts.title3();
   }
 
   .add-first-stock-button {
-    margin: rem(24px) auto 0 auto;
+    margin: rem.torem(24px) auto 0 auto;
   }
 
   .tertiary-button {
-    margin-top: rem(26px);
+    margin-top: rem.torem(26px);
 
     svg .ico-plus {
-      fill: $black;
+      fill: colors.$black;
     }
   }
 
-  .activation-codes-information, .cancellation-information {
-    margin-top: rem(16px);
+  .activation-codes-information,
+  .cancellation-information {
+    margin-top: rem.torem(16px);
   }
 
   table {
-    margin-top: rem(28px);
+    margin-top: rem.torem(28px);
     width: 100%;
   }
 
   th {
-    @include caption();
+    @include fonts.caption();
 
     text-align: left;
   }
 
   table td,
   table th {
-    padding: rem(10px) rem(5px);
+    padding: rem.torem(10px) rem.torem(5px);
     vertical-align: middle;
   }
 
   .interval {
-    height: rem(32px);
+    height: rem.torem(32px);
     left: 0;
     right: 0;
 
     &.cover {
-      background: $white;
+      background: colors.$white;
       position: absolute;
       z-index: 1;
     }
 
     &.shadow {
-      background-image: radial-gradient(ellipse at bottom, $black-shadow, transparent 75%);
+      background-image: radial-gradient(
+        ellipse at bottom,
+        colors.$black-shadow,
+        transparent 75%
+      );
       bottom: $actionsPaddingBottom + $actionsPaddingTop + $buttonHeight;
       position: sticky;
     }
@@ -63,9 +72,9 @@ $buttonHeight: rem(40px);
   }
 
   .actions-section {
-    background: $white;
+    background: colors.$white;
     bottom: 0;
-    margin-top: rem(60px);
+    margin-top: rem.torem(60px);
     padding-bottom: $actionsPaddingBottom;
     padding-top: $actionsPaddingTop;
     position: sticky;
@@ -73,7 +82,7 @@ $buttonHeight: rem(40px);
 
     button,
     a {
-      max-width: rem(230px);
+      max-width: rem.torem(230px);
     }
   }
 }

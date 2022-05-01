@@ -1,24 +1,28 @@
-@mixin quaternary {
-  @include caption();
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
 
-  color: $black;
-  line-height: rem(22px);
+@mixin quaternary {
+  @include fonts.caption();
+
+  color: colors.$black;
+  line-height: rem.torem(22px);
 
   &:hover,
   &:focus {
-    color: $black;
+    color: colors.$black;
     text-decoration: underline;
   }
 
   &:active {
-    color: $black;
+    color: colors.$black;
   }
 
   img {
-    height: rem(24px);
-    margin-right: rem(4px);
+    height: rem.torem(24px);
+    margin-right: rem.torem(4px);
     vertical-align: bottom;
-    width: rem(24px);
+    width: rem.torem(24px);
   }
 }
 

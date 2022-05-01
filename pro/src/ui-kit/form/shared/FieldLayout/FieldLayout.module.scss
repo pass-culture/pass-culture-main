@@ -1,6 +1,11 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/variables/_forms.scss' as forms;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .field-layout {
   &-label {
-    margin-bottom: rem($label-space-before-input);
+    margin-bottom: rem.torem(forms.$label-space-before-input);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -8,19 +13,19 @@
   }
 
   &-small-label &-label {
-    @include caption();
+    @include fonts.caption();
   }
 
   &-optional {
-    @include caption();
-    color: $grey-dark;
+    @include fonts.caption();
+    color: colors.$grey-dark;
   }
 
   &-footer {
-    margin-top: rem($input-space-before-error);
+    margin-top: rem.torem(forms.$input-space-before-error);
     display: flex;
     justify-content: flex-end;
-    min-height: rem($input-error-reserved-space);
+    min-height: rem.torem(forms.$input-error-reserved-space);
   }
 
   &-error {
@@ -28,8 +33,8 @@
   }
 
   &-counter {
-    @include caption();
-    color: $grey-dark;
+    @include fonts.caption();
+    color: colors.$grey-dark;
     flex: initial;
     justify-self: flex-end;
   }

@@ -1,3 +1,5 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .dialog-box-overlay {
   align-items: center;
   display: grid;
@@ -12,7 +14,7 @@
 
 .dialog-box-content {
   border-radius: 10px;
-  min-width: rem(534px);
+  min-width: rem.torem(534px);
   position: relative;
   width: auto;
 }
@@ -21,6 +23,6 @@
   background-color: transparent;
   border: none;
   position: absolute;
-  right: rem(32px);
-  top: rem(32px);
+  right: rem.torem(32px);
+  top: rem.torem(32px);
 }

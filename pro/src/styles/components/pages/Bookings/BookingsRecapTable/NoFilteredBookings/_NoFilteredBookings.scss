@@ -1,30 +1,34 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .no-filtered-bookings-wrapper {
   align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  margin-bottom: rem(36px);
-  min-height: rem(256px);
+  margin-bottom: rem.torem(36px);
+  min-height: rem.torem(256px);
 
   .nfb-icon {
-    margin-bottom: rem(12px);
+    margin-bottom: rem.torem(12px);
   }
 
   span {
-    @include body();
+    @include fonts.body();
 
-    color: $grey-dark;
+    color: colors.$grey-dark;
 
     &:first-of-type {
-      margin-bottom: rem(16px);
+      margin-bottom: rem.torem(16px);
     }
   }
 
   button {
-    @include button();
+    @include fonts.button();
 
     background: none;
     border: none;
-    color: $primary;
+    color: colors.$primary;
   }
 }

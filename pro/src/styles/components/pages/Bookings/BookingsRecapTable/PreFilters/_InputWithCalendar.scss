@@ -1,16 +1,18 @@
+@use 'styles/variables/_colors.scss' as colors;
+
 .bookings-page {
   .field-date-only {
     @extend .field-input;
     @extend .field-date;
 
     &.disabled {
-      background-color: $grey-light;
-      border-color: $grey-light;
+      background-color: colors.$grey-light;
+      border-color: colors.$grey-light;
       opacity: 1;
     }
 
     &.error:not(:focus-within) {
-      border: 2px solid $red-error;
+      border: 2px solid colors.$red-error;
     }
   }
 }

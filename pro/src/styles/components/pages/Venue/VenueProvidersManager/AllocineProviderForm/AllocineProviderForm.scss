@@ -1,11 +1,14 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .apf-price-section {
   margin-top: 0.8rem;
 }
 
 .allocine-provider-form {
   .field-asterisk {
-    color: $accent;
-    margin-left: rem(2px);
+    color: colors.$accent;
+    margin-left: rem.torem(2px);
   }
 
   .apf-price-section {
@@ -27,7 +30,7 @@
     margin-top: 0.8rem;
 
     img {
-      max-width: rem(24px);
+      max-width: rem.torem(24px);
     }
   }
 }
@@ -42,7 +45,7 @@
 }
 
 .apf-provider-import-button-section {
-  margin-top: rem(17px);
+  margin-top: rem.torem(17px);
 
   button {
     width: 100%;
@@ -50,5 +53,5 @@
 }
 
 .apf-tooltip {
-  margin-left: rem(4px);
+  margin-left: rem.torem(4px);
 }

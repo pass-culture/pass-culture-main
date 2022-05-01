@@ -1,21 +1,24 @@
+@use 'styles/mixins/_forms.scss' as forms;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .base-input {
-  @include input-theme();  
+  @include forms.input-theme();
 
   &::-webkit-inner-spin-button,
-  &::-webkit-calendar-picker-indicator{
+  &::-webkit-calendar-picker-indicator {
     display: none;
   }
-  
+
   &.has-error {
-    @include input-theme-error();
+    @include forms.input-theme-error();
   }
 
   &-with-right-icon {
-    padding-right: rem(36px);
+    padding-right: rem.torem(36px);
   }
 
   &-right-icon {
-    @include input-icon-wrapper(16px)
+    @include forms.input-icon-wrapper(16px);
   }
 
   &-wrapper {

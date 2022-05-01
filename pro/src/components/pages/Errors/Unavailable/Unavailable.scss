@@ -1,30 +1,33 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
 .unavailable-page {
   align-items: center;
-  background: linear-gradient(125deg, $primary, $secondary);
-  color: $white;
+  background: linear-gradient(125deg, colors.$primary, colors.$secondary);
+  color: colors.$white;
   display: flex;
   flex-direction: column;
   justify-content: center;
 
   h1 {
-    @include hero();
+    @include fonts.hero();
 
-    color: $white;
+    color: colors.$white;
     line-height: normal;
-    margin: rem(32px) 0 rem(16px);
+    margin: rem.torem(32px) 0 rem.torem(16px);
   }
 
   p {
-    @include title2();
+    @include fonts.title2();
   }
 
   img.error-icon {
-    width: rem(350px);
+    width: rem.torem(350px);
   }
 
   img.brand-logo {
-    bottom: rem(40px);
+    bottom: rem.torem(40px);
     position: fixed;
-    width: rem(110px);
+    width: rem.torem(110px);
   }
 }

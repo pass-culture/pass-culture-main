@@ -1,57 +1,6 @@
 {
-  "extends": [
-    "stylelint-config-standard",
-    "stylelint-a11y/recommended"
-  ],
-  "ignoreFiles": ["**/*.svg"],
-  "plugins": [
-    "stylelint-order",
-    "./stylelint-pass-culture"
-  ],
+  "extends": "stylelint-config-standard",
   "rules": {
-    "pass-culture/no-font-properties": true,
-    "pass-culture/no-hexadecimal-color": [true,
-      {
-        "colors": {
-          "#fff": "$white",
-          "#ffffff": "$white",
-          "#ecf0f1": "$grey-very-light",
-          "#f5f5f5": "$grey-light",
-          "#c7c7cc": "$grey-medium",
-          "#626262": "$grey-dark",
-          "#151515": "$black",
-          "#eb0055": "$primary",
-          "#c10046": "$primary-dark",
-          "#320096": "$secondary",
-          "#6123df": "$tertiary",
-          "#c1a3ff": "$light-purple",
-          "#06f": "$accent",
-          "#0066ff": "$accent",
-          "#ff99be": "$primary-disabled",
-          "#15884f": "$green-valid",
-          "#e60039": "$red-error",
-          "#ffea00": "$attention",
-          "#ff8097": "$notification-error",
-          "#b3e7ff": "$notification-info",
-          "#b8e986": "$notification-success",
-          "#ffd580": "$notification-warning",
-          "#f9c030": "$booking-pending-status"
-        }
-      }
-    ],
-    "at-rule-no-unknown": [true, {
-      "ignoreAtRules": [
-        "each",
-        "else",
-        "extend",
-        "function",
-        "if",
-        "include",
-        "mixin",
-        "return",
-        "use"
-      ]
-    }],
-    "order/properties-alphabetical-order": true
+    "at-rule-no-unknown": null
   }
 }

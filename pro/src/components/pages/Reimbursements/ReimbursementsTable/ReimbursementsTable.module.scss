@@ -1,3 +1,7 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 table.reimbursement-table {
   display: flex;
   flex-direction: column;
@@ -8,7 +12,7 @@ table.reimbursement-table {
     justify-content: flex-start;
 
     th {
-      @include caption();
+      @include fonts.caption();
 
       align-items: center;
       cursor: pointer;
@@ -23,25 +27,25 @@ table.reimbursement-table {
         padding: 0;
 
         img {
-          height: rem(20px);
-          margin-left: rem(10px);
+          height: rem.torem(20px);
+          margin-left: rem.torem(10px);
         }
       }
     }
 
     td,
     th {
-      padding: rem(20px) rem(16px);
-      width: rem(120px);
+      padding: rem.torem(20px) rem.torem(16px);
+      width: rem.torem(120px);
     }
 
     th:nth-child(2) {
-      width: rem(220px);
+      width: rem.torem(220px);
     }
 
     th:nth-child(4) {
       cursor: default;
-      margin-left: rem(20px);
+      margin-left: rem.torem(20px);
       text-align: right;
     }
   }
