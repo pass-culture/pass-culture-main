@@ -1,7 +1,11 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 // sass doc: https://sass-lang.com/documentation
 .tutorial-box {
-  height: rem(620px);
-  width: rem(750px);
+  height: rem.torem(620px);
+  width: rem.torem(750px);
 }
 
 .tutorial {
@@ -13,14 +17,14 @@
   text-align: center;
 
   h1 {
-    margin-bottom: rem(24px);
-    margin-top: rem(40px);
+    margin-bottom: rem.torem(24px);
+    margin-top: rem.torem(40px);
   }
 
   li {
     list-style-position: inside;
     list-style-type: '- ';
-    margin-top: rem(8px);
+    margin-top: rem.torem(8px);
   }
 
   .tutorial-content {
@@ -28,11 +32,11 @@
     flex-direction: column;
     height: 100%;
     justify-content: space-around;
-    width: rem(500px);
+    width: rem.torem(500px);
   }
 
   .tutorial-footer {
-    margin-top: rem(50px);
+    margin-top: rem.torem(50px);
   }
 
   .nav-step-list-section {
@@ -41,11 +45,11 @@
     justify-content: center;
 
     .nav-step {
-      background: $grey-medium;
+      background: colors.$grey-medium;
       border: none;
       border-radius: 50%;
       height: 8px;
-      margin-left: rem(8px);
+      margin-left: rem.torem(8px);
       width: 8px;
 
       &:focus {
@@ -54,24 +58,26 @@
     }
 
     .nav-step-active {
-      background: $primary;
+      background: colors.$primary;
       border-radius: 50%;
-      box-shadow: 0 0 3px 0 rgba($secondary, 0.21);
+      box-shadow: 0 0 3px 0 rgba(colors.$secondary, 0.21);
       height: 12px;
       width: 12px;
     }
 
     .nav-step-done {
-      background: $green-valid;
+      background: colors.$green-valid;
     }
   }
 
   .nav-buttons-section {
-    margin-top: rem(28px);
+    margin-top: rem.torem(28px);
 
     button {
-      margin-left: rem(20px);
-      min-width: rem(103px); // we use similar width for all button to avoid them moving on click.
+      margin-left: rem.torem(20px);
+      min-width: rem.torem(
+        103px
+      ); // we use similar width for all button to avoid them moving on click.
     }
   }
 }

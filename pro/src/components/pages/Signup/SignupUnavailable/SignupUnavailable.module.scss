@@ -1,3 +1,5 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .sign-up-unavailable-section {
   align-items: center;
   display: flex;
@@ -9,6 +11,6 @@
   }
 
   .heading-1 {
-    margin: rem(24px) 0;
+    margin: rem.torem(24px) 0;
   }
 }

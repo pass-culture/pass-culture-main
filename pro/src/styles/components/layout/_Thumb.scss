@@ -1,18 +1,21 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .offer-thumb {
   border-radius: 3px;
-  height: rem(100px);
+  height: rem.torem(100px);
   object-fit: cover;
-  width: rem(75px);
+  width: rem.torem(75px);
 }
 
 .default-thumb {
   align-items: center;
-  background-color: $grey-medium;
+  background-color: colors.$grey-medium;
   border-radius: 3px;
   display: flex;
-  height: rem(100px);
+  height: rem.torem(100px);
   justify-content: center;
-  width: rem(75px);
+  width: rem.torem(75px);
 
   svg {
     height: 75%;

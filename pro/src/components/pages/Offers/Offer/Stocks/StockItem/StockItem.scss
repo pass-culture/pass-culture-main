@@ -1,3 +1,7 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .stocks-page {
   /* Chrome, Safari, Edge, Opera */
   input::-webkit-outer-spin-button,
@@ -7,14 +11,14 @@
   }
 
   /* Firefox */
-  input[type=number] {
+  input[type='number'] {
     -moz-appearance: textfield;
   }
 
   .resized-input input {
     width: 100%;
 
-    &[type="number"]:disabled {
+    &[type='number']:disabled {
       border: 1px solid transparent;
     }
   }
@@ -46,18 +50,18 @@
     border-width: 1px;
     box-shadow: none;
     display: flex;
-    height: rem(40px);
+    height: rem.torem(40px);
     padding: 0 1px;
 
     &:focus-within {
       background-position-x: 91%;
-      border-color: $primary;
+      border-color: colors.$primary;
       border-width: 2px;
       padding: 0;
     }
 
     &.disabled {
-      background-color: $grey-light;
+      background-color: colors.$grey-light;
       background-image: url(/icons/ico-calendar-disabled.svg);
       border-color: transparent;
     }
@@ -68,30 +72,30 @@
   }
 
   .datetime-input {
-    @include body();
+    @include fonts.body();
 
     background: none;
     border: 0;
     cursor: pointer;
-    line-height: rem(32px);
+    line-height: rem.torem(32px);
     outline: none;
-    padding-left: rem(10px);
-    width: rem(135px);
+    padding-left: rem.torem(10px);
+    width: rem.torem(135px);
 
     &:disabled {
-      color: $grey-dark;
+      color: colors.$grey-dark;
       cursor: initial;
       opacity: 1;
 
       &::placeholder {
-        color: $grey-dark;
+        color: colors.$grey-dark;
       }
     }
   }
 
   .price-input {
-    padding-left: rem(10px);
-    padding-right: rem(10px);
+    padding-left: rem.torem(10px);
+    padding-right: rem.torem(10px);
   }
 
   &.disabled {

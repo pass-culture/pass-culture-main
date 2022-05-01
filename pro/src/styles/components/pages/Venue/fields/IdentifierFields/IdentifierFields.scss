@@ -1,3 +1,7 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .identifier-field-section {
   .field {
     align-items: center;
@@ -5,9 +9,9 @@
   }
 
   .field-label {
-    @include body();
+    @include fonts.body();
 
-    color: $black;
+    color: colors.$black;
     flex: 1;
     white-space: initial;
   }
@@ -32,33 +36,33 @@
 
   .select {
     select {
-      @include body-important();
+      @include fonts.body-important();
 
       appearance: none;
-      background-color: $white;
-      border: rem(1px) solid $grey-medium;
-      border-radius: rem(18px);
-      height: rem(36px);
+      background-color: colors.$white;
+      border: rem.torem(1px) solid colors.$grey-medium;
+      border-radius: rem.torem(18px);
+      height: rem.torem(36px);
       max-width: 100%;
       outline: none;
-      padding: rem(4px) rem(40px) rem(4px) rem(16px);
+      padding: rem.torem(4px) rem.torem(40px) rem.torem(4px) rem.torem(16px);
     }
 
     &::after {
-      border: rem(3px) solid $black;
-      border-radius: rem(2px);
+      border: rem.torem(3px) solid colors.$black;
+      border-radius: rem.torem(2px);
       border-right: 0;
       border-top: 0;
-      content: "";
-      height: rem(10px);
-      margin-top: rem(-7px);
+      content: '';
+      height: rem.torem(10px);
+      margin-top: rem.torem(-7px);
       pointer-events: none;
       position: absolute;
-      right: rem(18px);
+      right: rem.torem(18px);
       top: 50%;
       transform: rotate(-45deg);
       transform-origin: center;
-      width: rem(10px);
+      width: rem.torem(10px);
     }
   }
 
@@ -67,14 +71,14 @@
   }
 
   .required-fields-hint {
-    color: $grey-dark;
+    color: colors.$grey-dark;
     float: right;
-    font-size: rem(13px);
+    font-size: rem.torem(13px);
   }
 
   .venue-type-label,
   .venue-label-label {
-    padding-left: rem(22px);
+    padding-left: rem.torem(22px);
   }
 
   .field.is-label-aligned .field-control {

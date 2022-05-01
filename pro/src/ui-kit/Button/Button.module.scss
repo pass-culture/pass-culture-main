@@ -1,14 +1,18 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .button {
-  @include button();
+  @include fonts.button();
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-width: 2px;
   border-style: solid;
-  border-radius: rem(24px);
-  height: rem(40px);
-  line-height: rem(36px);
-  padding: 0 rem(16px);
+  border-radius: rem.torem(24px);
+  height: rem.torem(40px);
+  line-height: rem.torem(36px);
+  padding: 0 rem.torem(16px);
 
   &:focus {
     outline: none;
@@ -24,27 +28,29 @@
   }
 
   &-icon {
-    height: rem(20px);
-    margin-right: rem(6px);
-    margin-left: rem(-4px); // compensate for icon white space adding to padding
-    width: rem(20px);
+    height: rem.torem(20px);
+    margin-right: rem.torem(6px);
+    margin-left: rem.torem(
+      -4px
+    ); // compensate for icon white space adding to padding
+    width: rem.torem(20px);
   }
 
   &-primary {
-    color: $white;
-    background-color: $primary;
-    border-color: $primary;
+    color: colors.$white;
+    background-color: colors.$primary;
+    border-color: colors.$primary;
 
     &:hover,
     &:focus {
-      background-color: $primary-dark;
-      border-color: $primary-dark;
+      background-color: colors.$primary-dark;
+      border-color: colors.$primary-dark;
     }
 
     &:disabled,
     &.button-disabled {
-      background-color: $primary-disabled;
-      border-color: $primary-disabled;
+      background-color: colors.$primary-disabled;
+      border-color: colors.$primary-disabled;
     }
     &:disabled .button-icon,
     &.button-disabled .button-icon {
@@ -53,22 +59,22 @@
   }
 
   &-secondary {
-    color: $primary;
-    background-color: $white;
-    border-color: $primary;
+    color: colors.$primary;
+    background-color: colors.$white;
+    border-color: colors.$primary;
 
     &:hover,
     &:focus {
-      color: $white;
-      background-color: $primary-dark;
-      border-color: $primary-dark;
+      color: colors.$white;
+      background-color: colors.$primary-dark;
+      border-color: colors.$primary-dark;
     }
 
     &:disabled,
     &.button-disabled {
-      background-color: $white;
-      border-color: $primary-disabled;
-      color: $primary-disabled;
+      background-color: colors.$white;
+      border-color: colors.$primary-disabled;
+      color: colors.$primary-disabled;
     }
     &:disabled .button-icon,
     &.button-disabled .button-icon {
@@ -77,10 +83,10 @@
   }
 
   &-ternary {
-    color: $black;
+    color: colors.$black;
     background-color: transparent;
     border-color: transparent;
-    padding: 0 rem(8px);
+    padding: 0 rem.torem(8px);
 
     &:hover,
     &:focus {
@@ -89,7 +95,7 @@
 
     &:disabled,
     &.button-disabled {
-      color: $grey-medium;
+      color: colors.$grey-medium;
       text-decoration: none;
     }
     &:disabled .button-icon,

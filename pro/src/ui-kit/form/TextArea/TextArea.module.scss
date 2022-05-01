@@ -1,15 +1,19 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_forms.scss' as forms;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .text-area {
-  @include input-theme;
+  @include forms.input-theme;
   $line-height: 1.3;
   $padding: 8px;
   $font-size: 16px;
-  padding-top: rem($padding);
-  padding-bottom: rem($padding);
-  min-height: rem($line-height * $font-size * 3 + $padding * 2);
-  resize: none!important;
+  padding-top: rem.torem($padding);
+  padding-bottom: rem.torem($padding);
+  min-height: rem.torem($line-height * $font-size * 3 + $padding * 2);
+  resize: none !important;
   overflow: hidden;
 
   &.has-error {
-    @include input-theme-error;
+    @include forms.input-theme-error;
   }
 }

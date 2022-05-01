@@ -1,39 +1,43 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .no-match {
   align-items: center;
-  background: linear-gradient(125deg, $primary, $secondary);
-  color: $white;
+  background: linear-gradient(125deg, colors.$primary, colors.$secondary);
+  color: colors.$white;
   display: flex;
   flex-direction: column;
   justify-content: center;
 
   h1 {
-    @include hero();
+    @include fonts.hero();
 
-    color: $white;
+    color: colors.$white;
     line-height: normal;
-    margin: rem(32px) 0 rem(16px);
+    margin: rem.torem(32px) 0 rem.torem(16px);
   }
 
   p {
-    @include title2();
+    @include fonts.title2();
   }
 
   img {
-    width: rem(350px);
+    width: rem.torem(350px);
   }
 
   .nm-redirection-link {
-    @include button();
+    @include fonts.button();
 
     align-items: center;
     background-color: transparent;
-    border: 2px solid $white;
-    border-radius: rem(24px);
-    color: $white;
+    border: 2px solid colors.$white;
+    border-radius: rem.torem(24px);
+    color: colors.$white;
     justify-content: center;
-    margin-top: rem(48px);
-    max-height: rem(50px);
+    margin-top: rem.torem(48px);
+    max-height: rem.torem(50px);
     outline: none;
-    padding: rem(12px) rem(52px);
+    padding: rem.torem(12px) rem.torem(52px);
   }
 }

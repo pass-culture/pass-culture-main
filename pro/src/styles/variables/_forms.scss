@@ -1,19 +1,21 @@
-$input-border-color: $grey-medium;
-$input-border-color-focus: $black;
-$input-border-color-error: #B60025;
-$input-border-color-disabled: #F1F1F4;
+@use 'styles/variables/_colors.scss' as colors;
 
-$input-focus-shadow: 0px 3px 4px 0px #67686B1A;
+$input-border-color: colors.$grey-medium;
+$input-border-color-focus: colors.$black;
+$input-border-color-error: #b60025;
+$input-border-color-disabled: #f1f1f4;
 
-$input-bg-color: $white;
-$input-bg-color-disabled: #F1F1F4;
+$input-focus-shadow: 0px 3px 4px 0px #67686b1a;
+
+$input-bg-color: colors.$white;
+$input-bg-color-disabled: #f1f1f4;
 
 $input-text-color: #161617;
-$input-text-color-disabled: #67686B;
+$input-text-color-disabled: #67686b;
 $input-border-radius: 20px;
 
-$error-text-color: #B60025;
-$placeholder-text-color: #67686B;
+$error-text-color: #b60025;
+$placeholder-text-color: #67686b;
 
 $input-right-icon-padding: 32px;
 

@@ -1,3 +1,7 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .venue-providers-manager {
   form {
     width: 100%;
@@ -15,35 +19,35 @@
 
   .account-section {
     flex-direction: column;
-    margin-right: rem(25px);
-    max-width: rem(250px);
+    margin-right: rem.torem(25px);
+    max-width: rem.torem(250px);
   }
 
   .account-label {
-    margin-bottom: rem(15px);
-    margin-top: rem(6px);
+    margin-bottom: rem.torem(15px);
+    margin-top: rem.torem(6px);
   }
 
   .account-value {
-    @include title4();
+    @include fonts.title4();
 
-    height: rem(36px);
+    height: rem.torem(36px);
   }
 
   .secondary-button {
-    margin-top: rem(6px);
+    margin-top: rem.torem(6px);
 
     svg .ico-plus {
-      fill: $primary;
+      fill: colors.$primary;
     }
   }
 
   .provider-picto {
     align-items: center;
-    width: rem(30px);
+    width: rem.torem(30px);
 
     img {
-      line-height: rem(30px);
+      line-height: rem.torem(30px);
     }
   }
 
@@ -56,12 +60,12 @@
     }
 
     .tooltip .tooltip-info {
-      margin-left: rem(70px);
-      padding: rem(4px);
+      margin-left: rem.torem(70px);
+      padding: rem.torem(4px);
     }
   }
 
   .input-select {
-    padding: rem(8px) 0;
+    padding: rem.torem(8px) 0;
   }
 }

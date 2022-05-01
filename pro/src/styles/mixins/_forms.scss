@@ -1,51 +1,54 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/variables/_forms.scss' as forms;
+@use 'styles/mixins/_rem.scss' as rem;
+
 @mixin input-theme {
-  @include body();
+  @include fonts.body();
   width: 100%;
   outline: none;
   -webkit-appearance: none;
   appearance: none;
-  min-height: rem(40px);
+  min-height: rem.torem(40px);
   line-height: 1.3;
-  border: solid 1px $input-border-color;
-  border-radius: rem($input-border-radius);
-  background-color: $input-bg-color;
-  padding: 0 rem(16px);
-  color: $input-text-color;
-  box-shadow: 0 0 0 0 rgba(0,0,0,0);
-  transition: 
-    border 150ms ease,
-    background 150ms ease,
-    box-shadow 150ms ease;
+  border: solid 1px forms.$input-border-color;
+  border-radius: rem.torem(forms.$input-border-radius);
+  background-color: forms.$input-bg-color;
+  padding: 0 rem.torem(16px);
+  color: forms.$input-text-color;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
 
-  &:focus, &:hover {
-    border-color: $input-border-color-focus;
+  &:focus,
+  &:hover {
+    border-color: forms.$input-border-color-focus;
   }
 
   &:focus {
-    box-shadow: $input-focus-shadow;
+    box-shadow: forms.$input-focus-shadow;
   }
-  
+
   &:disabled {
     cursor: unset;
-    background-color: $input-bg-color-disabled;
-    border-color: $input-border-color-disabled;
-    color: $input-text-color-disabled;
+    background-color: forms.$input-bg-color-disabled;
+    border-color: forms.$input-border-color-disabled;
+    color: forms.$input-text-color-disabled;
   }
 
   &::placeholder {
-    @include placeholder();
-    color: $placeholder-text-color;
+    @include fonts.placeholder();
+    color: forms.$placeholder-text-color;
   }
 
   &:-webkit-autofill,
   &:-internal-autofill-selected {
-    background-color: $input-bg-color !important;
-    color: $input-text-color !important;
+    background-color: forms.$input-bg-color !important;
+    color: forms.$input-text-color !important;
   }
 }
 
 @mixin input-theme-error {
-  border-color: $input-border-color-error;
+  border-color: forms.$input-border-color-error;
 }
 
 @mixin input-icon-wrapper($icon-width: 16px) {
@@ -53,13 +56,13 @@
   z-index: 1;
   right: 0;
   top: 0;
-  width: rem(48px);
+  width: rem.torem(48px);
   height: 100%;
   display: flex;
   pointer-events: none;
   align-items: center;
   justify-content: center;
-  color: $input-text-color;
+  color: forms.$input-text-color;
 
   svg {
     width: $icon-width;
@@ -67,6 +70,6 @@
   }
 
   :disabled + & {
-    color: $input-text-color-disabled;
+    color: forms.$input-text-color-disabled;
   }
 }

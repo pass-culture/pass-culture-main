@@ -1,3 +1,5 @@
+@use 'styles/variables/_colors.scss' as colors;
+
 .react-datepicker-wrapper {
   width: 100%;
 }
@@ -7,29 +9,33 @@
 }
 
 .react-datepicker__day--today {
-  color: $primary;
+  color: colors.$primary;
 }
 
 .react-datepicker__day--selected {
-  background-color: $primary;
-  color: $white;
+  background-color: colors.$primary;
+  color: colors.$white;
 
   &:hover,
   &:focus {
-    background-color: $primary-dark;
+    background-color: colors.$primary-dark;
   }
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: $primary-dark;
-  color: $white;
+  background-color: colors.$primary-dark;
+  color: colors.$white;
 }
 
-.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
-  background-color: $primary;
+.react-datepicker__time-container
+  .react-datepicker__time
+  .react-datepicker__time-box
+  ul.react-datepicker__time-list
+  li.react-datepicker__time-list-item--selected {
+  background-color: colors.$primary;
 
   &:hover,
   &:focus {
-    background-color: $primary-dark;
+    background-color: colors.$primary-dark;
   }
 }

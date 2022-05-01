@@ -1,37 +1,41 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .profile-info-modal {
   .pi-title {
-    @include title4();
+    @include fonts.title4();
 
     line-height: normal;
     text-align: center;
   }
 
   .pi-mandatory-message {
-    @include caption();
+    @include fonts.caption();
 
-    color: $grey-dark;
-    margin-top: rem(24px);
+    color: colors.$grey-dark;
+    margin-top: rem.torem(24px);
   }
 
   label {
-    margin-top: rem(16px);
+    margin-top: rem.torem(16px);
 
     &:first-child {
-      margin-top: rem(8px);
+      margin-top: rem.torem(8px);
     }
   }
 
   .actions-group {
     display: flex;
     justify-content: center;
-    margin-top: rem(24px);
+    margin-top: rem.torem(24px);
 
     button {
-      width: rem(150px);
+      width: rem.torem(150px);
     }
 
     .primary-button {
-      margin-left: rem(24px);
+      margin-left: rem.torem(24px);
     }
   }
 }

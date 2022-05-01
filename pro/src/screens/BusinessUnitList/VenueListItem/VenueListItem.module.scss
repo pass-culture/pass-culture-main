@@ -1,35 +1,39 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .venue-list-item {
   align-items: center;
-  border: 1px solid $grey-medium;
+  border: 1px solid colors.$grey-medium;
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
-  margin: rem(8px) 0;
-  padding: rem(12px) rem(16px);
+  margin: rem.torem(8px) 0;
+  padding: rem.torem(12px) rem.torem(16px);
 }
 
 .reference-venue {
-  border: 1px solid $light-purple;
+  border: 1px solid colors.$light-purple;
 }
 
 .venue-list-item-infos {
   display: flex;
 
   img {
-    margin-right: rem(8px);
-    width: rem(15px);
+    margin-right: rem.torem(8px);
+    width: rem.torem(15px);
   }
 }
 
 .venue-missing-siret {
-  @include body-important();
+  @include fonts.body-important();
 }
 
 .venue-edit-link {
-  @include bold();
+  @include fonts.bold();
 
   display: flex;
-  margin-left: rem(4px);
+  margin-left: rem.torem(4px);
 
   &:hover,
   &:focus {
@@ -37,6 +41,6 @@
   }
 
   path {
-    fill: $black;
+    fill: colors.$black;
   }
 }

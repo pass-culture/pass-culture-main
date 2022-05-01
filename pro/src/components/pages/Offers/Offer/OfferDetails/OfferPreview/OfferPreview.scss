@@ -1,15 +1,19 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .offer-preview {
-  background-color: $grey-very-light;
+  background-color: colors.$grey-very-light;
   border-radius: 3px;
 
   .op-options-summary {
     display: flex;
-    margin-bottom: rem(27px);
-    margin-top: rem(22px);
+    margin-bottom: rem.torem(27px);
+    margin-top: rem.torem(22px);
 
     .op-option {
       align-items: center;
-      border-left: rem(1px) solid $grey-medium;
+      border-left: rem.torem(1px) solid colors.$grey-medium;
       display: flex;
       flex: 1;
       flex-direction: column;
@@ -20,62 +24,62 @@
       }
 
       .op-option-ico {
-        flex: 0 0 rem(33px);
-        margin-top: rem(-4px);
+        flex: 0 0 rem.torem(33px);
+        margin-top: rem.torem(-4px);
 
         .svg-color {
-          fill: $grey-dark;
+          fill: colors.$grey-dark;
         }
       }
 
       .op-option-text {
-        @include mini-highlight();
+        @include fonts.mini-highlight();
 
         flex: 1;
-        margin-bottom: rem(-9px);
+        margin-bottom: rem.torem(-9px);
       }
 
       &.disabled {
         .op-option-ico {
           .svg-color {
-            fill: $grey-light;
+            fill: colors.$grey-light;
           }
         }
 
         .op-option-text {
-          color: $grey-light;
+          color: colors.$grey-light;
         }
       }
     }
   }
 
   .op-section {
-    background-color: $white;
+    background-color: colors.$white;
     border-radius: 3px;
-    margin-top: rem(6px);
-    padding: rem(12px) rem(15px) rem(16px) rem(15px);
+    margin-top: rem.torem(6px);
+    padding: rem.torem(12px) rem.torem(15px) rem.torem(16px) rem.torem(15px);
 
     &:first-child {
-      margin-top: rem(13px);
+      margin-top: rem.torem(13px);
     }
   }
 
   .op-section-title {
-    @include body-important();
+    @include fonts.body-important();
 
-    margin-bottom: rem(16px);
+    margin-bottom: rem.torem(16px);
   }
 
   .op-section-secondary-title {
-    @include highlight();
+    @include fonts.highlight();
 
-    line-height: rem(16px);
+    line-height: rem.torem(16px);
   }
 
   .op-section-text {
-    @include preview-text();
+    @include fonts.preview-text();
 
-    margin-bottom: rem(16px);
+    margin-bottom: rem.torem(16px);
 
     &:last-child {
       margin-bottom: 0;
@@ -84,13 +88,13 @@
   }
 
   .op-address {
-    line-height: rem(20px);
+    line-height: rem.torem(20px);
   }
 
   .title-preview {
-    @include body-important();
+    @include fonts.body-important();
 
-    max-width: rem(224px);
+    max-width: rem.torem(224px);
     overflow-wrap: break-word;
     text-align: center;
   }

@@ -34,27 +34,30 @@ $rem-px-only: false !default;
 
   @each $value in $values {
     @if type-of($value) == 'number' and unit($value) == 'rem' and $to == 'px' {
-      $result: append($result, math.div($value, 1rem) * $rem-baseline, $separator);
-    }
-
-    @else if
+      $result: append(
+        $result,
+        math.div($value, 1rem) * $rem-baseline,
+        $separator
+      );
+    } @else if
       type-of($value) ==
       'number' and
       unit($value) ==
       'px' and
       $to ==
-      'rem' {
-      $result: append($result, math.div($value, $rem-baseline) * 1rem, $separator);
-    }
-
-    @else if type-of($value) == 'list' {
+      'rem'
+    {
+      $result: append(
+        $result,
+        math.div($value, $rem-baseline) * 1rem,
+        $separator
+      );
+    } @else if type-of($value) == 'list' {
       $value-separator: rem-separator($value);
       $value: rem-convert($to, $value...);
       $value: rem-separator($value, $value-separator);
       $result: append($result, $value, $separator);
-    }
-
-    @else {
+    } @else {
       $result: append($result, $value, $separator);
     }
   }
@@ -62,24 +65,20 @@ $rem-px-only: false !default;
   @return if(length($result) == 1, nth($result, 1), $result);
 }
 
-@function rem($values...) {
+@function torem($values...) {
   @if $rem-px-only {
     @return rem-convert(px, $values...);
-  }
-
-  @else {
+  } @else {
     @return rem-convert(rem, $values...);
   }
 }
 
-@mixin rem($properties, $values...) {
+@mixin torem($properties, $values...) {
   @if type-of($properties) == 'map' {
     @each $property in map-keys($properties) {
-      @include rem($property, map-get($properties, $property));
+      @include rem.torem($property, map-get($properties, $property));
     }
-  }
-
-  @else {
+  } @else {
     @each $property in $properties {
       @if $rem-fallback or $rem-px-only {
         #{$property}: rem-convert(px, $values...);

@@ -1,63 +1,67 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .thumbnail-dialog {
   position: relative;
   text-align: center;
 
   .pc-breadcrumb {
-    margin-top: rem(24px);
+    margin-top: rem.torem(24px);
   }
 }
 
 .tnd-actions {
   display: flex;
   justify-content: center;
-  margin-top: rem(24px);
+  margin-top: rem.torem(24px);
 
   button {
-    margin: 0 rem(12px);
-    width: rem(220px);
+    margin: 0 rem.torem(12px);
+    width: rem.torem(220px);
   }
 }
 
 .tnd-subtitle {
-  color: $grey-dark;
-  margin-bottom: rem(24px);
+  color: colors.$grey-dark;
+  margin-bottom: rem.torem(24px);
   line-height: 1em;
 }
 
 .tnd-header {
-  @include title3;
-  margin-bottom: rem(16px);
+  @include fonts.title3();
+  margin-bottom: rem.torem(16px);
   line-height: 1em;
 }
 
 .tnd-hr {
-  background: $grey-medium;
-  height: rem(1px);
+  background: colors.$grey-medium;
+  height: rem.torem(1px);
 }
 
 .tnf-form {
   & > svg {
-    height: rem(128px);
+    height: rem.torem(128px);
   }
 
   .input-text {
-    height: rem(104px);
+    height: rem.torem(104px);
     text-align: left;
   }
 }
 
 .tnf-url-button {
-  color: $white;
-  width: rem(334px);
+  color: colors.$white;
+  width: rem.torem(334px);
 
   svg {
-    height: rem(32px);
+    height: rem.torem(32px);
   }
 }
 
 .tna-advices {
   text-align: left;
-  width: rem(500px);
+  width: rem.torem(500px);
 }
 
 .tna-hidden {
@@ -65,7 +69,7 @@
 }
 
 .tna-toggle {
-  @include button;
+  @include fonts.button;
 
   align-items: center;
   background: transparent;
@@ -74,38 +78,38 @@
   outline: none;
 
   svg {
-    margin-left: rem(8px);
+    margin-left: rem.torem(8px);
   }
 }
 
 .tna-teaser {
-  margin-top: rem(24px);
+  margin-top: rem.torem(24px);
 }
 
 .tna-title {
-  @include title4;
+  @include fonts.title4;
 
-  margin-top: rem(16px);
+  margin-top: rem.torem(16px);
 }
 
 .tna-links a {
   align-items: center;
   display: flex;
-  margin: rem(16px) 0;
+  margin: rem.torem(16px) 0;
 
   svg {
-    margin: 0 rem(8px) 0 rem(-5px);
+    margin: 0 rem.torem(8px) 0 rem.torem(-5px);
   }
 }
 
 .tna-links-help {
-  @include body;
+  @include fonts.body;
 
-  color: $grey-dark;
+  color: colors.$grey-dark;
 }
 
 .tnc-explanations {
-  margin-top: rem(32px);
+  margin-top: rem.torem(32px);
   text-align: left;
-  width: rem(500px);
+  width: rem.torem(500px);
 }

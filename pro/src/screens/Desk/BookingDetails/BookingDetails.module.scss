@@ -1,7 +1,11 @@
-.booking-summary {
-  @include caption();
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
 
-  margin-bottom: rem(15px);
+.booking-summary {
+  @include fonts.caption();
+
+  margin-bottom: rem.torem(15px);
 
   > div > div {
     display: inline-block;
@@ -10,13 +14,13 @@
 }
 
 .desk-label {
-  color: $grey-dark;
+  color: colors.$grey-dark;
   text-align: right;
 }
 
 .desk-value {
-  color: $black;
-  padding-left: rem(5px);
+  color: colors.$black;
+  padding-left: rem.torem(5px);
   text-align: left;
 }
 
@@ -24,9 +28,9 @@
   position: relative;
   svg {
     position: absolute;
-    top: rem(-6px);
-    margin-left: rem(5px);
-    height: rem(30px);
-    width: rem(30px);
+    top: rem.torem(-6px);
+    margin-left: rem.torem(5px);
+    height: rem.torem(30px);
+    width: rem.torem(30px);
   }
 }

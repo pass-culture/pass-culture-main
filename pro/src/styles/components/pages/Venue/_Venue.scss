@@ -1,6 +1,10 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .venue-page {
   position: relative;
-  padding-top: rem(50px);
+  padding-top: rem.torem(50px);
 
   &-view-venue-cta {
     position: absolute;
@@ -29,7 +33,7 @@
   }
 
   .has-text-primary {
-    color: $primary;
+    color: colors.$primary;
   }
 
   .field-number {
@@ -41,40 +45,40 @@
   }
 
   .vp-detail {
-    margin: rem(8px) 0;
+    margin: rem.torem(8px) 0;
 
     > :first-child {
-      color: $grey-dark;
-      margin-right: rem(5px);
+      color: colors.$grey-dark;
+      margin-right: rem.torem(5px);
     }
   }
 
   .vp-field > label {
-    @include body();
+    @include fonts.body();
 
-    color: $black;
-    margin-right: rem(5px);
+    color: colors.$black;
+    margin-right: rem.torem(5px);
   }
 
   .vp-subtitle {
-    margin-bottom: rem(25px);
+    margin-bottom: rem.torem(25px);
   }
 
   .vp-content-section {
-    margin-bottom: rem(48px);
+    margin-bottom: rem.torem(48px);
 
     .field-label {
-      @include body();
+      @include fonts.body();
     }
   }
 
   .banner-invalid-bu img {
-    width: rem(16px);
+    width: rem.torem(16px);
     vertical-align: bottom;
-    margin-right: rem(8px);
+    margin-right: rem.torem(8px);
   }
 }
 
 .venue-domain-name-banner {
-  margin: rem(32px) 0 rem(8px) 0;
+  margin: rem.torem(32px) 0 rem.torem(8px) 0;
 }

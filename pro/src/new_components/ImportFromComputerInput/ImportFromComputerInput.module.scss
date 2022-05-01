@@ -1,13 +1,16 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .import-from-computer-input {
   cursor: pointer;
-  margin-bottom: rem(16px);
-  padding: 0 rem(32px);
-  width: rem(372px);
+  margin-bottom: rem.torem(16px);
+  padding: 0 rem.torem(32px);
+  width: rem.torem(372px);
   text-align: center;
 
   &:focus-within {
-    background-color: $primary-dark;
-    border: 3px solid $primary-dark;
+    background-color: colors.$primary-dark;
+    border: 3px solid colors.$primary-dark;
   }
 
   &-file-input {

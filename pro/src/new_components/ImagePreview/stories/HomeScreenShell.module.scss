@@ -5,15 +5,15 @@
 
 .preview-on-home-screen {
   background-color: $white;
-  border-radius: rem(5px);
-  left: rem(17px);
+  border-radius: rem.torem(5px);
+  left: rem.torem(17px);
   position: absolute;
-  top: rem(152px);
+  top: rem.torem(152px);
   height: 228px;
 }
 
 .offer-screen-shell {
-  top: rem(236px);
+  top: rem.torem(236px);
   position: absolute;
   height: 280px;
 }
@@ -21,18 +21,18 @@
 .blurred-preview-on-offer-screen {
   background-color: $white;
   filter: blur(2px);
-  left: rem(1px);
+  left: rem.torem(1px);
   position: absolute;
-  top: rem(1px);
+  top: rem.torem(1px);
   height: 435px;
   width: 290px;
 }
 
 .preview-on-offer-screen {
   background-color: $white;
-  border-radius: rem(5px);
-  left: rem(65px);
+  border-radius: rem.torem(5px);
+  left: rem.torem(65px);
   position: absolute;
-  top: rem(71px);
+  top: rem.torem(71px);
   height: 240px;
 }

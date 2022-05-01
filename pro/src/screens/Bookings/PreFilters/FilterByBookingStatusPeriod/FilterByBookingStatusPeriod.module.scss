@@ -1,3 +1,5 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .satus-period-filter {
   display: flex;
   select,
@@ -6,7 +8,7 @@
   }
   :global(.input-select-full-width > select) {
     border-right: none;
-    border-radius: rem(20px) rem(0px) rem(0px) rem(20px);
+    border-radius: rem.torem(20px) rem.torem(0px) rem.torem(0px) rem.torem(20px);
   }
   :global(.period-filter .field-date-begin) {
     border-left: none;

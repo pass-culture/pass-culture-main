@@ -1,21 +1,25 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .of-placeholder {
-  @include button;
+  @include fonts.button;
 
   align-items: center;
-  background-color: $grey-very-light;
+  background-color: colors.$grey-very-light;
   border: none;
-  border-radius: rem(3px);
-  box-shadow: 0 0 rem(20px) 0 $black-shadow;
+  border-radius: rem.torem(3px);
+  box-shadow: 0 0 rem.torem(20px) 0 colors.$black-shadow;
   display: flex;
   flex-direction: column;
-  height: rem(385px);
+  height: rem.torem(385px);
   justify-content: center;
   outline: none;
   position: relative;
-  width: rem(256px);
+  width: rem.torem(256px);
 
   svg {
-    width: rem(57px);
+    width: rem.torem(57px);
   }
 
   &:hover,
@@ -24,31 +28,31 @@
   }
 
   img {
-    border-radius: rem(4px);
+    border-radius: rem.torem(4px);
     height: 100%;
     width: 100%;
   }
 
   .of-error-message {
-    @include highlight;
+    @include fonts.highlight();
 
-    color: $primary-dark;
+    color: colors.$primary-dark;
     display: flex;
     justify-content: center;
-    margin: rem(16px) rem(31px);
+    margin: rem.torem(16px) rem.torem(31px);
     position: absolute;
     text-align: left;
     top: 60%;
     z-index: 1;
 
     svg {
-      margin-right: rem(5px);
+      margin-right: rem.torem(5px);
     }
   }
 }
 
 .of-image {
-  background-color: $white;
+  background-color: colors.$white;
 
   img {
     object-fit: cover;
@@ -61,8 +65,8 @@
   }
 
   &::after {
-    background: rgba($black, 0.6);
-    border-radius: rem(4px);
+    background: rgba(colors.$black, 0.6);
+    border-radius: rem.torem(4px);
     content: '';
     height: 100%;
     width: 100%;
@@ -71,9 +75,9 @@
   &::before {
     background: url('assets/edit-thumbnail.svg') no-repeat center 0;
     box-sizing: border-box;
-    color: $white;
+    color: colors.$white;
     content: attr(title);
-    padding-top: rem(50px);
+    padding-top: rem.torem(50px);
     text-decoration: underline;
     z-index: 1;
   }
@@ -87,6 +91,6 @@
 }
 
 .of-thumbnail-error {
-  border: solid 2px $red-error;
-  border-radius: rem(4px);
+  border: solid 2px colors.$red-error;
+  border-radius: rem.torem(4px);
 }

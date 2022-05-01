@@ -1,10 +1,14 @@
-.legal-infos {
-  @include caption();
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
 
-  color: $grey-dark;
-  line-height: rem(22px);
+.legal-infos {
+  @include fonts.caption();
+
+  color: colors.$grey-dark;
+  line-height: rem.torem(22px);
 
   .quaternary-link {
-    color: $primary;
+    color: colors.$primary;
   }
 }

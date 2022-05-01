@@ -1,5 +1,7 @@
+@use 'styles/variables/_colors.scss' as colors;
+
 .choose-pre-filters {
   svg .svg-color {
-    fill: $grey-medium;
+    fill: colors.$grey-medium;
   }
 }

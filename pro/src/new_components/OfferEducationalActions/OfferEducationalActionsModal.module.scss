@@ -1,34 +1,38 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .modal {
   text-align: center;
-  max-width: rem(600px);
-  
+  max-width: rem.torem(600px);
+
   &-icon-wrapper {
-    margin-top: rem(32px);
-    margin-bottom: rem(36px);
-    color: $grey-dark;
-    
+    margin-top: rem.torem(32px);
+    margin-bottom: rem.torem(36px);
+    color: colors.$grey-dark;
+
     svg {
-      width: rem(66px);
+      width: rem.torem(66px);
       height: auto;
     }
   }
-  
+
   &-header {
-    margin-bottom: rem(16px);
+    margin-bottom: rem.torem(16px);
   }
-  
+
   &-paragraph {
-    margin-bottom: rem(48px);
+    margin-bottom: rem.torem(48px);
   }
-  
+
   &-buttons {
     display: flex;
-    margin-bottom: rem(16px);
+    margin-bottom: rem.torem(16px);
     justify-content: center;
   }
-  
+
   &-button {
-    min-width: rem(192px);
-    margin: 0 rem(12px);
+    min-width: rem.torem(192px);
+    margin: 0 rem.torem(12px);
   }
 }

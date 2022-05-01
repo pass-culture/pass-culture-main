@@ -1,11 +1,13 @@
+@use 'styles/mixins/_rem.scss' as rem;
+
 .eac-layout {
   position: relative;
 
   &-heading {
-    margin-bottom: rem(32px);
+    margin-bottom: rem.torem(32px);
   }
 
   &-breadcrumb {
-    margin-bottom: rem(24px);
+    margin-bottom: rem.torem(24px);
   }
 }

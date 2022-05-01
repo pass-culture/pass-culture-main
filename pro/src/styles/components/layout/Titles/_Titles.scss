@@ -1,3 +1,7 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .hero-section {
   display: flex;
   flex-direction: column;
@@ -11,19 +15,19 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: 80%;
-    height: rem(120px);
+    height: rem.torem(120px);
     margin-left: -2.5rem;
     opacity: 0.25;
-    width: rem(120px);
+    width: rem.torem(120px);
   }
 
   .section-icon-mask {
-    height: rem(120px);
+    height: rem.torem(120px);
     left: -5.3rem;
     overflow: hidden;
     position: absolute;
     top: -2.75rem;
-    width: rem(80px);
+    width: rem.torem(80px);
   }
 }
 
@@ -33,18 +37,18 @@
 
   .title-action-links {
     .link {
-      @include caption();
+      @include fonts.caption();
 
       background-color: transparent;
-      color: $primary;
+      color: colors.$primary;
       display: flex;
       justify-content: flex-end;
-      line-height: rem(34px);
+      line-height: rem.torem(34px);
 
       &:focus,
       &:hover {
         background-color: transparent;
-        color: $primary;
+        color: colors.$primary;
       }
     }
   }
@@ -54,25 +58,25 @@
   }
 
   img {
-    height: rem(25px);
-    width: rem(25px);
+    height: rem.torem(25px);
+    width: rem.torem(25px);
   }
 }
 
 .cta {
   border: 0;
-  line-height: rem(22px);
+  line-height: rem.torem(22px);
   position: absolute;
   right: 0;
   top: -3px;
 
   img {
-    height: rem(20px);
-    margin-right: rem(8px);
-    width: rem(20px);
+    height: rem.torem(20px);
+    margin-right: rem.torem(8px);
+    width: rem.torem(20px);
   }
 }
 
 h3.section-title {
-  @include title3();
+  @include fonts.title3();
 }

@@ -1,23 +1,27 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .offers-page {
   .op-title {
-    @include title3();
+    @include fonts.title3();
 
     display: inline-block;
-    margin: 0 rem(20px) rem(24px) 0;
+    margin: 0 rem.torem(20px) rem.torem(24px) 0;
   }
 
   .offerer-filter {
-    @include caption();
+    @include fonts.caption();
 
     align-items: center;
-    background-color: $notification-info;
+    background-color: colors.$notification-info;
     border: none;
     border-radius: 24px;
     display: flex;
-    height: rem(32px);
+    height: rem.torem(32px);
     justify-content: space-between;
-    margin-bottom: rem(16px);
-    padding: rem(5px) rem(15px);
+    margin-bottom: rem.torem(16px);
+    padding: rem.torem(5px) rem.torem(15px);
     width: max-content;
 
     button {
@@ -25,36 +29,36 @@
       background: none;
       border: none;
       display: flex;
-      margin-left: rem(8px);
+      margin-left: rem.torem(8px);
 
       img {
-        height: rem(14px);
-        width: rem(14px);
+        height: rem.torem(14px);
+        width: rem.torem(14px);
       }
     }
   }
 
   form {
-    margin-bottom: rem(20px);
+    margin-bottom: rem.torem(20px);
   }
 
   .input-select {
-    margin-top: rem(24px);
-    width: rem(169px);
+    margin-top: rem.torem(24px);
+    width: rem.torem(169px);
   }
 
   .period-filter {
-    margin-left: rem(10px);
-    margin-top: rem(24px);
+    margin-left: rem.torem(10px);
+    margin-top: rem.torem(24px);
   }
 
   .period-filter-inputs {
     box-shadow: none;
-    margin-top: rem(8px);
+    margin-top: rem.torem(8px);
   }
 
   .period-filter-inputs .period-filter-input {
-    width: rem(130px);
+    width: rem.torem(130px);
   }
 
   .field-date-begin {
@@ -74,7 +78,7 @@
     flex-direction: row;
 
     .input-select {
-      margin-left: rem(10px);
+      margin-left: rem.torem(10px);
 
       &:first-child {
         margin-left: 0;
@@ -87,9 +91,9 @@
     flex-direction: row;
 
     .input-select {
-      margin-left: rem(24px);
-      margin-top: rem(24px);
-      width: rem(220px);
+      margin-left: rem.torem(24px);
+      margin-top: rem.torem(24px);
+      width: rem.torem(220px);
 
       &:first-child {
         margin-left: 0;
@@ -97,27 +101,27 @@
     }
 
     .period-filter {
-      margin-left: rem(24px);
-      margin-top: rem(24px);
+      margin-left: rem.torem(24px);
+      margin-top: rem.torem(24px);
     }
 
     .period-filter-inputs .period-filter-input {
-      width: rem(153px);
+      width: rem.torem(153px);
     }
   }
 
   .offers-count {
-    margin-bottom: rem(33px);
+    margin-bottom: rem.torem(33px);
   }
 
   table {
     width: 100%;
 
     th {
-      @include caption();
+      @include fonts.caption();
 
-      color: $black;
-      padding: 0 rem(8px) rem(10px);
+      color: colors.$black;
+      padding: 0 rem.torem(8px) rem.torem(10px);
       text-align: left;
     }
 
@@ -126,7 +130,7 @@
       padding: 0;
 
       input {
-        @include body-important();
+        @include fonts.body-important();
 
         &:disabled {
           cursor: not-allowed;
@@ -135,7 +139,7 @@
     }
 
     .th-checkbox-label {
-      max-width: rem(82px);
+      max-width: rem.torem(82px);
       overflow: visible;
       white-space: nowrap;
 
@@ -163,10 +167,10 @@
 
         img {
           filter: brightness(0) invert(0);
-          height: rem(16px);
-          margin-left: rem(10px);
-          margin-top: rem(2px);
-          width: rem(16px);
+          height: rem.torem(16px);
+          margin-left: rem.torem(10px);
+          margin-top: rem.torem(2px);
+          width: rem.torem(16px);
 
           &.active-status-filter {
             filter: unset;
@@ -175,7 +179,7 @@
 
         &:focus {
           & img {
-            border: rem(1px) solid $primary;
+            border: rem.torem(1px) solid colors.$primary;
             border-radius: 4px;
             filter: unset;
           }
@@ -188,10 +192,10 @@
     }
 
     tbody > tr {
-      border-bottom: 1px solid $grey-medium;
+      border-bottom: 1px solid colors.$grey-medium;
 
       td {
-        padding: rem(16px) rem(10px);
+        padding: rem.torem(16px) rem.torem(10px);
         vertical-align: middle;
       }
 
@@ -212,17 +216,17 @@
   }
 
   .pagination {
-    @include caption();
+    @include fonts.caption();
 
     align-items: center;
     display: flex;
     justify-content: center;
-    margin-top: rem(35px);
+    margin-top: rem.torem(35px);
 
     button {
       background: none;
       border: none;
-      height: rem(24px);
+      height: rem.torem(24px);
 
       &:disabled {
         cursor: not-allowed;
@@ -230,11 +234,11 @@
     }
 
     span {
-      margin: 0 rem(15px);
+      margin: 0 rem.torem(15px);
     }
   }
 
   .loading-spinner {
-    margin-top: rem(70px);
+    margin-top: rem.torem(70px);
   }
 }

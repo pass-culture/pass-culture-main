@@ -1,23 +1,29 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/components/layout/buttons/PrimaryButton/_PrimaryButton.scss' as
+  primarybutton;
+
 .activation-codes-upload {
   .activation-codes-upload-description {
-    @include body();
+    @include fonts.body();
 
     display: grid;
-    grid-row-gap: rem(16px);
-    margin-top: rem(20px);
+    grid-row-gap: rem.torem(16px);
+    margin-top: rem.torem(20px);
   }
 
   .activation-codes-upload-button-section {
     display: grid;
-    margin-top: rem(30px);
+    margin-top: rem.torem(30px);
 
     .activation-codes-upload-label {
-      @include button();
+      @include fonts.button();
 
       cursor: pointer;
 
       &:focus-within {
-        @include primary-focus();
+        @include primarybutton.primary-focus();
       }
     }
 
@@ -27,10 +33,10 @@
     }
 
     .activation-codes-upload-button-caption {
-      @include caption();
+      @include fonts.caption();
 
-      color: $grey-dark;
-      margin-top: rem(16px);
+      color: colors.$grey-dark;
+      margin-top: rem.torem(16px);
     }
   }
 }

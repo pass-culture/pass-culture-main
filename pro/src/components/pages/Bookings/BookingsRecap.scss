@@ -1,6 +1,10 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
 .bookings-page {
   .button-group {
-    margin-bottom: rem(32px);
+    margin-bottom: rem.torem(32px);
     position: relative;
 
     &-buttons {
@@ -9,13 +13,13 @@
       position: relative;
 
       > button {
-        margin: 0 rem(12px);
-        width: rem(148px);
+        margin: 0 rem.torem(12px);
+        width: rem.torem(148px);
       }
     }
 
     &-separator {
-      border-bottom: 1px solid $grey-medium;
+      border-bottom: 1px solid colors.$grey-medium;
       display: block;
       position: absolute;
       top: 50%;
@@ -25,33 +29,33 @@
 
   .br-warning {
     align-items: center;
-    color: $grey-dark;
+    color: colors.$grey-dark;
     display: flex;
     flex-direction: column;
-    height: rem(400px);
+    height: rem.torem(400px);
     text-align: center;
 
     p {
-      margin-top: rem(12px);
-      width: rem(400px);
+      margin-top: rem.torem(12px);
+      width: rem.torem(400px);
     }
 
     svg {
-      height: rem(124px);
-      width: rem(124px);
+      height: rem.torem(124px);
+      width: rem.torem(124px);
     }
   }
 
   .br-title {
-    @include title3();
+    @include fonts.title3();
 
     display: inline-block;
-    margin: 0 rem(20px) rem(24px) 0;
+    margin: 0 rem.torem(20px) rem.torem(24px) 0;
   }
 
   .reset-filters-link {
-    @include body-important();
+    @include fonts.body-important();
 
-    color: $primary;
+    color: colors.$primary;
   }
 }
