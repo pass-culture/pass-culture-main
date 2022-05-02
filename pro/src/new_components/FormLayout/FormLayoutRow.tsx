@@ -7,6 +7,7 @@ interface IFormLayoutRowProps {
   className?: string
   inline?: boolean
   lgSpaceAfter?: boolean
+  smSpaceAfter?: boolean
 }
 
 const Row = ({
@@ -14,11 +15,13 @@ const Row = ({
   className,
   inline,
   lgSpaceAfter,
+  smSpaceAfter,
 }: IFormLayoutRowProps): JSX.Element => (
   <div
     className={cn(style['form-layout-row'], className, {
       [style['inline-group']]: inline,
       [style['large-space-after']]: lgSpaceAfter,
+      [style['small-space-after']]: smSpaceAfter,
     })}
   >
     {children}

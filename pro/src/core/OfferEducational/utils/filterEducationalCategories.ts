@@ -1,3 +1,4 @@
+import { Category, SubCategory } from 'custom_types/categories'
 import {
   IEducationalCategory,
   IEducationalSubCategory,

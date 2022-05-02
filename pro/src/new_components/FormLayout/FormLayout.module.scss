@@ -30,6 +30,10 @@
     margin-bottom: rem.torem(16px);
     max-width: 100%;
 
+    &.small-space-after {
+      margin-bottom: rem.torem(4px);
+    }
+
     &.large-space-after {
       margin-bottom: rem.torem(32px);
     }

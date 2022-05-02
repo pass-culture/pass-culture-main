@@ -40,4 +40,5 @@ export type TOfferIndividualVenue = {
   id: string
   managingOffererId: string
   name: string
+  isVirtual: boolean
 }

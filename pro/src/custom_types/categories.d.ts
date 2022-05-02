@@ -1,3 +1,5 @@
+import { CATEGORY_STATUS } from 'core/Offers'
+
 type Category = {
   id: string
   proLabel: string
@@ -15,7 +17,7 @@ type SubCategory = {
   canExpire: boolean
   canBeDuo: boolean
   canBeEducational: boolean
-  onlineOfflinePlatform: string
+  onlineOfflinePlatform: CATEGORY_STATUS
   isDigitalDeposit: boolean
   isPhysicalDeposit: boolean
   reimbursementRule: string
