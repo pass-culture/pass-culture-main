@@ -15,6 +15,8 @@ import {
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { ReactComponent as LibraryIcon } from 'icons/library.svg'
+import { ReactComponent as UserIcon } from 'icons/user.svg'
 import NoOffers from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
 
@@ -188,11 +190,22 @@ const Offers = ({
       <Titles action={actionLink} title="Offres" />
       {separateIndividualAndCollectiveOffers && (
         <Tabs
-          collectiveLabel="Offres collectives"
-          collectiveLink="/offres/collectives"
-          individualLabel="Offres individuelles"
-          individualLink="/offres"
-          selectedAudience={audience}
+          selectedKey={audience}
+          tabs={[
+            {
+              label: 'Offres individuelles',
+              url: '/offres',
+              key: 'individual',
+              Icon: UserIcon,
+            },
+            {
+              label: 'Offres collectives',
+              url: '/offres/collectives',
+              key: 'collective',
+              Icon: LibraryIcon,
+            },
+          ]}
+          withQueryParams
         />
       )}
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
