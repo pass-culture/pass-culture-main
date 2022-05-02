@@ -7,8 +7,8 @@ from pcapi.connectors.cine_digital_service import ResourceCDS
 from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
-from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_PAYMENT_TYPE_CDS
 from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_TARIFF_LABEL_CDS
+from pcapi.core.booking_providers.cds.constants import VOUCHER_PAYMENT_TYPE_CDS
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
 from pcapi.core.booking_providers.models import SeatCDS
@@ -40,11 +40,11 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_payment_type(self) -> cds_serializers.PaymentTypeCDS:
+    def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.PAYMENT_TYPE)
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)
         for payment_type in payment_types:
-            if payment_type.short_label == PASS_CULTURE_PAYMENT_TYPE_CDS:
+            if payment_type.internal_code == VOUCHER_PAYMENT_TYPE_CDS:
                 return payment_type
 
         raise cds_exceptions.CineDigitalServiceAPIException(
@@ -131,7 +131,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         return seats_index[index_min_distance]
 
     def cancel_booking(self, barcodes: list[str]) -> None:
-        paiement_type_id = self.get_payment_type().id
+        paiement_type_id = self.get_voucher_payment_type().id
         barcodes_int: list[int] = []
         for barcode in barcodes:
             if not barcode.isdigit():

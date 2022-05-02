@@ -123,28 +123,29 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
 
 class CineDigitalServiceGetPaymentTypeTest:
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
-    def test_should_return_pass_culture_payment_type(self, mocked_get_resource):
-        payment_types = [
-            cds_serializers.PaymentTypeCDS(
-                id=21,
-                active=True,
-                shortlabel="PASSCULTURE",
-            ),
-            cds_serializers.PaymentTypeCDS(
-                id=22,
-                active=True,
-                shortlabel="OTHERPAYMENTYPE",
-            ),
+    def test_should_return_voucher_payment_type(self, mocked_get_resource):
+        json_payment_types = [
+            {
+                "id": 21,
+                "active": True,
+                "internalcode": "VCH",
+            },
+            {
+                "id": 22,
+                "active": True,
+                "internalcode": "OTHERPAYMENTYPE",
+            },
         ]
 
-        mocked_get_resource.return_value = payment_types
+        mocked_get_resource.return_value = json_payment_types
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test"
         )
 
-        payment_type = cine_digital_service.get_payment_type()
+        payment_type = cine_digital_service.get_voucher_payment_type()
 
-        assert payment_type.short_label == "PASSCULTURE"
+        assert payment_type.id == 21
+        assert payment_type.internal_code == "VCH"
 
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
     def test_should_raise_exception_if_payment_type_not_found(self, mocked_get_resource):
@@ -152,18 +153,18 @@ class CineDigitalServiceGetPaymentTypeTest:
             {
                 "id": 23,
                 "active": True,
-                "shortlabel": "OTHERPAYMENTYPE2",
+                "internalcode": "OTHERPAYMENTYPE2",
             },
             {
                 "id": 22,
                 "active": True,
-                "shortlabel": "OTHERPAYMENTYPE",
+                "internalcode": "OTHERPAYMENTYPE",
             },
         ]
         mocked_get_resource.return_value = json_payment_types
         cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
-            cine_digital_service.get_payment_type()
+            cine_digital_service.get_voucher_payment_type()
         assert (
             str(cds_exception.value)
             == "Pass Culture payment type not found in Cine Digital Service API for cinemaId=test_id & url=test_url"
