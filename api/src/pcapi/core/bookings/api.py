@@ -437,10 +437,10 @@ def mark_as_cancelled(booking: Booking) -> None:
     admin user.
     """
     if booking.status == BookingStatus.CANCELLED:
-        raise exceptions.BookingAlreadyCancelled("la réservation a déjà été annulée")
+        raise exceptions.BookingIsAlreadyCancelled()
 
     if finance_repository.has_reimbursement(booking):
-        raise exceptions.BookingAlreadyRefunded("la réservation a déjà été remboursée")
+        raise exceptions.BookingIsAlreadyRefunded()
 
     _cancel_booking(booking, BookingCancellationReasons.BENEFICIARY, cancel_even_if_used=True, raise_if_error=True)
     send_booking_cancellation_by_beneficiary_to_pro_email(booking)

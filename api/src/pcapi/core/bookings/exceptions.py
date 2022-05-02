@@ -60,9 +60,8 @@ class UserHasInsufficientFunds(ClientError):
         super().__init__("insufficientFunds", "Le solde de votre pass est insuffisant pour réserver cette offre.")
 
 
-class BookingIsAlreadyUsed(ClientError):
-    def __init__(self) -> None:
-        super().__init__("booking", "Impossible d'annuler une réservation consommée")
+class BookingIsAlreadyUsed(Exception):
+    pass
 
 
 class BookingHasAlreadyBeenUsed(ClientError):
@@ -70,9 +69,12 @@ class BookingHasAlreadyBeenUsed(ClientError):
         super().__init__("booking", "Cette offre a déjà été utilisée")
 
 
-class BookingIsAlreadyCancelled(ClientError):
-    def __init__(self) -> None:
-        super().__init__("booking", "Cette réservation a déjà été annulée")
+class BookingIsAlreadyRefunded(Exception):
+    pass
+
+
+class BookingIsAlreadyCancelled(Exception):
+    pass
 
 
 class BookingIsNotCancelledCannotBeUncancelled(ClientError):
@@ -83,6 +85,14 @@ class BookingIsNotCancelledCannotBeUncancelled(ClientError):
 class BookingIsCancelled(ClientError):
     def __init__(self) -> None:
         super().__init__("booking", "Cette réservation a été annulée et ne peut être marquée comme étant utilisée")
+
+
+class BookingRefused(Exception):
+    pass
+
+
+class BookingIsNotConfirmed(Exception):
+    pass
 
 
 class CannotCancelConfirmedBooking(ClientError):
@@ -109,14 +119,6 @@ class CannotDeleteVenueWithBookingsException(ClientError):
             "cannotDeleteVenueWithBookingsException",
             "Lieu non supprimable car il contient des réservations",
         )
-
-
-class BookingAlreadyCancelled(Exception):
-    pass
-
-
-class BookingAlreadyRefunded(Exception):
-    pass
 
 
 class CannotMarkAsConfirmedIndividualBooking(Exception):
