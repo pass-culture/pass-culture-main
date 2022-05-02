@@ -1,5 +1,6 @@
 import datetime
 from typing import Dict
+from typing import Optional
 
 from pydantic import Field
 
@@ -34,6 +35,12 @@ class TariffCDS(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+
+class VoucherTypeCDS(BaseModel):
+    id: int
+    code: str
+    tariff: Optional[TariffCDS] = Field(alias="tariffid")
 
 
 class ScreenCDS(BaseModel):
