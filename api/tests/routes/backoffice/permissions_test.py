@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def create_admin_role():
-    permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.value).first()
+    permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.name).first()
     role = RoleFactory(name="admin")
     role.permissions.append(permission)
     repository.save(role)
@@ -87,7 +87,10 @@ class PermissionListTest:
         # then
         assert response.status_code == 200
         permissions = response.json["permissions"]
-        assert set(perm["name"] for perm in permissions) == {Permissions.MANAGE_PERMISSIONS.value, "test_permission"}
+        assert set(perm["name"] for perm in permissions) == {
+            *[p.name for p in Permissions],
+            "test_permission",
+        }
 
     def test_cannot_list_permissions_as_non_admin(self, client):
         # given

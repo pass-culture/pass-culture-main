@@ -3,10 +3,10 @@ import logging
 from pcapi.core.permissions import api as perm_api
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
+from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
-from ...models.api_errors import ApiErrors
 from .serialization import ListPermissionResponseModel
 from .serialization import ListRoleResponseModel
 from .serialization import Permission
