@@ -46,11 +46,11 @@ def test_get_invoices(client):
 
 def test_get_invoices_only_return_visible_invoices(client):
     business_unit1 = finance_factories.BusinessUnitFactory()
-
-    invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1)
+    dt1 = datetime.datetime(2021, 1, 1)
+    invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1, date=dt1)
     business_unit2 = finance_factories.BusinessUnitFactory()
-
-    invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, amount=-1234)
+    dt2 = dt1 + datetime.timedelta(days=15)
+    invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, amount=-1234, date=dt2)
     venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
     offerer = venue1.managingOfferer
     _venue2 = offerers_factories.VenueFactory(
