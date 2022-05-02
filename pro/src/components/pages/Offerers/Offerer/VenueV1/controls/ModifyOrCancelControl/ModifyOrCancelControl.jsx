@@ -1,3 +1,4 @@
+/*eslint no-undef: 0*/
 import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
 import { Link } from 'react-router-dom'
