@@ -35,7 +35,7 @@ def get_business_units_query(  # type: ignore [no-untyped-def]
         venue_subquery = venue_subquery.join(
             offerers_models.UserOfferer,
             offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
-        ).filter(offerers_models.UserOfferer.user == user)
+        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.validationToken.is_(None))
     if offerer_id:
         venue_subquery = venue_subquery.filter(offerers_models.Venue.managingOffererId == offerer_id)
     if venue_subquery.whereclause is not None:
@@ -64,7 +64,7 @@ def get_invoices_query(  # type: ignore [no-untyped-def]
         business_units_subquery = business_units_subquery.join(
             offerers_models.UserOfferer,
             offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
-        ).filter(offerers_models.UserOfferer.user == user)
+        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.validationToken.is_(None))
     if business_unit_id:
         # Filtering like this makes sure that the requested business
         # unit id is accessible by the requesting user.
