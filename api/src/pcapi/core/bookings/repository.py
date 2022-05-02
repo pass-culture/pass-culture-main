@@ -859,12 +859,12 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
     tomorrow = datetime.utcnow() + timedelta(days=1)
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
-    return print(
+    return (
         IndividualBooking.query.join(Booking)
         .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
         .filter(Offer.isEvent)
-        .filter(or_(Offer.url == "", Offer.url == None))
-        .options(contains_eager(IndividualBooking.user).load_only(User.firstName, User.departementCode))
+        .filter(not_(Offer.isDigital))
+        # .options(contains_eager(IndividualBooking.user).load_only(User.firstName, User.departementCode))
         .options(
             contains_eager(IndividualBooking.booking)
             .load_only(Booking.id, Booking.stockId, Booking.quantity, Booking.token)
@@ -881,4 +881,5 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
             .joinedload(Offer.venue, innerjoin=True)
             .load_only(Venue.name, Venue.publicName, Venue.address, Venue.city, Venue.postalCode)
         )
+        .all()
     )
