@@ -1,4 +1,4 @@
-import { parse } from 'csv-parse/lib/sync'
+import Papa from 'papaparse'
 const CSV_SEMI_COLON_SEPARATOR = ';'
 
 interface ObjectFromCsv {
@@ -7,15 +7,17 @@ interface ObjectFromCsv {
 }
 
 const convertFromCsvToObject = (csv: string): ObjectFromCsv => {
-  const rows = parse(csv, {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result: any = Papa.parse(csv, {
     delimiter: CSV_SEMI_COLON_SEPARATOR,
-    skip_empty_lines: true,
+    skipEmptyLines: true,
+    dynamicTyping: true,
   })
-
-  const headers = rows.shift()
+  const resultData = result.data
+  const headers = resultData.shift()
   return {
     headers,
-    data: rows,
+    data: result.data,
   }
 }
 
