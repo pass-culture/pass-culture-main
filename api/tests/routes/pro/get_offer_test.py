@@ -17,7 +17,7 @@ from tests.conftest import TestClient
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns200Test:
+class Returns403Test:
     def test_access_by_beneficiary(self, app):
         # Given
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -25,6 +25,35 @@ class Returns200Test:
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
+        response = client.get(f"/offers/{humanize(offer.id)}")
+
+        # Then
+        assert response.status_code == 403
+
+    def test_access_by_unauthorized_pro_user(self, app):
+        # Given
+        pro_user = users_factories.ProFactory()
+        offer = offers_factories.ThingOfferFactory(venue__latitude=None, venue__longitude=None)
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=pro_user.email)
+        response = client.get(f"/offers/{humanize(offer.id)}")
+
+        # Then
+        assert response.status_code == 403
+
+
+@pytest.mark.usefixtures("db_session")
+class Returns200Test:
+    def test_access_by_pro_user(self, app):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(
+            venue__latitude=None, venue__longitude=None, venue__managingOfferer=user_offerer.offerer
+        )
+
+        # When
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -40,15 +69,16 @@ class Returns200Test:
 
     def test_performance(self, client):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = offers_factories.ThingOfferFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
         offers_factories.EventStockFactory.create_batch(5, offer=offer)
 
         # When
-        client.with_session_auth(email=beneficiary.email)
+        client.with_session_auth(email=user_offerer.user.email)
         humanized_offer_id = humanize(offer.id)
 
         num_queries = testing.AUTHENTICATION_QUERIES
+        num_queries += 1  # check user access to offerer
         num_queries += 1  # Get offer by id
 
         with testing.assert_num_queries(num_queries):
@@ -56,13 +86,14 @@ class Returns200Test:
 
     def test_access_even_if_offerer_has_no_siren(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.ThingOfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
             venue__managingOfferer__siren=None,
         )
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -70,12 +101,13 @@ class Returns200Test:
 
     def test_returns_an_active_mediation(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        offer = offers_factories.ThingOfferFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
+
         mediation = offers_factories.MediationFactory(offer=offer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -86,7 +118,12 @@ class Returns200Test:
     def test_returns_an_event_stock(self, app):
         # Given
         now = datetime.utcnow()
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        user_offerer = offerers_factories.UserOffererFactory(
+            offerer__dateCreated=now,
+            offerer__dateModifiedAtLastProvider=now,
+            offerer__siren="123456789",
+            offerer__name="Test Offerer",
+        )
         stock = offers_factories.EventStockFactory(
             dateCreated=now,
             dateModified=now,
@@ -113,10 +150,7 @@ class Returns200Test:
             offer__venue__dateCreated=now,
             offer__venue__dateModifiedAtLastProvider=now,
             offer__venue__bookingEmail="test@test.com",
-            offer__venue__managingOfferer__dateCreated=now,
-            offer__venue__managingOfferer__dateModifiedAtLastProvider=now,
-            offer__venue__managingOfferer__siren="123456789",
-            offer__venue__managingOfferer__name="Test Offerer",
+            offer__venue__managingOfferer=user_offerer.offerer,
         )
         offer = stock.offer
         venue = offer.venue
@@ -124,7 +158,7 @@ class Returns200Test:
         offers_factories.BankInformationFactory(venue=venue)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -266,14 +300,14 @@ class Returns200Test:
     @freeze_time("2019-10-15 00:00:00")
     def test_returns_a_thing_stock(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
-        stock = offers_factories.ThingStockFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
+        stock = offers_factories.ThingStockFactory(offer__venue__managingOfferer=user_offerer.offerer)
         offer = stock.offer
         offer.subcategoryId = subcategories.LIVRE_PAPIER.id
         repository.save(offer)
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = client.get(f"/offers/{humanize(offer.id)}")
 
         # Then
@@ -285,15 +319,16 @@ class Returns200Test:
     @freeze_time("2019-10-15 00:00:00")
     def test_returns_a_thing_with_activation_code_stock(self, app):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.OfferFactory(
             stocks=[offers_factories.StockWithActivationCodesFactory()],
             subcategoryId=subcategories.ABO_PLATEFORME_MUSIQUE.id,
             url="fake-url",
+            venue__managingOfferer=user_offerer.offerer,
         )
 
         # When
-        client = TestClient(app.test_client()).with_session_auth(email=beneficiary.email)
+        client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
 
         response = client.get(f"/offers/{humanize(offer.id)}")
 
