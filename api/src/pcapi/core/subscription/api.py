@@ -108,11 +108,9 @@ def _has_completed_profile(user: users_models.User) -> bool:
     return all(elem is not None for elem in mandatory_fields)
 
 
-def should_complete_profile(user: users_models.User) -> bool:
-    if _has_completed_profile(user):
-        return False
-    # if the user has a pending DMS subscription, we consider the profile as potentially completed
-    # (it will be completed when the subscription is activated)
+def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
+    # If a pending or started DMS fraud check exists, the user has already completed the profile.
+    # No need to ask for this information again.
     user_pending_dms_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
@@ -121,10 +119,11 @@ def should_complete_profile(user: users_models.User) -> bool:
         and fraud_check.resultContent
         and fraud_check.resultContent["city"] is not None  # TODO: remove when all DMS applications ask for city
     ]
-    if user_pending_dms_fraud_checks:
-        return False
+    return bool(user_pending_dms_fraud_checks)
 
-    return True
+
+def should_complete_profile(user: users_models.User) -> bool:
+    return not _has_completed_profile(user) and not _has_completed_profile_in_dms_form(user)
 
 
 def is_eligibility_activable(
