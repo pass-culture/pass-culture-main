@@ -21,6 +21,7 @@ BOOKING_PERIOD = (datetime(2022, 3, 10, tzinfo=timezone.utc).date(), datetime(20
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_user_is_admin(self, client):
         admin = users_factories.AdminFactory()
         user_offerer = offerers_factories.UserOffererFactory()
@@ -35,6 +36,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_regular_pro_user_and_booking_confirmed_by_ce(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -80,12 +82,16 @@ class Returns200Test:
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
-                "booking_status": "booked",
+                "booking_status": "confirmed",
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
                         "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
+                    },
+                    {
+                        "status": "confirmed",
+                        "date": "2022-04-30T12:15:00+02:00",
                     },
                 ],
             }
@@ -97,6 +103,7 @@ class Returns200Test:
         assert response.json["total"] == 1
         assert response.json["bookingsRecap"] == expected_bookings_recap
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_no_results(self, client):
         # Given
         booking_date = datetime(2022, 3, 15, 10, 15, 0)
@@ -128,6 +135,7 @@ class Returns200Test:
         assert response.json["total"] == 0
         assert response.json["bookingsRecap"] == []
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_collective_booking_pending_should_show_prereserve_in_history(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -163,6 +171,7 @@ class Returns200Test:
             },
         ]
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_collective_booking_used_should_show_valide_and_previous_in_history_but_not_prereserve(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -200,11 +209,16 @@ class Returns200Test:
                 "date": "2022-03-12T13:15:00+01:00",
             },
             {
+                "status": "confirmed",
+                "date": "2022-04-30T22:00:00+02:00",
+            },
+            {
                 "status": "validated",
                 "date": "2022-05-16T22:00:00+02:00",
             },
         ]
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_collective_booking_cancelled_after_confirmed_should_show_annule_and_previous_in_history_but_not_prereserve(
         self, client
     ):
@@ -244,11 +258,16 @@ class Returns200Test:
                 "date": "2022-03-12T13:15:00+01:00",
             },
             {
+                "status": "confirmed",
+                "date": "2022-04-30T22:00:00+02:00",
+            },
+            {
                 "status": "cancelled",
                 "date": "2022-03-16T11:47:00+01:00",
             },
         ]
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_collective_booking_cancelled_while_pending_should_show_annule_and_reserve_in_history_but_not_prereserve(
         self, client
     ):
@@ -388,6 +407,7 @@ class Returns200Test:
             },
         ]
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_filter_venue_id(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -441,12 +461,16 @@ class Returns200Test:
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
-                "booking_status": "booked",
+                "booking_status": "confirmed",
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
                         "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
+                    },
+                    {
+                        "status": "confirmed",
+                        "date": "2022-04-30T12:15:00+02:00",
                     },
                 ],
             }
@@ -458,6 +482,7 @@ class Returns200Test:
         assert response.json["total"] == 1
         assert response.json["bookingsRecap"] == expected_bookings_recap
 
+    @freeze_time("2022-05-01 15:00:00")
     def test_when_filter_event_date(self, client):
         # Given
         booking_date = datetime(2022, 3, 11, 10, 15, 0)
@@ -511,12 +536,16 @@ class Returns200Test:
                 "booking_date": "2022-03-11T11:15:00+01:00",
                 "booking_amount": 1200.00,
                 "booking_token": None,
-                "booking_status": "booked",
+                "booking_status": "confirmed",
                 "booking_is_duo": False,
                 "booking_status_history": [
                     {
                         "status": "booked",
                         "date": "2022-03-12T11:15:00+01:00",
+                    },
+                    {
+                        "status": "confirmed",
+                        "date": "2022-04-30T12:15:00+02:00",
                     },
                 ],
             }
