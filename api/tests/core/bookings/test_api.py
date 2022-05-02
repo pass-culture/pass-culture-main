@@ -636,7 +636,7 @@ class CancelByOffererTest:
         booking = booking_factories.CancelledIndividualBookingFactory(
             cancellationReason=BookingCancellationReasons.BENEFICIARY
         )
-        with pytest.raises(api_errors.ResourceGoneError):
+        with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             api.cancel_booking_by_offerer(booking)
         assert booking.status is BookingStatus.CANCELLED
         assert booking.cancellationReason == BookingCancellationReasons.BENEFICIARY  # unchanged
@@ -645,7 +645,7 @@ class CancelByOffererTest:
 
     def test_raise_if_already_used(self):
         booking = booking_factories.UsedIndividualBookingFactory()
-        with pytest.raises(api_errors.ForbiddenError):
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             api.cancel_booking_by_offerer(booking)
         assert booking.status is BookingStatus.USED
         assert not booking.cancellationReason
@@ -731,26 +731,26 @@ class MarkAsUsedTest:
 
     def test_raise_if_already_used(self):
         booking = booking_factories.UsedIndividualBookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError):
+        with pytest.raises(exceptions.BookingIsAlreadyUsed):
             api.mark_as_used(booking)
 
     def test_raise_if_cancelled(self):
         booking = booking_factories.CancelledIndividualBookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError):
+        with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             api.mark_as_used(booking)
         assert booking.status is not BookingStatus.USED
 
     def test_raise_if_already_reimbursed(self):
         booking = booking_factories.UsedIndividualBookingFactory()
         finance_factories.PaymentFactory(booking=booking)
-        with pytest.raises(api_errors.ForbiddenError):
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             api.mark_as_used(booking)
 
     def test_raise_if_too_soon_to_mark_as_used(self):
         booking = booking_factories.IndividualBookingFactory(
             stock__beginningDatetime=datetime.utcnow() + timedelta(days=4)
         )
-        with pytest.raises(api_errors.ForbiddenError):
+        with pytest.raises(exceptions.BookingIsNotConfirmed):
             api.mark_as_used(booking)
         assert booking.status is not BookingStatus.USED
 

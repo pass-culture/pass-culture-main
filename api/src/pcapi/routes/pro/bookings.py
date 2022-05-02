@@ -7,11 +7,13 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.bookings import exceptions
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
+from pcapi.models import api_errors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
@@ -63,6 +65,7 @@ def get_booking_by_token(token: str) -> Optional[LegacyBookingResponse]:
     check_user_is_logged_in_or_email_is_provided(current_user, email)
 
     booking = booking_repository.find_by(token, email, offer_id)
+
     bookings_validation.check_is_usable(booking)
 
     if check_user_can_validate_bookings(current_user, booking.offererId):
@@ -200,7 +203,6 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
         raise ForbiddenError()
 
     bookings_validation.check_is_usable(booking)
-
     return get_booking_response(booking)
 
 
@@ -286,7 +288,12 @@ def patch_cancel_booking_by_token(token: str) -> None:
         # We should not end up here, thanks to the `login_or_api_key_required` decorator.
         raise ForbiddenError()
 
-    bookings_api.cancel_booking_by_offerer(booking)
+    try:
+        bookings_api.cancel_booking_by_offerer(booking)
+    except exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ResourceGoneError({"global": ["Cette contremarque a déjà été annulée"]})
+    except exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ForbiddenError({"global": ["Impossible d'annuler une réservation consommée"]})
 
 
 @blueprint.pro_public_api_v2.route("/bookings/keep/token/<token>", methods=["PATCH"])

@@ -9,6 +9,7 @@ import pydantic
 
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
+import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.logging import get_or_set_correlation_id
@@ -295,8 +296,13 @@ def phone_validation_remaining_attempts(user: users_models.User) -> serializers.
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
 def suspend_account(user: users_models.User) -> None:
-    api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
-    send_user_request_to_delete_account_reception_email(user)
+    try:
+        api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
+        send_user_request_to_delete_account_reception_email(user)
+    except bookings_exceptions.BookingIsAlreadyCancelled:
+        raise api_errors.ResourceGoneError()
+    except bookings_exceptions.BookingIsAlreadyRefunded:
+        raise api_errors.ForbiddenError()
 
 
 @blueprint.native_v1.route("/account/suspension_date", methods=["GET"])

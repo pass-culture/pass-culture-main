@@ -12,17 +12,21 @@ from wtforms import validators
 from pcapi.admin.base_configuration import BaseCustomAdminView
 from pcapi.core.bookings import models as booking_models
 import pcapi.core.bookings.api as bookings_api
+import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.educational.models import EducationalBooking
 import pcapi.core.finance.repository as finance_repository
 from pcapi.core.offers.models import Stock
-from pcapi.domain.client_exceptions import ClientError
-from pcapi.models.api_errors import ApiErrors
 
 
-def _get_exception_message(exc: Exception) -> str:
-    if isinstance(exc, (ClientError, ApiErrors)):
-        return list(exc.errors.values())[0][0]
-    return str(exc)
+BOOKING_ERRORS_MSG = {
+    bookings_exceptions.BookingIsAlreadyCancelled: "la réservation a déjà été annulée",
+    bookings_exceptions.BookingIsAlreadyRefunded: "la réservation a déjà été remboursée",
+    bookings_exceptions.BookingIsAlreadyUsed: "la réservation a déjà été utilisée",
+}
+
+
+def _get_error_msg(error: Exception) -> str:
+    return BOOKING_ERRORS_MSG.get(type(error), str(error))
 
 
 class SearchForm(SecureForm):
@@ -112,7 +116,7 @@ class BookingView(BaseCustomAdminView):
         try:
             bookings_api.mark_as_used_with_uncancelling(booking)
         except Exception as exc:  # pylint: disable=broad-except
-            flash(f"L'opération a échoué : {_get_exception_message(exc)}", "error")
+            flash(f"L'opération a échoué : {_get_error_msg(exc)}", "error")
         else:
             flash("La réservation a été dés-annulée et marquée comme utilisée.", "info")
         return redirect(booking_url)
@@ -129,7 +133,7 @@ class BookingView(BaseCustomAdminView):
         try:
             bookings_api.mark_as_cancelled(booking)
         except Exception as exc:  # pylint: disable=broad-except
-            flash(f"L'opération a échoué : {_get_exception_message(exc)}", "error")
+            flash(f"L'opération a échoué : {_get_error_msg(exc)}", "error")
         else:
             flash("La réservation a été marquée comme annulée", "info")
         return redirect(booking_url)
