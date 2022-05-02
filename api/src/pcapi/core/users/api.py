@@ -15,6 +15,7 @@ from dateutil.relativedelta import relativedelta
 from flask import current_app as app
 from flask_jwt_extended import create_access_token
 from redis import Redis
+import sqlalchemy as sa
 
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
@@ -893,3 +894,21 @@ def is_user_age_compatible_with_eligibility(user_age: Optional[int], eligibility
     if eligibility == EligibilityType.AGE18:
         return user_age is not None and user_age >= constants.ELIGIBILITY_AGE_18
     return False
+
+
+def search_public_account(terms: typing.Iterable[str]) -> list[User]:
+    filters = []
+
+    for term in terms:
+        if not term:
+            continue
+
+        filters.append(sa.cast(User.phoneNumber, sa.Unicode) == term)
+        filters.append(sa.cast(User.firstName, sa.Unicode).ilike(f"%{term}%"))
+        filters.append(sa.cast(User.lastName, sa.Unicode).ilike(f"%{term}%"))
+        filters.append(sa.cast(User.id, sa.Unicode) == term)
+        filters.append(sa.cast(User.email, sa.Unicode).ilike(f"%{term}%"))
+
+    accounts = User.query.filter(sa.or_(*filters)).all()
+
+    return accounts

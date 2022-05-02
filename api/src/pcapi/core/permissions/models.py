@@ -18,6 +18,7 @@ class Permissions(enum.Enum):
     """
 
     MANAGE_PERMISSIONS = "gérer les droits"
+    SEARCH_PUBLIC_ACCOUNT = "rechercher un compte bénéficiaire/grand public"
 
 
 def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:
