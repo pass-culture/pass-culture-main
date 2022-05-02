@@ -22,6 +22,8 @@ import {
 } from 'core/Bookings'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { Audience } from 'core/shared/types'
+import { ReactComponent as LibraryIcon } from 'icons/library.svg'
+import { ReactComponent as UserIcon } from 'icons/user.svg'
 import NoData from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
 
@@ -56,7 +58,6 @@ const Bookings = ({
   const separateIndividualAndCollectiveOffers = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
-
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     ...DEFAULT_PRE_FILTERS,
     offerVenueId: venueId || DEFAULT_PRE_FILTERS.offerVenueId,
@@ -138,11 +139,21 @@ const Bookings = ({
       <Titles title="Réservations" />
       {separateIndividualAndCollectiveOffers && (
         <Tabs
-          collectiveLabel="Réservations collectives"
-          collectiveLink="/reservations/collectives"
-          individualLabel="Réservations individuelles"
-          individualLink="/reservations"
-          selectedAudience={audience}
+          selectedKey={audience}
+          tabs={[
+            {
+              label: 'Réservations individuelles',
+              url: '/reservations',
+              key: 'individual',
+              Icon: UserIcon,
+            },
+            {
+              label: 'Réservations collectives',
+              url: '/reservations/collectives',
+              key: 'collective',
+              Icon: LibraryIcon,
+            },
+          ]}
         />
       )}
       <PreFilters
