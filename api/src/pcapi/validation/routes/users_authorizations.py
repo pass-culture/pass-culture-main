@@ -3,6 +3,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
+from pcapi.models.api_errors import ResourceNotFoundError
 
 
 def check_user_can_validate_bookings(user: User, offerer_id: int) -> bool:
@@ -29,10 +30,16 @@ def check_user_can_validate_bookings_v2(user: User, offerer_id: int) -> None:
 
 def check_user_can_alter_venue(user: User, venue_id: int) -> None:
     venue = Venue.query.get(venue_id)
+
+    if not venue:
+        api_errors_not_found = ResourceNotFoundError()
+        api_errors_not_found.add_error("venue", "Lieu introuvable.")
+        raise api_errors_not_found
+
     if not user.has_access(venue.managingOffererId):
-        api_errors = ForbiddenError()
-        api_errors.add_error("user", "Vous n'avez pas les droits suffisants pour modifier ce lieu.")
-        raise api_errors
+        api_errors_forbiden = ForbiddenError()
+        api_errors_forbiden.add_error("user", "Vous n'avez pas les droits suffisants pour modifier ce lieu.")
+        raise api_errors_forbiden
 
 
 def check_api_key_allows_to_validate_booking(valid_api_key: ApiKey, offerer_id: int) -> None:
