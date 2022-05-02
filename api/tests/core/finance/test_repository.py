@@ -38,6 +38,13 @@ class GetBusinessUnitsTest:
         offerers_factories.VenueFactory(businessUnit=business_unit1)
         pro = users_factories.ProFactory(offerers=[venue.managingOfferer])
         _other_venue_with_business_unit = offerers_factories.VenueFactory()
+
+        business_unit2 = factories.BusinessUnitFactory()
+        factories.InvoiceFactory(businessUnit=business_unit2, amount=-15000000)
+        venue2 = offerers_factories.VenueFactory(businessUnit=business_unit2)
+        offerer2 = venue2.managingOfferer
+
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
         business_units = list(repository.get_business_units_query(pro))
         assert business_units == [business_unit1]
 
@@ -104,6 +111,12 @@ class GetInvoicesQueryTest:
         other_business_unit = factories.BusinessUnitFactory()
         _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)
         _other_invoice = factories.InvoiceFactory(businessUnit=other_business_unit)
+
+        business_unit3 = factories.BusinessUnitFactory()
+        factories.InvoiceFactory(businessUnit=business_unit3, amount=-15000000)
+        venue3 = offerers_factories.VenueFactory(businessUnit=business_unit3)
+        offerer2 = venue3.managingOfferer
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
 
         invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
