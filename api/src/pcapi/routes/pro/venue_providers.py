@@ -28,6 +28,8 @@ from . import blueprint
 @login_required
 @spectree_serialize(on_success_status=200, response_model=ListVenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
 def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResponse:
+    check_user_can_alter_venue(current_user, query.venue_id)
+
     venue_provider_list = repository.get_venue_provider_list(query.venue_id)
     for venue_provider in venue_provider_list:
         if venue_provider.isFromAllocineProvider:
@@ -42,11 +44,15 @@ def list_venue_providers(query: ListVenueProviderQuery) -> ListVenueProviderResp
 @spectree_serialize(on_success_status=201, response_model=VenueProviderResponse, api=blueprint.pro_private_schema)  # type: ignore [arg-type]
 def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     body.venueIdAtOfferProvider = None
+    venue_id = dehumanize_id(body.venueId)
+    if venue_id is None:
+        raise ApiErrors({"venue": ["Lieu introuvable."]}, 404)
+    check_user_can_alter_venue(current_user, venue_id)
 
     try:
         new_venue_provider = api.create_venue_provider(
             dehumanize_id(body.providerId),  # type: ignore [arg-type]
-            dehumanize_id(body.venueId),  # type: ignore [arg-type]
+            venue_id,
             VenueProviderCreationPayload(
                 isDuo=body.isDuo,
                 price=body.price,
