@@ -19,8 +19,8 @@ class ShowCDS(BaseModel):
 
 class PaymentTypeCDS(BaseModel):
     id: int
+    internal_code: str = Field(alias="internalcode")
     is_active: bool = Field(alias="active")
-    short_label: str = Field(alias="shortlabel")
 
     class Config:
         allow_population_by_field_name = True
