@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import Spinner from 'components/layout/Spinner'
@@ -15,6 +16,7 @@ import {
   Informations as InformationsScreen,
   IInformationsProps,
 } from 'screens/OfferIndividual/Informations'
+import { loadCategories } from 'store/offers/thunks'
 
 import { createOfferAdapter } from './adapters'
 
@@ -24,6 +26,7 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
   const {
     currentUser: { isAdmin },
   } = useCurrentUser()
+  const dispatch = useDispatch()
   const [isReady, setIsReady] = useState<boolean>(false)
   const [initialValues, setInitialValues] =
     useState<IOfferIndividualFormValues>(FORM_DEFAULT_VALUES)
@@ -64,12 +67,13 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
             venueList
           )
         )
+        dispatch(loadCategories())
         setIsReady(true)
       }
 
       loadData()
     }
-  }, [isReady, venueId, offererId])
+  }, [isReady, venueId, offererId, dispatch])
 
   return (
     <div>

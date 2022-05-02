@@ -1,5 +1,14 @@
+interface IMusicOption {
+  code: number
+  label: string
+  children: {
+    code: number
+    label: string
+  }[]
+}
+
 // WARNING: the list below MUST be kept in sync with the list at api/src/pcapi/domain/show_types.py and api/src/pcapi/domain/music_types.py
-export const musicOptionsTree = [
+export const musicOptionsTree: IMusicOption[] = [
   {
     code: 501,
     label: 'Jazz',

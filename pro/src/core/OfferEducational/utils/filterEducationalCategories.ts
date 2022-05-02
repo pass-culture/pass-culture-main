@@ -3,6 +3,7 @@ import {
   IEducationalCategory,
   IEducationalSubCategory,
 } from 'core/OfferEducational'
+import { Category, SubCategory } from 'custom_types/categories'
 
 interface IFilterEducationalCategoriesResult {
   educationalCategories: IEducationalCategory[]

@@ -11,6 +11,7 @@ type Option = {
 
 interface ISelectInputProps {
   name: string
+  defaultOption?: Option | null
   options: Option[]
   disabled?: boolean
   hasError?: boolean
@@ -18,6 +19,7 @@ interface ISelectInputProps {
 
 const SelectInput = ({
   hasError = false,
+  defaultOption = null,
   name,
   disabled,
   options,
@@ -33,6 +35,9 @@ const SelectInput = ({
       id={name}
       {...field}
     >
+      {defaultOption && (
+        <option value={defaultOption.value}>{defaultOption.label}</option>
+      )}
       {options.map(option => (
         <option key={option.value} value={option.value}>
           {option.label}
