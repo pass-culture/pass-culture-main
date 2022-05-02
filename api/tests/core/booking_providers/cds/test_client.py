@@ -171,6 +171,31 @@ class CineDigitalServiceGetPaymentTypeTest:
         )
 
 
+class CineDigitalServiceGetPCVoucherTypesTest:
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_only_voucher_types_with_pass_culture_code_and_tariff(self, mocked_get_resource):
+        json_voucher_types = [
+            {"id": 1, "code": "TESTCODE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},
+            {"id": 2, "code": "PSCULTURE", "tariffid": {"id": 3, "price": 5, "active": True, "labeltariff": ""}},
+            {"id": 3, "code": "PSCULTURE", "tariffid": {"id": 4, "price": 6, "active": True, "labeltariff": ""}},
+            {"id": 4, "code": "PSCULTURE"},
+        ]
+
+        mocked_get_resource.return_value = json_voucher_types
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="cinema_id_test", token="token_test", api_url="apiUrl_test"
+        )
+        pc_voucher_types = cine_digital_service.get_pc_voucher_types()
+
+        assert len(pc_voucher_types) == 2
+        assert pc_voucher_types[0].id == 2
+        assert pc_voucher_types[0].code == "PSCULTURE"
+        assert pc_voucher_types[0].tariff.id == 3
+        assert pc_voucher_types[0].tariff.price == 5
+        assert pc_voucher_types[1].id == 3
+        assert pc_voucher_types[1].tariff.id == 4
+
+
 class CineDigitalServiceGetTariffTest:
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
     def test_should_return_tariffs_with_pass_culture_tariff(self, mocked_get_resource):

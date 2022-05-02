@@ -8,6 +8,7 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_TARIFF_LABEL_CDS
+from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_VOUCHER_CODE
 from pcapi.core.booking_providers.cds.constants import VOUCHER_PAYMENT_TYPE_CDS
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
@@ -51,6 +52,15 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             f"Pass Culture payment type not found in Cine Digital Service API for cinemaId={self.cinema_id}"
             f" & url={self.api_url}"
         )
+
+    def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
+        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.VOUCHER_TYPE)
+        voucher_types = parse_obj_as(list[cds_serializers.VoucherTypeCDS], data)
+        return [
+            voucher_type
+            for voucher_type in voucher_types
+            if voucher_type.code == PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
+        ]
 
     def get_tariff(self) -> cds_serializers.TariffCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.TARIFFS)

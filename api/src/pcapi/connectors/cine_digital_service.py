@@ -19,6 +19,7 @@ class ResourceCDS(enum.Enum):
     TARIFFS = "tariffs"
     SHOWS = "shows"
     PAYMENT_TYPE = "paiementtype"
+    VOUCHER_TYPE = "vouchertype"
     SCREENS = "screens"
     SEATMAP = "shows/:show_id/seatmap"
     CANCEL_BOOKING = "transaction/cancel"
