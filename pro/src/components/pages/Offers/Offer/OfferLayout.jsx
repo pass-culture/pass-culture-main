@@ -47,13 +47,17 @@ const OfferLayout = () => {
 
   const loadOffer = useCallback(
     async (offerId, creationMode = false) => {
-      const existingOffer = await apiV1.getOffersGetOffer(offerId)
-      setOffer(existingOffer)
-      setIsCreatingOffer(
-        creationMode || existingOffer.status === OFFER_STATUS_DRAFT
-      )
+      try {
+        const existingOffer = await apiV1.getOffersGetOffer(offerId)
+        setOffer(existingOffer)
+        setIsCreatingOffer(
+          creationMode || existingOffer.status === OFFER_STATUS_DRAFT
+        )
+      } catch {
+        history.push('/404')
+      }
     },
-    [setOffer]
+    [history, setOffer]
   )
   const activeStep = getActiveStepFromLocation(location)
 
