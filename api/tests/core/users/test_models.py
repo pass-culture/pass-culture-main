@@ -212,7 +212,7 @@ class UserTest:
 
     class EligibilityTest:
         def test_not_eligible_when_19(self):
-            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19))
+            user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=19, days=1))
             assert user.eligibility is None
 
         def test_eligible_when_19_with_subscription_attempt_at_18(self):
