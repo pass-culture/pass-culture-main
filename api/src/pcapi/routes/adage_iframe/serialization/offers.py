@@ -9,6 +9,7 @@ from pydantic.class_validators import validator
 
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
+from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
@@ -150,7 +151,7 @@ class CollectiveOfferResponseModel(BaseModel):
     name: str
     collectiveStock: OfferStockResponse = Field(alias="stock")
     venue: OfferVenueResponse
-    students: list[str]
+    students: list[StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
     contactPhone: str
@@ -166,7 +167,6 @@ class CollectiveOfferResponseModel(BaseModel):
     def from_orm(cls: Any, offer: CollectiveOffer):  # type: ignore
         offer.subcategoryLabel = offer.subcategory.app_label
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
-        offer.students = [student.value for student in offer.students]  # type: ignore [misc]
 
         result = super().from_orm(offer)
 
@@ -180,6 +180,7 @@ class CollectiveOfferResponseModel(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
+        use_enum_values = True
 
 
 class CollectiveOfferTemplateResponseModel(BaseModel):
@@ -190,7 +191,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel):
     isSoldOut: bool
     name: str
     venue: OfferVenueResponse
-    students: list[str]
+    students: list[StudentLevels]
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
     contactPhone: str
@@ -205,8 +206,8 @@ class CollectiveOfferTemplateResponseModel(BaseModel):
     @classmethod
     def from_orm(cls: Any, offer: CollectiveOfferTemplate):  # type: ignore
         offer.subcategoryLabel = offer.subcategory.app_label
-        offer.students = [student.value for student in offer.students]  # type: ignore [misc]
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
+
         result = super().from_orm(offer)
 
         result.isSoldOut = False
@@ -219,3 +220,4 @@ class CollectiveOfferTemplateResponseModel(BaseModel):
         orm_mode = True
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
+        use_enum_values = True
