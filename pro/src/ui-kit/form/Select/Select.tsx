@@ -11,6 +11,7 @@ type Option = {
 
 interface ISelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string
+  defaultOption?: Option | null
   options: Option[]
   className?: string
   disabled?: boolean
@@ -22,6 +23,7 @@ interface ISelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 
 const Select = ({
   name,
+  defaultOption = null,
   options,
   className,
   isOptional = false,
@@ -58,6 +60,7 @@ const Select = ({
         disabled={disabled}
         hasError={meta.touched && !!meta.error}
         options={options}
+        defaultOption={defaultOption}
         {...selectAttributes}
         {...field}
       />

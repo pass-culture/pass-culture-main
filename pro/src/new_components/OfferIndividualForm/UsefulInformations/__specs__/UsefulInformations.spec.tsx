@@ -54,6 +54,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         id: 'AAAA',
         name: 'Venue AAAA',
         managingOffererId: 'AA',
+        isVirtual: false,
       },
     ]
 

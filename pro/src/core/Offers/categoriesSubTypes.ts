@@ -1,5 +1,7 @@
+import { ICategorySubtypeItem } from './types'
+
 // WARNING: the list below MUST be kept in sync with the list at api/src/pcapi/domain/show_types.py and api/src/pcapi/domain/music_types.py
-export const musicOptionsTree = [
+export const musicOptionsTree: ICategorySubtypeItem[] = [
   {
     code: 501,
     label: 'Jazz',
@@ -296,7 +298,7 @@ export const musicOptionsTree = [
   },
 ]
 
-export const showOptionsTree = [
+export const showOptionsTree: ICategorySubtypeItem[] = [
   {
     code: 100,
     label: 'Arts de la rue',

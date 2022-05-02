@@ -1,7 +1,10 @@
 import * as PropTypes from 'prop-types'
 
 import React, { useEffect, useState } from 'react'
-import { musicOptionsTree, showOptionsTree } from './subTypes'
+import {
+  musicOptionsTree,
+  showOptionsTree,
+} from 'core/Offers/categoriesSubTypes'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
 import Select from 'components/layout/inputs/Select'
