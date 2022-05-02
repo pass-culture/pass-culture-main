@@ -78,6 +78,8 @@ def get_offer(offer_id: str) -> offers_serialize.GetIndividualOfferResponseModel
             },
             status_code=404,
         )
+    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
+
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
