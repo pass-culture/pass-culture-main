@@ -6,6 +6,8 @@ import freezegun
 import pytest
 
 from pcapi.core.cultural_survey import cultural_survey
+from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
+from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.tasks.serialization import cultural_survey_tasks as serializers
@@ -227,23 +229,23 @@ class CulturalSurveyQuestionsTest:
 
         expected_answers = [
             {
-                "question_id": cultural_survey.SORTIES.id,
-                "answer_ids": [
-                    cultural_survey.FESTIVAL.id,
+                "questionId": CulturalSurveyQuestionEnum.SORTIES,
+                "answerIds": [
+                    CulturalSurveyAnswerEnum.FESTIVAL,
                 ],
             },
             {
-                "question_id": cultural_survey.FESTIVALS.id,
-                "answer_ids": [
-                    cultural_survey.FESTIVAL_MUSIQUE.id,
-                    cultural_survey.LIVRE.id,
+                "questionId": CulturalSurveyQuestionEnum.FESTIVALS,
+                "answerIds": [
+                    CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE,
+                    CulturalSurveyAnswerEnum.LIVRE,
                 ],
             },
             {
-                "question_id": cultural_survey.ACTIVITES.id,
-                "answer_ids": [
-                    cultural_survey.LIVRE.id,
-                    cultural_survey.PODCAST.id,
+                "questionId": CulturalSurveyQuestionEnum.ACTIVITES,
+                "answerIds": [
+                    CulturalSurveyAnswerEnum.LIVRE,
+                    CulturalSurveyAnswerEnum.PODCAST,
                 ],
             },
         ]

@@ -968,8 +968,11 @@ def test_public_api(client, app):
                 },
                 "CulturalSurveyUserAnswer": {
                     "properties": {
-                        "answerIds": {"items": {"type": "string"}, "title": "Answerids", "type": "array"},
-                        "questionId": {"title": "Questionid", "type": "string"},
+                        "answerIds": {
+                            "items": {"$ref": "#/components/schemas/CulturalSurveyAnswerEnum"},
+                            "type": "array",
+                        },
+                        "questionId": {"$ref": "#/components/schemas/CulturalSurveyQuestionEnum"},
                     },
                     "required": ["questionId", "answerIds"],
                     "title": "CulturalSurveyUserAnswer",

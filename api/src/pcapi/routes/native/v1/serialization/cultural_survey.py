@@ -1,6 +1,5 @@
-from pydantic import root_validator
-
 from pcapi.core.cultural_survey import cultural_survey
+from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
@@ -10,18 +9,12 @@ class CulturalSurveyQuestionsResponse(BaseModel):
 
 
 class CulturalSurveyUserAnswer(BaseModel):
-    question_id: str
-    answer_ids: list[str]
+    question_id: cultural_survey_models.CulturalSurveyQuestionEnum
+    answer_ids: list[cultural_survey_models.CulturalSurveyAnswerEnum]
 
     class Config:
         alias_generator = to_camel
-
-    @root_validator(pre=True)
-    def check_answer_ids_are_valid(cls, values: dict) -> dict:  # pylint: disable=no-self-argument
-        for value in values.get("answer_ids", []):
-            if not value in cultural_survey.CulturalSurveyAnswersDict:
-                raise ValueError(f"Invalid answer id: {value}")
-        return values
+        use_enum_values = True
 
 
 class CulturalSurveyAnswersRequest(BaseModel):
