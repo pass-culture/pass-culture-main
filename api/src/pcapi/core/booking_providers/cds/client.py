@@ -81,7 +81,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
 
     def get_available_duo_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[SeatCDS]:
         seatmap = self.get_seatmap(show_id)
-        seatmap_center = ((seatmap.nb_row - 1) / 2.0, (seatmap.nb_col - 1) / 2.0)
+        seatmap_center = ((seatmap.nb_row - 1) / 2, (seatmap.nb_col - 1) / 2)
 
         available_seats_index = [
             (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] % 10 == 1
@@ -111,7 +111,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         return parse_obj_as(cds_serializers.SeatmapCDS, data)
 
     def _get_closest_seat_to_center(
-        self, center: tuple[int, int], seats_index: list[tuple[int, int]]
+        self, center: tuple[float, float], seats_index: list[tuple[int, int]]
     ) -> tuple[int, int]:
         distances_to_center = list(
             map(
