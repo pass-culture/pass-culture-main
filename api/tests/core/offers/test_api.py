@@ -1687,6 +1687,15 @@ class UpdateOfferTest:
 
         assert error.value.errors == {"showType": ["Ce champ est obligatoire"]}
 
+    def test_should_be_able_to_update_offer_when_extra_data_is_none(self):
+        offer = factories.OfferFactory(
+            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, extraData={"showType": 200}
+        )
+
+        offer = api.update_offer(offer, extraData=None)
+
+        assert offer.extraData == {"showType": 200}
+
     def test_update_product_if_owning_offerer_is_the_venue_managing_offerer(self):
         offerer = factories.OffererFactory()
         product = factories.ProductFactory(owningOfferer=offerer)
