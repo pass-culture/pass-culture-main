@@ -2742,3 +2742,21 @@ class GetTomorrowEventOfferTest:
             bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 1
+
+    def should_not_get_digital_event(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        bookings_factories.IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=tomorrow,
+                offer__url="http://digitaloffer.pass",
+            )
+        )
+        bookings_factories.IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=tomorrow,
+            )
+        )
+
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 0
