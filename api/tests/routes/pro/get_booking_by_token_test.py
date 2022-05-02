@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from unittest import mock
 from urllib.parse import urlencode
 
 import pytest
@@ -12,7 +11,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models import api_errors
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 
@@ -227,23 +225,24 @@ class Returns400Test:
 
 
 class Returns403Test:
-    @mock.patch("pcapi.core.bookings.validation.check_is_usable")
     @pytest.mark.usefixtures("db_session")
-    def when_booking_not_confirmed(self, mocked_check_is_usable, client):
+    def when_booking_not_confirmed(self, client):
         # Given
-        unconfirmed_booking = IndividualBookingFactory(stock=offers_factories.EventStockFactory())
+        cancellation_date = datetime.utcnow() + timedelta(days=7)
+        unconfirmed_booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(), cancellationLimitDate=cancellation_date
+        )
         url = (
             f"/bookings/token/{unconfirmed_booking.token}?email={unconfirmed_booking.individualBooking.user.email}"
             f"&offer_id={humanize(unconfirmed_booking.stock.offerId)}"
         )
-        mocked_check_is_usable.side_effect = api_errors.ForbiddenError(errors={"booking": ["Not confirmed"]})
 
         # When
         response = client.get(url)
 
         # Then
         assert response.status_code == 403
-        assert response.json["booking"] == ["Not confirmed"]
+        assert "Cette réservation a été effectuée le " in response.json["booking"][0]
 
     @pytest.mark.usefixtures("db_session")
     def when_booking_is_refunded(self, client):

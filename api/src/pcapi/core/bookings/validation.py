@@ -105,48 +105,29 @@ def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
         )
 
 
-# FIXME: should not raise exceptions from `api_errors` (see below for details).
 def check_booking_can_be_cancelled(booking: Booking) -> None:
     if booking.status == BookingStatus.CANCELLED:
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("global", "Cette contremarque a déjà été annulée")
-        raise gone
+        raise exceptions.BookingIsAlreadyCancelled()
     if booking.is_used_or_reimbursed:
-        forbidden = api_errors.ForbiddenError()
-        forbidden.add_error("global", "Impossible d'annuler une réservation consommée")
-        raise forbidden
+        raise exceptions.BookingIsAlreadyRefunded()
 
 
-# FIXME (dbaty, 2020-10-19): I moved this function from validation/routes/bookings.py. It
-# should not raise HTTP-related exceptions. It should rather raise
-# generic exceptions such as `BookingIsAlreadyUsed` and the calling
-# route should have an exception handler that turns it into the
-# desired HTTP-related exception (such as ResourceGone and Forbidden)
-# See also functions below.
 def check_is_usable(booking: Booking) -> None:
     if finance_repository.has_reimbursement(booking):
-        forbidden = api_errors.ForbiddenError()
-        forbidden.add_error("payment", "Cette réservation a été remboursée")
-        raise forbidden
+        raise exceptions.BookingIsAlreadyRefunded()
 
     if booking.status is BookingStatus.USED:
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("booking", "Cette réservation a déjà été validée")
-        raise gone
+        raise exceptions.BookingIsAlreadyUsed()
 
     if booking.status is BookingStatus.CANCELLED:
-        gone = api_errors.ResourceGoneError()
-        gone.add_error("booking_cancelled", "Cette réservation a été annulée")
-        raise gone
+        raise exceptions.BookingIsAlreadyCancelled()
 
     if booking.educationalBookingId is not None:
         if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:  # type: ignore [union-attr]
-            reason = "Cette réservation pour une offre éducationnelle a été refusée par le chef d'établissement"
-            raise api_errors.ForbiddenError(errors={"educationalBooking": reason})
+            raise exceptions.BookingRefused()
 
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
     if is_booking_for_event_and_not_confirmed:
-        forbidden = api_errors.ForbiddenError()
         venue_departement_code = booking.venue.departementCode
         booking_date = datetime.datetime.strftime(
             utc_datetime_to_department_timezone(booking.dateCreated, venue_departement_code), "%d/%m/%Y à %H:%M"
@@ -162,15 +143,18 @@ def check_is_usable(booking: Booking) -> None:
             "%d/%m/%Y à %H:%M",
         )
 
-        forbidden.add_error(
-            "booking",
+        raise exceptions.BookingIsNotConfirmed(
             f"Cette réservation a été effectuée le {booking_date}. "
             f"Veuillez attendre jusqu’au {max_cancellation_date} pour valider la contremarque.",
         )
-        raise forbidden
 
 
-# FIXME: should not raise exceptions from `api_errors` (see above for details).
+# FIXME (dbaty, 2020-10-19): I moved this function from validation/routes/bookings.py. It
+# should not raise HTTP-related exceptions. It should rather raise
+# generic exceptions such as `BookingIsAlreadyUsed` and the calling
+# route should have an exception handler that turns it into the
+# desired HTTP-related exception (such as ResourceGone and Forbidden)
+# See also functions below.
 def check_can_be_mark_as_unused(booking: Booking) -> None:
     if booking.stock.canHaveActivationCodes and booking.activationCode:
         forbidden = api_errors.ForbiddenError()

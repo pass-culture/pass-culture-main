@@ -358,22 +358,19 @@ class InsufficientFundsSQLCheckTest:
 class CheckIsUsableTest:
     def should_raise_if_used(self):
         booking = factories.UsedIndividualBookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(exceptions.BookingIsAlreadyUsed):
             validation.check_is_usable(booking)
-        assert exc.value.errors["booking"] == ["Cette réservation a déjà été validée"]
 
     def should_raise_if_cancelled(self):
         booking = factories.CancelledIndividualBookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             validation.check_is_usable(booking)
-        assert exc.value.errors["booking_cancelled"] == ["Cette réservation a été annulée"]
 
     def should_raises_forbidden_error_if_payement_exists(self, app):
         booking = factories.UsedIndividualBookingFactory()
         finance_factories.PaymentFactory(booking=booking)
-        with pytest.raises(api_errors.ForbiddenError) as exc:
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_is_usable(booking)
-        assert exc.value.errors["payment"] == ["Cette réservation a été remboursée"]
 
     def should_pass_if_no_beginning_datetime(self):
         booking = factories.IndividualBookingFactory(stock__beginningDatetime=None)
@@ -398,34 +395,8 @@ class CheckIsUsableTest:
         booking = factories.IndividualBookingFactory(dateCreated=one_day_before, stock__beginningDatetime=next_week)
 
         # When
-        with pytest.raises(api_errors.ForbiddenError) as exception:
+        with pytest.raises(exceptions.BookingIsNotConfirmed):
             validation.check_is_usable(booking)
-
-        # Then
-        assert exception.value.errors["booking"] == [
-            "Cette réservation a été effectuée le 14/10/2020 à 11:00. Veuillez "
-            "attendre jusqu’au 16/10/2020 à 11:00 pour valider la contremarque."
-        ]
-
-    @freeze_time("2020-10-15 09:00:00")
-    def should_use_timezone_of_venue_departmentCode(self):
-        # Given
-        next_week = datetime.utcnow() + timedelta(weeks=1)
-        one_day_before = datetime.utcnow() - timedelta(days=1)
-
-        booking = factories.IndividualBookingFactory(
-            dateCreated=one_day_before, stock__beginningDatetime=next_week, stock__offer__venue__postalCode="97300"
-        )
-
-        # When
-        with pytest.raises(api_errors.ForbiddenError) as exception:
-            validation.check_is_usable(booking)
-
-        # Then
-        assert exception.value.errors["booking"] == [
-            "Cette réservation a été effectuée le 14/10/2020 à 06:00. Veuillez "
-            "attendre jusqu’au 16/10/2020 à 06:00 pour valider la contremarque."
-        ]
 
 
 @pytest.mark.usefixtures("db_session")
@@ -495,15 +466,13 @@ class CheckOffererCanCancelBookingTest:
 
     def test_raise_if_already_cancelled(self):
         booking = factories.CancelledIndividualBookingFactory()
-        with pytest.raises(api_errors.ResourceGoneError) as exc:
+        with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             validation.check_booking_can_be_cancelled(booking)
-        assert exc.value.errors["global"] == ["Cette contremarque a déjà été annulée"]
 
     def test_raise_if_already_used(self):
         booking = factories.UsedIndividualBookingFactory()
-        with pytest.raises(api_errors.ForbiddenError) as exc:
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_booking_can_be_cancelled(booking)
-        assert exc.value.errors["global"] == ["Impossible d'annuler une réservation consommée"]
 
 
 @pytest.mark.usefixtures("db_session")

@@ -7,10 +7,12 @@ from flask_admin.actions import action
 from flask_admin.form import SecureForm
 from flask_login import current_user
 from markupsafe import Markup
+from werkzeug.exceptions import Conflict
 from werkzeug.exceptions import Forbidden
 import wtforms.validators
 
 from pcapi import settings
+import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.users.api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.models import User
@@ -126,8 +128,15 @@ class SuspensionMixin:
             if form.validate():
                 flash(f"Le compte de l'utilisateur {user.email} ({user.id}) a été suspendu.")
                 reason = {r.value: r for r in users_constants.SuspensionReason}[form.data["reason"]]
-                users_api.suspend_account(user, reason, current_user)
-                return redirect(self.user_list_url)
+
+                try:
+                    users_api.suspend_account(user, reason, current_user)
+                except bookings_exceptions.BookingIsAlreadyCancelled:
+                    return Conflict(description="Impossible d'annuler une des réservations (déjà annulée)")
+                except bookings_exceptions.BookingIsAlreadyRefunded:
+                    return Conflict(description="Impossible d'annuler une des réservations (déjà remboursée)")
+                else:
+                    return redirect(self.user_list_url)
         else:
             form = SuspensionForm()
 
