@@ -429,9 +429,13 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
     def isThing(self) -> bool:
         return not self.subcategory.is_event
 
-    @property
+    @sa.ext.hybrid.hybrid_property
     def isDigital(self) -> bool:
         return self.url is not None and self.url != ""
+
+    @isDigital.expression  # type: ignore [no-redef]
+    def isDigital(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.url.isnot(None)
 
     @property
     def isEditable(self) -> bool:
