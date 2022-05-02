@@ -1,50 +1,48 @@
 import cn from 'classnames'
-import React from 'react'
-import { Link } from 'react-router-dom'
-
-import { Audience } from 'core/shared/types'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
+import React, { FunctionComponent, SVGProps } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 import styles from './Tabs.module.scss'
 
-interface ITabsProps {
-  selectedAudience: Audience
-  individualLink: string
-  collectiveLink: string
-  individualLabel: string
-  collectiveLabel: string
+interface ITab {
+  label: string
+  key: string
+  url: string
+  Icon?: FunctionComponent<SVGProps<SVGSVGElement>>
+}
+interface IFilterTabsProps {
+  tabs: ITab[]
+  selectedKey?: string
+  withQueryParams?: boolean
 }
 
 const Tabs = ({
-  selectedAudience,
-  individualLink,
-  collectiveLink,
-  individualLabel,
-  collectiveLabel,
-}: ITabsProps): JSX.Element => {
+  selectedKey,
+  tabs,
+  withQueryParams,
+}: IFilterTabsProps): JSX.Element => {
+  const { search } = useLocation()
+
   return (
     <ul className={styles['tabs']}>
-      <li
-        className={cn(styles['tabs-tab'], {
-          [styles['is-selected']]: selectedAudience === Audience.INDIVIDUAL,
-        })}
-      >
-        <Link className={styles['tabs-tab-link']} to={individualLink}>
-          <UserIcon className={styles['tabs-tab-icon']} />
-          <span>{individualLabel}</span>
-        </Link>
-      </li>
-      <li
-        className={cn(styles['tabs-tab'], {
-          [styles['is-selected']]: selectedAudience === Audience.COLLECTIVE,
-        })}
-      >
-        <Link className={styles['tabs-tab-link']} to={collectiveLink}>
-          <LibraryIcon className={styles['tabs-tab-icon']} />
-          <span>{collectiveLabel}</span>
-        </Link>
-      </li>
+      {tabs.map(({ key, label, url, Icon }) => {
+        const to = withQueryParams
+          ? `${url}?${new URLSearchParams(search).toString()}`
+          : url
+        return (
+          <li
+            className={cn(styles['tabs-tab'], {
+              [styles['is-selected']]: selectedKey === key,
+            })}
+            key={`tab_${url}`}
+          >
+            <Link className={styles['tabs-tab-link']} key={`tab${url}`} to={to}>
+              {Icon && <Icon className={styles['tabs-tab-icon']} />}
+              <span>{label}</span>
+            </Link>
+          </li>
+        )
+      })}
     </ul>
   )
 }
