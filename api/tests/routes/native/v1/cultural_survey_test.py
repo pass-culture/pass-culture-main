@@ -5,7 +5,6 @@ from dateutil.relativedelta import relativedelta
 import freezegun
 import pytest
 
-from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 from pcapi.core.users import factories as users_factories
@@ -200,23 +199,23 @@ class CulturalSurveyQuestionsTest:
 
         all_answers = [
             {
-                "questionId": cultural_survey.SORTIES.id,
+                "questionId": CulturalSurveyQuestionEnum.SORTIES.value,
                 "answerIds": [
-                    cultural_survey.FESTIVAL.id,
+                    CulturalSurveyAnswerEnum.FESTIVAL.value,
                 ],
             },
             {
-                "questionId": cultural_survey.FESTIVALS.id,
+                "questionId": CulturalSurveyQuestionEnum.FESTIVALS.value,
                 "answerIds": [
-                    cultural_survey.FESTIVAL_MUSIQUE.id,
-                    cultural_survey.LIVRE.id,
+                    CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE.value,
+                    CulturalSurveyAnswerEnum.LIVRE.value,
                 ],
             },
             {
-                "questionId": cultural_survey.ACTIVITES.id,
+                "questionId": CulturalSurveyQuestionEnum.ACTIVITES.value,
                 "answerIds": [
-                    cultural_survey.LIVRE.id,
-                    cultural_survey.PODCAST.id,
+                    CulturalSurveyAnswerEnum.LIVRE.value,
+                    CulturalSurveyAnswerEnum.PODCAST.value,
                 ],
             },
         ]

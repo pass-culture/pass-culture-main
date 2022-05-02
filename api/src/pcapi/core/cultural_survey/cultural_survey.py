@@ -21,142 +21,142 @@ class CulturalSurveyQuestion:
 
 
 FESTIVAL = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FESTIVAL.value,
+    id=CulturalSurveyAnswerEnum.FESTIVAL,
     title="Participé à un festival,",
     subtitle="à une avant-première",
     sub_question=CulturalSurveyQuestionEnum.FESTIVALS,
 )
 SPECTACLE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE,
     title="Assisté à un spectacle",
     subtitle="Pièce de théâtre, cirque, danse...",
     sub_question=CulturalSurveyQuestionEnum.SPECTACLES,
 )
 BIBLIOTHEQUE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.BIBLIOTHEQUE.value,
+    id=CulturalSurveyAnswerEnum.BIBLIOTHEQUE,
     title="Allé à la bibliothèque",
     subtitle="ou à la médiathèque",
 )
 EVENEMENT_JEU = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.EVENEMENT_JEU.value,
+    id=CulturalSurveyAnswerEnum.EVENEMENT_JEU,
     title="Participé à un jeu",
     subtitle="escape game, jeu concours",
 )
 CONCERT = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.CONCERT.value,
+    id=CulturalSurveyAnswerEnum.CONCERT,
     title="Allé à un concert",
 )
 CINEMA = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.CINEMA.value,
+    id=CulturalSurveyAnswerEnum.CINEMA,
     title="Allé au cinéma",
 )
 MUSEE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.MUSEE.value,
+    id=CulturalSurveyAnswerEnum.MUSEE,
     title="Visité un musée,",
     subtitle="un monument, une exposition...",
 )
 CONFERENCE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.CONFERENCE.value,
+    id=CulturalSurveyAnswerEnum.CONFERENCE,
     title="Participé à une conférence,",
     subtitle="rencontre ou découverte des métiers de la culture",
 )
 COURS = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.COURS.value,
+    id=CulturalSurveyAnswerEnum.COURS,
     title="Pris un cours",
     subtitle="danse, théâtre, musique, dessin",
 )
 SANS_SORTIES = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SANS_SORTIES.value,
+    id=CulturalSurveyAnswerEnum.SANS_SORTIES,
     title="Aucune de ces sorties culturelles",
 )
 
 FESTIVAL_MUSIQUE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE.value,
+    id=CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE,
     title="Festival de musique",
 )
 FESTIVAL_AVANT_PREMIERE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FESTIVAL_AVANT_PREMIERE.value,
+    id=CulturalSurveyAnswerEnum.FESTIVAL_AVANT_PREMIERE,
     title="Avant-première de film",
 )
 FESTIVAL_SPECTACLE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FESTIVAL_SPECTACLE.value,
+    id=CulturalSurveyAnswerEnum.FESTIVAL_SPECTACLE,
     title="Festival de danse, de cirque",
 )
 FESTIVAL_LIVRE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FESTIVAL_LIVRE.value,
+    id=CulturalSurveyAnswerEnum.FESTIVAL_LIVRE,
     title="Festival littéraire",
 )
 FESTIVAL_CINEMA = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FESTIVAL_CINEMA.value,
+    id=CulturalSurveyAnswerEnum.FESTIVAL_CINEMA,
     title="Festival de cinéma",
 )
 FESTIVAL_AUTRE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FESTIVAL_AUTRE.value,
+    id=CulturalSurveyAnswerEnum.FESTIVAL_AUTRE,
     title="Autre festival",
 )
 
 SPECTACLE_HUMOUR = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE_HUMOUR.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE_HUMOUR,
     title="Spectacle d'humour",
     subtitle="ou café-théâtre",
 )
 SPECTACLE_THEATRE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE_THEATRE.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE_THEATRE,
     title="Théâtre",
 )
 SPECTACLE_RUE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE_RUE.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE_RUE,
     title="Spectacle de rue",
 )
 SPECTACLE_OPERA = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE_OPERA.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE_OPERA,
     title="Comédie musicale, opéra",
 )
 SPECTACLE_CIRQUE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE_CIRQUE.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE_CIRQUE,
     title="Cirque",
 )
 SPECTACLE_DANSE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE_DANSE.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE_DANSE,
     title="Spectacle de danse",
 )
 SPECTACLE_AUTRE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SPECTACLE_AUTRE.value,
+    id=CulturalSurveyAnswerEnum.SPECTACLE_AUTRE,
     title="Autres spectacles",
 )
 
 MATERIEL_ART_CREATIF = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.MATERIEL_ART_CREATIF.value,
+    id=CulturalSurveyAnswerEnum.MATERIEL_ART_CREATIF,
     title="Utilisé du matériel d'art",
     subtitle="pour peindre, dessiner...",
 )
 PODCAST = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.PODCAST.value,
+    id=CulturalSurveyAnswerEnum.PODCAST,
     title="Écouté un podcast",
 )
 LIVRE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.LIVRE.value,
+    id=CulturalSurveyAnswerEnum.LIVRE,
     title="Lu un livre",
 )
 JOUE_INSTRUMENT = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.JOUE_INSTRUMENT.value,
+    id=CulturalSurveyAnswerEnum.JOUE_INSTRUMENT,
     title="Joué d'un instrument de musique ",
 )
 PRESSE_EN_LIGNE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.PRESSE_EN_LIGNE.value,
+    id=CulturalSurveyAnswerEnum.PRESSE_EN_LIGNE,
     title="Lu un article de presse",
     subtitle="en ligne",
 )
 JEU_VIDEO = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.JEU_VIDEO.value,
+    id=CulturalSurveyAnswerEnum.JEU_VIDEO,
     title="Joué à un jeu vidéo",
 )
 FILM_DOMICILE = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.FILM_DOMICILE.value,
+    id=CulturalSurveyAnswerEnum.FILM_DOMICILE,
     title="Regardé un film chez toi",
 )
 SANS_ACTIVITES = CulturalSurveyAnswer(
-    id=CulturalSurveyAnswerEnum.SANS_ACTIVITES.value,
+    id=CulturalSurveyAnswerEnum.SANS_ACTIVITES,
     title="Aucune de ces activités culturelles",
 )
 
@@ -240,25 +240,25 @@ ACTIVITES_ANSWERS = [
 
 
 SORTIES = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.SORTIES.value,
+    id=CulturalSurveyQuestionEnum.SORTIES,
     title="Au cours de l'année précédente, tu as/es au moins une fois ...",
     answers=SORTIES_ANSWERS,
 )
 
 FESTIVALS = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.FESTIVALS.value,
+    id=CulturalSurveyQuestionEnum.FESTIVALS,
     title="À quels types de festivals as-tu participé ?",
     answers=FESTIVALS_ANSWERS,
 )
 
 SPECTACLES = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.SPECTACLES.value,
+    id=CulturalSurveyQuestionEnum.SPECTACLES,
     title="À quels types de spectacles as-tu assisté ?",
     answers=SPECTACLES_ANSWERS,
 )
 
 ACTIVITES = CulturalSurveyQuestion(
-    id=CulturalSurveyQuestionEnum.ACTIVITES.value,
+    id=CulturalSurveyQuestionEnum.ACTIVITES,
     title="Au cours de l'année précédente, tu as au moins une fois ...",
     answers=ACTIVITES_ANSWERS,
 )
