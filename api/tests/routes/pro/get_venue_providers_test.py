@@ -2,10 +2,10 @@ from datetime import datetime
 
 import pytest
 
+import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.users import factories as users_factories
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
@@ -15,10 +15,13 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_list_with_valid_venue_id(self, app):
         # given
-        user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
         venue_provider = providers_factories.VenueProviderFactory(
-            venue__name="Librairie Titelive", provider=titelive_things_provider, lastSyncDate=datetime(2021, 8, 16)
+            venue__name="Librairie Titelive",
+            venue__managingOfferer=user_offerer.offerer,
+            provider=titelive_things_provider,
+            lastSyncDate=datetime(2021, 8, 16),
         )
 
         # test that nOffers only containe active offers
@@ -36,7 +39,7 @@ class Returns200Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venueProviders?venueId=" + humanize(venue_provider.venue.id))
 
         # then
@@ -49,10 +52,11 @@ class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_get_list_that_include_allocine_with_valid_venue_id(self, app):
         # given
-        user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         allocine_stocks_provider = get_provider_by_local_class("AllocineStocks")
         allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue__name="Whatever cinema",
+            venue__managingOfferer=user_offerer.offerer,
             provider=allocine_stocks_provider,
         )
         providers_factories.AllocineVenueProviderPriceRuleFactory(
@@ -60,7 +64,7 @@ class Returns200Test:
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venueProviders?venueId=" + humanize(allocine_venue_provider.venue.id))
 
         # then
@@ -74,15 +78,16 @@ class Returns400Test:
     @pytest.mark.usefixtures("db_session")
     def when_listing_all_venues_without_venue_id_argument(self, app):
         # given
-        user = users_factories.ProFactory()
+        user_offerer = offerers_factories.UserOffererFactory()
         titelive_things_provider = get_provider_by_local_class("TiteLiveThings")
         providers_factories.VenueProviderFactory(
             venue__name="Librairie Titelive",
+            venue__managingOfferer=user_offerer.offerer,
             provider=titelive_things_provider,
         )
 
         # when
-        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)
         response = auth_request.get("/venueProviders")
 
         # then
