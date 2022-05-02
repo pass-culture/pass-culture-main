@@ -44,6 +44,45 @@ def test_get_invoices(client):
     assert invoices[1]["reference"] == invoice1.reference
 
 
+def test_get_invoices_only_return_visible_invoices(client):
+    business_unit1 = finance_factories.BusinessUnitFactory()
+
+    invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1)
+    business_unit2 = finance_factories.BusinessUnitFactory()
+
+    invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, amount=-1234)
+    venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
+    offerer = venue1.managingOfferer
+    _venue2 = offerers_factories.VenueFactory(
+        managingOfferer=offerer,
+        businessUnit=business_unit2,
+    )
+
+    # The user_offerer link is not validated, he should not be able to see their invoices.
+    business_unit3 = finance_factories.BusinessUnitFactory()
+    finance_factories.InvoiceFactory(businessUnit=business_unit3, amount=-15000000)
+    venue3 = offerers_factories.VenueFactory(businessUnit=business_unit3)
+    offerer2 = venue3.managingOfferer
+
+    pro = users_factories.ProFactory(offerers=[offerer])
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
+
+    client = client.with_session_auth(pro.email)
+    response = client.get("/finance/invoices")
+
+    assert response.status_code == 200
+    invoices = response.json
+    assert len(invoices) == 2
+    assert invoices[0] == {
+        "reference": invoice2.reference,
+        "date": invoice2.date.date().isoformat(),
+        "amount": 12.34,
+        "url": invoice2.url,
+        "businessUnitName": business_unit2.name,
+    }
+    assert invoices[1]["reference"] == invoice1.reference
+
+
 def test_get_invoices_specify_business_unit(client):
     business_unit1 = finance_factories.BusinessUnitFactory()
     invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1)
