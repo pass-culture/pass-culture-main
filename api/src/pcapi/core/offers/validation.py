@@ -385,6 +385,8 @@ def check_offer_extra_data(offer: Optional[Offer], subcategory_id: str, extra_da
     api_errors = ApiErrors()
     subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
     mandatory_fields = OFFER_EXTRA_DATA_MANDATORY_FIELDS & set(subcategory.conditional_fields)
+    if not extra_data:
+        extra_data = {}
 
     for field in mandatory_fields:
         if offer and offer.extraData and offer.extraData.get(field):  # type: ignore [union-attr]
