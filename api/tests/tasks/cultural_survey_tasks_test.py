@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import freezegun
 
-from pcapi.core.cultural_survey import cultural_survey
+from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.tasks.cultural_survey_tasks import upload_answers_task
 from pcapi.tasks.serialization import cultural_survey_tasks as serializers
 
@@ -14,12 +14,16 @@ class CulturalSurveyTasksTest:
     def test_upload_answers_task(self, store_public_object):
         answers = [
             {
-                "question_id": cultural_survey.SORTIES.id,
-                "choices": [cultural_survey.FESTIVAL.id],
+                "questionId": cultural_survey_models.CulturalSurveyQuestionEnum.SORTIES,
+                "answerIds": [
+                    cultural_survey_models.CulturalSurveyAnswerEnum.FESTIVAL,
+                ],
             },
             {
-                "question_id": cultural_survey.FESTIVALS.id,
-                "choices": [cultural_survey.FESTIVAL_LIVRE.id],
+                "questionId": cultural_survey_models.CulturalSurveyQuestionEnum.FESTIVALS,
+                "answerIds": [
+                    cultural_survey_models.CulturalSurveyAnswerEnum.FESTIVAL_LIVRE,
+                ],
             },
         ]
 
@@ -32,8 +36,8 @@ class CulturalSurveyTasksTest:
 
         answers_str = (
             '{"user_id": 1, "submitted_at": "2020-01-01T00:00:00", "answers": '
-            '[{"question_id": "SORTIES", "choices": ["FESTIVAL"]}, '
-            '{"question_id": "FESTIVALS", "choices": ["FESTIVAL_LIVRE"]}]}'
+            '[{"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]}, '
+            '{"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_LIVRE"]}]}'
         )
 
         # Note: if the path does not exist, GCP creates the necessary folders
