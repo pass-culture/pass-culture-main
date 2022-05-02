@@ -2,7 +2,6 @@ module.exports = {
   moduleNameMapper: {
     '\\.(png|svg)': '<rootDir>/src/utils/svgrMock.js',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/utils/styleMock.js',
-    '^csv-parse/lib/sync': '<rootDir>/node_modules/csv-parse/dist/cjs/sync.cjs',
   },
   modulePaths: ['node_modules', 'src'],
   preset: 'jest-preset-stylelint',
