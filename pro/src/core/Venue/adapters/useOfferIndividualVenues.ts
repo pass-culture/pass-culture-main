@@ -27,6 +27,7 @@ const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
           id: venue.id,
           managingOffererId: venue.managingOffererId,
           name: venue.publicName || venue.name,
+          isVirtual: venue.isVirtual,
         })),
       }
     } catch (e) {

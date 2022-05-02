@@ -57,9 +57,10 @@ describe('useOffererNames', () => {
 
     const offerIndividualVenues = [
       {
-        id: 'AAAA',
-        managingOffererId: 'AA',
-        name: 'Entreprise AAAA public name',
+        id: apiVenue.id,
+        isVirtual: apiVenue.isVirtual,
+        managingOffererId: apiVenue.managingOffererId,
+        name: apiVenue.publicName,
       },
     ]
 

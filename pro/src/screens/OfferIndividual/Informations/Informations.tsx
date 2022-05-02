@@ -1,4 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import {
   IOfferIndividualFormValues,
   OfferIndividualForm,
@@ -12,6 +13,7 @@ import React from 'react'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
 import { fakeOffer } from '../constants'
+import { filterCategories } from './utils'
 import { useHistory } from 'react-router-dom'
 
 export interface IInformationsProps {
@@ -21,6 +23,8 @@ export interface IInformationsProps {
   initialValues: IOfferIndividualFormValues
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
+  categories: IOfferCategory[]
+  subCategories: IOfferSubCategory[]
 }
 
 const Informations = ({
@@ -28,6 +32,8 @@ const Informations = ({
   initialValues,
   offererNames,
   venueList,
+  categories,
+  subCategories,
 }: IInformationsProps): JSX.Element => {
   const history = useHistory()
 
@@ -47,12 +53,23 @@ const Informations = ({
     validationSchema,
   })
 
+  const initialVenue: TOfferIndividualVenue | undefined = venueList.find(
+    venue => venue.id === initialValues.venueId
+  )
+  const [filteredCategories, filteredSubCategories] = filterCategories(
+    categories,
+    subCategories,
+    initialVenue
+  )
+
   return (
     <FormikProvider value={{ ...formik, resetForm }}>
       <form onSubmit={formik.handleSubmit}>
         <OfferIndividualForm
           offererNames={offererNames}
           venueList={venueList}
+          categories={filteredCategories}
+          subCategories={filteredSubCategories}
         />
 
         <OfferFormLayout.ActionBar>

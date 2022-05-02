@@ -1,6 +1,9 @@
+import { CATEGORIES_DEFAULT_VALUES } from './Categories'
 import { INFORMATIONS_DEFAULT_VALUES } from './Informations/constants'
 import { USEFUL_INFORMATIONS_DEFAULT_VALUES } from './UsefulInformations'
+
 export const FORM_DEFAULT_VALUES = {
   ...INFORMATIONS_DEFAULT_VALUES,
+  ...CATEGORIES_DEFAULT_VALUES,
   ...USEFUL_INFORMATIONS_DEFAULT_VALUES,
 }

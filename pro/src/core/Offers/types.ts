@@ -1,3 +1,5 @@
+import { CATEGORY_STATUS } from '.'
+
 export type TSearchFilters = {
   nameOrIsbn: string
   offererId: string
@@ -46,4 +48,32 @@ export type Offer = {
 export type Option = {
   id: string
   displayName: string
+}
+
+export interface ICategorySubtypeItem {
+  code: number
+  label: string
+  children: {
+    code: number
+    label: string
+  }[]
+}
+
+export interface IOfferCategory {
+  id: string
+  proLabel: string
+  isSelectable: boolean
+}
+
+export interface IOfferSubCategory {
+  id: string
+  categoryId: string
+  proLabel: string
+  isEvent: boolean
+  conditionalFields: string[]
+  canBeDuo: boolean
+  canBeEducational: boolean
+  onlineOfflinePlatform: CATEGORY_STATUS
+  reimbursementRule: string
+  isSelectable: boolean
 }
