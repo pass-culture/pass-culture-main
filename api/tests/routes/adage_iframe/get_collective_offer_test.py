@@ -5,6 +5,7 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import StudentLevels
 from pcapi.core.testing import assert_num_queries
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
@@ -37,6 +38,7 @@ class Returns200Test:
             collectiveOffer__name="offer name",
             collectiveOffer__description="offer description",
             price=10,
+            collectiveOffer__students=[StudentLevels.GENERAL2],
         )
 
         adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
@@ -83,7 +85,7 @@ class Returns200Test:
             "contactEmail": stock.collectiveOffer.contactEmail,
             "contactPhone": stock.collectiveOffer.contactPhone,
             "offerVenue": stock.collectiveOffer.offerVenue,
-            "students": stock.collectiveOffer.students,
+            "students": ["Lycée - Seconde"],
             "offerId": None,
             "educationalPriceDetail": stock.priceDetail,
         }

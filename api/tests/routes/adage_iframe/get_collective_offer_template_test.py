@@ -5,6 +5,7 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational.models import StudentLevels
 from pcapi.core.testing import assert_num_queries
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_jwt_fake_valid_token
@@ -33,15 +34,19 @@ class Returns200Test:
     def test_get_collective_offer_template(self, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory(
-            name="offer name", description="offer description", priceDetail="détail du prix"
+            name="offer name",
+            description="offer description",
+            priceDetail="détail du prix",
+            students=[StudentLevels.GENERAL2],
         )
+        offer_id = offer.id
 
         adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
         with assert_num_queries(1):
-            response = client.get(f"/adage-iframe/collective/offers-template/{offer.id}")
+            response = client.get(f"/adage-iframe/collective/offers-template/{offer_id}")
 
         # Then
         assert response.status_code == 200
@@ -70,7 +75,7 @@ class Returns200Test:
             "contactEmail": offer.contactEmail,
             "contactPhone": offer.contactPhone,
             "offerVenue": offer.offerVenue,
-            "students": offer.students,
+            "students": ["Lycée - Seconde"],
             "offerId": None,
             "educationalPriceDetail": "détail du prix",
         }
