@@ -6,8 +6,6 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.providers.models import Provider
-from pcapi.core.providers.models import VenueProvider
 
 
 def create_offerer(
@@ -126,28 +124,3 @@ def create_venue(
         venue.postalCode = postal_code
 
     return venue
-
-
-def create_venue_provider(
-    venue: Venue,
-    provider: Provider,
-    date_modified_at_last_provider: datetime = None,
-    id_at_providers: str = None,
-    idx: int = None,
-    is_active: bool = True,
-    last_provider_id: int = None,
-    last_sync_date: datetime = None,
-    venue_id_at_offer_provider: str = None,
-) -> VenueProvider:
-    venue_provider = VenueProvider()
-    venue_provider.dateModifiedAtLastProvider = date_modified_at_last_provider
-    venue_provider.id = idx  # type: ignore [assignment]
-    venue_provider.idAtProviders = id_at_providers
-    venue_provider.isActive = is_active
-    venue_provider.lastProviderId = last_provider_id
-    venue_provider.lastSyncDate = last_sync_date
-    venue_provider.provider = provider
-    venue_provider.venue = venue
-    venue_provider.venueIdAtOfferProvider = venue_id_at_offer_provider or venue.siret  # type: ignore [assignment]
-
-    return venue_provider
