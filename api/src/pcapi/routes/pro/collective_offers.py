@@ -58,8 +58,16 @@ def list_collective_offers(
     api=blueprint.pro_private_schema,
 )
 def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_repository.get_collective_offer_by_id(dehumanize_or_raise(offer_id))
+        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        offer = educational_repository.get_collective_offer_by_id(dehumanized_id)
     except educational_exceptions.CollectiveOfferNotFound:
         raise ApiErrors(
             errors={
@@ -77,8 +85,15 @@ def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollec
     api=blueprint.pro_private_schema,
 )
 def get_collective_offer_template(offer_id: str) -> collective_offers_serialize.GetCollectiveOfferTemplateResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
     try:
-        offer = educational_repository.get_collective_offer_template_by_id(dehumanize_or_raise(offer_id))
+        offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+    try:
+        offer = educational_repository.get_collective_offer_template_by_id(dehumanized_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors(
             errors={
