@@ -54,6 +54,13 @@ class VenueBookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
     )
 
 
+class SeatMap:
+    def __init__(self, seatmap: list[list[int]]):
+        self.map = seatmap
+        self.nb_row = len(self.map)
+        self.nb_col = len(self.map[0]) if len(self.map[0]) > 0 else 0
+
+
 class BookingProviderClientAPI:
     def __init__(self, cinema_id: str, api_url: str, token: Optional[str]):
         self.token = token
@@ -63,7 +70,7 @@ class BookingProviderClientAPI:
     def get_show_remaining_places(self, show_id: int) -> int:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
-    def get_seatmap(self, show_id: int) -> list[list[int]]:
+    def get_seatmap(self, show_id: int) -> SeatMap:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
     def cancel_booking(self, barcodes: list[str]) -> None:
