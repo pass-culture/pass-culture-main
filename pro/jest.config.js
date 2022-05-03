@@ -1,6 +1,7 @@
 module.exports = {
   moduleNameMapper: {
     '\\.(png|svg)': '<rootDir>/src/utils/svgrMock.js',
+    '\\.module\\.scss$': 'identity-obj-proxy',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/utils/styleMock.js',
   },
   modulePaths: ['node_modules', 'src'],
