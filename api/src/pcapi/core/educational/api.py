@@ -46,6 +46,9 @@ from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution
     send_education_booking_cancellation_by_institution_email,
 )
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
+from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import (
+    send_eac_new_collective_prebooking_email_to_pro,
+)
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import send_eac_new_prebooking_email_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
@@ -162,6 +165,79 @@ def book_educational_offer(redactor_informations: RedactorInformation, stock_id:
 
     try:
         adage_client.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))  # type: ignore [arg-type]
+    except AdageException as adage_error:
+        logger.error(
+            "%s Educational institution will not receive a confirmation email.",
+            adage_error.message,
+            extra={
+                "bookingId": booking.id,
+                "adage status code": adage_error.status_code,
+                "adage response text": adage_error.response_text,
+            },
+        )
+    except ValidationError:
+        logger.exception(
+            "Coulf not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
+            extra={
+                "bookingId": booking.id,
+            },
+        )
+
+    return booking
+
+
+def book_collective_offer(redactor_informations: RedactorInformation, stock_id: int) -> CollectiveBooking:
+    redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
+    if not redactor:
+        redactor = _create_redactor(redactor_informations)
+
+    educational_institution = educational_repository.find_educational_institution_by_uai_code(redactor_informations.uai)
+    validation.check_institution_exists(educational_institution)
+
+    # The call to transaction here ensures we free the FOR UPDATE lock
+    # on the stock if validation issues an exception
+    with transaction():
+        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock_id)
+        validation.check_collective_stock_is_bookable(stock)
+
+        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
+        validation.check_educational_year_exists(educational_year)
+
+        utcnow = datetime.datetime.utcnow()
+        booking = CollectiveBooking(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            educationalRedactor=redactor,
+            confirmationLimitDate=stock.bookingLimitDatetime,
+            collectiveStockId=stock.id,
+            venueId=stock.collectiveOffer.venueId,
+            offererId=stock.collectiveOffer.venue.managingOffererId,
+            status=educational_models.CollectiveBookingStatus.PENDING,
+            dateCreated=utcnow,
+            cancellationLimitDate=compute_educational_booking_cancellation_limit_date(stock.beginningDatetime, utcnow),
+        )
+        repository.save(booking)
+
+    logger.info(
+        "Redactor booked a collective offer",
+        extra={
+            "redactor": redactor_informations.email,
+            "offerId": stock.collectiveOfferId,
+            "stockId": stock.id,
+            "bookingId": booking.id,
+        },
+    )
+
+    if not send_eac_new_collective_prebooking_email_to_pro(booking):
+        logger.warning(
+            "Could not send new prebooking email to pro",
+            extra={"booking": booking.id},
+        )
+
+    search.async_index_collective_offer_ids([stock.collectiveOfferId])
+
+    try:
+        adage_client.notify_prebooking(data=serialize_collective_booking(booking))
     except AdageException as adage_error:
         logger.error(
             "%s Educational institution will not receive a confirmation email.",
