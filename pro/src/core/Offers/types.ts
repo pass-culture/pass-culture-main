@@ -1,4 +1,5 @@
 import { CATEGORY_STATUS } from '.'
+import { GetOfferResponseModel } from 'api/v1/gen/'
 
 export type TSearchFilters = {
   nameOrIsbn: string
@@ -76,4 +77,95 @@ export interface IOfferSubCategory {
   onlineOfflinePlatform: CATEGORY_STATUS
   reimbursementRule: string
   isSelectable: boolean
+}
+
+export interface IApiOfferIndividualStock {
+  beginningDatetime: Date | null
+  bookingLimitDatetime: Date | null
+  bookingsQuantity: number
+  cancellationLimitDate: Date | null
+  dateCreated: Date
+  dateModified: Date
+  dateModifiedAtLastProvider: Date
+  fieldsUpdated: string[]
+  hasActivationCode: boolean
+  id: string
+  idAtProviders: string | null
+  isBookable: boolean
+  isEventDeletable: boolean
+  isEventExpired: boolean
+  isSoftDeleted: boolean
+  lastProviderId: null
+  offerId: string
+  price: number
+  quantity: number
+  remainingQuantity: number
+}
+
+export interface IOfferIndividualStock {
+  beginningDatetime: Date | null
+  bookingLimitDatetime: Date | null
+  bookingsQuantity: number
+  dateCreated: Date
+  hasActivationCode: boolean
+  id: string
+  isEventDeletable: boolean
+  isEventExpired: boolean
+  isSoftDeleted: boolean
+  offerId: string
+  price: number
+  quantity: number
+  remainingQuantity: number
+}
+
+export interface IApiOfferIndividual extends GetOfferResponseModel {
+  stocks: IApiOfferIndividualStock[]
+  withdrawalDelay: number | null
+  withdrawalType: string | null
+  extraData?: {
+    author?: string
+    isbn?: string
+    musicType?: string
+    musicSubType?: string
+    performer?: string
+    showType?: string
+    showSubType?: string
+    speaker?: string
+    stageDirector?: string
+    visa?: string
+  } | null
+}
+
+export interface IOfferIndividual {
+  id: string
+  author: string
+  bookingEmail: string
+  description: string
+  durationMinutes: number | null
+  isbn: string
+  isDuo: boolean
+  isEducational: boolean
+  noDisabilityCompliant: boolean
+  audioDisabilityCompliant: boolean
+  mentalDisabilityCompliant: boolean
+  motorDisabilityCompliant: boolean
+  visualDisabilityCompliant: boolean
+  isNational: boolean
+  name: string
+  musicSubType: string
+  musicType: string
+  offererId: string
+  performer: string
+  showSubType: string
+  showType: string
+  stageDirector: string
+  speaker: string
+  subcategoryId: string
+  url: string
+  externalTicketOfficeUrl: string
+  venueId: string
+  visa: string
+  withdrawalDetails: string | null
+  withdrawalDelay?: number | null
+  stocks: IOfferIndividualStock[]
 }

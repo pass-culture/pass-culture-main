@@ -8,6 +8,7 @@ import {
 import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
 
 import { ActionBar } from '../ActionBar'
+import { IOfferIndividual } from 'core/Offers/types'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import React from 'react'
 import { TOfferIndividualVenue } from 'core/Venue/types'
@@ -17,6 +18,7 @@ import { filterCategories } from './utils'
 import { useHistory } from 'react-router-dom'
 
 export interface IInformationsProps {
+  offer?: IOfferIndividual
   createOfferAdapter: (
     formValues: IOfferIndividualFormValues
   ) => Promise<string | void>
@@ -28,6 +30,7 @@ export interface IInformationsProps {
 }
 
 const Informations = ({
+  offer,
   createOfferAdapter,
   initialValues,
   offererNames,
@@ -38,7 +41,7 @@ const Informations = ({
   const history = useHistory()
 
   // call getStep with offer when this screen get it as prop
-  const { activeSteps } = useOfferFormSteps(fakeOffer)
+  const { activeSteps } = useOfferFormSteps(offer)
   const handleNextStep = async () => formik.handleSubmit()
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
