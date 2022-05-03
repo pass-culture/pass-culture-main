@@ -68,6 +68,7 @@ def _create_pro_user(row: dict) -> User:
     offerer.dateValidated = datetime.utcnow()
     repository.save(offerer)
 
+    user.validationToken = None
     user.isEmailValidated = True
     user.add_pro_role()
 
@@ -100,6 +101,7 @@ def create_or_update_users(rows: Iterable[dict]) -> list[User]:
         user.phoneNumber = row["Téléphone"]
         user.departementCode = row["Département"]
         user.postalCode = row["Code postal"]
+        user.comment = row["Type"]
         repository.save(user)
 
         users.append(user)
