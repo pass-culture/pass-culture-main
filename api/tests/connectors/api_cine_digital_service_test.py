@@ -98,7 +98,7 @@ class CineDigitalServicePutResourceTest:
 
         response_json = {"111111111111": "BARCODE_NOT_FOUND"}
 
-        response_return_value = mock.MagicMock(status_code=200, text="")
+        response_return_value = mock.MagicMock(status_code=200, text="", headers={"Content-Type": "application/json"})
         response_return_value.json = mock.MagicMock(return_value=response_json)
         request_put.return_value = response_return_value
 
