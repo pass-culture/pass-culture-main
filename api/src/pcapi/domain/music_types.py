@@ -1,3 +1,4 @@
+# WARNING: the list below MUST be kept in sync with the list at pro/src/components/pages/Offers/Offer/OfferDetails/OfferForm/OfferCategories/subTypes.js
 music_types = [
     {
         "code": 501,
@@ -21,6 +22,7 @@ music_types = [
             {"code": 517, "label": "Vocal Jazz"},
             {"code": 518, "label": "Ragtime"},
             {"code": 519, "label": "Smooth"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -36,6 +38,7 @@ music_types = [
             {"code": 527, "label": "Country Blues"},
             {"code": 528, "label": "Delta Blues"},
             {"code": 529, "label": "Ragtime"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -48,6 +51,7 @@ music_types = [
             {"code": 534, "label": "Roots "},
             {"code": 535, "label": "Ska"},
             {"code": 536, "label": "Zouk "},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -68,6 +72,7 @@ music_types = [
             {"code": 612, "label": "Opéra"},
             {"code": 613, "label": "Renaissance"},
             {"code": 614, "label": "Romantique"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -102,6 +107,7 @@ music_types = [
             {"code": 726, "label": "Salsa"},
             {"code": 727, "label": "Tango Argentin"},
             {"code": 728, "label": "Yiddish"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -122,6 +128,7 @@ music_types = [
             {"code": 813, "label": "Soft Rock"},
             {"code": 814, "label": "Synthpop "},
             {"code": 815, "label": "Teen Pop"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -144,6 +151,7 @@ music_types = [
             {"code": 834, "label": "Rockabilly"},
             {"code": 835, "label": "Shoegaze"},
             {"code": 836, "label": "Rock Electro"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -159,6 +167,7 @@ music_types = [
             {"code": 847, "label": "Trash Metal"},
             {"code": 848, "label": "Metal Industriel"},
             {"code": 849, "label": "Fusion"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -170,6 +179,7 @@ music_types = [
             {"code": 853, "label": "Afro Punk"},
             {"code": 854, "label": "Grindcore"},
             {"code": 855, "label": "Noise Rock "},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -182,6 +192,7 @@ music_types = [
             {"code": 864, "label": "New Acoustic"},
             {"code": 865, "label": "Folk Traditionelle"},
             {"code": 866, "label": "Tex-Mex"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -194,6 +205,7 @@ music_types = [
             {"code": 874, "label": "Country Contemporaine"},
             {"code": 875, "label": "Gospel Country"},
             {"code": 876, "label": "Country Pop"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -218,6 +230,7 @@ music_types = [
             {"code": 896, "label": "Lounge"},
             {"code": 897, "label": "Techno"},
             {"code": 898, "label": "Trance"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -245,6 +258,7 @@ music_types = [
             {"code": 926, "label": "Motown"},
             {"code": 927, "label": "Neo Soul"},
             {"code": 928, "label": "Soul Psychedelique"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -259,6 +273,7 @@ music_types = [
             {"code": 936, "label": "Blues Gospel"},
             {"code": 937, "label": "Country Gospel"},
             {"code": 938, "label": "Hybrid Gospel"},
+            {"code": -1, "label": "Autre"},
         ],
     },
     {
@@ -271,7 +286,13 @@ music_types = [
             {"code": 1004, "label": "Folklore français"},
             {"code": 1005, "label": "Chanson à texte"},
             {"code": 1006, "label": "Slam"},
+            {"code": -1, "label": "Autre"},
         ],
+    },
+    {
+        "code": -1,
+        "label": "Autre",
+        "children": [{"code": -1, "label": "Autre"}],
     },
 ]
 
