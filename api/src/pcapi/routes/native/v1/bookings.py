@@ -127,6 +127,7 @@ def get_bookings(user: User) -> BookingsResponse:
             .joinedload(Offer.mediations)
         )
         .options(joinedload(IndividualBooking.booking).joinedload(Booking.activationCode))
+        .options(joinedload(IndividualBooking.booking).joinedload(Booking.externalBookings))
     ).all()
 
     ended_bookings = []

@@ -87,6 +87,14 @@ class BookingActivationCodeResponse(BaseModel):
         orm_mode = True
 
 
+class ExternalBookingResponse(BaseModel):
+    barcode: str
+    seat: Optional[str]
+
+    class Config:
+        orm_mode = True
+
+
 class BookingReponse(BaseModel):
     id: int
     cancellationDate: Optional[datetime]
@@ -101,6 +109,7 @@ class BookingReponse(BaseModel):
     total_amount: int
     token: str
     activationCode: Optional[BookingActivationCodeResponse]
+    externalBookings: Optional[list[ExternalBookingResponse]]
 
     _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
 
