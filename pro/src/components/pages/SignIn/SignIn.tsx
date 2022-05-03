@@ -122,7 +122,15 @@ const SignIn = (): JSX.Element => {
               <BannerRGS />
             </div>
             <div className="field buttons-field">
-              <Link className="secondary-link" to={accountCreationUrl}>
+              <Link
+                className="secondary-link"
+                onClick={() =>
+                  logEvent(Events.CLICKED_CREATE_ACCOUNT, {
+                    from: location.pathname,
+                  })
+                }
+                to={accountCreationUrl}
+              >
                 Créer un compte
               </Link>
               <button

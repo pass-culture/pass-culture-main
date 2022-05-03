@@ -1,11 +1,13 @@
 import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter, Route } from 'react-router'
 
 import { HTTP_STATUS } from 'api/helpers'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -20,13 +22,16 @@ const renderSignIn = storeOveride => {
   const store = configureTestStore(storeOveride)
   return render(
     <Provider store={store}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/connexion']}>
         <SignIn />
         <Route path="/accueil">
           <span>I'm logged standard user redirect route</span>
         </Route>
         <Route path="/structures">
           <span>I'm logged admin redirect route</span>
+        </Route>
+        <Route path="/inscription">
+          <span>I'm the inscription page</span>
         </Route>
         <NotificationContainer />
       </MemoryRouter>
@@ -40,6 +45,7 @@ describe('src | components | pages | SignIn', () => {
     store = {
       data: {},
       user: {},
+      app: {},
       features: {
         list: [
           {
@@ -133,6 +139,23 @@ describe('src | components | pages | SignIn', () => {
             screen.getByRole('link', { name: 'Créer un compte' })
           ).toHaveAttribute('href', '/erreur/indisponible')
         })
+      })
+      it('should trigger a tracking event', async () => {
+        const mockLogEvent = jest.fn()
+        store.app.logEvent = mockLogEvent
+        store.user = { initialized: true, currentUser: null }
+        renderSignIn(store)
+        await userEvent.click(
+          screen.getByRole('link', {
+            name: 'Créer un compte',
+          })
+        )
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_CREATE_ACCOUNT,
+          { from: '/connexion' }
+        )
       })
     })
   })
