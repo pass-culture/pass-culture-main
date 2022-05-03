@@ -153,6 +153,14 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         uselist=False,
     )
 
+    externalBookingId = Column(
+        BigInteger,
+        ForeignKey("external_booking.id"),
+        nullable=True,
+        unique=True,
+        index=True,
+    )
+
     individualBookingId = Column(
         BigInteger,
         ForeignKey("individual_booking.id"),

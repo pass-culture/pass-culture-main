@@ -277,6 +277,52 @@ class FindByProUserTest:
             tz.gettz("Europe/Paris")
         )
 
+    def test_should_not_return_booking_token_when_external_booking(self, app: fixture):
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary@example.com", firstName="Ron", lastName="Weasley"
+        )
+        pro = users_factories.ProFactory()
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        product = offers_factories.ThingProductFactory(name="Harry Potter")
+        offer = offers_factories.ThingOfferFactory(venue=venue, product=product)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=0)
+        booking_date = datetime(2020, 1, 1, 10, 0, 0) - timedelta(days=1)
+        bookings_factories.ExternalBooking(
+            individualBooking__user=beneficiary,
+            stock=stock,
+            dateCreated=booking_date,
+            token="ABCDEF",
+            amount=12,
+        )
+
+        # When
+        bookings_recap_paginated = booking_repository.find_by_pro_user(
+            user=pro, booking_period=(booking_date - timedelta(days=365), booking_date + timedelta(days=365))
+        )
+
+        # Then
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
+        assert expected_booking_recap.offer_identifier == stock.offer.id
+        assert expected_booking_recap.offer_name == "Harry Potter"
+        assert expected_booking_recap.beneficiary_firstname == "Ron"
+        assert expected_booking_recap.beneficiary_lastname == "Weasley"
+        assert expected_booking_recap.beneficiary_email == "beneficiary@example.com"
+        assert expected_booking_recap.booking_date == booking_date.astimezone(tz.gettz("Europe/Paris"))
+        assert expected_booking_recap.booking_token == "ABCDEF"
+        assert expected_booking_recap.booking_is_used is True
+        assert expected_booking_recap.booking_is_cancelled is False
+        assert expected_booking_recap.booking_is_reimbursed is False
+        assert expected_booking_recap.booking_is_duo is False
+        assert expected_booking_recap.booking_amount == 12
+        assert expected_booking_recap.booking_status_history.booking_date == booking_date.astimezone(
+            tz.gettz("Europe/Paris")
+        )
+
     def test_should_return_only_validated_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()

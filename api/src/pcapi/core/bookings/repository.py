@@ -637,7 +637,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         beneficiary_firstname=booking.beneficiaryFirstname,  # type: ignore [attr-defined]
         beneficiary_lastname=booking.beneficiaryLastname,  # type: ignore [attr-defined]
         booking_amount=booking.bookingAmount,  # type: ignore [attr-defined]
-        booking_token=booking.bookingToken,  # type: ignore [attr-defined]
+        booking_token="-" if booking.externalBookingId is not None else booking.bookingToken,  # type: ignore [attr-defined]
         booking_date=convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),  # type: ignore [attr-defined]
         booking_is_used=booking.status in (BookingStatus.USED, BookingStatus.REIMBURSED),  # type: ignore [attr-defined]
         booking_is_cancelled=booking.status == BookingStatus.CANCELLED,  # type: ignore [attr-defined]
