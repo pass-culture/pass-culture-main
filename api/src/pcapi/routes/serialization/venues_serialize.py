@@ -127,6 +127,16 @@ class BannerMetaModel(BaseModel):
     original_image_url: Optional[str]
     crop_params: CropParams = CropParams()
 
+    @validator("crop_params", pre=True)
+    @classmethod
+    def validate_crop_params(cls, raw_crop_params: Optional[CropParams]) -> CropParams:
+        """
+        Old venues might have a crop_params key with a null value
+        """
+        if not raw_crop_params:
+            return CropParams()
+        return raw_crop_params
+
 
 class GetVenueResponseModel(base.BaseVenueResponse):
     id: str
