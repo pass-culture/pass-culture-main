@@ -6,6 +6,7 @@ from freezegun import freeze_time
 import pytest
 from sqlalchemy.orm import joinedload
 
+from pcapi.core.booking_providers.factories import ExternalBookingFactory
 from pcapi.core.bookings import factories as booking_factories
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
@@ -17,6 +18,7 @@ from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils.human_ids import humanize
@@ -227,6 +229,7 @@ class GetBookingsTest:
             },
             "token": used2.token,
             "totalAmount": 1000,
+            "externalBookings": [],
         }
 
         for booking in response.json["ongoing_bookings"]:
@@ -250,6 +253,24 @@ class GetBookingsTest:
         assert offer["withdrawalDetails"] == "Veuillez chercher votre billet au guichet"
         assert offer["withdrawalType"] == "on_site"
         assert offer["withdrawalDelay"] == 60 * 30
+
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    def test_get_bookings_with_external_booking_infos(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        booking = booking_factories.IndividualBookingFactory(
+            individualBooking__user=user, stock__offer__subcategoryId=subcategories.SEANCE_CINE.id
+        )
+        ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
+        ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
+
+        response = client.with_token(self.identifier).get("/native/v1/bookings")
+
+        assert response.status_code == 200
+        booking_response = response.json["ongoing_bookings"][0]
+        assert sorted(booking_response["externalBookings"], key=lambda x: x["barcode"]) == [
+            {"barcode": "111111111", "seat": "A_1"},
+            {"barcode": "111111112", "seat": "A_2"},
+        ]
 
 
 class CancelBookingTest:

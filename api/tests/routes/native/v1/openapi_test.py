@@ -127,6 +127,12 @@ def test_public_api(client, app):
                             "title": "Expirationdate",
                             "type": "string",
                         },
+                        "externalBookings": {
+                            "items": {"$ref": "#/components/schemas/ExternalBookingResponse"},
+                            "nullable": True,
+                            "title": "Externalbookings",
+                            "type": "array",
+                        },
                         "id": {"title": "Id", "type": "integer"},
                         "qrCodeData": {"nullable": True, "title": "Qrcodedata", "type": "string"},
                         "quantity": {"title": "Quantity", "type": "integer"},
@@ -887,6 +893,15 @@ def test_public_api(client, app):
                     "description": "An enumeration.",
                     "enum": ["all", "digital", "physical"],
                     "title": "ExpenseDomain",
+                },
+                "ExternalBookingResponse": {
+                    "properties": {
+                        "barcode": {"title": "Barcode", "type": "string"},
+                        "seat": {"nullable": True, "title": "Seat", "type": "string"},
+                    },
+                    "required": ["barcode"],
+                    "title": "ExternalBookingResponse",
+                    "type": "object",
                 },
                 "FavoriteMediationResponse": {
                     "properties": {
