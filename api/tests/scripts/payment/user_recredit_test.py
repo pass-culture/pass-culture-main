@@ -22,8 +22,8 @@ class UserRecreditTest:
         "birth_date,registration_datetime,expected_result",
         [
             ("2006-01-01", datetime.datetime(2021, 5, 1), False),
-            ("2006-01-01", datetime.datetime(2020, 5, 1), True),
-            ("2006-07-01", datetime.datetime(2020, 5, 1), True),
+            ("2005-01-01", datetime.datetime(2020, 5, 1), True),
+            ("2005-07-01", datetime.datetime(2021, 5, 1), True),
         ],
     )
     def test_has_celebrated_birthday_since_registration(self, birth_date, registration_datetime, expected_result):
@@ -35,7 +35,7 @@ class UserRecreditTest:
             user=user,
             resultContent=fraud_check_result_content,
             type=fraud_models.FraudCheckType.UBBLE,
-            dateCreated=datetime.datetime(2021, 5, 1),
+            dateCreated=registration_datetime,
         )
         assert has_celebrated_birthday_since_registration(user) == expected_result
 
