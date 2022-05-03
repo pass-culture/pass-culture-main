@@ -10,7 +10,8 @@ class AllocinePivotFactory(BaseFactory):
     class Meta:
         model = models.AllocinePivot
 
-    siret = "12345678912345"
+    venue = factory.SubFactory(VenueFactory)
+    siret = factory.SelfAttribute("venue.siret")
     theaterId = "XXXXXXXXXXXXXXXXXX=="
     internalId = "PXXXXX"
 

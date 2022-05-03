@@ -130,7 +130,9 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
         name="Lieu synchro allociné", siret="87654321", businessUnit__name="Business Unit du Lieu synchro allociné"
     )
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
-    pivot = providers_factories.AllocinePivotFactory(siret=venue_synchronized_with_allocine.siret)
+    pivot = providers_factories.AllocinePivotFactory(
+        venue=venue_synchronized_with_allocine, siret=venue_synchronized_with_allocine.siret
+    )
     venue_provider = providers_factories.AllocineVenueProviderFactory(
         venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
     )

@@ -24,6 +24,7 @@ from sqlalchemy.orm import column_property
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
+from pcapi.core.offerers.models import Venue
 from pcapi.domain.price_rule import PriceRule
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models import Model
@@ -77,7 +78,7 @@ class Provider(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, 
 class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
+    venue = relationship("Venue", foreign_keys=[venueId])
 
     providerId = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
 
@@ -195,6 +196,10 @@ class StockDetail:
 
 
 class AllocinePivot(PcObject, Model):  # type: ignore [valid-type, misc]
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
+
+    venue = relationship(Venue, foreign_keys=[venueId])
+
     siret = Column(String(14), nullable=False, unique=True)
 
     theaterId = Column(String(20), nullable=False, unique=True)
