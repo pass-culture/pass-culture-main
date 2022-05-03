@@ -12,8 +12,9 @@ import {
   FiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
+import { ADRESS_TYPE, OfferType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { ADRESS_TYPE, OfferType, ResultType, Role } from 'utils/types'
+import { ResultType, Role } from 'utils/types'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOffer: jest.fn(),
@@ -45,6 +46,7 @@ const searchFakeResult: Hit<ResultType> = {
     name: 'Le Petit Rintintin 25',
     publicName: 'Le Petit Rintintin 25',
   },
+  isTemplate: false,
   _highlightResult: {},
 }
 
@@ -160,6 +162,7 @@ describe('offer', () => {
       setIsLoading: jest.fn(),
       userRole: Role.redactor,
       handleResetFiltersAndLaunchSearch: jest.fn(),
+      useNewAlgoliaIndex: false,
     }
   })
 

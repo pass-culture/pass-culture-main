@@ -12,8 +12,9 @@ import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
 } from 'app/providers'
+import { OfferType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { OfferType, ResultType, Role } from 'utils/types'
+import { ResultType, Role } from 'utils/types'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOffer: jest.fn(),
@@ -47,6 +48,7 @@ const searchFakeResults: Hit<ResultType>[] = [
       publicName: 'Le Petit Rintintin 25',
     },
     _highlightResult: {},
+    isTemplate: false,
   },
   {
     objectID: '480',
@@ -60,6 +62,7 @@ const searchFakeResults: Hit<ResultType>[] = [
       publicName: 'Le Petit Coco',
     },
     _highlightResult: {},
+    isTemplate: false,
   },
 ]
 
@@ -197,6 +200,7 @@ describe('offers', () => {
       hits: searchFakeResults,
       setIsLoading: jest.fn(),
       userRole: Role.redactor,
+      useNewAlgoliaIndex: false,
     }
   })
 
@@ -234,6 +238,7 @@ describe('offers', () => {
         publicName: 'Un autre lieu public',
       },
       _highlightResult: {},
+      isTemplate: false,
     }
 
     // When
@@ -269,6 +274,7 @@ describe('offers', () => {
         publicName: 'Un autre lieu public',
       },
       _highlightResult: {},
+      isTemplate: false,
     }
 
     // When
