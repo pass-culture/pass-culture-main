@@ -40,7 +40,6 @@ import LocationFields, {
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
 import NotificationMessage from '../Notification'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
-import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
 /* eslint-disable */
@@ -102,7 +101,7 @@ class VenueCreation extends PureComponent {
       return venueTypes.map(type => new VenueType(type))
     })
     const venueLabelsRequest = getVenueLabels().then(labels => {
-      return labels.map(label => new VenueLabel(label))
+      return [...labels].sort((a, b) => a.label.localeCompare(b.label, 'fr'))
     })
     const [offerer, venueTypes, venueLabels] = await Promise.all([
       offererRequest,

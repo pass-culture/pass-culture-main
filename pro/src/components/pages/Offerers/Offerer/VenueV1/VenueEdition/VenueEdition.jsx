@@ -34,7 +34,6 @@ import LocationFields from '../fields/LocationFields/LocationFields'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
-import VenueLabel from '../ValueObjects/VenueLabel'
 import VenueType from '../ValueObjects/VenueType'
 
 import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
@@ -131,7 +130,7 @@ const VenueEdition = () => {
         return venueTypes.map(type => new VenueType(type))
       })
       const venueLabelsRequest = pcapi.getVenueLabels().then(labels => {
-        return labels.map(label => new VenueLabel(label))
+        return [...labels].sort((a, b) => a.label.localeCompare(b.label, 'fr'))
       })
 
       const [offerer, venue, venueTypes, venueLabels] = await Promise.all([
