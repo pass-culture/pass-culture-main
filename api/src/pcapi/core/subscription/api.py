@@ -538,9 +538,17 @@ def _get_jouve_subscription_item_status(
 
 def get_first_registration_date(user: users_models.User) -> typing.Optional[datetime.datetime]:
     fraud_checks = user.beneficiaryFraudChecks
-    if not fraud_checks:
+    if not fraud_checks or not user.dateOfBirth:
         return None
-    return min([fraud_check.get_min_date_between_creation_and_registration() for fraud_check in fraud_checks])
+
+    registration_dates = [fraud_check.get_min_date_between_creation_and_registration() for fraud_check in fraud_checks]
+    registration_dates_when_eligible = [
+        registration_date
+        for registration_date in registration_dates
+        if users_utils.get_age_at_date(user.dateOfBirth, registration_date)
+        >= users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]
+    ]
+    return min(registration_dates_when_eligible) if registration_dates_when_eligible else None
 
 
 def get_age_at_first_registration(user: users_models.User) -> typing.Optional[int]:
