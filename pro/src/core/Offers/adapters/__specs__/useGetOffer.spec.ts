@@ -1,0 +1,215 @@
+import '@testing-library/jest-dom'
+
+import { OfferStatus, SubcategoryIdEnum } from 'api/v1/gen/api'
+
+import { IApiOfferIndividual } from 'core/Offers/types'
+import { apiV1 } from 'api/api'
+import { renderHook } from '@testing-library/react-hooks'
+import { useGetOffer } from '..'
+
+describe('useOffererNames', () => {
+  it('should return loading payload then success payload', async () => {
+    const apiOffer: IApiOfferIndividual = {
+      activeMediation: null,
+      ageMax: null,
+      ageMin: null,
+      bookingEmail: null,
+      conditions: null,
+      dateCreated: new Date('2022-05-18T08:25:30.991476Z'),
+      dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.991481Z'),
+      dateRange: [
+        new Date('2022-05-23T08:25:31.009799Z'),
+        new Date('2022-05-23T08:25:31.009799Z'),
+      ],
+      description: 'A passionate description of product 80',
+      durationMinutes: null,
+      extraData: null,
+      fieldsUpdated: [],
+      hasBookingLimitDatetimesPassed: true,
+      id: 'YA',
+      isActive: true,
+      isBookable: false,
+      isDigital: false,
+      isDuo: false,
+      isEditable: true,
+      isEducational: false,
+      isEvent: true,
+      isNational: false,
+      isThing: false,
+      audioDisabilityCompliant: false,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+      nonHumanizedId: 192,
+      visualDisabilityCompliant: false,
+      lastProvider: null,
+      lastProviderId: null,
+      mediaUrls: [],
+      mediations: [],
+      name: 'Séance ciné duo',
+      product: {
+        ageMax: null,
+        ageMin: null,
+        conditions: null,
+        dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.980975Z'),
+        description: 'A passionate description of product 80',
+        durationMinutes: null,
+        extraData: null,
+        fieldsUpdated: [],
+        id: 'AJFA',
+        idAtProviders: null,
+        isGcuCompatible: true,
+        isNational: false,
+        lastProviderId: null,
+        mediaUrls: [],
+        name: 'Product 80',
+        owningOffererId: null,
+        thumbCount: 0,
+        url: null,
+      },
+      productId: 'AJFA',
+      stocks: [
+        {
+          beginningDatetime: new Date('2022-05-23T08:25:31.009799Z'),
+          bookingLimitDatetime: new Date('2022-05-23T07:25:31.009799Z'),
+          bookingsQuantity: 2,
+          cancellationLimitDate: new Date('2022-06-01T12:15:12.343431Z'),
+          dateCreated: new Date('2022-05-18T08:25:31.015652Z'),
+          dateModified: new Date('2022-05-18T08:25:31.015655Z'),
+          dateModifiedAtLastProvider: new Date('2022-05-18T08:25:31.015643Z'),
+          fieldsUpdated: [],
+          hasActivationCode: false,
+          id: 'YE',
+          idAtProviders: null,
+          isBookable: false,
+          isEventDeletable: false,
+          isEventExpired: true,
+          isSoftDeleted: false,
+          lastProviderId: null,
+          offerId: 'YA',
+          price: 10,
+          quantity: 1000,
+          remainingQuantity: 998,
+        },
+      ],
+      subcategoryId: SubcategoryIdEnum.SEANCECINE,
+      thumbUrl: null,
+      externalTicketOfficeUrl: null,
+      url: null,
+      venue: {
+        address: '1 boulevard Poissonnière',
+        bookingEmail: 'venue29@example.net',
+        city: 'Paris',
+        comment: null,
+        dateCreated: new Date('2022-05-18T08:25:30.929961Z'),
+        dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.929955Z'),
+        departementCode: '75',
+        fieldsUpdated: [],
+        id: 'DY',
+        idAtProviders: null,
+        isValidated: true,
+        isVirtual: false,
+        lastProviderId: null,
+        latitude: 48.87004,
+        longitude: 2.3785,
+        managingOfferer: {
+          address: '1 boulevard Poissonnière',
+          city: 'Paris',
+          dateCreated: new Date('2022-05-18T08:25:30.891369Z'),
+          dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.891364Z'),
+          fieldsUpdated: [],
+          id: 'CU',
+          idAtProviders: null,
+          isActive: true,
+          isValidated: true,
+          lastProviderId: null,
+          name: 'Le Petit Rintintin Management 6',
+          postalCode: '75000',
+          siren: '000000006',
+          thumbCount: 0,
+        },
+        managingOffererId: 'CU',
+        name: 'Cinéma synchro avec booking provider',
+        postalCode: '75000',
+        publicName: 'Cinéma synchro avec booking provider',
+        siret: '00000000600029',
+        thumbCount: 0,
+        venueLabelId: null,
+        audioDisabilityCompliant: false,
+        mentalDisabilityCompliant: false,
+        motorDisabilityCompliant: false,
+        visualDisabilityCompliant: false,
+      },
+      venueId: 'DY',
+      withdrawalDetails: null,
+      status: OfferStatus.EXPIRED,
+      withdrawalType: null,
+      withdrawalDelay: null,
+    }
+
+    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(apiOffer)
+
+    const { result, waitForNextUpdate } = renderHook(() => useGetOffer('YA'))
+    const loadingState = result.current
+
+    expect(loadingState.data).toBeUndefined()
+    expect(loadingState.isLoading).toBe(true)
+    expect(loadingState.error).toBeUndefined()
+
+    const offerIndividual = {
+      id: 'YA',
+      author: '',
+      bookingEmail: '',
+      description: 'A passionate description of product 80',
+      durationMinutes: null,
+      isbn: '',
+      isDuo: false,
+      isEducational: false,
+      noDisabilityCompliant: true,
+      audioDisabilityCompliant: false,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: false,
+      visualDisabilityCompliant: false,
+      isNational: false,
+      name: 'Séance ciné duo',
+      musicSubType: '',
+      musicType: '',
+      offererId: 'CU',
+      performer: '',
+      showSubType: '',
+      showType: '',
+      stageDirector: '',
+      speaker: '',
+      subcategoryId: SubcategoryIdEnum.SEANCECINE,
+      url: '',
+      externalTicketOfficeUrl: '',
+      venueId: 'DY',
+      visa: '',
+      withdrawalDetails: '',
+      withdrawalDelay: null,
+      stocks: [
+        {
+          beginningDatetime: new Date('2022-05-23T08:25:31.009799Z'),
+          bookingLimitDatetime: new Date('2022-05-23T07:25:31.009799Z'),
+          bookingsQuantity: 2,
+          dateCreated: new Date('2022-05-18T08:25:31.015652Z'),
+          hasActivationCode: false,
+          id: 'YE',
+          isEventDeletable: false,
+          isEventExpired: true,
+          isSoftDeleted: false,
+          offerId: 'YA',
+          price: 10,
+          quantity: 1000,
+          remainingQuantity: 998,
+        },
+      ],
+    }
+
+    await waitForNextUpdate()
+    expect(apiV1.getOffersGetOffer).toHaveBeenCalled()
+    const updatedState = result.current
+    expect(updatedState.isLoading).toBe(false)
+    expect(updatedState.data).toEqual(offerIndividual)
+    expect(updatedState.error).toBeUndefined()
+  })
+})
