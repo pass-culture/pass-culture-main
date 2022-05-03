@@ -1,6 +1,5 @@
-import { render, fireEvent } from '@testing-library/react'
+import { fireEvent } from '@testing-library/react'
 import omit from 'lodash.omit'
-import sass from 'node-sass'
 import { act } from 'react-dom/test-utils'
 
 export const queryCallbacks = {
@@ -35,35 +34,6 @@ export function queryByTextTrimHtml(screen, searchString, options = {}) {
     queryCallbacks.queryByTextWithChildren(searchString, leafOnly),
     omit(options, 'leafOnly')
   )
-}
-
-export function renderWithStyles(ui, options = {}) {
-  const view = render(ui, {
-    ...omit(options, 'stylesheet'),
-  })
-  if (options.stylesheet || options.componentStylesheet) {
-    let stylesData = `
-    @import 'src/styles/variables/index';
-    ${options.stylesheet ? `@import 'src/styles/${options.stylesheet}';` : ''}
-    ${
-      options.componentStylesheet
-        ? `@import 'src/${options.componentStylesheet}';`
-        : ''
-    }
-    `
-
-    const styles = sass.renderSync({
-      data: stylesData,
-      outputStyle: 'compressed',
-    })
-
-    const styleElement = document.createElement('style')
-    styleElement.innerHTML = styles.css.toString()
-    document.body.appendChild(styleElement)
-    document.body.appendChild(view.container)
-  }
-
-  return view
 }
 
 /*
