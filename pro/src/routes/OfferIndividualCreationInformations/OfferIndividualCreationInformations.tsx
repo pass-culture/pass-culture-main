@@ -3,6 +3,8 @@ import {
   IOfferIndividualFormValues,
   setInitialFormValues,
 } from 'new_components/OfferIndividualForm'
+import { useGetCategories, useGetOffer } from 'core/Offers/adapters'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { Informations as InformationsScreen } from 'screens/OfferIndividual/Informations'
 import React from 'react'
@@ -10,18 +12,22 @@ import Spinner from 'components/layout/Spinner'
 import { createOfferAdapter } from './adapters'
 // TODO (rlecellier): rename into getOfferQueryParams
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
-import { useGetCategories } from 'core/Offers/adapters'
 import { useGetOfferIndividualVenues } from 'core/Venue/adapters'
 import { useGetOffererNames } from 'core/Offerers/adapters'
-import { useHistory } from 'react-router-dom'
 import { useHomePath } from 'hooks'
 import useNotification from 'components/hooks/useNotification'
 
 const OfferIndividualCreationInformations = (): JSX.Element | null => {
+  const { offerId } = useParams<{ offerId?: string }>()
   const homePath = useHomePath()
   const notify = useNotification()
   const history = useHistory()
 
+  const {
+    data: offer,
+    isLoading: offerIsLoading,
+    error: offerError,
+  } = useGetOffer(offerId)
   const {
     data: offererNames,
     isLoading: offererNamesIsLoading,
@@ -41,18 +47,27 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
 
-  if (offererNamesIsLoading || venueListIsLoading || categoriesStatus) {
+  if (
+    offererNamesIsLoading ||
+    venueListIsLoading ||
+    categoriesStatus ||
+    offerIsLoading
+  ) {
     return <Spinner />
   }
 
-  if (offererNamesError || venueListError || categoriesError) {
-    notify.error(offererNamesError || venueListError || categoriesError)
+  if (offererNamesError || venueListError || categoriesError || offerError) {
+    notify.error(
+      offererNamesError || venueListError || categoriesError || offerError
+    )
     history.push(homePath)
 
     return null
   }
 
   const { categories, subCategories } = categoriesData
+
+  // TODO: prefill informations from previously saved offer
   const initialValues: IOfferIndividualFormValues = setInitialFormValues(
     FORM_DEFAULT_VALUES,
     offererNames,
@@ -63,6 +78,7 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
 
   return (
     <InformationsScreen
+      offer={offer || undefined}
       offererNames={offererNames}
       categories={categories}
       subCategories={subCategories}

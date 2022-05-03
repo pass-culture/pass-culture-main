@@ -2,28 +2,24 @@ import { FormikProvider, useFormik } from 'formik'
 import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
 
 import { ActionBar } from '../ActionBar'
+import { IOfferIndividual } from 'core/Offers/types'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import React from 'react'
-import { fakeOffer } from '../constants'
 import { useHistory } from 'react-router-dom'
 
-const Stocks = (): JSX.Element => {
+interface IStocksProps {
+  offer: IOfferIndividual
+}
+
+const Stocks = ({ offer }: IStocksProps): JSX.Element => {
   const history = useHistory()
-  // call getStep with offer when this screen get it as prop
-  const { activeSteps } = useOfferFormSteps(fakeOffer)
+  const { activeSteps } = useOfferFormSteps(offer)
 
   const handleNextStep = () => {
-    // TODO get offerId from url query string
-    history.push(
-      `/offre/${fakeOffer.id}/v3/creation/individuelle/recapitulatif`
-    )
+    history.push(`/offre/${offer.id}/v3/creation/individuelle/recapitulatif`)
   }
   const handlePreviousStep = () => {
-    // TODO get offerId from url query string
-    const testCreatedOfferId = 'AL4Q'
-    history.push(
-      `/offre/${testCreatedOfferId}/v3/creation/individuelle/informations`
-    )
+    history.push(`/offre/${offer.id}/v3/creation/individuelle/informations`)
   }
 
   const initialValues = {}
