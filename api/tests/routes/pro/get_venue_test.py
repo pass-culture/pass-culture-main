@@ -260,6 +260,29 @@ class Returns200Test:
             "width_crop_percent": 0.42,
         }
 
+    def should_complete_crop_params_when_venue_image_crop_params_is_null(self, client):
+        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+            bannerUrl="http://example.com/image_cropped.png",
+            bannerMeta={"crop_params": None},
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get("/venues/%s" % humanize(venue.id))
+
+        assert response.json["bannerMeta"] == {
+            "crop_params": {
+                "x_crop_percent": DO_NOT_CROP.x_crop_percent,
+                "y_crop_percent": DO_NOT_CROP.y_crop_percent,
+                "height_crop_percent": DO_NOT_CROP.height_crop_percent,
+                "width_crop_percent": DO_NOT_CROP.width_crop_percent,
+            },
+            "image_credit": None,
+            "original_image_url": None,
+        }
+
 
 class Returns403Test:
     @pytest.mark.usefixtures("db_session")
