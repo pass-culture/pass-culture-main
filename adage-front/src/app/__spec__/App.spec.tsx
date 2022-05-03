@@ -8,8 +8,9 @@ import {
   FacetFiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
+import { VenueFilterType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { Role, VenueFilterType } from 'utils/types'
+import { Role } from 'utils/types'
 
 import { App } from '../App'
 

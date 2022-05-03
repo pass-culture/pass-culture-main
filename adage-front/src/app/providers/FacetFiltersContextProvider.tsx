@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  ReactNode,
-  useMemo,
-  useState,
-} from 'react'
+import React, { createContext, ReactNode, useMemo, useState } from 'react'
 
 import { LEGACY_INITIAL_FACET_FILTERS } from 'app/constants'
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
