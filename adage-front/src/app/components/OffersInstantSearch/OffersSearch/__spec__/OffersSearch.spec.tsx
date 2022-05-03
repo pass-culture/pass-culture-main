@@ -45,6 +45,7 @@ describe('offersSearch component', () => {
       refine: jest.fn(),
       currentRefinement: '',
       isSearchStalled: false,
+      useNewAlgoliaIndex: false,
     }
   })
 
