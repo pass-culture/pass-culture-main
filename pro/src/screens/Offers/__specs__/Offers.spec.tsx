@@ -24,7 +24,7 @@ import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
 import { configureTestStore } from 'store/testUtils'
 import { offererFactory, offerFactory } from 'utils/apiFactories'
-import { queryByTextTrimHtml, renderWithStyles } from 'utils/testHelpers'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 import Offers, { IOffersProps } from '../Offers'
 
@@ -706,34 +706,30 @@ describe('screen Offers', () => {
   describe('offers selection', () => {
     it('should display actionsBar when at least one offer is selected', async () => {
       // Given
-      renderWithStyles(
+      render(
         <Provider store={store}>
           <MemoryRouter>
             <Offers {...props} />
           </MemoryRouter>
-        </Provider>,
-        {
-          stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal',
-        }
+        </Provider>
       )
 
       const actionBar = await screen.findByTestId('actions-bar')
-      expect(actionBar).not.toBeVisible()
 
       // When
       const checkbox = await screen.findByTestId(
         `select-offer-${offersRecap[0].id}`
       )
-      fireEvent.click(checkbox)
+      await userEvent.click(checkbox)
 
       // Then
-      expect(actionBar).toBeVisible()
+      expect(actionBar).toHaveClass('actions-bar-visible')
 
       // When
-      fireEvent.click(checkbox)
+      await userEvent.click(checkbox)
 
       // Then
-      expect(actionBar).not.toBeVisible()
+      expect(actionBar).not.toHaveClass('actions-bar-visible')
     })
 
     describe('on click on select all offers checkbox', () => {

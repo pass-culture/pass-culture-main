@@ -36,8 +36,7 @@ describe('src | components | layout | Banner', () => {
       render(<Banner {...props}>{message}</Banner>)
 
       // then
-      expect(screen.getByText(message).closest('div')).toHaveAttribute(
-        'class',
+      expect(screen.getByText(message).closest('div')).toHaveClass(
         'bi-banner attention'
       )
     })
@@ -51,8 +50,7 @@ describe('src | components | layout | Banner', () => {
       render(<Banner {...props}>{message}</Banner>)
 
       // then
-      expect(screen.getByText(message).closest('div')).toHaveAttribute(
-        'class',
+      expect(screen.getByText(message).closest('div')).toHaveClass(
         'bi-banner notification-info'
       )
     })

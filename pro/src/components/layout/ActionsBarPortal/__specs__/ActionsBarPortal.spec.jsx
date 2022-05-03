@@ -1,19 +1,14 @@
 import '@testing-library/jest-dom'
-import { screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
-
-import { renderWithStyles } from 'utils/testHelpers'
 
 import ActionsBarPortal from '../ActionsBarPortal'
 
 const renderActionsBar = props => {
-  return renderWithStyles(
+  render(
     <ActionsBarPortal {...props}>
       <div>actionsBar content</div>
-    </ActionsBarPortal>,
-    {
-      stylesheet: 'components/layout/ActionsBarPortal/_ActionsBarPortal',
-    }
+    </ActionsBarPortal>
   )
 }
 
@@ -21,12 +16,14 @@ describe('src | components | layout | ActionsBar', () => {
   it('should not be visible by default', () => {
     renderActionsBar({})
 
-    expect(screen.getByText('actionsBar content')).not.toBeVisible()
+    expect(screen.getByTestId('actions-bar')).not.toHaveClass(
+      'actions-bar-visible'
+    )
   })
 
-  it('should be visible if isVisible is True', async () => {
+  it('should be visible if isVisible is True', () => {
     renderActionsBar({ isVisible: true })
 
-    expect(screen.getByText('actionsBar content')).toBeVisible()
+    expect(screen.getByTestId('actions-bar')).toHaveClass('actions-bar-visible')
   })
 })
