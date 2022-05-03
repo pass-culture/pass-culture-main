@@ -1,3 +1,4 @@
+// WARNING: the list below MUST be kept in sync with the list at api/src/pcapi/domain/show_types.py and api/src/pcapi/domain/music_types.py
 export const musicOptionsTree = [
   {
     code: 501,
