@@ -3,6 +3,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
 from pcapi.core.booking_providers.models import BookingProviderName
+from pcapi.core.booking_providers.models import SeatMap
 from pcapi.core.booking_providers.models import VenueBookingProvider
 
 
@@ -11,7 +12,7 @@ def get_show_stock(venue_id: int, show_id: int) -> int:
     return client.get_show_remaining_places(show_id)
 
 
-def get_available_seats(venue_id: int, show_id: int) -> list[list[int]]:
+def get_available_seats(venue_id: int, show_id: int) -> SeatMap:
     client = _get_booking_provider_client_api(venue_id)
     return client.get_seatmap(show_id)
 

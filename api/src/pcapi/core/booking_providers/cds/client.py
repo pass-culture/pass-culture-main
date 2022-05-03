@@ -12,6 +12,7 @@ from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_TARIFF_LABEL
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
 from pcapi.core.booking_providers.models import SeatCDS
+from pcapi.core.booking_providers.models import SeatMap
 
 
 class CineDigitalServiceAPI(BookingProviderClientAPI):
@@ -106,9 +107,10 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             SeatCDS(second_seat, screen, seatmap),
         ]
 
-    def get_seatmap(self, show_id: int) -> cds_serializers.SeatmapCDS:
+    def get_seatmap(self, show_id: int) -> SeatMap:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
-        return parse_obj_as(cds_serializers.SeatmapCDS, data)
+        seatmap_cds = parse_obj_as(cds_serializers.SeatmapCDS, data)
+        return SeatMap(seatmap_cds.map)
 
     def _get_closest_seat_to_center(
         self, center: tuple[float, float], seats_index: list[tuple[int, int]]
