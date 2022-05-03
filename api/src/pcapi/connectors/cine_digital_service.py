@@ -58,7 +58,7 @@ def get_resource(
 
 def put_resource(
     api_url: str, cinema_id: str, token: Optional[str], resource: ResourceCDS, body: BaseModel
-) -> Union[dict, list[dict], list]:
+) -> Optional[Union[dict, list[dict], list]]:
     if settings.IS_DEV:
         return MOCKS[resource]
 
@@ -71,7 +71,10 @@ def put_resource(
     except requests.exceptions.RequestException as e:
         raise cds_exceptions.CineDigitalServiceAPIException(f"API CDS - url : {url} - error : {e}")
 
-    return response.json()
+    response_headers = response.headers.get("Content-Type")
+    if response_headers and "application/json" in response_headers:
+        return response.json()
+    return None
 
 
 def _build_url(
