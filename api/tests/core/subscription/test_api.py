@@ -1140,7 +1140,7 @@ class GetFirstRegistrationDateTest:
         assert subscription_api.get_first_registration_date(user) is None
 
     def test_get_first_registration_date(self):
-        user = users_factories.UserFactory()
+        user = users_factories.UserFactory(dateOfBirth=datetime(2002, 1, 15))
         d1 = datetime(2020, 1, 1)
         d2 = datetime(2020, 2, 1)
         d3 = datetime(2020, 3, 1)
@@ -1157,3 +1157,34 @@ class GetFirstRegistrationDateTest:
             resultContent=fraud_factories.DMSContentFactory(registration_datetime=d1),
         )
         assert subscription_api.get_first_registration_date(user) == d1
+
+    def test_get_first_registration_date_with_uneligible_try(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
+        d1 = datetime(2020, 1, 1)
+        d2 = datetime(2020, 2, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            dateCreated=d1,
+            status=fraud_models.FraudCheckStatus.KO,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            dateCreated=d2,
+            resultContent=fraud_factories.DMSContentFactory(registration_datetime=d2),
+        )
+
+        assert subscription_api.get_first_registration_date(user) == d2
+
+    def test_get_first_registration_date_without_eligible_try(self):
+        user = users_factories.UserFactory(dateOfBirth=datetime(2005, 1, 15))
+        d1 = datetime(2020, 1, 1)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            dateCreated=d1,
+            status=fraud_models.FraudCheckStatus.KO,
+        )
+
+        assert subscription_api.get_first_registration_date(user) == None
