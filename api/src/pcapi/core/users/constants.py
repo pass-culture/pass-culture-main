@@ -71,7 +71,7 @@ SUSPENSION_REASON_CHOICES = (
     (SuspensionReason.FRAUD_CREATION_PRO, "Fraude PRO création"),
     (SuspensionReason.CLOSED_STRUCTURE_DEFINITIVE, "Structure définitivement fermée"),
     (SuspensionReason.CLOSED_STRUCTURE_TEMP, "Structure fermée provisoirement"),
-    (SuspensionReason.DELETED, "Compte supprimé"),
+    (SuspensionReason.DELETED, "Supprimé"),
 )
 
 assert set(_t[0] for _t in SUSPENSION_REASON_CHOICES) == set(SuspensionReason)
