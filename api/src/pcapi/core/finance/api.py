@@ -910,10 +910,10 @@ def _generate_business_units_file() -> pathlib.Path:
 
 
 def _clean_for_accounting(value: str) -> str:
-    # 2022-01-13 remove potential trailing space, new line and doublequote for BU, venue and offer name
     if not isinstance(value, str):
         return value
-    return value.strip().replace('"', "")
+    # Accounting software dislikes quotes and newline characters.
+    return value.strip().replace('"', "").replace("\n", "")
 
 
 def _generate_payments_file(batch_id: int) -> pathlib.Path:
