@@ -5,6 +5,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
@@ -40,6 +41,8 @@ const renderHomePage = store => {
   )
 }
 
+const mockLogEvent = jest.fn()
+
 describe('homepage', () => {
   let baseOfferers
   let baseOfferersNames
@@ -59,6 +62,7 @@ describe('homepage', () => {
         ],
       },
       user: { initialized: true },
+      app: { logEvent: mockLogEvent },
     })
     baseOfferers = [
       {
@@ -187,6 +191,26 @@ describe('homepage', () => {
 
         // then
         expect(scrollIntoViewMock).toHaveBeenCalledWith({ behavior: 'auto' })
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_BREADCRUMBS_PROFILE_AND_HELP
+        )
+      })
+    })
+    describe('when clicking on anchor link to offerers', () => {
+      it('should trigger', async () => {
+        await renderHomePage(store)
+        // given
+        doesUserPreferReducedMotion.mockReturnValue(true)
+
+        // when
+        await userEvent.click(screen.getByRole('link', { name: 'Structures' }))
+
+        // then
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_BREADCRUMBS_STRUCTURES
+        )
       })
     })
 
