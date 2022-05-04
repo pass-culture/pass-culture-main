@@ -225,11 +225,6 @@ export const getOfferer = offererId => {
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offererId' implicitly has an 'any' type... Remove this comment to see the full error message
-export const getUserOfferers = offererId => {
-  return client.get(`/userOfferers/${offererId}`)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offererId' implicitly has an 'any' type... Remove this comment to see the full error message
 export const canOffererCreateEducationalOffer = offererId =>
   client.get(`/offerers/${offererId}/eac-eligibility`)
 

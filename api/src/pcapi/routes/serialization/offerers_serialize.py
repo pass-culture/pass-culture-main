@@ -181,23 +181,6 @@ class CreateOffererQueryModel(BaseModel):
         anystr_strip_whitespace = True
 
 
-class UserOffererResponseModel(BaseModel):
-    id: str
-    userId: str
-    offererId: str
-
-    _humanize_id = humanize_field("id")
-    _humanize_user_id = humanize_field("userId")
-    _humanize_offerer_id = humanize_field("offererId")
-
-    class Config:
-        orm_mode = True
-
-
-class ListUserOfferersResponseModel(BaseModel):
-    __root__: list[UserOffererResponseModel]
-
-
 class GetOfferersVenueResponseModel(BaseModel):
     id: str
     isVirtual: bool
