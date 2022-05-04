@@ -62,18 +62,10 @@ class GetAllOfferersForUserTest:
         offerers_ids = [offerer.id for offerer in offerers]
         assert pro_offerer_attachment.offerer.id in offerers_ids
 
-    def should_return_offerers_with_non_validated_attachment_to_given_pro(self) -> None:
-        # Given
+    def should_not_return_offerers_with_non_validated_attachment_to_given_pro(self) -> None:
         pro = users_factories.ProFactory()
-        unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro, validationToken="Token")
-
-        # When
-        offerers = repository.get_all_offerers_for_user(user=pro).all()
-
-        # Then
-        assert len(offerers) == 1
-        offerers_ids = [offerer.id for offerer in offerers]
-        assert unvalidated_pro_offerer_attachment.offerer.id in offerers_ids
+        offerers_factories.UserOffererFactory(user=pro, validationToken="token")
+        assert repository.get_all_offerers_for_user(user=pro).all() == []
 
     def should_not_return_deactivated_offerers(self) -> None:
         # Given
@@ -159,58 +151,6 @@ class GetAllOfferersForUserTest:
             offerers_ids = [offerer.id for offerer in offerers]
             assert pro_attachment_to_validated_offerer.offerer.id not in offerers_ids
             assert pro_attachment_to_unvalidated_offerer.offerer.id in offerers_ids
-
-    class WithValidatedForUserFilterTest:
-        def should_return_all_pro_offerers_when_filter_is_none(self) -> None:
-            # Given
-            pro = users_factories.ProFactory()
-            validated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
-            unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(
-                user=pro, validationToken="Token"
-            )
-
-            # When
-            offerers = repository.get_all_offerers_for_user(user=pro).all()
-
-            # Then
-            assert len(offerers) == 2
-            offerers_ids = [offerer.id for offerer in offerers]
-            assert validated_pro_offerer_attachment.offerer.id in offerers_ids
-            assert unvalidated_pro_offerer_attachment.offerer.id in offerers_ids
-
-        def should_return_only_offerers_with_validated_attachment_when_filter_is_true(self) -> None:
-            # Given
-            pro = users_factories.ProFactory()
-            validated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
-            unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(
-                user=pro, validationToken="Token"
-            )
-
-            # When
-            offerers = repository.get_all_offerers_for_user(user=pro, validated_for_user=True).all()
-
-            # Then
-            assert len(offerers) == 1
-            offerers_ids = [offerer.id for offerer in offerers]
-            assert validated_pro_offerer_attachment.offerer.id in offerers_ids
-            assert unvalidated_pro_offerer_attachment.offerer.id not in offerers_ids
-
-        def should_return_only_offerers_with_unvalidated_attachment_when_filter_is_false(self) -> None:
-            # Given
-            pro = users_factories.ProFactory()
-            validated_pro_offerer_attachment = offerers_factories.UserOffererFactory(user=pro)
-            unvalidated_pro_offerer_attachment = offerers_factories.UserOffererFactory(
-                user=pro, validationToken="Token"
-            )
-
-            # When
-            offerers = repository.get_all_offerers_for_user(user=pro, validated_for_user=False).all()
-
-            # Then
-            assert len(offerers) == 1
-            offerers_ids = [offerer.id for offerer in offerers]
-            assert validated_pro_offerer_attachment.offerer.id not in offerers_ids
-            assert unvalidated_pro_offerer_attachment.offerer.id in offerers_ids
 
 
 class FindUserOffererByValidationTokenTest:

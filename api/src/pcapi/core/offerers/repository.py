@@ -29,8 +29,8 @@ def get_all_venue_labels() -> list[models.VenueLabel]:
 def get_all_offerers_for_user(
     user: User,
     validated: bool = None,
-    validated_for_user: bool = None,
     keywords: str = None,
+    include_non_validated_user_offerers: bool = False,
 ) -> sqla_orm.Query:
     """Return a query of matching, accessible offerers.
 
@@ -40,29 +40,24 @@ def get_all_offerers_for_user(
     `distinct()`). This function cannot call `distinct()` itself
     because it does not know how the caller wants to sort results (and
     `distinct` and `order by` clauses must match).
+
+    **WARNING:** ``include_non_validated_user_offerers`` should only
+    be used to return very restrictive informations (that the
+    requesting user already knows), such as the name of the offerer.
     """
     query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
-        query = query.join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id).filter(
-            models.UserOfferer.userId == user.id
-        )
+        user_offerer_filters = [models.UserOfferer.userId == user.id]
+        if not include_non_validated_user_offerers:
+            user_offerer_filters.append(models.UserOfferer.validationToken.is_(None))
+        query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
 
     if validated is not None:
         if validated:
             query = query.filter(models.Offerer.validationToken.is_(None))
         else:
             query = query.filter(models.Offerer.validationToken.isnot(None))
-
-    if validated_for_user is not None:
-        if user.has_admin_role:
-            query = query.join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
-        else:
-            pass  # we already JOINed above.
-        if validated_for_user:
-            query = query.filter(models.UserOfferer.validationToken.is_(None))
-        else:
-            query = query.filter(models.UserOfferer.validationToken.isnot(None))
 
     if keywords:
         query = filter_offerers_with_keywords_string(query, keywords)
