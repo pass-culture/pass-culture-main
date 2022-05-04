@@ -1,10 +1,13 @@
 from datetime import datetime
+from datetime import timezone
+import logging
 from typing import Any
 from typing import Dict
 from typing import Optional
 
 from pydantic import Field
 from pydantic import validator
+from pydantic.fields import ModelField
 
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
@@ -13,6 +16,9 @@ from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
+
+
+logger = logging.getLogger(__name__)
 
 
 class CollectiveStockIdResponseModel(BaseModel):
@@ -43,9 +49,23 @@ def validate_price(price: Optional[float]) -> float:
 def validate_booking_limit_datetime(
     booking_limit_datetime: Optional[datetime], values: Dict[str, Any]
 ) -> Optional[datetime]:
-    if booking_limit_datetime and booking_limit_datetime > values["beginning_datetime"]:
+    if (
+        booking_limit_datetime
+        and "beginning_datetime" in values
+        and booking_limit_datetime > values["beginning_datetime"]
+    ):
         raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
     return booking_limit_datetime
+
+
+def validate_beginning_datetime(beginning_datetime: datetime, values: Dict[str, Any], field: ModelField) -> datetime:
+    # we need a datetime with timezone information which is not provided by datetime.utcnow.
+    if beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
+        logger.error(
+            "L'utilisateur a essayé de créer un stock pour la date %s qui est dans le passé", str(beginning_datetime)
+        )
+        raise ValueError("L'évènement ne peut commencer dans le passé.")
+    return beginning_datetime
 
 
 def validate_price_detail(educational_price_detail: Optional[str]) -> Optional[str]:
@@ -66,6 +86,10 @@ def booking_limit_datetime_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_booking_limit_datetime)
 
 
+def beginning_datetime_validator(field_name: str) -> classmethod:
+    return validator(field_name, allow_reuse=True)(validate_beginning_datetime)
+
+
 def price_detail_validator(field_name: str) -> classmethod:
     return validator(field_name, allow_reuse=True)(validate_price_detail)
 
@@ -81,6 +105,7 @@ class CollectiveStockCreationBodyModel(BaseModel):
     _dehumanize_offer_id = dehumanize_field("offer_id")
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
     _validate_total_price = price_validator("total_price")
+    _validate_beginning_datetime = beginning_datetime_validator("beginning_datetime")
     _validate_booking_limit_datetime = booking_limit_datetime_validator("booking_limit_datetime")
     _validate_educational_price_detail = price_detail_validator("educational_price_detail")
 
@@ -99,6 +124,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
     _validate_educational_price_detail = price_detail_validator("educationalPriceDetail")
+    _validate_beginning_datetime = beginning_datetime_validator("beginningDatetime")
 
     # FIXME (cgaunet, 2022-04-28): Once edit_collective_stock is not used by legacy code,
     # we can use the same interface as for creation and thus reuse the validator defined above.
@@ -106,7 +132,11 @@ class CollectiveStockEditionBodyModel(BaseModel):
     def validate_booking_limit_datetime(  # pylint: disable=no-self-argument
         cls, booking_limit_datetime: Optional[datetime], values: Dict[str, Any]
     ) -> Optional[datetime]:
-        if booking_limit_datetime and booking_limit_datetime > values["beginningDatetime"]:
+        if (
+            booking_limit_datetime
+            and "beginningDatetime" in values
+            and booking_limit_datetime > values["beginningDatetime"]
+        ):
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
         return booking_limit_datetime
 

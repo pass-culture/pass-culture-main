@@ -1,3 +1,4 @@
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.educational.factories as educational_factories
@@ -10,6 +11,7 @@ from pcapi.utils.human_ids import humanize
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@freeze_time("2020-11-17 15:00:00")
 class Return200Test:
     def test_create_valid_stock_for_collective_offer(self, client):
         # Given
@@ -41,6 +43,7 @@ class Return200Test:
         assert created_stock.priceDetail == "Détail du prix"
 
 
+@freeze_time("2020-11-17 15:00:00")
 class Return400Test:
     def test_create_collective_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, client):
         # Given
@@ -192,3 +195,28 @@ class Return400Test:
         # Then
         assert response.status_code == 409
         assert response.json == {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"}
+
+    def test_create_valid_stock_for_collective_offer(self, client):
+        # Given
+        offer = educational_factories.CollectiveOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(offer.id),
+            "beginningDatetime": "1970-12-01T00:00:00Z",
+            "bookingLimitDatetime": "1970-01-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
