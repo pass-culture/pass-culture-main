@@ -119,7 +119,7 @@ def list_offerers_names(query: GetOfferersNamesQueryModel) -> GetOfferersNamesRe
     offerers = repository.get_all_offerers_for_user(
         user=current_user,
         validated=query.validated,
-        validated_for_user=query.validated_for_user,
+        include_non_validated_user_offerers=not query.validated_for_user,
     )
     offerers = offerers.order_by(offerers_models.Offerer.name, offerers_models.Offerer.id)
     offerers = offerers.distinct(offerers_models.Offerer.name, offerers_models.Offerer.id)

@@ -437,7 +437,6 @@ def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> l
             get_all_offerers_for_user(
                 user=current_user,
                 validated=True,
-                validated_for_user=True,
             )
             .distinct(Offerer.id)
             .all()

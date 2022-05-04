@@ -21,7 +21,7 @@ def test_access_by_pro(client):
     offers_factories.OfferFactory.create_batch(2, venue=venue2)
     offerers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2, inactive])
-    # Non-validated offerers should be included, too.
+    # Non-validated offerers should not be included.
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken="TOKEN")
     # Offerer that belongs to another user should not be returned.
     offerers_factories.OffererFactory(name="not returned")
@@ -35,19 +35,17 @@ def test_access_by_pro(client):
         response = client.get("/offerers")
 
     assert response.status_code == 200
-    assert response.json["nbTotalResults"] == 3
+    assert response.json["nbTotalResults"] == 2
     offerers = response.json["offerers"]
-    assert len(offerers) == 3
+    assert len(offerers) == 2
     names = [o["name"] for o in offerers]
-    assert names == ["offreur A", "offreur B", "offreur C"]
+    assert names == ["offreur A", "offreur B"]
     venue_ids = {v["id"] for v in offerers[0]["managedVenues"]}
     assert venue_ids == {humanize(venue1.id), humanize(venue2.id)}
     assert offerers[0]["userHasAccess"]
     assert offerers[1]["userHasAccess"]
-    assert not offerers[2]["userHasAccess"]
     assert offerers[0]["nOffers"] == 3
     assert offerers[1]["nOffers"] == 0
-    assert offerers[2]["nOffers"] == 0
 
 
 def test_access_by_admin(client):

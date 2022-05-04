@@ -96,25 +96,6 @@ class Returns200ForProUserTest:
         assert humanize(offerers["owned_offerer_not_validated_for_user"].id) in offerer_ids
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_not_validated_offerers_names(self, app):
-        # given
-        pro_user = users_factories.ProFactory()
-        offerers = self._setup_offerers_for_pro_user(pro_user)
-
-        # when
-        response = (
-            TestClient(app.test_client()).with_session_auth(pro_user.email).get("/offerers/names?validated=false")
-        )
-
-        # then
-        assert response.status_code == 200
-        assert "offerersNames" in response.json
-        assert len(response.json["offerersNames"]) == 1
-
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["owned_offerer_not_validated"].id) in offerer_ids
-
-    @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_for_user_offerers_names(self, app):
         # given
         pro_user = users_factories.ProFactory()
@@ -136,27 +117,6 @@ class Returns200ForProUserTest:
         assert humanize(offerers["owned_offerer_validated"].id) in offerer_ids
         assert humanize(offerers["owned_offerer_not_validated"].id) in offerer_ids
         assert humanize(offerers["owned_offerer_validated_for_user"].id) in offerer_ids
-
-    @pytest.mark.usefixtures("db_session")
-    def test_get_all_not_validated_for_user_offerers_names(self, app):
-        # given
-        pro_user = users_factories.ProFactory()
-        offerers = self._setup_offerers_for_pro_user(pro_user)
-
-        # when
-        response = (
-            TestClient(app.test_client())
-            .with_session_auth(pro_user.email)
-            .get("/offerers/names?validated_for_user=false")
-        )
-
-        # then
-        assert response.status_code == 200
-        assert "offerersNames" in response.json
-        assert len(response.json["offerersNames"]) == 1
-
-        offerer_ids = [offererName["id"] for offererName in response.json["offerersNames"]]
-        assert humanize(offerers["owned_offerer_not_validated_for_user"].id) in offerer_ids
 
 
 class Returns200ForAdminTest:
