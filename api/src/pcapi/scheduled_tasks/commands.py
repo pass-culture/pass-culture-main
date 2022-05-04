@@ -201,10 +201,11 @@ def send_email_reminder_7_days_before_event() -> None:
 @blueprint.cli.command("send_email_reminder_tomorrow_event_to_beneficiaries")
 @log_cron_with_transaction
 def send_email_reminder_tomorrow_event_to_beneficiaries() -> None:
-    """Triggers email reminder to beneficiaries for events happening tomorrow"""
+    """Triggers email reminder to beneficiaries for none digitals events happening tomorrow"""
     individual_bookings = bookings_repository.find_individual_bookings_event_happening_tomorrow_query()
     for individual_booking in individual_bookings:
-        send_individual_booking_event_reminder_email_to_beneficiary(individual_booking)
+        if not individual_booking.booking.stock.offer.isDigital:
+            send_individual_booking_event_reminder_email_to_beneficiary(individual_booking)
 
 
 @blueprint.cli.command("clean_past_draft_offers")
