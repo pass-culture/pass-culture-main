@@ -7,12 +7,24 @@ from pydantic import Field
 from pcapi.routes.serialization import BaseModel
 
 
+class IdObjectCDS(BaseModel):
+    id: int
+
+
+class ShowTariffCDS(BaseModel):
+    tariff: IdObjectCDS = Field(alias="tariffid")
+
+    class Config:
+        allow_population_by_field_name = True
+
+
 class ShowCDS(BaseModel):
     id: int
     is_cancelled: bool = Field(alias="canceled")
     is_deleted: bool = Field(alias="deleted")
     internet_remaining_place: int = Field(alias="internetremainingplace")
     showtime: datetime.datetime
+    shows_tariff_pos_type_collection: list[ShowTariffCDS] = Field(alias="showsTariffPostypeCollection")
 
     class Config:
         allow_population_by_field_name = True

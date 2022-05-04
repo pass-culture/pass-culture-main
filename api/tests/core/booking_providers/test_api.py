@@ -4,7 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
 from pcapi.core.booking_providers.api import _get_booking_provider_client_api
 from pcapi.core.booking_providers.api import _get_venue_booking_provider
 from pcapi.core.booking_providers.api import get_show_stock
@@ -83,7 +85,12 @@ class GetShowStockTest:
         venue_booking_provider = VenueBookingProviderFactory(bookingProvider=booking_provider)
         venue_id = venue_booking_provider.venueId
         mocked_show.return_value = ShowCDS(
-            id=1, canceled=False, deleted=False, internetremainingplace=15, showtime=datetime.utcnow()
+            id=1,
+            canceled=False,
+            deleted=False,
+            internetremainingplace=15,
+            showtime=datetime.utcnow(),
+            showsTariffPostypeCollection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
         )
 
         # When
