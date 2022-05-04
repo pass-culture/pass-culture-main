@@ -13,6 +13,7 @@ import {
   setInitialFormValues,
   patchIsOfferActiveAdapter,
   cancelActiveBookingsAdapter,
+  cancelCollectiveBookingAdapter,
   CollectiveOffer,
   CollectiveOfferTemplate,
   extractOfferIdAndOfferTypeFromRouteParams,
@@ -56,11 +57,10 @@ const OfferEducationalEdition = (): JSX.Element => {
   const notify = useNotification()
 
   const editOffer = async (offerFormValues: IOfferEducationalFormValues) => {
-    let patchOfferId = offerId
-
-    if (enableIndividualAndCollectiveSeparation && !isNewModelEnabled) {
-      patchOfferId = (offer as CollectiveOffer).offerId || ''
-    }
+    const patchOfferId =
+      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
+        ? (offer as CollectiveOffer).offerId || ''
+        : offerId
 
     const patchAdapter = isNewModelEnabled
       ? patchCollectiveOfferAdapter
@@ -80,9 +80,10 @@ const OfferEducationalEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchOfferId = enableIndividualAndCollectiveSeparation
-      ? (offer as CollectiveOffer).offerId || ''
-      : offerId
+    const patchOfferId =
+      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
+        ? (offer as CollectiveOffer).offerId || ''
+        : offerId
     const { isOk, message } = await patchIsOfferActiveAdapter({
       isActive,
       offerId: patchOfferId,
@@ -97,10 +98,14 @@ const OfferEducationalEdition = (): JSX.Element => {
   }
 
   const cancelActiveBookings = async () => {
-    const patchOfferId = enableIndividualAndCollectiveSeparation
-      ? (offer as CollectiveOffer).offerId || ''
-      : offerId
-    const { isOk, message } = await cancelActiveBookingsAdapter({
+    const patchOfferId =
+      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
+        ? offerId
+        : offerId
+    const cancelAdapter = isNewModelEnabled
+      ? cancelCollectiveBookingAdapter
+      : cancelActiveBookingsAdapter
+    const { isOk, message } = await cancelAdapter({
       offerId: patchOfferId,
     })
 
@@ -126,6 +131,7 @@ const OfferEducationalEdition = (): JSX.Element => {
 
       const offer = offerResponse.payload
       setOffer(offer)
+
       const offererId = offer.venue.managingOffererId
 
       const results = await Promise.all([

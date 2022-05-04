@@ -6,6 +6,7 @@ import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import {
   cancelActiveBookingsAdapter,
+  cancelCollectiveBookingAdapter,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   getStockOfferAdapter,
@@ -117,9 +118,10 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchOfferId = enableIndividualAndCollectiveSeparation
-      ? offer?.offerId || ''
-      : offerId
+    const patchOfferId =
+      enableIndividualAndCollectiveSeparation && !isNewCollectiveModelEnabled
+        ? offer?.offerId || ''
+        : offerId
     const { isOk, message } = await patchIsOfferActiveAdapter({
       isActive,
       offerId: patchOfferId,
@@ -134,10 +136,14 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const cancelActiveBookings = async () => {
-    const patchOfferId = enableIndividualAndCollectiveSeparation
-      ? offer?.offerId || ''
-      : offerId
-    const { isOk, message } = await cancelActiveBookingsAdapter({
+    const patchOfferId =
+      enableIndividualAndCollectiveSeparation && !isNewCollectiveModelEnabled
+        ? offer?.offerId || ''
+        : offerId
+    const cancelAdapter = isNewCollectiveModelEnabled
+      ? cancelCollectiveBookingAdapter
+      : cancelActiveBookingsAdapter
+    const { isOk, message } = await cancelAdapter({
       offerId: patchOfferId,
     })
 
