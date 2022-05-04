@@ -132,6 +132,10 @@ _PRICE_BOOKINGS_ORDER_CLAUSE = (
 )
 
 
+def foo():  # type: ignore [no-untyped-def]
+    return None
+
+
 def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ignore [no-untyped-def]
     """Price bookings that have been recently marked as used.
 
