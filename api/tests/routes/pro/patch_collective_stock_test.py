@@ -426,3 +426,30 @@ class Return400Test:
         # Then
         assert response.status_code == 400
         assert response.json == {"educationalPriceDetail": ["Le détail du prix ne doit pas excéder 1000 caractères."]}
+
+    def test_create_valid_stock_for_collective_offer(self, client):
+        # Given
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime(2021, 12, 18),
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 1),
+            priceDetail="Détail du prix",
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+
+        # When
+        stock_edition_payload = {
+            "beginningDatetime": "1970-12-01T00:00:00Z",
+            "bookingLimitDatetime": "1970-01-31T20:00:00Z",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 400
+        assert response.json == {"beginningDatetime": ["L'évènement ne peut commencer dans le passé."]}
