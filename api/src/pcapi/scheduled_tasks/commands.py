@@ -41,6 +41,7 @@ from pcapi.notifications.push.transactional_notifications import (
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.beneficiary import archive_dms_applications
+from pcapi.scripts.beneficiary.handle_inactive_dms_applications import handle_inactive_dms_applications
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
@@ -297,3 +298,18 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
     users = fraud_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
     for user in users:
         users_api.suspend_account(user, users_constants.SuspensionReason.DELETED, None)
+
+
+@blueprint.cli.command("handle_inactive_dms_applications_cron")
+@log_cron_with_transaction
+def handle_inactive_dms_applications_cron() -> None:
+    procedures = [
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR,
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET,
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING,
+        settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
+    ]
+    if settings.IS_PROD:
+        procedures.append(DMS_OLD_PROCEDURE_ID)
+    for procedure_id in procedures:
+        handle_inactive_dms_applications(procedure_id)
