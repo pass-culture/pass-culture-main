@@ -11,6 +11,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
+import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -69,6 +70,7 @@ const renderHomePage = ({ store }) => {
     waitForElements,
   }
 }
+const mockLogEvent = jest.fn()
 
 describe('offererDetailsLegacy', () => {
   let store
@@ -816,6 +818,7 @@ describe('offererDetailsLegacy', () => {
             { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },
           ],
         },
+        app: { logEvent: mockLogEvent },
       })
     })
     it('should display invalid business unit banner when a BU does not have a siret', async () => {
@@ -913,14 +916,28 @@ describe('offererDetailsLegacy', () => {
       expect(displayButton).toBeInTheDocument()
 
       // open offerer and wait that the block open.
-      fireEvent.click(displayButton)
-      await within(offerer).findByRole('button', {
+      await userEvent.click(displayButton)
+      const hideButton = await within(offerer).findByRole('button', {
         name: 'Masquer',
       })
+
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_TOGGLE_HIDE_OFFERER_NAME,
+        { isExpanded: false }
+      )
 
       expect(
         within(offerer).queryByText('Coordonnées bancaires')
       ).not.toBeInTheDocument()
+
+      await userEvent.click(hideButton)
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        2,
+        Events.CLICKED_TOGGLE_HIDE_OFFERER_NAME,
+        { isExpanded: true }
+      )
+      expect(mockLogEvent).toHaveBeenCalledTimes(2)
     })
   })
 })

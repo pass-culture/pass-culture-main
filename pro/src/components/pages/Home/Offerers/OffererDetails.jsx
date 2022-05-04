@@ -1,10 +1,12 @@
 import PropTypes from 'prop-types'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import Select from 'components/layout/inputs/Select'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Banner } from 'ui-kit'
 
 import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
@@ -44,6 +46,7 @@ const OffererDetails = ({
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
+  const logEvent = useSelector(state => state.app.logEvent)
 
   const hasRejectedOrDraftOffererBankInformations = useMemo(() => {
     if (!selectedOfferer) return false
@@ -94,10 +97,13 @@ const OffererDetails = ({
     ]
   )
 
-  const toggleVisibility = useCallback(
-    () => setIsExpanded(currentVisibility => !currentVisibility),
-    []
-  )
+  const toggleVisibility = () => {
+    console.log(logEvent)
+    logEvent(Events.CLICKED_TOGGLE_HIDE_OFFERER_NAME, {
+      isExpanded: isExpanded,
+    })
+    setIsExpanded(currentVisibility => !currentVisibility)
+  }
 
   return (
     <div className="h-card h-card-secondary" data-testid="offerrer-wrapper">
