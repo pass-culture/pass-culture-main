@@ -15,6 +15,7 @@ from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
+from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -250,3 +251,27 @@ def edit_collective_offer_template(
     else:
         offer = educational_api.get_collective_offer_template_by_id(dehumanized_id)
         return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers-template/<offer_id>/to-collective-offer", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=201, response_model=collective_offers_serialize.CollectiveOfferFromTemplateResponseModel
+)
+def transform_collective_offer_template_into_collective_offer(
+    offer_id: str, body: collective_stock_serialize.CollectiveStockCreationBodyModel
+) -> collective_offers_serialize.CollectiveOfferFromTemplateResponseModel:
+    dehumanized_offer_id = dehumanize_or_raise(offer_id)
+    if not int(body.offer_id) == dehumanized_offer_id:
+        ApiErrors(
+            {"offer": ["L'id de l'offre fournie en argument et celui du stock doivent être les mêmes"]}, status_code=403
+        )
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_offer_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    check_user_has_access_to_offerer(current_user, offerer.id)
+
+    offer = educational_api.transform_collective_offer_template_into_collective_offer(user=current_user, body=body)
+
+    return collective_offers_serialize.CollectiveOfferFromTemplateResponseModel.from_orm(offer)

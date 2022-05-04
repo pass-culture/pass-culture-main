@@ -763,10 +763,11 @@ def create_collective_stock(
     user: User,
     *,
     legacy_id: Optional[int] = None,
+    offer_id: Optional[int] = None,
 ) -> Optional[CollectiveStock]:
     from pcapi.core.offers.api import update_offer_fraud_information
 
-    offer_id = stock_data.offer_id
+    offer_id = offer_id or stock_data.offer_id
     beginning = stock_data.beginning_datetime
     booking_limit_datetime = stock_data.booking_limit_datetime
     total_price = stock_data.total_price
@@ -1056,3 +1057,19 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:
 
 def get_collective_offer_template_by_id_for_adage(offer_id: int) -> CollectiveOfferTemplate:
     return educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
+
+
+def transform_collective_offer_template_into_collective_offer(
+    user: User, body: CollectiveStockCreationBodyModel
+) -> CollectiveOffer:
+    collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(id=body.offer_id).one()
+
+    offer_validation.check_validation_status(collective_offer_template)
+    collective_offer = educational_models.CollectiveOffer.create_from_collective_offer_template(
+        collective_offer_template
+    )
+    db.session.delete(collective_offer_template)
+    db.session.add(collective_offer)
+    db.session.commit()
+    create_collective_stock(stock_data=body, user=user, offer_id=collective_offer.id)
+    return collective_offer
