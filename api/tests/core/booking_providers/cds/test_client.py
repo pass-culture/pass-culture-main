@@ -75,6 +75,52 @@ class CineDigitalServiceGetShowTest:
         )
 
 
+class CineDigitalServiceGetShowsRemainingPlacesTest:
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_shows_id_with_corresponding_remaining_places(self, mocked_get_resource):
+        # Given
+        cinema_id = "cinemaid_test"
+        token = "token_test"
+        api_url = "apiUrl_test/"
+        resource = ResourceCDS.SHOWS
+
+        json_shows = [
+            {
+                "id": 1,
+                "internet_remaining_place": 10,
+                "showtime": datetime.datetime(2022, 3, 28),
+                "is_cancelled": False,
+                "is_deleted": False,
+            },
+            {
+                "id": 2,
+                "internet_remaining_place": 30,
+                "showtime": datetime.datetime(2022, 3, 29),
+                "is_cancelled": False,
+                "is_deleted": False,
+            },
+            {
+                "id": 3,
+                "internet_remaining_place": 100,
+                "showtime": datetime.datetime(2022, 3, 30),
+                "is_cancelled": False,
+                "is_deleted": False,
+            },
+        ]
+        mocked_get_resource.return_value = json_shows
+
+        # when
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test/"
+        )
+        shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
+
+        # then
+        mocked_get_resource.assert_called_once_with(api_url, cinema_id, token, resource)
+
+        assert shows_remaining_places == {2: 30, 3: 100}
+
+
 class CineDigitalServiceGetPaymentTypeTest:
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
     def test_should_return_pass_culture_payment_type(self, mocked_get_resource):
