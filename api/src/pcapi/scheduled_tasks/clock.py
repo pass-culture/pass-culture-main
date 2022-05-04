@@ -49,7 +49,6 @@ from pcapi.scheduled_tasks.decorators import cron_context
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.beneficiary import archive_dms_applications
-from pcapi.scripts.beneficiary.handle_inactive_dms_applications import handle_inactive_dms_applications
 from pcapi.scripts.booking.handle_expired_bookings import handle_expired_bookings
 from pcapi.scripts.booking.notify_soon_to_be_expired_bookings import notify_soon_to_be_expired_individual_bookings
 from pcapi.scripts.payment.user_recredit import recredit_underage_users
@@ -130,21 +129,6 @@ def pc_import_beneficiaries_from_dms_v4() -> None:
             continue
         dms_api.import_dms_users(procedure_id)
         archive_dms_applications.archive_applications(procedure_id, dry_run=False)
-
-
-@cron_context
-@log_cron_with_transaction
-def pc_handle_inactive_dms_applications() -> None:
-    procedures = [
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR,
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET,
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING,
-        settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
-    ]
-    if settings.IS_PROD:
-        procedures.append(DMS_OLD_PROCEDURE_ID)
-    for procedure_id in procedures:
-        handle_inactive_dms_applications(procedure_id)
 
 
 @cron_context
@@ -317,8 +301,6 @@ def clock() -> None:
     scheduler.add_job(pc_import_beneficiaries_from_dms_v3, "cron", day="*", hour="6")
 
     scheduler.add_job(pc_import_beneficiaries_from_dms_v4, "cron", day="*", hour="6", minute="20")
-
-    scheduler.add_job(pc_handle_inactive_dms_applications, "cron", day="*", hour="4")
 
     scheduler.add_job(update_booking_used, "cron", day="*", hour="0")
 
