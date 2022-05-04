@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { TPreFilters } from 'core/Bookings'
+import { Events } from 'core/FirebaseEvents/constants'
 
 import { ReactComponent as DownloadSvg } from '../../icons/ico-download.svg'
+import { RootState } from '../../store/reducers'
 
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
@@ -23,6 +26,7 @@ const MultiDownloadButtonsModal = ({
   downloadFunction,
   filters,
 }: MultiDownloadButtonsModalType): JSX.Element => {
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const [isDownloadModalOptionOpen, setIsDownloadModalOptionOpen] =
     useState(false)
 
@@ -33,6 +37,9 @@ const MultiDownloadButtonsModal = ({
           className="primary-button"
           disabled={isDownloading || isLocalLoading || isFiltersDisabled}
           onClick={() => {
+            logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS, {
+              from: location.pathname,
+            })
             setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
           }}
           type="button"
@@ -50,24 +57,30 @@ const MultiDownloadButtonsModal = ({
           <button
             className={style['insideModalButton']}
             onClick={() => {
+              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
+                from: location.pathname,
+              })
               downloadFunction(filters, 'XLS')
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
             }}
             type="button"
           >
             <DownloadSvg />
-            Microsoft Excel (XLS)
+            Microsoft Excel (.xls)
           </button>
           <button
             className={style['insideModalButton']}
             onClick={() => {
+              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
+                from: location.pathname,
+              })
               downloadFunction(filters, 'CSV')
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
             }}
             type="button"
           >
             <DownloadSvg />
-            Fichier CSV (.CSV)
+            Fichier CSV (.csv)
           </button>
         </div>
       )}
