@@ -69,6 +69,9 @@ class BookingProviderClientAPI:
 
     def get_show_remaining_places(self, show_id: int) -> int:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
+    
+    def get_shows_remaining_places(self, shows_id: list[int]) -> dict[int, int]:
+        raise NotImplementedError("Should be implemented in subclass (abstract method)")
 
     def get_seatmap(self, show_id: int) -> SeatMap:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")

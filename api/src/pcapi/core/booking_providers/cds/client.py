@@ -25,6 +25,11 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         show = self.get_show(show_id)
         return show.internet_remaining_place
 
+    def get_shows_remaining_places(self, show_ids: list[int]) -> dict[int, int]:
+        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
+        shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
+        return {show.id: show.internet_remaining_place for show in shows if show.id in show_ids}
+
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
