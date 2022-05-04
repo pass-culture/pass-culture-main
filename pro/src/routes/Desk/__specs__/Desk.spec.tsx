@@ -110,8 +110,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
 
     expect(Object.keys(response)).toHaveLength(1)
@@ -143,8 +142,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
 
     expect(Object.keys(response)).toHaveLength(1)
@@ -170,8 +168,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
 
     expect(Object.keys(response)).toHaveLength(1)
@@ -197,8 +194,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
 
     expect(Object.keys(response)).toHaveLength(1)
@@ -222,8 +218,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
     expect(Object.keys(response)).toHaveLength(0)
   })
@@ -245,8 +240,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
 
     expect(Object.keys(response)).toHaveLength(1)
@@ -270,8 +264,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
     expect(Object.keys(response)).toHaveLength(0)
   })
@@ -293,8 +286,7 @@ describe('src | routes | Desk', () => {
         testToken
       )
     })
-    // to fix - added to allow upgrade
-    // eslint-disable-next-line jest/no-conditional-in-test
+    // to fix - no-conditional-in-test
     const response = JSON.parse(responseDataContainer.textContent || '')
 
     expect(Object.keys(response)).toHaveLength(1)

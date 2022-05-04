@@ -1,6 +1,7 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
 @use 'src/styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+
 .reimbursements-page {
   .header {
     display: flex;

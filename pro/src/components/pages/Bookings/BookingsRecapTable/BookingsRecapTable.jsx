@@ -38,7 +38,6 @@ class BookingsRecapTable extends Component {
           id: 1,
           headerTitle: "Nom de l'offre",
           accessor: 'stock',
-          /* eslint-disable react/no-unstable-nested-components */
           Cell: ({ value }) => <BookingOfferCell offer={value} />,
           className: 'column-offer-name',
           defaultCanSort: true,
@@ -48,7 +47,6 @@ class BookingsRecapTable extends Component {
           id: 2,
           headerTitle: '',
           accessor: 'booking_is_duo',
-          /* eslint-disable react/no-unstable-nested-components */
           Cell: ({ value }) => <BookingIsDuoCell isDuo={value} />,
           className: 'column-booking-duo',
           disableSortBy: true,
@@ -57,7 +55,6 @@ class BookingsRecapTable extends Component {
           id: 3,
           headerTitle: 'Bénéficiaire',
           accessor: 'beneficiary',
-          /* eslint-disable react/no-unstable-nested-components */
           Cell: ({ value }) => <BeneficiaryCell beneficiaryInfos={value} />,
           className: 'column-beneficiary',
           defaultCanSort: true,
@@ -67,7 +64,6 @@ class BookingsRecapTable extends Component {
           id: 4,
           headerTitle: 'Réservation',
           accessor: 'booking_date',
-          /* eslint-disable react/no-unstable-nested-components */
           Cell: ({ value }) => (
             <BookingDateCell bookingDateTimeIsoString={value} />
           ),
@@ -79,7 +75,6 @@ class BookingsRecapTable extends Component {
           id: 5,
           headerTitle: 'Contremarque',
           accessor: 'booking_token',
-          /* eslint-disable react/no-unstable-nested-components */
           Cell: ({ value }) => <BookingTokenCell bookingToken={value} />,
           className: 'column-booking-token',
           disableSortBy: true,
@@ -87,7 +82,6 @@ class BookingsRecapTable extends Component {
         {
           id: 6,
           accessor: 'booking_status',
-          /* eslint-disable react/no-unstable-nested-components */
           Cell: ({ row }) => <BookingStatusCell bookingRecapInfo={row} />,
           className: 'column-booking-status',
           disableSortBy: true,

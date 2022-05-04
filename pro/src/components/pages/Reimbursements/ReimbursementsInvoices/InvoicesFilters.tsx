@@ -3,6 +3,7 @@ import React, { Dispatch, SetStateAction, useCallback } from 'react'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
 import { getToday } from 'utils/date'
+import { MouseEventHandler } from 'react'
 
 type selectableOptionsType = [
   {
@@ -63,7 +64,7 @@ const InvoicesFilters = ({
   }
 
   const setBusinessUnitFilter = useCallback(
-    event => {
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
       const businessUnitId = event.target.value
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
@@ -75,7 +76,7 @@ const InvoicesFilters = ({
   )
 
   const setStartDateFilter = useCallback(
-    startDate => {
+    (startDate: Date) => {
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
         periodStart: startDate,
@@ -86,7 +87,7 @@ const InvoicesFilters = ({
   )
 
   const setEndDateFilter = useCallback(
-    endDate => {
+    (endDate: Date) => {
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
         periodEnd: endDate,

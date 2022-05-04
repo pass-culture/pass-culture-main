@@ -81,7 +81,7 @@ const PreFilters = ({
   }, [selectedPreFilters])
 
   const updateSelectedFilters = useCallback(
-    updatedFilter => {
+    (updatedFilter: any) => {
       if (updatedFilter.offerEventDate) {
         updatedFilter.bookingBeginningDate = null
         updatedFilter.bookingEndingDate = null
@@ -100,7 +100,7 @@ const PreFilters = ({
   )
 
   const requestFilteredBookings = useCallback(
-    event => {
+    (event: any) => {
       event.preventDefault()
       applyPreFilters(selectedPreFilters)
     },

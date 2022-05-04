@@ -1,5 +1,5 @@
 import React, { useCallback, useState, ReactNode } from 'react'
-import { Redirect, useHistory } from 'react-router'
+import { Redirect, useHistory } from 'react-router-dom'
 import { Prompt } from 'react-router-dom'
 
 import DialogBox from 'new_components/DialogBox/DialogBox'
@@ -39,7 +39,7 @@ const RouteLeavingGuard = ({
   }, [])
 
   const handleBlockedNavigation = useCallback(
-    nextLocation => {
+    (nextLocation: any) => {
       const { redirectPath, shouldBlock } = shouldBlockNavigation(nextLocation)
       setLastLocation(redirectPath ? redirectPath : nextLocation)
       if (!isConfirmedNavigation && shouldBlock) {

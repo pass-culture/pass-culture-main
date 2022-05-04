@@ -1,40 +1,40 @@
 {
-    "compilerOptions": {
-        "typeRoots": ["./node_modules/@types", "./src/custom_types"],
-        "plugins": [{ "name": "typescript-plugin-css-modules" }],
-        "allowJs": true,
-        "allowSyntheticDefaultImports": true,
-        "baseUrl": "src",
-        "esModuleInterop": true,
-        "isolatedModules": true,
-        "jsx": "react",
-        "lib": [
-            "dom"
-        ],
-        "moduleResolution": "node",
-        "noImplicitAny": true,
-        "noImplicitReturns": true,
-        "noImplicitThis": true,
-        "outDir": "./built",
-        "paths": {
-            "*": ["*"],
-            "@ui-kit/*": ["ui-kit/*"],
-        },
-        "resolveJsonModule": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "target": "es5",
+  "compilerOptions": {
+    "typeRoots": ["./node_modules/@types", "./src/custom_types"],
+    "plugins": [{ "name": "typescript-plugin-css-modules" }],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "src",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "outDir": "./built",
+    "paths": {
+      "*": ["*"],
+      "@ui-kit/*": ["ui-kit/*"]
     },
-    "include": [
-        "./src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "babel.config.js",
-        "webpack.config.js",
-        "jest.config.js",
-        "__mocks__/**",
-        "coverage/**",
-        "src/api/gen"
-    ]
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "es5"
+  },
+  "include": ["./src/**/*"],
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "webpack.config.js",
+    "jest.config.js",
+    "__mocks__/**",
+    "coverage/**",
+    "src/api/gen"
+  ]
 }

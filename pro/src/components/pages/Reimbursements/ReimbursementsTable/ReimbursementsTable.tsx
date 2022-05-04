@@ -58,7 +58,7 @@ const ReimbursementsTable = ({
   )
 
   const targetedColumn = useCallback(
-    newSelectedColumn => {
+    (newSelectedColumn: string) => {
       const newDirection =
         newSelectedColumn === selectedColumn
           ? changeDirection(direction)

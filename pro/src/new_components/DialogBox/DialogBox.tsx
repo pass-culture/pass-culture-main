@@ -10,6 +10,7 @@ interface DialogProps {
   labelledBy: string
   onDismiss?: () => void
   initialFocusRef?: React.RefObject<HTMLButtonElement>
+  children?: React.ReactNode
 }
 
 const DialogBox: FunctionComponent<DialogProps> = ({

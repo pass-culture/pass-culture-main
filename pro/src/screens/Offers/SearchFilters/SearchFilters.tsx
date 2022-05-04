@@ -1,6 +1,6 @@
 import { endOfDay } from 'date-fns'
 import { utcToZonedTime } from 'date-fns-tz'
-import React, { MouseEventHandler, useCallback } from 'react'
+import React, { FormEvent, MouseEventHandler, useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
@@ -63,35 +63,39 @@ const SearchFilters = ({
   )
 
   const storeNameOrIsbnSearchValue = useCallback(
-    event => {
-      updateSearchFilters({ nameOrIsbn: event.target.value })
+    (event: Event) => {
+      const target = event.target as HTMLSelectElement
+      updateSearchFilters({ nameOrIsbn: target.value })
     },
     [updateSearchFilters]
   )
 
   const storeSelectedVenue = useCallback(
-    event => {
-      updateSearchFilters({ venueId: event.target.value })
+    (event: Event) => {
+      const target = event.target as HTMLSelectElement
+      updateSearchFilters({ venueId: target.value })
     },
     [updateSearchFilters]
   )
 
   const storeSelectedCategory = useCallback(
-    event => {
-      updateSearchFilters({ categoryId: event.target.value })
+    (event: Event) => {
+      const target = event.target as HTMLSelectElement
+      updateSearchFilters({ categoryId: target.value })
     },
     [updateSearchFilters]
   )
 
   const storeCreationMode = useCallback(
-    event => {
-      updateSearchFilters({ creationMode: event.target.value })
+    (event: Event) => {
+      const target = event.target as HTMLSelectElement
+      updateSearchFilters({ creationMode: target.value })
     },
     [updateSearchFilters]
   )
 
   const changePeriodBeginningDateValue = useCallback(
-    periodBeginningDate => {
+    (periodBeginningDate: Date) => {
       const dateToFilter = periodBeginningDate
         ? formatBrowserTimezonedDateAsUTC(periodBeginningDate)
         : DEFAULT_SEARCH_FILTERS.periodBeginningDate
@@ -101,7 +105,7 @@ const SearchFilters = ({
   )
 
   const changePeriodEndingDateValue = useCallback(
-    periodEndingDate => {
+    (periodEndingDate: Date) => {
       const dateToFilter = periodEndingDate
         ? formatBrowserTimezonedDateAsUTC(endOfDay(periodEndingDate))
         : DEFAULT_SEARCH_FILTERS.periodEndingDate
@@ -111,7 +115,7 @@ const SearchFilters = ({
   )
 
   const requestFilteredOffers = useCallback(
-    event => {
+    (event: FormEvent) => {
       event.preventDefault()
       applyFilters()
     },

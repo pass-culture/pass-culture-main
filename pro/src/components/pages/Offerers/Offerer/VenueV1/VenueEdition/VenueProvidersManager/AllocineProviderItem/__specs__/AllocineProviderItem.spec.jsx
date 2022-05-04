@@ -88,8 +88,7 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     expect(quantity).toBeInTheDocument()
     const isDuo = queryByTextTrimHtml(
       screen,
-      // to fix - added to allow upgrade
-      // eslint-disable-next-line jest/no-conditional-in-test
+      // to fix - no-conditional-in-test
       `Accepter les offres DUO : ${allocineVenueProvider.isDuo ? 'Oui' : 'Non'}`
     )
     expect(isDuo).toBeInTheDocument()

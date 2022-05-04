@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import { action } from '@storybook/addon-actions'
 import { Story } from '@storybook/react'
 import { Formik } from 'formik'

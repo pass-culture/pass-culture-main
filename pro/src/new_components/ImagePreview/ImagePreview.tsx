@@ -4,6 +4,7 @@ import { ReactComponent as MobileShell } from './assets/mobile-shell.svg'
 
 interface ImagePreviewScreenProps {
   title: string
+  children?: React.ReactNode
 }
 
 export const ImagePreview: FunctionComponent<ImagePreviewScreenProps> = ({

@@ -34,7 +34,7 @@ const SignIn = (): JSX.Element => {
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
-  }, [currentUser]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentUser]) // eslint-disable-line
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription'

@@ -7,6 +7,7 @@ interface ITitleProps {
   level: 1 | 2 | 3 | 4
   as?: 'p' | 'span' | 'h1' | 'h2' | 'h3' | 'h4'
   className?: string
+  children?: React.ReactNode
 }
 
 const Title: React.FC<ITitleProps> = ({ level, as, className, children }) => {

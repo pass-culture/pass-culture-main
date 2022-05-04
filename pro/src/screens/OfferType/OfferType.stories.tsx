@@ -1,6 +1,6 @@
 import { createBrowserHistory } from 'history'
 import React from 'react'
-import { Router } from 'react-router'
+import { Router } from 'react-router-dom'
 
 import OfferType from './OfferType'
 

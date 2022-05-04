@@ -32,7 +32,6 @@ function withRouter(Component) {
  */
 // TO FIX:: the above component is temporary, in order to
 // allow react-router upgrade before the below component is refactored as function component
-// eslint-disable-next-line react/no-multi-comp
 class Offerers extends PureComponent {
   constructor(props) {
     super(props)
