@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import isEqual from 'lodash.isequal'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
@@ -12,6 +13,9 @@ import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/
 import getBookingsXLSFileAdapter from 'routes/Bookings/adapters/getBookingsXLSFileAdapter'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { Events } from '../../../core/FirebaseEvents/constants'
+import { RootState } from '../../../store/reducers'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
@@ -52,6 +56,8 @@ const PreFilters = ({
   const isCsvMultiDownloadFiltersActive = useActiveFeature(
     'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON'
   )
+
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
 
   const [selectedPreFilters, setSelectedPreFilters] = useState<TPreFilters>({
     ...appliedPreFilters,
@@ -224,6 +230,11 @@ const PreFilters = ({
             <button
               className="secondary-button"
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
+              onClick={() => {
+                logEvent(Events.CLICKED_SHOW_BOOKINGS, {
+                  from: location.pathname,
+                })
+              }}
               type="submit"
             >
               Afficher
