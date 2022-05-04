@@ -408,3 +408,7 @@ class UnsuspendedSuspensionFactory(UserSuspensionFactory):
 
 class SuspendedUponUserRequestFactory(UserSuspensionFactory):
     reasonCode = users_constants.SuspensionReason.UPON_USER_REQUEST
+
+
+class DeletedAccountSuspensionFactory(UserSuspensionFactory):
+    reasonCode = users_constants.SuspensionReason.DELETED

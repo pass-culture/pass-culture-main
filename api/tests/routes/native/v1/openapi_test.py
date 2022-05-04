@@ -1531,6 +1531,26 @@ def test_public_api(client, app):
                     "tags": [],
                 }
             },
+            "/native/v1/account/suspension_date": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/account/suspension_date",
+                    "parameters": [],
+                    "responses": {
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_account_suspension_date <GET>",
+                    "tags": [],
+                }
+            },
             "/native/v1/bookings": {
                 "get": {
                     "description": "",
