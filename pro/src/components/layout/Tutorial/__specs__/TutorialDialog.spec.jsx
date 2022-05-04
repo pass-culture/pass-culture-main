@@ -1,10 +1,12 @@
 import '@testing-library/jest-dom'
 import { act, fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
+import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -20,22 +22,43 @@ const stepTitles = [
 ]
 
 const renderTutorialDialog = async (store, props = {}) => {
-  return await act(async () => {
-    return render(
-      <Provider store={store}>
-        <MemoryRouter>
-          <TutorialDialogContainer {...props} />
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  return render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <TutorialDialogContainer {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
 }
+
+const mockLogEvent = jest.fn()
 
 describe('tutorial modal', () => {
   let store
 
   beforeEach(() => {
     store = configureTestStore({})
+  })
+  it('should trigger an event when the user arrive on /accueil for the first time', async () => {
+    store = configureTestStore({
+      data: {
+        users: [
+          {
+            id: 'test_id',
+            hasSeenProTutorials: false,
+          },
+        ],
+      },
+      app: { logEvent: mockLogEvent },
+    })
+    renderTutorialDialog(store, {})
+    const closeButton = await screen.getByTitle('Fermer la modale')
+    await userEvent.click(closeButton)
+    expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.TUTO_PAGE_VIEW, {
+      page_number: '1',
+    })
+    expect(mockLogEvent).toHaveBeenNthCalledWith(2, Events.FIRST_LOGIN)
+    expect(mockLogEvent).toHaveBeenCalledTimes(2)
   })
 
   it('should show tutorial dialog if user has not seen it yet', async () => {

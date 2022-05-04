@@ -23,6 +23,7 @@ export enum Events {
   CLICKED_SHOW_BOOKINGS = 'hasClickedShowBooking',
   CLICKED_TICKET = 'hasClickedTicket',
   CLICKED_TOGGLE_HIDE_OFFERER_NAME = 'hasClickedToggleHideOffererName',
+  FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
   TUTO_PAGE_VIEW = 'tutoPageView',
 }
