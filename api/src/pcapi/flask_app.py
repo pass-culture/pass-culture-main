@@ -75,6 +75,7 @@ def log_request_details(response: flask.wrappers.Response) -> flask.wrappers.Res
         "size": response.headers.get("Content-Length", type=int),
         "deviceId": request.headers.get("device-id"),
         "sourceIp": request.headers.get("X-Forwarded-For"),
+        "requestId": request.headers.get("request-id"),
     }
     try:
         duration = round((time.perf_counter() - g.request_start) * 1000)  # milliseconds
