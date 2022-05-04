@@ -641,6 +641,15 @@ class PriceBookingsWithNewCollectiveModelsTest:
         assert len(collective_booking.pricings) == 1
 
 
+def _get_next_cashflow_batch_label():
+    label = api._get_next_cashflow_batch_label()
+    assert label == "VIR1"
+
+    factories.CashflowBatchFactory(label=label)
+    label = api._get_next_cashflow_batch_label()
+    assert label == "VIR2"
+
+
 class GenerateCashflowsTest:
     def test_basics(self):
         now = datetime.datetime.utcnow()
@@ -741,6 +750,7 @@ class GenerateCashflowsTest:
 
         n_queries = 0
         n_queries += 1  # select FF
+        n_queries += 1  # compute next CashflowBatch.label
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # commit
         n_queries += 1  # select business unit and bank account ids to process
