@@ -26,7 +26,7 @@ class SerializeBookingRecapTest:
             booking_date=booking_date,
             booking_token="FOND",
             booking_is_used=False,
-            booking_amount=18,
+            booking_amount=18.5,
         )
         thing_booking_recap_2 = create_domain_booking_recap(
             offer_identifier=2,
@@ -73,7 +73,7 @@ class SerializeBookingRecapTest:
                         "date": "2020-01-01T10:00:00",
                     },
                 ],
-                booking_amount=18,
+                booking_amount=18.5,
             ),
             BookingRecapResponseModel(
                 stock={
@@ -104,6 +104,7 @@ class SerializeBookingRecapTest:
             ),
         ]
         assert getattr(result, "bookingsRecap") == expected_bookings_recap
+        assert getattr(result, "bookingsRecap")[0].booking_amount == 18.5
         assert getattr(result, "page") == 0
         assert getattr(result, "pages") == 1
         assert getattr(result, "total") == 2

@@ -51,7 +51,7 @@ class BookingRecapResponseBookingStatusHistoryModel(BaseModel):
 
 class BookingRecapResponseModel(BaseModel):
     beneficiary: BookingRecapResponseBeneficiaryModel
-    booking_amount: int
+    booking_amount: float
     booking_date: datetime
     booking_is_duo: bool
     booking_status: BookingRecapStatus
