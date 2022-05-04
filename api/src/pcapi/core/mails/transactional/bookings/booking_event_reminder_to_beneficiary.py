@@ -37,7 +37,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
     )
 
     return SendinblueTransactionalEmailData(
-        template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,
+        template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,  # id_prod à zero -> à changer avec l'id du template sur le compte sib de prod
         params={
             "BOOKING_LINK": booking_app_link(individual_booking.booking),
             "EVENT_DATE": formatted_event_beginning_date,
@@ -45,11 +45,11 @@ def get_booking_event_reminder_to_beneficiary_email_data(
             "IS_DUO_EVENT": individual_booking.booking.quantity == 2,
             "OFFER_NAME": individual_booking.booking.stock.offer.name,
             "OFFER_TOKEN": booking_token,
-            "OFFER_WITHDRAWAL_DELAY": individual_booking.booking.stock.offer.withdrawalDelay,
+            "OFFER_WITHDRAWAL_DELAY": individual_booking.booking.stock.offer.withdrawalDelay,  # --> changer les secondes en jours
             "OFFER_WITHDRAWAL_DETAILS": individual_booking.booking.stock.offer.withdrawalDetails or None,
             "OFFER_WITHDRAWAL_TYPE": individual_booking.booking.stock.offer.withdrawalType,
             "QR_CODE": bookings_api.get_qr_code_data(individual_booking.booking.token),
-            "SUBCATEGORY": individual_booking.booking.stock.offer.subcategoryId,
+            "SUBCATEGORY": individual_booking.booking.stock.offer.subcategoryId,  # subcategoryId utilisé pour filtrer dans sib, n'est pas affiché à l'utiliser
             "USER_FIRST_NAME": individual_booking.user.firstName,
             "VENUE_ADDRESS": individual_booking.booking.stock.offer.venue.address,
             "VENUE_CITY": individual_booking.booking.stock.offer.venue.city,
