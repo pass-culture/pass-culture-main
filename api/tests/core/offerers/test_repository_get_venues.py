@@ -107,13 +107,13 @@ class GetFilteredVenuesForProUserTest:
         venue_list = offerers_repository.get_filtered_venues(pro_user_id=pro_user.id, user_is_admin=False)
 
         # then
-        assert len(venue_list) == 5
+        assert len(venue_list) == 4
 
         venue_ids = [venue.id for venue in venue_list]
         assert venues["owned_venue_validated"].id in venue_ids
         assert venues["owned_venue_not_validated"].id in venue_ids
         assert venues["owned_venue_validated_for_user"].id in venue_ids
-        assert venues["owned_venue_not_validated_for_user"].id in venue_ids
+        assert venues["owned_venue_not_validated_for_user"].id not in venue_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_validated_venues(self, app):
@@ -129,12 +129,12 @@ class GetFilteredVenuesForProUserTest:
         )
 
         # then
-        assert len(venue_list) == 4
+        assert len(venue_list) == 3
 
         venue_ids = [venue.id for venue in venue_list]
         assert venues["owned_venue_validated"].id in venue_ids
         assert venues["owned_venue_validated_for_user"].id in venue_ids
-        assert venues["owned_venue_not_validated_for_user"].id in venue_ids
+        assert venues["owned_venue_not_validated_for_user"].id not in venue_ids
 
     @pytest.mark.usefixtures("db_session")
     def test_get_all_not_validated_venues(self, app):
@@ -176,46 +176,6 @@ class GetFilteredVenuesForProUserTest:
         assert expected_venue.id in venue_ids
 
     @pytest.mark.usefixtures("db_session")
-    def test_get_all_validated_for_user_venues(self, app):
-        # given
-        pro_user = users_factories.ProFactory()
-        venues = self._setup_venues_for_pro_user(pro_user)
-
-        # when
-        venue_list = offerers_repository.get_filtered_venues(
-            pro_user_id=pro_user.id,
-            user_is_admin=False,
-            validated_offerer_for_user=True,
-        )
-
-        # then
-        assert len(venue_list) == 4
-
-        venue_ids = [venue.id for venue in venue_list]
-        assert venues["owned_venue_validated"].id in venue_ids
-        assert venues["owned_venue_not_validated"].id in venue_ids
-        assert venues["owned_venue_validated_for_user"].id in venue_ids
-
-    @pytest.mark.usefixtures("db_session")
-    def test_get_all_not_validated_for_user_venues(self, app):
-        # given
-        pro_user = users_factories.ProFactory()
-        venues = self._setup_venues_for_pro_user(pro_user)
-
-        # when
-        venue_list = offerers_repository.get_filtered_venues(
-            pro_user_id=pro_user.id,
-            user_is_admin=False,
-            validated_offerer_for_user=False,
-        )
-
-        # then
-        assert len(venue_list) == 1
-
-        venue_ids = [venue.id for venue in venue_list]
-        assert venues["owned_venue_not_validated_for_user"].id in venue_ids
-
-    @pytest.mark.usefixtures("db_session")
     def test_get_all_venues_from_active_offerers_only(self, app):
         # given
         pro_user = users_factories.ProFactory()
@@ -229,7 +189,7 @@ class GetFilteredVenuesForProUserTest:
         )
 
         # then
-        assert len(venue_list) == 4
+        assert len(venue_list) == 3
 
         venue_ids = [venue.id for venue in venue_list]
         assert venues["venue_from_inactive_offerer"].id not in venue_ids
@@ -248,7 +208,7 @@ class GetFilteredVenuesForProUserTest:
         )
 
         # then
-        assert len(venue_list) == 5
+        assert len(venue_list) == 4
 
         venue_ids = [venue.id for venue in venue_list]
         assert venues["venue_from_inactive_offerer"].id in venue_ids
