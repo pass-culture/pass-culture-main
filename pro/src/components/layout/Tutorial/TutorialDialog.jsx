@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
 
+import { Events } from 'core/FirebaseEvents/constants'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import { Tutorial, TUTO_DIALOG_LABEL_ID } from 'new_components/Tutorial'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -11,15 +13,17 @@ const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(
     currentUser && !currentUser.hasSeenProTutorials
   )
+  const logEvent = useSelector(state => state.app.logEvent)
 
   const saveHasSeenProTutorials = useCallback(() => {
+    logEvent(Events.FIRST_LOGIN)
     pcapi
       .setHasSeenTutos()
       .then(() => {
         setUserHasSeenTuto(currentUser)
       })
       .finally(() => setAreTutoDisplayed(false))
-  }, [currentUser, setUserHasSeenTuto])
+  }, [currentUser, setUserHasSeenTuto, logEvent])
 
   return areTutoDisplayed ? (
     <DialogBox
