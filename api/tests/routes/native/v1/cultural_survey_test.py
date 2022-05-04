@@ -9,7 +9,6 @@ from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
-from pcapi.tasks.serialization import cultural_survey_tasks as serializers
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -191,9 +190,9 @@ class CulturalSurveyQuestionsTest:
             ]
         }
 
-    @patch("pcapi.tasks.cultural_survey_tasks.upload_answers_task.delay")
     @freezegun.freeze_time("2020-01-01")
-    def test_post_cultural_survey_answers(self, upload_answers_task, client):
+    @patch("pcapi.core.object_storage.backends.gcp.GCPBackend.store_public_object")
+    def test_post_cultural_survey_answers(self, store_public_object, client):
         user: users_models.User = users_factories.UserFactory()
         client.with_token(user.email)
 
@@ -208,14 +207,6 @@ class CulturalSurveyQuestionsTest:
                 "questionId": CulturalSurveyQuestionEnum.FESTIVALS.value,
                 "answerIds": [
                     CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE.value,
-                    CulturalSurveyAnswerEnum.LIVRE.value,
-                ],
-            },
-            {
-                "questionId": CulturalSurveyQuestionEnum.ACTIVITES.value,
-                "answerIds": [
-                    CulturalSurveyAnswerEnum.LIVRE.value,
-                    CulturalSurveyAnswerEnum.PODCAST.value,
                 ],
             },
         ]
@@ -226,32 +217,19 @@ class CulturalSurveyQuestionsTest:
 
         assert response.status_code == 204
 
-        expected_answers = [
-            {
-                "questionId": CulturalSurveyQuestionEnum.SORTIES,
-                "answerIds": [
-                    CulturalSurveyAnswerEnum.FESTIVAL,
-                ],
-            },
-            {
-                "questionId": CulturalSurveyQuestionEnum.FESTIVALS,
-                "answerIds": [
-                    CulturalSurveyAnswerEnum.FESTIVAL_MUSIQUE,
-                    CulturalSurveyAnswerEnum.LIVRE,
-                ],
-            },
-            {
-                "questionId": CulturalSurveyQuestionEnum.ACTIVITES,
-                "answerIds": [
-                    CulturalSurveyAnswerEnum.LIVRE,
-                    CulturalSurveyAnswerEnum.PODCAST,
-                ],
-            },
-        ]
-        upload_answers_task.assert_called_once_with(
-            serializers.CulturalSurveyAnswersForData(
-                user_id=user.id, answers=expected_answers, submitted_at=datetime.datetime.utcnow()
-            )
+        answers_str = (
+            '{"user_id": %s, "submitted_at": "2020-01-01T00:00:00", "answers": '
+            '[{"question_id": "SORTIES", "answer_ids": ["FESTIVAL"]}, '
+            '{"question_id": "FESTIVALS", "answer_ids": ["FESTIVAL_MUSIQUE"]}]}'
+        ) % user.id
+
+        # Note: if the path does not exist, GCP creates the necessary folders
+        store_public_object.assert_called_once_with(
+            folder="QPI_exports/qpi_answers_20200101",
+            object_id=f"user_id_{user.id}.jsonl",
+            blob=bytes(answers_str, "utf-8"),
+            content_type="application/json",
         )
+
         assert not user.needsToFillCulturalSurvey
         assert user.culturalSurveyFilledDate == datetime.datetime.utcnow()

@@ -1,17 +1,33 @@
 import datetime
 import json
 
+import pydantic
+
 from pcapi import settings
+from pcapi.core.cultural_survey import models as cultural_survey_models
 from pcapi.core.object_storage.backends import gcp as gcp_backend
 from pcapi.tasks.decorator import task
-from pcapi.tasks.serialization import cultural_survey_tasks as serializers
 
 
 CULTURAL_SURVEY_ANSWERS_QUEUE_NAME = settings.GCP_CULTURAL_SURVEY_ANSWERS_QUEUE_NAME
 
 
+class CulturalSurveyTaskAnswer(pydantic.BaseModel):
+    question_id: cultural_survey_models.CulturalSurveyQuestionEnum
+    answer_ids: list[cultural_survey_models.CulturalSurveyAnswerEnum]
+
+    class Config:
+        use_enum_values = True
+
+
+class CulturalSurveyTaskAnswers(pydantic.BaseModel):
+    user_id: int
+    submitted_at: datetime.datetime
+    answers: list[CulturalSurveyTaskAnswer]
+
+
 @task(CULTURAL_SURVEY_ANSWERS_QUEUE_NAME, "/cultural_survey/upload_answers")
-def upload_answers_task(payload: serializers.CulturalSurveyAnswersForData) -> None:
+def upload_answers_task(payload: CulturalSurveyTaskAnswers) -> None:
     BUCKET_NAME = settings.GCP_DATA_BUCKET_NAME
     PROJECT_ID = settings.GCP_DATA_PROJECT_ID
 
@@ -22,7 +38,7 @@ def upload_answers_task(payload: serializers.CulturalSurveyAnswersForData) -> No
     answer = {
         "user_id": payload.user_id,
         "submitted_at": payload.submitted_at.isoformat(),
-        "answers": [payload_answer.dict() for payload_answer in payload.answers],
+        "answers": [answer.dict() for answer in payload.answers],
     }
 
     gcp_client.store_public_object(
