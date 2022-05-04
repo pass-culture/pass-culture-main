@@ -28,6 +28,7 @@ class UserOffererView(BaseAdminView):
         "offerer.address",
         "offerer.name",
         "offerer.id",
+        "isValidated",
     ]
     column_labels = {
         "user.email": "Email utilisateur",
@@ -38,6 +39,7 @@ class UserOffererView(BaseAdminView):
         "offerer.address": "Adresse de la structure",
         "offerer.name": "Nom de la structure",
         "offerer.id": "Identifiant de la structure",
+        "isValidated": "Validé",
     }
     column_sortable_list: list[str] = []
     column_searchable_list = [
