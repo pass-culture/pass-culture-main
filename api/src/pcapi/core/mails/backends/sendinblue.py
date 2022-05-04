@@ -7,6 +7,7 @@ from pcapi import settings
 from pcapi.core.mails.models.models import MailResult
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task
 from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task
 from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
@@ -66,7 +67,13 @@ class ToDevSendinblueBackend(SendinblueBackend):
         recipients: Iterable,
         data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
     ) -> MailResult:
-        whitelisted_recipients = set(recipients) & set(settings.WHITELISTED_EMAIL_RECIPIENTS)
+        whitelisted_recipients = set()
+        for recipient in recipients:
+            # Imported test users are whitelisted (Internal users, Bug Bounty, audit, etc.)
+            user = find_user_by_email(recipient)
+            if (user and user.has_test_role) or recipient in settings.WHITELISTED_EMAIL_RECIPIENTS:
+                whitelisted_recipients.add(recipient)
+
         if whitelisted_recipients:
             recipients = list(whitelisted_recipients)
         else:
