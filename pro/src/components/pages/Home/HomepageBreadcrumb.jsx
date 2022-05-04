@@ -1,7 +1,9 @@
 /* eslint-disable react/prop-types */
 import PropTypes from 'prop-types'
 import React from 'react'
+import { useSelector } from 'react-redux'
 
+import { Events } from 'core/FirebaseEvents/constants'
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
@@ -12,8 +14,10 @@ export const STEP_OFFERER_HASH = 'structures'
 export const STEP_PROFILE_HASH = 'profil'
 
 const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
+  const logEvent = useSelector(state => state.app.logEvent)
   const jumpToProfileSection = e => {
     e.preventDefault()
+    logEvent(Events.CLICKED_BREADCRUMBS_PROFILE_AND_HELP)
 
     profileRef?.current.scrollIntoView({
       behavior: doesUserPreferReducedMotion() ? 'auto' : 'smooth',
@@ -25,6 +29,7 @@ const HomepageBreadcrumb = ({ activeStep, profileRef }) => {
       id: STEP_ID_OFFERERS,
       label: 'Structures',
       hash: STEP_OFFERER_HASH,
+      onClick: () => logEvent(Events.CLICKED_BREADCRUMBS_STRUCTURES),
     },
     [STEP_ID_PROFILE]: {
       id: STEP_ID_PROFILE,

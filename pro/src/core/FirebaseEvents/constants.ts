@@ -1,5 +1,7 @@
 export enum Events {
   CLICKED_BOOKING = 'hasClickedBooking',
+  CLICKED_BREADCRUMBS_PROFILE_AND_HELP = 'hasClickedProfileAndHelp',
+  CLICKED_BREADCRUMBS_STRUCTURES = 'hasClickedStructures',
   CLICKED_CONSULT_CGU = 'hasClickedConsultCGU',
   CLICKED_CONSULT_SUPPORT = 'hasClickedConsultSupport',
   CLICKED_CREATE_ACCOUNT = 'hasClickedCreateAccount',
