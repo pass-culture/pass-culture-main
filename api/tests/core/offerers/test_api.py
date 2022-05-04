@@ -16,6 +16,7 @@ from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
@@ -724,34 +725,40 @@ def test_delete_business_unit():
 
 
 class IsVenueEligibleForStrictSearchTest:
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_eligible(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offers_factories.EventStockFactory(offer__venue=venue)
 
         assert offerers_api.is_venue_eligible_for_strict_search(venue)
 
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_venue_not_validated(self):
         venue = offerers_factories.VenueFactory(isPermanent=True, validationToken="not_validated_yet")
         offers_factories.EventStockFactory(offer__venue=venue)
 
         assert not offerers_api.is_venue_eligible_for_strict_search(venue)
 
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_no_offers(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         assert not offerers_api.is_venue_eligible_for_strict_search(venue)
 
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_managing_offerer_not_validated(self):
         venue = offerers_factories.VenueFactory(isPermanent=True, managingOfferer__validationToken="not_validated_yet")
         offers_factories.EventStockFactory(offer__venue=venue)
 
         assert not offerers_api.is_venue_eligible_for_strict_search(venue)
 
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_offer_without_stock(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
         offers_factories.OfferFactory(venue=venue)
 
         assert not offerers_api.is_venue_eligible_for_strict_search(venue)
 
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_expired_event(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 
@@ -760,6 +767,7 @@ class IsVenueEligibleForStrictSearchTest:
 
         assert not offerers_api.is_venue_eligible_for_strict_search(venue)
 
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_only_one_bookable_offer(self):
         venue = offerers_factories.VenueFactory(isPermanent=True)
 
