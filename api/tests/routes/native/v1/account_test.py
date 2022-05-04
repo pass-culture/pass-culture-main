@@ -1891,3 +1891,55 @@ class AccountSecurityTest:
         assert User.query.count() == 1
         user = User.query.first()
         assert user.password == user_password
+
+
+class GetAccountSuspendedDateTest:
+    def test_suspended_account(self, client):
+        """
+        Test that a call for a suspended account returns its suspension
+        date
+        """
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        suspension_event = users_factories.SuspendedUponUserRequestFactory(user=user)
+
+        client.with_token(email=user.email)
+        response = client.get("/native/v1/account/suspension_date")
+
+        assert response.status_code == 200
+        assert datetime.fromisoformat(response.json["date"]) == suspension_event.eventDate
+
+    class ShouldNotRespondWithSuspensionDateTest:
+        def test_unsuspended_account(self, client):
+            """
+            Test that a call for a unsuspended account returns no date
+            """
+            user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+
+            users_factories.SuspendedUponUserRequestFactory(user=user)
+            users_factories.UnsuspendedSuspensionFactory(user=user)
+
+            self.assert_no_suspension_date_returned(client, user)
+
+        def test_never_suspended_account(self, client):
+            """
+            Test that a call for an account that has never been suspended
+            returns no date
+            """
+            user = users_factories.BeneficiaryGrant18Factory(isActive=True)
+            self.assert_no_suspension_date_returned(client, user)
+
+        def test_suspended_fraud_suspicion(self, client):
+            """
+            Test that a call for an account that has been suspended because
+            of fraud suspicion returns no date
+            """
+            user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+            users_factories.UserSuspensionByFraudFactory(user=user)
+
+            self.assert_no_suspension_date_returned(client, user)
+
+        def assert_no_suspension_date_returned(self, client, user) -> None:
+            client.with_token(email=user.email)
+            response = client.get("/native/v1/account/suspension_date")
+
+            assert response.status_code == 403
