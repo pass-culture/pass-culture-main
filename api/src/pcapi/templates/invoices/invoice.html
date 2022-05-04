@@ -253,7 +253,7 @@
     <thead>
     <tr>
         <th>Mode de règlement</th>
-        <th>N° de règlement</th>
+        <th>N° de virement</th>
         <th>Date</th>
         <th>Montant réglé</th>
         <th>Destinataire</th>
@@ -263,10 +263,10 @@
 {% for cashflow in invoice.cashflows %}
     <tr>
         <td>Virement {{ cashflow.bankAccount.iban }}</td>
-        <td class="cashflow_id">{{ cashflow.id }}</td>
+        <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
         <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
         <td>{{ cashflow.amount|fr_currency }} €</td>
-        <td> {{ invoice.businessUnit.name }}</td>
+        <td>{{ invoice.businessUnit.name }}</td>
     </tr>
 {% endfor %}
     <tr class="coloredSection bottomTableText">
