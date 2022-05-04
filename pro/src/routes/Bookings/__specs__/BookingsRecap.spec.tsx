@@ -10,7 +10,6 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
-import type { Store } from 'redux'
 
 import { api } from 'api/v1/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
@@ -60,12 +59,13 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
 }
 
 const renderBookingsRecap = async (
-  store: Store,
+  // eslint-disable-next-line
+  store: any,
   routerState?: BookingsRouterState,
   waitDomReady?: boolean
 ) => {
   const rtlReturn = render(
-    <Provider store={store}>
+    <Provider store={configureTestStore(store)}>
       <MemoryRouter
         initialEntries={[{ pathname: '/reservations', state: routerState }]}
       >
@@ -106,7 +106,8 @@ const renderBookingsRecap = async (
 }
 
 describe('components | BookingsRecap | Pro user', () => {
-  let store: Store
+  // eslint-disable-next-line
+  let store: any
   let venue: { id: string; name: string; publicName: string }
   let user
 
@@ -126,11 +127,11 @@ describe('components | BookingsRecap | Pro user', () => {
       isAdmin: false,
       email: 'rené@example.com',
     }
-    store = configureTestStore({
+    store = {
       data: {
         users: [user],
       },
-    })
+    }
     ;(pcapi.getUserInformations as jest.Mock).mockResolvedValue(user)
     venue = venueFactory()
     ;(getVenuesForOfferer as jest.Mock).mockResolvedValue([venue])
@@ -345,24 +346,21 @@ describe('components | BookingsRecap | Pro user', () => {
     ).toBeInTheDocument()
   })
 
-  it.only('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
+  it('should fetch API for CSV when clicking on the download button and disable button while its loading', async () => {
     // Given
 
-    const { submitDownloadFilters } = await renderBookingsRecap(
-      configureTestStore({
-        ...store,
-        features: {
-          initialized: true,
-          list: [
-            {
-              isActive: true,
-              name: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
-              nameKey: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
-            },
-          ],
-        },
-      })
-    )
+    const { submitDownloadFilters } = await renderBookingsRecap({
+      ...store,
+      features: {
+        list: [
+          {
+            isActive: true,
+            name: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
+            nameKey: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
+          },
+        ],
+      },
+    })
 
     // When
     // submit utils method wait for button to become disabled then enabled.
@@ -384,13 +382,24 @@ describe('components | BookingsRecap | Pro user', () => {
     })
   })
 
-  it.only('should display an error message on CSV download when API returns a status other than 200', async () => {
+  it('should display an error message on CSV download when API returns a status other than 200', async () => {
     // Given
     ;(pcapi.getFilteredBookingsCSV as jest.Mock).mockImplementation(() =>
       Promise.reject(new Error('An error happened.'))
     )
 
-    const { submitDownloadFilters } = await renderBookingsRecap(store)
+    const { submitDownloadFilters } = await renderBookingsRecap({
+      ...store,
+      features: {
+        list: [
+          {
+            isActive: true,
+            name: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
+            nameKey: 'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON',
+          },
+        ],
+      },
+    })
 
     // When
     await submitDownloadFilters()

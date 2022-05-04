@@ -9,10 +9,9 @@ import { GetBookingsCSVFileAdapter } from 'core/Bookings'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import FilterByOfferType from 'new_components/FilterByOfferType'
 import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
+import getBookingsXLSFileAdapter from 'routes/Bookings/adapters/getBookingsXLSFileAdapter'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-
-import getBookingsXLSFileAdapter from '../../../routes/Bookings/adapters/getBookingsXLSFileAdapter'
 
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
@@ -52,11 +51,6 @@ const PreFilters = ({
   )
   const isCsvMultiDownloadFiltersActive = useActiveFeature(
     'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON'
-  )
-  // eslint-disable-next-line no-console
-  console.log(
-    'isCsvMultiDownloadFiltersActive',
-    isCsvMultiDownloadFiltersActive
   )
 
   const [selectedPreFilters, setSelectedPreFilters] = useState<TPreFilters>({
