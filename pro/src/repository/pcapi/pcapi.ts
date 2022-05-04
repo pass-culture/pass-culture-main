@@ -26,8 +26,6 @@ import { stringify } from 'utils/query-string'
 
 export const loadFeatures = async () => {
   client.get('/features').then(result => console.log('result', result))
-  // eslint-disable-next-line no-console
-
   return client.get('/features')
 }
 
