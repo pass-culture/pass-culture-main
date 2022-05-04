@@ -402,3 +402,26 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     class Config:
         alias_generator = to_camel
         extra = "forbid"
+
+
+class CollectiveOfferFromTemplateResponseModel(BaseModel):
+    id: str  # it's the stock id for compatibility
+    beginningDatetime: datetime
+    bookingLimitDatetime: datetime
+    isEducationalStockEditable: bool = True
+    numberOfTickets: Optional[int]
+    offerId: str
+    price: float
+    priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+
+    _humanize_id = humanize_field("id")
+
+    @classmethod
+    def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOfferFromTemplateResponseModel":
+        stock = offer.collectiveStock
+        stock.offerId = humanize(offer.id)
+        return super().from_orm(stock)
+
+    class Config:
+        json_encoders = {datetime: format_into_utc_date}
+        orm_mode = True
