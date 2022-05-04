@@ -7,6 +7,7 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
+from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 
 
@@ -119,6 +120,7 @@ class ReindexOfferIdsTest:
         assert offer.id in search_testing.search_store["offers"]
         assert app.redis_client.lrange("offer_ids_in_error", 0, 5) == [str(offer.id)]
 
+    @override_features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_reindex_venues_after_reindexing_offers(self, app):
         offer = make_bookable_offer()
         assert search_testing.search_store["offers"] == {}
@@ -196,6 +198,7 @@ class IndexOffersInQueueTest:
         assert app.redis_client.llen("offer_ids") == 0
 
 
+@override_features(ENABLE_VENUE_STRICT_SEARCH=True)
 def test_unindex_offer_ids(app):
     offer1 = make_bookable_offer()
     offer2 = make_bookable_offer()
