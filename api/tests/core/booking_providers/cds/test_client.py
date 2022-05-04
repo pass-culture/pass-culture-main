@@ -25,6 +25,11 @@ class CineDigitalServiceGetShowTest:
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 96}},
+                    {"tariffid": {"id": 3}},
+                    {"tariffid": {"id": 2}},
+                ],
             },
             {
                 "id": 2,
@@ -32,6 +37,9 @@ class CineDigitalServiceGetShowTest:
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 96}},
+                ],
             },
             {
                 "id": 3,
@@ -39,6 +47,7 @@ class CineDigitalServiceGetShowTest:
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
+                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -63,6 +72,7 @@ class CineDigitalServiceGetShowTest:
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
+                "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -91,6 +101,9 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "showtime": datetime.datetime(2022, 3, 28),
                 "is_cancelled": False,
                 "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 2}},
+                ],
             },
             {
                 "id": 2,
@@ -98,6 +111,9 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "showtime": datetime.datetime(2022, 3, 29),
                 "is_cancelled": False,
                 "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 2}},
+                ],
             },
             {
                 "id": 3,
@@ -105,6 +121,9 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                 "showtime": datetime.datetime(2022, 3, 30),
                 "is_cancelled": False,
                 "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 2}},
+                ],
             },
         ]
         mocked_get_resource.return_value = json_shows
