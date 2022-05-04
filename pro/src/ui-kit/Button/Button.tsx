@@ -1,4 +1,3 @@
-/* eslint-disable react/button-has-type */
 import cn from 'classnames'
 import React from 'react'
 

@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 import Package from '../../package.json'
 
 // TODO check empty response type from api
 // found the right type into fetch-node types if needed.
 /* tslint:disable-next-line */
-export interface EmptyResponse {} // eslint-disable-line @typescript-eslint/no-empty-interface
+export interface EmptyResponse {}
 
 // TODO: ModelObject should be removed when offer.extraData is correctly typed on api
 /* tslint:disable-next-line */
-export interface ModelObject {} // eslint-disable-line @typescript-eslint/no-empty-interface
+export interface ModelObject {}
 
 export interface ApiErrorResonseMessages {
   global?: string[]
@@ -19,11 +17,11 @@ export interface ApiErrorResonseMessages {
 export class ApiError extends Error {
   name = 'ApiError'
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line
   content: any
   statusCode: number
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
+  // eslint-disable-next-line
   constructor(
     statusCode: number,
     content: ApiErrorResonseMessages,
@@ -75,7 +73,7 @@ export const safeFetch = async (
 // !!! Not encouraging to use `any` anywhere else !!!
 export async function handleGeneratedApiResponse(
   response: Response
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line
 ): Promise<any | void> {
   if (
     response.status === HTTP_STATUS.NO_CONTENT ||
@@ -99,7 +97,7 @@ export function isApiError(error: ApiError | unknown): error is ApiError {
   return (error as ApiError).name === 'ApiError'
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+// eslint-disable-next-line
 export function extractApiErrorMessageForKey(
   error: unknown,
   errorKey: string
@@ -114,7 +112,7 @@ export function extractApiErrorMessageForKey(
   return errorMessages
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+// eslint-disable-next-line
 export function extractApiGlobalErrorMessage(error: unknown) {
   let message = 'Une erreur est survenue'
   const globalErrorMessages = extractApiErrorMessageForKey(error, 'global')
@@ -124,7 +122,7 @@ export function extractApiGlobalErrorMessage(error: unknown) {
   return message
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+// eslint-disable-next-line
 export function extractApiFirstErrorMessage(error: unknown) {
   if (isApiError(error)) {
     const { content } = error

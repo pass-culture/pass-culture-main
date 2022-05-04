@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 /* eslint no-undef: 0 */
 import classnames from 'classnames'
 import { Icon as LeafletIcon } from 'leaflet'

@@ -1403,8 +1403,10 @@ describe('offerDetails - Creation - pro user', () => {
             setOfferValues({ subcategoryId: 'SPECTACLE_REPRESENTATION' })
 
             // Then
-            const showTypeInput = await getOfferInputForField('showType')
-            expect(showTypeInput).toBeInTheDocument()
+
+            await waitFor(() =>
+              expect(screen.getByLabelText(/Type/)).toBeInTheDocument()
+            )
           })
 
           it('should display a show subtype selection when a showType is selected', async () => {

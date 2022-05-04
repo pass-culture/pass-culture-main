@@ -7,7 +7,6 @@ interface ObjectFromCsv {
 }
 
 const convertFromCsvToObject = (csv: string): ObjectFromCsv => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const result: any = Papa.parse(csv, {
     delimiter: CSV_SEMI_COLON_SEPARATOR,
     skipEmptyLines: true,

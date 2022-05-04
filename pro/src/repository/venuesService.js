@@ -1,7 +1,7 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
-export const fetchAllVenuesByProUser = (offererId = null) => {
-  return pcapi.getVenuesForOfferer({ offererId: offererId }).catch(() => [])
+export const fetchAllVenuesByProUser = offererId => {
+  return pcapi.getVenuesForOfferer({ offererId }).catch(() => [])
 }
 
 export const computeVenueDisplayName = venue => {

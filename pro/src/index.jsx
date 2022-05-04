@@ -12,7 +12,7 @@ import {
   SENTRY_SAMPLE_RATE,
 } from 'utils/config'
 
-import { version } from '../package.json'
+import config from '../package.json'
 import './styles/index.scss'
 
 import { unregister } from './registerServiceWorker'
@@ -22,7 +22,7 @@ if (SENTRY_SERVER_URL) {
   SentryInit({
     dsn: SENTRY_SERVER_URL,
     environment: ENVIRONMENT_NAME,
-    release: version,
+    release: config.version,
     integrations: [new TracingIntegrations.BrowserTracing()],
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
   })

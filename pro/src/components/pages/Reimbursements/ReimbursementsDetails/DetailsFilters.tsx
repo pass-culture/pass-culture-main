@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useCallback, useState } from 'react'
+import React, {
+  Dispatch,
+  MouseEventHandler,
+  SetStateAction,
+  useCallback,
+  useState,
+} from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
@@ -56,7 +62,7 @@ const DetailsFilters = ({
   }
 
   const setVenueFilter = useCallback(
-    event => {
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
       const venueId = event.target.value
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
@@ -68,7 +74,7 @@ const DetailsFilters = ({
   )
 
   const setStartDateFilter = useCallback(
-    startDate => {
+    (startDate: Date) => {
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
         periodStart: startDate,
@@ -79,7 +85,7 @@ const DetailsFilters = ({
   )
 
   const setEndDateFilter = useCallback(
-    endDate => {
+    (endDate: Date) => {
       setFilters((prevFilters: filtersType) => ({
         ...prevFilters,
         periodEnd: endDate,

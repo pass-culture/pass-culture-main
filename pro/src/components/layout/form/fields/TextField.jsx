@@ -1,4 +1,3 @@
-/* eslint react/function-component-definition: 0 */
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'

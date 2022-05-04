@@ -1,5 +1,5 @@
 import React from 'react'
-import { Redirect } from 'react-router'
+import { Redirect } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'

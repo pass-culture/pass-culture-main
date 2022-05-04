@@ -3,14 +3,6 @@ import fetch from 'jest-fetch-mock'
 import { client } from 'repository/pcapi/pcapiClient'
 import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
-delete window.location
-// @ts-expect-error ts-migrate(2740) FIXME: Type '{}' is missing the following properties from... Remove this comment to see the full error message
-window.location = {}
-const setHrefSpy = jest.fn()
-Object.defineProperty(window.location, 'href', {
-  set: setHrefSpy,
-})
-
 describe('pcapiClient', () => {
   beforeEach(() => {
     fetch.mockResponse(JSON.stringify({}), { status: 200 })
@@ -50,8 +42,7 @@ describe('pcapiClient', () => {
 
     it('should reject if return response status is not 200', async () => {
       // Given
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: string; }' is not assig... Remove this comment to see the full error message
-      fetch.mockResponseOnce({ error: 'API error message' }, { status: 403 })
+      fetch.mockResponseOnce('API error message', { status: 403 })
 
       // When
       await expect(client.getPlainText('/bookings/csv')).rejects.toStrictEqual(
@@ -60,8 +51,7 @@ describe('pcapiClient', () => {
     })
 
     it('should throw an error if return response status is not 200', async () => {
-      // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ error: string; }' is not assig... Remove this comment to see the full error message
-      fetch.mockResponseOnce({ error: 'API error message' }, { status: 403 })
+      fetch.mockResponseOnce('API error message', { status: 403 })
       let throwError
       try {
         await client.getPlainText('/bookings/csv')
@@ -145,14 +135,20 @@ describe('pcapiClient', () => {
     })
 
     it('should redirect to maintenance page when status is 503', async () => {
-      // Given
       fetch.mockResponse('Service Unavailable', { status: 503 })
+      const mockLocationAssign = jest.fn()
+      Object.defineProperty(window, 'location', {
+        value: {
+          assign: mockLocationAssign,
+        },
+        configurable: true,
+        enumerable: true,
+        writable: true,
+      })
 
-      // When
       await expect(client.get('/bookings/pro')).rejects.toBeNull()
 
-      // Then
-      expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
+      expect(mockLocationAssign).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
     })
   })
 

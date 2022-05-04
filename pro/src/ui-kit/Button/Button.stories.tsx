@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import { Story } from '@storybook/react'
 import React from 'react'
 

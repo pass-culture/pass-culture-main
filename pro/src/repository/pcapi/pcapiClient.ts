@@ -41,7 +41,7 @@ const fetchWithErrorHandler = async (path, options) => {
     if (!response.ok) {
       if (response.status === HTTP_STATUS.SERVICE_UNAVAILABLE) {
         // @ts-expect-error ts-migrate(2322) FIXME: Type 'string | undefined' is not assignable to typ... Remove this comment to see the full error message
-        window.location.href = URL_FOR_MAINTENANCE
+        window.location.assign(URL_FOR_MAINTENANCE)
       }
       return Promise.reject(
         results ? { errors: results, status: response.status } : null

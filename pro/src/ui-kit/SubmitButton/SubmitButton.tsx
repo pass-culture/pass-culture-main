@@ -10,6 +10,7 @@ interface ISubmitButtonProps {
   isLoading: boolean
   buttonRef?: ForwardedRef<HTMLButtonElement | null>
   onClick?(): void
+  children?: React.ReactNode
 }
 
 const SubmitButton: FC<ISubmitButtonProps> = ({

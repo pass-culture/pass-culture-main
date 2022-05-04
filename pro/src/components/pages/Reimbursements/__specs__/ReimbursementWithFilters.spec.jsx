@@ -287,7 +287,6 @@ describe('reimbursementsWithFilters', () => {
     )
   })
 
-  // eslint-disable-next-line jest/expect-expect
   it('should reset filters values when clicking on the button', async () => {
     // given
     const { getElementsOnLoadingComplete } = renderReimbursements(store, props)

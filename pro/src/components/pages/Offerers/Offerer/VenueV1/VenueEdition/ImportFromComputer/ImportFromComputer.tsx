@@ -15,7 +15,7 @@ export type ImportFromComputerProps = {
   orientation: 'portrait' | 'landscape'
   imageTypes: string[]
   constraints: Constraint[]
-  onSetImage: (file: File) => void
+  onSetImage: (file: string) => void
   children?: never
 }
 

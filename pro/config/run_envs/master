@@ -1,9 +1,0 @@
-API_URL='https://backend.passculture-testing.beta.gouv.fr'
-NODE_ENV="production"
-TYPEFORM_URL_CULTURAL_PRACTICES_POLL="https://passculture.typeform.com/to/T8rurj"
-ENVIRONMENT_NAME='testing'
-ENV_WORDING='de testing'
-SENTRY_SERVER_URL='https://50f5694849704813b4154c5868b73365@sentry.internal-passculture.app/2'
-URL_FOR_MAINTENANCE=https://maintenance.passculture.app
-DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL=https://www.demarches-simplifiees.fr/commencer/test/549ae483-be80-4a03-8700-394514b0e90d
-DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL=https://www.demarches-simplifiees.fr/commencer/test/7f08a1d7-8ffe-40b9-b93d-f6078ea89df8

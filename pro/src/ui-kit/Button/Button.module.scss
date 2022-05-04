@@ -54,7 +54,7 @@
     }
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      fill: $grey-medium;
+      fill: colors.$grey-medium;
     }
   }
 
@@ -78,7 +78,7 @@
     }
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      fill: $grey-medium;
+      fill: colors.$grey-medium;
     }
   }
 
@@ -100,7 +100,7 @@
     }
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      fill: $grey-medium;
+      fill: colors.$grey-medium;
     }
   }
 }

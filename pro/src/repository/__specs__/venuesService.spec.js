@@ -28,7 +28,7 @@ describe('venuesService', () => {
       const venues = await fetchAllVenuesByProUser()
       // Then
       expect(pcapi.getVenuesForOfferer).toHaveBeenCalledWith({
-        offererId: null,
+        offererId: undefined,
       })
       expect(venues).toHaveLength(1)
       expect(venues[0]).toStrictEqual({
