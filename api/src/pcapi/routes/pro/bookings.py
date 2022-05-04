@@ -12,6 +12,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
+from pcapi.models.api_errors import ForbiddenError
 from pcapi.routes.serialization import serialize
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsQueryModel
 from pcapi.routes.serialization.bookings_recap_serialize import ListBookingsResponseModel
@@ -189,12 +190,14 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
     if current_user.is_authenticated:
         # warning : current user is not none when user is not logged in
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
-
-    if current_api_key:
+    elif current_api_key:
         check_api_key_allows_to_validate_booking(
             current_api_key,  # type: ignore[arg-type]
             booking.offererId,
         )
+    else:
+        # We should not end up here, thanks to the `login_or_api_key_required` decorator.
+        raise ForbiddenError()
 
     bookings_validation.check_is_usable(booking)
 
@@ -228,12 +231,14 @@ def patch_booking_use_by_token(token: str) -> None:
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
-
-    if current_api_key:
+    elif current_api_key:
         check_api_key_allows_to_validate_booking(
             current_api_key,  # type: ignore[arg-type]
             booking.offererId,
         )
+    else:
+        # We should not end up here, thanks to the `login_or_api_key_required` decorator.
+        raise ForbiddenError()
 
     bookings_api.mark_as_used(booking)
 
@@ -272,12 +277,14 @@ def patch_cancel_booking_by_token(token: str) -> None:
 
     if current_user.is_authenticated:
         check_user_has_access_to_offerer(current_user, booking.offererId)
-
-    if current_api_key:
+    elif current_api_key:
         check_api_key_allows_to_cancel_booking(
             current_api_key,  # type: ignore[arg-type]
             booking.offererId,
         )
+    else:
+        # We should not end up here, thanks to the `login_or_api_key_required` decorator.
+        raise ForbiddenError()
 
     bookings_api.cancel_booking_by_offerer(booking)
 
@@ -310,12 +317,14 @@ def patch_booking_keep_by_token(token: str) -> None:
 
     if current_user.is_authenticated:
         check_user_can_validate_bookings_v2(current_user, booking.offererId)
-
-    if current_api_key:
+    elif current_api_key:
         check_api_key_allows_to_validate_booking(
             current_api_key,  # type: ignore[arg-type]
             booking.offererId,
         )
+    else:
+        # We should not end up here, thanks to the `login_or_api_key_required` decorator.
+        raise ForbiddenError()
 
     bookings_api.mark_as_unused(booking)
 
