@@ -132,7 +132,7 @@ _PRICE_BOOKINGS_ORDER_CLAUSE = (
 )
 
 
-def foo():  # type: ignore [no-untyped-def]
+def foo() -> None:
     return None
 
 
