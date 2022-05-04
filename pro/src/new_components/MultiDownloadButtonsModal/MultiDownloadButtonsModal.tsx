@@ -1,18 +1,19 @@
 import React, { useState } from 'react'
 
+import { TPreFilters } from 'core/Bookings'
+
 import { ReactComponent as DownloadSvg } from '../../icons/ico-download.svg'
 
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
 import style from './MultiDownloadButtonsModal.module.scss'
 
-type MultiDownloadButtonsModalType = {
+interface MultiDownloadButtonsModalType {
   isDownloading: boolean
   isLocalLoading: boolean
   isFiltersDisabled: boolean
-  // eslint-disable-next-line
-  downloadFunction: (filters: any, data: string) => void
-  filters: object
+  downloadFunction: (filters: TPreFilters, type: string) => Promise<void>
+  filters: TPreFilters
 }
 
 const MultiDownloadButtonsModal = ({
@@ -44,7 +45,6 @@ const MultiDownloadButtonsModal = ({
           )}
         </button>
       </div>
-      {console.log('filter', filters)}
       {isDownloadModalOptionOpen && (
         <div className={style['downloadModalOption']}>
           <button
