@@ -383,3 +383,7 @@ class UserProfilingFraudRequest(BaseModel):
 
 class UserProfilingSessionIdResponse(BaseModel):
     sessionId: str
+
+
+class UserSuspensionDateResponse(BaseModel):
+    date: Optional[datetime.datetime]

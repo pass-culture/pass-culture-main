@@ -17,11 +17,14 @@ from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users.external import update_external_user
+import pcapi.core.users.models as users_models
 from pcapi.core.users.models import User
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.models import api_errors
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
+from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -264,6 +267,19 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
 def suspend_account(user: User) -> None:
     api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
     send_user_request_to_delete_account_reception_email(user)
+
+
+@blueprint.native_v1.route("/account/suspension_date", methods=["GET"])
+@spectree_serialize(api=blueprint.api, on_success_status=200)
+@authenticated_maybe_inactive_user_required
+def get_account_suspension_date(user: User) -> serializers.UserSuspensionDateResponse:
+    reason = user.suspension_reason
+    if reason != users_models.SuspensionReason.UPON_USER_REQUEST:
+        # If the account has not been suspended upon user request, it
+        # has no reason to ask for its suspension date.
+        raise api_errors.ForbiddenError()
+
+    return serializers.UserSuspensionDateResponse(date=user.suspension_date)
 
 
 @blueprint.native_v1.route("/user_profiling", methods=["POST"])
