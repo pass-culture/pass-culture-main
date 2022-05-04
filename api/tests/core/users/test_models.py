@@ -72,6 +72,13 @@ class UserTest:
             assert user_models.User.query.filter(user_models.User.has_pro_role.is_(False)).all() == []
             assert user_models.User.query.filter(user_models.User.has_pro_role.is_(True)).all() == [user]
 
+        def test_has_test_role(self):
+            user = users_factories.UserFactory(roles=[user_models.UserRole.TEST])
+
+            assert user.has_test_role
+            assert user_models.User.query.filter(user_models.User.has_test_role.is_(False)).all() == []
+            assert user_models.User.query.filter(user_models.User.has_test_role.is_(True)).all() == [user]
+
         def test_add_role_on_new_user(self):
             user = user_models.User()
 
@@ -126,6 +133,13 @@ class UserTest:
 
             assert user.has_pro_role
             assert len(user.roles) == 1
+
+        def test_add_test_role(self):
+            user = users_factories.UserFactory.build()
+
+            user.add_test_role()
+
+            assert user.has_test_role
 
         def test_cannot_add_beneficiary_role_to_an_admin(self):
             user = users_factories.AdminFactory()

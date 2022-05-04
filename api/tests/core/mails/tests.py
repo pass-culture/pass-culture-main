@@ -12,6 +12,8 @@ from pcapi.core.mails.models import sendinblue_models
 from pcapi.core.mails.models.models import Email
 from pcapi.core.mails.models.models import EmailStatus
 from pcapi.core.testing import override_settings
+from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.tasks.serialization import sendinblue_tasks
 
 
@@ -230,6 +232,7 @@ class SendinblueBackendTest:
         assert result.successful
 
 
+@pytest.mark.usefixtures("db_session")
 class ToDevSendinblueBackendTest(SendinblueBackendTest):
 
     expected_sent_data = sendinblue_tasks.SendTransactionalEmailRequest(
@@ -243,3 +246,43 @@ class ToDevSendinblueBackendTest(SendinblueBackendTest):
 
     def _get_backend(self):
         return pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend()
+
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_to_dev(self, mock_send_transactional_email_secondary_task):
+        backend = self._get_backend()
+        result = backend.send_mail(recipients=self.recipients, data=self.data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
+        assert list(task_param.recipients) == list(self.expected_sent_data.recipients)
+        assert task_param.params == self.expected_sent_data.params
+        assert task_param.template_id == self.expected_sent_data.template_id
+        assert task_param.tags == self.expected_sent_data.tags
+        assert task_param.sender == self.expected_sent_data.sender
+        assert task_param.reply_to == self.expected_sent_data.reply_to
+        assert result.successful
+
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_test_user(self, mock_send_transactional_email_secondary_task):
+        users_factories.UserFactory(email=self.recipients[0], roles=[users_models.UserRole.TEST])
+
+        backend = self._get_backend()
+        result = backend.send_mail(recipients=self.recipients, data=self.data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
+        assert list(task_param.recipients) == list(self.recipients[0:1])
+        assert result.successful
+
+    @override_settings(WHITELISTED_EMAIL_RECIPIENTS=["whitelisted@example.com", "avery.kelly@example.com"])
+    @patch("pcapi.core.mails.backends.sendinblue.send_transactional_email_secondary_task.delay")
+    def test_send_mail_whitelisted(self, mock_send_transactional_email_secondary_task):
+        users_factories.UserFactory(email="avery.kelly@example.com", roles=[users_models.UserRole.TEST])
+
+        backend = self._get_backend()
+        result = backend.send_mail(recipients=self.recipients, data=self.data)
+
+        assert mock_send_transactional_email_secondary_task.call_count == 1
+        task_param = mock_send_transactional_email_secondary_task.call_args[0][0]
+        assert list(task_param.recipients) == ["avery.kelly@example.com"]
+        assert result.successful
