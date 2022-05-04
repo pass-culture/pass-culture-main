@@ -55,7 +55,6 @@ def get_venues(query: VenueListQueryModel) -> GetVenueListResponseModel:
         active_offerers_only=query.active_offerers_only,
         offerer_id=query.offerer_id,
         validated_offerer=query.validated,
-        validated_offerer_for_user=query.validated_for_user,
     )
 
     return GetVenueListResponseModel(

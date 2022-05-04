@@ -256,6 +256,7 @@ class GetVenueListResponseModel(BaseModel):
 
 
 class VenueListQueryModel(BaseModel):
+    # FIXME (dbaty, 2022-05-04): this is a no-op, remove this argument.
     validated_for_user: Optional[bool]
     validated: Optional[bool]
     active_offerers_only: Optional[bool]

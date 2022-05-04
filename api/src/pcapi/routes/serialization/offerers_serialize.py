@@ -114,6 +114,7 @@ class GetOfferersNamesResponseModel(BaseModel):
 
 class GetOfferersNamesQueryModel(BaseModel):
     validated: Optional[bool]
+    # FIXME (dbaty, 2022-05-04): rename to something clearer, e.g. `include_non_validated_user_offerers`
     validated_for_user: Optional[bool]
 
     class Config:

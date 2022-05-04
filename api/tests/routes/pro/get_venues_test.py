@@ -65,7 +65,6 @@ def test_default_call(mock_get_filtered_venues, app):
         pro_user_id=user_offerer.user.id,
         user_is_admin=False,
         validated_offerer=None,
-        validated_offerer_for_user=None,
     )
 
 
@@ -85,7 +84,6 @@ def test_default_admin_call(mock_get_filtered_venues, app):
         pro_user_id=admin_user.id,
         user_is_admin=True,
         validated_offerer=None,
-        validated_offerer_for_user=None,
     )
 
 
@@ -137,7 +135,6 @@ def test_invalid_offerer_id(mock_get_filtered_venues, app):
         pro_user_id=pro_user.id,
         user_is_admin=False,
         validated_offerer=None,
-        validated_offerer_for_user=None,
     )
 
     assert "venues" in response.json
@@ -169,7 +166,6 @@ def test_full_valid_call(mock_get_filtered_venues, app):
         pro_user_id=pro_user.id,
         user_is_admin=False,
         validated_offerer=True,
-        validated_offerer_for_user=True,
     )
 
 
@@ -198,7 +194,6 @@ def test_full_valid_call_with_false(mock_get_filtered_venues, app):
         pro_user_id=pro_user.id,
         user_is_admin=False,
         validated_offerer=False,
-        validated_offerer_for_user=False,
     )
 
 

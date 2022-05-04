@@ -89,7 +89,6 @@ def get_filtered_venues(
     active_offerers_only: Optional[bool] = False,
     offerer_id: Optional[int] = None,
     validated_offerer: Optional[bool] = None,
-    validated_offerer_for_user: Optional[bool] = None,
 ) -> list[models.Venue]:
     query = (
         models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
@@ -98,18 +97,16 @@ def get_filtered_venues(
         .options(sqla_orm.joinedload(models.Venue.businessUnit))
     )
     if not user_is_admin:
-        query = query.filter(models.UserOfferer.userId == pro_user_id)
+        query = query.filter(
+            models.UserOfferer.userId == pro_user_id,
+            models.UserOfferer.validationToken.is_(None),
+        )
 
     if validated_offerer is not None:
         if validated_offerer:
             query = query.filter(models.Offerer.validationToken.is_(None))
         else:
             query = query.filter(models.Offerer.validationToken.isnot(None))
-    if validated_offerer_for_user is not None:
-        if validated_offerer_for_user:
-            query = query.filter(models.UserOfferer.validationToken.is_(None))
-        else:
-            query = query.filter(models.UserOfferer.validationToken.isnot(None))
 
     if active_offerers_only:
         query = query.filter(models.Offerer.isActive.is_(True))
