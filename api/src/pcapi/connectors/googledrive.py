@@ -20,11 +20,13 @@ proper backend is chosen depending on the environment (see
   API).
 """
 
+from io import BytesIO
 import pathlib
 import typing
 
 import googleapiclient.discovery
 from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseDownload
 
 from pcapi import settings
 from pcapi.utils.module_loading import import_string
@@ -50,6 +52,10 @@ class BaseBackend:
         """Create a new file and return its id."""
         raise NotImplementedError()
 
+    def download_file(self, file_id: str, content_type: typing.Optional[str] = None) -> BytesIO:
+        """Download a file and return its content"""
+        raise NotImplementedError()
+
 
 class TestingBackend(BaseBackend):
     def get_folder(self, parent_folder_id: str, name: str) -> typing.Optional[str]:
@@ -67,6 +73,10 @@ class TestingBackend(BaseBackend):
         if not local_path.exists():
             raise ValueError("The given local path should exist.")
         return parent_folder_id + name
+
+    def download_file(self, file_id: str, content_type: typing.Optional[str] = None) -> BytesIO:
+        """Download a file and return its content"""
+        return BytesIO()
 
 
 class GoogleDriveBackend(BaseBackend):
@@ -121,3 +131,14 @@ class GoogleDriveBackend(BaseBackend):
         )
         response = request.execute()
         return response["id"]
+
+    def download_file(self, file_id: str, content_type: typing.Optional[str] = None) -> BytesIO:
+        """Download a file and return its content"""
+        request = self.service.files().export_media(fileId=file_id, mimeType=content_type)
+        bytes_io = BytesIO()
+        downloader = MediaIoBaseDownload(bytes_io, request)
+        done = False
+        while done is False:
+            _, done = downloader.next_chunk()
+        bytes_io.seek(0)
+        return bytes_io

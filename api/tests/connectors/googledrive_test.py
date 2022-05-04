@@ -1,4 +1,5 @@
 import functools
+import io
 import json
 from unittest import mock
 
@@ -117,3 +118,24 @@ def test_create_file(mocked_request, tmpdir):
     mocked_request.call_args_list[0].kwargs["method"] = "POST"
     # It's MIME-encoded, don't bother to decode, just take a peek.
     assert b"dummy data" in mocked_request.call_args_list[0].kwargs["body"]
+
+
+@override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
+@mock_credentials
+@mock.patch("googleapiclient.http._retry_request")
+def test_download_file(mocked_request):
+    mocked_request.return_value = (
+        httplib2.Response({"status": 200, "headers": {"content-type": "text/csv"}}),
+        b"abc,def\nghi,jkl",
+    )
+
+    backend = googledrive.get_backend()
+    content = backend.download_file("file-id", "text/csv")
+
+    assert isinstance(content, io.BytesIO)
+    assert content.getvalue() == b"abc,def\nghi,jkl"
+    mocked_request.assert_called_once()
+    url = mocked_request.call_args_list[0].args[5]
+    url, query = url.split("?")
+    assert url == "https://www.googleapis.com/drive/v3/files/file-id/export"
+    assert query == "mimeType=text%2Fcsv&alt=media"

@@ -77,6 +77,7 @@ class UserRole(enum.Enum):
     BENEFICIARY = "BENEFICIARY"
     PRO = "PRO"
     UNDERAGE_BENEFICIARY = "UNDERAGE_BENEFICIARY"
+    TEST = "TEST"  # used to mark imported test users on staging
 
 
 class EligibilityType(enum.Enum):
@@ -253,6 +254,9 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
         if self.has_admin_role:  # pylint: disable=using-constant-test
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.UNDERAGE_BENEFICIARY)
+
+    def add_test_role(self) -> None:
+        self._add_role(UserRole.TEST)
 
     def checkPassword(self, passwordToCheck):  # type: ignore [no-untyped-def]
         return crypto.check_password(passwordToCheck, self.password)
@@ -491,6 +495,14 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
     @has_underage_beneficiary_role.expression  # type: ignore [no-redef]
     def has_underage_beneficiary_role(cls) -> bool:  # pylint: disable=no-self-argument
         return cls.roles.contains([UserRole.UNDERAGE_BENEFICIARY])
+
+    @hybrid_property
+    def has_test_role(self) -> bool:
+        return UserRole.TEST in self.roles if self.roles else False
+
+    @has_test_role.expression  # type: ignore [no-redef]
+    def has_test_role(cls) -> bool:  # pylint: disable=no-self-argument
+        return cls.roles.contains([UserRole.TEST])
 
     @classmethod
     def init_subscription_state_machine(cls, obj, *args, **kwargs) -> None:  # type: ignore [no-untyped-def]
