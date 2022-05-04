@@ -13,7 +13,7 @@ def store_public_object_from_sandbox_assets(folder, model, subcategoryId):  # ty
     picture_path = str(thumbs_folder_path / "mediations" / subcategoryId) + ".jpg"
     with open(picture_path, mode="rb") as thumb_file:
         if folder == "thumbs":
-            create_thumb(model, thumb_file.read(), 0)
+            create_thumb(model, thumb_file.read(), 0, keep_ratio=True)
             model.thumbCount += 1
         else:
             store_public_object(
