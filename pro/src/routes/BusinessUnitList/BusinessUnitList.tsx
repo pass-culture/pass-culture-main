@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 import Spinner from 'components/layout/Spinner'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -135,13 +135,16 @@ const BusinessUnitList = (): JSX.Element => {
     loadVenues(params.offererId)
   }, [params.offererId])
 
-  const saveBusinessUnit = useCallback((businessUnitId, siret) => {
-    try {
-      pcapi.editBusinessUnit(businessUnitId, siret)
-    } catch (e) {
-      console.error(e)
-    }
-  }, [])
+  const saveBusinessUnit = useCallback(
+    (businessUnitId: number, siret: string) => {
+      try {
+        pcapi.editBusinessUnit(businessUnitId, siret)
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    []
+  )
 
   if (!businessUnitList || !offerer || !venues) {
     return <Spinner />

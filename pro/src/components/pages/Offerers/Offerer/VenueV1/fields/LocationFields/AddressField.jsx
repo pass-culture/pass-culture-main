@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -38,7 +37,6 @@ export const addressFieldRender =
     required,
     addressProps,
   }) =>
-  // eslint-disable-next-line react/display-name
   ({ input, meta }) => {
     return (
       <div
@@ -99,7 +97,6 @@ export const addressFieldRender =
     )
   }
 
-// eslint-disable-next-line react/no-multi-comp
 export const AddressField = ({
   className,
   disabled,

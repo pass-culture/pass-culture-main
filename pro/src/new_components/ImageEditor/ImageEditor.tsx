@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   useCallback,
   useState,
+  MouseEventHandler,
 } from 'react'
 import AvatarEditor, { Position } from 'react-avatar-editor'
 
@@ -44,7 +45,7 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
     ref
   ) => {
     const [scale, setScale] = useState(initialScale ? initialScale : 1)
-    const [position, setPosition] = useState(initialPosition)
+    const [position, setPosition] = useState<Position>(initialPosition)
     const scaleRef = useRef(scale)
     const theme = createTheme({
       palette: {
@@ -85,11 +86,11 @@ const ImageEditor = forwardRef<AvatarEditor, IImageEditorProps>(
       canvasHeight,
     ])
 
-    const onScaleChange = useCallback(event => {
+    const onScaleChange = useCallback((event: any) => {
       setScale(event.target.value)
     }, [])
 
-    const onPositionChange = useCallback(position => {
+    const onPositionChange = useCallback((position: Position) => {
       setPosition(position)
     }, [])
 

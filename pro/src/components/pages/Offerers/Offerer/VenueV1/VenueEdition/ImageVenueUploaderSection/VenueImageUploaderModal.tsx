@@ -77,14 +77,14 @@ export const VenueImageUploaderModal = ({
   const notification = useNotification()
 
   const onSetImage = useCallback(
-    file => {
+    (file: string) => {
       setImage(file)
     },
     [setImage]
   )
 
   const onEditedImageSave = useCallback(
-    (dataUrl, croppedRect) => {
+    (dataUrl: string, croppedRect: CroppedRect) => {
       setCroppingRect(croppedRect)
       setEditedImage(dataUrl)
     },

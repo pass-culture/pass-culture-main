@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/named
+// eslint-disable-next-line
 import { Location, LocationListener } from 'history'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
@@ -13,7 +13,7 @@ const useLogNavigation = (): LocationListener | void => {
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
   useEffect(() => {
     if (logEvent) logEvent(Events.PAGE_VIEW, { from: location.pathname })
-  }, [logEvent]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [logEvent])
 
   useEffect(() => {
     if (logEvent) {

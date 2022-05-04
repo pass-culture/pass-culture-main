@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { useLocation } from 'react-router'
+import { useLocation } from 'react-router-dom'
 
 import { Title } from 'ui-kit'
 

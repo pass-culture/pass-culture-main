@@ -120,8 +120,7 @@ describe('new_components | RouteLeavingGuardOfferCreation | RouteLeavingGuard', 
   it('should display the redirection confirmation modal only when the next location is About page', async () => {
     // Given
     props.shouldBlockNavigation = nextLocation => {
-      // to fix - added to allow upgrade
-      // eslint-disable-next-line jest/no-conditional-in-test
+      // to fix - no-conditional-in-test
       if (nextLocation.pathname === '/about') {
         return { redirectPath: '', shouldBlock: true }
       }

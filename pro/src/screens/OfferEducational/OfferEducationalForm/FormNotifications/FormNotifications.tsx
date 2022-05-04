@@ -19,7 +19,6 @@ const FormNotifications = (): JSX.Element => {
       setFieldValue('notificationEmail', values.email)
     }
     // disable eslint because we want to trigger prefill only when checkbox value is updated
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.notifications, setFieldValue])
 
   return (

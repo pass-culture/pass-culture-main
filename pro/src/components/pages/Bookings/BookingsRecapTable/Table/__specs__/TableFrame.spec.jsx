@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { mount } from 'enzyme'
 import React from 'react'
 import * as reactTable from 'react-table'
@@ -97,7 +96,6 @@ describe('components | TableFrame', () => {
           id: 1,
           headerTitle: 'Stock',
           accessor: 'stock',
-          // eslint-disable-next-line react/display-name, react/no-multi-comp
           Cell: function ({ value }) {
             return <CellMock offer={value} />
           },
@@ -108,7 +106,6 @@ describe('components | TableFrame', () => {
           id: 2,
           headerTitle: 'Beneficiaire',
           accessor: 'beneficiary',
-          // eslint-disable-next-line react/display-name, react/no-multi-comp
           Cell: function ({ value }) {
             return <CellMock offer={value} />
           },
@@ -165,7 +162,6 @@ describe('components | TableFrame', () => {
             id: 1,
             headerTitle: 'Stock',
             accessor: 'stock',
-            // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
@@ -211,7 +207,6 @@ describe('components | TableFrame', () => {
             id: 1,
             headerTitle: 'Stock',
             accessor: 'stock',
-            // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
@@ -254,7 +249,6 @@ describe('components | TableFrame', () => {
             id: 1,
             headerTitle: 'Stock',
             accessor: 'stock',
-            // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },
@@ -298,7 +292,6 @@ describe('components | TableFrame', () => {
             id: 1,
             headerTitle: 'Stock',
             accessor: 'stock',
-            // eslint-disable-next-line react/display-name, react/no-multi-comp
             Cell: function ({ value }) {
               return <CellMock offer={value} />
             },

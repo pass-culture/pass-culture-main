@@ -4,7 +4,7 @@ import { Constraint, getValidatorErrors } from './imageConstraints'
 
 type UseCheckAndSetImage = (args: {
   constraints: Constraint[]
-  onSetImage: (file: File) => void
+  onSetImage: (file: string) => void
 }) => {
   errors: string[]
   checkAndSetImage: React.ChangeEventHandler<HTMLInputElement>
@@ -28,7 +28,8 @@ export const useCheckAndSetImage: UseCheckAndSetImage = ({
       const validatorErrors = await getValidatorErrors(constraints, currentFile)
 
       if (validatorErrors.length === 0) {
-        onSetImage(currentFile)
+        // FIX ME: don't cast
+        onSetImage(currentFile as unknown as string)
       }
 
       setErrors(validatorErrors)

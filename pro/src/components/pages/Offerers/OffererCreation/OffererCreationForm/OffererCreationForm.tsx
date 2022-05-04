@@ -16,7 +16,10 @@ const OffererCreationForm = ({
   pristine,
 }: IOffererCreationForm): JSX.Element => {
   const renderAddress = useCallback(
-    ({ values }) => (
+    (
+      // @ts-ignore
+      { values }
+    ) => (
       <div className="op-detail-creation-form">
         <span>{'Siège social : '}</span>
         {values.postalCode && (
@@ -29,7 +32,10 @@ const OffererCreationForm = ({
     []
   )
   const renderName = useCallback(
-    ({ values }) => (
+    (
+      // @ts-ignore
+      { values }
+    ) => (
       <div className="op-detail-creation-form">
         <span>{'Désignation : '}</span>
         {values.name && <span>{values.name}</span>}

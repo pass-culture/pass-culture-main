@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { useHistory, useLocation } from 'react-router'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import {
   translateApiParamsToQueryParams,

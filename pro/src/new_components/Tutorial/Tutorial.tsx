@@ -58,7 +58,7 @@ const Tutorial = ({ onFinish }: ITutorialProps): JSX.Element => {
     logEvent(Events.TUTO_PAGE_VIEW, {
       page_number: activeStep.position.toString(),
     })
-  }, [activeStep]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activeStep])
 
   return (
     <div className={styles['tutorial']} data-testid="tutorial-container">

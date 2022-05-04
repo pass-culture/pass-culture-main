@@ -22,7 +22,7 @@ const renderCsvTable = async ({
   storeOverride = {},
 }: {
   props: ICsvTableTestProps
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line
   storeOverride?: any
 }) => {
   const store = configureTestStore(storeOverride)

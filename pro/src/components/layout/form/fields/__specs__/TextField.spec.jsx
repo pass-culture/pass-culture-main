@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-no-bind */
 import { mount } from 'enzyme'
 import React from 'react'
 import { Form } from 'react-final-form'

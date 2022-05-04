@@ -217,7 +217,6 @@ test("je suis scrollé sur l'élément incorrect du formulaire d'édition d'offr
 })
 
 // skip this test until flakiness is fixed
-// eslint-disable-next-line jest/no-disabled-tests
 test.skip("je suis empêché de quitter la création d'offre sans confirmation", async t => {
   const { offerer, user, venue } = await fetchSandbox(
     'pro_07_offer',
@@ -328,7 +327,6 @@ test("je suis redirigé sur la page de choix du type d'offre si je clique sur re
 })
 
 // skip this test until flakiness is fixed
-// eslint-disable-next-line jest/no-disabled-tests
 test.skip("je suis redirigé sur la liste des offres si je clique sur retour à partir de la page des stock au moment de la création d'offre", async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',
@@ -398,7 +396,6 @@ test("je suis redirigé sur la liste des offres si je clique sur retour à parti
 })
 
 // skip this test until flakiness is fixed
-// eslint-disable-next-line jest/no-disabled-tests
 test.skip('je suis redirigé sur la liste des offres si je clique sur retour à partir de la page de création quand je viens de la confirmation', async t => {
   const { user } = await fetchSandbox(
     'pro_07_offer',

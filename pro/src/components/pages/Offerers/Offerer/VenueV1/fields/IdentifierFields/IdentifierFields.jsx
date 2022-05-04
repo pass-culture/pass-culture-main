@@ -22,7 +22,6 @@ class IdentifierFields extends PureComponent {
     ReactTooltip.rebuild()
   }
 
-  /* eslint-disable react/no-unstable-nested-components */
   handleTooltipBookingEmail = readOnly => () =>
     readOnly ? null : (
       <span

@@ -1,8 +1,10 @@
 import React, { FunctionComponent, useCallback } from 'react'
+import { MouseEventHandler } from 'react'
 
 interface Props {
   className?: string
   link: string
+  children?: React.ReactNode
 }
 
 export const DisplayInAppLink: FunctionComponent<Props> = ({
@@ -10,7 +12,7 @@ export const DisplayInAppLink: FunctionComponent<Props> = ({
   link,
   children,
 }) => {
-  const openWindow = useCallback(
+  const openWindow: MouseEventHandler = useCallback(
     event => {
       event.preventDefault()
 
