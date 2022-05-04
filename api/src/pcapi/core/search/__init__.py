@@ -8,6 +8,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.search.backends import base
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import offer_queries
 from pcapi.utils.module_loading import import_string
 
@@ -442,6 +443,9 @@ def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
     """
     Get the offers' venue ids and reindex them
     """
+    if not FeatureToggle.ENABLE_VENUE_STRICT_SEARCH.is_active():
+        return
+
     query = Offer.query.filter(Offer.id.in_(offer_ids)).with_entities(Offer.venueId).distinct()
     venue_ids = [row[0] for row in query]
 

@@ -37,6 +37,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.repository import get_users_with_validated_attachment_by_offerer
 from pcapi.domain.admin_emails import maybe_send_offerer_validation_email
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
@@ -476,6 +477,9 @@ def is_venue_eligible_for_strict_search(venue: offerers_models.Venue) -> bool:
       1. it is eligible for search and validated/active;
       2. at least one if its offers is eligible for search
     """
+    if not FeatureToggle.ENABLE_VENUE_STRICT_SEARCH.is_active():
+        return True
+
     if not venue.is_eligible_for_search or not venue.isReleased:
         return False
 
