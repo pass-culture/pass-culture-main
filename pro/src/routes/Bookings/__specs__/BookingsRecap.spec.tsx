@@ -366,7 +366,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // submit utils method wait for button to become disabled then enabled.
     await submitDownloadFilters()
     const downloadSubButton = await screen.findByRole('button', {
-      name: 'Fichier CSV (.CSV)',
+      name: 'Fichier CSV (.csv)',
     })
     await userEvent.click(downloadSubButton)
 
@@ -404,7 +404,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // When
     await submitDownloadFilters()
     const downloadSubButton = await screen.findByRole('button', {
-      name: 'Fichier CSV (.CSV)',
+      name: 'Fichier CSV (.csv)',
     })
     await userEvent.click(downloadSubButton)
 
