@@ -134,6 +134,9 @@ _PRICE_BOOKINGS_ORDER_CLAUSE = (
 )
 
 
+CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
+
+
 def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ignore [no-untyped-def]
     """Price bookings that have been recently marked as used.
 
@@ -632,13 +635,25 @@ def generate_cashflows_and_payment_files(cutoff: datetime.datetime):  # type: ig
     generate_payment_files(batch_id)
 
 
+def _get_next_cashflow_batch_label() -> str:
+    """Return the label of the next CashflowBatch."""
+    latest_batch = models.CashflowBatch.query.order_by(models.CashflowBatch.cutoff.desc()).limit(1).one_or_none()
+    if latest_batch is None:
+        latest_number = 0
+    else:
+        latest_number = int(latest_batch.label[len(CASHFLOW_BATCH_LABEL_PREFIX) :])
+
+    next_number = latest_number + 1
+    return CASHFLOW_BATCH_LABEL_PREFIX + str(next_number)
+
+
 def generate_cashflows(cutoff: datetime.datetime) -> int:
     """Generate a new CashflowBatch and a new cashflow for each business
     unit for which there is money to transfer.
     """
     is_new_collective_model_enabled = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
     logger.info("Started to generate cashflows")
-    batch = models.CashflowBatch(cutoff=cutoff)
+    batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
     db.session.flush()
     batch_id = batch.id  # access _before_ COMMIT to avoid extra SELECT
