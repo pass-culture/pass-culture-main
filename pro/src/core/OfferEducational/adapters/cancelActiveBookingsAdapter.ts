@@ -1,6 +1,6 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { hasStatusCodeAndCode } from '../utils'
+import { hasStatusCodeAndErrorsCode } from '../utils'
 
 type IPayloadSuccess = null
 type IPayloadFailure = null
@@ -14,12 +14,15 @@ export const cancelActiveBookingsAdapter: CancelActiveBookingsAdapter = async ({
   offerId,
 }) => {
   try {
+    // the api returns no understandable error when the id is not valid, so we deal before calling the api
+    if (!offerId || offerId === '')
+      throw new Error('L’identifiant de l’offre n’est pas valide.')
     await pcapi.cancelEducationalBooking(offerId)
     /* @debt bugRisk "Gaël: we can't be sure this way that the stock is really booked, it can also be USED"*/
     return {
       isOk: true,
       message:
-        'La réservation / préreservation sur cette offre à été annulée avec succès, votre offre sera à nouveau visible sur ADAGE',
+        'La réservation / préreservation sur cette offre à été annulée avec succès, votre offre sera à nouveau visible sur ADAGE.',
       payload: null,
     }
   } catch (error) {
@@ -27,23 +30,21 @@ export const cancelActiveBookingsAdapter: CancelActiveBookingsAdapter = async ({
       isOk: false,
       payload: null,
     }
-
     if (
-      hasStatusCodeAndCode(error) &&
+      hasStatusCodeAndErrorsCode(error) &&
       error.status === 400 &&
-      error.code === 'NO_BOOKING'
+      error.errors.code === 'NO_BOOKING'
     ) {
       return {
         ...errorResponse,
         message:
-          'Cette offre n’a aucune reservation en cours. Il est possible que la réservation que vous tentiez d’annuler ai déjà été utilisée.',
+          'Cette offre n’a aucune reservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.',
       }
     }
 
     return {
       ...errorResponse,
-      message:
-        'Une erreur inconnue est survenue lors de l’annulation de la réservation.',
+      message: `Une erreur est survenue lors de l’annulation de la réservation. ${error}`,
     }
   }
 }
