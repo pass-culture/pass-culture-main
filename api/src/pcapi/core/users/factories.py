@@ -403,7 +403,7 @@ class UserSuspensionFactory(BaseFactory):
 
 
 class UnsuspendedSuspensionFactory(UserSuspensionFactory):
-    eventType = users_constants.SuspensionEventType.SUSPENDED
+    eventType = users_constants.SuspensionEventType.UNSUSPENDED
 
 
 class SuspendedUponUserRequestFactory(UserSuspensionFactory):
