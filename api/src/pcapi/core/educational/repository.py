@@ -119,6 +119,22 @@ def get_confirmed_educational_bookings_amount(
     return Decimal(sum([educational_booking.booking.total_amount for educational_booking in educational_bookings]))
 
 
+def get_confirmed_collective_bookings_amount(
+    educational_institution_id: int,
+    educational_year_id: str,
+) -> Decimal:
+    query = db.session.query(func.sum(educational_models.CollectiveStock.price).label("amount"))
+    query = query.join(educational_models.CollectiveBooking, educational_models.CollectiveStock.collectiveBookings)
+    query = query.filter(
+        educational_models.CollectiveBooking.educationalInstitutionId == educational_institution_id,
+        educational_models.CollectiveBooking.educationalYearId == educational_year_id,
+        ~educational_models.CollectiveBooking.status.in_(
+            [CollectiveBookingStatus.CANCELLED, CollectiveBookingStatus.PENDING]
+        ),
+    )
+    return query.first().amount or Decimal(0)
+
+
 def find_educational_booking_by_id(
     educational_booking_id: int,
 ) -> Optional[educational_models.EducationalBooking]:
@@ -149,6 +165,28 @@ def find_educational_booking_by_id(
 def find_collective_booking_by_booking_id(booking_id: int) -> Optional[educational_models.CollectiveBooking]:
     return (
         CollectiveBooking.query.filter(educational_models.CollectiveBooking.bookingId == booking_id)
+        .options(
+            joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+            .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+            .load_only(educational_models.CollectiveOffer.name)
+            .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+            .load_only(Venue.name)
+        )
+        .options(joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
+        .options(
+            joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True).load_only(
+                educational_models.EducationalRedactor.email,
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+            )
+        )
+        .one_or_none()
+    )
+
+
+def find_collective_booking_by_id(booking_id: int) -> Optional[educational_models.CollectiveBooking]:
+    return (
+        CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
         .options(
             joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
             .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
