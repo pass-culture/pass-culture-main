@@ -93,8 +93,10 @@ def get_postal_code_timezone(postal_code: str) -> str:
     return get_department_timezone(PostalCode(postal_code).get_departement_code())
 
 
-def get_department_timezone(departement_code: str) -> str:
-    return CUSTOM_TIMEZONES.get(departement_code, METROPOLE_TIMEZONE)
+def get_department_timezone(departement_code: Optional[str]) -> str:
+    return (
+        METROPOLE_TIMEZONE if departement_code is None else CUSTOM_TIMEZONES.get(departement_code, METROPOLE_TIMEZONE)
+    )
 
 
 def utc_datetime_to_department_timezone(date_time: Optional[datetime], departement_code: str) -> datetime:
