@@ -65,25 +65,46 @@ def get_educational_bookings(
 )
 @adage_api_key_required
 def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.EducationalBookingResponse:
-    try:
-        educational_booking = api.confirm_educational_booking(educational_booking_id)
-        api.confirm_collective_booking(educational_booking_id)
-    except exceptions.InsufficientFund:
-        raise ApiErrors({"code": "INSUFFICIENT_FUND"}, status_code=422)
-    except exceptions.InsufficientTemporaryFund:
-        raise ApiErrors({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}, status_code=422)
-    except exceptions.EducationalBookingIsRefused:
-        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_REFUSED"}, status_code=422)
-    except exceptions.BookingIsCancelled:
-        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}, status_code=422)
-    except bookings_exceptions.ConfirmationLimitDateHasPassed:
-        raise ApiErrors({"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}, status_code=422)
-    except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
-    except exceptions.EducationalDepositNotFound:
-        raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        try:
+            educational_booking = api.confirm_collective_booking(educational_booking_id)
+        except exceptions.InsufficientFund:
+            raise ApiErrors({"code": "INSUFFICIENT_FUND"}, status_code=422)
+        except exceptions.InsufficientTemporaryFund:
+            raise ApiErrors({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}, status_code=422)
+        except exceptions.EducationalBookingIsRefused:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_REFUSED"}, status_code=422)
+        except exceptions.BookingIsCancelled:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}, status_code=422)
+        except bookings_exceptions.ConfirmationLimitDateHasPassed:
+            raise ApiErrors({"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}, status_code=422)
+        except exceptions.EducationalBookingNotFound:
+            raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
+        except exceptions.EducationalDepositNotFound:
+            raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
 
-    return prebooking_serialization.serialize_educational_booking(educational_booking)
+        serialized_booking = prebooking_serialization.serialize_collective_booking(educational_booking)
+    else:
+        try:
+            educational_booking = api.confirm_educational_booking(educational_booking_id)
+            api.confirm_collective_booking(educational_booking_id)
+        except exceptions.InsufficientFund:
+            raise ApiErrors({"code": "INSUFFICIENT_FUND"}, status_code=422)
+        except exceptions.InsufficientTemporaryFund:
+            raise ApiErrors({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}, status_code=422)
+        except exceptions.EducationalBookingIsRefused:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_REFUSED"}, status_code=422)
+        except exceptions.BookingIsCancelled:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}, status_code=422)
+        except bookings_exceptions.ConfirmationLimitDateHasPassed:
+            raise ApiErrors({"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}, status_code=422)
+        except exceptions.EducationalBookingNotFound:
+            raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
+        except exceptions.EducationalDepositNotFound:
+            raise ApiErrors({"code": "DEPOSIT_NOT_FOUND"}, status_code=404)
+
+        serialized_booking = prebooking_serialization.serialize_educational_booking(educational_booking)
+    return serialized_booking
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/refuse", methods=["POST"])
