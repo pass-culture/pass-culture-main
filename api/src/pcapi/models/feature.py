@@ -26,6 +26,7 @@ class FeatureToggle(enum.Enum):
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
     )
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
+    APP_ENABLE_SEARCH_HOMEPAGE_REWORK = "Active les modifications concernant le rework de la recherche de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
     DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING = "Désactiver la validation des noms et prénoms"
@@ -127,6 +128,7 @@ class Feature(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, m
 FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
     FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
+    FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
