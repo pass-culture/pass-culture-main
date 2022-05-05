@@ -47,8 +47,9 @@ class GetTimeFormattedForEmailTest:
 class GetDepartmentTimezoneTest:
     def test_should_return_paris_as_default_timezone(self):
         assert get_department_timezone("1") == "Europe/Paris"
+        assert get_department_timezone(None) == "Europe/Paris"
 
-    def test_should_return_custom_timezones(self):
+    def test_should_return_custom_timezone(self):
         assert get_department_timezone("973") == "America/Cayenne"
 
     def test_all_custom_timezones_are_valid(self):
