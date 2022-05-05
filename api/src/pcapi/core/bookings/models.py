@@ -16,7 +16,10 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy import and_
+from sqlalchemy import case
 from sqlalchemy import event
+from sqlalchemy import exists
+from sqlalchemy import select
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
@@ -84,6 +87,18 @@ class IndividualBooking(PcObject, Model):  # type: ignore [valid-type, misc]
         lazy="joined",
         innerjoin=True,
     )
+
+
+class ExternalBooking(PcObject, Model):  # type: ignore [valid-type, misc]
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+
+    bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
+
+    booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
+
+    barcode = Column(String, nullable=False)
+
+    seat = Column(String)
 
 
 class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
@@ -301,17 +316,20 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
 
         return None
 
+    @hybrid_property
+    def isExternal(self) -> bool:
+        return any(externalBooking.id for externalBooking in self.externalBookings)
 
-class ExternalBooking(PcObject, Model):  # type: ignore [valid-type, misc]
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-
-    bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
-
-    booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
-
-    barcode = Column(String, nullable=False)
-
-    seat = Column(String)
+    @isExternal.expression  # type: ignore [no-redef]
+    def isExternal(cls):  # pylint: disable=no-self-argument # type: ignore[no-redef]
+        return select(
+            [
+                case(
+                    [(exists().where(ExternalBooking.bookingId == cls.id).correlate(cls), True)],
+                    else_=False,
+                ).label("isExternal")
+            ]
+        ).label("number_of_externalBookings")
 
 
 # FIXME (dbaty, 2020-02-08): once `Deposit.expirationDate` has been

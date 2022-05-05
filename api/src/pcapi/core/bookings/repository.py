@@ -554,6 +554,7 @@ def _get_filtered_booking_report(
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.cancellationDate.label("cancelledAt"),
+            Booking.isExternal,
             Booking.isConfirmed,
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field
@@ -601,6 +602,7 @@ def _get_filtered_booking_pro(
             Booking.status,
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.educationalBookingId,
+            Booking.isExternal,
             Booking.isConfirmed,
             EducationalBooking.confirmationDate,
             EducationalRedactor.firstName.label("redactorFirstname"),  # type: ignore [attr-defined]
@@ -645,6 +647,7 @@ def _serialize_booking_recap(booking: AbstractKeyedTuple) -> BookingRecap:
         booking_is_confirmed=booking.isConfirmed,  # type: ignore [attr-defined]
         booking_is_duo=booking.quantity == DUO_QUANTITY,  # type: ignore [attr-defined]
         booking_is_educational=booking.educationalBookingId is not None,  # type: ignore [attr-defined]
+        booking_is_external=booking.isExternal,  # type: ignore [attr-defined]
         booking_raw_status=booking.status,  # type: ignore [attr-defined]
         booking_confirmation_date=booking.confirmationDate,  # type: ignore [attr-defined]
         redactor_email=booking.redactorEmail,  # type: ignore [attr-defined]
@@ -702,7 +705,11 @@ def _serialize_csv_report(query: BaseQuery) -> str:
                 convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking),
                 convert_booking_dates_utc_to_venue_timezone(booking.usedAt, booking),
                 booking_recap_utils.get_booking_token(
-                    booking.token, booking.status, booking.offerIsEducational, booking.stockBeginningDatetime
+                    booking.token,
+                    booking.status,
+                    booking.offerIsEducational,
+                    booking.isExternal,
+                    booking.stockBeginningDatetime,
                 ),
                 booking.amount,
                 _get_booking_status(booking.status, booking.isConfirmed),
@@ -745,7 +752,11 @@ def _serialize_excel_report(query: BaseQuery) -> bytes:
             row,
             9,
             booking_recap_utils.get_booking_token(
-                booking.token, booking.status, booking.offerIsEducational, booking.stockBeginningDatetime
+                booking.token,
+                booking.status,
+                booking.offerIsEducational,
+                booking.isExternal,
+                booking.stockBeginningDatetime,
             ),
         )
         worksheet.write(row, 10, booking.amount, currency_format)

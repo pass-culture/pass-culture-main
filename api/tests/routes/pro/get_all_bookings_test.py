@@ -289,6 +289,19 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["bookingsRecap"][0]["booking_status_history"] == expected_bookings_recap
 
+    @freeze_time("2020-08-11 13:00")
+    def test_should_not_return_booking_token_when_booking_is_external(self, app, client):
+        externalbooking = bookings_factories.UsedExternalBookingFactory(
+            booking__dateCreated=datetime(2020, 8, 11, 12, 0, 0)
+        )
+        pro_user = users_factories.ProFactory(email="pro@example.com")
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)
+
+        response = client.with_session_auth(pro_user.email).get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}")
+
+        assert response.status_code == 200
+        assert response.json["bookingsRecap"][0]["booking_token"] is None
+
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:

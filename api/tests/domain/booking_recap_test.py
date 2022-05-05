@@ -208,6 +208,18 @@ class BookingRecapTest:
             # Then
             assert booking_recap_token == "ABCDE"
 
+        def test_should_not_return_token_when_booking_is_external_and_booking_is_used_and_not_cancelled(self):
+            # Given
+            booking_recap = create_domain_booking_recap(
+                booking_token="ABCDE", booking_status=BookingStatus.USED, booking_is_external=True
+            )
+
+            # When
+            booking_recap_token = booking_recap.booking_token
+
+            # Then
+            assert booking_recap_token is None
+
     class BuildHistoryTest:
         def test_should_return_booking_recap_history(self):
             # Given
