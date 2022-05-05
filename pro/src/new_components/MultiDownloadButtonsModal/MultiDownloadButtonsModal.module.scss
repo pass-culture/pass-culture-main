@@ -12,8 +12,8 @@
   }
 
   .dropIcon {
-    margin-left: rem(50px);
-    margin-bottom: rem(2px);
+    margin-left: rem.torem(50px);
+    margin-bottom: rem.torem(2px);
   }
 }
 
@@ -35,9 +35,10 @@
     text-align: left;
     font-style: normal;
     font-weight: 600;
-    font-size: rem.torem(15px);
-    padding: rem.torem(8px) rem.torem(16px);
+    font-size: rem.torem(16px);
+    padding: rem.torem(8px) rem.torem(17px);
     width: 100%;
+
     &:hover {
       background: colors.$grey-medium;
     }

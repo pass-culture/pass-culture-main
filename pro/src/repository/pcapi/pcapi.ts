@@ -25,7 +25,7 @@ import {
 import { stringify } from 'utils/query-string'
 
 export const loadFeatures = async () => {
-  client.get('/features').then(result => console.log('result', result))
+  client.get('/features')
   return client.get('/features')
 }
 
