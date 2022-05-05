@@ -887,9 +887,9 @@ def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional
     )
 
 
-def is_user_age_compatible_with_eligibility(user: models.User, eligibility: Optional[EligibilityType]) -> bool:
+def is_user_age_compatible_with_eligibility(user_age: Optional[int], eligibility: Optional[EligibilityType]) -> bool:
     if eligibility == EligibilityType.UNDERAGE:
-        return user.age in constants.ELIGIBILITY_UNDERAGE_RANGE
+        return user_age in constants.ELIGIBILITY_UNDERAGE_RANGE
     if eligibility == EligibilityType.AGE18:
-        return user.age is not None and user.age >= constants.ELIGIBILITY_AGE_18
+        return user_age is not None and user_age >= constants.ELIGIBILITY_AGE_18
     return False
