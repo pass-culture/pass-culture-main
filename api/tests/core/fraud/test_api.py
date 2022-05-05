@@ -740,8 +740,8 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
         expected_user_ids = {expected_suspension.userId}
 
         with assert_num_queries(1):
-            users = fraud_api.get_suspended_upon_user_request_accounts_since(5)
-            user_ids = {user.id for user in users}
+            query = fraud_api.get_suspended_upon_user_request_accounts_since(5)
+            user_ids = {user.id for user in query}
             assert user_ids == expected_user_ids
 
     def test_unsuspended_account(self) -> None:

@@ -5,6 +5,7 @@ import typing
 
 import pydantic
 import sqlalchemy
+from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.core.fraud.utils import is_latin
@@ -633,7 +634,7 @@ def decide_eligibility(
 UserGenerator = typing.Generator[users_models.User, None, None]
 
 
-def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> UserGenerator:
+def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int) -> Query:
     start = datetime.date.today() - datetime.timedelta(days=expiration_delta_in_days)
 
     # distinct keeps the first row if duplicates are found. Since rows
@@ -661,5 +662,4 @@ def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int
         user_ids_and_latest_events.c.reasonCode == users_models.SuspensionReason.UPON_USER_REQUEST,
     )
 
-    for user in query.yield_per(1_000):
-        yield user
+    return query
