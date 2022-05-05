@@ -512,3 +512,56 @@ class CineDigitalServiceCancelBookingTest:
             str(exception.value)
             == f"""Error while canceling bookings :{sep}111111111111 : BARCODE_NOT_FOUND{sep}222222222222 : TICKET_ALREADY_CANCELED{sep}333333333333 : AFTER_END_OF_DAY{sep}444444444444 : AFTER_END_OF_SHOW{sep}555555555555 : DAY_CLOSED"""
         )
+
+
+class CineDigitalServiceGetVoucherForShowTest:
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_none_when_show_does_not_have_pass_culture_tariff(self, mocked_get_resource):
+        show = cds_serializers.ShowCDS(
+            id=1,
+            is_cancelled=False,
+            is_deleted=False,
+            internet_remaining_place=20,
+            showtime=datetime.datetime.utcnow(),
+            shows_tariff_pos_type_collection=[cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=5))],
+        )
+        json_voucher_types = [
+            {"id": 1, "code": "TESTCODE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},
+            {"id": 2, "code": "PSCULTURE", "tariffid": {"id": 3, "price": 6, "active": True, "labeltariff": ""}},
+        ]
+
+        mocked_get_resource.return_value = json_voucher_types
+
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+
+        voucher_type = cine_digital_service.get_voucher_type_for_show(show)
+        print("voucher_type", voucher_type)
+        assert not voucher_type
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_psculture_voucher_with_the_lower_price(self, mocked_get_resource):
+        show = cds_serializers.ShowCDS(
+            id=1,
+            is_cancelled=False,
+            is_deleted=False,
+            internet_remaining_place=20,
+            showtime=datetime.datetime.utcnow(),
+            shows_tariff_pos_type_collection=[
+                cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=3)),
+                cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
+            ],
+        )
+        json_voucher_types = [
+            {"id": 1, "code": "PSCULTURE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},
+            {"id": 2, "code": "PSCULTURE", "tariffid": {"id": 3, "price": 6, "active": True, "labeltariff": ""}},
+        ]
+
+        mocked_get_resource.return_value = json_voucher_types
+
+        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+
+        voucher_type = cine_digital_service.get_voucher_type_for_show(show)
+        print("voucher_type", voucher_type)
+        assert voucher_type.id == 1
+        assert voucher_type.tariff.id == 2
+        assert voucher_type.tariff.price == 5
