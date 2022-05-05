@@ -1,4 +1,5 @@
 import math
+from operator import attrgetter
 from typing import Optional
 
 from pydantic.tools import parse_obj_as
@@ -160,3 +161,20 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
 
     def create_booking(self) -> None:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")
+
+    def get_voucher_type_for_show(self, show: cds_serializers.ShowCDS) -> Optional[cds_serializers.VoucherTypeCDS]:
+        pc_voucher_types = self.get_pc_voucher_types()
+
+        show_pc_vouchers = []
+        for show_tariff in show.shows_tariff_pos_type_collection:
+            for voucher in pc_voucher_types:
+                if show_tariff.tariff.id == voucher.tariff.id:
+                    show_pc_vouchers.append(voucher)
+
+        if not show_pc_vouchers:
+            return None
+        # In the normal case a show is associated to 0 or 1 pass culture tariff
+        # It is possible that by mistake from CDS side several pass culture tariffs are associated with a show
+        # In this case we take the tariff with the lower price
+        min_price_voucher = min(show_pc_vouchers, key=attrgetter("tariff.price"))
+        return min_price_voucher
