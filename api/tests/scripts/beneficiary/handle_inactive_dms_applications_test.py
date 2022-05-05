@@ -49,7 +49,7 @@ class HandleInactiveApplicationTest:
         mark_without_continuation_mock.assert_called_once_with(
             inactive_application.id,
             "SomeInstructorId",
-            motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 90 jours",
+            motivation="Aucune activité n'a eu lieu sur votre dossier depuis plus de 90 jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse support@example.com",
         )
         assert active_fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert inactive_fraud_check.status == fraud_models.FraudCheckStatus.CANCELED
