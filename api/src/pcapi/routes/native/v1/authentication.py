@@ -15,7 +15,6 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import check_password_strength
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.routes.native.security import authenticated_user_required
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
@@ -72,11 +71,11 @@ def refresh() -> authentication.RefreshResponse:
 @blueprint.native_v1.route("/request_password_reset", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def request_password_reset(body: RequestPasswordResetRequest) -> None:
-    if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
-        try:
-            api_recaptcha.check_native_app_recaptcha_token(body.token)  # type: ignore [arg-type]
-        except api_recaptcha.ReCaptchaException:
-            raise ApiErrors({"token": "The given token is not valid"})
+    try:
+        api_recaptcha.check_native_app_recaptcha_token(body.token)  # type: ignore [arg-type]
+    except api_recaptcha.ReCaptchaException:
+        raise ApiErrors({"token": "The given token is not valid"})
+
     user = find_user_by_email(body.email)
     try:
         users_api.request_password_reset(user)  # type: ignore [arg-type]

@@ -68,7 +68,7 @@ class NextStepTest:
 
     @override_features(
         ENABLE_EDUCONNECT_AUTHENTICATION=False,
-        ALLOW_IDCHECK_UNDERAGE_REGISTRATION=False,
+        ENABLE_UBBLE=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=True,
     )
     def test_next_subscription_maintenance_page_test(self, client):
@@ -345,7 +345,6 @@ class NextStepTest:
 
     @override_features(
         ENABLE_UBBLE_SUBSCRIPTION_LIMITATION=True,
-        ALLOW_IDCHECK_UNDERAGE_REGISTRATION=True,
         ENABLE_UBBLE=True,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,

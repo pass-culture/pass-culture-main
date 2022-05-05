@@ -340,7 +340,6 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
@@ -350,7 +349,6 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
@@ -360,7 +358,6 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": True,
                     "ENABLE_UBBLE": True,
                 },
@@ -371,7 +368,6 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE": False,
                 },
                 15,
@@ -382,7 +378,6 @@ class NextSubscriptionStepTest:
             (
                 {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ENABLE_UBBLE": True,
                 },
                 15,
@@ -391,32 +386,12 @@ class NextSubscriptionStepTest:
             ),
             (
                 {
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
-                    "ENABLE_UBBLE": True,
-                },
-                15,
-                None,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT],
-            ),
-            (
-                {
                     "ENABLE_EDUCONNECT_AUTHENTICATION": False,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": True,
                     "ENABLE_UBBLE": True,
                 },
                 15,
                 None,
                 [subscription_models.IdentityCheckMethod.UBBLE],
-            ),
-            (
-                {
-                    "ENABLE_EDUCONNECT_AUTHENTICATION": True,
-                    "ALLOW_IDCHECK_UNDERAGE_REGISTRATION": False,
-                },
-                15,
-                None,
-                [subscription_models.IdentityCheckMethod.EDUCONNECT],
             ),
         ],
     )

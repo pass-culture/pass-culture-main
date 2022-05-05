@@ -345,10 +345,6 @@ def complete_profile(
 
 
 def is_identity_check_with_document_method_allowed_for_underage(user: users_models.User) -> bool:
-
-    if not FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION.is_active():
-        return False
-
     if user.schoolType in (
         users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
         users_models.SchoolTypeEnum.PUBLIC_SECONDARY_SCHOOL,

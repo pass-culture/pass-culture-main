@@ -153,11 +153,10 @@ def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) 
 @blueprint.native_v1.route("/account", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 def create_account(body: serializers.AccountRequest) -> None:
-    if FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA.is_active():
-        try:
-            api_recaptcha.check_native_app_recaptcha_token(body.token)
-        except api_recaptcha.ReCaptchaException:
-            raise ApiErrors({"token": "The given token is not valid"})
+    try:
+        api_recaptcha.check_native_app_recaptcha_token(body.token)
+    except api_recaptcha.ReCaptchaException:
+        raise ApiErrors({"token": "The given token is not valid"})
 
     try:
         api.create_account(

@@ -22,9 +22,6 @@ class FeatureToggle(enum.Enum):
     ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE = (
         "Autoriser la redirection vers Ubble (en backup) pour les utilisateurs éligibles à éduconnect"
     )
-    ALLOW_IDCHECK_UNDERAGE_REGISTRATION = (
-        "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
-    )
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     APP_ENABLE_SEARCH_HOMEPAGE_REWORK = "Active les modifications concernant le rework de la recherche de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
@@ -42,22 +39,15 @@ class FeatureToggle(enum.Enum):
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 15-17 ans"
     )
-    ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE = "Utiliser la nouvelle règle de détection d'utilisateur en doublon"
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
     ENABLE_FRONT_IMAGE_RESIZING = "Active le redimensionnement sur demande des images par l'app et le web"
-    ENABLE_ID_CHECK_RETENTION = "Active le mode bassin de retention dans Id Check V2"
     ENABLE_IDCHECK_FRAUD_CONTROLS = "Active les contrôles de sécurité en sortie du process ID Check"
     ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
     ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION = (
         "Active le champ isbn obligatoire lors de la création d'offre de type LIVRE_EDITION"
     )
-    ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
     ENABLE_NATIVE_CULTURAL_SURVEY = (
         "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
-    )
-    ENABLE_NATIVE_ID_CHECK_VERSION = "Utilise la version d'ID-Check intégrée à l'application native"
-    ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING = (
-        "Active le mode debug Firebase pour l'Id Check intégrée à l'application native"
     )
     ENABLE_CSV_MULTI_DOWNLOAD_BUTTON = "Active le multi-téléchargement des réservations"
     ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
@@ -87,11 +77,6 @@ class FeatureToggle(enum.Enum):
     SYNCHRONIZE_TITELIVE_PRODUCTS_THUMBS = "Permettre limport journalier des couvertures de livres"
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
     USER_PROFILING_FRAUD_CHECK = "Détection de la fraude basée sur le profil de l'utilisateur"
-    # FIXME (dbaty, 2022-02-21): remove WEBAPP_V2_ENABLED when no user
-    # accessed the old webapp (through its old URL) anymore. Until
-    # then, this flag musty be kept because it is still fetched by the
-    # old webapp.
-    WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
     ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION = (
         "Sépare la visualisation des offres et des remboursements sur le portail PRO"
     )
@@ -130,22 +115,18 @@ class Feature(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, m
 
 FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE,
-    FeatureToggle.ALLOW_IDCHECK_UNDERAGE_REGISTRATION,
     FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK,
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
     FeatureToggle.ENABLE_CDS_IMPLEMENTATION,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
-    FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
     FeatureToggle.ENABLE_EDUCONNECT_AUTHENTICATION,
     FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
-    FeatureToggle.ENABLE_ID_CHECK_RETENTION,
     FeatureToggle.ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION,
     FeatureToggle.ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION,
     FeatureToggle.ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION,
     FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
-    FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
     FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,

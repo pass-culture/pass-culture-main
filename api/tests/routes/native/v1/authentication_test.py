@@ -13,7 +13,6 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import api as subscription_api
-from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.core.users.models import Token
@@ -112,7 +111,6 @@ def test_request_reset_password_for_unknown_email(client):
 
 
 @patch("pcapi.connectors.api_recaptcha.check_native_app_recaptcha_token")
-@override_features(ENABLE_NATIVE_APP_RECAPTCHA=True)
 def test_request_reset_password_with_recaptcha_ok(
     mock_check_native_app_recaptcha_token,
     client,
