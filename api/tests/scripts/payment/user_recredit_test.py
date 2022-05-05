@@ -9,6 +9,7 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.payments import factories as payments_factories
 from pcapi.core.payments import models as payments_models
 from pcapi.core.users import factories as user_factories
+from pcapi.core.users.models import EligibilityType
 from pcapi.scripts.payment.user_recredit import can_be_recredited
 from pcapi.scripts.payment.user_recredit import has_been_recredited
 from pcapi.scripts.payment.user_recredit import has_celebrated_birthday_since_registration
@@ -36,6 +37,7 @@ class UserRecreditTest:
             resultContent=fraud_check_result_content,
             type=fraud_models.FraudCheckType.UBBLE,
             dateCreated=registration_datetime,
+            eligibilityType=EligibilityType.UNDERAGE,
         )
         assert has_celebrated_birthday_since_registration(user) == expected_result
 
@@ -53,6 +55,7 @@ class UserRecreditTest:
                 status=fraud_models.FraudCheckStatus.OK,
                 resultContent=content,
                 dateCreated=datetime.datetime(2020, 5, 1),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             assert user.deposit.recredits == []
             assert can_be_recredited(user) is False
@@ -96,6 +99,7 @@ class UserRecreditTest:
                 status=fraud_models.FraudCheckStatus.OK,
                 resultContent={},
                 dateCreated=datetime.datetime(2020, 5, 1),  # first fraud check created
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             fraud_check.resultContent = content
         with freeze_time("2022-05-02"):
@@ -182,6 +186,7 @@ class UserRecreditTest:
                 resultContent=fraud_factories.EduconnectContentFactory(
                     user=user_15, birth_date="2004-08-01", registration_datetime=id_check_application_date
                 ),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=datetime.datetime(2019, 12, 31),
@@ -193,6 +198,7 @@ class UserRecreditTest:
                     birth_date="2003-08-01",
                     registration_datetime=id_check_application_date,
                 ),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=datetime.datetime(2019, 12, 31),
@@ -204,6 +210,7 @@ class UserRecreditTest:
                     birth_date="2003-08-01",
                     registration_datetime=id_check_application_date,
                 ),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=datetime.datetime(2019, 12, 31),
@@ -215,6 +222,7 @@ class UserRecreditTest:
                     birth_date="2002-08-01",
                     registration_datetime=id_check_application_date,
                 ),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=datetime.datetime(2019, 12, 31),
@@ -226,6 +234,7 @@ class UserRecreditTest:
                     birth_date="2002-08-01",
                     registration_datetime=id_check_application_date,
                 ),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=datetime.datetime(2019, 12, 31),
@@ -237,6 +246,7 @@ class UserRecreditTest:
                     birth_date="2002-08-01",
                     registration_datetime=id_check_application_date,
                 ),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
             fraud_factories.BeneficiaryFraudCheckFactory(
                 dateCreated=datetime.datetime(2019, 12, 31),
@@ -248,6 +258,7 @@ class UserRecreditTest:
                     birth_date="2002-08-01",
                     registration_datetime=id_check_application_date,
                 ),
+                eligibilityType=EligibilityType.UNDERAGE,
             )
 
             # Not beneficiary user
