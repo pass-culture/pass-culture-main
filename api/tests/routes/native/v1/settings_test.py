@@ -19,12 +19,14 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=True,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=True,
         PRO_DISABLE_EVENTS_QRCODE=False,
+        APP_ENABLE_SEARCH_HOMEPAGE_REWORK=False,
     )
     def test_get_settings_feature_combination_1(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
         assert response.status_code == 200
         assert response.json == {
             "accountCreationMinimumAge": 15,
+            "appEnableSearchHomepageRework": False,
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": True,
@@ -55,12 +57,14 @@ class SettingsTest:
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         PRO_DISABLE_EVENTS_QRCODE=True,
         ALLOW_ACCOUNT_REACTIVATION=True,
+        APP_ENABLE_SEARCH_HOMEPAGE_REWORK=True,
     )
     def test_get_settings_feature_combination_2(self, app):
         response = TestClient(app.test_client()).get("/native/v1/settings")
         assert response.status_code == 200
         assert response.json == {
             "accountCreationMinimumAge": 15,
+            "appEnableSearchHomepageRework": True,
             "autoActivateDigitalBookings": True,
             "depositAmountsByAge": {"age_15": 2000, "age_16": 3000, "age_17": 3000, "age_18": 30000},
             "displayDmsRedirection": False,

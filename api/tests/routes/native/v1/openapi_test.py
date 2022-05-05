@@ -170,6 +170,7 @@ def test_public_api(client, app):
                 "SettingsResponse": {
                     "properties": {
                         "accountCreationMinimumAge": {"title": "Accountcreationminimumage", "type": "integer"},
+                        "appEnableSearchHomepageRework": {"title": "Appenablesearchhomepagerework", "type": "boolean"},
                         "autoActivateDigitalBookings": {"title": "Autoactivatedigitalbookings", "type": "boolean"},
                         "depositAmountsByAge": {
                             "allOf": [{"$ref": "#/components/schemas/DepositAmountsByAge"}],
@@ -197,6 +198,7 @@ def test_public_api(client, app):
                     },
                     "required": [
                         "accountCreationMinimumAge",
+                        "appEnableSearchHomepageRework",
                         "autoActivateDigitalBookings",
                         "displayDmsRedirection",
                         "enableFrontImageResizing",
