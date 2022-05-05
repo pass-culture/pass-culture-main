@@ -83,7 +83,7 @@ def get_activable_identity_fraud_check(user: users_models.User) -> typing.Option
         if fraud_check.status == fraud_models.FraudCheckStatus.OK
         and fraud_check.type in fraud_models.IDENTITY_CHECK_TYPES
         and users_api.is_eligible_for_beneficiary_upgrade(user, fraud_check.eligibilityType)
-        and users_api.is_user_age_compatible_with_eligibility(user, fraud_check.eligibilityType)
+        and users_api.is_user_age_compatible_with_eligibility(user.age, fraud_check.eligibilityType)
     ]
     if not user_identity_fraud_checks:
         return None
@@ -134,7 +134,7 @@ def is_eligibility_activable(
     return (
         user.eligibility == eligibility
         and users_api.is_eligible_for_beneficiary_upgrade(user, eligibility)
-        and users_api.is_user_age_compatible_with_eligibility(user, eligibility)
+        and users_api.is_user_age_compatible_with_eligibility(user.age, eligibility)
     )
 
 
@@ -549,8 +549,10 @@ def get_first_registration_date(
         fraud_check.get_min_date_between_creation_and_registration()
         for fraud_check in fraud_checks
         if fraud_check.eligibilityType == eligibility
-        and users_utils.get_age_at_date(user.dateOfBirth, fraud_check.get_min_date_between_creation_and_registration())
-        >= users_constants.ELIGIBILITY_UNDERAGE_RANGE[0]
+        and users_api.is_user_age_compatible_with_eligibility(
+            users_utils.get_age_at_date(user.dateOfBirth, fraud_check.get_min_date_between_creation_and_registration()),
+            eligibility,
+        )
     ]
 
     return min(registration_dates_when_eligible) if registration_dates_when_eligible else None
