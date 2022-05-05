@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 
+import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
 import { TPreFilters } from 'core/Bookings'
 import { Events } from 'core/FirebaseEvents/constants'
 
@@ -27,11 +28,18 @@ const MultiDownloadButtonsModal = ({
   filters,
 }: MultiDownloadButtonsModalType): JSX.Element => {
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
+
   const [isDownloadModalOptionOpen, setIsDownloadModalOptionOpen] =
     useState(false)
 
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  useOnClickOrFocusOutside(containerRef, () => {
+    setIsDownloadModalOptionOpen(false)
+  })
+
   return (
-    <>
+    <div ref={containerRef}>
       <div className={style['downloadModalButton']}>
         <button
           className="primary-button"
@@ -84,7 +92,7 @@ const MultiDownloadButtonsModal = ({
           </button>
         </div>
       )}
-    </>
+    </div>
   )
 }
 
