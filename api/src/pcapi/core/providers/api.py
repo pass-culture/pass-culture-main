@@ -81,7 +81,7 @@ def change_venue_provider(
     if not new_provider:
         raise ProviderNotFound()
 
-    id_at_provider = venueIdAtOfferProvider or venue_provider.venue.siret
+    id_at_provider = _get_siret(venueIdAtOfferProvider, venue_provider.venue.siret)
 
     _check_provider_can_be_connected(new_provider, id_at_provider)
 
@@ -118,23 +118,20 @@ def update_allocine_venue_provider(
 
 
 def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferProvider: str = None) -> VenueProvider:
-    id_at_provider = venueIdAtOfferProvider or venue.siret
+    id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
 
     _check_provider_can_be_connected(provider, id_at_provider)
 
     venue_provider = VenueProvider()
     venue_provider.venue = venue
     venue_provider.provider = provider
-    venue_provider.venueIdAtOfferProvider = id_at_provider  # type: ignore [assignment]
+    venue_provider.venueIdAtOfferProvider = id_at_provider
 
     repository.save(venue_provider)
     return venue_provider
 
 
-def _check_provider_can_be_connected(provider: Provider, id_at_provider: Optional[str]) -> None:
-    if not id_at_provider:
-        raise NoSiretSpecified()
-
+def _check_provider_can_be_connected(provider: Provider, id_at_provider: str) -> None:
     if not provider.implements_provider_api:
         raise ProviderWithoutApiImplementation()
 
@@ -397,3 +394,11 @@ def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: d
     is_new_quantity_stock_empty = new_quantity == 0
 
     return is_existing_stock_empty is not is_new_quantity_stock_empty
+
+
+def _get_siret(venue_id_at_offer_provider: Optional[str], siret: Optional[str]) -> str:
+    if venue_id_at_offer_provider is not None:
+        return venue_id_at_offer_provider
+    if siret is not None:
+        return siret
+    raise NoSiretSpecified()
