@@ -307,8 +307,8 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
     if not FeatureToggle.ALLOW_ACCOUNT_REACTIVATION:
         return
 
-    users = fraud_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
-    for user in users:
+    query = fraud_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
+    for user in query:
         users_api.suspend_account(user, users_constants.SuspensionReason.DELETED, None)
 
 
