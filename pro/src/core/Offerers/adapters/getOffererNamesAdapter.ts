@@ -1,8 +1,8 @@
 import { apiV1 } from 'api/api'
-import { IOffererName } from 'core/Offerers/types'
+import { TOffererName } from 'core/Offerers/types'
 
 type Params = void
-type IPayload = IOffererName[]
+type IPayload = TOffererName[]
 type TGetOffererNamesAdapter = Adapter<Params, IPayload, IPayload>
 
 const FAILING_RESPONSE = {

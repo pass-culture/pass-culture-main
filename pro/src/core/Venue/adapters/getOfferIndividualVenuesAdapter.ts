@@ -1,8 +1,8 @@
-import { IAPIVenue, IOfferIndividualVenue } from 'core/Venue/types'
+import { IAPIVenue, TOfferIndividualVenue } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 type Params = void
-type IPayload = IOfferIndividualVenue[]
+type IPayload = TOfferIndividualVenue[]
 type TGetOfferIndividualVenuesAdapter = Adapter<Params, IPayload, IPayload>
 
 const FAILING_RESPONSE = {

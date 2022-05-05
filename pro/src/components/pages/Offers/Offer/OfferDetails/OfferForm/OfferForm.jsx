@@ -21,6 +21,7 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import InternalBanner from 'components/layout/InternalBanner'
 import Spinner from 'components/layout/Spinner'
 import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
+import { OfferRefundWarning } from 'new_components/Banner'
 import { SubmitButton } from 'ui-kit'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
@@ -41,7 +42,6 @@ import {
 import AccessibilityCheckboxList, {
   getAccessibilityValues,
 } from './AccessibilityCheckboxList'
-import OfferRefundWarning from './Messages/OfferRefundWarning'
 import WithdrawalReminder from './Messages/WithdrawalReminder'
 import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'

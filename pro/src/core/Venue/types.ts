@@ -36,7 +36,7 @@ export interface IAPIVenue {
   withdrawalDetails: null
 }
 
-export interface IOfferIndividualVenue {
+export type TOfferIndividualVenue = {
   id: string
   managingOffererId: string
   name: string

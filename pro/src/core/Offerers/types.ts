@@ -1,4 +1,4 @@
-export interface IOffererName {
+export type TOffererName = {
   id: string
   name: string
 }

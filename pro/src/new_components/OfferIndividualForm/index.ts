@@ -1,4 +1,5 @@
 export { default as OfferIndividualForm } from './OfferIndividualForm'
 export { FORM_DEFAULT_VALUES } from './constants'
 export type { IOfferIndividualFormValues } from './types'
+export { default as setInitialFormValues } from './utils/setInitialFormValues'
 export { validationSchema } from './validationSchema'
