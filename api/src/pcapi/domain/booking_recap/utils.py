@@ -8,6 +8,7 @@ def get_booking_token(
     booking_token: str,
     booking_status: BookingStatus,
     booking_is_educational: bool,
+    booking_is_external: bool,
     event_beginning_datetime: Optional[datetime],
 ) -> Optional[str]:
     if (
@@ -19,6 +20,7 @@ def get_booking_token(
             BookingStatus.USED,
         ]
         or booking_is_educational
+        or booking_is_external
     ):
         return None
     return booking_token
