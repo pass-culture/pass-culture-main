@@ -68,7 +68,7 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
     dms_api.DMSGraphQLClient().mark_without_continuation(
         dms_application.id,
         settings.DMS_ENROLLMENT_INSTRUCTOR,
-        motivation=f"Aucune activité n'a eu lieu sur votre dossier depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours",
+        motivation=f"Aucune activité n'a eu lieu sur votre dossier depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse {settings.SUPPORT_EMAIL_ADDRESS}",
     )
 
     logger.info("Marked application %s without continuation", dms_application.number)
