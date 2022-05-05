@@ -123,7 +123,11 @@ class BeneficiaryValidationViewTest:
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_validate_user_from_educonnect(self, client):
         user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=2))
-        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.EDUCONNECT)
+        check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
         admin = users_factories.AdminFactory()
         client.with_session_auth(admin.email)
 
