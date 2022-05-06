@@ -44,6 +44,9 @@ def activate_beneficiary_for_eligibility(
         user.add_underage_beneficiary_role()
         age_at_registration = get_age_at_first_registration(user, users_models.EligibilityType.UNDERAGE)
 
+        if age_at_registration not in users_constants.ELIGIBILITY_UNDERAGE_RANGE:
+            raise exceptions.InvalidAgeException(age=age_at_registration)
+
     elif eligibility == users_models.EligibilityType.AGE18:
         user.validate_user_identity_18()
         user.add_beneficiary_role()
