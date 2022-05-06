@@ -27,6 +27,108 @@ from . import repository as dms_repository
 logger = logging.getLogger(__name__)
 
 
+def get_dms_subscription_item_status(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    dms_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
+) -> subscription_models.SubscriptionItemStatus:
+    if any(check.status == fraud_models.FraudCheckStatus.OK for check in dms_fraud_checks):
+        return subscription_models.SubscriptionItemStatus.OK
+    if any(
+        check.status in (fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING)
+        for check in dms_fraud_checks
+    ):
+        return subscription_models.SubscriptionItemStatus.PENDING
+    if any(check.status == fraud_models.FraudCheckStatus.KO for check in dms_fraud_checks):
+        return subscription_models.SubscriptionItemStatus.KO
+    if any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in dms_fraud_checks):
+        return subscription_models.SubscriptionItemStatus.SUSPICIOUS
+
+    if subscription_api.is_eligibility_activable(user, eligibility):
+        return subscription_models.SubscriptionItemStatus.TODO
+
+    return subscription_models.SubscriptionItemStatus.VOID
+
+
+def try_dms_orphan_adoption(user: users_models.User):  # type: ignore [no-untyped-def]
+    dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
+    if not dms_orphan:
+        return
+
+    dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(dms_orphan.application_id)
+    fraud_check = handle_dms_application(dms_application, dms_orphan.process_id)
+
+    if fraud_check is not None:
+        pcapi_repository.repository.delete(dms_orphan)
+
+
+def handle_dms_application(
+    dms_application: dms_models.DmsApplicationResponse, procedure_id: int
+) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+    application_id = dms_application.number
+    user_email = dms_application.profile.email
+    application_scalar_id = dms_application.id
+    state = dms_models.GraphQLApplicationStates(dms_application.state)
+
+    log_extra_data = {
+        "application_id": application_id,
+        "application_scalar_id": application_scalar_id,
+        "procedure_id": procedure_id,
+        "user_email": user_email,
+    }
+
+    user = find_user_by_email(user_email)
+
+    if not user:
+        _process_user_not_found_error(user_email, application_id, procedure_id, state, application_scalar_id)
+        return None
+    try:
+        application_content = dms_connector_api.parse_beneficiary_information_graphql(dms_application, procedure_id)
+        core_logging.log_for_supervision(
+            logger=logger,
+            log_level=logging.INFO,
+            log_message="Successfully parsed DMS application",
+            extra=log_extra_data,
+        )
+    except subscription_exceptions.DMSParsingError as parsing_error:
+        logger.info("[DMS] Parsing error in application", extra=log_extra_data)
+        return _process_parsing_error(parsing_error, user, application_id, state, application_scalar_id)
+
+    logger.info("DMS Application received with state %s", state, extra=log_extra_data)
+
+    current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, application_content)
+
+    if state == dms_models.GraphQLApplicationStates.draft:
+        eligibility_type = current_fraud_check.eligibilityType
+        if eligibility_type is None:
+            fraud_dms_api.on_dms_eligibility_error(
+                user, current_fraud_check, application_scalar_id, extra_data=log_extra_data
+            )
+        else:
+            subscription_messages.on_dms_application_received(user)
+        current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED  # type: ignore [assignment]
+
+    elif state == dms_models.GraphQLApplicationStates.on_going:
+        subscription_messages.on_dms_application_received(user)
+        current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
+
+    elif state == dms_models.GraphQLApplicationStates.accepted:
+        _process_application(user, application_content)
+        return current_fraud_check
+
+    elif state == dms_models.GraphQLApplicationStates.refused:
+        current_fraud_check.status = fraud_models.FraudCheckStatus.KO  # type: ignore [assignment]
+        current_fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]  # type: ignore [list-item]
+
+        subscription_messages.on_dms_application_refused(user)
+
+    elif state == dms_models.GraphQLApplicationStates.without_continuation:
+        current_fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
+
+    pcapi_repository.repository.save(current_fraud_check)
+    return current_fraud_check
+
+
 def _notify_parsing_error(parsing_errors: dict[str, str], application_scalar_id: str) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     if "birth_date" in parsing_errors:
@@ -93,31 +195,13 @@ def _process_parsing_error(
     return fraud_check
 
 
-def _process_parsing_exception(user: users_models.User, application_id: int) -> None:
-    _update_or_create_error_fraud_check(user, application_id, "Erreur de lecture du dossier")
-
-
-def _update_or_create_error_fraud_check(user: users_models.User, application_id: int, reason: str):  # type: ignore [no-untyped-def]
-    # Update fraud check for observability and to avoid reimporting the same application
-    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id)
-
-    fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
-    fraud_check.reason = reason
-    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
-
-    pcapi_repository.repository.save(fraud_check)
-
-
-def _process_user_parsing_error(application_id: int, procedure_id: int) -> None:
-    logger.info(
-        "[DMS][REMOTE IMPORT BENEFICIARIES] Application %s in procedure %s has no user and was ignored",
-        application_id,
-        procedure_id,
-    )
-    dms_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id)
-
-
-def _process_user_not_found_error(email: str, application_id: int, procedure_id: int) -> None:
+def _process_user_not_found_error(
+    email: str,
+    application_id: int,
+    procedure_id: int,
+    state: dms_models.GraphQLApplicationStates,
+    application_scalar_id: str,
+) -> None:
     logger.info(
         "User not found for application %s procedure %s email %s",
         application_id,
@@ -125,9 +209,15 @@ def _process_user_not_found_error(email: str, application_id: int, procedure_id:
         email,
     )
     dms_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id, email=email)
+    if state == dms_models.GraphQLApplicationStates.draft:
+        dms_connector_api.DMSGraphQLClient().send_user_message(
+            application_scalar_id,
+            settings.DMS_INSTRUCTOR_ID,
+            subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
+        )
 
 
-def process_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
+def _process_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
     try:
         fraud_check = fraud_api.on_dms_fraud_result(user, result_content)
     except Exception as exc:  # pylint: disable=broad-except
@@ -135,7 +225,7 @@ def process_application(user: users_models.User, result_content: fraud_models.DM
         return
 
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-        handle_validation_errors(user, fraud_check.reasonCodes, result_content)  # type: ignore [arg-type]
+        _handle_validation_errors(user, fraud_check.reasonCodes, result_content)  # type: ignore [arg-type]
         subscription_api.update_user_birth_date(user, result_content.get_birth_date())
         return
 
@@ -160,7 +250,7 @@ def process_application(user: users_models.User, result_content: fraud_models.DM
     )
 
 
-def handle_validation_errors(
+def _handle_validation_errors(
     user: users_models.User,
     reason_codes: list[fraud_models.FraudReasonCode],
     dms_content: fraud_models.DMSContent,
@@ -181,112 +271,3 @@ def handle_validation_errors(
         dms_content.procedure_id,
         extra={"user_id": user.id},
     )
-
-
-def get_dms_subscription_item_status(
-    user: users_models.User,
-    eligibility: typing.Optional[users_models.EligibilityType],
-    dms_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
-) -> subscription_models.SubscriptionItemStatus:
-    if any(check.status == fraud_models.FraudCheckStatus.OK for check in dms_fraud_checks):
-        return subscription_models.SubscriptionItemStatus.OK
-    if any(
-        check.status in (fraud_models.FraudCheckStatus.STARTED, fraud_models.FraudCheckStatus.PENDING)
-        for check in dms_fraud_checks
-    ):
-        return subscription_models.SubscriptionItemStatus.PENDING
-    if any(check.status == fraud_models.FraudCheckStatus.KO for check in dms_fraud_checks):
-        return subscription_models.SubscriptionItemStatus.KO
-    if any(check.status == fraud_models.FraudCheckStatus.SUSPICIOUS for check in dms_fraud_checks):
-        return subscription_models.SubscriptionItemStatus.SUSPICIOUS
-
-    if subscription_api.is_eligibility_activable(user, eligibility):
-        return subscription_models.SubscriptionItemStatus.TODO
-
-    return subscription_models.SubscriptionItemStatus.VOID
-
-
-def try_dms_orphan_adoption(user: users_models.User):  # type: ignore [no-untyped-def]
-    dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
-    if not dms_orphan:
-        return
-
-    dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(dms_orphan.application_id)
-    fraud_check = handle_dms_application(dms_application, dms_orphan.process_id)
-
-    if fraud_check is not None:
-        pcapi_repository.repository.delete(dms_orphan)
-
-
-def handle_dms_application(
-    dms_application: dms_models.DmsApplicationResponse, procedure_id: int
-) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
-    application_id = dms_application.number
-    user_email = dms_application.profile.email
-    application_scalar_id = dms_application.id
-    state = dms_models.GraphQLApplicationStates(dms_application.state)
-
-    log_extra_data = {
-        "application_id": application_id,
-        "application_scalar_id": application_scalar_id,
-        "procedure_id": procedure_id,
-        "user_email": user_email,
-    }
-
-    user = find_user_by_email(user_email)
-
-    if not user:
-        _process_user_not_found_error(user_email, application_id, procedure_id)
-        if state == dms_models.GraphQLApplicationStates.draft:
-            dms_connector_api.DMSGraphQLClient().send_user_message(
-                application_scalar_id,
-                settings.DMS_INSTRUCTOR_ID,
-                subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
-            )
-
-        return None
-    try:
-        application_content = dms_connector_api.parse_beneficiary_information_graphql(dms_application, procedure_id)
-        core_logging.log_for_supervision(
-            logger=logger,
-            log_level=logging.INFO,
-            log_message="Successfully parsed DMS application",
-            extra=log_extra_data,
-        )
-    except subscription_exceptions.DMSParsingError as parsing_error:
-        logger.info("[DMS] Parsing error in application", extra=log_extra_data)
-        return _process_parsing_error(parsing_error, user, application_id, state, application_scalar_id)
-
-    logger.info("DMS Application received with state %s", state, extra=log_extra_data)
-
-    current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, application_content)
-
-    if state == dms_models.GraphQLApplicationStates.draft:
-        eligibility_type = current_fraud_check.eligibilityType
-        if eligibility_type is None:
-            fraud_dms_api.on_dms_eligibility_error(
-                user, current_fraud_check, application_scalar_id, extra_data=log_extra_data
-            )
-        else:
-            subscription_messages.on_dms_application_received(user)
-        current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED  # type: ignore [assignment]
-
-    elif state == dms_models.GraphQLApplicationStates.on_going:
-        subscription_messages.on_dms_application_received(user)
-        current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
-
-    elif state == dms_models.GraphQLApplicationStates.accepted:
-        process_application(user, application_content)
-        return current_fraud_check
-
-    elif state == dms_models.GraphQLApplicationStates.refused:
-        current_fraud_check.status = fraud_models.FraudCheckStatus.KO  # type: ignore [assignment]
-        current_fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]  # type: ignore [list-item]
-
-        subscription_messages.on_dms_application_refused(user)
-
-    elif state == dms_models.GraphQLApplicationStates.without_continuation:
-        current_fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
-
-    pcapi_repository.repository.save(current_fraud_check)
-    return current_fraud_check
