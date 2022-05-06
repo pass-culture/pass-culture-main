@@ -14,6 +14,7 @@ import {
   CollectiveOfferTemplateResponseModel,
   EditEducationalOfferPayload,
   EditCollectiveStockPayload,
+  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Offer } from 'custom_types/offer'
@@ -371,6 +372,13 @@ export const createCollectiveOfferTemplate = (
   payload: CreateCollectiveOfferTemplatePayload
 ) => {
   return client.post(`/collective/offers-template/${offerId}/`, payload)
+}
+
+export const patchCollectiveOfferTemplate = (
+  offerId: string,
+  payload: Partial<CollectiveOfferTemplate>
+) => {
+  return client.patch(`/collective/offers-template/${offerId}/`, payload)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
