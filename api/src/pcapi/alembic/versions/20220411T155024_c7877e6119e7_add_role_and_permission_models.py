@@ -13,7 +13,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     op.create_table(
         "permission",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
@@ -27,17 +27,18 @@ def upgrade():
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("name", sa.String(length=140), nullable=False),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("name"),
     )
     op.create_table(
         "role_permission",
-        sa.Column("role_id", sa.BigInteger(), nullable=True),
-        sa.Column("permission_id", sa.BigInteger(), nullable=True),
+        sa.Column("roleId", sa.BigInteger(), nullable=True),
+        sa.Column("permissionId", sa.BigInteger(), nullable=True),
         sa.ForeignKeyConstraint(
-            ["permission_id"],
+            ["permissionId"],
             ["permission.id"],
         ),
         sa.ForeignKeyConstraint(
-            ["role_id"],
+            ["roleId"],
             ["role.id"],
         ),
     )
@@ -52,7 +53,7 @@ def upgrade():
             VALUES ('admin')
             RETURNING id
         )
-        INSERT INTO role_permission(role_id, permission_id)
+        INSERT INTO role_permission("roleId", "permissionId")
         VALUES (
             (SELECT id FROM admin_role LIMIT 1),
             (SELECT id FROM manage_perm LIMIT 1)
@@ -61,7 +62,7 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_table("role_permission")
     op.drop_table("role")
     op.drop_table("permission")

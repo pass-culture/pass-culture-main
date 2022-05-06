@@ -1,8 +1,10 @@
 from functools import wraps
+import logging
 import typing
 
 from flask import Response
 from flask import jsonify
+from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
@@ -14,9 +16,12 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 
 
+logger = logging.getLogger(__name__)
+
+
 def send_403_permission_needed(permission: Permissions) -> tuple[Response, int]:
     e = ApiErrors()
-    e.add_error("global", f"Permission nécessaire: {permission.value}")
+    e.add_error("global", "Permission requise")
     return jsonify(e.errors), 403
 
 
@@ -35,6 +40,12 @@ def permission_required(permission: Permissions) -> typing.Callable:
             ).scalar()
 
             if not granted:
+                logger.warning(
+                    "user %s missed permission %s while trying to access %s",
+                    str(current_user),
+                    permission.name,
+                    request.url,
+                )
                 return send_403_permission_needed(permission)
 
             return func(*args, **kwargs)
