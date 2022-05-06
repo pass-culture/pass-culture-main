@@ -131,7 +131,8 @@ def import_dms_users(procedure_id: int) -> None:
     )
 
 
-def _notify_parsing_error(parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str, client):  # type: ignore [no-untyped-def]
+def _notify_parsing_error(parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str) -> None:
+    client = dms_connector_api.DMSGraphQLClient()
     if "birth_date" in parsing_error:  # type: ignore [operator]
         client.send_user_message(
             application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
@@ -292,20 +293,19 @@ def try_dms_orphan_adoption(user: users_models.User):  # type: ignore [no-untype
     if not dms_orphan:
         return
 
-    fraud_check = parse_and_handle_dms_application(dms_orphan.application_id, dms_orphan.process_id)
+    dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(dms_orphan.application_id)
+    fraud_check = handle_dms_application(dms_application, dms_orphan.process_id)
 
     if fraud_check is not None:
         pcapi_repository.repository.delete(dms_orphan)
 
 
-def parse_and_handle_dms_application(  # type: ignore [no-untyped-def]
-    application_id, procedure_id
+def handle_dms_application(
+    dms_application: dms_models.DmsApplicationResponse, procedure_id: int
 ) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
-    client = dms_connector_api.DMSGraphQLClient()
-    dms_dossier = client.get_single_application_details(application_id)
-
-    user_email = dms_dossier.profile.email
-    application_scalar_id = dms_dossier.id
+    application_id = dms_application.number
+    user_email = dms_application.profile.email
+    application_scalar_id = dms_application.id
 
     log_extra_data = {
         "application_id": application_id,
@@ -315,7 +315,7 @@ def parse_and_handle_dms_application(  # type: ignore [no-untyped-def]
     }
 
     try:
-        state = dms_models.GraphQLApplicationStates(dms_dossier.state)
+        state = dms_models.GraphQLApplicationStates(dms_application.state)
     except ValueError:
         logger.exception(
             "Unknown GraphQLApplicationState for application %s procedure %s email %s",
@@ -330,7 +330,7 @@ def parse_and_handle_dms_application(  # type: ignore [no-untyped-def]
     if not user:
         _process_user_not_found_error(user_email, application_id, procedure_id)
         if state == dms_models.GraphQLApplicationStates.draft:
-            client.send_user_message(
+            dms_connector_api.DMSGraphQLClient().send_user_message(
                 application_scalar_id,
                 settings.DMS_INSTRUCTOR_ID,  # type: ignore [arg-type]
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
@@ -338,7 +338,7 @@ def parse_and_handle_dms_application(  # type: ignore [no-untyped-def]
 
         return None
     try:
-        application = dms_connector_api.parse_beneficiary_information_graphql(dms_dossier, procedure_id)
+        application = dms_connector_api.parse_beneficiary_information_graphql(dms_application, procedure_id)
         core_logging.log_for_supervision(
             logger=logger,
             log_level=logging.INFO,
@@ -350,7 +350,7 @@ def parse_and_handle_dms_application(  # type: ignore [no-untyped-def]
             user, list(parsing_error.errors.keys())
         )
         if state == dms_models.GraphQLApplicationStates.draft:
-            _notify_parsing_error(parsing_error.errors, application_scalar_id, client)  # type: ignore [arg-type]
+            _notify_parsing_error(parsing_error.errors, application_scalar_id)  # type: ignore [arg-type]
 
         return fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
 
