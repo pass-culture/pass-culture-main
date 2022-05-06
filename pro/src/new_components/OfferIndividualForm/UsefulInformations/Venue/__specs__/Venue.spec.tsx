@@ -8,7 +8,7 @@ import * as yup from 'yup'
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
-import { Venue, validationSchema } from '..'
+import { Venue, validationSchema, VENUE_DEFAULT_VALUES } from '..'
 import { IVenueProps } from '../Venue'
 
 interface IInitialValues {
@@ -25,7 +25,7 @@ const renderVenue = ({
   onSubmit: () => void
   props: IVenueProps
 }) => {
-  const rtlReturns = render(
+  return render(
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
@@ -34,15 +34,6 @@ const renderVenue = ({
       <Venue {...props} />
     </Formik>
   )
-
-  const selectVenue = screen.getByLabelText('Lieu') as HTMLSelectElement
-  const selectOfferer = screen.getByLabelText('Structure') as HTMLSelectElement
-
-  return {
-    ...rtlReturns,
-    selectVenue,
-    selectOfferer,
-  }
 }
 
 describe('OfferIndividual section: venue', () => {
@@ -100,34 +91,31 @@ describe('OfferIndividual section: venue', () => {
   })
 
   it('should not automatically select a structure', () => {
-    const { selectOfferer } = renderVenue({
+    renderVenue({
       initialValues,
       onSubmit,
       props,
     })
 
+    const selectOfferer = screen.getByLabelText('Structure')
+
     expect(selectOfferer).toBeInTheDocument()
-    const offererDefaultOption = screen.getByRole('option', {
-      name: 'Selectionner une structure',
-    }) as HTMLOptionElement
-    expect(offererDefaultOption.selected).toBeTruthy()
-    expect(selectOfferer.options.length).toBe(4)
+    expect(selectOfferer).toHaveValue(VENUE_DEFAULT_VALUES.offererId)
+    expect(selectOfferer.childNodes.length).toBe(4)
   })
 
   it('should not automatically select an offerer when the structure is not defined', () => {
-    const { selectVenue } = renderVenue({
+    renderVenue({
       initialValues,
       onSubmit,
       props,
     })
+    const selectVenue = screen.getByLabelText('Lieu')
 
     expect(selectVenue).toBeInTheDocument()
-    const venueDefaultOption = screen.getByRole('option', {
-      name: 'Selectionner un lieu',
-    }) as HTMLOptionElement
-    expect(venueDefaultOption.selected).toBeTruthy()
+    expect(selectVenue).toHaveValue(VENUE_DEFAULT_VALUES.venueId)
     expect(selectVenue).toBeDisabled()
-    expect(selectVenue.options.length).toBe(1)
+    expect(selectVenue.childNodes.length).toBe(1)
   })
 
   it('should automatically select the venue and offerer when there is only one in the list', async () => {
@@ -135,81 +123,70 @@ describe('OfferIndividual section: venue', () => {
       offererNames: [props.offererNames[0]],
       venueList: [props.venueList[0]],
     }
-    const { selectVenue, selectOfferer } = renderVenue({
+    renderVenue({
       initialValues,
       onSubmit,
       props,
     })
+    const selectVenue = screen.getByLabelText('Lieu')
+    const selectOfferer = screen.getByLabelText('Structure')
 
     await waitFor(() => {
-      const offererDefaultOption = screen.getByRole('option', {
-        name: 'Offerer AA',
-      }) as HTMLOptionElement
-      expect(offererDefaultOption.selected).toBeTruthy()
+      expect(selectOfferer).toHaveValue('AA')
+      expect(selectOfferer).toBeDisabled()
+      expect(selectOfferer.childNodes.length).toBe(1)
+      expect(selectVenue).toHaveValue('AAAA')
       expect(selectVenue).toBeDisabled()
-      expect(selectOfferer.options.length).toBe(1)
-
-      const venueDefaultOption = screen.getByRole('option', {
-        name: 'Venue AAAA',
-      }) as HTMLOptionElement
-      expect(venueDefaultOption.selected).toBeTruthy()
-      expect(selectVenue).toBeDisabled()
-      expect(selectVenue.options.length).toBe(1)
+      expect(selectVenue.childNodes.length).toBe(1)
     })
   })
 
   it('should automaticaly select the venue when only one option is available', async () => {
-    const { selectVenue, selectOfferer } = renderVenue({
+    renderVenue({
       initialValues,
       onSubmit,
       props,
     })
+    const selectVenue = screen.getByLabelText('Lieu')
+    const selectOfferer = screen.getByLabelText('Structure')
 
     // select a offerer with 1 venue
     await userEvent.selectOptions(selectOfferer, 'AA')
-    const selectedOffererOption = screen.getByRole('option', {
-      name: 'Offerer AA',
-    }) as HTMLOptionElement
-    expect(selectedOffererOption.selected).toBeTruthy()
+    expect(selectOfferer).toHaveValue('AA')
 
     expect(selectVenue).toBeDisabled()
-    expect(selectVenue.options.length).toBe(1)
-    const selectedVenueOption = screen.getByRole('option', {
-      name: 'Venue AAAA',
-    }) as HTMLOptionElement
-    expect(selectedVenueOption.selected).toBeTruthy()
+    expect(selectVenue).toHaveValue('AAAA')
+    expect(selectVenue.childNodes.length).toBe(1)
   })
 
   it('should not automaticaly select the venue when multiple options are available', async () => {
-    const { selectVenue, selectOfferer } = renderVenue({
+    renderVenue({
       initialValues,
       onSubmit,
       props,
     })
+    const selectVenue = screen.getByLabelText('Lieu')
+    const selectOfferer = screen.getByLabelText('Structure')
 
     await userEvent.selectOptions(selectOfferer, 'CC')
-    const selectedOffererOption = screen.getByRole('option', {
-      name: 'Offerer CC',
-    }) as HTMLOptionElement
-    expect(selectedOffererOption.selected).toBeTruthy()
+    expect(selectOfferer).toHaveValue('CC')
 
     waitFor(() => {
       expect(selectVenue).not.toBeDisabled()
     })
 
-    expect(selectVenue.options.length).toBe(3)
-    const selectedVenueOption = screen.getByRole('option', {
-      name: 'Selectionner un lieu',
-    }) as HTMLOptionElement
-    expect(selectedVenueOption.selected).toBeTruthy()
+    expect(selectVenue.childNodes.length).toBe(3)
+    expect(selectVenue).toHaveValue(VENUE_DEFAULT_VALUES.venueId)
   })
 
   it('should automatically unselect the venue when the user unselects the offerer', async () => {
-    const { selectVenue, selectOfferer } = renderVenue({
+    renderVenue({
       initialValues,
       onSubmit,
       props,
     })
+    const selectVenue = screen.getByLabelText('Lieu')
+    const selectOfferer = screen.getByLabelText('Structure')
 
     // select a other offerer with 1 venue
     await userEvent.selectOptions(selectOfferer, 'BB')
@@ -217,20 +194,20 @@ describe('OfferIndividual section: venue', () => {
     // unselect offerer id
     await userEvent.selectOptions(selectOfferer, 'Selectionner une structure')
 
-    const venueDefaultOption = screen.getByRole('option', {
-      name: 'Selectionner un lieu',
-    }) as HTMLOptionElement
-    expect(venueDefaultOption.selected).toBeTruthy()
+    expect(selectVenue).toHaveValue(VENUE_DEFAULT_VALUES.venueId)
     expect(selectVenue).toBeDisabled()
-    expect(selectVenue.options.length).toBe(1)
+    expect(selectVenue.childNodes.length).toBe(1)
   })
 
   it('should display an error when the user has not filled all required fields', async () => {
-    const { selectVenue, selectOfferer } = renderVenue({
+    renderVenue({
       initialValues,
       onSubmit,
       props,
     })
+    const selectVenue = screen.getByLabelText('Lieu')
+    const selectOfferer = screen.getByLabelText('Structure')
+
     expect(
       screen.queryByText('Veuillez séléctioner une structure')
     ).not.toBeInTheDocument()

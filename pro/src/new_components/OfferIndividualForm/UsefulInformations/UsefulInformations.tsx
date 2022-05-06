@@ -13,7 +13,7 @@ export interface IUsefulInformationsProps {
   isUserAdmin: boolean
 }
 
-const UserfulInformations = ({
+const UsefulInformations = ({
   offererNames,
   venueList,
   isUserAdmin,
@@ -39,4 +39,4 @@ const UserfulInformations = ({
   )
 }
 
-export default UserfulInformations
+export default UsefulInformations
