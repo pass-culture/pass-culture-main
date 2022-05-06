@@ -280,13 +280,6 @@ class TestClient:
         self.client = client
         self.auth_header = {}
 
-    def __enter__(self):
-        self.client.__enter__()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.client.__exit__(exc_type, exc_val, exc_tb)
-
     def with_session_auth(self, email: str) -> "TestClient":
         response = self.post("/users/signin", {"identifier": email, "password": settings.TEST_DEFAULT_PASSWORD})
         assert response.status_code == 200

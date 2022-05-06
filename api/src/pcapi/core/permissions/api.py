@@ -8,6 +8,11 @@ from pcapi.models import db
 from pcapi.repository import repository
 
 
+def raise_error_on_empty_role_name(name: str) -> None:
+    if not name:
+        raise ValueError("Role name cannot be empty")
+
+
 def list_roles() -> list[Role]:
     roles = Role.query.options(joinedload(Role.permissions)).all()
     return roles
@@ -19,8 +24,7 @@ def list_permissions() -> list[Permission]:
 
 
 def create_role(name: str, permission_ids: typing.Iterable[int]) -> Role:
-    if not name:
-        raise ValueError("Role name cannot be empty")
+    raise_error_on_empty_role_name(name)
     permissions = Permission.query.filter(Permission.id.in_(permission_ids))
     role = Role(name=name, permissions=permissions.all())
     repository.save(role)
@@ -28,8 +32,7 @@ def create_role(name: str, permission_ids: typing.Iterable[int]) -> Role:
 
 
 def update_role(id_: int, name: str, permission_ids: typing.Iterable[int]) -> Role:
-    if not name:
-        raise ValueError("Role name cannot be empty")
+    raise_error_on_empty_role_name(name)
     permissions = Permission.query.filter(Permission.id.in_(permission_ids))
     role = Role.query.get(id_)
     role.name = name
