@@ -94,7 +94,7 @@ def on_dms_eligibility_error(
     )
     subscription_messages.on_dms_application_parsing_errors_but_updatables_values(user, ["birth_date"])
     dms_client.send_user_message(
-        application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE  # type: ignore [arg-type]
+        application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
     )
     fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]  # type: ignore [list-item]
