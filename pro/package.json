@@ -6,6 +6,8 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js' --html build/stats.html",
     "build": "react-scripts build",
+    "build:staging": "sh -ac '. .env.staging; react-scripts build'",
+    "build:testing": "sh -ac '. .env.testing; react-scripts build'",
     "generate:api:client": "./scripts/generate_api_client.sh",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
