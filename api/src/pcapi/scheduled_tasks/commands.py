@@ -26,7 +26,6 @@ from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
 from pcapi.core.providers.repository import get_provider_by_local_class
-from pcapi.core.subscription.dms import api as dms_api
 from pcapi.core.users import api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.external import user_automations
@@ -42,6 +41,7 @@ from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.beneficiary import archive_dms_applications
 from pcapi.scripts.beneficiary.handle_inactive_dms_applications import handle_inactive_dms_applications
+from pcapi.scripts.beneficiary.import_dms_accepted_applications import import_dms_accepted_applications
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
@@ -88,7 +88,7 @@ def synchronize_provider_api() -> None:
 @log_cron_with_transaction
 def import_dms_users_beneficiaries() -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
-    dms_api.import_dms_users(procedure_id)
+    import_dms_accepted_applications(procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
@@ -100,7 +100,7 @@ def import_dms_users_beneficiaries_from_old_dms() -> None:
     if not settings.IS_PROD:
         return
     procedure_id = DMS_OLD_PROCEDURE_ID
-    dms_api.import_dms_users(procedure_id)
+    import_dms_accepted_applications(procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
@@ -108,7 +108,7 @@ def import_dms_users_beneficiaries_from_old_dms() -> None:
 @log_cron_with_transaction
 def import_beneficiaries_from_dms_v3() -> None:
     procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
-    dms_api.import_dms_users(procedure_id)
+    import_dms_accepted_applications(procedure_id)
     archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
@@ -122,7 +122,7 @@ def import_beneficiaries_from_dms_v4() -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        dms_api.import_dms_users(procedure_id)
+        import_dms_accepted_applications(procedure_id)
         archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
