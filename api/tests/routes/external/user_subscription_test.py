@@ -400,7 +400,7 @@ class DmsWebhookApplicationTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert (
             fraud_check.reason
-            == "Erreur lors de la récupération de l'application DMS: les champs ['id_piece_number', 'postal_code'] sont erronés"
+            == "Erreur dans les données soumises dans le dossier DMS : 'id_piece_number' (error_identity_piece_number),'postal_code' (error_postal_code)"
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -649,13 +649,13 @@ class DmsWebhookApplicationTest:
         fraud_check = user.beneficiaryFraudChecks[0]
 
         assert response.status_code == 204
-        assert execute_query.call_count == 1
+        assert execute_query.call_count == 2  # 1 to fetch application, 1 to send user message
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
-        # assert fraud_check.reason == "Some stuff went wrong"
 
         # Second DMS webhook call: on_going with no value errors
+        execute_query.reset_mock()
         execute_query.return_value = make_single_application(
             12, state=dms_models.GraphQLApplicationStates.on_going.value, email=user.email
         )
@@ -665,7 +665,7 @@ class DmsWebhookApplicationTest:
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         assert response.status_code == 204
-        assert execute_query.call_count == 2
+        assert execute_query.call_count == 1
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 

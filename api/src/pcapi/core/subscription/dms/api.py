@@ -20,6 +20,7 @@ import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 import pcapi.repository as pcapi_repository
 
+from . import constants as dms_constants
 from . import repository as dms_repository
 
 
@@ -114,7 +115,9 @@ def import_dms_users(procedure_id: int) -> None:
             result_content = dms_connector_api.parse_beneficiary_information_graphql(application_details, procedure_id)
         except subscription_exceptions.DMSParsingError as exc:
             logger.info("[DMS] Invalid values (%r) detected in application %s", exc.errors, application_id)
-            _process_parsing_error(exc, user, application_id)
+            _process_parsing_error(
+                exc, user, application_id, dms_models.GraphQLApplicationStates.accepted, application_details.id
+            )
             continue
 
         except Exception:  # pylint: disable=broad-except
@@ -162,17 +165,39 @@ def _notify_parsing_error(parsing_errors: dict[str, str], application_scalar_id:
 
 
 def _process_parsing_error(
-    exception: subscription_exceptions.DMSParsingError, user: users_models.User, application_id: int
-) -> None:
-    send_pre_subscription_from_dms_error_email_to_beneficiary(
-        exception.user_email, exception.errors.get("postal_code"), exception.errors.get("id_piece_number")
+    parsing_error: subscription_exceptions.DMSParsingError,
+    user: users_models.User,
+    application_id: int,
+    state: dms_models.GraphQLApplicationStates,
+    application_scalar_id: str,
+) -> fraud_models.BeneficiaryFraudCheck:
+    subscription_messages.on_dms_application_parsing_errors(
+        user,
+        list(parsing_error.errors.keys()),
+        is_application_updatable=state == dms_models.GraphQLApplicationStates.draft,
     )
-    subscription_messages.on_dms_application_parsing_errors(user, list(exception.errors.keys()))
 
-    errors = ",".join([f"'{key}' ({value})" for key, value in sorted(exception.errors.items())])
-    error_details = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
+    if state == dms_models.GraphQLApplicationStates.draft:
+        _notify_parsing_error(parsing_error.errors, application_scalar_id)
+    elif state in dms_constants.FINAL_INSTRUCTOR_DECISION_STATES:
+        send_pre_subscription_from_dms_error_email_to_beneficiary(
+            parsing_error.user_email,
+            parsing_error.errors.get("postal_code"),
+            parsing_error.errors.get("id_piece_number"),
+        )
 
-    _update_or_create_error_fraud_check(user, application_id, error_details)
+    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id)
+
+    if state in dms_constants.FINAL_INSTRUCTOR_DECISION_STATES:
+        fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
+
+    errors = ",".join([f"'{key}' ({value})" for key, value in sorted(parsing_error.errors.items())])
+    fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
+
+    pcapi_repository.repository.save(fraud_check)
+
+    return fraud_check
 
 
 def _process_parsing_exception(user: users_models.User, application_id: int) -> None:
@@ -327,6 +352,7 @@ def handle_dms_application(
         return None
 
     user = find_user_by_email(user_email)
+
     if not user:
         _process_user_not_found_error(user_email, application_id, procedure_id)
         if state == dms_models.GraphQLApplicationStates.draft:
@@ -346,12 +372,7 @@ def handle_dms_application(
             extra=log_extra_data,
         )
     except subscription_exceptions.DMSParsingError as parsing_error:
-        subscription_messages.on_dms_application_parsing_errors_but_updatables_values(
-            user, list(parsing_error.errors.keys())
-        )
-        if state == dms_models.GraphQLApplicationStates.draft:
-            _notify_parsing_error(parsing_error.errors, application_scalar_id)
-
-        return fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
+        logger.info("[DMS] Parsing error in application", extra=log_extra_data)
+        return _process_parsing_error(parsing_error, user, application_id, state, application_scalar_id)
 
     return handle_dms_state(user, state, application, procedure_id, application_id, application_scalar_id)

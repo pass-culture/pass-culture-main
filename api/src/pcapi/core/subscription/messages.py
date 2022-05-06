@@ -318,26 +318,21 @@ def _generate_form_field_error(error_text_singular: str, error_text_plural: str,
     return user_message
 
 
-def on_dms_application_parsing_errors_but_updatables_values(user: users_models.User, error_fields: list[str]) -> None:
-    user_message = _generate_form_field_error(
-        "Il semblerait que le champ ‘{formatted_error_fields}’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
-        "Il semblerait que les champs ‘{formatted_error_fields}’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier.",
-        error_fields,
-    )
-    message = models.SubscriptionMessage(
-        user=user,
-        userMessage=user_message,
-        popOverIcon=models.PopOverIcon.WARNING,
-    )
-    repository.save(message)
-
-
-def on_dms_application_parsing_errors(user: users_models.User, error_fields: list[str]) -> None:
-    user_message = _generate_form_field_error(
-        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘{formatted_error_fields}’ n’est pas valide.",
-        "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car les champs ‘{formatted_error_fields}’ ne sont pas valides.",
-        error_fields,
-    )
+def on_dms_application_parsing_errors(
+    user: users_models.User, error_fields: list[str], is_application_updatable: bool
+) -> None:
+    if is_application_updatable:
+        user_message = _generate_form_field_error(
+            "Il semblerait que le champ ‘{formatted_error_fields}’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier.",
+            "Il semblerait que les champs ‘{formatted_error_fields}’ soient erronés. Tu peux te rendre sur le site Démarches-simplifiées pour les rectifier.",
+            error_fields,
+        )
+    else:
+        user_message = _generate_form_field_error(
+            "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘{formatted_error_fields}’ n’est pas valide.",
+            "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car les champs ‘{formatted_error_fields}’ ne sont pas valides.",
+            error_fields,
+        )
     message = models.SubscriptionMessage(
         user=user,
         userMessage=user_message,

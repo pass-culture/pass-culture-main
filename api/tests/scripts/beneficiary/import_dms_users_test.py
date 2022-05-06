@@ -98,29 +98,6 @@ class RunTest:
         assert on_sucessful_application.call_count == 3
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    @patch("pcapi.connectors.dms.api.parse_beneficiary_information_graphql")
-    def test_an_error_status_is_saved_when_an_application_is_not_parsable(
-        self,
-        mocked_parse_beneficiary_information,
-        get_applications_with_details,
-    ):
-        user = users_factories.UserFactory()
-        get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(123, "accepte", email=user.email)
-        ]
-        mocked_parse_beneficiary_information.side_effect = [Exception()]
-
-        # when
-        dms_api.import_dms_users(procedure_id=6712558)
-
-        # then
-        dms_fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
-        assert dms_fraud_check.userId == user.id
-        assert dms_fraud_check.thirdPartyId == "123"
-        assert dms_fraud_check.status == fraud_models.FraudCheckStatus.ERROR
-        assert dms_fraud_check.reason == "Erreur de lecture du dossier"
-
-    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_application_with_known_application_id_are_not_processed(
         self,
