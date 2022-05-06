@@ -8,6 +8,7 @@ from flask import request
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi import settings
 from pcapi.core.permissions.models import Permission
 from pcapi.core.permissions.models import Permissions
 from pcapi.core.permissions.models import Role
@@ -29,24 +30,25 @@ def permission_required(permission: Permissions) -> typing.Callable:
     def wrapper(func: typing.Callable) -> typing.Callable:
         @wraps(func)
         def wrapped(*args, **kwargs) -> typing.Union[tuple[Response, int], typing.Callable]:  # type: ignore[no-untyped-def]
-            current_roles = getattr(current_user, "groups", [])
+            if not settings.IS_TESTING:
+                current_roles = getattr(current_user, "groups", [])
 
-            granted = db.session.query(
-                Role.query.filter(Role.name.in_(current_roles))
-                .join(role_permission_table)
-                .join(Permission)
-                .filter(Permission.name == permission.name)
-                .exists()
-            ).scalar()
+                granted = db.session.query(
+                    Role.query.filter(Role.name.in_(current_roles))
+                    .join(role_permission_table)
+                    .join(Permission)
+                    .filter(Permission.name == permission.name)
+                    .exists()
+                ).scalar()
 
-            if not granted:
-                logger.warning(
-                    "user %s missed permission %s while trying to access %s",
-                    str(current_user),
-                    permission.name,
-                    request.url,
-                )
-                return send_403_permission_needed(permission)
+                if not granted:
+                    logger.warning(
+                        "user %s missed permission %s while trying to access %s",
+                        current_user.email,
+                        permission.name,
+                        request.url,
+                    )
+                    return send_403_permission_needed(permission)
 
             return func(*args, **kwargs)
 
