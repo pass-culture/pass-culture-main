@@ -30,9 +30,9 @@ class RoleListTest:
         admin_role = create_admin_role()
         RoleFactory(name="test_role")
         user = UserFactory()
+        user.groups = [admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -48,9 +48,9 @@ class RoleListTest:
         create_admin_role()
         non_admin_role = RoleFactory(name="not_admin")
         user = UserFactory()
+        user.groups = [non_admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [non_admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -76,9 +76,9 @@ class PermissionListTest:
         admin_role = create_admin_role()
         PermissionFactory(name="test_permission")
         user = UserFactory()
+        user.groups = [admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -94,9 +94,9 @@ class PermissionListTest:
         create_admin_role()
         non_admin_role = RoleFactory(name="not_admin")
         user = UserFactory()
+        user.groups = [non_admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [non_admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -121,11 +121,11 @@ class NewRoleTest:
         # given
         admin_role = create_admin_role()
         user = UserFactory()
+        user.groups = [admin_role.name]
         permissions = (PermissionFactory(), PermissionFactory())
         new_role_data = {"name": "dummy_role", "permissionIds": [p.id for p in permissions]}
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -148,10 +148,10 @@ class NewRoleTest:
         # given
         admin_role = create_admin_role()
         user = UserFactory()
+        user.groups = [admin_role.name]
         new_role_data = {"name": "dummy_role", "permissionIds": []}
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -174,10 +174,10 @@ class NewRoleTest:
         # given
         admin_role = create_admin_role()
         user = UserFactory()
+        user.groups = [admin_role.name]
         new_role_data = {"name": "", "permissionIds": []}
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -194,9 +194,9 @@ class NewRoleTest:
         create_admin_role()
         non_admin_role = RoleFactory(name="not_admin")
         user = UserFactory()
+        user.groups = [non_admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [non_admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -227,12 +227,12 @@ class UpdateRoleTest:
         # given
         admin_role = create_admin_role()
         user = UserFactory()
+        user.groups = [admin_role.name]
         permissions = (PermissionFactory(), PermissionFactory())
         existing_role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
         new_role_data = {"name": "updated_role", "permissionIds": [p.id for p in permissions]}
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -255,11 +255,11 @@ class UpdateRoleTest:
         # given
         admin_role = create_admin_role()
         user = UserFactory()
+        user.groups = [admin_role.name]
         existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
         new_role_data = {"name": "updated_role", "permissionIds": []}
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -282,11 +282,11 @@ class UpdateRoleTest:
         # given
         admin_role = create_admin_role()
         user = UserFactory()
+        user.groups = [admin_role.name]
         existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
         new_role_data = {"name": "", "permissionIds": []}
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -304,9 +304,9 @@ class UpdateRoleTest:
         non_admin_role = RoleFactory(name="not_admin")
         existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
         user = UserFactory()
+        user.groups = [non_admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [non_admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -340,9 +340,9 @@ class DeleteRoleTest:
         permissions = (PermissionFactory(), PermissionFactory())
         role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
         user = UserFactory()
+        user.groups = [admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -359,9 +359,9 @@ class DeleteRoleTest:
         admin_role = create_admin_role()
         role = RoleFactory(name="dummy_role")
         user = UserFactory()
+        user.groups = [admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -377,9 +377,9 @@ class DeleteRoleTest:
         # given
         admin_role = create_admin_role()
         user = UserFactory()
+        user.groups = [admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [admin_role.name]
             current_user_mock.return_value = user
 
             # when
@@ -397,9 +397,9 @@ class DeleteRoleTest:
         non_admin_role = RoleFactory(name="not_admin")
         role = RoleFactory(name="dummy_role")
         user = UserFactory()
+        user.groups = [non_admin_role.name]
 
         with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [non_admin_role.name]
             current_user_mock.return_value = user
 
             # when

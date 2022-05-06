@@ -55,22 +55,22 @@ def sync_db_permissions(session: sa.orm.Session) -> None:
 role_permission_table = sa.Table(
     "role_permission",
     Model.metadata,
-    sa.Column("role_id", sa.ForeignKey("role.id")),
-    sa.Column("permission_id", sa.ForeignKey("permission.id")),
+    sa.Column("roleId", sa.ForeignKey("role.id")),
+    sa.Column("permissionId", sa.ForeignKey("permission.id")),
 )
 
 
-class Permission(PcObject, Model):  # type: ignore[valid-type]
+class Permission(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "permission"
 
     name = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
 
 
-class Role(PcObject, Model):  # type: ignore[valid-type]
+class Role(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "role"
 
-    name = sa.Column(sa.String(140), nullable=False)
+    name = sa.Column(sa.String(140), nullable=False, unique=True)
     permissions = sa.orm.relationship(
         Permission,
         secondary=role_permission_table,

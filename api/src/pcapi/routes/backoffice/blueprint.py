@@ -1,6 +1,5 @@
 from flask import Blueprint
 from flask_cors import CORS
-from spectree import SecurityScheme
 
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
@@ -14,13 +13,6 @@ CORS(
     resources={r"/*": {"origins": "*"}},
     supports_credentials=True,
 )
-
-
-JWT_AUTH = "JWTAuth"
-
-SECURITY_SCHEMES = [
-    SecurityScheme(name=JWT_AUTH, data={"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}),
-]
 
 
 api = ExtendedSpecTree(
