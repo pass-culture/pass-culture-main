@@ -91,41 +91,10 @@ def import_dms_users(procedure_id: int) -> None:
     for application_details in client.get_applications_with_details(
         procedure_id, dms_models.GraphQLApplicationStates.accepted
     ):
-        application_id = application_details.number
-        if application_id in already_processed_applications_ids:
+        if application_details.number in already_processed_applications_ids:
             continue
         processed_count += 1
-        try:
-            user_email = application_details.profile.email
-        except KeyError as e:
-            logger.error(
-                "[DMS][REMOTE IMPORT BENEFICIARIES] Could not parse user email: %s",
-                e,
-                extra={"application_id": application_id, "procedure_id": procedure_id},
-            )
-            _process_user_parsing_error(application_id, procedure_id)
-            continue
-
-        user = find_user_by_email(user_email)
-        if user is None:
-            _process_user_not_found_error(user_email, application_id, procedure_id)
-            continue
-
-        try:
-            result_content = dms_connector_api.parse_beneficiary_information_graphql(application_details, procedure_id)
-        except subscription_exceptions.DMSParsingError as exc:
-            logger.info("[DMS] Invalid values (%r) detected in application %s", exc.errors, application_id)
-            _process_parsing_error(
-                exc, user, application_id, dms_models.GraphQLApplicationStates.accepted, application_details.id
-            )
-            continue
-
-        except Exception:  # pylint: disable=broad-except
-            logger.exception("[DMS] Exception when parsing application %s", application_id)
-            _process_parsing_exception(user, application_id)
-            continue
-
-        process_application(user, result_content)
+        handle_dms_application(application_details, procedure_id)
 
     logger.info(
         "[DMS][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s - Processed %s applications",
