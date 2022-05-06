@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Iterable
 from typing import Optional
 from typing import Union
 
@@ -23,7 +24,7 @@ from pcapi.serialization.utils import to_camel
 
 class GetEducationalBookingsRequest(BaseModel):
     redactorEmail: Optional[str] = Field(description="Email of querying redactor")
-    status: Optional[Union[EducationalBookingStatus, BookingStatus]] = Field(
+    status: Optional[Union[BookingStatus, CollectiveBookingStatus, EducationalBookingStatus]] = Field(
         description="Status of retrieved preboookings"
     )
 
@@ -106,8 +107,44 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     redactorEmail: str
 
 
+def get_collective_bookings_per_year_response(
+    educational_bookings: Iterable[CollectiveBooking],
+) -> "CollectiveBookingsPerYearResponse":
+    serialized_bookings = [
+        CollectiveBookingPerYearResponse(
+            id=educational_booking.id,
+            UAICode=educational_booking.educationalInstitution.institutionId,
+            status=educational_booking.status,
+            confirmationLimitDate=educational_booking.confirmationLimitDate,
+            totalAmount=educational_booking.collectiveStock.price,
+            beginningDatetime=educational_booking.collectiveStock.beginningDatetime,
+            venueTimezone=educational_booking.collectiveStock.collectiveOffer.venue.timezone,
+            name=educational_booking.collectiveStock.collectiveOffer.name,
+            redactorEmail=educational_booking.educationalRedactor.email,
+        )
+        for educational_booking in educational_bookings
+    ]
+    return CollectiveBookingsPerYearResponse(bookings=serialized_bookings)
+
+
+class CollectiveBookingPerYearResponse(AdageBaseResponseModel):
+    id: int
+    UAICode: str
+    status: Union[CollectiveBookingStatus]
+    confirmationLimitDate: datetime
+    totalAmount: float
+    beginningDatetime: datetime
+    venueTimezone: str
+    name: str
+    redactorEmail: str
+
+
 class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
     bookings: list[EducationalBookingPerYearResponse]
+
+
+class CollectiveBookingsPerYearResponse(AdageBaseResponseModel):
+    bookings: list[CollectiveBookingPerYearResponse]
 
 
 class GetAllBookingsPerYearQueryModel(BaseModel):
@@ -123,6 +160,14 @@ def serialize_educational_bookings(educational_bookings: list[EducationalBooking
     serialized_educational_bookings = []
     for educational_booking in educational_bookings:
         serialized_educational_bookings.append(serialize_educational_booking(educational_booking))
+
+    return serialized_educational_bookings
+
+
+def serialize_collective_bookings(educational_bookings: list[CollectiveBooking]) -> list[EducationalBookingResponse]:
+    serialized_educational_bookings = []
+    for educational_booking in educational_bookings:
+        serialized_educational_bookings.append(serialize_collective_booking(educational_booking))
 
     return serialized_educational_bookings
 

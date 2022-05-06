@@ -1,11 +1,16 @@
 import logging
+from typing import Union
 
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
+from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.repository import find_collective_bookings_for_adage
 from pcapi.core.educational.repository import find_educational_bookings_for_adage
 from pcapi.core.educational.repository import get_paginated_bookings_for_educational_year
+from pcapi.core.educational.repository import get_paginated_collective_bookings_for_educational_year
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.educational_institution import educational_institution_path
 from pcapi.routes.adage.v1.serialization import constants
@@ -26,16 +31,29 @@ from . import blueprint
 def get_educational_bookings(
     query: prebooking_serialization.GetEducationalBookingsRequest, year_id: str, uai_code: str
 ) -> prebooking_serialization.EducationalBookingsResponse:
-    educational_bookings = find_educational_bookings_for_adage(
-        uai_code=uai_code,
-        year_id=year_id,
-        redactor_email=query.redactorEmail,
-        status=query.status,
-    )
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        educational_bookings = find_collective_bookings_for_adage(
+            uai_code=uai_code,
+            year_id=year_id,
+            redactor_email=query.redactorEmail,
+            status=getattr(CollectiveBookingStatus, query.status.name, None) if query.status else None,
+        )
 
-    return prebooking_serialization.EducationalBookingsResponse(
-        prebookings=prebooking_serialization.serialize_educational_bookings(educational_bookings)
-    )
+        serialized_booking = prebooking_serialization.EducationalBookingsResponse(
+            prebookings=prebooking_serialization.serialize_collective_bookings(educational_bookings)
+        )
+    else:
+        educational_bookings = find_educational_bookings_for_adage(
+            uai_code=uai_code,
+            year_id=year_id,
+            redactor_email=query.redactorEmail,
+            status=query.status,
+        )
+
+        serialized_booking = prebooking_serialization.EducationalBookingsResponse(
+            prebookings=prebooking_serialization.serialize_educational_bookings(educational_bookings)
+        )
+    return serialized_booking
 
 
 @blueprint.adage_v1.route("/prebookings/<int:educational_booking_id>/confirm", methods=["POST"])
@@ -97,31 +115,48 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
 @blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=prebooking_serialization.EducationalBookingsPerYearResponse,
+    response_model=prebooking_serialization.CollectiveBookingsPerYearResponse,
     tags=("get bookings per year",),
 )
 @adage_api_key_required
 def get_all_bookings_per_year(
     educational_year_id: str,
     query: prebooking_serialization.GetAllBookingsPerYearQueryModel,
-) -> prebooking_serialization.EducationalBookingsPerYearResponse:
-    educational_bookings = get_paginated_bookings_for_educational_year(
-        educational_year_id,
-        query.page,
-        query.per_page,
-    )
-    serialized_bookings = [
-        prebooking_serialization.EducationalBookingPerYearResponse(
-            id=educational_booking.id,
-            UAICode=educational_booking.educationalInstitution.institutionId,
-            status=prebooking_serialization.get_educational_booking_status(educational_booking),
-            confirmationLimitDate=educational_booking.confirmationLimitDate,
-            totalAmount=educational_booking.booking.total_amount,
-            beginningDatetime=educational_booking.booking.stock.beginningDatetime,
-            venueTimezone=educational_booking.booking.stock.offer.venue.timezone,
-            name=educational_booking.booking.stock.offer.name,
-            redactorEmail=educational_booking.educationalRedactor.email,
+) -> Union[
+    prebooking_serialization.EducationalBookingsPerYearResponse,
+    prebooking_serialization.CollectiveBookingsPerYearResponse,
+]:
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        educational_bookings = get_paginated_collective_bookings_for_educational_year(
+            educational_year_id,
+            query.page,
+            query.per_page,
         )
-        for educational_booking in educational_bookings
-    ]
-    return prebooking_serialization.EducationalBookingsPerYearResponse(bookings=serialized_bookings)
+        serialized_bookings_container = prebooking_serialization.get_collective_bookings_per_year_response(
+            educational_bookings
+        )
+    else:
+        educational_bookings = get_paginated_bookings_for_educational_year(
+            educational_year_id,
+            query.page,
+            query.per_page,
+        )
+        serialized_bookings = [
+            prebooking_serialization.EducationalBookingPerYearResponse(
+                id=educational_booking.id,
+                UAICode=educational_booking.educationalInstitution.institutionId,
+                status=prebooking_serialization.get_educational_booking_status(educational_booking),
+                confirmationLimitDate=educational_booking.confirmationLimitDate,
+                totalAmount=educational_booking.booking.total_amount,
+                beginningDatetime=educational_booking.booking.stock.beginningDatetime,
+                venueTimezone=educational_booking.booking.stock.offer.venue.timezone,
+                name=educational_booking.booking.stock.offer.name,
+                redactorEmail=educational_booking.educationalRedactor.email,
+            )
+            for educational_booking in educational_bookings
+        ]
+        serialized_bookings_container = prebooking_serialization.EducationalBookingsPerYearResponse(  # type: ignore [assignment]
+            bookings=serialized_bookings
+        )
+    return serialized_bookings_container

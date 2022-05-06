@@ -206,7 +206,9 @@ def find_educational_bookings_for_adage(
     uai_code: str,
     year_id: str,
     redactor_email: Optional[str] = None,
-    status: Optional[Union[educational_models.EducationalBookingStatus, BookingStatus]] = None,
+    status: Optional[
+        Union[BookingStatus, educational_models.CollectiveBookingStatus, educational_models.EducationalBookingStatus]
+    ] = None,
 ) -> list[educational_models.EducationalBooking]:
 
     educational_bookings_base_query = (
@@ -243,6 +245,39 @@ def find_educational_bookings_for_adage(
             )
 
     return educational_bookings_base_query.all()
+
+
+def find_collective_bookings_for_adage(
+    uai_code: str,
+    year_id: str,
+    redactor_email: Optional[str] = None,
+    status: Optional[
+        Union[educational_models.CollectiveBookingStatus, educational_models.EducationalBookingStatus, BookingStatus]
+    ] = None,
+) -> list[educational_models.CollectiveBooking]:
+
+    query = educational_models.CollectiveBooking.query
+    query = query.options(
+        joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+        .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+        .options(
+            joinedload(educational_models.CollectiveOffer.venue, innerjoin=True),
+        )
+    )
+    query = query.join(educational_models.EducationalInstitution)
+    query = query.join(educational_models.EducationalRedactor)
+    query = query.join(educational_models.EducationalYear)
+    query = query.options(contains_eager(educational_models.CollectiveBooking.educationalInstitution))
+    query = query.options(contains_eager(educational_models.CollectiveBooking.educationalRedactor))
+    query = query.filter(educational_models.EducationalInstitution.institutionId == uai_code)
+    query = query.filter(educational_models.EducationalYear.adageId == year_id)
+
+    if redactor_email is not None:
+        query = query.filter(educational_models.EducationalRedactor.email == redactor_email)
+
+    if status is not None:
+        query = query.filter(educational_models.CollectiveBooking.status == status)
+    return query.all()
 
 
 def find_redactor_by_email(redactor_email: str) -> Optional[educational_models.EducationalRedactor]:
@@ -333,6 +368,47 @@ def get_paginated_bookings_for_educational_year(
         .limit(per_page)
         .all()
     )
+
+
+def get_paginated_collective_bookings_for_educational_year(
+    educational_year_id: str,
+    page: Optional[int],
+    per_page: Optional[int],
+) -> list[educational_models.CollectiveBooking]:
+    page = 1 if page is None else page
+    per_page = 1000 if per_page is None else per_page
+
+    query = educational_models.CollectiveBooking.query
+    query = query.filter(educational_models.CollectiveBooking.educationalYearId == educational_year_id)
+    query = query.options(
+        joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True).load_only(
+            educational_models.EducationalRedactor.email
+        )
+    )
+    query = query.options(
+        load_only(
+            educational_models.CollectiveBooking.collectiveStockId,
+            educational_models.CollectiveBooking.status,
+            educational_models.CollectiveBooking.confirmationLimitDate,
+        )
+        .joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+        .load_only(
+            educational_models.CollectiveStock.beginningDatetime,
+            educational_models.CollectiveStock.collectiveOfferId,
+            educational_models.CollectiveStock.price,
+        )
+        .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+        .load_only(educational_models.CollectiveOffer.name)
+        .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+        .load_only(offerers_models.Venue.managingOffererId, offerers_models.Venue.departementCode)
+        .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
+        .load_only(offerers_models.Offerer.postalCode)
+    )
+    query = query.options(joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
+    query = query.order_by(educational_models.CollectiveBooking.id)
+    query = query.offset((page - 1) * per_page)
+    query = query.limit(per_page)
+    return query.all()
 
 
 def get_expired_collective_offers(interval: list[datetime]) -> BaseQuery:
