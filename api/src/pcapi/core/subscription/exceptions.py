@@ -1,9 +1,18 @@
+from typing import Optional
+
+
 class SubscriptionException(Exception):
     pass
 
 
 class InvalidEligibilityTypeException(SubscriptionException):
     pass
+
+
+class InvalidAgeException(SubscriptionException):
+    def __init__(self, age: Optional[int]) -> None:
+        super().__init__()
+        self.age = age
 
 
 class BeneficiaryFraudCheckMissingException(SubscriptionException):
