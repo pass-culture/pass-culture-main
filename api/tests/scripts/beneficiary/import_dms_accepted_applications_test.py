@@ -800,7 +800,7 @@ class GraphQLSourceProcessApplicationTest:
         application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api.process_application(user, information)
+        dms_api._process_application(user, information)
 
         assert len(user.beneficiaryFraudChecks) == 2
         dms_fraud_check = next(
@@ -831,7 +831,7 @@ class GraphQLSourceProcessApplicationTest:
         application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api.process_application(user, information)
+        dms_api._process_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
@@ -858,7 +858,7 @@ class GraphQLSourceProcessApplicationTest:
         )
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api.process_application(user, information)
+        dms_api._process_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
@@ -878,7 +878,7 @@ class GraphQLSourceProcessApplicationTest:
         )
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api.process_application(user, information)
+        dms_api._process_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 1
         dms_fraud_check = user.beneficiaryFraudChecks[0]
         assert dms_fraud_check.status == fraud_models.FraudCheckStatus.KO
