@@ -2,6 +2,9 @@ import { useFormik, FormikProvider } from 'formik'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
+import Spinner from 'components/layout/Spinner'
+import { TOffererName } from 'core/Offerers/types'
+import { TOfferIndividualVenue } from 'core/Venue/types'
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import {
@@ -15,11 +18,19 @@ import { ActionBar } from '../ActionBar'
 import { fakeOffer } from '../constants'
 import { getStepsOffer } from '../utils/steps'
 
-interface IInformationsProps {
+export interface IInformationsProps {
   initialValues: IOfferIndividualFormValues
+  isParentReady: boolean
+  offererNames: TOffererName[]
+  venueList: TOfferIndividualVenue[]
 }
 
-const Informations = ({ initialValues }: IInformationsProps): JSX.Element => {
+const Informations = ({
+  initialValues,
+  isParentReady,
+  offererNames,
+  venueList,
+}: IInformationsProps): JSX.Element => {
   const history = useHistory()
 
   // call getStep with offer when this screen get it as prop
@@ -56,7 +67,14 @@ const Informations = ({ initialValues }: IInformationsProps): JSX.Element => {
       <OfferFormLayout.Content>
         <FormikProvider value={{ ...formik, resetForm }}>
           <form onSubmit={formik.handleSubmit}>
-            <OfferIndividualForm />
+            {isParentReady ? (
+              <OfferIndividualForm
+                offererNames={offererNames}
+                venueList={venueList}
+              />
+            ) : (
+              <Spinner />
+            )}
 
             <OfferFormLayout.ActionBar>
               <ActionBar
