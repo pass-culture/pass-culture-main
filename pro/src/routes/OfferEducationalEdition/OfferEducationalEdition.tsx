@@ -28,6 +28,7 @@ import getCollectiveOfferAdapter from './adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from './adapters/getCollectiveOfferTemplateAdapter'
 import getOfferAdapter from './adapters/getOfferAdapter'
 import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
+import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import patchOfferAdapter from './adapters/patchOfferAdapter'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 
@@ -56,28 +57,39 @@ const OfferEducationalEdition = (): JSX.Element => {
 
   const notify = useNotification()
 
-  const editOffer = async (offerFormValues: IOfferEducationalFormValues) => {
-    const patchOfferId =
-      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
-        ? (offer as CollectiveOffer).offerId || ''
-        : offerId
+  const editOffer = useCallback(
+    async (offerFormValues: IOfferEducationalFormValues) => {
+      if (offer) {
+        let patchOfferId = offerId
 
-    const patchAdapter = isNewModelEnabled
-      ? patchCollectiveOfferAdapter
-      : patchOfferAdapter
-    const offerResponse = await patchAdapter({
-      offerId: patchOfferId,
-      offer: offerFormValues,
-      initialValues,
-    })
+        if (enableIndividualAndCollectiveSeparation && !isNewModelEnabled) {
+          patchOfferId = (offer as CollectiveOffer).offerId || ''
+        }
 
-    if (!offerResponse.isOk) {
-      return notify.error(offerResponse.message)
-    }
+        let patchAdapter
+        if (isNewModelEnabled) {
+          patchAdapter = isShowcase
+            ? patchCollectiveOfferTemplateAdapter
+            : patchCollectiveOfferAdapter
+        } else {
+          patchAdapter = patchOfferAdapter
+        }
+        const offerResponse = await patchAdapter({
+          offerId: patchOfferId,
+          offer: offerFormValues,
+          initialValues,
+        })
 
-    notify.success(offerResponse.message)
-    loadData(offerResponse)
-  }
+        if (!offerResponse.isOk) {
+          return notify.error(offerResponse.message)
+        }
+
+        notify.success(offerResponse.message)
+        loadData(offerResponse)
+      }
+    },
+    [offer]
+  )
 
   const setIsOfferActive = async (isActive: boolean) => {
     const patchOfferId =
