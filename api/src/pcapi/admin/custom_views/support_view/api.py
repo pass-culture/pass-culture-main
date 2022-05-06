@@ -2,6 +2,7 @@ import enum
 import logging
 
 import flask
+from werkzeug import Response
 
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -69,8 +70,7 @@ def get_beneficiary_activation_status(user: users_models.User) -> BeneficiaryAct
     return BeneficiaryActivationStatus.NOT_APPLICABLE
 
 
-def on_admin_review(review: fraud_models.BeneficiaryFraudReview, user: users_models.User, data):  # type: ignore [no-untyped-def]
-
+def on_admin_review(review: fraud_models.BeneficiaryFraudReview, user: users_models.User, data: dict) -> Response:
     if review.review == fraud_models.FraudReviewStatus.OK.value:
         fraud_check = fraud_api.get_last_filled_identity_fraud_check(user)
         if not fraud_check:
@@ -98,6 +98,15 @@ def on_admin_review(review: fraud_models.BeneficiaryFraudReview, user: users_mod
 
         except subscription_exceptions.InvalidEligibilityTypeException:
             flask.flash(f"L'égibilité '{eligibility.value}' n'existe pas !", "error")
+            return flask.redirect(flask.url_for(".details_view", id=user.id))
+        except subscription_exceptions.InvalidAgeException as exc:
+            if exc.age is None:
+                flask.flash("L'âge de l'utilisateur à l'inscription n'a pas pu être déterminé", "error")
+            else:
+                flask.flash(
+                    f"L'âge de l'utilisateur à l'inscription ({exc.age} ans) est incompatible avec l'éligibilité choisie",
+                    "error",
+                )
             return flask.redirect(flask.url_for(".details_view", id=user.id))
         except subscription_exceptions.CannotUpgradeBeneficiaryRole:
             flask.flash(f"L'utilisateur ne peut pas être promu au rôle {eligibility.value}", "error")
