@@ -100,28 +100,6 @@ class RunTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
-    def test_application_with_known_application_id_are_not_processed(
-        self,
-        on_sucessful_application,
-        get_applications_with_details,
-    ):
-        # given
-        created_import = users_factories.BeneficiaryImportFactory(applicationId=123, source="demarches_simplifiees")
-        users_factories.BeneficiaryImportStatusFactory(
-            status=ImportStatus.CREATED,
-            beneficiaryImport=created_import,
-            author=None,
-        )
-        get_applications_with_details.return_value = [fixture.make_parsed_graphql_application(123, "accepte")]
-
-        # when
-        import_dms_accepted_applications(procedure_id=6712558)
-
-        # then
-        on_sucessful_application.assert_not_called()
-
-    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_application_with_known_email_and_already_beneficiary_are_saved_as_rejected(
         self, on_sucessful_application, get_applications_with_details
     ):
