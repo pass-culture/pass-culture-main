@@ -224,6 +224,7 @@ def handle_dms_application(
     application_id = dms_application.number
     user_email = dms_application.profile.email
     application_scalar_id = dms_application.id
+    state = dms_models.GraphQLApplicationStates(dms_application.state)
 
     log_extra_data = {
         "application_id": application_id,
@@ -231,18 +232,6 @@ def handle_dms_application(
         "procedure_id": procedure_id,
         "user_email": user_email,
     }
-
-    try:
-        state = dms_models.GraphQLApplicationStates(dms_application.state)
-    except ValueError:
-        logger.exception(
-            "Unknown GraphQLApplicationState for application %s procedure %s email %s",
-            application_id,
-            procedure_id,
-            user_email,
-            extra=log_extra_data,
-        )
-        return None
 
     user = find_user_by_email(user_email)
 
