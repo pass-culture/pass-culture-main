@@ -131,29 +131,29 @@ def import_dms_users(procedure_id: int) -> None:
     )
 
 
-def _notify_parsing_error(parsing_error: subscription_exceptions.DMSParsingError, application_scalar_id: str) -> None:
+def _notify_parsing_error(parsing_errors: dict[str, str], application_scalar_id: str) -> None:
     client = dms_connector_api.DMSGraphQLClient()
-    if "birth_date" in parsing_error:  # type: ignore [operator]
+    if "birth_date" in parsing_errors:
         client.send_user_message(
             application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
         )
-    elif "postal_code" in parsing_error and "id_piece_number" in parsing_error:  # type: ignore [operator]
+    elif "postal_code" in parsing_errors and "id_piece_number" in parsing_errors:
         client.send_user_message(
             application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
         )
-    elif "postal_code" in parsing_error and "id_piece_number" not in parsing_error:  # type: ignore [operator]
+    elif "postal_code" in parsing_errors and "id_piece_number" not in parsing_errors:
         client.send_user_message(
             application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE,
         )
-    elif "id_piece_number" in parsing_error and "postal_code" not in parsing_error:  # type: ignore [operator]
+    elif "id_piece_number" in parsing_errors and "postal_code" not in parsing_errors:
         client.send_user_message(
             application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE,
         )
-    elif "first_name" in parsing_error or "last_name" in parsing_error:  # type: ignore [operator]
+    elif "first_name" in parsing_errors or "last_name" in parsing_errors:
         client.send_user_message(
             application_scalar_id,
             settings.DMS_INSTRUCTOR_ID,
@@ -332,7 +332,7 @@ def handle_dms_application(
         if state == dms_models.GraphQLApplicationStates.draft:
             dms_connector_api.DMSGraphQLClient().send_user_message(
                 application_scalar_id,
-                settings.DMS_INSTRUCTOR_ID,  # type: ignore [arg-type]
+                settings.DMS_INSTRUCTOR_ID,
                 subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
             )
 
@@ -350,7 +350,7 @@ def handle_dms_application(
             user, list(parsing_error.errors.keys())
         )
         if state == dms_models.GraphQLApplicationStates.draft:
-            _notify_parsing_error(parsing_error.errors, application_scalar_id)  # type: ignore [arg-type]
+            _notify_parsing_error(parsing_error.errors, application_scalar_id)
 
         return fraud_dms_api.on_dms_parsing_error(user, application_id, parsing_error, extra_data=log_extra_data)
 
