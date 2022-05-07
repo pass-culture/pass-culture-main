@@ -80,6 +80,7 @@ def handle_dms_application(
     user = find_user_by_email(user_email)
 
     if not user:
+        logger.info("[DMS] User not found for application", extra=log_extra_data)
         _process_user_not_found_error(user_email, application_id, procedure_id, state, application_scalar_id)
         return None
     try:
@@ -94,7 +95,7 @@ def handle_dms_application(
         logger.info("[DMS] Parsing error in application", extra=log_extra_data)
         return _process_parsing_error(parsing_error, user, application_id, state, application_scalar_id)
 
-    logger.info("DMS Application received with state %s", state, extra=log_extra_data)
+    logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
 
     current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, application_content)
 
@@ -202,12 +203,6 @@ def _process_user_not_found_error(
     state: dms_models.GraphQLApplicationStates,
     application_scalar_id: str,
 ) -> None:
-    logger.info(
-        "User not found for application %s procedure %s email %s",
-        application_id,
-        procedure_id,
-        email,
-    )
     dms_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id, email=email)
     if state == dms_models.GraphQLApplicationStates.draft:
         dms_connector_api.DMSGraphQLClient().send_user_message(
@@ -234,17 +229,16 @@ def _process_application(user: users_models.User, result_content: fraud_models.D
     )
     try:
         subscription_api.on_successful_application(user=user, source_data=result_content)
-    except Exception as exception:  # pylint: disable=broad-except
+    except Exception:  # pylint: disable=broad-except
         logger.exception(
-            "[DMS][REMOTE IMPORT BENEFICIARIES] Could not save application %s, because of error: %s - Procedure %s",
+            "[DMS] Could not save application %s - Procedure %s",
             result_content.application_id,
-            exception,
             result_content.procedure_id,
         )
         return
 
     logger.info(
-        "[DMS][REMOTE IMPORT BENEFICIARIES] Successfully imported DMS application %s - Procedure %s",
+        "[DMS] Successfully imported DMS application %s - Procedure %s",
         result_content.application_id,
         result_content.procedure_id,
     )
@@ -265,7 +259,7 @@ def _handle_validation_errors(
     reason = ", ".join([code.name for code in reason_codes])
 
     logger.warning(
-        "[DMS][REMOTE IMPORT BENEFICIARIES] Rejected application %s because of '%s' - Procedure %s",
+        "[DMS] Rejected application %s because of '%s' - Procedure %s",
         dms_content.application_id,
         reason,
         dms_content.procedure_id,
