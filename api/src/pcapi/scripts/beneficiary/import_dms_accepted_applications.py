@@ -10,12 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def import_dms_accepted_applications(procedure_id: int) -> None:
-    logger.info(
-        "[DMS][REMOTE IMPORT BENEFICIARIES] Start import from Démarches Simplifiées for "
-        "procedure = %s - Procedure %s",
-        procedure_id,
-        procedure_id,
-    )
+    logger.info("[DMS] Start import from Démarches Simplifiées for procedure %s", procedure_id)
 
     already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
     client = dms_connector_api.DMSGraphQLClient()
@@ -30,7 +25,7 @@ def import_dms_accepted_applications(procedure_id: int) -> None:
         dms_api.handle_dms_application(application_details, procedure_id)
 
     logger.info(
-        "[DMS][REMOTE IMPORT BENEFICIARIES] End import from Démarches Simplifiées - Procedure %s - Processed %s applications",
+        "[DMS] End import from Démarches Simplifiées for procedure %s - Processed %s applications",
         procedure_id,
         processed_count,
     )
