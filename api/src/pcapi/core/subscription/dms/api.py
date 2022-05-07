@@ -114,7 +114,7 @@ def handle_dms_application(
         current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
-        _process_application(user, application_content)
+        _process_accepted_application(user, application_content)
         return current_fraud_check
 
     elif state == dms_models.GraphQLApplicationStates.refused:
@@ -212,7 +212,7 @@ def _process_user_not_found_error(
         )
 
 
-def _process_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
+def _process_accepted_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
     try:
         fraud_check = fraud_api.on_dms_fraud_result(user, result_content)
     except Exception as exc:  # pylint: disable=broad-except

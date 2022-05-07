@@ -24,7 +24,6 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.models.beneficiary_import_status import ImportStatus
 import pcapi.notifications.push.testing as push_testing
 from pcapi.scripts.beneficiary.import_dms_accepted_applications import import_dms_accepted_applications
 
@@ -794,13 +793,13 @@ class RunIntegrationTest:
 
 @pytest.mark.usefixtures("db_session")
 class GraphQLSourceProcessApplicationTest:
-    def test_process_application_user_already_created(self):
+    def test_process_accepted_application_user_already_created(self):
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
         application_id = 123123
         application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api._process_application(user, information)
+        dms_api._process_accepted_application(user, information)
 
         assert len(user.beneficiaryFraudChecks) == 2
         dms_fraud_check = next(
@@ -818,7 +817,7 @@ class GraphQLSourceProcessApplicationTest:
         assert statement_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert statement_fraud_check.reason == "honor statement contained in DMS application"
 
-    def test_process_application_user_registered_at_18(self):
+    def test_process_accepted_application_user_registered_at_18(self):
         user = users_factories.UserFactory(
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -831,11 +830,11 @@ class GraphQLSourceProcessApplicationTest:
         application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api._process_application(user, information)
+        dms_api._process_accepted_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    def test_process_application_user_registered_at_18_dms_at_19(self):
+    def test_process_accepted_application_user_registered_at_18_dms_at_19(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -858,11 +857,11 @@ class GraphQLSourceProcessApplicationTest:
         )
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api._process_application(user, information)
+        dms_api._process_accepted_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    def test_process_application_user_not_eligible(self):
+    def test_process_accepted_application_user_not_eligible(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -878,7 +877,7 @@ class GraphQLSourceProcessApplicationTest:
         )
         information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
-        dms_api._process_application(user, information)
+        dms_api._process_accepted_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 1
         dms_fraud_check = user.beneficiaryFraudChecks[0]
         assert dms_fraud_check.status == fraud_models.FraudCheckStatus.KO
