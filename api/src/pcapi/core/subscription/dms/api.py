@@ -16,6 +16,7 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
+from pcapi.core.users import utils as users_utils
 import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 import pcapi.repository as pcapi_repository
@@ -66,7 +67,7 @@ def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse, procedure_id: int
 ) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
     application_id = dms_application.number
-    user_email = dms_application.profile.email
+    user_email = users_utils.sanitize_email(dms_application.profile.email)
     application_scalar_id = dms_application.id
     state = dms_models.GraphQLApplicationStates(dms_application.state)
 
