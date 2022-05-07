@@ -203,7 +203,9 @@ def _process_user_not_found_error(
     state: dms_models.GraphQLApplicationStates,
     application_scalar_id: str,
 ) -> None:
-    dms_repository.create_orphan_dms_application(application_id=application_id, procedure_id=procedure_id, email=email)
+    dms_repository.create_orphan_dms_application_if_not_exists(
+        application_id=application_id, procedure_id=procedure_id, email=email
+    )
     if state == dms_models.GraphQLApplicationStates.draft:
         dms_connector_api.DMSGraphQLClient().send_user_message(
             application_scalar_id,

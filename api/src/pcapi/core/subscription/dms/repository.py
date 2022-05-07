@@ -7,15 +7,19 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.models import db
 
 
-def create_orphan_dms_application(
+def create_orphan_dms_application_if_not_exists(
     application_id: int, procedure_id: int, email: typing.Optional[str] = None
-) -> fraud_models.OrphanDmsApplication:
+) -> None:
+    if db.session.query(
+        fraud_models.OrphanDmsApplication.query.filter_by(application_id=application_id, email=email).exists()
+    ).scalar():
+        return
+
     orphan_dms_application = fraud_models.OrphanDmsApplication(
         application_id=application_id, process_id=procedure_id, email=email
     )
     db.session.add(orphan_dms_application)
     db.session.commit()
-    return orphan_dms_application
 
 
 def get_already_processed_applications_ids(procedure_id: int) -> set[int]:
