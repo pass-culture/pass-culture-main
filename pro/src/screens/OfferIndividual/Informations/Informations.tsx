@@ -19,6 +19,9 @@ import { fakeOffer } from '../constants'
 import { getStepsOffer } from '../utils/steps'
 
 export interface IInformationsProps {
+  createOfferAdapter: (
+    formValues: IOfferIndividualFormValues
+  ) => Promise<string | void>
   initialValues: IOfferIndividualFormValues
   isParentReady: boolean
   offererNames: TOffererName[]
@@ -26,6 +29,7 @@ export interface IInformationsProps {
 }
 
 const Informations = ({
+  createOfferAdapter,
   initialValues,
   isParentReady,
   offererNames,
@@ -35,13 +39,12 @@ const Informations = ({
 
   // call getStep with offer when this screen get it as prop
   const { stepList, activeSteps } = getStepsOffer(fakeOffer)
-  const handleNextStep = () => {
+  const handleNextStep = async () => formik.handleSubmit()
+
+  const onSubmit = async (formValues: IOfferIndividualFormValues) => {
+    await createOfferAdapter(formValues)
     // TODO get a real id after offer creation form submit
     history.push(`/offre/${fakeOffer.id}/v3/creation/individuelle/stocks`)
-  }
-
-  const onSubmit = () => {
-    // TODO submit function
   }
 
   const { resetForm, ...formik } = useFormik({
@@ -75,7 +78,6 @@ const Informations = ({
             ) : (
               <Spinner />
             )}
-
             <OfferFormLayout.ActionBar>
               <ActionBar
                 disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.STOCKS)}

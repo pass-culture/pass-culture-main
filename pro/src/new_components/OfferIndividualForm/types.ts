@@ -3,4 +3,5 @@ export interface IOfferIndividualFormValues {
   description: string
   offererId: string
   venueId: string
+  isNational: boolean
 }
