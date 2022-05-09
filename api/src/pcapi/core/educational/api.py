@@ -4,6 +4,7 @@ import logging
 from operator import or_
 from typing import Optional
 from typing import Union
+from typing import cast
 
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.orm import joinedload
@@ -494,17 +495,24 @@ def refuse_educational_booking(educational_booking_id: int) -> EducationalBookin
     return educational_booking
 
 
-def refuse_collective_booking(educational_booking_id: int) -> Optional[CollectiveBooking]:
-    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
+def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:
+    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
 
-    if educational_booking is None:
-        raise exceptions.EducationalBookingNotFound()
+        if educational_booking is None:
+            raise exceptions.EducationalBookingNotFound()
 
-    collective_booking = find_collective_booking_by_booking_id(educational_booking.booking.id)
+        collective_booking = find_collective_booking_by_booking_id(educational_booking.booking.id)
 
-    if collective_booking is None:
-        # FIXME (MathildeDuboille - 2022-03-03): raise an error once data has been migrated to the new model
-        return collective_booking
+        if collective_booking is None:
+            # FIXME (MathildeDuboille - 2022-03-03): raise an error once data has been migrated to the new model
+            return None  # type: ignore [return-value]
+    else:
+        collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
+        if collective_booking is None:
+            exceptions.EducationalBookingNotFound()
+
+    collective_booking = cast(CollectiveBooking, collective_booking)  # we already checked it was not None
 
     if collective_booking.status == CollectiveBookingStatus.CANCELLED:
         return collective_booking
@@ -556,10 +564,9 @@ def refuse_collective_booking(educational_booking_id: int) -> Optional[Collectiv
             )
             mails.send(recipients=[booking_email], data=data)
 
-    # FIXME (MathildeDuboille 2022-03-03): decomment this once algolia is set up for new model
-    # search.async_index_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
+    search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
 
-    return educational_booking
+    return collective_booking
 
 
 def create_educational_institution(institution_id: str) -> EducationalInstitution:
