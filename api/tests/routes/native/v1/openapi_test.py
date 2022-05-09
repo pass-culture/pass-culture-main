@@ -195,6 +195,7 @@ def test_public_api(client, app):
                         "objectStorageUrl": {"title": "Objectstorageurl", "type": "string"},
                         "proDisableEventsQrcode": {"title": "Prodisableeventsqrcode", "type": "boolean"},
                         "allowAccountReactivation": {"title": "Allowaccountreactivation", "type": "boolean"},
+                        "accountReactivationLimit": {"title": "Accountreactivationlimit", "type": "integer"},
                     },
                     "required": [
                         "accountCreationMinimumAge",
@@ -215,6 +216,7 @@ def test_public_api(client, app):
                         "objectStorageUrl",
                         "proDisableEventsQrcode",
                         "allowAccountReactivation",
+                        "accountReactivationLimit",
                     ],
                     "title": "SettingsResponse",
                     "type": "object",

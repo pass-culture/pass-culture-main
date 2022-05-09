@@ -31,6 +31,7 @@ class SettingsResponse(BaseModel):
     object_storage_url: str
     pro_disable_events_qrcode: bool
     allow_account_reactivation: bool
+    account_reactivation_limit: int
 
     class Config:
         alias_generator = to_camel

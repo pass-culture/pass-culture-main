@@ -44,6 +44,7 @@ class SettingsTest:
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": False,
             "allowAccountReactivation": False,
+            "accountReactivationLimit": 61,
         }
 
     @override_features(
@@ -82,4 +83,5 @@ class SettingsTest:
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": True,
             "allowAccountReactivation": True,
+            "accountReactivationLimit": 61,
         }
