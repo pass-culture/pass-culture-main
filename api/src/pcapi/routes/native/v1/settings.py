@@ -61,4 +61,5 @@ def get_settings() -> serializers.SettingsResponse:
         object_storage_url=OBJECT_STORAGE_URL,
         pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
         allow_account_reactivation=features[FeatureToggle.ALLOW_ACCOUNT_REACTIVATION],
+        account_reactivation_limit=constants.ACCOUNT_REACTIVATION_LIMIT,
     )
