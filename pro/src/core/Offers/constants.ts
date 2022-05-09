@@ -66,7 +66,7 @@ export const ALL_CATEGORIES_OPTION = {
   id: ALL_CATEGORIES,
 }
 const CREATION_MODES_OPTIONS = [
-  { displayName: 'Tous les modes', id: ALL_CREATION_MODES },
+  { displayName: 'Tous', id: ALL_CREATION_MODES },
   { displayName: 'Manuelle', id: 'manual' },
   { displayName: 'Importée', id: 'imported' },
 ]

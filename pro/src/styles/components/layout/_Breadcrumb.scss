@@ -23,7 +23,7 @@
       position: relative;
 
       &::after {
-        border-bottom: rem.torem(2px) solid colors.$primary;
+        border-bottom: rem.torem(3px) solid colors.$primary;
         content: '';
         left: 0;
         position: absolute;
