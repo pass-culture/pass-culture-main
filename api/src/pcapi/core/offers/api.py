@@ -500,7 +500,7 @@ def batch_update_collective_offers(query, update_fields):  # type: ignore [no-un
 
 def batch_update_collective_offers_template(query, update_fields):  # type: ignore [no-untyped-def]
     collective_offer_ids_tuples = query.filter(
-        CollectiveOffer.validation == OfferValidationStatus.APPROVED
+        CollectiveOfferTemplate.validation == OfferValidationStatus.APPROVED
     ).with_entities(CollectiveOfferTemplate.id)
 
     collective_offer_template_ids = [offer_id for offer_id, in collective_offer_ids_tuples]

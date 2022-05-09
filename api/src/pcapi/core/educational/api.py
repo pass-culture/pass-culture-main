@@ -2,9 +2,11 @@ import datetime
 import decimal
 import logging
 from operator import or_
+from typing import Iterable
 from typing import Optional
 from typing import Union
 
+from flask_sqlalchemy import BaseQuery
 from pydantic.error_wrappers import ValidationError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.elements import not_
@@ -1117,3 +1119,11 @@ def transform_collective_offer_template_into_collective_offer(
     db.session.commit()
     create_collective_stock(stock_data=body, user=user, offer_id=collective_offer.id)
     return collective_offer
+
+
+def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+    return educational_repository.get_query_for_collective_offers_by_ids_for_user(user=user, ids=ids)
+
+
+def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+    return educational_repository.get_query_for_collective_offers_template_by_ids_for_user(user=user, ids=ids)
