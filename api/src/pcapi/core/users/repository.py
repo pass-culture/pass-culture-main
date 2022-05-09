@@ -4,12 +4,9 @@ import logging
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
-import sqlalchemy
 from sqlalchemy.sql.functions import func
 
-import pcapi.core.fraud.models as fraud_models
 import pcapi.core.offerers.models as offerers_models
-from pcapi.models import db
 from pcapi.repository import repository
 from pcapi.utils import crypto
 
@@ -120,18 +117,4 @@ def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offe
             offerers_models.UserOfferer.offererId == offerer.id,
         )
         .all()
-    )
-
-
-def get_earliest_identity_check_date_of_eligibility(
-    user: models.User, eligibility: models.EligibilityType
-) -> Optional[datetime]:
-    return (
-        db.session.query(sqlalchemy.func.min(fraud_models.BeneficiaryFraudCheck.dateCreated))
-        .filter(
-            fraud_models.BeneficiaryFraudCheck.type != fraud_models.FraudCheckType.INTERNAL_REVIEW,
-            fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility,
-            fraud_models.BeneficiaryFraudCheck.user == user,
-        )
-        .scalar()
     )

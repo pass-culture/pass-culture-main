@@ -240,6 +240,26 @@ class UserTest:
             )
             assert user.eligibility is user_models.EligibilityType.AGE18
 
+        def test_eligible_when_19_with_subscription_attempt_at_18_without_account(self):
+            user_19_yo_birth_date = datetime.utcnow() - relativedelta(years=19, months=3)
+            dms_registration_date_by_18_yo = datetime.utcnow() - relativedelta(months=6)
+            user_account_creation_date_by_19_yo = datetime.utcnow()
+
+            user = users_factories.UserFactory(dateOfBirth=user_19_yo_birth_date)
+            dms_content_before_account_creation = fraud_factories.DMSContentFactory(
+                user=user,
+                registration_datetime=dms_registration_date_by_18_yo,
+            )
+            fraud_factories.BeneficiaryFraudCheckFactory(
+                dateCreated=user_account_creation_date_by_19_yo,  # the fraud_check was created when user validated its email
+                user=user,
+                type=fraud_models.FraudCheckType.DMS,
+                status=fraud_models.FraudCheckStatus.OK,
+                eligibilityType=user_models.EligibilityType.AGE18,
+                resultContent=dms_content_before_account_creation,
+            )
+            assert user.eligibility is user_models.EligibilityType.AGE18
+
     def test_hasPhysicalVenue(self):
         user = users_factories.UserFactory()
         assert not user.hasPhysicalVenues

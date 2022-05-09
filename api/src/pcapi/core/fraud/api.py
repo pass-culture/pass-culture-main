@@ -12,7 +12,6 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
-from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -617,9 +616,8 @@ def decide_eligibility(
     eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.utcnow())
 
     if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
-        earliest_identity_check_date = users_repository.get_earliest_identity_check_date_of_eligibility(
-            user,
-            users_models.EligibilityType.AGE18,
+        earliest_identity_check_date = subscription_api.get_first_registration_date(
+            user, users_models.EligibilityType.AGE18
         )
         if earliest_identity_check_date:
             return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date)
