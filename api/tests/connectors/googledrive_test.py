@@ -2,6 +2,7 @@ import functools
 import io
 import json
 from unittest import mock
+import urllib.parse
 
 import httplib2
 
@@ -55,10 +56,14 @@ def test_get_folder(mocked_request):
     url = mocked_request.call_args_list[0].args[5]
     url, query = url.split("?")
     assert url == "https://www.googleapis.com/drive/v3/files"
-    assert (
-        query
-        == "q=mimeType+%3D+%27application%2Fvnd.google-apps.folder%27+and+%27parent-folder-id%27+in+parents+and+name+%3D+%27name%27&fields=files+%28id%29&alt=json"
-    )
+    query = urllib.parse.parse_qs(query)
+    assert query == {
+        "q": ["mimeType = 'application/vnd.google-apps.folder' and 'parent-folder-id' in parents and name = 'name'"],
+        "fields": ["files (id)"],
+        "includeItemsFromAllDrives": ["true"],
+        "supportsAllDrives": ["true"],
+        "alt": ["json"],
+    }
 
 
 @override_settings(GOOGLE_DRIVE_BACKEND="pcapi.connectors.googledrive.GoogleDriveBackend")
