@@ -1047,6 +1047,7 @@ jobs:
 workflows:
   version: 2
   commit:
+    unless: << pipeline.parameters.run_measurement_workflow >>
     jobs:
       - tests-script-pc
       - type-checking-pro:
