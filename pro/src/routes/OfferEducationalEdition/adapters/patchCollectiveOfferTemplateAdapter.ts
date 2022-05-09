@@ -29,12 +29,11 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
         offerId,
         payload
       )
-      const isBooked = updatedOffer.collectiveStock.isBooked
 
       return {
         isOk: true,
         message: 'Votre offre a bien été modifiée.',
-        payload: { ...updatedOffer, isBooked },
+        payload: updatedOffer,
       }
     } catch (error) {
       return {
