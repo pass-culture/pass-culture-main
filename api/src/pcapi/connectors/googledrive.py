@@ -95,6 +95,8 @@ class GoogleDriveBackend(BaseBackend):
                 f"and name = '{name}'"
             ),
             fields="files (id)",
+            includeItemsFromAllDrives=True,
+            supportsAllDrives=True,
         )
         response = request.execute()
         if not response["files"]:
@@ -115,6 +117,7 @@ class GoogleDriveBackend(BaseBackend):
                 "mimeType": "application/vnd.google-apps.folder",
             },
             fields="id",  # yes, it's a string, not a list
+            supportsAllDrives=True,
         )
         response = request.execute()
         return response["id"]
@@ -128,6 +131,7 @@ class GoogleDriveBackend(BaseBackend):
             },
             media_body=MediaFileUpload(filename=str(local_path)),
             fields="id",  # yes, it's a string, not a list
+            supportsAllDrives=True,
         )
         response = request.execute()
         return response["id"]
