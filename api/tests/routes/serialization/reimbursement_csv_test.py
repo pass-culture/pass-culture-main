@@ -50,7 +50,7 @@ class ReimbursementDetailsTest:
         # legacy payment data
         raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
         assert raw_csv[0] == "2019"
-        assert raw_csv[1] == "Juillet : remboursement 1ère quinzaine"
+        assert raw_csv[1] == "juillet : remboursement 1ère quinzaine"
         assert raw_csv[2] == payment.booking.venue.name
         assert raw_csv[3] == payment.booking.venue.siret
         assert raw_csv[4] == payment.booking.venue.address
@@ -118,7 +118,7 @@ class ReimbursementDetailsTest:
         # legacy payment data
         raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
         assert raw_csv[0] == "2019"
-        assert raw_csv[1] == "Juillet : remboursement 1ère quinzaine"
+        assert raw_csv[1] == "juillet : remboursement 1ère quinzaine"
         assert raw_csv[2] == payment.booking.venue.name
         assert raw_csv[3] == payment.booking.venue.siret
         assert raw_csv[4] == payment.booking.venue.address
@@ -218,14 +218,14 @@ class ReimbursementDetailsTest:
         payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
         row = ReimbursementDetails(payments[0]).as_csv_row()
         assert row[0] == 2021
-        assert row[1] == "Janvier : remboursement 1ère quinzaine"
+        assert row[1] == "janvier : remboursement 1ère quinzaine"
 
         cashflow.creationDate = datetime(2021, 2, 16, 4, 0)
         repository.save(cashflow)
         payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
         row = ReimbursementDetails(payments[0]).as_csv_row()
         assert row[0] == 2021
-        assert row[1] == "Février : remboursement 2nde quinzaine"
+        assert row[1] == "février : remboursement 2nde quinzaine"
 
 
 @pytest.mark.usefixtures("db_session")
@@ -272,11 +272,11 @@ def test_generate_reimbursement_details_csv():
     )
     assert (  # legacy payment data
         rows[2]
-        == '"2019";"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé";"offre grand public"'
+        == '"2019";"juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé";"offre grand public"'
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == '2019;"Juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100 %";"21,00";"Remboursement envoyé";"offre grand public"'
+        == '2019;"juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100 %";"21,00";"Remboursement envoyé";"offre grand public"'
     )
 
 

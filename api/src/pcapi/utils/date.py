@@ -15,18 +15,18 @@ DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_STORED_TIMEZONE = "UTC"
 MONTHS_IN_FRENCH = [
     None,
-    "Janvier",
-    "Février",
-    "Mars",
-    "Avril",
-    "Mai",
-    "Juin",
-    "Juillet",
-    "Août",
-    "Septembre",
-    "Octobre",
-    "Novembre",
-    "Décembre",
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
 ]
 # This mapping is also defined in pro. Make sure that all
 # are synchronized.
