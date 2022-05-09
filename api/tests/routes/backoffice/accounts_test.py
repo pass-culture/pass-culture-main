@@ -6,6 +6,7 @@ import pytest
 from pcapi.core.permissions.factories import RoleFactory
 from pcapi.core.permissions.models import Permission
 from pcapi.core.permissions.models import Permissions
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as user_factories
 from pcapi.repository import repository
 
@@ -40,6 +41,7 @@ def create_search_role():
 
 
 class PublicAccountSearchTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_id(self, client):
         # given
         underage, _, _, _ = create_bunch_of_accounts()
@@ -66,6 +68,7 @@ class PublicAccountSearchTest:
         assert found_user["email"] == underage.email
         assert found_user["phoneNumber"] == underage.phoneNumber
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_name(self, client):
         # given
         _, grant_18, _, _ = create_bunch_of_accounts()
@@ -92,6 +95,7 @@ class PublicAccountSearchTest:
         assert found_user["email"] == grant_18.email
         assert found_user["phoneNumber"] == grant_18.phoneNumber
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_email(self, client):
         # given
         _, _, _, random = create_bunch_of_accounts()
@@ -118,6 +122,7 @@ class PublicAccountSearchTest:
         assert found_user["email"] == random.email
         assert found_user["phoneNumber"] == random.phoneNumber
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_phone(self, client):
         # given
         _, _, _, random = create_bunch_of_accounts()
@@ -144,6 +149,7 @@ class PublicAccountSearchTest:
         assert found_user["email"] == random.email
         assert found_user["phoneNumber"] == random.phoneNumber
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_without_permission(self, client):
         # given
         no_perm_role = RoleFactory(name="no public search")
@@ -161,6 +167,7 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 403
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_as_anonymous(self, client):
         # given
         create_search_role()

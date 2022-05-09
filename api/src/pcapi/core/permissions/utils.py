@@ -15,6 +15,7 @@ from pcapi.core.permissions.models import Role
 from pcapi.core.permissions.models import role_permission_table
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,11 @@ def permission_required(permission: Permissions) -> typing.Callable:
     def wrapper(func: typing.Callable) -> typing.Callable:
         @wraps(func)
         def wrapped(*args, **kwargs) -> typing.Union[tuple[Response, int], typing.Callable]:  # type: ignore[no-untyped-def]
+            if not FeatureToggle.ENABLE_BACKOFFICE_API.is_active():
+                e = ApiErrors()
+                e.add_error("global", "This function is behind the deactivated ENABLE_BACKOFFICE_API feature flag.")
+                return jsonify(e.errors), 403
+
             if not settings.IS_TESTING:
                 current_roles = getattr(current_user, "groups", [])
 
