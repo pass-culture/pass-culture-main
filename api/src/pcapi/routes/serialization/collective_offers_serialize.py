@@ -93,11 +93,10 @@ def serialize_collective_offers_capped(
 def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemplate]) -> CollectiveOfferResponseModel:
     # TODO: put back offer.id when we will use new api routes on frontend side
     serialized_stock = None
-    if hasattr(offer, "collectiveStock"):
-        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-            serialized_stock = _serialize_stock(offer.id, offer.collectiveStock)
-        else:
-            serialized_stock = _serialize_stock(offer.offerId, offer.collectiveStock)  # type: ignore [arg-type]
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
+    else:
+        serialized_stock = _serialize_stock(offer.offerId, getattr(offer, "collectiveStock", None))  # type: ignore [arg-type]
 
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
