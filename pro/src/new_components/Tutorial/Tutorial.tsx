@@ -1,4 +1,3 @@
-// react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'

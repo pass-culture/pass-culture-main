@@ -18,7 +18,6 @@ const FormNotifications = (): JSX.Element => {
     if (values.notifications && values.email && !values.notificationEmail) {
       setFieldValue('notificationEmail', values.email)
     }
-    // disable eslint because we want to trigger prefill only when checkbox value is updated
   }, [values.notifications, setFieldValue])
 
   return (

@@ -59,7 +59,6 @@ const NTH_ARGUMENT_GET_BOOKINGS = {
 }
 
 const renderBookingsRecap = async (
-  // eslint-disable-next-line
   store: any,
   routerState?: BookingsRouterState,
   waitDomReady?: boolean
@@ -106,7 +105,6 @@ const renderBookingsRecap = async (
 }
 
 describe('components | BookingsRecap | Pro user', () => {
-  // eslint-disable-next-line
   let store: any
   let venue: { id: string; name: string; publicName: string }
   let user

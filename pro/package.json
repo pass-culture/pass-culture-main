@@ -122,7 +122,6 @@
     "@types/react-router-dom": "^5.1.8",
     "@typescript-eslint/eslint-plugin": "^5.21.0",
     "@typescript-eslint/parser": "^5.21.0",
-    "autoprefixer": "^9.6.1",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^27.5.1",
     "babel-loader": "^8.2.2",
@@ -155,6 +154,9 @@
     "ts-pnp": "^1.2.0",
     "ts-standard": "^11.0.0",
     "url-loader": "^4.1.1"
+  },
+  "resolutions": {
+    "autoprefixer": "10.4.5"
   },
   "engines": {
     "node": ">=14 <15"
