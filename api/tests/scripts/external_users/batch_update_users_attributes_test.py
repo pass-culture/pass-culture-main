@@ -90,8 +90,10 @@ def test_format_batch_user():
         "u.has_completed_id_check": True,
         "u.last_name": "Doux",
         "u.marketing_push_subscription": True,
+        "u.most_booked_subcategory": "SUPPORT_PHYSIQUE_FILM",
         "u.postal_code": None,
         "ut.booking_categories": ["FILM"],
+        "ut.booking_subcategories": ["SUPPORT_PHYSIQUE_FILM"],
         "ut.roles": [UserRole.BENEFICIARY.value],
     }
 
@@ -138,6 +140,7 @@ def test_format_sendinblue_user():
         "LAST_FAVORITE_CREATION_DATE": None,
         "LAST_VISIT_DATE": None,
         "MARKETING_EMAIL_SUBSCRIPTION": True,
+        "MOST_BOOKED_OFFER_SUBCATEGORY": "SUPPORT_PHYSIQUE_FILM",
         "OFFERER_NAME": None,
         "POSTAL_CODE": None,
         "PRODUCT_BRUT_X_USE_DATE": None,

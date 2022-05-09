@@ -38,6 +38,7 @@ common_user_attributes = UserAttributes(
     last_visit_date=None,
     marketing_email_subscription=True,
     marketing_push_subscription=True,
+    most_booked_subcategory="CINE_PLEIN_AIR",
     phone_number="0706050403",
     postal_code=None,
     products_use_date={"product_brut_x_use": datetime(2021, 5, 6)},
