@@ -8,6 +8,7 @@ from pcapi.core.permissions.factories import RoleFactory
 from pcapi.core.permissions.models import Permission
 from pcapi.core.permissions.models import Permissions
 from pcapi.core.permissions.models import Role
+from pcapi.core.testing import override_features
 from pcapi.core.users.factories import UserFactory
 from pcapi.repository import repository
 
@@ -25,6 +26,7 @@ def create_admin_role():
 
 
 class RoleListTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_list_roles_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -43,6 +45,7 @@ class RoleListTest:
         roles = response.json["roles"]
         assert set(role["name"] for role in roles) == {"admin", "test_role"}
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_roles_as_non_admin(self, client):
         # given
         create_admin_role()
@@ -59,6 +62,7 @@ class RoleListTest:
         # then
         assert response.status_code == 403
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_roles_as_anonymous(self, client):
         # given
         create_admin_role()
@@ -71,6 +75,7 @@ class RoleListTest:
 
 
 class PermissionListTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_list_permissions_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -92,6 +97,7 @@ class PermissionListTest:
             "test_permission",
         }
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_permissions_as_non_admin(self, client):
         # given
         create_admin_role()
@@ -108,6 +114,7 @@ class PermissionListTest:
         # then
         assert response.status_code == 403
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_permissions_as_anonymous(self, client):
         # given
         create_admin_role()
@@ -120,6 +127,7 @@ class PermissionListTest:
 
 
 class NewRoleTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_create_new_role_with_permissions_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -147,6 +155,7 @@ class NewRoleTest:
         assert inserted_role.name == new_role_data["name"]
         assert set(inserted_role.permissions) == set(permissions)
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_create_new_role_with_empty_permissions_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -173,6 +182,7 @@ class NewRoleTest:
         assert inserted_role.name == new_role_data["name"]
         assert inserted_role.permissions == []
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_create_new_role_with_empty_name_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -192,6 +202,7 @@ class NewRoleTest:
         # then
         assert response.status_code == 400
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_create_new_role_as_non_admin(self, client):
         # given
         create_admin_role()
@@ -211,6 +222,7 @@ class NewRoleTest:
         # then
         assert response.status_code == 403
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_create_new_role_as_anonymous(self, client):
         # given
         create_admin_role()
@@ -226,6 +238,7 @@ class NewRoleTest:
 
 
 class UpdateRoleTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_update_role_with_permissions_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -254,6 +267,7 @@ class UpdateRoleTest:
         assert inserted_role.name == new_role_data["name"]
         assert set(inserted_role.permissions) == set(permissions)
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_update_role_with_empty_permissions_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -281,6 +295,7 @@ class UpdateRoleTest:
         assert inserted_role.name == new_role_data["name"]
         assert inserted_role.permissions == []
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_update_role_with_empty_name_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -301,6 +316,7 @@ class UpdateRoleTest:
         # then
         assert response.status_code == 400
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_update_role_as_non_admin(self, client):
         # given
         create_admin_role()
@@ -321,6 +337,7 @@ class UpdateRoleTest:
         # then
         assert response.status_code == 403
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_update_role_as_anonymous(self, client):
         # given
         create_admin_role()
@@ -337,6 +354,7 @@ class UpdateRoleTest:
 
 
 class DeleteRoleTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_delete_role_with_permissions_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -357,6 +375,7 @@ class DeleteRoleTest:
         assert response.status_code == 204
         assert Role.query.filter_by(id=role.id).count() == 0
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_delete_role_with_empty_permissions_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -376,6 +395,7 @@ class DeleteRoleTest:
         assert response.status_code == 204
         assert Role.query.filter_by(id=role.id).count() == 0
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_delete_admin_role_as_admin(self, client):
         # given
         admin_role = create_admin_role()
@@ -394,6 +414,7 @@ class DeleteRoleTest:
         assert response.status_code == 400
         assert "Cannot delete admin role" in response.json.values()
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_delete_role_as_non_admin(self, client):
         # given
         create_admin_role()
@@ -413,6 +434,7 @@ class DeleteRoleTest:
         # then
         assert response.status_code == 403
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_delete_role_as_anonymous(self, client):
         # given
         create_admin_role()

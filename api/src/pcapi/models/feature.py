@@ -34,6 +34,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )
+    ENABLE_BACKOFFICE_API = "Autorise l'accès à l'API backoffice"
     ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
@@ -135,6 +136,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.DISABLE_ENTERPRISE_API,
     FeatureToggle.DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING,
     FeatureToggle.ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING,
+    FeatureToggle.ENABLE_BACKOFFICE_API,
     FeatureToggle.ENABLE_CDS_IMPLEMENTATION,
     FeatureToggle.ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE,
     FeatureToggle.ENABLE_DUPLICATE_USER_RULE_WITHOUT_BIRTHDATE,
