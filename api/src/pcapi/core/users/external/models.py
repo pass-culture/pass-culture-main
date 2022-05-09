@@ -35,6 +35,7 @@ class UserAttributes:
     last_visit_date: Optional[datetime]
     marketing_email_subscription: bool
     marketing_push_subscription: bool
+    most_booked_subcategory: Optional[str]  # Single subcategory most frequently booked by the user
     phone_number: Optional[str]  # Added for Zendesk
     postal_code: Optional[str]
     products_use_date: dict

@@ -39,6 +39,7 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         "u.marketing_push_subscription": user_attributes.marketing_push_subscription,
         "u.postal_code": user_attributes.postal_code,
         "ut.roles": user_attributes.roles if user_attributes.roles else None,
+        "u.most_booked_subcategory": user_attributes.most_booked_subcategory,
     }
 
     for product_use_date_key, product_use_date_value in user_attributes.products_use_date.items():
@@ -47,6 +48,8 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
     # A Batch tag can't be an empty list, otherwise the API returns an error
     if user_attributes.booking_categories:
         attributes["ut.booking_categories"] = user_attributes.booking_categories
+    if user_attributes.booking_subcategories:
+        attributes["ut.booking_subcategories"] = user_attributes.booking_subcategories
 
     return attributes
 

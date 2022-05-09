@@ -7,11 +7,13 @@ import pytest
 from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users.external import BookingsAttributes
 from pcapi.core.users.external import TRACKED_PRODUCT_IDS
 from pcapi.core.users.external import _get_bookings_categories_and_subcategories
 from pcapi.core.users.external import _get_user_bookings
@@ -146,6 +148,7 @@ def test_get_user_attributes_beneficiary():
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
+        most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
         roles=[UserRole.BENEFICIARY.value],
         suspension_date=None,
         suspension_reason=None,
@@ -204,6 +207,7 @@ def test_get_user_attributes_not_beneficiary():
         last_favorite_creation_date=None,
         last_visit_date=None,
         marketing_email_subscription=True,
+        most_booked_subcategory=None,
         roles=[],
         suspension_date=None,
         suspension_reason=None,
@@ -214,10 +218,72 @@ def test_get_bookings_categories_and_subcategories():
     user = BeneficiaryGrant18Factory()
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
 
-    assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == ([], [])
+    assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == BookingsAttributes(
+        booking_categories=[],
+        booking_subcategories=[],
+        most_booked_subcategory=None,
+    )
 
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
     IndividualBookingFactory(individualBooking__user=user, stock__offer=offer)
     CancelledIndividualBookingFactory(individualBooking__user=user)
 
-    assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == (["FILM"], ["SUPPORT_PHYSIQUE_FILM"])
+    assert _get_bookings_categories_and_subcategories(_get_user_bookings(user)) == BookingsAttributes(
+        booking_categories=["FILM"],
+        booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
+        most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
+    )
+
+
+def test_get_bookings_categories_and_subcategories_most_booked():
+    user = BeneficiaryGrant18Factory()
+    offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1)
+    CancelledIndividualBookingFactory(individualBooking__user=user)
+    offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2)
+
+    booking_attributes = _get_bookings_categories_and_subcategories(_get_user_bookings(user))
+
+    # 2xFILM, 1xCINE => FILM is the most booked
+    assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
+    assert set(booking_attributes.booking_subcategories) == {"SUPPORT_PHYSIQUE_FILM", "CINE_PLEIN_AIR"}
+    assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+
+
+def test_get_bookings_categories_and_subcategories_most_booked_on_price():
+    user = BeneficiaryGrant18Factory()
+    offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
+    CancelledIndividualBookingFactory(individualBooking__user=user)
+    offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
+
+    booking_attributes = _get_bookings_categories_and_subcategories(_get_user_bookings(user))
+
+    # 2xFILM, 2xCINE, but FILM has the highest credit spent => FILM is the most booked
+    assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
+    assert set(booking_attributes.booking_subcategories) == {"SUPPORT_PHYSIQUE_FILM", "CINE_PLEIN_AIR"}
+    assert booking_attributes.most_booked_subcategory == "SUPPORT_PHYSIQUE_FILM"
+
+
+def test_get_bookings_categories_and_subcategories_most_booked_on_count():
+    user = BeneficiaryGrant18Factory()
+    offer1 = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer1, stock__price=15.00)
+    CancelledIndividualBookingFactory(individualBooking__user=user)
+    offer2 = OfferFactory(subcategoryId=subcategories.CINE_PLEIN_AIR.id)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
+    IndividualBookingFactory(individualBooking__user=user, stock__offer=offer2, stock__price=8.00)
+
+    booking_attributes = _get_bookings_categories_and_subcategories(_get_user_bookings(user))
+
+    # 2xFILM, 3xCINE => CINE is the most booked, even if the highest credit spent is still FILM
+    assert set(booking_attributes.booking_categories) == {"FILM", "CINEMA"}
+    assert set(booking_attributes.booking_subcategories) == {"SUPPORT_PHYSIQUE_FILM", "CINE_PLEIN_AIR"}
+    assert booking_attributes.most_booked_subcategory == "CINE_PLEIN_AIR"
