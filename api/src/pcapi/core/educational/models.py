@@ -287,6 +287,11 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [attr-defined]
 
+    @property
+    def isEducational(self) -> bool:
+        # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer
+        return True
+
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         # this property is here for compatibility reasons
