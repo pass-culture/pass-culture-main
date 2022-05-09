@@ -80,7 +80,6 @@ class FeatureToggle(enum.Enum):
     )
     PRICE_BOOKINGS = "Active la valorisation des réservations"
     PRO_DISABLE_EVENTS_QRCODE = "Active la possibilité de différencier le type d’envoi des billets sur une offre et le retrait du QR code sur la réservation"
-    SHOW_INVOICES_ON_PRO_PORTAL = "Activer l'affichage des remboursements sur le portail pro"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
     SYNCHRONIZE_TITELIVE_PRODUCTS_DESCRIPTION = "Permettre limport journalier des résumés des livres"
@@ -156,7 +155,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.OFFER_FORM_V3,
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
-    FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.ALLOW_ACCOUNT_REACTIVATION,
     FeatureToggle.ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE,

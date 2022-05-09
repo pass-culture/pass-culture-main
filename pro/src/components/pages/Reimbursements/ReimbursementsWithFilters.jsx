@@ -13,7 +13,6 @@ import { Banner } from 'ui-kit'
 
 import './Reimbursement.scss'
 import Breadcrumb from '../../../new_components/Breadcrumb'
-import useActiveFeature from '../../hooks/useActiveFeature'
 
 import ReimbursementsDetails from './ReimbursementsDetails/ReimbursementsDetails'
 import ReimbursementsInvoices from './ReimbursementsInvoices/ReimbursementsInvoices'
@@ -39,7 +38,6 @@ const buildAndSortVenueFilterOptions = venues =>
     .sort(sortByKeyAlphabeticalOrder('displayName'))
 
 const Reimbursements = ({ currentUser }) => {
-  const areInvoicesEnabled = useActiveFeature('SHOW_INVOICES_ON_PRO_PORTAL')
   const [isLoading, setIsLoading] = useState(true)
   const [venuesOptions, setVenuesOptions] = useState([])
   const [businessUnitsOptions, setBusinessUnitsOptions] = useState([])
@@ -137,36 +135,26 @@ const Reimbursements = ({ currentUser }) => {
               Les modalités de remboursement
             </a>
           </Banner>
-          {areInvoicesEnabled ? (
-            <>
-              <Breadcrumb
-                activeStep={activeStep}
-                steps={steps}
-                styleType="tab"
+          <Breadcrumb
+            activeStep={activeStep}
+            steps={steps}
+            styleType="tab"
+          />
+          <Switch>
+            <Route exact path={`${match.path}/justificatifs`}>
+              <ReimbursementsInvoices
+                businessUnitsOptions={businessUnitsOptions}
+                isCurrentUserAdmin={currentUser.isAdmin}
               />
-              <Switch>
-                <Route exact path={`${match.path}/justificatifs`}>
-                  <ReimbursementsInvoices
-                    businessUnitsOptions={businessUnitsOptions}
-                    isCurrentUserAdmin={currentUser.isAdmin}
-                  />
-                </Route>
-                <Route exact path={`${match.path}/details`}>
-                  <ReimbursementsDetails
-                    isCurrentUserAdmin={currentUser.isAdmin}
-                    loadVenues={loadVenues}
-                    venuesOptions={venuesOptions}
-                  />
-                </Route>
-              </Switch>
-            </>
-          ) : (
-            <ReimbursementsDetails
-              isCurrentUserAdmin={currentUser.isAdmin}
-              loadVenues={loadVenues}
-              venuesOptions={venuesOptions}
-            />
-          )}
+            </Route>
+            <Route exact path={`${match.path}/details`}>
+              <ReimbursementsDetails
+                isCurrentUserAdmin={currentUser.isAdmin}
+                loadVenues={loadVenues}
+                venuesOptions={venuesOptions}
+              />
+            </Route>
+          </Switch>
         </>
       )}
     </AppLayout>

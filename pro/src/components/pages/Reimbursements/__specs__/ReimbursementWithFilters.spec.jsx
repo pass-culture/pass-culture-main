@@ -176,13 +176,10 @@ describe('reimbursementsWithFilters', () => {
     pcapi.getInvoices.mockResolvedValue(invoices)
   })
 
-  it('should display a new refund invoices section when feature flag is up', async () => {
+  it('should display a new refund invoices section', async () => {
     store = configureTestStore({
       data: {
         users: [{ publicName: 'Damien', isAdmin: false }],
-      },
-      features: {
-        list: [{ isActive: true, nameKey: 'SHOW_INVOICES_ON_PRO_PORTAL' }],
       },
     })
 
