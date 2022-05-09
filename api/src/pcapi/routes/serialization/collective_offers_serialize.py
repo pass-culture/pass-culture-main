@@ -12,6 +12,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.offers_serialize import ListOffersVenueResponseModel
@@ -91,7 +92,14 @@ def serialize_collective_offers_capped(
 
 def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemplate]) -> CollectiveOfferResponseModel:
     # TODO: put back offer.id when we will use new api routes on frontend side
-    serialized_stock = [_serialize_stock(offer.offerId, getattr(offer, "collectiveStock", None))]  # type: ignore [arg-type]
+    serialized_stock = None
+    if hasattr(offer, "collectiveStock"):
+        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+            serialized_stock = _serialize_stock(offer.id, offer.collectiveStock)
+        else:
+            serialized_stock = _serialize_stock(offer.offerId, offer.collectiveStock)  # type: ignore [arg-type]
+
+    serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
 
     return CollectiveOfferResponseModel(
@@ -104,7 +112,7 @@ def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemp
         isEducational=True,
         productIsbn=None,
         name=offer.name,
-        stocks=serialized_stock,
+        stocks=serialized_stocks,
         thumbUrl=None,
         subcategoryId=offer.subcategoryId,
         venue=_serialize_venue(offer.venue),
