@@ -13,13 +13,13 @@ import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersM
 import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
   CollectiveBookingResponseModel,
-  GetBookingsCSVFileAdapter,
+  GetBookingsCSVFileAdapter, GetBookingsXLSFileAdapter,
   GetFilteredBookingsRecapAdapter,
   GetFilteredCollectiveBookingsRecapAdapter,
   GetUserHasBookingsAdapter,
   GetVenuesAdapter,
-  TPreFilters,
-} from 'core/Bookings'
+  TPreFilters
+} from "core/Bookings";
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { Audience } from 'core/shared/types'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
@@ -34,6 +34,7 @@ interface IBookingsProps {
   venueId?: string
   audience: Audience
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
+  getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
   getFilteredBookingsRecapAdapter:
     | GetFilteredBookingsRecapAdapter
     | GetFilteredCollectiveBookingsRecapAdapter
@@ -48,6 +49,7 @@ const Bookings = ({
   venueId,
   audience,
   getBookingsCSVFileAdapter,
+  getBookingsXLSFileAdapter,
   getFilteredBookingsRecapAdapter,
   getUserHasBookingsAdapter,
   getVenuesAdapter,
@@ -160,6 +162,7 @@ const Bookings = ({
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}
         getBookingsCSVFileAdapter={getBookingsCSVFileAdapter}
+        getBookingsXLSFileAdapter={getBookingsXLSFileAdapter}
         hasResult={bookings.length > 0}
         isBookingFiltersActive={isBookingFiltersActive}
         isFiltersDisabled={!hasBooking}

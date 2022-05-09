@@ -2,4 +2,6 @@ export { default as getFilteredBookingsRecapAdapter } from './getFilteredBooking
 export * from './getFilteredBookingsRecapAdapter'
 export { default as getBookingsCSVFileAdapter } from './getBookingsCSVFileAdapter'
 export * from './getBookingsCSVFileAdapter'
+export { default as getBookingsXLSFileAdapter} from './getBookingsXLSFileAdapter'
+export * from './getBookingsXLSFileAdapter'
 export { default as getUserHasBookingsAdapter } from './getUserHasBookingsAdapter'

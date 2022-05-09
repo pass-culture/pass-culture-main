@@ -6,11 +6,10 @@ import { useSelector } from 'react-redux'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
-import { GetBookingsCSVFileAdapter } from 'core/Bookings'
+import { GetBookingsCSVFileAdapter, GetBookingsXLSFileAdapter } from 'core/Bookings'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import FilterByOfferType from 'new_components/FilterByOfferType'
 import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
-import getBookingsXLSFileAdapter from 'routes/Bookings/adapters/getBookingsXLSFileAdapter'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 
@@ -34,6 +33,7 @@ export interface IPreFiltersProps {
   resetPreFilters: () => void
   venues: { id: string; displayName: string }[]
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
+  getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
 }
 
 const PreFilters = ({
@@ -48,6 +48,7 @@ const PreFilters = ({
   resetPreFilters,
   venues,
   getBookingsCSVFileAdapter,
+  getBookingsXLSFileAdapter,
 }: IPreFiltersProps): JSX.Element => {
   const notify = useNotification()
   const separateIndividualAndCollectiveOffers = useActiveFeature(
