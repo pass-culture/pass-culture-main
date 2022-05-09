@@ -15,7 +15,6 @@ const getImageBitmap = async (file: File): Promise<ImageBitmap | null> => {
       new Promise(resolve => {
         const img = document.createElement('img')
         img.addEventListener('load', function () {
-          // eslint-disable-next-line
           resolve(this as any)
         })
         img.src = URL.createObjectURL(blob as Blob)

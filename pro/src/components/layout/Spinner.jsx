@@ -16,7 +16,7 @@ const Spinner = ({ message }) => {
     return () => {
       window.clearInterval(newTimer)
     }
-  }, []) // eslint-disable-line
+  }, [])
 
   return (
     <div className="loading-spinner" data-testid="spinner">

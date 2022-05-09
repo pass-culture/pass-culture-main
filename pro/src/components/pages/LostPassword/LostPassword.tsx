@@ -32,7 +32,7 @@ const LostPassword = (): JSX.Element => {
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
-  }, [currentUser]) // eslint-disable-line
+  }, [currentUser])
 
   useEffect(() => {
     const gcaptchaScript = initReCaptchaScript()
