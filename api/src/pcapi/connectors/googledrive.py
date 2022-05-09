@@ -88,11 +88,12 @@ class GoogleDriveBackend(BaseBackend):
 
     def get_folder(self, parent_folder_id: str, name: str) -> typing.Optional[str]:
         """Return folder id if it exists, None otherwise."""
+        quoted_name = name.replace("'", "\\'")
         request = self.service.files().list(
             q=(
                 "mimeType = 'application/vnd.google-apps.folder' "
                 f"and '{parent_folder_id}' in parents "
-                f"and name = '{name}'"
+                f"and name = '{quoted_name}'"
             ),
             fields="files (id)",
             includeItemsFromAllDrives=True,

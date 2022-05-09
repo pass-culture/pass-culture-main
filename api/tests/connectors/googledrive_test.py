@@ -49,7 +49,7 @@ def test_get_folder(mocked_request):
     mock_response(mocked_request, json.dumps({"files": [{"id": "folder-id"}]}))
 
     backend = googledrive.get_backend()
-    folder_id = backend.get_folder("parent-folder-id", "name")
+    folder_id = backend.get_folder("parent-folder-id", "name 'with' single quotes")
 
     assert folder_id == "folder-id"
     mocked_request.assert_called_once()
@@ -58,7 +58,13 @@ def test_get_folder(mocked_request):
     assert url == "https://www.googleapis.com/drive/v3/files"
     query = urllib.parse.parse_qs(query)
     assert query == {
-        "q": ["mimeType = 'application/vnd.google-apps.folder' and 'parent-folder-id' in parents and name = 'name'"],
+        "q": [
+            # fmt: off
+            "mimeType = 'application/vnd.google-apps.folder' "
+            "and 'parent-folder-id' in parents "
+            r"and name = 'name \'with\' single quotes'"
+            # fmt: on
+        ],
         "fields": ["files (id)"],
         "includeItemsFromAllDrives": ["true"],
         "supportsAllDrives": ["true"],
