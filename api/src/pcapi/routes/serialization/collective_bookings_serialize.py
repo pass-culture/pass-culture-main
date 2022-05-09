@@ -1,11 +1,13 @@
 import csv
 from datetime import datetime
 from enum import Enum
+from io import BytesIO
 from io import StringIO
 from typing import Optional
 
+from flask_sqlalchemy import BaseQuery
 from pydantic import root_validator
-from sqlalchemy.orm import Query
+import xlsxwriter
 
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.repository import BOOKING_STATUS_LABELS
@@ -228,22 +230,23 @@ def serialize_collective_booking(collective_booking: CollectiveBookingNamedTuple
     )
 
 
-def serialize_collective_booking_csv_report(query: Query) -> str:
+COLLECTIVE_BOOKING_EXPORT_HEADER = [
+    "Lieu",
+    "Nom de l'offre",
+    "Date de l'évènement",
+    "Nom et prénom du bénéficiaire",
+    "Email du bénéficiaire",
+    "Date et heure de réservation",
+    "Date et heure de validation",
+    "Prix de la réservation",
+    "Date et heure de remboursement",
+]
+
+
+def _serialize_collective_booking_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
-    writer.writerow(
-        (
-            "Lieu",
-            "Nom de l'offre",
-            "Date de l'évènement",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Prix de la réservation",
-            "Date et heure de remboursement",
-        )
-    )
+    writer.writerow(COLLECTIVE_BOOKING_EXPORT_HEADER)
     for collective_booking in query.yield_per(1000):
         writer.writerow(
             (
@@ -261,4 +264,51 @@ def serialize_collective_booking_csv_report(query: Query) -> str:
             )
         )
 
+    return output.getvalue()
+
+
+def _serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+
+    bold = workbook.add_format({"bold": 1})
+    currency_format = workbook.add_format({"num_format": "###0.00[$€-fr-FR]"})
+    col_width = 18
+
+    worksheet = workbook.add_worksheet()
+    row = 0
+
+    for col_num, title in enumerate(COLLECTIVE_BOOKING_EXPORT_HEADER):
+        worksheet.write(row, col_num, title, bold)
+        worksheet.set_column(col_num, col_num, col_width)
+    row = 1
+    for collective_booking in query.yield_per(1000):
+        worksheet.write(row, 0, collective_booking.venueName)
+        worksheet.write(row, 1, collective_booking.offerName)
+        worksheet.write(
+            row,
+            2,
+            str(
+                convert_booking_dates_utc_to_venue_timezone(
+                    collective_booking.stockBeginningDatetime, collective_booking
+                )
+            ),
+        )
+        worksheet.write(row, 3, f"{collective_booking.lastName} {collective_booking.firstName}")
+        worksheet.write(row, 4, collective_booking.email)
+        worksheet.write(
+            row, 5, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking))
+        )
+        worksheet.write(
+            row, 6, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking))
+        )
+        worksheet.write(row, 7, collective_booking.price, currency_format)
+        worksheet.write(
+            row,
+            8,
+            str(convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking)),
+        )
+        row += 1
+
+    workbook.close()
     return output.getvalue()

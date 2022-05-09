@@ -15,6 +15,7 @@ from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions
@@ -66,7 +67,8 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
-from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
+from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_csv_report
+from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_excel_report
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
@@ -773,13 +775,14 @@ def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: i
     return [offer_id for offer_id, in collective_offers.with_entities(educational_models.CollectiveOffer.id)]
 
 
-def get_collective_booking_csv_report(
+def get_collective_booking_report(
     user: User,
     booking_period: Optional[tuple[datetime.date, datetime.date]] = None,
     status_filter: Optional[CollectiveBookingStatusFilter] = CollectiveBookingStatusFilter.BOOKED,
     event_date: Optional[datetime.datetime] = None,
     venue_id: Optional[int] = None,
-) -> str:
+    export_type: Optional[BookingExportType] = BookingExportType.CSV,
+) -> Union[str, bytes]:
     bookings_query = get_filtered_collective_booking_report(
         pro_user=user,
         period=booking_period,  # type: ignore [arg-type]
@@ -787,7 +790,10 @@ def get_collective_booking_csv_report(
         event_date=event_date,
         venue_id=venue_id,
     )
-    return serialize_collective_booking_csv_report(bookings_query)  # type: ignore [arg-type]
+
+    if export_type == BookingExportType.EXCEL:
+        return _serialize_collective_booking_excel_report(bookings_query)
+    return _serialize_collective_booking_csv_report(bookings_query)
 
 
 def list_collective_offers_for_pro_user(

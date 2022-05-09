@@ -1,11 +1,14 @@
 from datetime import datetime
 import logging
 import math
+from typing import Union
+from typing import cast
 
 from dateutil import parser
 from flask_login import current_user
 from flask_login import login_required
 
+from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.educational import api as collective_api
 from pcapi.core.educational import repository as collective_repository
 from pcapi.core.offerers import api as offerers_api
@@ -71,10 +74,33 @@ def get_collective_bookings_pro(
     json_format=False,
     response_headers={
         "Content-Type": "text/csv; charset=utf-8-sig;",
-        "Content-Disposition": "attachment; filename=reservations_pass_culture.csv",
+        "Content-Disposition": "attachment; filename=reservations_eac_pass_culture.csv",
     },
 )
-def get_collective_bookings_csv(query: collective_bookings_serialize.ListCollectiveBookingsQueryModel) -> bytes:
+def get_collective_bookings_csv(
+    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
+) -> Union[str, bytes]:
+    return _create_collective_bookings_export_file(query, BookingExportType.CSV)
+
+
+@blueprint.pro_private_api.route("/collective/bookings/excel", methods=["GET"])
+@login_required
+@spectree_serialize(
+    json_format=False,
+    response_headers={
+        "Content-Type": "application/vnd.ms-excel",
+        "Content-Disposition": "attachment; filename=reservations_eac_pass_culture.xlsx",
+    },
+)
+def get_collective_bookings_excel(
+    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
+) -> Union[str, bytes]:
+    return _create_collective_bookings_export_file(query, BookingExportType.EXCEL)
+
+
+def _create_collective_bookings_export_file(
+    query: collective_bookings_serialize.ListCollectiveBookingsQueryModel, export_type: BookingExportType
+) -> Union[str, bytes]:
     venue_id = query.venue_id
     event_date = parser.parse(query.event_date) if query.event_date else None
     booking_period = None
@@ -85,15 +111,18 @@ def get_collective_bookings_csv(query: collective_bookings_serialize.ListCollect
         )
     booking_status = query.booking_status_filter
 
-    bookings = collective_api.get_collective_booking_csv_report(
+    export_data = collective_api.get_collective_booking_report(
         user=current_user._get_current_object(),  # for tests to succeed, because current_user is actually a LocalProxy
         booking_period=booking_period,
         status_filter=booking_status,
         event_date=event_date,
         venue_id=venue_id,
+        export_type=export_type,
     )
 
-    return bookings.encode("utf-8-sig")
+    if export_type == BookingExportType.CSV:
+        return cast(str, export_data).encode("utf-8-sig")
+    return cast(bytes, export_data)
 
 
 @blueprint.pro_private_api.route("/collective/bookings/pro/userHasBookings", methods=["GET"])
