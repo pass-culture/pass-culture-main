@@ -8,7 +8,6 @@ from the PIL library:
 from dataclasses import dataclass
 import enum
 import io
-import math
 from typing import Optional
 from typing import TYPE_CHECKING
 
@@ -98,8 +97,6 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: Optional[C
         preprocessed_image,
     )
     resized_image = _resize_image(cropped_image, ratio)
-    resized_image = _check_ratio(resized_image, ratio)
-
     return _post_process_image(resized_image)
 
 
@@ -136,13 +133,6 @@ def _post_process_image(image: PIL.Image) -> bytes:
 
 def _transpose_image(raw_image: PIL.Image) -> PIL.Image:
     return ImageOps.exif_transpose(raw_image)
-
-
-def _check_ratio(image: PIL.Image, ratio: ImageRatio) -> PIL.Image:
-    image_ratio = image.width / image.height
-    if not math.isclose(image_ratio, ratio.value, abs_tol=0.04):
-        raise ImageRatioError(expected=ratio.value, found=image_ratio)
-    return image
 
 
 def _crop_image(
