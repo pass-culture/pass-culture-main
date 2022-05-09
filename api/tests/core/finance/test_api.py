@@ -1983,3 +1983,10 @@ def test_merge_cashflow_batches():
     assert get_cashflows(batch_id=5, business_unit=bu3)[0].amount == 1280 + 2560
     assert get_cashflows(batch_id=5, business_unit=bu4)[0].amount == 5120
     assert get_cashflows(batch_id=5, business_unit=bu5)[0].amount == 10240
+
+
+def test_get_drive_folder_name():
+    cutoff = datetime.datetime(2022, 4, 30, 22, 0)
+    batch = factories.CashflowBatchFactory(cutoff=cutoff)
+    name = api._get_drive_folder_name(batch.id)
+    assert name == "2022-04 - jusqu'au 30 avril"

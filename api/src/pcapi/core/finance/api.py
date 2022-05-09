@@ -861,7 +861,7 @@ def _get_drive_folder_name(batch_id: int) -> str:
     """
     batch = models.CashflowBatch.query.get(batch_id)
     last_day = pytz.utc.localize(batch.cutoff).astimezone(utils.ACCOUNTING_TIMEZONE).date() - datetime.timedelta(days=1)
-    return "{year}-{month} - jusqu'au {day} {month_name}".format(
+    return "{year}-{month:02} - jusqu'au {day} {month_name}".format(
         year=last_day.year,
         month=last_day.month,
         day=last_day.day,
