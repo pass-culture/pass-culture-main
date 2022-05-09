@@ -312,7 +312,7 @@ jobs:
       - run:
           name: Run pylint
           when: always
-          command: venv/bin/pylint src tests --jobs=8
+          command: venv/bin/pylint src tests --jobs=2
           working_directory: api
       - run:
           name: Run mypy
