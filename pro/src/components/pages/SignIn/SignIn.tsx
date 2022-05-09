@@ -34,7 +34,7 @@ const SignIn = (): JSX.Element => {
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
-  }, [currentUser]) // eslint-disable-line
+  }, [currentUser])
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription'

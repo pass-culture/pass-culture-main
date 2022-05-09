@@ -1,4 +1,3 @@
-// eslint-disable-next-line
 import { Location, LocationListener } from 'history'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
