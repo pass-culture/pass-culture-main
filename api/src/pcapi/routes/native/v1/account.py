@@ -218,9 +218,17 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
             {"message": "Le numéro de téléphone est déjà validé", "code": "PHONE_NUMBER_ALREADY_VALIDATED"},
             status_code=400,
         )
-    except (exceptions.PhoneAlreadyExists, exceptions.InvalidPhoneNumber):
+    except (exceptions.InvalidPhoneNumber):
         raise ApiErrors(
             {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
+        )
+    except (exceptions.PhoneAlreadyExists):
+        raise ApiErrors(
+            {
+                "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi.",
+                "code": "PHONE_ALREADY_EXISTS",
+            },
+            status_code=400,
         )
     except exceptions.PhoneVerificationException:
         raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
