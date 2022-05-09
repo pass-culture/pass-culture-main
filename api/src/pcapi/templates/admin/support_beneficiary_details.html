@@ -305,7 +305,7 @@
 <div class="section">
     <h3>Vérification des données utilisateurs</h3>
     <div class="row">
-        {% for check in model.beneficiaryFraudChecks %}
+        {% for check in model.beneficiaryFraudChecks|sort(attribute="dateCreated", reverse=true) %}
         <div class="col-lg-4">
             <table class="table">
                 <tr>
