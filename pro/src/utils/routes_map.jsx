@@ -112,6 +112,7 @@ const routes = [
     exact: true,
     path: '/reservations/collectives',
     title: 'Réservations',
+    featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: SetPasswordContainer,
