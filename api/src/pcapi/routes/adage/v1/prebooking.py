@@ -120,17 +120,29 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
 
     Can only work if prebooking is confirmed or pending,
     is not yet used and still refusable."""
-    try:
-        educational_booking = api.refuse_educational_booking(educational_booking_id)
-        api.refuse_collective_booking(educational_booking_id)
-    except exceptions.EducationalBookingNotFound:
-        raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
-    except exceptions.EducationalBookingNotRefusable:
-        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
-    except exceptions.EducationalBookingAlreadyCancelled:
-        raise ApiErrors({"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}, status_code=422)
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        try:
+            educational_booking = api.refuse_collective_booking(educational_booking_id)
+        except exceptions.EducationalBookingNotFound:
+            raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
+        except exceptions.EducationalBookingNotRefusable:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
+        except exceptions.EducationalBookingAlreadyCancelled:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}, status_code=422)
+        response = prebooking_serialization.serialize_collective_booking(educational_booking)
+    else:
+        try:
+            educational_booking = api.refuse_educational_booking(educational_booking_id)
+            api.refuse_collective_booking(educational_booking_id)
+        except exceptions.EducationalBookingNotFound:
+            raise ApiErrors({"code": constants.EDUCATIONAL_BOOKING_NOT_FOUND}, status_code=404)
+        except exceptions.EducationalBookingNotRefusable:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_NOT_REFUSABLE"}, status_code=422)
+        except exceptions.EducationalBookingAlreadyCancelled:
+            raise ApiErrors({"code": "EDUCATIONAL_BOOKING_ALREADY_CANCELLED"}, status_code=422)
+        response = prebooking_serialization.serialize_educational_booking(educational_booking)
 
-    return prebooking_serialization.serialize_educational_booking(educational_booking)
+    return response
 
 
 @blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
