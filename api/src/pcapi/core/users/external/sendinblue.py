@@ -72,6 +72,7 @@ class SendinblueAttributes(Enum):
     LAST_VISIT_DATE = "LAST_VISIT_DATE"
     LASTNAME = "LASTNAME"
     MARKETING_EMAIL_SUBSCRIPTION = "MARKETING_EMAIL_SUBSCRIPTION"
+    MOST_BOOKED_OFFER_SUBCATEGORY = "MOST_BOOKED_OFFER_SUBCATEGORY"
     OFFERER_NAME = "OFFERER_NAME"
     POSTAL_CODE = "POSTAL_CODE"
     PRODUCT_BRUT_X_USE_DATE = "PRODUCT_BRUT_X_USE_DATE"
@@ -168,6 +169,7 @@ def format_user_attributes(attributes: Union[UserAttributes, ProAttributes]) -> 
         SendinblueAttributes.LAST_VISIT_DATE.value: _get_attr(attributes, "last_visit_date"),
         SendinblueAttributes.LASTNAME.value: _get_attr(attributes, "last_name"),
         SendinblueAttributes.MARKETING_EMAIL_SUBSCRIPTION.value: _get_attr(attributes, "marketing_email_subscription"),
+        SendinblueAttributes.MOST_BOOKED_OFFER_SUBCATEGORY.value: _get_attr(attributes, "most_booked_subcategory"),
         SendinblueAttributes.OFFERER_NAME.value: _get_attr(attributes, "offerers_names", format_list),
         SendinblueAttributes.POSTAL_CODE.value: _get_attr(attributes, "postal_code", format_list_or_str),
         SendinblueAttributes.PRODUCT_BRUT_X_USE_DATE.value: _get_attr(

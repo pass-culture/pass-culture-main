@@ -1,7 +1,8 @@
+from collections import defaultdict
+from dataclasses import dataclass
 from datetime import datetime
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 from sqlalchemy.orm import joinedload
@@ -31,6 +32,15 @@ from .sendinblue import update_contact_attributes as update_sendinblue_user
 
 # make sure values are in [a-z0-9_] (no uppercase characters, no '-')
 TRACKED_PRODUCT_IDS = {3084625: "brut_x"}
+
+
+@dataclass
+class BookingsAttributes:
+    """Attributes computed from bookings (values returned by _get_bookings_categories_and_subcategories)"""
+
+    booking_categories: list[str]
+    booking_subcategories: list[str]
+    most_booked_subcategory: Optional[str] = None
 
 
 def update_external_user(user: User, skip_batch: bool = False, skip_sendinblue: bool = False) -> None:
@@ -161,12 +171,12 @@ def get_user_attributes(user: User) -> UserAttributes:
         Favorite.query.filter_by(userId=user.id).order_by(Favorite.id.desc()).first() if not is_pro_user else None
     )
     domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
-    booking_categories, booking_subcategories = _get_bookings_categories_and_subcategories(user_bookings)
+    bookings_attributes = _get_bookings_categories_and_subcategories(user_bookings)
 
     return UserAttributes(
-        booking_categories=booking_categories,
+        booking_categories=bookings_attributes.booking_categories,
         booking_count=len(user_bookings),
-        booking_subcategories=booking_subcategories,
+        booking_subcategories=bookings_attributes.booking_subcategories,
         city=user.city,
         date_created=user.dateCreated,
         date_of_birth=user.dateOfBirth,  # type: ignore [arg-type]
@@ -190,6 +200,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         last_visit_date=user.lastConnectionDate,
         marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
         marketing_push_subscription=user.get_notification_subscriptions().marketing_push,
+        most_booked_subcategory=bookings_attributes.most_booked_subcategory,
         phone_number=user.phoneNumber,
         postal_code=user.postalCode,
         products_use_date={
@@ -203,10 +214,39 @@ def get_user_attributes(user: User) -> UserAttributes:
     )
 
 
-def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> Tuple[list[str], list[str]]:
-    booking_subcategories_ids = list(set(booking.stock.offer.subcategoryId for booking in user_bookings))
-    booking_categories_ids = list(set(booking.stock.offer.subcategory.category_id for booking in user_bookings))
-    return booking_categories_ids, booking_subcategories_ids
+def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> BookingsAttributes:
+    """
+    Returns a tuple of three values:
+    - the list of all distinct categories in user bookings (not canceled)
+    - the list of all distinct subcategories in user bookings (not canceled)
+    - the single most booked subcategory in user bookings:
+       * category in which the user has the highest number of bookings
+       * in case of several most booked subcategories, the one with the highest credit spent by the user
+    """
+    booking_categories = set()
+    bookings_by_subcategories = defaultdict(list)
+    for booking in user_bookings:
+        if booking.status != BookingStatus.CANCELLED:
+            booking_categories.add(booking.stock.offer.subcategory.category_id)
+            bookings_by_subcategories[booking.stock.offer.subcategoryId].append(booking)
+
+    sorted_subcategories_items = sorted(
+        bookings_by_subcategories.items(),
+        key=lambda key_value: (
+            len(key_value[1]),
+            sum([booking.stock.price for booking in key_value[1]]),
+        ),
+        reverse=True,
+    )
+
+    booking_subcategories_ids = [subcategory[0] for subcategory in sorted_subcategories_items]
+    booking_categories_ids = list(booking_categories)
+    most_booked_subcategory = sorted_subcategories_items[0][0] if sorted_subcategories_items else None
+    return BookingsAttributes(
+        booking_categories=booking_categories_ids,
+        booking_subcategories=booking_subcategories_ids,
+        most_booked_subcategory=most_booked_subcategory,
+    )
 
 
 def _get_user_bookings(user: User) -> List[Booking]:
