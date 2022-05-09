@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 
 import useCurrentUser from 'components/hooks/useCurrentUser'
+import Spinner from 'components/layout/Spinner'
 // TODO (rlecellier): rename into getOfferQueryParams
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters'
@@ -15,9 +16,11 @@ import {
   IInformationsProps,
 } from 'screens/OfferIndividual/Informations'
 
+import { createOfferAdapter } from './adapters'
+
 type TScreenProps = Pick<IInformationsProps, 'offererNames' | 'venueList'>
 
-const OfferIndividualCreationInformations = (): JSX.Element => {
+const OfferIndividualCreationInformations = (): JSX.Element | null => {
   const {
     currentUser: { isAdmin },
   } = useCurrentUser()
@@ -70,11 +73,16 @@ const OfferIndividualCreationInformations = (): JSX.Element => {
 
   return (
     <div>
-      <InformationsScreen
-        {...screenProps}
-        initialValues={initialValues}
-        isParentReady={isReady}
-      />
+      {isReady ? (
+        <InformationsScreen
+          {...screenProps}
+          createOfferAdapter={createOfferAdapter}
+          initialValues={initialValues}
+          isParentReady={isReady}
+        />
+      ) : (
+        <Spinner />
+      )}
     </div>
   )
 }
