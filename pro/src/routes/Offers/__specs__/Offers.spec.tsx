@@ -744,7 +744,7 @@ describe('route Offers', () => {
       // Given
       const { history } = renderOffers(store)
       // When
-      fireEvent.change(await screen.findByDisplayValue('Tous les modes'), {
+      fireEvent.change(await screen.findByDisplayValue('Tous'), {
         target: { value: 'manual' },
       })
       await userEvent.click(screen.getByText('Lancer la recherche'))
@@ -759,7 +759,7 @@ describe('route Offers', () => {
       // Given
       const { history } = renderOffers(store)
       const searchButton = await screen.findByText('Lancer la recherche')
-      fireEvent.change(screen.getByDisplayValue('Tous les modes'), {
+      fireEvent.change(screen.getByDisplayValue('Tous'), {
         target: { value: 'manual' },
       })
       await userEvent.click(searchButton)

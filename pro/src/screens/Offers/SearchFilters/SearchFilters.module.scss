@@ -1,11 +1,10 @@
 @use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
 @use 'styles/mixins/_rem.scss' as rem;
 
 .search-separator {
   align-items: center;
   display: flex;
-  margin-top: rem.torem(35px);
+  margin-top: rem.torem(23px);
 
   .separator {
     background-color: colors.$grey-medium;
@@ -19,6 +18,6 @@
 }
 
 .reset-filters {
-  margin-top: rem.torem(36px);
+  margin-top: rem.torem(24px);
   text-align: right;
 }

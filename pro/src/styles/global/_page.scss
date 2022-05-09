@@ -37,7 +37,8 @@ main {
   }
 
   .advice {
-    font-size: rem.torem(20px);
+    @include fonts.title4();
+
     margin-bottom: rem.torem(32px);
 
     a {
@@ -77,6 +78,7 @@ main {
     .page-content {
       background: colors.$white;
       box-shadow: 0 0 3.75rem colors.$black-shadow;
+      border-radius: rem.torem(10px);
 
       .after-notification-content {
         padding: rem.torem(24px);
