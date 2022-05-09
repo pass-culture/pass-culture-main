@@ -275,3 +275,33 @@ def transform_collective_offer_template_into_collective_offer(
     offer = educational_api.transform_collective_offer_template_into_collective_offer(user=current_user, body=body)
 
     return collective_offers_serialize.CollectiveOfferFromTemplateResponseModel.from_orm(offer)
+
+
+@private_api.route("/collective/offers/active-status", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    response_model=None,
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def patch_collective_offers_active_status(
+    body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
+) -> None:
+    collective_query = educational_api.get_query_for_collective_offers_by_ids_for_user(current_user, body.ids)
+    offers_api.batch_update_collective_offers(collective_query, {"isActive": body.is_active})
+
+
+@private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    response_model=None,
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def patch_collective_offers_template_active_status(
+    body: collective_offers_serialize.PatchCollectiveOfferActiveStatusBodyModel,
+) -> None:
+    collective_template_query = educational_api.get_query_for_collective_offers_template_by_ids_for_user(
+        current_user, body.ids
+    )
+    offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
