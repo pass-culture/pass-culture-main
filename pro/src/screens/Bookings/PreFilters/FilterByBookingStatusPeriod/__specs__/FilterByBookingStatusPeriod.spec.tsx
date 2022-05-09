@@ -41,6 +41,7 @@ describe('filter bookings by bookings period', () => {
         displayName: name,
       })),
       getBookingsCSVFileAdapter: jest.fn(),
+      getBookingsXLSFileAdapter: jest.fn(),
       isBookingFiltersActive: true,
       hasResult: true,
       resetPreFilters: jest.fn(),

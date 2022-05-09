@@ -610,6 +610,12 @@ export const getFilteredCollectiveBookingsCSV = async filters => {
   return client.getPlainText(`/collective/bookings/csv?${queryParams}`)
 }
 
+// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'filters' implicitly has an 'any' type.
+export const getFilteredCollectiveBookingsXLS = async filters => {
+  const queryParams = buildBookingsRecapQuery(filters)
+  return client.getExcelFile(`/collective/bookings/excel?${queryParams}`)
+}
+
 export const getCollectiveBookings = async (
   page?: number,
   venueId?: string | null,
