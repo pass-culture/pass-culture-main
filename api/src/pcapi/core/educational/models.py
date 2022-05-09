@@ -86,7 +86,7 @@ class CollectiveBookingStatusFilter(enum.Enum):
 class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
 
@@ -249,7 +249,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer_template"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     offerId = sa.Column(sa.BigInteger, nullable=True)
 

@@ -10,6 +10,7 @@ from typing import Union
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
+from sqlalchemy import and_
 from sqlalchemy import func
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
@@ -533,7 +534,7 @@ def get_collective_offers_for_filters(
         period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
         period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
-    query = query.order_by(educational_models.CollectiveOffer.id.desc())  # type: ignore [attr-defined]
+    query = query.order_by(educational_models.CollectiveOffer.id.desc())
 
     is_new_model_enabled = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
     if not is_new_model_enabled:
@@ -581,7 +582,7 @@ def get_collective_offers_template_for_filters(
     if query is None:
         return []
 
-    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())  # type: ignore [attr-defined]
+    query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())
 
     if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         query = query.filter(educational_models.CollectiveOfferTemplate.offerId.isnot(None))
@@ -678,7 +679,7 @@ def _get_filtered_collective_bookings_pro(
             EducationalRedactor.lastName.label("redactorLastname"),  # type: ignore [attr-defined]
             EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
             CollectiveOffer.name.label("offerName"),
-            CollectiveOffer.id.label("offerId"),  # type: ignore [attr-defined]
+            CollectiveOffer.id.label("offerId"),
             CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
             Venue.departementCode.label("venueDepartmentCode"),
             Offerer.postalCode.label("offererPostalCode"),
@@ -911,3 +912,25 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> CollectiveOf
         )
         .one()
     )
+
+
+def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+    query = educational_models.CollectiveOffer.query
+    if not user.has_admin_role:
+        query = query.join(Venue, educational_models.CollectiveOffer.venue)
+        query = query.join(Offerer, Venue.managingOfferer)
+        query = query.join(UserOfferer, Offerer.UserOfferers)
+        query = query.filter(and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None)))
+    query = query.filter(educational_models.CollectiveOffer.id.in_(ids))
+    return query
+
+
+def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
+    query = educational_models.CollectiveOfferTemplate.query
+    if not user.has_admin_role:
+        query = query.join(Venue, educational_models.CollectiveOfferTemplate.venue)
+        query = query.join(Offerer, Venue.managingOfferer)
+        query = query.join(UserOfferer, Offerer.UserOfferers)
+        query = query.filter(and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None)))
+    query = query.filter(educational_models.CollectiveOfferTemplate.id.in_(ids))
+    return query

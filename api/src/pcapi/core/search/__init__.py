@@ -257,7 +257,7 @@ def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) ->
 def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_ids: Iterable[int]) -> None:
     logger.info("Starting to index collective offers", extra={"count": len(collective_offer_ids)})  # type: ignore [arg-type]
     collective_offers = educational_models.CollectiveOffer.query.filter(
-        educational_models.CollectiveOffer.id.in_(collective_offer_ids)  # type: ignore [attr-defined]
+        educational_models.CollectiveOffer.id.in_(collective_offer_ids)
     ).options(
         joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
             educational_models.CollectiveStock.collectiveBookings
@@ -295,7 +295,7 @@ def _reindex_collective_offer_template_ids(
 ) -> None:
     logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})  # type: ignore [arg-type]
     collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
-        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)  # type: ignore [attr-defined]
+        educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
     ).options(
         joinedload(educational_models.CollectiveOfferTemplate.venue, innerjoin=True).joinedload(
             Venue.managingOfferer, innerjoin=True
