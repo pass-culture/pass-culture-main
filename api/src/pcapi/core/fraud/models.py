@@ -407,7 +407,9 @@ class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
 class OrphanDmsApplication(PcObject, Model):  # type: ignore [valid-type, misc]
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
-
+    dateCreated = sa.Column(
+        sa.DateTime, nullable=True, default=datetime.datetime.utcnow
+    )  # no sql default because the column was added after table creation
     email = sa.Column(sa.Text, nullable=True, index=True)
     application_id = sa.Column(sa.BigInteger, primary_key=True)
     process_id = sa.Column(sa.BigInteger)
