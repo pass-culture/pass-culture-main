@@ -367,6 +367,7 @@ class RunIntegrationTest:
         assert dms_application.application_id == 123
         assert dms_application.process_id == 6712558
         assert dms_application.email == "nonexistant@example.com"
+        assert dms_application.dateCreated is not None
 
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
