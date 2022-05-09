@@ -295,7 +295,7 @@ class SuspendAccountTest:
 
 class UnsuspendAccountTest:
     def test_unsuspend_account(self):
-        suspension = users_factories.UserSuspensionFactory()
+        suspension = users_factories.UserSuspensionByFraudFactory()
         user = suspension.user
 
         users_api.unsuspend_account(user, suspension.actorUser)
@@ -310,9 +310,9 @@ class UnsuspendAccountTest:
 
     def test_bulk_unsuspend_account(self):
         actor = users_factories.AdminFactory()
-        suspension1 = users_factories.UserSuspensionFactory(actorUser=actor)
-        suspension2 = users_factories.UserSuspensionFactory(actorUser=actor)
-        suspension3 = users_factories.UserSuspensionFactory(actorUser=actor)
+        suspension1 = users_factories.UserSuspensionByFraudFactory(actorUser=actor)
+        suspension2 = users_factories.UserSuspensionByFraudFactory(actorUser=actor)
+        suspension3 = users_factories.UserSuspensionByFraudFactory(actorUser=actor)
 
         users_api.bulk_unsuspend_account([suspension1.user.id, suspension2.user.id, suspension3.user.id], actor)
 

@@ -391,24 +391,28 @@ class EmailAdminValidationEntryFactory(UserEmailHistoryFactory):
     eventType = users_models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION.value
 
 
-class UserSuspensionFactory(BaseFactory):
+class UserSuspensionBaseFactory(BaseFactory):
     class Meta:
         model = users_models.UserSuspension
+        abstract = True
 
     user = factory.SubFactory(UserFactory, isActive=False)
     actorUser = factory.SubFactory(AdminFactory)
     eventType = users_models.SuspensionEventType.SUSPENDED
     eventDate = factory.LazyFunction(lambda: datetime.utcnow() - relativedelta(days=1))
+
+
+class UserSuspensionByFraudFactory(UserSuspensionBaseFactory):
     reasonCode = users_constants.SuspensionReason.FRAUD_SUSPICION
 
 
-class UnsuspendedSuspensionFactory(UserSuspensionFactory):
+class UnsuspendedSuspensionFactory(UserSuspensionBaseFactory):
     eventType = users_constants.SuspensionEventType.UNSUSPENDED
 
 
-class SuspendedUponUserRequestFactory(UserSuspensionFactory):
+class SuspendedUponUserRequestFactory(UserSuspensionBaseFactory):
     reasonCode = users_constants.SuspensionReason.UPON_USER_REQUEST
 
 
-class DeletedAccountSuspensionFactory(UserSuspensionFactory):
+class DeletedAccountSuspensionFactory(UserSuspensionByFraudFactory):
     reasonCode = users_constants.SuspensionReason.DELETED

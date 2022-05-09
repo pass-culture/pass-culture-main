@@ -1368,7 +1368,7 @@ class SuspendAccountTest:
     def test_suspend_suspended_account(self, client, app):
         # Ensure that a beneficiary user can't change the reason for being suspended
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        user_suspension = users_factories.UserSuspensionFactory(user=user)
+        user_suspension = users_factories.UserSuspensionByFraudFactory(user=user)
 
         client.with_token(email=user.email)
         response = client.post("/native/v1/account/suspend")

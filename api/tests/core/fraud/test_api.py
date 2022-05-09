@@ -731,7 +731,7 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
         expected_suspension = users_factories.SuspendedUponUserRequestFactory(eventDate=one_week_ago)
 
         # not suspended upon user request: should be ignored
-        users_factories.UserSuspensionFactory(eventDate=one_week_ago)
+        users_factories.UserSuspensionByFraudFactory(eventDate=one_week_ago)
 
         # suspended less than 5 days ago (see below): should be ignored
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -750,7 +750,7 @@ class GetSuspendedAccountsUponUserRequestSinceTest:
         suspension event occurred more than N days ago.
         """
         one_week_ago = datetime.datetime.utcnow() - datetime.timedelta(days=7)
-        user_suspension = users_factories.UserSuspensionFactory(eventDate=one_week_ago)
+        user_suspension = users_factories.UserSuspensionByFraudFactory(eventDate=one_week_ago)
 
         yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         users_factories.UnsuspendedSuspensionFactory(user=user_suspension.user, eventDate=yesterday)

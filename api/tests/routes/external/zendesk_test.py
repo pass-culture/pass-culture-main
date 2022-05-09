@@ -73,7 +73,7 @@ class ZendeskWebhookTest:
             phoneValidationStatus=PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
             isActive=False,
         )
-        users_factories.UserSuspensionFactory(
+        users_factories.UserSuspensionByFraudFactory(
             user=user, eventDate=datetime(2022, 3, 22, 15), reasonCode=SuspensionReason.FRAUD_HACK
         )
 
