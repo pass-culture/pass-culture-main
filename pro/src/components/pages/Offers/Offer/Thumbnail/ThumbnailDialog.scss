@@ -23,7 +23,6 @@
 }
 
 .tnd-subtitle {
-  color: colors.$grey-dark;
   margin-bottom: rem.torem(24px);
   line-height: 1em;
 }
@@ -104,8 +103,6 @@
 
 .tna-links-help {
   @include fonts.body;
-
-  color: colors.$grey-dark;
 }
 
 .tnc-explanations {

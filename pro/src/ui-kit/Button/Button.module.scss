@@ -29,11 +29,11 @@
 
   &-icon {
     height: rem.torem(20px);
-    margin-right: rem.torem(6px);
+    margin-right: rem.torem(2px);
     margin-left: rem.torem(
       -4px
     ); // compensate for icon white space adding to padding
-    width: rem.torem(20px);
+    width: rem.torem(16px);
   }
 
   &-primary {
@@ -83,6 +83,7 @@
   }
 
   &-ternary {
+    @include fonts.caption();
     color: colors.$black;
     background-color: transparent;
     border-color: transparent;
@@ -95,12 +96,12 @@
 
     &:disabled,
     &.button-disabled {
-      color: colors.$grey-medium;
+      color: colors.$grey-dark;
       text-decoration: none;
     }
     &:disabled .button-icon,
     &.button-disabled .button-icon {
-      fill: colors.$grey-medium;
+      fill: colors.$grey-dark;
     }
   }
 }

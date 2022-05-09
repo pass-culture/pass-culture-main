@@ -19,16 +19,15 @@ table.reimbursement-table {
       display: flex;
 
       button {
+        @include fonts.caption();
         background: none;
         border: none;
         display: flex;
-        font-size: 0.875rem;
-        font-weight: 500;
         padding: 0;
 
         img {
           height: rem.torem(20px);
-          margin-left: rem.torem(10px);
+          margin-left: rem.torem(2px);
         }
       }
     }

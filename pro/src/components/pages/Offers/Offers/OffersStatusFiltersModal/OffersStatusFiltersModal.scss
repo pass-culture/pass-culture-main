@@ -17,6 +17,7 @@
   .osf-title {
     @include fonts.caption();
 
+    color: colors.$grey-dark;
     white-space: nowrap;
   }
 

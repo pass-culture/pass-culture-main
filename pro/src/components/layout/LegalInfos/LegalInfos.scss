@@ -6,7 +6,6 @@
   @include fonts.caption();
 
   color: colors.$grey-dark;
-  line-height: rem.torem(22px);
 
   .quaternary-link {
     color: colors.$primary;

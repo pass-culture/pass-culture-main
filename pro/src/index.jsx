@@ -1,4 +1,3 @@
-import '@fontsource/barlow/latin.css'
 import './styles/index.scss'
 
 import {
@@ -10,10 +9,12 @@ import {
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Root from 'Root'
+
 import { init as SentryInit } from '@sentry/browser'
 import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import config from '../package.json'
 import smoothscroll from 'smoothscroll-polyfill'
+
 import { unregister } from './registerServiceWorker'
 
 // Initialize sentry
