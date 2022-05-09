@@ -1044,7 +1044,10 @@ class SendPhoneValidationCodeTest:
         assert not Token.query.filter_by(userId=user.id).first()
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
-        assert response.json == {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}
+        assert response.json == {
+            "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi.",
+            "code": "PHONE_ALREADY_EXISTS",
+        }
 
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
