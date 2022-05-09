@@ -7,6 +7,7 @@ import BookingsScreen from 'screens/Bookings'
 
 import {
   getCollectiveBookingsCSVFileAdapter,
+  getCollectiveBookingsXLSFileAdapter,
   getFilteredCollectiveBookingsRecapAdapter,
   getUserHasCollectiveBookingsAdapter,
 } from './adapters'
@@ -23,6 +24,7 @@ const CollectiveBookings = (): JSX.Element => {
     <BookingsScreen
       audience={Audience.COLLECTIVE}
       getBookingsCSVFileAdapter={getCollectiveBookingsCSVFileAdapter}
+      getBookingsXLSFileAdapter={getCollectiveBookingsXLSFileAdapter}
       getFilteredBookingsRecapAdapter={
         getFilteredCollectiveBookingsRecapAdapter
       }
