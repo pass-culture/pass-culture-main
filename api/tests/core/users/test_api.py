@@ -223,6 +223,7 @@ def _assert_user_suspension_history(
         assert not last_suspension_event.reasonCode
 
 
+@pytest.mark.usefixtures("db_session")
 class SuspendAccountTest:
     def test_suspend_admin(self):
         user = users_factories.AdminFactory()
@@ -252,10 +253,14 @@ class SuspendAccountTest:
         used_booking = bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user)
         actor = users_factories.AdminFactory()
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
+        old_password_hash = user.password
 
         users_api.suspend_account(user, reason, actor)
 
+        db.session.refresh(user)
+
         assert not user.isActive
+        assert user.password == old_password_hash
         assert user.suspension_reason == reason
         assert _datetime_within_last_5sec(user.suspension_date)
 

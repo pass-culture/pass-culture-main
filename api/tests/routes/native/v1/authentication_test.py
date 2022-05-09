@@ -33,9 +33,28 @@ def test_user_is_active_returned_value(client, is_active):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=is_active)
 
-    response = client.post("/native/v1/signin", json=data)
-    assert response.status_code == 200
-    assert response.json["isActive"] == is_active
+    with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+        assert response.json["isActive"] == is_active
+
+
+def test_allow_inactive_user_sign_when_ff_is_active(client):
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+
+    with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+
+
+def test_reject_inactive_user_sign_when_ff_is_disabled(client):
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+
+    with override_features(ALLOW_ACCOUNT_REACTIVATION=False):
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 400
 
 
 def test_user_logs_in_and_refreshes_token(client):
