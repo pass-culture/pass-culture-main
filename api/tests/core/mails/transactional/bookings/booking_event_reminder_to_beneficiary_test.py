@@ -1,5 +1,4 @@
 import dataclasses
-from datetime import datetime
 
 from freezegun import freeze_time
 import pytest
@@ -19,19 +18,6 @@ import pcapi.core.offers.factories as offers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-
-@freeze_time("2021-10-15 12:48:00")
-def test_sendinblue_send_email():
-    booking = IndividualBookingFactory(
-        stock=offers_factories.EventStockFactory(price=1.99), dateCreated=datetime.utcnow()
-    )
-    send_individual_booking_event_reminder_email_to_beneficiary(booking.individualBooking)
-
-    assert len(mails_testing.outbox) == 1
-    assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-        TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value
-    )
 
 
 def get_expected_base_sendinblue_email_data(individual_booking, **overrides):
@@ -61,64 +47,100 @@ def get_expected_base_sendinblue_email_data(individual_booking, **overrides):
 
 
 @freeze_time("2021-10-15 12:48:00")
-def test_should_return_event_specific_data_for_email_when_offer_is_an_event():
-    booking = IndividualBookingFactory(
-        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow()
-    )
-    email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
-    expected = get_expected_base_sendinblue_email_data(booking.individualBooking)
-    assert email_data == expected
+class SendIndividualBookingEventReminderEmailToBeneficiaryTest:
+    def test_sendinblue_send_email(self):
+        booking = IndividualBookingFactory(stock=offers_factories.EventStockFactory())
+
+        send_individual_booking_event_reminder_email_to_beneficiary(booking.individualBooking)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value
+        )
 
 
 @freeze_time("2021-10-15 12:48:00")
-def test_should_return_event_specific_data_for_email_when_offer_is_a_duo_event():
-    booking = IndividualBookingFactory(
-        stock=offers_factories.EventStockFactory(price=23.99), dateCreated=datetime.utcnow(), quantity=2
-    )
+class GetBookingEventReminderToBeneficiaryEmailDataTest:
+    def given_nominal_booking_event(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue__name="Le Petit Rintintin",
+                offer__name="Product",
+            ),
+            token="N2XPV5",
+        )
 
-    email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
 
-    expected = get_expected_base_sendinblue_email_data(
-        booking.individualBooking,
-        IS_DUO_EVENT=True,
-    )
-    assert email_data == expected
+        assert email_data.params == {
+            "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
+            "EVENT_DATE": "20 octobre 2021",
+            "EVENT_HOUR": "14h48",
+            "IS_DUO_EVENT": False,
+            "OFFER_NAME": "Product",
+            "OFFER_TOKEN": "N2XPV5",
+            "OFFER_WITHDRAWAL_DELAY": None,
+            "OFFER_WITHDRAWAL_DETAILS": None,
+            "OFFER_WITHDRAWAL_TYPE": None,
+            "QR_CODE": "PASSCULTURE:v3;TOKEN:N2XPV5",
+            "SUBCATEGORY": "SEANCE_CINE",
+            "USER_FIRST_NAME": "Jeanne",
+            "VENUE_ADDRESS": "1 boulevard Poissonnière",
+            "VENUE_CITY": "Paris",
+            "VENUE_NAME": "Le Petit Rintintin",
+            "VENUE_POSTAL_CODE": "75000",
+        }
 
+    def should_return_event_specific_data_for_email_when_offer_is_a_duo_event(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(),
+            quantity=2,
+        )
 
-@freeze_time("2021-10-15 12:48:00")
-def test_should_use_public_name_when_available():
-    booking = IndividualBookingFactory(
-        dateCreated=datetime.utcnow(),
-        stock=offers_factories.EventStockFactory(
-            price=23.99,
-            offer__venue__name="LIBRAIRIE GENERALE UNIVERSITAIRE COLBERT",
-            offer__venue__publicName="Librairie Colbert",
-        ),
-    )
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
 
-    email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+        assert email_data.params["IS_DUO_EVENT"] is True
 
-    expected = get_expected_base_sendinblue_email_data(
-        booking.individualBooking,
-        VENUE_NAME="Librairie Colbert",
-        **{key: value for key, value in email_data.params.items() if key != "VENUE_NAME"},
-    )
-    assert email_data == expected
+    def should_return_withdrawal_details_when_available(self):
+        withdrawal_details = "Conditions de retrait spécifiques."
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(offer__withdrawalDetails=withdrawal_details)
+        )
 
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
 
-@freeze_time("2021-10-15 12:48:00")
-def test_should_return_withdrawal_details_when_available():
-    withdrawal_details = "Conditions de retrait spécifiques."
-    booking = IndividualBookingFactory(
-        stock=offers_factories.EventStockFactory(price=23.99, offer__withdrawalDetails=withdrawal_details),
-        dateCreated=datetime.utcnow(),
-    )
+        assert email_data.params["OFFER_WITHDRAWAL_DETAILS"] == withdrawal_details
 
-    email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+    def should_use_venue_public_name_when_available(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue__publicName="Cinéma du bout de la rue",
+                offer__venue__name="Nom administratif du cinéma",
+            )
+        )
 
-    expected = get_expected_base_sendinblue_email_data(
-        booking.individualBooking,
-        OFFER_WITHDRAWAL_DETAILS=withdrawal_details,
-        **{key: value for key, value in email_data.params.items() if key != "OFFER_WITHDRAWAL_DETAILS"},
-    )
-    assert email_data == expected
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+
+        assert email_data.params["VENUE_NAME"] == "Cinéma du bout de la rue"
+
+    def should_use_venue_name_when_public_name_is_unavailable(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                offer__venue__publicName=None,
+                offer__venue__name="Cinéma du bout de la rue",
+            )
+        )
+
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+
+        assert email_data.params["VENUE_NAME"] == "Cinéma du bout de la rue"
+
+    def should_use_activation_code_when_available(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(),
+        )
+        offers_factories.ActivationCodeFactory(stock=booking.stock, booking=booking, code="AZ3")
+
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+
+        assert email_data.params["OFFER_TOKEN"] == "AZ3"
