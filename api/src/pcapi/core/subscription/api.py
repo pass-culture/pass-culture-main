@@ -122,7 +122,7 @@ def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
         if fraud_check.type == fraud_models.FraudCheckType.DMS
         and fraud_check.status in (fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.STARTED)
         and fraud_check.resultContent
-        and fraud_check.resultContent.get("city") is not None  # TODO: remove when all DMS applications ask for city
+        and fraud_check.source_data().city is not None
     ]
     return bool(user_pending_dms_fraud_checks)
 
