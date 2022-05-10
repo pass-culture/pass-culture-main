@@ -117,5 +117,27 @@ describe('formatPatch', () => {
         description: '',
       })
     })
+
+    it('should format phoneNumber whend provided ', () => {
+      // given
+      const patch = {
+        contact: {
+          phoneNumber: '06.08-08(08.08',
+        },
+      }
+
+      // when
+      const result = formatVenuePayload(patch, false)
+
+      // then
+      expect(result).toStrictEqual({
+        contact: {
+          phoneNumber: '+33608080808',
+        },
+        venueTypeCode: null,
+        venueLabelId: null,
+        description: '',
+      })
+    })
   })
 })

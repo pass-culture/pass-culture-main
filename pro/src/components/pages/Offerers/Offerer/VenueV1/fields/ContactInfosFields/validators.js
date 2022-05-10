@@ -1,12 +1,14 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { string } from 'yup'
 
-export const validatePhone = val => {
-  const phoneRegex = /^((\+)33|0)[1-9](\d{2}){4}$/
-  if (val === null) {
+export const validatePhone = phone => {
+  if (!phone) {
     return
   }
-  if (val && !phoneRegex.test(val)) {
-    return 'Ce numéro de téléphone n’est pas valide merci de fournir un numéro de téléphone sans espaces'
+  const phoneNumber = parsePhoneNumberFromString(phone, 'FR')
+  const isValid = phoneNumber?.isValid()
+  if (!isValid) {
+    return 'Votre numéro de téléphone n’est pas valide'
   }
 }
 
