@@ -1514,17 +1514,27 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
         VenueBookingProvider.venueId == offer.venueId, VenueBookingProvider.isActive
     ).one_or_none()
 
-    if booking_provider:
-        shows_id = []
-        for stock in offer.activeStocks:
-            if stock.idAtProviders and stock.idAtProviders.isdigit():
-                shows_id.append(int(stock.idAtProviders))
-        shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
+    if not booking_provider:
+        return
 
-        for show_id, remaining_places in shows_remaining_places.items():
-            stock = next((s for s in offer.activeStocks if s.idAtProviders == str(show_id)))
-            if stock:
-                if remaining_places <= 0:
-                    stock_to_update = offers_repository.get_and_lock_stock(stock.id)
-                    stock_to_update.quantity = stock_to_update.dnBookedQuantity
-                    repository.save(stock_to_update)
+    shows_id = [
+        int(stock.idAtProviders)
+        for stock in offer.activeStocks
+        if stock.idAtProviders and stock.idAtProviders.isdigit()
+    ]
+
+    if not shows_id:
+        return
+
+    logger.info(
+        "Getting up-to-date show stock from booking provider on offer view",
+        extra={"offer": offer.id, "booking_provider": booking_provider.id},
+    )
+    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
+
+    for show_id, remaining_places in shows_remaining_places.items():
+        stock = next((s for s in offer.activeStocks if s.idAtProviders == str(show_id)))
+        if stock:
+            if remaining_places <= 0:
+                stock.quantity = stock.dnBookedQuantity
+                repository.save(stock)
