@@ -246,3 +246,98 @@ def _get_sent_pricings_for_individual_offers(
             BankInformation.iban.label("iban"),
         )
     ).all()
+
+
+def _get_sent_pricings_for_collective_bookings(
+    offerer_ids: list[int],
+    reimbursement_period: tuple[datetime.date, datetime.date],
+    venue_id: typing.Optional[int] = None,
+) -> list[tuple]:
+    return (
+        models.Pricing.query.join(educational_models.CollectiveBooking, models.Pricing.collectiveBooking)
+        .join(educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock)
+        .join(educational_models.CollectiveOffer, educational_models.CollectiveStock.collectiveOffer)
+        .join(offerers_models.Venue, educational_models.CollectiveOffer.venue)
+        .join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
+        .join(models.Pricing.cashflows)
+        .join(models.Cashflow.bankAccount)
+        .outerjoin(models.Pricing.customRule)
+        .filter(
+            models.Pricing.status == models.PricingStatus.INVOICED,
+            sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                *reimbursement_period,
+                symmetric=True,
+            ),
+            educational_models.CollectiveBooking.offererId.in_(offerer_ids),
+            (offerers_models.Venue.id == venue_id) if venue_id else sqla.true(),
+        )
+        .join(educational_models.EducationalRedactor, educational_models.CollectiveBooking.educationalRedactor)
+        .order_by(educational_models.CollectiveBooking.dateUsed.desc(), educational_models.CollectiveBooking.id.desc())
+        .with_entities(
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+            educational_models.CollectiveBooking.dateUsed.label("booking_dateUsed"),
+            educational_models.CollectiveStock.price.label("booking_amount"),
+            educational_models.CollectiveOffer.name.label("offer_name"),
+            sqla.true().label("offer_is_educational"),
+            offerers_models.Offerer.address.label("offerer_address"),
+            offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.siret.label("venue_siret"),
+            offerers_models.Venue.address.label("venue_address"),
+            # See note about `amount` in `core/finance/models.py`.
+            (-models.Pricing.amount).label("amount"),
+            models.Pricing.standardRule.label("rule_name"),
+            models.Pricing.customRuleId.label("rule_id"),
+            models.Cashflow.creationDate.label("cashflow_date"),
+            BankInformation.iban.label("iban"),
+        )
+    ).all()
+
+
+def _get_sent_pricings_for_individual_bookings(
+    offerer_ids: list[int],
+    reimbursement_period: tuple[datetime.date, datetime.date],
+    venue_id: typing.Optional[int] = None,
+) -> list[tuple]:
+    return (
+        models.Pricing.query.join(models.Pricing.booking)
+        .join(models.Pricing.cashflows)
+        .join(models.Cashflow.bankAccount)
+        .outerjoin(models.Pricing.customRule)
+        .filter(
+            models.Pricing.status == models.PricingStatus.INVOICED,
+            sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
+                *reimbursement_period,
+                symmetric=True,
+            ),
+            bookings_models.Booking.offererId.in_(offerer_ids),
+            (bookings_models.Booking.venueId == venue_id) if venue_id else sqla.true(),
+        )
+        .join(bookings_models.Booking.offerer)
+        .join(bookings_models.IndividualBooking)
+        .join(users_models.User)
+        .join(offers_models.Stock)
+        .join(offers_models.Offer)
+        .join(offerers_models.Venue)
+        .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
+        .with_entities(
+            users_models.User.lastName.label("user_lastName"),
+            users_models.User.firstName.label("user_firstName"),
+            bookings_models.Booking.token.label("booking_token"),
+            bookings_models.Booking.dateUsed.label("booking_dateUsed"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
+            bookings_models.Booking.amount.label("booking_amount"),
+            offers_models.Offer.name.label("offer_name"),
+            offers_models.Offer.isEducational.label("offer_is_educational"),
+            offerers_models.Offerer.address.label("offerer_address"),
+            offerers_models.Venue.name.label("venue_name"),
+            offerers_models.Venue.siret.label("venue_siret"),
+            offerers_models.Venue.address.label("venue_address"),
+            # See note about `amount` in `core/finance/models.py`.
+            (-models.Pricing.amount).label("amount"),
+            models.Pricing.standardRule.label("rule_name"),
+            models.Pricing.customRuleId.label("rule_id"),
+            models.Cashflow.creationDate.label("cashflow_date"),
+            BankInformation.iban.label("iban"),
+        )
+    ).all()
