@@ -1,3 +1,5 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
+
 const creation_authorized_input_field = [
   'address',
   'bic',
@@ -66,6 +68,15 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     if (inputName === 'contact' && payload[inputName]?.phoneNumber === '') {
       payload[inputName].phoneNumber = null
     }
+    if (
+      inputName === 'contact' &&
+      payload[inputName]?.phoneNumber != undefined
+    ) {
+      payload[inputName].phoneNumber = parsePhoneNumberFromString(
+        payload[inputName].phoneNumber,
+        'FR'
+      ).number
+    }
 
     if (inputName === 'contact' && payload[inputName]?.email === '') {
       payload[inputName].email = null
@@ -74,7 +85,6 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
     if (inputName === 'contact' && payload[inputName]?.website === '') {
       payload[inputName].website = null
     }
-
     if (payload[inputName] !== undefined) {
       requestPayload[inputName] = payload[inputName]
     } else if (inputName === 'venueTypeCode' || inputName === 'venueLabelId') {

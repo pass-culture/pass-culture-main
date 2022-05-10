@@ -16,15 +16,12 @@ describe('has fill fields with correct format', () => {
   })
 
   it('should return an error message when phone number is invalid', () => {
-    const errorMessage =
-      'Ce numéro de téléphone n’est pas valide merci de fournir un numéro de téléphone sans espaces'
+    const errorMessage = 'Votre numéro de téléphone n’est pas valide'
 
-    const phoneNumberWithSpaces = '01 11 11 11 11'
     const phoneNumberWithUnexpectedString = '+33111+11111'
     const tooLongPhoneNumber = '011111111111111'
     const tooShortPhoneNumber = '01'
 
-    expect(validatePhone(phoneNumberWithSpaces)).toStrictEqual(errorMessage)
     expect(validatePhone(phoneNumberWithUnexpectedString)).toStrictEqual(
       errorMessage
     )

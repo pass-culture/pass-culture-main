@@ -266,7 +266,7 @@ describe('test page : VenueEdition', () => {
       const contactInfos = {
         email: 'test@test.com',
         website: 'https://some-url-test.com',
-        phoneNumber: '0606060606',
+        phoneNumber: '+33606060606',
       }
       await clearAndFillContact(contactInfos)
 
