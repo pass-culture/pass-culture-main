@@ -11,6 +11,7 @@ from pcapi import settings
 from pcapi.connectors.beneficiaries.educonnect import educonnect_connector
 from pcapi.connectors.beneficiaries.educonnect import exceptions as educonnect_exceptions
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
+from pcapi.core import logging as core_logging
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription.educonnect import api as educonnect_subscription_api
 from pcapi.core.subscription.educonnect import exceptions as educonnect_subscription_exceptions
@@ -28,6 +29,15 @@ ERROR_PAGE_URL = f"{settings.WEBAPP_V2_URL}/educonnect/erreur?"
 SUCCESS_PAGE_URL = f"{settings.WEBAPP_V2_URL}/educonnect/validation?"
 
 
+def _log_for_educonnect_supervision(log_message: str, user_id: int) -> None:
+    core_logging.log_for_supervision(
+        logger=logging.getLogger(__name__),
+        log_level=logging.INFO,
+        log_message=f"[EDUCONNECT AUTHENTICATION] {log_message}",
+        extra={"user_id": user_id},
+    )
+
+
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
 @authenticated_and_active_user_required
 def login_educonnect(user: users_models.User) -> Response:
@@ -39,8 +49,10 @@ def login_educonnect(user: users_models.User) -> Response:
         response.status_code = 204
         response.headers["educonnect-redirect"] = redirect_url
         response.headers["Access-Control-Expose-Headers"] = "educonnect-redirect"
+        _log_for_educonnect_supervision("Sending redirect url (webapp)", user.id)
     else:
         response = redirect(redirect_url, code=302)
+        _log_for_educonnect_supervision("Redirecting to educonnect (app)", user.id)
 
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"
