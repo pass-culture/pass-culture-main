@@ -1127,3 +1127,29 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[in
 
 def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: Iterable[int]) -> BaseQuery:
     return educational_repository.get_query_for_collective_offers_template_by_ids_for_user(user=user, ids=ids)
+
+
+def find_collective_bookings_for_adage(
+    uai_code: str,
+    year_id: str,
+    redactor_email: Optional[str] = None,
+    status: Optional[
+        Union[
+            educational_models.CollectiveBookingStatus,
+            educational_models.EducationalBookingStatus,
+            bookings_models.BookingStatus,
+        ]
+    ] = None,
+) -> list[educational_models.CollectiveBooking]:
+    return educational_repository.find_collective_bookings_for_adage(
+        uai_code=uai_code, year_id=year_id, redactor_email=redactor_email, status=status
+    )
+
+
+def find_educational_deposit_by_institution_id_and_year(
+    educational_institution_id: int,
+    educational_year_id: str,
+) -> Optional[educational_models.EducationalDeposit]:
+    return educational_repository.find_educational_deposit_by_institution_id_and_year(
+        educational_institution_id=educational_institution_id, educational_year_id=educational_year_id
+    )
