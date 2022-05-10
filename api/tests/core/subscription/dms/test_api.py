@@ -13,6 +13,7 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
+from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
 from tests.scripts.beneficiary.fixture import make_single_application
 
 
@@ -123,3 +124,22 @@ class DMSOrphanSubsriptionTest:
 
         dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
         assert dms_orphan is None
+
+
+@pytest.mark.usefixtures("db_session")
+class HandleDmsApplicationTest:
+    @patch("pcapi.connectors.dms.api.parse_beneficiary_information_graphql")
+    def test_parsing_failure(
+        self,
+        mocked_parse_beneficiary_information,
+    ):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_id=1, state=dms_models.GraphQLApplicationStates.draft, email=user.email
+        )
+        mocked_parse_beneficiary_information.side_effect = [Exception()]
+
+        with pytest.raises(Exception):
+            dms_subscription_api.handle_dms_application(dms_response, 123)
+
+        assert fraud_models.BeneficiaryFraudCheck.query.first() is None
