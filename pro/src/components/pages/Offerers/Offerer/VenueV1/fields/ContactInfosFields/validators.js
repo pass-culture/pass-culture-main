@@ -22,12 +22,13 @@ export const validateEmail = async val => {
   }
 }
 
-export const validateUrl = async val => {
-  const isValid = await string().url().isValid(val)
-  if (val === null) {
+export const validateUrl = async url => {
+  const urlRegex =
+    /^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/
+  if (!url) {
     return
   }
-  if (!isValid) {
+  if (!urlRegex.test(url)) {
     return 'L’URL renseignée n’est pas valide'
   }
 }
