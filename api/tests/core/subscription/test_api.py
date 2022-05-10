@@ -796,6 +796,20 @@ class CommonSubscritpionTest:
             == fraud_check
         )
 
+    def test__has_completed_profile_in_dms_form(self):
+        # This test reproduces an error that happened with old data, where 'city' was not set in the fraudCheck resultContent
+        user = users_factories.UserFactory()
+        content = fraud_factories.DMSContentFactory()
+        content.__delattr__("city")
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            resultContent=content,
+            type=fraud_models.FraudCheckType.DMS,
+            status=fraud_models.FraudCheckStatus.PENDING,
+        )
+
+        assert not subscription_api._has_completed_profile_in_dms_form(user)
+
 
 @pytest.mark.usefixtures("db_session")
 class HasPassedAllChecksToBecomeBeneficiaryTest:
