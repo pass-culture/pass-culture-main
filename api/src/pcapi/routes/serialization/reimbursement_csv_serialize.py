@@ -76,11 +76,15 @@ class ReimbursementDetails:
         self.payment_iban = payment_info.iban  # type: ignore [attr-defined]
         self.venue_name = payment_info.venue_name  # type: ignore [attr-defined]
         self.offer_name = payment_info.offer_name  # type: ignore [attr-defined]
-        self.user_last_name = payment_info.user_lastName or payment_info.redactor_lastname  # type: ignore [attr-defined]
-        self.user_first_name = payment_info.user_firstName or payment_info.redactor_firstname  # type: ignore [attr-defined]
-        self.booking_token = payment_info.booking_token  # type: ignore [attr-defined]
+        self.user_last_name = getattr(payment_info, "user_lastName", None) or getattr(
+            payment_info, "redactor_lastname", None
+        )
+        self.user_first_name = getattr(payment_info, "user_firstName", None) or getattr(
+            payment_info, "redactor_firstname", None
+        )
+        self.booking_token = getattr(payment_info, "booking_token", None)
         self.booking_used_date = payment_info.booking_dateUsed  # type: ignore [attr-defined]
-        self.booking_total_amount = format_number_as_french(payment_info.booking_amount * payment_info.booking_quantity)  # type: ignore [attr-defined]
+        self.booking_total_amount = format_number_as_french(payment_info.booking_amount * getattr(payment_info, "booking_quantity", 1))  # type: ignore [attr-defined]
         if using_legacy_models:
             if payment_info.reimbursement_rate:  # type: ignore [attr-defined]
                 rate = f"{int(payment_info.reimbursement_rate * 100)}%"  # type: ignore [attr-defined]
