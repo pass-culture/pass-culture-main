@@ -38,10 +38,8 @@ AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=ELIGIBILITY_
 @pytest.mark.usefixtures("db_session")
 class RunTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    @patch("pcapi.core.subscription.api.on_successful_application")
     def test_should_retrieve_applications_from_new_procedure_id(
         self,
-        on_sucessful_application,
         get_applications_with_details,
     ):
         get_applications_with_details.return_value = [
