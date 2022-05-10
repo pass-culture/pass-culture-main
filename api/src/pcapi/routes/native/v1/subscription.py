@@ -9,7 +9,7 @@ from pcapi.core.subscription import profile_options
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
-from pcapi.routes.native.security import authenticated_user_required
+from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
     on_success_status=200,
     api=blueprint.api,
 )
-@authenticated_user_required
+@authenticated_and_active_user_required
 def next_subscription_step(
     user: users_models.User,
 ) -> Optional[serializers.NextSubscriptionStepResponse]:
@@ -41,7 +41,7 @@ def next_subscription_step(
 
 @blueprint.native_v1.route("/subscription/profile", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def complete_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
     subscription_api.complete_profile(
         user,
@@ -75,7 +75,7 @@ def get_profile_options() -> serializers.ProfileOptionsResponse:
 
 @blueprint.native_v1.route("/subscription/honor_statement", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def create_honor_statement_fraud_check(user: users_models.User) -> None:
     fraud_api.create_honor_statement_fraud_check(user, "statement from /subscription/honor_statement endpoint")
 
@@ -84,7 +84,7 @@ def create_honor_statement_fraud_check(user: users_models.User) -> None:
 
 @blueprint.native_v1.route("/ubble_identification", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def start_identification_session(
     user: users_models.User, body: serializers.IdentificationSessionRequest
 ) -> serializers.IdentificationSessionResponse:

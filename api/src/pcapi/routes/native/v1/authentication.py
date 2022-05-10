@@ -17,7 +17,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
-from pcapi.routes.native.security import authenticated_user_required
+from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
@@ -116,7 +116,7 @@ def reset_password(body: ResetPasswordRequest) -> None:
 
 @blueprint.native_v1.route("/change_password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
-@authenticated_user_required
+@authenticated_and_active_user_required
 def change_password(user: User, body: ChangePasswordRequest) -> None:
     try:
         users_repo.check_user_and_credentials(user, body.current_password)

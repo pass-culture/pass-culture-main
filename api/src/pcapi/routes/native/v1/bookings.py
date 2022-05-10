@@ -17,7 +17,7 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.product import Product
 from pcapi.repository import repository
-from pcapi.routes.native.security import authenticated_user_required
+from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization.bookings import BookOfferRequest
 from pcapi.routes.native.v1.serialization.bookings import BookOfferResponse
 from pcapi.routes.native.v1.serialization.bookings import BookingDisplayStatusRequest
@@ -33,7 +33,7 @@ from . import blueprint
 
 @blueprint.native_v1.route("/bookings", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
-@authenticated_user_required
+@authenticated_and_active_user_required
 def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
     stock = Stock.query.get(body.stock_id)
     if not stock:
@@ -79,7 +79,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 
 @blueprint.native_v1.route("/bookings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=BookingsResponse)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def get_bookings(user: User) -> BookingsResponse:
     individual_bookings = (
         IndividualBooking.query.filter_by(userId=user.id)
@@ -186,7 +186,7 @@ def is_ended_booking(booking: Booking) -> bool:
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/cancel", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
-@authenticated_user_required
+@authenticated_and_active_user_required
 def cancel_booking(user: User, booking_id: int) -> None:
     booking = (
         Booking.query.join(IndividualBooking)
@@ -206,7 +206,7 @@ def cancel_booking(user: User, booking_id: int) -> None:
 
 @blueprint.native_v1.route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
-@authenticated_user_required
+@authenticated_and_active_user_required
 def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
     individual_booking = (
         IndividualBooking.query.join(IndividualBooking.booking)

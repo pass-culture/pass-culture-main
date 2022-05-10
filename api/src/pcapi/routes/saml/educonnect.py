@@ -17,7 +17,7 @@ from pcapi.core.subscription.educonnect import exceptions as educonnect_subscrip
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
-from pcapi.routes.native.security import authenticated_user_required
+from pcapi.routes.native.security import authenticated_and_active_user_required
 
 from . import blueprint
 
@@ -29,7 +29,7 @@ SUCCESS_PAGE_URL = f"{settings.WEBAPP_V2_URL}/educonnect/validation?"
 
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
-@authenticated_user_required
+@authenticated_and_active_user_required
 def login_educonnect(user: users_models.User) -> Response:
     should_redirect = request.args.get("redirect", default=True, type=lambda v: v.lower() == "true")
     redirect_url = educonnect_connector.get_login_redirect_url(user)

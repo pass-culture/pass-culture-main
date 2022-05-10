@@ -12,7 +12,7 @@ from pcapi.core.users.models import User
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.product import Product
-from pcapi.routes.native.security import authenticated_user_required
+from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.workers.push_notification_job import send_offer_link_by_push_job
 
@@ -48,7 +48,7 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 
 @blueprint.native_v1.route("/offer/<int:offer_id>/report", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest) -> None:
     offer = Offer.query.get_or_404(offer_id)
 
@@ -60,21 +60,21 @@ def report_offer(user: User, offer_id: int, body: serializers.OfferReportRequest
 
 @blueprint.native_v1.route("/offer/report/reasons", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
     return serializers.OfferReportReasons(reasons=Reason.get_full_meta())
 
 
 @blueprint.native_v1.route("/offers/reports", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserReportedOffersResponse)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def user_reported_offers(user: User) -> serializers.UserReportedOffersResponse:
     return serializers.UserReportedOffersResponse(reportedOffers=user.reported_offers)
 
 
 @blueprint.native_v1.route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def send_offer_app_link(user: User, offer_id: int) -> None:
     """
     On iOS native app, users cannot book numeric offers with price > 0, so
@@ -86,7 +86,7 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
 
 @blueprint.native_v1.route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def send_offer_link_by_push(user: User, offer_id: int) -> None:
     Offer.query.get_or_404(offer_id)
     send_offer_link_by_push_job.delay(user.id, offer_id)
