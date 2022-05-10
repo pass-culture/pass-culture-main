@@ -182,7 +182,25 @@ def find_all_offerers_payments(
         )
     )
 
-    sent_pricings = (
+    sent_pricings = _get_sent_pricings_for_individual_offers(
+        offerer_ids,
+        reimbursement_period,
+        venue_id,
+    )
+
+    results = sent_pricings
+    if FeatureToggle.INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS.is_active():
+        results.extend(sent_payments.all())
+
+    return results
+
+
+def _get_sent_pricings_for_individual_offers(
+    offerer_ids: list[int],
+    reimbursement_period: tuple[datetime.date, datetime.date],
+    venue_id: typing.Optional[int] = None,
+) -> list[tuple]:
+    return (
         models.Pricing.query.join(models.Pricing.booking)
         .join(models.Pricing.cashflows)
         .join(models.Cashflow.bankAccount)
@@ -227,10 +245,4 @@ def find_all_offerers_payments(
             models.Cashflow.creationDate.label("cashflow_date"),
             BankInformation.iban.label("iban"),
         )
-    )
-
-    results = sent_pricings.all()
-    if FeatureToggle.INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS.is_active():
-        results.extend(sent_payments.all())
-
-    return results
+    ).all()
