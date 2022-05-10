@@ -6,10 +6,11 @@ import {
   NotificationComponent,
   NotificationType,
 } from 'app/components/Layout/Notification/Notification'
+import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { StockType } from 'app/types/offers'
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
-import { preBookStock } from 'repository/pcapi/pcapi'
+import { preBookCollectiveStock, preBookStock } from 'repository/pcapi/pcapi'
 
 import './PrebookingButton.scss'
 import PrebookingModal from './PrebookingModal'
@@ -23,10 +24,11 @@ const PrebookingButton = ({
   className?: string
   stock: StockType
   canPrebookOffers: boolean
-}): JSX.Element => {
+}): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const newCollectiveModel = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const handleSearchButtonClick = () => {
     setIsModalOpen(true)
@@ -37,7 +39,10 @@ const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
-    return preBookStock(stock.id)
+    const preBookRoute = newCollectiveModel
+      ? preBookCollectiveStock
+      : preBookStock
+    return preBookRoute(stock.id)
       .then(() => {
         setHasPrebookedOffer(true)
         closeModal()
@@ -53,36 +58,35 @@ const PrebookingButton = ({
           new Notification(NotificationType.error, getErrorMessage(error))
         )
       )
-  }, [stock.id])
+  }, [newCollectiveModel, stock.id])
 
-  return (
+  return canPrebookOffers ? (
     <>
-      {canPrebookOffers && (
-        <div className={`prebooking-button-container ${className}`}>
-          {hasPrebookedOffer ? (
-            <div className="prebooking-tag">
-              <HourGlassIcon className="prebooking-tag-icon" />
-              Préréservé
-            </div>
-          ) : (
-            <>
-              <Button
-                className="prebooking-button"
-                label="Préréserver"
-                onClick={handleSearchButtonClick}
-                type="button"
-              />
+      <div className={`prebooking-button-container ${className}`}>
+        {hasPrebookedOffer ? (
+          <div className="prebooking-tag">
+            <HourGlassIcon className="prebooking-tag-icon" />
+            Préréservé
+          </div>
+        ) : (
+          <>
+            <Button
+              className="prebooking-button"
+              label="Préréserver"
+              onClick={handleSearchButtonClick}
+              type="button"
+            />
 
-              {stock.bookingLimitDatetime && (
-                <span className="prebooking-button-booking-limit">
-                  avant le :{' '}
-                  {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
-                </span>
-              )}
-            </>
-          )}
-        </div>
-      )}
+            {stock.bookingLimitDatetime && (
+              <span className="prebooking-button-booking-limit">
+                avant le :{' '}
+                {format(new Date(stock.bookingLimitDatetime), 'dd/MM/yyyy')}
+              </span>
+            )}
+          </>
+        )}
+      </div>
+
       {notification && <NotificationComponent notification={notification} />}
       <PrebookingModal
         closeModal={closeModal}
@@ -90,7 +94,7 @@ const PrebookingButton = ({
         preBookCurrentStock={preBookCurrentStock}
       />
     </>
-  )
+  ) : null
 }
 
 export default PrebookingButton
