@@ -438,10 +438,15 @@ def get_source_data(user: users_models.User) -> pydantic.BaseModel:
 
 
 def create_failed_phone_validation_fraud_check(
-    user: users_models.User, fraud_check_data: models.PhoneValidationFraudData
+    user: users_models.User,
+    fraud_check_data: models.PhoneValidationFraudData,
+    reason: str,
+    reason_codes: list[models.FraudReasonCode],
 ) -> models.BeneficiaryFraudCheck:
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
+        reason=reason,
+        reasonCodes=reason_codes,
         type=models.FraudCheckType.PHONE_VALIDATION,
         thirdPartyId=f"PC-{user.id}",
         resultContent=fraud_check_data,
@@ -462,42 +467,34 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
         .id
     )
     reason = f"Le numéro est déjà utilisé par l'utilisateur {orig_user_id}"
-    fraud_check_data = models.PhoneValidationFraudData(
-        source=models.InternalReviewSource.PHONE_ALREADY_EXISTS, message=reason, phone_number=phone_number
-    )
+    reason_codes = [models.FraudReasonCode.PHONE_ALREADY_EXISTS]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
 
-    return create_failed_phone_validation_fraud_check(user, fraud_check_data)
+    return create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
     reason = "Le numéro saisi est interdit"
-    fraud_check_data = models.PhoneValidationFraudData(
-        source=models.InternalReviewSource.BLACKLISTED_PHONE_NUMBER, message=reason, phone_number=phone_number
-    )
+    reason_codes = [models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
 
-    return create_failed_phone_validation_fraud_check(user, fraud_check_data)
+    return create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_sms_sending_limit_reached(user: users_models.User) -> None:
     reason = "Le nombre maximum de sms envoyés est atteint"
-    fraud_check_data = models.PhoneValidationFraudData(
-        source=models.InternalReviewSource.SMS_SENDING_LIMIT_REACHED,
-        message=reason,
-        phone_number=user.phoneNumber,
-    )
+    reason_codes = [models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
-    create_failed_phone_validation_fraud_check(user, fraud_check_data)
+    create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_phone_validation_attempts_limit_reached(user: users_models.User, attempts_count: int) -> None:
     reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
-    fraud_check_data = models.PhoneValidationFraudData(
-        source=models.InternalReviewSource.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED,
-        message=reason,
-        phone_number=user.phoneNumber,
-    )
+    reason_codes = [models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
-    create_failed_phone_validation_fraud_check(user, fraud_check_data)
+    create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def validate_frauds(

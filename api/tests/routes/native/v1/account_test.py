@@ -958,8 +958,8 @@ class SendPhoneValidationCodeTest:
 
         content = fraud_check.resultContent
         expected_reason = "Le nombre maximum de sms envoyés est atteint"
-        assert content["source"] == fraud_models.InternalReviewSource.SMS_SENDING_LIMIT_REACHED.value
-        assert content["message"] == expected_reason
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
+        assert fraud_check.reason == expected_reason
         assert content["phone_number"] == "+33601020304"
 
     def test_send_phone_validation_code_already_beneficiary(self, client, app):
@@ -1061,8 +1061,8 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.eligibilityType == eligibility_type
 
         content = fraud_check.resultContent
-        assert content["source"] == fraud_models.InternalReviewSource.PHONE_ALREADY_EXISTS.value
-        assert content["message"] == f"Le numéro est déjà utilisé par l'utilisateur {orig_user.id}"
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS]
+        assert fraud_check.reason == f"Le numéro est déjà utilisé par l'utilisateur {orig_user.id}"
         assert content["phone_number"] == "+33102030405"
 
         assert (
@@ -1157,8 +1157,8 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.eligibilityType == eligibility_type
 
         content = fraud_check.resultContent
-        assert content["source"] == fraud_models.InternalReviewSource.BLACKLISTED_PHONE_NUMBER.value
-        assert content["message"] == "Le numéro saisi est interdit"
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
+        assert fraud_check.reason == "Le numéro saisi est interdit"
         assert content["phone_number"] == "+33601020304"
 
 
@@ -1248,8 +1248,9 @@ class ValidatePhoneNumberTest:
 
         expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
         content = fraud_check.resultContent
-        assert content["source"] == fraud_models.InternalReviewSource.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED.value
-        assert content["message"] == expected_reason
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
+
+        assert fraud_check.reason == expected_reason
         assert content["phone_number"] == "+33607080900"
 
     def test_wrong_code(self, client, app):
