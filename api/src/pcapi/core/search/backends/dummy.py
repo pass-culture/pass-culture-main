@@ -1,17 +1,25 @@
+import logging
+
 from flask import current_app
 
 from .algolia import AlgoliaBackend
 
 
+logger = logging.getLogger(__name__)
+
+
 class FakeClient:
     def save_objects(self, objects):  # type: ignore [no-untyped-def]
-        pass
+        logger.info(
+            "Dummy indexation of objects",
+            extra={"object_ids": [o["objectID"] for o in objects]},
+        )
 
     def delete_objects(self, object_ids):  # type: ignore [no-untyped-def]
-        pass
+        logger.info("Dummy deletion of objects", extra={"object_ids": object_ids})
 
     def clear_objects(self):  # type: ignore [no-untyped-def]
-        pass
+        logger.info("Dummy clear of all objects")
 
 
 class DummyBackend(AlgoliaBackend):
