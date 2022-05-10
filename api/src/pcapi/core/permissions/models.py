@@ -22,7 +22,7 @@ class Permissions(enum.Enum):
 
 def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:
     db_values = set(p.name for p in session.query(db_field).all())
-    py_values = set(e.value for e in py_enum)
+    py_values = set(e.name for e in py_enum)
 
     if removed_permissions := db_values - py_values:
         logger.warning(
@@ -45,7 +45,7 @@ def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], d
 def sync_db_permissions(session: sa.orm.Session) -> None:
     """
     Automatically synchronize `permission` table in database from the
-    the `Permissions` Python Enum.
+    `Permissions` Python Enum.
 
     This is done before each deployment and in tests
     """
@@ -57,6 +57,7 @@ role_permission_table = sa.Table(
     Model.metadata,
     sa.Column("roleId", sa.ForeignKey("role.id")),
     sa.Column("permissionId", sa.ForeignKey("permission.id")),
+    sa.UniqueConstraint("roleId", "permissionId"),
 )
 
 
