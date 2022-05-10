@@ -8,6 +8,7 @@ from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
+import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import factories as users_factories
@@ -129,10 +130,7 @@ class DMSOrphanSubsriptionTest:
 @pytest.mark.usefixtures("db_session")
 class HandleDmsApplicationTest:
     @patch("pcapi.connectors.dms.api.parse_beneficiary_information_graphql")
-    def test_parsing_failure(
-        self,
-        mocked_parse_beneficiary_information,
-    ):
+    def test_parsing_failure(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
             application_id=1, state=dms_models.GraphQLApplicationStates.draft, email=user.email
@@ -143,3 +141,130 @@ class HandleDmsApplicationTest:
             dms_subscription_api.handle_dms_application(dms_response, 123)
 
         assert fraud_models.BeneficiaryFraudCheck.query.first() is None
+
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    def test_parsing_error_when_draft(self, send_dms_message_mock):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_id=1,
+            state=dms_models.GraphQLApplicationStates.draft,
+            email=user.email,
+            id_piece_number="(wrong_number)",
+            application_techid="XYZQVM",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response, 123)
+
+        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
+        assert (
+            subscription_message.userMessage
+            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+        )
+
+        send_dms_message_mock.assert_called_once()
+        assert send_dms_message_mock.call_args[0][0] == "XYZQVM"
+        assert (
+            "Nous avons bien reçu ton dossier, mais le numéro de pièce d'identité sur le formulaire ne correspond pas à celui indiqué sur ta pièce d'identité."
+            in send_dms_message_mock.call_args[0][2]
+        )
+        assert len(mails_testing.outbox) == 0
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    def test_parsing_error_when_on_going(self, send_dms_message_mock):
+        application_id = 1
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            thirdPartyId=str(application_id),
+            status=fraud_models.FraudCheckStatus.STARTED,
+            type=fraud_models.FraudCheckType.DMS,
+        )
+        dms_response = make_parsed_graphql_application(
+            application_id=1,
+            state=dms_models.GraphQLApplicationStates.on_going,
+            email=user.email,
+            id_piece_number="(wrong_number)",
+            application_techid="XYZQVM",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response, 123)
+
+        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
+        assert (
+            subscription_message.userMessage
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘ta pièce d'identité’ n’est pas valide."
+        )
+
+        send_dms_message_mock.assert_not_called()
+        assert len(mails_testing.outbox) == 0
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    def test_parsing_error_when_accepted(self, send_dms_message_mock):
+        application_id = 1
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            thirdPartyId=str(application_id),
+            status=fraud_models.FraudCheckStatus.STARTED,
+            type=fraud_models.FraudCheckType.DMS,
+        )
+        dms_response = make_parsed_graphql_application(
+            application_id=1,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=user.email,
+            id_piece_number="(wrong_number)",
+            application_techid="XYZQVM",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response, 123)
+
+        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
+        assert (
+            subscription_message.userMessage
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘ta pièce d'identité’ n’est pas valide."
+        )
+
+        send_dms_message_mock.assert_not_called()
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 510
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
+
+    @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    def test_parsing_error_when_refused(self, send_dms_message_mock):
+        application_id = 1
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            thirdPartyId=str(application_id),
+            status=fraud_models.FraudCheckStatus.STARTED,
+            type=fraud_models.FraudCheckType.DMS,
+        )
+        dms_response = make_parsed_graphql_application(
+            application_id=1,
+            state=dms_models.GraphQLApplicationStates.refused,
+            email=user.email,
+            id_piece_number="(wrong_number)",
+            application_techid="XYZQVM",
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response, 123)
+
+        subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
+        assert (
+            subscription_message.userMessage
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘ta pièce d'identité’ n’est pas valide."
+        )
+
+        send_dms_message_mock.assert_not_called()
+        assert len(mails_testing.outbox) == 0
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO

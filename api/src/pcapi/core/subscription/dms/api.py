@@ -21,7 +21,6 @@ import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 import pcapi.repository as pcapi_repository
 
-from . import constants as dms_constants
 from . import repository as dms_repository
 
 
@@ -176,21 +175,42 @@ def _process_parsing_error(
 
     if state == dms_models.GraphQLApplicationStates.draft:
         _notify_parsing_error(parsing_error.errors, application_scalar_id)
-    elif state in dms_constants.FINAL_INSTRUCTOR_DECISION_STATES:
+    elif state == dms_models.GraphQLApplicationStates.accepted:
         send_pre_subscription_from_dms_error_email_to_beneficiary(
             parsing_error.user_email,
             parsing_error.errors.get("postal_code"),
             parsing_error.errors.get("id_piece_number"),
         )
 
-    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id)
+    return _create_parsing_error_fraud_check(user, application_id, state, parsing_error)
 
-    if state in dms_constants.FINAL_INSTRUCTOR_DECISION_STATES:
-        fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
+
+def _create_parsing_error_fraud_check(
+    user: users_models.User,
+    application_id: int,
+    state: dms_models.GraphQLApplicationStates,
+    parsing_error: subscription_exceptions.DMSParsingError,
+) -> fraud_models.BeneficiaryFraudCheck:
+    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id)
 
     errors = ",".join([f"'{key}' ({value})" for key, value in sorted(parsing_error.errors.items())])
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
+
+    if state == dms_models.GraphQLApplicationStates.draft:
+        status = fraud_models.FraudCheckStatus.STARTED
+    elif state == dms_models.GraphQLApplicationStates.on_going:
+        status = fraud_models.FraudCheckStatus.PENDING
+    elif state == dms_models.GraphQLApplicationStates.accepted:
+        status = fraud_models.FraudCheckStatus.ERROR
+    elif state == dms_models.GraphQLApplicationStates.refused:
+        status = fraud_models.FraudCheckStatus.KO
+    elif state == dms_models.GraphQLApplicationStates.without_continuation:
+        status = fraud_models.FraudCheckStatus.CANCELED
+    else:
+        status = fraud_models.FraudCheckStatus.ERROR
+
+    fraud_check.status = status  # type: ignore [assignment]
 
     pcapi_repository.repository.save(fraud_check)
 
