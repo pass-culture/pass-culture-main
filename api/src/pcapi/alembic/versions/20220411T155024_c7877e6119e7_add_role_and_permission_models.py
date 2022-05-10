@@ -8,7 +8,7 @@ from pcapi.core.permissions.models import Permissions
 
 
 revision = "c7877e6119e7"
-down_revision = "ce0fcf03be9a"
+down_revision = "ab3a9d7b221b"
 branch_labels = None
 depends_on = None
 
@@ -41,6 +41,7 @@ def upgrade() -> None:
             ["roleId"],
             ["role.id"],
         ),
+        sa.UniqueConstraint("roleId", "permissionId"),
     )
     op.execute(
         f"""

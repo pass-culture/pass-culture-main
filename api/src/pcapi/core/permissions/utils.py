@@ -35,7 +35,7 @@ def permission_required(permission: Permissions) -> typing.Callable:
                 Role.query.filter(Role.name.in_(current_roles))
                 .join(role_permission_table)
                 .join(Permission)
-                .filter(Permission.name == permission.value)
+                .filter(Permission.name == permission.name)
                 .exists()
             ).scalar()
 
