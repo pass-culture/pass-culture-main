@@ -181,14 +181,33 @@ def find_all_offerers_payments(
             models.Payment.transactionLabel.label("transactionLabel"),
         )
     )
+    results = []
 
-    sent_pricings = _get_sent_pricings_for_individual_offers(
-        offerer_ids,
-        reimbursement_period,
-        venue_id,
-    )
+    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        results.extend(
+            _get_sent_pricings_for_individual_offers(
+                offerer_ids,
+                reimbursement_period,
+                venue_id,
+            )
+        )
 
-    results = sent_pricings
+    else:
+        results.extend(
+            _get_sent_pricings_for_individual_bookings(
+                offerer_ids,
+                reimbursement_period,
+                venue_id,
+            )
+        )
+        results.extend(
+            _get_sent_pricings_for_collective_bookings(
+                offerer_ids,
+                reimbursement_period,
+                venue_id,
+            )
+        )
+
     if FeatureToggle.INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS.is_active():
         results.extend(sent_payments.all())
 
