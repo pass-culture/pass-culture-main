@@ -6,6 +6,7 @@ import logging
 from typing import Optional
 
 import sqlalchemy as sa
+from sqlalchemy import and_
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import subcategories
@@ -435,7 +436,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     @isDigital.expression  # type: ignore [no-redef]
     def isDigital(cls) -> bool:  # pylint: disable=no-self-argument
-        return cls.url.isnot(None)
+        return and_(cls.url != None, cls.url != "")
 
     @property
     def isEditable(self) -> bool:

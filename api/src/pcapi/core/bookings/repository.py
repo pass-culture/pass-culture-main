@@ -863,6 +863,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
         IndividualBooking.query.join(Booking)
         .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
         .filter(Offer.isEvent)
+        .filter(not_(Offer.isDigital))
         .options(
             contains_eager(IndividualBooking.booking)
             .load_only(Booking.id, Booking.stockId, Booking.quantity, Booking.token)
