@@ -284,8 +284,8 @@ class InternalReviewSource(enum.Enum):
 
 
 class PhoneValidationFraudData(pydantic.BaseModel):
-    source: InternalReviewSource
-    message: str
+    source: typing.Optional[InternalReviewSource]  # legacy field, still present in database
+    message: typing.Optional[str]  # legacy field, still present in database
     phone_number: typing.Optional[str]
 
 
