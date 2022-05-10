@@ -308,6 +308,7 @@ class FraudReasonCode(enum.Enum):
     AGE_NOT_VALID = "age_is_not_valid"
     AGE_TOO_OLD = "age_too_old"
     AGE_TOO_YOUNG = "age_too_young"
+    BLACKLISTED_PHONE_NUMBER = "blacklisted_phone_number"
     DUPLICATE_ID_PIECE_NUMBER = "duplicate_id_piece_number"
     DUPLICATE_INE = "duplicate_ine"
     DUPLICATE_USER = "duplicate_user"
@@ -326,8 +327,11 @@ class FraudReasonCode(enum.Enum):
     MISSING_REQUIRED_DATA = "missing_required_data"
     NAME_INCORRECT = "name_incorrect"
     NOT_ELIGIBLE = "not_eligible"
+    PHONE_ALREADY_EXISTS = "phone_already_exists"
     PHONE_NOT_VALIDATED = "phone_not_validated"
+    PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
     REFUSED_BY_OPERATOR = "refused_by_operator"
+    SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
 
 
 # FIXME: ce status fait un peu doublon avec FraudStatus
