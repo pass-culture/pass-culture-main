@@ -67,6 +67,13 @@ export const SubtypeSelects = ({
     }
   }, [categoriesFormValues.showType])
 
+  const ignoreValueToSort = valueToIgnor => {
+    subTypesOptions.showType.sort((a, b) =>
+      b.displayName === valueToIgnor && a.displayName.localeCompare(b.displayName) ? -1 : +1
+    )
+  }
+  ignoreValueToSort('Autre (spectacle sur glace, historique, aquatique…)  ')
+
   return (
     <>
       {currentSubCategoryConditionalFields.includes('musicType') && (
