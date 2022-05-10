@@ -1,3 +1,4 @@
+from freezegun import freeze_time
 import pytest
 
 import pcapi.core.educational.factories as educational_factories
@@ -11,6 +12,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
+    @freeze_time("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, app, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -48,6 +50,7 @@ class Return200Test:
 
 
 class Return400Test:
+    @freeze_time("2020-11-17 15:00:00")
     def test_create_educational_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, app, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -76,6 +79,7 @@ class Return400Test:
         }
         assert educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one_or_none()
 
+    @freeze_time("2020-11-17 15:00:00")
     def should_not_allow_number_of_tickets_to_be_negative_on_creation(self, app, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -103,6 +107,7 @@ class Return400Test:
         assert response.json == {"numberOfTickets": ["Le nombre de places ne peut pas être négatif."]}
         assert educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one_or_none()
 
+    @freeze_time("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_negative_on_creation(self, app, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -130,6 +135,7 @@ class Return400Test:
         assert response.json == {"totalPrice": ["Le prix ne peut pas être négatif."]}
         assert educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one_or_none()
 
+    @freeze_time("2020-11-17 15:00:00")
     def should_not_accept_payload_with_bookingLimitDatetime_after_beginningDatetime(self, app, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory()
@@ -161,6 +167,7 @@ class Return400Test:
         }
         assert educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one_or_none()
 
+    @freeze_time("2020-11-17 15:00:00")
     def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, app, client):
         # Given
         offer = educational_factories.CollectiveOfferTemplateFactory()
