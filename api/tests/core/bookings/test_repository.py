@@ -2744,7 +2744,6 @@ class GetTomorrowEventOfferTest:
         assert len(bookings) == 1
 
     def should_not_select_digital_event(self):
-
         tomorrow = datetime.utcnow() + timedelta(days=1)
         bookings_factories.IndividualBookingFactory(
             stock=offers_factories.EventStockFactory(
@@ -2753,23 +2752,26 @@ class GetTomorrowEventOfferTest:
             )
         )
 
-        bookings_factories.IndividualBookingFactory(
-            stock=offers_factories.EventStockFactory(
-                beginningDatetime=tomorrow,
-                offer__url=None,
-            )
-        )
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
+        assert len(bookings) == 0
+
+    @pytest.mark.parametrize(
+        "offer_url",
+        [
+            None,
+            "",
+        ],
+    )
+    def should_select_not_digital_event(self, offer_url):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
         bookings_factories.IndividualBookingFactory(
             stock=offers_factories.EventStockFactory(
                 beginningDatetime=tomorrow,
-                offer__url="",
-            ),
+                offer__url=offer_url,
+            )
         )
 
         bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
-        for booking in bookings:
-            print(booking.booking.stock.offer.url)
-
-        assert len(bookings) == 0
+        assert len(bookings) == 1
