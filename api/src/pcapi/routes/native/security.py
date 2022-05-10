@@ -22,7 +22,7 @@ RouteFunc = typing.Callable[..., typing.Any]
 RouteDecorator = typing.Callable[..., typing.Any]
 
 
-def authenticated_user_required(route_function: RouteFunc) -> RouteDecorator:
+def authenticated_and_active_user_required(route_function: RouteFunc) -> RouteDecorator:
     add_security_scheme(route_function, JWT_AUTH)
 
     @wraps(route_function)

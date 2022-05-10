@@ -24,8 +24,8 @@ from pcapi.models import api_errors
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
+from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.security import authenticated_maybe_inactive_user_required
-from pcapi.routes.native.security import authenticated_user_required
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
     on_success_status=200,
     api=blueprint.api,
 )
-@authenticated_user_required
+@authenticated_and_active_user_required
 def get_user_profile(user: User) -> serializers.UserProfileResponse:
     return serializers.UserProfileResponse.from_orm(user)
 
@@ -52,7 +52,7 @@ def get_user_profile(user: User) -> serializers.UserProfileResponse:
     on_success_status=200,
     api=blueprint.api,
 )
-@authenticated_user_required
+@authenticated_and_active_user_required
 def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) -> serializers.UserProfileResponse:
     api.update_notification_subscription(user, body.subscriptions)
     update_external_user(user)
@@ -64,7 +64,7 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
     on_success_status=200,
     api=blueprint.api,
 )
-@authenticated_user_required
+@authenticated_and_active_user_required
 def reset_recredit_amount_to_show(user: User) -> None:
     api.reset_recredit_amount_to_show(user)
 
@@ -76,7 +76,7 @@ def reset_recredit_amount_to_show(user: User) -> None:
     on_success_status=204,
     api=blueprint.api,
 )
-@authenticated_user_required
+@authenticated_and_active_user_required
 def update_user_email(user: User, body: serializers.UserProfileEmailUpdate) -> None:
     try:
         email_api.request_email_update(user, body.email, body.password)
@@ -130,7 +130,7 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> None:
 
 @blueprint.native_v1.route("/profile/token_expiration", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UpdateEmailTokenExpiration)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmailTokenExpiration:
     return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
 
@@ -141,7 +141,7 @@ def get_email_update_token_expiration_date(user: User) -> serializers.UpdateEmai
     on_error_statuses=[400],
     api=blueprint.api,
 )
-@authenticated_user_required
+@authenticated_and_active_user_required
 def update_cultural_survey(user: User, body: serializers.CulturalSurveyRequest) -> None:
     with transaction():
         if not body.needs_to_fill_cultural_survey:
@@ -203,7 +203,7 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 
 @blueprint.native_v1.route("/send_phone_validation_code", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def send_phone_validation_code(user: User, body: serializers.SendPhoneValidationRequest) -> None:
     try:
         if body.phoneNumber:
@@ -239,7 +239,7 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
 
 @blueprint.native_v1.route("/validate_phone_number", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberRequest) -> None:
     with transaction():
         try:
@@ -263,7 +263,7 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
 
 @blueprint.native_v1.route("/account/suspend", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def suspend_account(user: User) -> None:
     api.suspend_account(user, constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
     send_user_request_to_delete_account_reception_email(user)
@@ -284,7 +284,7 @@ def get_account_suspension_date(user: User) -> serializers.UserSuspensionDateRes
 
 @blueprint.native_v1.route("/user_profiling", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudRequest) -> None:
     if not FeatureToggle.ENABLE_USER_PROFILING.is_active():
         return
@@ -327,7 +327,7 @@ def profiling_fraud_score(user: User, body: serializers.UserProfilingFraudReques
 
 @blueprint.native_v1.route("/user_profiling/session_id", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.UserProfilingSessionIdResponse)
-@authenticated_user_required
+@authenticated_and_active_user_required
 def profiling_session_id(user: User) -> serializers.UserProfilingSessionIdResponse:
     """
     Generate a unique hash which will be used as an identifier for user profiling
