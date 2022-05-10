@@ -796,7 +796,7 @@ class CommonSubscritpionTest:
             == fraud_check
         )
 
-    def test__has_completed_profile_in_dms_form(self):
+    def test__has_completed_profile_in_dms_form_without_city_field(self):
         # This test reproduces an error that happened with old data, where 'city' was not set in the fraudCheck resultContent
         user = users_factories.UserFactory()
         content = fraud_factories.DMSContentFactory()
