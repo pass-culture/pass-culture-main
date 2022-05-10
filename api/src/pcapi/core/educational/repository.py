@@ -675,8 +675,8 @@ def _get_filtered_collective_bookings_pro(
             CollectiveBooking.reimbursementDate.label("reimbursedAt"),
             CollectiveBooking.isConfirmed,
             CollectiveBooking.confirmationDate,
-            EducationalRedactor.firstName.label("redactorFirstname"),  # type: ignore [attr-defined]
-            EducationalRedactor.lastName.label("redactorLastname"),  # type: ignore [attr-defined]
+            EducationalRedactor.firstName.label("redactorFirstname"),
+            EducationalRedactor.lastName.label("redactorLastname"),
             EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
             CollectiveOffer.name.label("offerName"),
             CollectiveOffer.id.label("offerId"),

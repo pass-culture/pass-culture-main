@@ -546,9 +546,9 @@ class EducationalRedactor(PcObject, Model):  # type: ignore[valid-type, misc]
 
     email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)  # type: ignore [assignment]
 
-    firstName: str = sa.Column(sa.String(128), nullable=True)  # type: ignore [assignment]
+    firstName = sa.Column(sa.String(128), nullable=True)
 
-    lastName: str = sa.Column(sa.String(128), nullable=True)  # type: ignore [assignment]
+    lastName = sa.Column(sa.String(128), nullable=True)
 
     civility: str = sa.Column(sa.String(20), nullable=True)  # type: ignore [assignment]
 
