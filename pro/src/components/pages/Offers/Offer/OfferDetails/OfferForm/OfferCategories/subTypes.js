@@ -437,9 +437,4 @@ export const showOptionsTree = [
       { code: -1, label: 'Autre' },
     ],
   },
-  {
-    code: -1,
-    label: 'Autre',
-    children: [{ code: -1, label: 'Autre' }],
-  },
 ]
