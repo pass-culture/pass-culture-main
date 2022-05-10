@@ -163,8 +163,8 @@ def find_all_offerers_payments(
         .with_entities(
             users_models.User.lastName.label("user_lastName"),
             users_models.User.firstName.label("user_firstName"),
-            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),  # type: ignore [attr-defined]
-            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),  # type: ignore [attr-defined]
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
             bookings_models.Booking.token.label("booking_token"),
             bookings_models.Booking.dateUsed.label("booking_dateUsed"),
             bookings_models.Booking.quantity.label("booking_quantity"),
@@ -226,8 +226,8 @@ def _get_sent_pricings_for_individual_offers(
         .with_entities(
             users_models.User.lastName.label("user_lastName"),
             users_models.User.firstName.label("user_firstName"),
-            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),  # type: ignore [attr-defined]
-            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),  # type: ignore [attr-defined]
+            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
+            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
             bookings_models.Booking.token.label("booking_token"),
             bookings_models.Booking.dateUsed.label("booking_dateUsed"),
             bookings_models.Booking.quantity.label("booking_quantity"),

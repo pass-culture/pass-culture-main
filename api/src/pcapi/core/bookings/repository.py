@@ -605,8 +605,8 @@ def _get_filtered_booking_pro(
             Booking.isExternal,
             Booking.isConfirmed,
             EducationalBooking.confirmationDate,
-            EducationalRedactor.firstName.label("redactorFirstname"),  # type: ignore [attr-defined]
-            EducationalRedactor.lastName.label("redactorLastname"),  # type: ignore [attr-defined]
+            EducationalRedactor.firstName.label("redactorFirstname"),
+            EducationalRedactor.lastName.label("redactorLastname"),
             EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
