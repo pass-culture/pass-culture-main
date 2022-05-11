@@ -10,6 +10,7 @@ echo "<h2>🚓 Mypy cop report:</h2>"
 
 if [ $type_ignore_counter -lt $master_type_ignore_counter ]; then
     echo '<p>🎉 Number of type ignore inferior to master, good job !</p>'
+    echo "<p>Have yourself a merry little break and learn a few facts about the year <a href='https://fr.wikipedia.org/wiki/$type_ignore_counter' target='_blank'>$type_ignore_counter</a> </p>"
 fi
 
 if [ $type_ignore_counter -gt $master_type_ignore_counter ]; then
