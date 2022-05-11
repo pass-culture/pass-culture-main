@@ -1,9 +1,12 @@
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models.bank_information import BankInformationStatus
 from pcapi.validation.models.entity_validator import validate
 
 
@@ -18,8 +21,13 @@ class OffererValidationTest:
         api_errors = validate(offerer)
         assert not api_errors.errors
 
-    def test_invalid_siren(self):
+    def test_invalid_siren_with_incorrect_with_length(self):
         offerer = offerers_factories.OffererFactory.build(siren="1")
+        api_errors = validate(offerer)
+        assert api_errors.errors == {"siren": ["Ce code SIREN est invalide"]}
+
+    def test_invalid_empty_siren(self):
+        offerer = offerers_factories.OffererFactory.build(siren="")
         api_errors = validate(offerer)
         assert api_errors.errors == {"siren": ["Ce code SIREN est invalide"]}
 
@@ -40,6 +48,26 @@ class VenueValidationTest:
         api_errors = validate(venue)
         assert api_errors.errors == {}
 
+    @pytest.mark.usefixtures("db_session")
+    def test_siren_and_siret_mismatch(self):
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__siren="987654321",
+            siret="12345678901234",
+        )
+        api_errors = validate(venue)
+        assert api_errors.errors == {"siret": ["Le code SIRET doit correspondre à un établissement de votre structure"]}
+
+    @pytest.mark.usefixtures("db_session")
+    def test_missing_offerer_siren(self):
+        venue = offerers_factories.VenueFactory(
+            managingOfferer__siren=None,
+            siret="12345678901234",
+        )
+        api_errors = validate(venue)
+        assert api_errors.errors == {
+            "siren": ["Ce lieu ne peut enregistrer de SIRET car la structure associée n’a pas de SIREN renseigné"]
+        }
+
 
 class BankInformationValidationTest:
     def test_invalid_iban_and_bic(self):
@@ -58,6 +86,18 @@ class BankInformationValidationTest:
         api_errors = validate(bank_information)
         assert not api_errors.errors
 
+    def test_non_empty_iban_and_bic_with_draft_status(self):
+        bank_information = offers_factories.BankInformationFactory.build(
+            bic="AGFBFRCC",
+            iban="FR7014508000301971798194B82",
+            status=BankInformationStatus.DRAFT,
+        )
+        api_errors = validate(bank_information)
+        assert api_errors.errors == {
+            "bic": ["Le BIC doit être vide pour le statut DRAFT"],
+            "iban": ["L’IBAN doit être vide pour le statut DRAFT"],
+        }
+
 
 class OfferValidationTest:
     def test_digital_offer_with_non_virtual_venue(self):
@@ -72,6 +112,26 @@ class OfferValidationTest:
         offer = offers_factories.DigitalOfferFactory.build()
         api_errors = validate(offer)
         assert not api_errors.errors
+
+    def test_physical_offer_with_virtual_venue(self):
+        venue = offerers_factories.VirtualVenueFactory.build()
+        offer = offers_factories.OfferFactory.build(venue=venue)
+        api_errors = validate(offer)
+        assert api_errors.errors == {"venue": ['Une offre physique ne peut être associée au lieu "Offre numérique"']}
+
+    def test_physical_offer_with_non_virtual_venue(self):
+        offer = offers_factories.OfferFactory.build()
+        api_errors = validate(offer)
+        assert not api_errors.errors
+
+    def test_digital_offer_with_incompatible_subcategory(self):
+        offer = offers_factories.DigitalOfferFactory.build(
+            subcategoryId=subcategories.CARTE_CINE_MULTISEANCES.id,
+        )
+        api_errors = validate(offer)
+        assert api_errors.errors == {
+            "url": ["Une offre de sous-catégorie Carte cinéma multi-séances ne peut pas être numérique"]
+        }
 
 
 class ProductValidationTest:
@@ -96,8 +156,13 @@ class StockValidationTest:
         api_errors = validate(stock)
         assert api_errors.errors == {"quantity": ["La quantité doit être positive."]}
 
-    def test_valid_quantity(self):
+    def test_valid_finite_quantity(self):
         stock = offers_factories.StockFactory.build(quantity=1)
+        api_errors = validate(stock)
+        assert not api_errors.errors
+
+    def test_valid_infinite_quantity(self):
+        stock = offers_factories.StockFactory.build(quantity=None)
         api_errors = validate(stock)
         assert not api_errors.errors
 
