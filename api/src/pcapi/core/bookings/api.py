@@ -246,7 +246,7 @@ def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCance
     """
     deleted_bookings: list[Booking] = []
     for booking in stock.bookings:
-        if _cancel_booking(booking, reason, cancel_even_if_used=stock.offer.isEvent):
+        if _cancel_booking(booking, reason, cancel_even_if_used=typing.cast(bool, stock.offer.isEvent)):
             deleted_bookings.append(booking)
 
     return deleted_bookings
