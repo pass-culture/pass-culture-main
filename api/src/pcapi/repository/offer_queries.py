@@ -1,5 +1,3 @@
-from sqlalchemy.orm import joinedload
-
 from pcapi.core.offers.models import Offer
 
 
@@ -9,10 +7,6 @@ def get_offer_by_id(offer_id: int):  # type: ignore [no-untyped-def]
 
 def get_offers_by_product_id(product_id: int) -> list[Offer]:
     return Offer.query.filter_by(productId=product_id).all()
-
-
-def get_offers_by_ids(offer_ids: list[int]) -> list[Offer]:
-    return Offer.query.filter(Offer.id.in_(offer_ids)).options(joinedload("stocks")).all()
 
 
 def get_paginated_active_offer_ids(limit: int, page: int) -> list[int]:

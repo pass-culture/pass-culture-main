@@ -5,29 +5,8 @@ from pcapi.model_creators.generic_creators import create_venue
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
 from pcapi.repository import repository
-from pcapi.repository.offer_queries import get_offers_by_ids
 from pcapi.repository.offer_queries import get_paginated_active_offer_ids
 from pcapi.repository.offer_queries import get_paginated_offer_ids_by_venue_id
-
-
-class GetOffersByIdsTest:
-    @pytest.mark.usefixtures("db_session")
-    def test_should_return_all_existing_offers_when_offer_ids_are_given(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
-        offer1 = create_offer_with_thing_product(venue=venue)
-        offer2 = create_offer_with_thing_product(venue=venue)
-        repository.save(offer1, offer2)
-        offer_ids = [0, offer1.id, offer2.id]
-
-        # When
-        offers = get_offers_by_ids(offer_ids)
-
-        # Then
-        assert len(offers) == 2
-        assert offer1 in offers
-        assert offer2 in offers
 
 
 class GetPaginatedActiveOfferIdsTest:
