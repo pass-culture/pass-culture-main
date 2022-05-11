@@ -134,3 +134,20 @@ def get_day_start(dt: date, timezone) -> datetime:  # type: ignore [no-untyped-d
     ``date`` in the given timezone.
     """
     return timezone.localize(datetime.combine(dt, time(0, 0)))
+
+
+def format_time_in_second_to_human_readable(time_in_second: int) -> Optional[str]:
+    INTERVALS = [60 * 60 * 24 * 7, 60 * 60 * 24, 60 * 60, 60, 1]
+    NAMES = [
+        ("semaine", "semaines"),
+        ("jour", "jours"),
+        ("heure", "heures"),
+        ("minute", "minutes"),
+        ("seconde", "secondes"),
+    ]
+    for i, interval in enumerate(INTERVALS):
+        if time_in_second >= interval:
+            time_in_unit = time_in_second // interval
+            unit = NAMES[i][0] if time_in_unit == 1 else NAMES[i][1]
+            return f"{time_in_unit} {unit}"
+    return None
