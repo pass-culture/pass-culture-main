@@ -46,7 +46,7 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       expect(addressField.prop('longitude')).toBe(1)
       expect(addressField.prop('name')).toBe('address')
       expect(addressField.prop('readOnly')).toBe(true)
-      expect(addressField.prop('required')).toBe(false)
+      expect(addressField.prop('required')).toBe(true)
       expect(addressField.prop('withMap')).toBe(true)
     })
 
