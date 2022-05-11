@@ -144,3 +144,12 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
         email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
 
         assert email_data.params["OFFER_TOKEN"] == "AZ3"
+
+    def should_format_withdrawal_delay_when_a_delay_is_set(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(offer__withdrawalDelay=60 * 60 * 24 * 2),
+        )
+
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+
+        assert email_data.params["OFFER_WITHDRAWAL_DELAY"] == "2 jours"
