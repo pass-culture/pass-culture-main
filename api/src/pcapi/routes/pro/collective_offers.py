@@ -19,6 +19,7 @@ from pcapi.routes.serialization import collective_stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize_or_raise
 from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.workers.update_all_offers_active_status_job import update_all_collective_offers_active_status_job
 
 from . import blueprint
 
@@ -277,10 +278,33 @@ def transform_collective_offer_template_into_collective_offer(
     return collective_offers_serialize.CollectiveOfferFromTemplateResponseModel.from_orm(offer)
 
 
+@private_api.route("/collective/offers/all-active-status", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=204,
+    api=blueprint.pro_private_schema,
+)
+def patch_all_collective_offers_active_status(
+    body: collective_offers_serialize.PatchAllCollectiveOffersActiveStatusBodyModel,
+) -> None:
+    filters = {
+        "user_id": current_user.id,
+        "is_user_admin": current_user.has_admin_role,
+        "offerer_id": body.offerer_id,
+        "status": body.status,
+        "venue_id": body.venue_id,
+        "category_id": body.category_id,
+        "name_or_isbn": body.name_or_isbn,
+        "creation_mode": body.creation_mode,
+        "period_beginning_date": body.period_beginning_date,
+        "period_ending_date": body.period_ending_date,
+    }
+    update_all_collective_offers_active_status_job.delay(filters, body.is_active)
+
+
 @private_api.route("/collective/offers/active-status", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=None,
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
@@ -294,7 +318,6 @@ def patch_collective_offers_active_status(
 @private_api.route("/collective/offers-template/active-status", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    response_model=None,
     on_success_status=204,
     api=blueprint.pro_private_schema,
 )
