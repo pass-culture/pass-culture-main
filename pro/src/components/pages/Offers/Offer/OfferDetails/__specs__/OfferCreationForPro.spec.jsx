@@ -2295,7 +2295,7 @@ describe('offerDetails - Creation - pro user', () => {
       expect(errorNotification).toBeInTheDocument()
 
       const thumbnailUploadError = await screen.findByText(
-        'L’image n’a pas pu être ajoutée. Veuillez réessayer.'
+        'Utilisez une image plus grande (supérieure à 400px par 400px)'
       )
       expect(thumbnailUploadError).toBeInTheDocument()
     })
