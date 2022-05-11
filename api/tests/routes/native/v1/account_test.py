@@ -1894,19 +1894,20 @@ class AccountSecurityTest:
 
 
 class GetAccountSuspendedDateTest:
+    @freeze_time("2020-10-15 00:00:00")
     def test_suspended_account(self, client):
         """
         Test that a call for a suspended account returns its suspension
         date
         """
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
-        suspension_event = users_factories.SuspendedUponUserRequestFactory(user=user)
+        users_factories.SuspendedUponUserRequestFactory(user=user)
 
         client.with_token(email=user.email)
         response = client.get("/native/v1/account/suspension_date")
 
         assert response.status_code == 200
-        assert datetime.fromisoformat(response.json["date"]) == suspension_event.eventDate
+        assert response.json["date"] == "2020-10-14T00:00:00Z"
 
     class ShouldNotRespondWithSuspensionDateTest:
         def test_unsuspended_account(self, client):
