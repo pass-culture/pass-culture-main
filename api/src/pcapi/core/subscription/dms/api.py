@@ -4,6 +4,7 @@ import typing
 from pcapi import settings
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -84,7 +85,7 @@ def handle_dms_application(
         _process_user_not_found_error(user_email, application_id, procedure_id, state, application_scalar_id)
         return None
     try:
-        application_content = dms_connector_api.parse_beneficiary_information_graphql(dms_application, procedure_id)
+        application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application, procedure_id)
         core_logging.log_for_supervision(
             logger=logger,
             log_level=logging.INFO,
