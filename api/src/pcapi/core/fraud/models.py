@@ -192,6 +192,7 @@ class DMSContent(common_models.IdentityCheckContent):
     birth_date: typing.Optional[datetime.date]
     city: typing.Optional[str]
     civility: typing.Optional[users_models.GenderEnum]
+    deletion_datetime: typing.Optional[datetime.datetime]
     department: typing.Optional[str]
     email: str
     first_name: str
