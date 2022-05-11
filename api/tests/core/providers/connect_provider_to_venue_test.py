@@ -1,4 +1,3 @@
-from unittest.mock import MagicMock
 from unittest.mock import patch
 
 import pytest
@@ -10,9 +9,6 @@ from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
 from pcapi.core.providers.exceptions import VenueSiretNotRegistered
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import VenueProvider
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.repository import repository
 
 
 @pytest.mark.usefixtures("db_session")
@@ -20,7 +16,7 @@ from pcapi.repository import repository
     "pcapi.infrastructure.repository.stock_provider.provider_api.ProviderAPI.is_siret_registered",
     return_value=True,
 )
-def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized, app):
+def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized):
     # Given
     venue_id_at_offer_provider = "id_for_remote_system"
     venue = offerers_factories.VenueFactory(siret="12345678912345")
@@ -40,7 +36,7 @@ def test_when_venue_id_at_offer_provider_is_given(can_be_synchronized, app):
     "pcapi.infrastructure.repository.stock_provider.provider_api.ProviderAPI.is_siret_registered",
     return_value=True,
 )
-def test_use_siret_as_default(can_be_synchronized, app):
+def test_use_siret_as_default(can_be_synchronized):
     # Given
     venue = offerers_factories.VenueFactory(siret="12345678912345")
     provider = providers_factories.APIProviderFactory()
@@ -54,76 +50,27 @@ def test_use_siret_as_default(can_be_synchronized, app):
     can_be_synchronized.assert_called_once_with("12345678912345")
 
 
-class WhenProviderImplementsProviderAPITest:
-    def setup_class(self):
-        self.find_by_id = MagicMock()
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.core.providers.api._siret_can_be_synchronized", return_value=False)
+def test_cannot_connect_when_synchronization_is_not_allowed(can_be_synchronized):
+    venue = offerers_factories.VenueFactory()
+    provider = providers_factories.APIProviderFactory()
 
-    @pytest.mark.usefixtures("db_session")
-    @patch(
-        "pcapi.core.providers.api._siret_can_be_synchronized",
-        return_value=True,
-    )
-    def should_connect_venue_when_synchronization_is_allowed(self, app):
-        # Given
-        offerer = create_offerer()
-
-        venue = create_venue(offerer)
-        provider = providers_factories.APIProviderFactory()
-
-        repository.save(venue)
-
-        self.find_by_id.return_value = venue
-        stock_repository = MagicMock()
-        stock_repository.can_be_synchronized.return_value = True
-
-        # When
+    with pytest.raises(VenueSiretNotRegistered):
         connect_venue_to_provider(venue, provider)
 
-        # Then
-        fnac_venue_provider = VenueProvider.query.one()
-        assert fnac_venue_provider.venue == venue
+    assert not VenueProvider.query.count()
 
-    @pytest.mark.usefixtures("db_session")
-    @patch(
-        "pcapi.core.providers.api._siret_can_be_synchronized",
-        return_value=False,
-    )
-    def should_not_connect_venue_when_synchronization_is_not_allowed(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer, siret="12345678912345")
-        provider = providers_factories.APIProviderFactory(name="FNAC")
 
-        repository.save(venue)
+@pytest.mark.usefixtures("db_session")
+def test_cannot_connect_venue_when_venue_has_no_siret():
+    venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
+    provider = providers_factories.APIProviderFactory()
 
-        self.find_by_id.return_value = venue
-        stock_repository = MagicMock()
-        stock_repository.can_be_synchronized.return_value = False
+    with pytest.raises(NoSiretSpecified):
+        connect_venue_to_provider(venue, provider)
 
-        # when
-        with pytest.raises(VenueSiretNotRegistered):
-            connect_venue_to_provider(venue, provider)
-
-        # then
-        assert not VenueProvider.query.first()
-
-    @pytest.mark.usefixtures("db_session")
-    def should_not_connect_venue_when_venue_has_no_siret(self, app):
-        # Given
-        offerer = create_offerer()
-        venue = create_venue(offerer, siret=None, is_virtual=True)
-        provider = providers_factories.APIProviderFactory(name="FNAC")
-
-        repository.save(venue)
-
-        self.find_by_id.return_value = venue
-
-        # when
-        with pytest.raises(NoSiretSpecified):
-            connect_venue_to_provider(venue, provider)
-
-        # then
-        assert not VenueProvider.query.first()
+    assert not VenueProvider.query.count()
 
 
 @pytest.mark.usefixtures("db_session")
@@ -134,4 +81,4 @@ def test_cannot_connect_if_provider_has_local_class():
     with pytest.raises(ProviderWithoutApiImplementation):
         connect_venue_to_provider(venue, provider)
 
-    assert not VenueProvider.query.first()
+    assert not VenueProvider.query.count()
