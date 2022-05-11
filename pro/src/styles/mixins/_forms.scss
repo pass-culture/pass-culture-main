@@ -73,3 +73,8 @@
     color: forms.$input-text-color-disabled;
   }
 }
+
+@mixin input-icon-button-wrapper($icon-width: 32px) {
+  @include input-icon-wrapper($icon-width);
+  pointer-events: initial;
+}

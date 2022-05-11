@@ -1,75 +1,93 @@
 import '@testing-library/jest-dom'
-
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
-
+import * as pcapi from 'repository/pcapi/pcapi'
+import { ApiError, HTTP_STATUS } from 'api/helpers'
+import { MemoryRouter, Route } from 'react-router'
 import { render, screen, waitFor } from '@testing-library/react'
-
 import { Provider } from 'react-redux'
 import React from 'react'
-import { Router } from 'react-router-dom'
 import SignupForm from '../SignupForm'
 import { configureTestStore } from 'store/testUtils'
-import { createBrowserHistory } from 'history'
 import userEvent from '@testing-library/user-event'
 
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
+jest.mock('repository/pcapi/pcapi', () => ({
+  signup: jest.fn(),
+  getUserInformations: jest.fn().mockResolvedValue({}),
+}))
+
+const renderSignUp = storeOveride => {
+  const store = configureTestStore(storeOveride)
+  return render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={['/inscription']}>
+        <Route path="/inscription">
+          <SignupForm />
+        </Route>
+        <Route path="/accueil">
+          <span>I'm logged in as a pro user</span>
+        </Route>
+        <Route path="/structures">
+          <span>I'm logged in as an Admin</span>
+        </Route>
+        <Route path="/inscription/confirmation">
+          <span>I'm the confirmation page</span>
+        </Route>
+      </MemoryRouter>
+    </Provider>
+  )
+}
 
 describe('src | components | pages | Signup | SignupForm', () => {
-  let props
-  let history
   let store
 
   beforeEach(() => {
-    props = {
-      createNewProUser: jest.fn(),
-      notifyError: () => {},
-      redirectToConfirmation: jest.fn(),
-      showNotification: jest.fn(),
-    }
-    history = createBrowserHistory()
-    store = configureTestStore({
-      data: {
-        users: null,
-      },
+    store = {
+      data: {},
+      user: { initialized: true },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-    })
+    }
+    pcapi.signup.mockResolvedValue({})
   })
 
-  it('should redirect to home page if the user is logged in', async () => {
+  it('should redirect to accueil page if the user is logged in', async () => {
     // when the user is logged in and lands on signup validation page
-    store = configureTestStore({
-      data: {
-        users: [{ id: 'CMOI' }],
+    store.data.users = [
+      {
+        id: 'user_id',
+        publicName: 'François',
+        isAdmin: false,
       },
-      features: {
-        list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
+    ]
+    store.user.initialized = true
+    renderSignUp(store)
+    await expect(
+      screen.findByText("I'm logged in as a pro user")
+    ).resolves.toBeInTheDocument()
+  })
+
+  it('should redirect to structure page if the user is logged in as an Admin', async () => {
+    // when the user is logged in and lands on signup validation page
+    store.data.users = [
+      {
+        id: 'user_id',
+        publicName: 'François',
+        isAdmin: true,
       },
-    })
-    render(
-      <Provider store={store}>
-        <Router history={history}>
-          <SignupForm {...props} />
-        </Router>
-      </Provider>
-    )
-    // then he should be redirected to home page
-    await waitFor(() => {
-      expect(history.location.pathname).toBe('/')
-    })
+    ]
+    store.user.initialized = true
+    renderSignUp(store)
+    await expect(
+      screen.findByText("I'm logged in as an Admin")
+    ).resolves.toBeInTheDocument()
   })
 
   describe('render', () => {
     it('should render with all information', () => {
       // when the user sees the form
-      render(
-        <Provider store={store}>
-          <Router history={history}>
-            <SignupForm {...props} />
-          </Router>
-        </Provider>
-      )
+      renderSignUp(store)
 
       // then it should have a title
       expect(
@@ -122,21 +140,15 @@ describe('src | components | pages | Signup | SignupForm', () => {
       )
       // and a link to signin page
       expect(
-        screen.getByRole('link', {
+        screen.getByRole('button', {
           name: /J’ai déjà un compte/,
         })
-      ).toHaveAttribute('href', '/connexion')
+      ).toBeInTheDocument()
     })
 
     it('should render with all fields', () => {
       // when the user sees the form
-      render(
-        <Provider store={store}>
-          <Router history={history}>
-            <SignupForm {...props} />
-          </Router>
-        </Provider>
-      )
+      renderSignUp(store)
       // then it should have an email field
       expect(
         screen.getByRole('textbox', {
@@ -182,58 +194,165 @@ describe('src | components | pages | Signup | SignupForm', () => {
         })
       ).toBeInTheDocument()
     })
-
-    it('should enable submit button only when required inputs are filled', async () => {
-      jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({})
-      // Given the signup form
-      render(
-        <Provider store={store}>
-          <Router history={history}>
-            <SignupForm {...props} />
-          </Router>
-        </Provider>
-      )
-      const submitButton = screen.getByRole('button', {
-        name: /Créer mon compte/,
+    describe('formValidation', () => {
+      beforeEach(() => {
+        jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+          isOk: true,
+          message: '',
+          payload: {
+            values: {
+              address: '4 rue du test',
+              city: 'Plessix-Balisson',
+              latitude: 1.1,
+              longitude: 1.1,
+              name: 'Ma Petite structure',
+              postalCode: '22350',
+              siren: '881457238',
+            },
+          },
+        })
       })
-      // when the user fills required information
-      await userEvent.type(
-        screen.getByRole('textbox', {
-          name: /Adresse e-mail/,
-        }),
-        'test@example.com'
-      )
-      await userEvent.type(
-        screen.getByLabelText(/Mot de passe/),
-        'user@AZERTY123'
-      )
-      await userEvent.type(
-        screen.getByRole('textbox', {
-          name: /Nom/,
-        }),
-        'Nom'
-      )
-      await userEvent.type(
-        screen.getByRole('textbox', {
-          name: /Prénom/,
-        }),
-        'Prénom'
-      )
-      await userEvent.type(
-        screen.getByRole('textbox', {
-          name: /Téléphone/,
-        }),
-        '0722332233'
-      )
-      expect(submitButton).toBeDisabled()
-      await userEvent.type(
-        screen.getByRole('textbox', {
-          name: /SIREN/,
-        }),
-        '881457238'
-      )
-      // then it should enable submit button
-      expect(submitButton).toBeEnabled()
+
+      it('should enable submit button only when required inputs are filled and call pcapi with data', async () => {
+        renderSignUp(store)
+        const submitButton = screen.getByRole('button', {
+          name: /Créer mon compte/,
+        })
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Adresse e-mail/,
+          }),
+          'test@example.com'
+        )
+        await userEvent.type(
+          screen.getByLabelText(/Mot de passe/),
+          'user@AZERTY123'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Nom/,
+          }),
+          'Nom'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Prénom/,
+          }),
+          'Prénom'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Téléphone/,
+          }),
+          '0722332233'
+        )
+        expect(submitButton).toBeDisabled()
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /SIREN/,
+          }),
+          '881457238'
+        )
+
+        // To simulate onBlur event
+        await userEvent.tab()
+
+        expect(submitButton).toBeEnabled()
+        // Structure name should be displayed and submit button enabled
+        waitFor(() =>
+          expect(
+            screen.findByText('Ma Petite structure')
+          ).resolves.toBeInTheDocument()
+        )
+
+        await userEvent.click(submitButton)
+
+        expect(pcapi.signup).toHaveBeenCalledWith({
+          address: '4 rue du test',
+          city: 'Plessix-Balisson',
+          contactOk: '',
+          email: 'test@example.com',
+          firstName: 'Prénom',
+          lastName: 'Nom',
+          latitude: 1.1,
+          longitude: 1.1,
+          name: 'Ma Petite structure',
+          password: 'user@AZERTY123',
+          phoneNumber: '0722332233',
+          postalCode: '22350',
+          publicName: 'Prénom',
+          siren: '881457238',
+        })
+        await expect(
+          screen.findByText("I'm the confirmation page")
+        ).resolves.toBeInTheDocument()
+      })
+      it('should show a notification on api call error', async () => {
+        pcapi.signup.mockRejectedValue(
+          new ApiError(HTTP_STATUS.GONE, {
+            telephone: 'Le téléphone doit faire moins de 20 caractères',
+          })
+        )
+        renderSignUp(store)
+        const submitButton = screen.getByRole('button', {
+          name: /Créer mon compte/,
+        })
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Adresse e-mail/,
+          }),
+          'test@example.com'
+        )
+        await userEvent.type(
+          screen.getByLabelText(/Mot de passe/),
+          'user@AZERTY123'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Nom/,
+          }),
+          'Nom'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Prénom/,
+          }),
+          'Prénom'
+        )
+
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Téléphone/,
+          }),
+          '0722332233'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /SIREN/,
+          }),
+          '881457238'
+        )
+        // To simulate onBlur event
+        await userEvent.tab()
+
+        await userEvent.click(submitButton)
+        expect(pcapi.signup).toHaveBeenCalledTimes(1)
+        waitFor(() =>
+          expect(
+            screen.findByText('Le téléphone doit faire moins de 20 caractères')
+          ).resolves.toBeInTheDocument()
+        )
+
+        waitFor(() => expect(submitButton).toBeDisabled())
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Téléphone/,
+          }),
+          '0722332233'
+        )
+        await userEvent.tab()
+        waitFor(() => expect(submitButton).toBeEnabled())
+      })
     })
   })
 })

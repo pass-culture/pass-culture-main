@@ -45,7 +45,7 @@ const DatePicker = ({
         {...field}
         customInput={
           <BaseInput
-            RightIcon={Calendar}
+            rightIcon={() => <Calendar />}
             hasError={meta.touched && !!meta.error}
             ref={ref}
           />

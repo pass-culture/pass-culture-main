@@ -6,7 +6,7 @@ import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PropTypes from 'prop-types'
 import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
-import SignupFormContainer from './SignupForm/SignupFormContainer'
+import SignupForm from './SignupForm/SignupForm'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
 import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -31,7 +31,7 @@ const Signup = ({ location }) => {
       </div>
       {isProAccountCreationEnabled ? (
         <Switch location={location}>
-          <Route component={SignupFormContainer} exact path="/inscription" />
+          <Route component={SignupForm} exact path="/inscription" />
           <Route
             component={SignupConfirmation}
             path="/inscription/confirmation"
