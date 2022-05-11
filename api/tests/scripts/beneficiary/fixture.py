@@ -528,6 +528,41 @@ def make_new_stranger_application():
     return data
 
 
+def make_graphql_deleted_applications(procedure_id: int):
+    return {
+        "demarche": {
+            "id": "PROCEDURE_ID_AT_DMS",
+            "number": procedure_id,
+            "deletedDossiers": {
+                "pageInfo": {"endCursor": "MTAw", "hasNextPage": False},
+                "nodes": [
+                    {
+                        "dateSupression": "2021-10-02T00:00:00+02:00",
+                        "id": "RGVsZXRlZERvc3NpZXItMjE0ODQx",
+                        "number": 6075436,
+                        "reason": "user_request",
+                        "state": "en_construction",
+                    },
+                    {
+                        "dateSupression": "2021-10-02T00:00:00+02:00",
+                        "id": "RGVsZXRlZERvc3NpZXItMjE0OTM0",
+                        "number": 5948299,
+                        "reason": "user_request",
+                        "state": "en_construction",
+                    },
+                    {
+                        "dateSupression": "2021-10-02T00:00:00+02:00",
+                        "id": "RGVsZXRlZERvc3NpZXItMjE1NTE0",
+                        "number": 6069965,
+                        "reason": "user_request",
+                        "state": "en_construction",
+                    },
+                ],
+            },
+        }
+    }
+
+
 def make_single_application(*args, **kwargs):
     return {"dossier": make_graphql_application(*args, **kwargs)}
 
