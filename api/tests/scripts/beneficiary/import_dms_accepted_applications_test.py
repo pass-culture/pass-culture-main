@@ -11,6 +11,7 @@ import pytest
 
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.dms import serializer as dms_serializer
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -166,7 +167,7 @@ class ParseBeneficiaryInformationTest:
     )
     def test_handles_department_code(self, department_code, expected_code):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", department_code=department_code)
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
         assert information.department == expected_code
 
     @pytest.mark.parametrize(
@@ -179,7 +180,7 @@ class ParseBeneficiaryInformationTest:
     )
     def test_handles_postal_codes(self, postal_code, expected_code):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code=postal_code)
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
         assert information.postal_code == expected_code
 
     def test_handles_civility_parsing(self):
@@ -187,7 +188,7 @@ class ParseBeneficiaryInformationTest:
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", civility="M")
 
         # when
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
 
         # then
         assert information.civility == users_models.GenderEnum.M
@@ -195,20 +196,20 @@ class ParseBeneficiaryInformationTest:
     @pytest.mark.parametrize("activity", ["Étudiant", None])
     def test_handles_activity(self, activity):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", activity=activity)
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
         assert information.activity == activity
 
     @pytest.mark.parametrize("possible_value", ["0123456789", " 0123456789", "0123456789 ", " 0123456789 "])
     def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
         assert information.id_piece_number == "0123456789"
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_new_procedure(self, get_applications_with_details):
         raw_data = fixture.make_new_application()
-        content = dms_connector_api.parse_beneficiary_information_graphql(
+        content = dms_serializer.parse_beneficiary_information_graphql(
             dms_models.DmsApplicationResponse(**raw_data), 32
         )
         assert content.last_name == "VALGEAN"
@@ -228,7 +229,7 @@ class ParseBeneficiaryInformationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_new_procedure_for_stranger_residents(self, get_applications_with_details):
         raw_data = fixture.make_new_stranger_application()
-        content = dms_connector_api.parse_beneficiary_information_graphql(
+        content = dms_serializer.parse_beneficiary_information_graphql(
             dms_models.DmsApplicationResponse(**raw_data), 32
         )
         assert content.last_name == "VALGEAN"
@@ -247,14 +248,14 @@ class ParseBeneficiaryInformationTest:
 
     def test_processed_datetime_none(self):
         raw_data = fixture.make_graphql_application(1, "en_construction", processed_datetime=None)
-        content = dms_connector_api.parse_beneficiary_information_graphql(
+        content = dms_serializer.parse_beneficiary_information_graphql(
             dms_models.DmsApplicationResponse(**raw_data), 32
         )
         assert content.processed_datetime is None
 
     def test_processed_datetime_not_none(self):
         raw_data = fixture.make_graphql_application(1, "accepte")
-        content = dms_connector_api.parse_beneficiary_information_graphql(
+        content = dms_serializer.parse_beneficiary_information_graphql(
             dms_models.DmsApplicationResponse(**raw_data), 32
         )
         assert content.processed_datetime == datetime(2020, 5, 13, 10, 41, 21, tzinfo=timezone(timedelta(seconds=7200)))
@@ -264,7 +265,7 @@ class ParsingErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
         with pytest.raises(ValueError) as exc_info:
-            dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+            dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
         assert exc_info.value.errors["postal_code"] == "Strasbourg"
 
@@ -273,7 +274,7 @@ class ParsingErrorsTest:
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
 
         with pytest.raises(ValueError) as exc_info:
-            dms_connector_api.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+            dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
         assert exc_info.value.errors["id_piece_number"] == possible_value
 
@@ -797,7 +798,7 @@ class GraphQLSourceProcessApplicationTest:
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
         application_id = 123123
         application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
 
@@ -828,7 +829,7 @@ class GraphQLSourceProcessApplicationTest:
 
         application_id = 123123
         application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
@@ -855,7 +856,7 @@ class GraphQLSourceProcessApplicationTest:
             birth_date=user.dateOfBirth,
             construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
         )
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
@@ -875,7 +876,7 @@ class GraphQLSourceProcessApplicationTest:
             birth_date=user.dateOfBirth,
             construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
         )
-        information = dms_connector_api.parse_beneficiary_information_graphql(application_details, 123123)
+        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
         assert len(user.beneficiaryFraudChecks) == 1
