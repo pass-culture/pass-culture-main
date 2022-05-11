@@ -26,37 +26,7 @@
 
         <hr/>
 
-        <section data-testId="user_offerer">
-            {% if user_offerer.isValidated %}
-                <h2>Rattachement :</h2>
-            {% else %}
-                <h2>Nouveau rattachement :</h2>
-                <strong class="validation">
-                    Pour valider, <a href="{{ api_url }}/validate/user-offerer/{{ user_offerer.validationToken }}">cliquez ici</a>
-                </strong>
-            {% endif %}
-
-            <h3>Utilisateur :</h3>
-            <pre>{{ user_vars }}</pre>
-            <h3>Structure :</h3>
-            <pre>{{ offerer_vars_user_offerer }} </pre>
-        </section>
-
-        <hr/>
-
-        <section data-testId="offerer">
-            {% if offerer.isValidated %}
-                <h2>Structure :</h2>
-            {% else %}
-                <h2>Nouvelle structure :</h2>
-                <strong class="validation">
-                    Pour valider, <a href="{{ api_url }}/validate/offerer/{{ offerer.validationToken }}">cliquez ici</a>
-                </strong>
-            {% endif %}
-
-            <pre class="offerer-data">{{ offerer_vars }}</pre>
-            <h3>Infos API entreprise :</h3>
-            <pre class="api-entreprise-data">{{ api_entreprise }}</pre>
-        </section>
+        <h2>Infos API entreprise :</h3>
+        <pre class="api-entreprise-data">{{ api_entreprise }}</pre>
     </body>
 </html>
