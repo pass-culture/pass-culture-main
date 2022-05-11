@@ -1,9 +1,11 @@
 import datetime
 
 import dateutil
+import pytest
 
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import FrenchParserInfo
+from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
@@ -68,3 +70,69 @@ class GetPostalCodeTimezoneTest:
 class FrenchParserInfoTest:
     def test_parse_french_date(self):
         assert dateutil.parser.parse("12 mai 2021", FrenchParserInfo()) == datetime.datetime(2021, 5, 12)
+
+
+class FormatTimeInSecondToHumanReadableTest:
+    def test_format_single_second(self):
+        time_in_second = 1
+        assert format_time_in_second_to_human_readable(time_in_second) == "1 seconde"
+
+    @pytest.mark.parametrize(
+        "time_in_second",
+        [
+            2,
+            59,
+        ],
+    )
+    def test_format_many_seconds(self, time_in_second):
+        assert format_time_in_second_to_human_readable(time_in_second) == f"{time_in_second} secondes"
+
+    def test_format_single_minute(self):
+        time_in_second = 60
+        assert format_time_in_second_to_human_readable(time_in_second) == "1 minute"
+
+    @pytest.mark.parametrize(
+        "time_in_second,time_in_unit",
+        [
+            (60 * 2, 2),
+            (60 * 59, 59),
+        ],
+    )
+    def test_format_many_minutes(self, time_in_second, time_in_unit):
+        assert format_time_in_second_to_human_readable(time_in_second) == f"{time_in_unit} minutes"
+
+    def test_format_single_hour(self):
+        time_in_second = 60 * 60
+        assert format_time_in_second_to_human_readable(time_in_second) == "1 heure"
+
+    @pytest.mark.parametrize(
+        "time_in_second,time_in_unit",
+        [
+            (60 * 60 * 2, 2),
+            (60 * 60 * 23, 23),
+        ],
+    )
+    def test_format_many_hours(self, time_in_second, time_in_unit):
+        assert format_time_in_second_to_human_readable(time_in_second) == f"{time_in_unit} heures"
+
+    def test_format_single_day(self):
+        time_in_second = 60 * 60 * 24
+        assert format_time_in_second_to_human_readable(time_in_second) == "1 jour"
+
+    @pytest.mark.parametrize(
+        "time_in_second,time_in_unit",
+        [
+            (60 * 60 * 24 * 2, 2),
+            (60 * 60 * 24 * 6, 6),
+        ],
+    )
+    def test_format_many_days(self, time_in_second, time_in_unit):
+        assert format_time_in_second_to_human_readable(time_in_second) == f"{time_in_unit} jours"
+
+    def test_format_single_week(self):
+        time_in_second = 60 * 60 * 24 * 7
+        assert format_time_in_second_to_human_readable(time_in_second) == "1 semaine"
+
+    def test_format_many_weeks(self):
+        time_in_second = 60 * 60 * 24 * 7 * 2
+        assert format_time_in_second_to_human_readable(time_in_second) == "2 semaines"
