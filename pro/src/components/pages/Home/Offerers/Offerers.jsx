@@ -11,6 +11,7 @@ import { VenueList } from 'components/pages/Home/Venues/VenueList'
 import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { sortByDisplayName } from 'utils/strings'
 
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
@@ -35,12 +36,12 @@ const Offerers = () => {
     function fetchData() {
       const { offererId } = query
       pcapi.getAllOfferersNames().then(receivedOffererNames => {
-        const initialOffererOptions = receivedOffererNames
-          .map(item => ({
+        const initialOffererOptions = sortByDisplayName(
+          receivedOffererNames.map(item => ({
             id: item['id'].toString(),
             displayName: item['name'],
           }))
-          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+        )
 
         if (initialOffererOptions.length > 0) {
           setSelectedOffererId(offererId || initialOffererOptions[0].id)

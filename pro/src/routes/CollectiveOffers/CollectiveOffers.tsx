@@ -21,6 +21,7 @@ import {
 } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
+import { sortByDisplayName } from 'utils/strings'
 
 import { getFilteredCollectiveOffersAdapter } from './adapters'
 
@@ -74,11 +75,7 @@ const CollectiveOffers = (): JSX.Element => {
           displayName: category.label,
         }))
 
-        setCategories(
-          categoriesOptions.sort((a, b) =>
-            a.displayName.localeCompare(b.displayName)
-          )
-        )
+        setCategories(sortByDisplayName(categoriesOptions))
       })
     }
 
