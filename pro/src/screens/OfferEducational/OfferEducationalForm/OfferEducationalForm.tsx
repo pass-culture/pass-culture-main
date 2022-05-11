@@ -13,7 +13,6 @@ import FormLayout from 'new_components/FormLayout'
 import { SubmitButton, Banner } from 'ui-kit'
 
 import { IOfferEducationalProps } from '../OfferEducational'
-import buildSelectOptions from '../utils/buildSelectOptions'
 
 import FormAccessibility from './FormAccessibility'
 import FormContact from './FormContact'
@@ -81,15 +80,18 @@ const OfferEducationalForm = ({
 
       checkOffererEligibilityToEducationalOffer()
 
+      let venuesOptions = selectedOfferer.managedVenues.map(item => ({
+        value: item['id'] as string,
+        label: item['name'] as string,
+      }))
+      if (venuesOptions.length > 1) {
+        venuesOptions = [
+          { value: '', label: 'Sélectionner un lieu' },
+          ...venuesOptions,
+        ]
+      }
       setCurrentOfferer(selectedOfferer)
-      setVenuesOptions(
-        buildSelectOptions(
-          selectedOfferer.managedVenues,
-          'name',
-          'id',
-          'Sélectionner un lieu'
-        )
-      )
+      setVenuesOptions(venuesOptions)
     }
   }, [values.offererId, userOfferers, notify, getIsOffererEligible, mode])
   return (

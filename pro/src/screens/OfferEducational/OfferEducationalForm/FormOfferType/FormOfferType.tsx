@@ -17,7 +17,6 @@ import {
   SUBCATEGORY_LABEL,
   TITLE_LABEL,
 } from '../../constants/labels'
-import buildSelectOptions from '../../utils/buildSelectOptions'
 
 interface IFormTypeProps {
   categories: IEducationalCategory[]
@@ -52,6 +51,30 @@ const FormOfferType = ({
     )
   }, [values.category, setFieldValue, subCategories, values.subCategory])
 
+  let categoriesOptions = categories.map(item => ({
+    value: item['id'] as string,
+    label: item['label'] as string,
+  }))
+  if (categoriesOptions.length > 1) {
+    categoriesOptions = [
+      { value: '', label: 'Sélectionner une catégorie' },
+      ...categoriesOptions,
+    ]
+  }
+
+  let subCategoriesOptions = availableSubCategories
+    ? availableSubCategories.map(item => ({
+        value: item['id'] as string,
+        label: item['label'] as string,
+      }))
+    : []
+  if (subCategoriesOptions.length > 1) {
+    subCategoriesOptions = [
+      { value: '', label: 'Sélectionner une sous catégorie' },
+      ...subCategoriesOptions,
+    ]
+  }
+
   return (
     <FormLayout.Section
       description="Le type de l’offre permet de la caractériser et de la valoriser au mieux pour les enseignants et chefs d’établissement."
@@ -61,12 +84,7 @@ const FormOfferType = ({
         <Select
           label={CATEGORY_LABEL}
           name="category"
-          options={buildSelectOptions(
-            categories,
-            'label',
-            'id',
-            'Sélectionner une catégorie'
-          )}
+          options={categoriesOptions}
         />
       </FormLayout.Row>
       {!!availableSubCategories?.length && (
@@ -74,12 +92,7 @@ const FormOfferType = ({
           <Select
             label={SUBCATEGORY_LABEL}
             name="subCategory"
-            options={buildSelectOptions(
-              availableSubCategories,
-              'label',
-              'id',
-              'Sélectionner une sous catégorie'
-            )}
+            options={subCategoriesOptions}
           />
         </FormLayout.Row>
       )}

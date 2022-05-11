@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import Select from 'components/layout/inputs/Select'
 
 import { IBusinessUnit, IBusinessUnitVenue } from '../BusinessUnitList'
 
@@ -23,11 +23,15 @@ const BusinessUnitForm = ({
       id: '',
       displayName: 'Sélectionner un SIRET dans la liste',
     },
-    ...buildSelectOptions(
-      'siret',
-      'siret',
-      venues.filter(venue => venue.siret)
-    ),
+    ...venues
+      .filter(item => item['siret'] !== null)
+      .map(item => {
+        return {
+          id: item.siret as string,
+          displayName: item['siret'] as string,
+        }
+      })
+      .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
   ]
 
   const onChange = (event: { target: { value: string } }) => {

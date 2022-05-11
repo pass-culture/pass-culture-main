@@ -1,15 +1,25 @@
 import * as PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
-import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import Select from 'components/layout/inputs/Select'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
 
 import { musicOptionsTree, showOptionsTree } from './subTypes'
 
 const initialSubTypesOptions = {
-  musicType: buildSelectOptions('code', 'label', musicOptionsTree),
-  showType: buildSelectOptions('code', 'label', showOptionsTree),
+  musicType: musicOptionsTree
+    .map(item => ({
+      id: item['code'].toString(),
+      displayName: item['label'],
+    }))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
+  showType: showOptionsTree
+    .map(item => ({
+      id: item['code'].toString(),
+      displayName: item['label'],
+    }))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
   musicSubType: [],
   showSubType: [],
 }
@@ -31,11 +41,12 @@ export const SubtypeSelects = ({
 
       setSubTypesOptions(prevOptions => ({
         ...prevOptions,
-        musicSubType: buildSelectOptions(
-          'code',
-          'label',
-          selectedMusicTypeChildren
-        ),
+        musicSubType: selectedMusicTypeChildren
+          .map(item => ({
+            id: item['code'].toString(),
+            displayName: item['label'],
+          }))
+          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
       }))
     } else {
       setSubTypesOptions(prevOptions => ({
@@ -53,11 +64,12 @@ export const SubtypeSelects = ({
 
       setSubTypesOptions(prevOptions => ({
         ...prevOptions,
-        showSubType: buildSelectOptions(
-          'code',
-          'label',
-          selectedShowTypeChildren
-        ),
+        showSubType: selectedShowTypeChildren
+          .map(item => ({
+            id: item['code'].toString(),
+            displayName: item['label'],
+          }))
+          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
       }))
     } else {
       setSubTypesOptions(prevOptions => ({

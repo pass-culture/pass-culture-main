@@ -4,7 +4,6 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
 import Icon from 'components/layout/Icon'
-import { buildSelectOptions } from 'components/layout/inputs/Select'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
@@ -78,7 +77,12 @@ const Reimbursements = ({ currentUser }) => {
     try {
       const businessUnitsResponse = await pcapi.getBusinessUnits()
       setBusinessUnitsOptions(
-        buildSelectOptions('id', 'name', businessUnitsResponse)
+        businessUnitsResponse
+          .map(item => ({
+            id: item['id'].toString(),
+            displayName: item['name'],
+          }))
+          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
       )
     } catch (err) {
       console.error(err)

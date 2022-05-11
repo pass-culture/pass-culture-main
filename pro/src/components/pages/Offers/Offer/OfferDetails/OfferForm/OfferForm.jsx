@@ -12,10 +12,7 @@ import { Link } from 'react-router-dom'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import CheckboxInput from 'components/layout/inputs/CheckboxInput'
 import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
-import Select, {
-  buildSelectOptions,
-  buildSelectOptionsWithOptionalFields,
-} from 'components/layout/inputs/Select'
+import Select from 'components/layout/inputs/Select'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import InternalBanner from 'components/layout/InternalBanner'
@@ -121,7 +118,12 @@ const OfferForm = ({
   const [venue, setVenue] = useState(null)
   const [formValues, setFormValues] = useState({})
   const [venueOptions, setVenueOptions] = useState(
-    buildSelectOptionsWithOptionalFields('id', ['publicName', 'name'], venues)
+    venues
+      .map(item => ({
+        id: item['id'].toString(),
+        displayName: item['publicName'] ? item['publicName'] : item['name'],
+      }))
+      .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
   )
   const [offerFormFields, setOfferFormFields] = useState(
     Object.keys(DEFAULT_FORM_VALUES)
@@ -165,7 +167,12 @@ const OfferForm = ({
     [setFormValues]
   )
 
-  const offererOptions = buildSelectOptions('id', 'name', offerersNames)
+  const offererOptions = offerersNames
+    .map(item => ({
+      id: item['id'].toString(),
+      displayName: item['name'],
+    }))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
 
   const setOfferVenue = useCallback(
     newVenueId => {
@@ -310,11 +317,12 @@ const OfferForm = ({
       }
 
       setVenueOptions(
-        buildSelectOptionsWithOptionalFields(
-          'id',
-          ['publicName', 'name'],
-          venuesToShow
-        )
+        venuesToShow
+          .map(item => ({
+            id: item['id'].toString(),
+            displayName: item['publicName'] ? item['publicName'] : item['name'],
+          }))
+          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
       )
 
       if (venuesToShow.length === 0 && venues.length > 0) {

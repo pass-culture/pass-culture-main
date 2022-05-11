@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import useFrenchQuery from 'components/hooks/useFrenchQuery'
-import { buildSelectOptions } from 'components/layout/inputs/Select'
 import Spinner from 'components/layout/Spinner'
 import {
   INITIAL_PHYSICAL_VENUES,
@@ -36,11 +35,13 @@ const Offerers = () => {
     function fetchData() {
       const { offererId } = query
       pcapi.getAllOfferersNames().then(receivedOffererNames => {
-        const initialOffererOptions = buildSelectOptions(
-          'id',
-          'name',
-          receivedOffererNames
-        )
+        const initialOffererOptions = receivedOffererNames
+          .map(item => ({
+            id: item['id'].toString(),
+            displayName: item['name'],
+          }))
+          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+
         if (initialOffererOptions.length > 0) {
           setSelectedOffererId(offererId || initialOffererOptions[0].id)
           setOffererOptions([

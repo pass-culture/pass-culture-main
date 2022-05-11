@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import Select from 'components/layout/inputs/Select'
 import { CATEGORY_STATUS } from 'core/Offers'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
@@ -45,11 +45,13 @@ const OfferCategories = ({
     [categoryIsVirtual, isVirtualOffer]
   )
 
-  const categoriesOptions = buildSelectOptions(
-    'id',
-    'proLabel',
-    categories.filter(categoryFilters)
-  )
+  const categoriesOptions = categories
+    .filter(categoryFilters)
+    .map(item => ({
+      id: item['id'].toString(),
+      displayName: item['proLabel'],
+    }))
+    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
   const [subCategoriesOptions, setSubCategoriesOptions] = useState(null)
   const [subCategoryConditionalFields, setSubCategoryConditionalFields] =
     useState([])
@@ -71,7 +73,14 @@ const OfferCategories = ({
           )
         }
         updateFormErrors({})
-        setSubCategoriesOptions(buildSelectOptions('id', 'proLabel', options))
+        setSubCategoriesOptions(
+          options
+            .map(item => ({
+              id: item['id'].toString(),
+              displayName: item['proLabel'],
+            }))
+            .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+        )
       } else {
         setSubCategoriesOptions(null)
       }
