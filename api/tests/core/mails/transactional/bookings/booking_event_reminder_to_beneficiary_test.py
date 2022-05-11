@@ -3,9 +3,7 @@ import dataclasses
 from freezegun import freeze_time
 import pytest
 
-import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.factories import IndividualBookingFactory
-from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficiary import (
     get_booking_event_reminder_to_beneficiary_email_data,
