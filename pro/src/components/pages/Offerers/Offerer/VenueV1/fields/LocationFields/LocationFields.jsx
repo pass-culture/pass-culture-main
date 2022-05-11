@@ -38,6 +38,7 @@ const LocationFields = ({
           name="address"
           readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
           withMap
+          required={true}
         />
         <TextField
           autoComplete="postal-code"
