@@ -20,6 +20,7 @@ import {
 } from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { sortByLabel } from 'utils/strings'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
@@ -99,9 +100,9 @@ class VenueCreation extends PureComponent {
     const venueTypesRequest = getVenueTypes().then(venueTypes => {
       return venueTypes.map(type => new VenueType(type))
     })
-    const venueLabelsRequest = getVenueLabels().then(labels => {
-      return [...labels].sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-    })
+    const venueLabelsRequest = getVenueLabels().then(labels =>
+      sortByLabel(labels)
+    )
     const [offerer, venueTypes, venueLabels] = await Promise.all([
       offererRequest,
       venueTypesRequest,

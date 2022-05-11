@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 
 import Select from 'components/layout/inputs/Select'
+import { sortByDisplayName } from 'utils/strings'
 
 import { IBusinessUnit, IBusinessUnitVenue } from '../BusinessUnitList'
 
@@ -23,15 +24,16 @@ const BusinessUnitForm = ({
       id: '',
       displayName: 'Sélectionner un SIRET dans la liste',
     },
-    ...venues
-      .filter(item => item['siret'] !== null)
-      .map(item => {
-        return {
-          id: item.siret as string,
-          displayName: item['siret'] as string,
-        }
-      })
-      .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
+    ...sortByDisplayName(
+      venues
+        .filter(item => item['siret'] !== null)
+        .map(item => {
+          return {
+            id: item.siret as string,
+            displayName: item['siret'] as string,
+          }
+        })
+    ),
   ]
 
   const onChange = (event: { target: { value: string } }) => {

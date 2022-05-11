@@ -19,6 +19,7 @@ import {
 } from 'repository/venuesService'
 import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
+import { sortByDisplayName } from 'utils/strings'
 
 import { getFilteredOffersAdapter } from './adapters'
 
@@ -93,11 +94,7 @@ const Offers = (): JSX.Element => {
             displayName: category.proLabel,
           }))
 
-        setCategories(
-          categoriesOptions.sort((a, b) =>
-            a.displayName.localeCompare(b.displayName)
-          )
-        )
+        setCategories(sortByDisplayName(categoriesOptions))
       })
 
     loadCategories()

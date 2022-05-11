@@ -19,6 +19,7 @@ import InternalBanner from 'components/layout/InternalBanner'
 import Spinner from 'components/layout/Spinner'
 import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import { SubmitButton } from 'ui-kit'
+import { sortByDisplayName } from 'utils/strings'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 
 import {
@@ -118,12 +119,12 @@ const OfferForm = ({
   const [venue, setVenue] = useState(null)
   const [formValues, setFormValues] = useState({})
   const [venueOptions, setVenueOptions] = useState(
-    venues
-      .map(item => ({
+    sortByDisplayName(
+      venues.map(item => ({
         id: item['id'].toString(),
         displayName: item['publicName'] ? item['publicName'] : item['name'],
       }))
-      .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+    )
   )
   const [offerFormFields, setOfferFormFields] = useState(
     Object.keys(DEFAULT_FORM_VALUES)
@@ -167,12 +168,12 @@ const OfferForm = ({
     [setFormValues]
   )
 
-  const offererOptions = offerersNames
-    .map(item => ({
+  const offererOptions = sortByDisplayName(
+    offerersNames.map(item => ({
       id: item['id'].toString(),
       displayName: item['name'],
     }))
-    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+  )
 
   const setOfferVenue = useCallback(
     newVenueId => {
@@ -317,12 +318,12 @@ const OfferForm = ({
       }
 
       setVenueOptions(
-        venuesToShow
-          .map(item => ({
+        sortByDisplayName(
+          venuesToShow.map(item => ({
             id: item['id'].toString(),
             displayName: item['publicName'] ? item['publicName'] : item['name'],
           }))
-          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+        )
       )
 
       if (venuesToShow.length === 0 && venues.length > 0) {

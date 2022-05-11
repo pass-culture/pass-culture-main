@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import Select from 'components/layout/inputs/Select'
 import { CATEGORY_STATUS } from 'core/Offers'
+import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
 
@@ -45,13 +46,12 @@ const OfferCategories = ({
     [categoryIsVirtual, isVirtualOffer]
   )
 
-  const categoriesOptions = categories
-    .filter(categoryFilters)
-    .map(item => ({
+  const categoriesOptions = sortByDisplayName(
+    categories.filter(categoryFilters).map(item => ({
       id: item['id'].toString(),
       displayName: item['proLabel'],
     }))
-    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+  )
   const [subCategoriesOptions, setSubCategoriesOptions] = useState(null)
   const [subCategoryConditionalFields, setSubCategoryConditionalFields] =
     useState([])
@@ -74,12 +74,12 @@ const OfferCategories = ({
         }
         updateFormErrors({})
         setSubCategoriesOptions(
-          options
-            .map(item => ({
+          sortByDisplayName(
+            options.map(item => ({
               id: item['id'].toString(),
               displayName: item['proLabel'],
             }))
-            .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+          )
         )
       } else {
         setSubCategoriesOptions(null)
