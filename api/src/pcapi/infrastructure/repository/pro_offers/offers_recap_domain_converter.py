@@ -1,3 +1,5 @@
+import typing
+
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.domain.pro_offers.offers_recap import OfferRecap
@@ -18,7 +20,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         has_booking_limit_datetimes_passed=offer.hasBookingLimitDatetimesPassed,  # type: ignore [arg-type]
         is_active=offer.isActive,
         is_editable=offer.isEditable,
-        is_event=offer.isEvent,
+        is_event=typing.cast(bool, offer.isEvent),
         is_thing=offer.isThing,
         is_educational=offer.isEducational,
         product_isbn=offer.extraData.get("isbn") if offer.extraData else None,  # type: ignore [union-attr]
