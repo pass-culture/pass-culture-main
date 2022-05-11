@@ -11,7 +11,6 @@ import { Select } from 'ui-kit'
 import { Banner } from 'ui-kit'
 
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
-import buildSelectOptions from '../../utils/buildSelectOptions'
 
 interface IFormVenueProps {
   userOfferers: IUserOfferer[]
@@ -26,12 +25,16 @@ const FormVenue = ({
   isEligible,
   mode,
 }: IFormVenueProps): JSX.Element => {
-  const offerersOptions = buildSelectOptions(
-    userOfferers,
-    'name',
-    'id',
-    'Selectionner une structure'
-  )
+  let offerersOptions = userOfferers.map(item => ({
+    value: item['id'] as string,
+    label: item['name'] as string,
+  }))
+  if (offerersOptions.length > 1) {
+    offerersOptions = [
+      { value: '', label: 'Selectionner une structure' },
+      ...offerersOptions,
+    ]
+  }
 
   const { values } = useFormikContext<IOfferEducationalFormValues>()
 

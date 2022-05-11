@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useMemo, useState } from 'react'
 
-import Select, { buildSelectOptions } from 'components/layout/inputs/Select'
+import Select from 'components/layout/inputs/Select'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
@@ -13,7 +13,13 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
     DEFAULT_PROVIDER_OPTION
   )
   const providersOptions = useMemo(
-    () => buildSelectOptions('id', 'name', providers),
+    () =>
+      providers
+        .map(item => ({
+          id: item['id'].toString(),
+          displayName: item['name'],
+        }))
+        .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
     [providers]
   )
 
