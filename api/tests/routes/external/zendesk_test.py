@@ -45,7 +45,6 @@ class ZendeskWebhookTest:
             "user": {
                 "email": user.email,
                 "phone": "+33612345678",
-                "name": user.publicName,
                 "tags": ["BENEFICIARY", "actif", "id_check_terminé", "éligible"],
                 "user_fields": {
                     "backoffice_url": expected_bo_url,
@@ -95,7 +94,6 @@ class ZendeskWebhookTest:
             "user": {
                 "email": user.email,
                 "phone": "+33634567890",
-                "name": user.publicName,
                 "tags": ["suspendu", "éligible"],
                 "user_fields": {
                     "backoffice_url": f"{settings.API_URL}/pc/back-office/support_beneficiary/details/?id={user.id}",
@@ -112,6 +110,55 @@ class ZendeskWebhookTest:
                 },
             }
         }
+
+    def test_webhook_update_user_without_subscription_process(self, client):
+        # first name, last name and phone number unknown
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime(2004, 1, 2),
+            firstName=None,
+            lastName=None,
+            phoneNumber=None,
+            postalCode="06000",
+        )
+
+        response = client.post(
+            "/webhooks/zendesk/ticket_notification",
+            json={
+                "is_new_ticket": True,
+                "ticket_id": 125,
+                "requester_id": 458,
+                "requester_email": user.email,
+                "requester_phone": None,
+            },
+        )
+
+        expected_bo_url = f"{settings.API_URL}/pc/back-office/support_beneficiary/details/?id={user.id}"
+
+        assert response.status_code == 204
+        assert len(users_testing.zendesk_requests) == 2  # user attributes and internal note
+        assert all(req["zendesk_user_id"] == 458 for req in users_testing.zendesk_requests)
+        assert users_testing.zendesk_requests[0]["data"] == {
+            "user": {
+                "email": user.email,
+                "phone": None,
+                "tags": ["actif", "éligible"],
+                "user_fields": {
+                    "backoffice_url": expected_bo_url,
+                    "user_id": user.id,
+                    "first_name": user.firstName,
+                    "last_name": user.lastName,
+                    "postal_code": user.postalCode,
+                    "date_of_birth": "2004-01-02",
+                    "suspended": "Non",
+                    "email_validated": True,
+                    "phone_validated": False,
+                    "initial_credit": 0.0,
+                    "remaining_credit": 0.0,
+                },
+            }
+        }
+        assert expected_bo_url in str(users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["html_body"])
+        assert users_testing.zendesk_requests[1]["data"]["ticket"]["comment"]["public"] is False
 
     def test_webhook_update_pro_by_user_email(self, client):
         pro_user = users_factories.ProFactory(email="pro@example.com")
@@ -134,8 +181,6 @@ class ZendeskWebhookTest:
         assert users_testing.zendesk_requests[0]["data"] == {
             "user": {
                 "email": pro_user.email,
-                "phone": None,
-                "name": pro_user.publicName,
                 "tags": ["PRO", "département_75"],
                 "user_fields": {
                     "backoffice_url": f"{settings.API_URL}/pc/back-office/pro_users/?search=pro%40example.com",
@@ -175,8 +220,6 @@ class ZendeskWebhookTest:
         assert users_testing.zendesk_requests[0]["data"] == {
             "user": {
                 "email": venue.bookingEmail,
-                "phone": None,
-                "name": None,
                 "tags": ["PRO", "département_06"],
                 "user_fields": {
                     "backoffice_url": f"{settings.API_URL}/pc/back-office/venue/?flt3_26={venue.id}",
