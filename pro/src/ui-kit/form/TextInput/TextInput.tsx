@@ -14,6 +14,7 @@ interface ITextInputProps {
   maxLength?: number
   isOptional?: boolean
   smallLabel?: boolean
+  rightButton?: () => JSX.Element
   step?: number | string
 }
 
@@ -28,6 +29,7 @@ const TextInput = ({
   maxLength,
   smallLabel,
   isOptional = false,
+  rightButton,
   step,
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -54,6 +56,7 @@ const TextInput = ({
         placeholder={placeholder}
         step={step}
         type={type}
+        rightButton={rightButton}
         {...field}
       />
     </FieldLayout>

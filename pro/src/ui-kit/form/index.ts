@@ -7,5 +7,7 @@ export { default as CheckboxGroup } from './CheckboxGroup'
 export { default as RadioGroup } from './RadioGroup'
 export { default as DatePicker } from './DatePicker'
 export { default as TimePicker } from './TimePicker'
+export { default as PasswordInput } from './PasswordInput'
+export { default as SirenInput } from './SirenInput'
 
 export * as shared from './shared'

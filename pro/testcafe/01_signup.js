@@ -32,6 +32,7 @@ test('je peux créer un compte avec un SIREN non existant en base de données, e
     .typeText(firstNameInput, 'PC Test 0 Pro')
     .typeText(phoneNumberInput, '0102030405')
     .typeText(sirenInput, '501106520')
+    .pressKey('tab')
     .click(signUpButton)
     .expect(getPathname())
     .eql('/inscription/confirmation')
