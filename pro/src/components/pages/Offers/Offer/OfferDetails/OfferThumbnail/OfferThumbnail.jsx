@@ -11,7 +11,10 @@ const OfferThumbnail = ({
   offerId,
   postThumbnail,
   setThumbnailInfo,
+  setThumbnailError,
+  setThumbnailMsgError,
   thumbnailError,
+  thumbnailMsgError,
   url,
 }) => {
   const [isModalOpened, setIsModalOpened] = useState(false)
@@ -20,6 +23,8 @@ const OfferThumbnail = ({
 
   const openModal = useCallback(e => {
     e.target.blur()
+    setThumbnailError(false),
+    setThumbnailMsgError(''),
     setIsModalOpened(true)
   }, [])
 
@@ -40,15 +45,15 @@ const OfferThumbnail = ({
     <>
       <button
         className={`of-placeholder
-        ${preview ? 'of-image' : ''}
+        ${preview && !thumbnailError ? 'of-image' : ''}
         ${thumbnailError ? 'of-thumbnail-error' : ''}`}
         disabled={isDisabled}
         onClick={openModal}
         ref={thumbnailButtonRef}
-        title={`${preview ? 'Modifier l’image' : 'Ajouter une image'}`}
+        title={`${preview && !thumbnailError ? 'Modifier l’image' : 'Ajouter une image'}`}
         type="button"
       >
-        {preview ? (
+        {preview && !thumbnailError ? (
           <Icon alt="Image de l’offre" src={preview} />
         ) : (
           <>
@@ -60,7 +65,7 @@ const OfferThumbnail = ({
         {thumbnailError && (
           <span className="of-error-message">
             <ErrorAlertIcon />
-            L’image n’a pas pu être ajoutée. Veuillez réessayer.
+            {thumbnailMsgError !== '' ? thumbnailMsgError : `L’image n’a pas pu être ajoutée. Veuillez réessayer.`}
           </span>
         )}
       </button>
