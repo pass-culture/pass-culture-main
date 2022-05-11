@@ -129,7 +129,7 @@ class DMSOrphanSubsriptionTest:
 
 @pytest.mark.usefixtures("db_session")
 class HandleDmsApplicationTest:
-    @patch("pcapi.connectors.dms.api.parse_beneficiary_information_graphql")
+    @patch("pcapi.connectors.dms.serializer.parse_beneficiary_information_graphql")
     def test_parsing_failure(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
