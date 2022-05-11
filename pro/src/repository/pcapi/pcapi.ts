@@ -15,6 +15,7 @@ import {
   EditEducationalOfferPayload,
   EditCollectiveStockPayload,
   CollectiveOfferTemplate,
+  StockPayload,
 } from 'core/OfferEducational'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import { Offer } from 'custom_types/offer'
@@ -175,6 +176,15 @@ export const getCollectiveOfferTemplate = async (
 ): Promise<CollectiveOfferTemplateResponseModel> => {
   return client.get(`/collective/offers-template/${offerId}`)
 }
+
+export const patchCollectiveOfferTemplateIntoCollectiveOffer = async (
+  offerId: string,
+  body: StockPayload & { offerId: string }
+): Promise<CollectiveStockResponseModel> =>
+  client.patch(
+    `/collective/offers-template/${offerId}/to-collective-offer`,
+    body
+  )
 
 //
 // offerers
