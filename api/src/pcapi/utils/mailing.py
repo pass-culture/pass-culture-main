@@ -74,8 +74,6 @@ def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
     user_offerer: offerers_models.UserOfferer,
     get_by_siren=api_entreprises.get_by_offerer,
 ) -> dict:
-    vars_obj_user = vars(user_offerer.user)
-    vars_obj_user.pop("clearTextPassword", None)
     api_entreprise = get_by_siren(offerer)
 
     offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()
@@ -83,10 +81,7 @@ def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
     email_html = render_template(
         "mails/internal_validation_email.html",
         user_offerer=user_offerer,
-        user_vars=pformat(vars_obj_user),
         offerer=offerer,
-        offerer_vars_user_offerer=pformat(vars(user_offerer.offerer)),
-        offerer_vars=pformat(vars(offerer)),
         offerer_pro_link=build_pc_pro_offerer_link(offerer),
         offerer_summary=pformat(_summarize_offerer_vars(offerer, api_entreprise)),
         user_summary=pformat(_summarize_user_vars(user_offerer)),

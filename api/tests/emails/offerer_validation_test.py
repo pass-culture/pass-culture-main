@@ -50,7 +50,6 @@ def test_write_object_validation_email():
 
     # When
     email = make_offerer_internal_validation_email(offerer, user_offerer, get_by_siren=get_by_siren_stub)
-
     # Then
     html = BeautifulSoup(email.html_content, features="html.parser")
     assert html.h1.text == "Inscription ou rattachement PRO à valider"
@@ -70,76 +69,31 @@ def test_write_object_validation_email():
     )
     assert summary_section.select("strong")[1].a.text == "cliquez ici"
 
-    offerer_section = html.select_one("section[data-testId='offerer']")
-    assert offerer_section.h2.text == "Nouvelle structure :"
-    assert offerer_section.h3.text == "Infos API entreprise :"
-    assert offerer_section.strong.a["href"] == "http://localhost:5001/validate/offerer/{}".format(
-        offerer.validationToken
-    )
-    assert offerer_section.strong.a.text == "cliquez ici"
-
-    user_offerer_section = html.select_one("section[data-testId='user_offerer']")
-    assert user_offerer_section.h2.text == "Nouveau rattachement :"
-    assert user_offerer_section.h3.text == "Utilisateur :"
-    assert user_offerer_section.strong.a["href"] == "http://localhost:5001/validate/user-offerer/{}".format(
-        user_offerer.validationToken
-    )
-    assert user_offerer_section.strong.a.text == "cliquez ici"
-
-    offerer_data = offerer_section.select_one("pre.offerer-data").text
-    assert "'address': '122 AVENUE DE FRANCE'" in offerer_data
-    assert "'city': 'Paris'" in offerer_data
-    assert "'name': 'Accenture'" in offerer_data
-    assert "'postalCode': '75013'" in offerer_data
-    assert "'siren': '732075312'" in offerer_data
-    assert "'validationToken': '{}'".format(validation_token) in offerer_data
-
-    api_entreprise_data = offerer_section.select_one("pre.api-entreprise-data").text
+    api_entreprise_data = html.select_one("pre.api-entreprise-data").text
     assert "'other_etablissements_sirets':['39525144000032','39525144000065']" in api_entreprise_data.replace(
         " ", ""
     ).replace("\n", "")
     assert "etablissement_siege" in api_entreprise_data
 
 
-def test_validation_email_object_does_not_include_validation_link_if_user_offerer_is_already_validated(app):
+def test_no_validation_link_if_user_offerer_is_already_validated():
     user_offerer = offerers_factories.UserOffererFactory.build()
     email = make_offerer_internal_validation_email(
         user_offerer.offerer,
         user_offerer,
         get_by_siren=get_by_siren_stub,
     )
-
-    html = BeautifulSoup(email.html_content, features="html.parser")
-    assert "Nouveau rattachement :" not in [h2.text for h2 in html.select("section[data-testId='summary'] h2")]
-    assert not html.select("section[data-testId='user_offerer'] strong.validation a")
-    assert html.select("section[data-testId='user_offerer'] h2")[0].text == "Rattachement :"
+    assert "Nouveau rattachement :" not in email.html_content
 
 
-def test_validation_email_object_does_not_include_validation_link_if_offerer_is_already_validated():
+def test_no_validation_link_if_offerer_is_already_validated():
     user_offerer = offerers_factories.UserOffererFactory.build()
     email = make_offerer_internal_validation_email(
         user_offerer.offerer,
         user_offerer,
         get_by_siren=get_by_siren_stub,
     )
-
-    html = BeautifulSoup(email.html_content, features="html.parser")
-    assert "Nouvelle structure :" not in [h2.text for h2 in html.select("section[data-testId='summary'] h2")]
-    assert not html.select("section[data-testId='offerer'] strong.validation a")
-    assert html.select("section[data-testId='offerer'] h2")[0].text == "Structure :"
-
-
-def test_validation_email_should_neither_return_clearTextPassword_nor_totallysafepsswd():
-    user_offerer = offerers_factories.UserOffererFactory.build()
-    email = make_offerer_internal_validation_email(
-        user_offerer.offerer,
-        user_offerer,
-        get_by_siren=get_by_siren_stub,
-    )
-
-    email_html_soup = BeautifulSoup(email.html_content, features="html.parser")
-    assert "clearTextPassword" not in str(email_html_soup)
-    assert "totallysafepsswd" not in str(email_html_soup)
+    assert "Nouvelle structure :" not in email.html_content
 
 
 def test_should_return_subject_with_correct_departement_code():
