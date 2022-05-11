@@ -43,6 +43,7 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
   const [showThumbnailForm, setShowThumbnailForm] = useState(false)
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
+  const [thumbnailMsgError, setThumbnailMsgError] = useState('')
   const { categories, subCategories } = useSelector(
     state => state.offers.categories
   )
@@ -78,6 +79,22 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
     }
   }, [categories, subCategories])
 
+  const goToStockAndPrice = async(offerId) => {
+    let queryString = ''
+  
+    if (formInitialValues.current.offererId !== undefined) {
+      queryString = `?structure=${formInitialValues.current.offererId}`
+    }
+
+    if (formInitialValues.current.venueId !== undefined) {
+      queryString += `&lieu=${formInitialValues.current.venueId}`
+    }
+
+    history.push(
+      `/offre/${offerId}/individuel/stocks${queryString}`
+    )
+  }
+
   const postThumbnail = useCallback(
     async (offerId, thumbnailInfo) => {
       const offerThumbnailHasBeenUpdated =
@@ -85,8 +102,7 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
       if (offerThumbnailHasBeenUpdated) {
         const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
 
-        try {
-          await pcapi.postThumbnail(
+        await pcapi.postThumbnail(
             offerId,
             credit,
             thumbnail,
@@ -95,13 +111,24 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
             croppingRect?.y,
             croppingRect?.height,
             croppingRect?.width
-          )
-        } catch (error) {
-          setThumbnailError(true)
-          showErrorNotification()
+          ).then(() => {
+            setThumbnailError(false)
+            setThumbnailMsgError('')
 
-          throw error
-        }
+            if (!offer) {
+              goToStockAndPrice(offerId)
+            }
+          })
+          .catch((error) => {
+            setThumbnailInfo({})
+            setThumbnailError(true)
+            if (error.errors?.errors?.length > 0) {
+              setThumbnailMsgError(error.errors.errors[0])
+            }
+            showErrorNotification()
+
+            throw error
+          })
       }
     },
     [showErrorNotification]
@@ -115,24 +142,17 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
           notification.success('Votre offre a bien été modifiée')
           reloadOffer()
           setFormErrors({})
+          setThumbnailError(false)
+          setThumbnailMsgError('')
         } else {
           const response = await pcapi.createOffer(offerValues)
           const createdOfferId = response.id
           await postThumbnail(createdOfferId, thumbnailInfo)
 
-          let queryString = ''
-
-          if (formInitialValues.current.offererId !== undefined) {
-            queryString = `?structure=${formInitialValues.current.offererId}`
+          if (Object.keys(thumbnailInfo).length === 0) {
+            await goToStockAndPrice(createdOfferId)
           }
 
-          if (formInitialValues.current.venueId !== undefined) {
-            queryString += `&lieu=${formInitialValues.current.venueId}`
-          }
-
-          history.push(
-            `/offre/${createdOfferId}/individuel/stocks${queryString}`
-          )
           return Promise.resolve()
         }
       } catch (error) {
@@ -223,7 +243,10 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
                 offerId={offer?.id}
                 postThumbnail={postThumbnail}
                 setThumbnailInfo={setThumbnailInfo}
+                setThumbnailError={setThumbnailError}
+                setThumbnailMsgError={setThumbnailMsgError}
                 thumbnailError={thumbnailError}
+                thumbnailMsgError={thumbnailMsgError}
                 url={offer?.thumbUrl}
               />
               <OfferPreview offerPreviewData={offerPreviewData} />
