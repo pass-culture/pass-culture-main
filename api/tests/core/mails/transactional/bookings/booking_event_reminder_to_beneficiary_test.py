@@ -20,32 +20,6 @@ import pcapi.core.offers.factories as offers_factories
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-def get_expected_base_sendinblue_email_data(individual_booking, **overrides):
-    email_data = SendinblueTransactionalEmailData(
-        template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,
-        params={
-            "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{individual_booking.booking.id}/details",
-            "EVENT_DATE": "20 octobre 2021",
-            "EVENT_HOUR": "14h48",
-            "OFFER_NAME": individual_booking.booking.stock.offer.name,
-            "OFFER_TOKEN": individual_booking.booking.token,
-            "OFFER_WITHDRAWAL_DELAY": None,
-            "OFFER_WITHDRAWAL_DETAILS": None,
-            "OFFER_WITHDRAWAL_TYPE": None,
-            "QR_CODE": bookings_api.get_qr_code_data(individual_booking.booking.token),
-            "IS_DUO_EVENT": False,
-            "SUBCATEGORY": "SEANCE_CINE",
-            "USER_FIRST_NAME": individual_booking.user.firstName,
-            "VENUE_ADDRESS": individual_booking.booking.stock.offer.venue.address,
-            "VENUE_CITY": individual_booking.booking.stock.offer.venue.city,
-            "VENUE_NAME": individual_booking.booking.stock.offer.venue.name,
-            "VENUE_POSTAL_CODE": individual_booking.booking.stock.offer.venue.postalCode,
-        },
-    )
-    email_data.params.update(overrides)
-    return email_data
-
-
 @freeze_time("2021-10-15 12:48:00")
 class SendIndividualBookingEventReminderEmailToBeneficiaryTest:
     def test_sendinblue_send_email(self):
