@@ -18,6 +18,7 @@ import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner } from 'ui-kit'
+import { sortByLabel } from 'utils/strings'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
@@ -129,9 +130,9 @@ const VenueEdition = () => {
       const venueTypesRequest = pcapi.getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
       })
-      const venueLabelsRequest = pcapi.getVenueLabels().then(labels => {
-        return [...labels].sort((a, b) => a.label.localeCompare(b.label, 'fr'))
-      })
+      const venueLabelsRequest = pcapi
+        .getVenueLabels()
+        .then(labels => sortByLabel(labels))
 
       const [offerer, venue, venueTypes, venueLabels] = await Promise.all([
         offererRequest,

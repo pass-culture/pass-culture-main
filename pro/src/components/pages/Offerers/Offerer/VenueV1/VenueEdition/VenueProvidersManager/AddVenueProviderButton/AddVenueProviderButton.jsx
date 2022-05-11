@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from 'react'
 
 import Select from 'components/layout/inputs/Select'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
 import VenueProviderForm from '../VenueProviderForm'
@@ -14,12 +15,12 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
   )
   const providersOptions = useMemo(
     () =>
-      providers
-        .map(item => ({
+      sortByDisplayName(
+        providers.map(item => ({
           id: item['id'].toString(),
           displayName: item['name'],
         }))
-        .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
+      ),
     [providers]
   )
 

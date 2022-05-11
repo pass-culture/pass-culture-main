@@ -9,6 +9,7 @@ import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { Banner } from 'ui-kit'
+import { sortByDisplayName } from 'utils/strings'
 
 import './Reimbursement.scss'
 import Breadcrumb from '../../../new_components/Breadcrumb'
@@ -24,18 +25,15 @@ export const mapPathToStep = {
   details: STEP_ID_DETAILS,
 }
 
-const sortByKeyAlphabeticalOrder = keyName => (x, y) =>
-  x[keyName].localeCompare(y[keyName])
-
 const buildAndSortVenueFilterOptions = venues =>
-  venues
-    .map(venue => ({
+  sortByDisplayName(
+    venues.map(venue => ({
       id: venue.id,
       displayName: venue.isVirtual
         ? `${venue.offererName} - Offre numérique`
         : venue.publicName || venue.name,
     }))
-    .sort(sortByKeyAlphabeticalOrder('displayName'))
+  )
 
 const Reimbursements = ({ currentUser }) => {
   const areInvoicesEnabled = useActiveFeature('SHOW_INVOICES_ON_PRO_PORTAL')
@@ -77,12 +75,12 @@ const Reimbursements = ({ currentUser }) => {
     try {
       const businessUnitsResponse = await pcapi.getBusinessUnits()
       setBusinessUnitsOptions(
-        businessUnitsResponse
-          .map(item => ({
+        sortByDisplayName(
+          businessUnitsResponse.map(item => ({
             id: item['id'].toString(),
             displayName: item['name'],
           }))
-          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr'))
+        )
       )
     } catch (err) {
       console.error(err)

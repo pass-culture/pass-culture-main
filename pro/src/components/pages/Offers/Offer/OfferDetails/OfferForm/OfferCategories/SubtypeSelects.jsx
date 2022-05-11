@@ -2,24 +2,25 @@ import * as PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
 import Select from 'components/layout/inputs/Select'
+import { sortByDisplayName } from 'utils/strings'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
 
 import { musicOptionsTree, showOptionsTree } from './subTypes'
 
 const initialSubTypesOptions = {
-  musicType: musicOptionsTree
-    .map(item => ({
+  musicType: sortByDisplayName(
+    musicOptionsTree.map(item => ({
       id: item['code'].toString(),
       displayName: item['label'],
     }))
-    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
-  showType: showOptionsTree
-    .map(item => ({
+  ),
+  showType: sortByDisplayName(
+    showOptionsTree.map(item => ({
       id: item['code'].toString(),
       displayName: item['label'],
     }))
-    .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
+  ),
   musicSubType: [],
   showSubType: [],
 }
@@ -41,12 +42,12 @@ export const SubtypeSelects = ({
 
       setSubTypesOptions(prevOptions => ({
         ...prevOptions,
-        musicSubType: selectedMusicTypeChildren
-          .map(item => ({
+        musicSubType: sortByDisplayName(
+          selectedMusicTypeChildren.map(item => ({
             id: item['code'].toString(),
             displayName: item['label'],
           }))
-          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
+        ),
       }))
     } else {
       setSubTypesOptions(prevOptions => ({
@@ -64,12 +65,12 @@ export const SubtypeSelects = ({
 
       setSubTypesOptions(prevOptions => ({
         ...prevOptions,
-        showSubType: selectedShowTypeChildren
-          .map(item => ({
+        showSubType: sortByDisplayName(
+          selectedShowTypeChildren.map(item => ({
             id: item['code'].toString(),
             displayName: item['label'],
           }))
-          .sort((a, b) => a.displayName.localeCompare(b.displayName, 'fr')),
+        ),
       }))
     } else {
       setSubTypesOptions(prevOptions => ({
