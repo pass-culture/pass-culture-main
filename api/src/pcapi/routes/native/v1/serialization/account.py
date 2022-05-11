@@ -387,3 +387,6 @@ class UserProfilingSessionIdResponse(BaseModel):
 
 class UserSuspensionDateResponse(BaseModel):
     date: Optional[datetime.datetime]
+
+    class Config:
+        json_encoders = {datetime.datetime: format_into_utc_date}
