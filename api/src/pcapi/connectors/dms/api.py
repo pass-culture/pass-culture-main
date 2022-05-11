@@ -3,6 +3,7 @@ import os
 import pathlib
 import re
 from typing import Any
+from typing import Generator
 from typing import Optional
 
 from dateutil import parser as date_parser
@@ -25,6 +26,7 @@ GRAPHQL_DIRECTORY = pathlib.Path(os.path.dirname(__file__)) / "graphql"
 
 ARCHIVE_APPLICATION_QUERY_NAME = "archive_application"
 GET_BIC_QUERY_NAME = "pro/get_banking_info_v2"
+GET_DELETED_APPLICATIONS_QUERY_NAME = "get_deleted_applications"
 GET_SINGLE_APPLICATION_QUERY_NAME = "beneficiaries/get_single_application_details"
 GET_APPLICATIONS_WITH_DETAILS_QUERY_NAME = "beneficiaries/get_applications_with_details"
 MAKE_ON_GOING_MUTATION_NAME = "make_on_going"
@@ -94,6 +96,27 @@ class DMSGraphQLClient:
             yield from self.get_applications_with_details(
                 procedure_id, state, dms_demarche_response.page_info.end_cursor  # type: ignore [arg-type]
             )
+
+    def get_deleted_applications(
+        self, procedure_id: int, page_token: Optional[str] = None
+    ) -> Generator[dms_models.DmsDeletedApplication, None, None]:
+        variables: dict[str, Any] = {"demarcheNumber": procedure_id}
+        if page_token:
+            variables["after"] = page_token
+        results = self.execute_query(GET_DELETED_APPLICATIONS_QUERY_NAME, variables=variables)
+        # pylint: disable=unsubscriptable-object
+        dms_response = dms_models.DmsDeletedApplicationsResponse(**results["demarche"]["deletedDossiers"])
+        # pylint: enable=unsubscriptable-object
+        logger.info(
+            "[DMS] Found %s deleted applications for procedure %d",
+            len(dms_response.dms_deleted_applications),
+            procedure_id,
+        )
+        for application in dms_response.dms_deleted_applications:
+            yield application
+
+        if dms_response.page_info.has_next_page:
+            yield from self.get_deleted_applications(procedure_id, dms_response.page_info.end_cursor)
 
     def send_user_message(self, application_scalar_id: str, instructeur_techid: str, body: str) -> Any:
         try:

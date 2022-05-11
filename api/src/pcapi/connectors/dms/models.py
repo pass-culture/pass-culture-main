@@ -125,10 +125,31 @@ class DmsApplicationResponse(pydantic.BaseModel):
     _format_modification_date = pydantic.validator("latest_modification_date", allow_reuse=True)(parse_dms_datetime)
 
 
-class DmsProcessApplicationsResponse(pydantic.BaseModel):
+class DmsPaginatedResponse(pydantic.BaseModel):
+    page_info: ApplicationPageInfo = pydantic.Field(alias="pageInfo")
+
+
+class DmsProcessApplicationsResponse(DmsPaginatedResponse):
     """Response from DMS API.
     https://demarches-simplifiees-graphql.netlify.app/demarche.doc.html
     """
 
     dms_applications: list[DmsApplicationResponse] = pydantic.Field(alias="nodes")
-    page_info: ApplicationPageInfo = pydantic.Field(alias="pageInfo")
+
+
+class DmsDeletedApplication(pydantic.BaseModel):
+    """Response from DMS API.
+    https://demarches-simplifiees-graphql.netlify.app/deleteddossier.doc.html
+    """
+
+    deletion_datetime: datetime.datetime = pydantic.Field(alias="dateSupression")
+    id: str
+    number: int
+    reason: str
+    state: GraphQLApplicationStates
+
+    _format_deletion_datetime = pydantic.validator("deletion_datetime", allow_reuse=True)(parse_dms_datetime)
+
+
+class DmsDeletedApplicationsResponse(DmsPaginatedResponse):
+    dms_deleted_applications: list[DmsDeletedApplication] = pydantic.Field(alias="nodes")

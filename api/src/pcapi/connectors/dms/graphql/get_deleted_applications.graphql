@@ -1,0 +1,19 @@
+query getApplication($demarcheNumber: Int!, $after: String) {
+  demarche(number: $demarcheNumber) {
+    id
+    number
+    deletedDossiers(first: 100, after: $after) {
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+      nodes {
+        dateSupression
+        id
+        number
+        reason
+        state
+      }
+    }
+  }
+}

@@ -2,10 +2,13 @@ import datetime
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+import freezegun
+
 from pcapi.connectors.dms import api as api_dms
 from pcapi.connectors.dms import models as dms_models
 
 from tests.scripts.beneficiary.fixture import make_graphql_application
+from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
 from tests.scripts.beneficiary.fixture import make_single_application
 
 
@@ -84,3 +87,20 @@ class GraphqlResponseTest:
         client.update_text_annotation("dossier_id", "instructeur_id", "annotation_id", "Il y a une grosse erreur ici")
 
         assert client.execute_query.call_count == 1
+
+    @freezegun.freeze_time("2020-01-01")
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_get_deleted_applications(self, execute_query):
+        procedure_id = 1
+        execute_query.return_value = make_graphql_deleted_applications(procedure_id)
+
+        client = api_dms.DMSGraphQLClient()
+
+        deleted_application_count = 0
+        for result in client.get_deleted_applications(procedure_id):
+            assert result.deletion_datetime == datetime.datetime(2021, 10, 1, 22, 0, 0)
+            assert result.reason == "user_request"
+            deleted_application_count += 1
+
+        assert client.execute_query.call_count == 1
+        assert deleted_application_count == 3
