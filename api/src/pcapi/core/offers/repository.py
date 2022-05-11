@@ -8,6 +8,7 @@ from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import and_
+from sqlalchemy import false
 from sqlalchemy import func
 from sqlalchemy import not_
 from sqlalchemy import or_
@@ -303,11 +304,11 @@ def get_collective_offers_template_by_filters(
     name_keywords: Optional[str] = None,
     period_beginning_date: Optional[datetime] = None,
     period_ending_date: Optional[datetime] = None,
-) -> Optional[BaseQuery]:
-    if period_beginning_date is not None or period_ending_date is not None:
-        return None
-
+) -> BaseQuery:
     query = CollectiveOfferTemplate.query
+
+    if period_beginning_date is not None or period_ending_date is not None:
+        query = query.filter(false())
 
     if not user_is_admin:
         query = (
