@@ -122,7 +122,6 @@ def _format_user_attributes(email: str, attributes: UserAttributes) -> dict:
     return {
         "email": email,
         "phone": phone_number,
-        "name": f"{attributes.first_name} {attributes.last_name}",
         "tags": tags,
         # https://developer.zendesk.com/api-reference/ticketing/users/users/#user-fields
         "user_fields": {
@@ -147,8 +146,6 @@ def _format_pro_attributes(email: str, attributes: ProAttributes) -> dict:
         tags += [ZENDESK_TAG_DEPARTMENT_CODE_PREFIX + code for code in attributes.departement_code]
     return {
         "email": email,
-        "phone": None,
-        "name": f"{attributes.first_name} {attributes.last_name}" if attributes.first_name else None,
         "tags": tags,
         # https://developer.zendesk.com/api-reference/ticketing/users/users/#user-fields
         "user_fields": {
@@ -197,11 +194,15 @@ def _add_internal_note(
     """
     html_body = Markup("<i>Note automatique générée par le backend pass Culture ({})</i><br/>").format(settings.ENV)
 
+    name = (
+        f"{attributes.first_name} {attributes.last_name}"
+        if attributes.first_name and attributes.last_name
+        else f"id {attributes.user_id}"
+    )
+
     if isinstance(attributes, ProAttributes):
         if attributes.user_id:
-            html_body += Markup("Utilisateur pro identifié : <b>{} {}</b><br/>").format(
-                attributes.first_name, attributes.last_name
-            )
+            html_body += Markup("Utilisateur pro identifié : <b>{}</b><br/>, {}").format(name, email)
             for bo_link in _get_backoffice_pro_user_links(email):
                 html_body += Markup('<a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
         if attributes.venues_ids:
@@ -210,9 +211,14 @@ def _add_internal_note(
             bo_link = _get_backoffice_venues_link(attributes.venues_ids)
             html_body += Markup('<br/><a href="{}" target="_blank">{}</a><br/>').format(bo_link, bo_link)
     else:
-        html_body += Markup("Utilisateur identifié : <b>{} {}</b>").format(attributes.first_name, attributes.last_name)
+        html_body += Markup("Utilisateur identifié : <b>{}</b>, {}").format(name, email)
         if attributes.date_of_birth:
             html_body += f", {users_utils.get_age_from_birth_date(attributes.date_of_birth)} ans"
+        if attributes.is_beneficiary and attributes.domains_credit:
+            html_body += Markup("<br/>Bénéficiaire, crédit restant : {remaining:.2f} € sur {initial:.2f} €").format(
+                remaining=float(attributes.domains_credit.all.remaining) if attributes.domains_credit else 0,
+                initial=float(attributes.domains_credit.all.initial) if attributes.domains_credit else 0,
+            )
         for bo_link in _get_backoffice_support_beneficiary_user_links(attributes.user_id):
             html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
 
