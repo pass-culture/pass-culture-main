@@ -24,4 +24,20 @@
   &-wrapper {
     position: relative;
   }
+
+  &-right-button {
+    @include forms.input-icon-button-wrapper(32px);
+    button {
+      background: none;
+      border: none;
+      height: 100%;
+      margin: 0 16px;
+      outline: none;
+
+      svg {
+          width: 32px;
+          height: 100%
+      }
+    }
+  }
 }
