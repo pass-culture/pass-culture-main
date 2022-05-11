@@ -2,18 +2,16 @@ from datetime import datetime
 
 import pytest
 
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.infrastructure.repository.bank_informations import bank_informations_domain_converter
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
     BankInformationsSQLRepository,
 )
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.bank_information import BankInformation as BankInformationsSQLEntity
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.repository import repository
 
 
 class BankInformationsSQLRepositoryTest:
@@ -23,7 +21,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_bank_informations_when_offerer_has_bank_informations(self, app):
         # given
-        offerer = create_offerer()
+        offerer = offerers_factories.OffererFactory()
         bank_informations = offers_factories.BankInformationFactory(offerer=offerer)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
@@ -41,7 +39,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_none_when_offerer_has_no_bank_informations(self, app):
         # given
-        offerer = create_offerer()
+        offerer = offerers_factories.OffererFactory()
         bank_informations = offers_factories.BankInformationFactory(offerer=offerer)
 
         # when
@@ -53,8 +51,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_bank_informations_when_venue_has_bank_informations(self, app):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
+        venue = offerers_factories.VenueFactory()
         bank_informations = offers_factories.BankInformationFactory(venue=venue)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
@@ -71,8 +68,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_none_when_venue_has_no_bank_informations(self, app):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
+        venue = offerers_factories.VenueFactory()
         bank_informations = offers_factories.BankInformationFactory(venue=venue)
 
         # when
@@ -84,7 +80,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_bank_informations_when_there_is_bank_informations_associated_with_this_application_id(self, app):
         # given
-        offerer = create_offerer()
+        offerer = offerers_factories.OffererFactory()
         bank_informations = offers_factories.BankInformationFactory(offerer=offerer, applicationId=2)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
@@ -102,7 +98,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_returns_none_when_there_is_no_bank_informations_associated_with_this_application_id(self, app):
         # given
-        offerer = create_offerer()
+        offerer = offerers_factories.OffererFactory()
         bank_informations = offers_factories.BankInformationFactory(offerer=offerer, applicationId=2)
 
         # when
@@ -114,8 +110,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_create_bank_informations_on_save_when_bank_informations_does_not_exist(self, app):
         # given
-        offerer = create_offerer()
-        repository.save(offerer)
+        offerer = offerers_factories.OffererFactory()
         bank_informations_to_save = BankInformations(
             offerer_id=offerer.id,
             status=BankInformationStatus.ACCEPTED,
@@ -131,7 +126,7 @@ class BankInformationsSQLRepositoryTest:
         # then
         assert BankInformationsSQLEntity.query.count() == 1
 
-        sql_bank_informations_saved = BankInformationsSQLEntity.query.first()
+        sql_bank_informations_saved = BankInformationsSQLEntity.query.one()
         assert sql_bank_informations_saved.offererId == offerer.id
         assert sql_bank_informations_saved.venueId is None
         assert sql_bank_informations_saved.iban == bank_informations_to_save.iban
@@ -163,7 +158,7 @@ class BankInformationsSQLRepositoryTest:
         self, app
     ):
         # given
-        offerer = create_offerer()
+        offerer = offerers_factories.OffererFactory()
         offers_factories.BankInformationFactory(offerer=offerer)
         bank_informations_to_save = BankInformations(offerer_id=offerer.id, status="ACCEPTED", application_id=8)
 
@@ -180,7 +175,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_offerer(self, app):
         # given
-        offerer = create_offerer()
+        offerer = offerers_factories.OffererFactory()
         offers_factories.BankInformationFactory(
             offerer=offerer, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
@@ -235,7 +230,7 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_application(self, app):
         # given
-        offerer = create_offerer()
+        offerer = offerers_factories.OffererFactory()
         offers_factories.BankInformationFactory(
             offerer=offerer, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
@@ -292,10 +287,13 @@ class BankInformationsSQLRepositoryTest:
     @pytest.mark.usefixtures("db_session")
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_venue(self, app):
         # given
-        offerer = create_offerer()
-        venue = create_venue(offerer=offerer)
+        venue = offerers_factories.VenueFactory(businessUnit=None)
         offers_factories.BankInformationFactory(
-            venue=venue, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
+            venue=venue,
+            applicationId=9,
+            status=BankInformationStatus.DRAFT,
+            iban=None,
+            bic=None,
         )
 
         bank_informations_to_save = BankInformations(

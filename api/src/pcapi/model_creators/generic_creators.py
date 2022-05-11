@@ -1,9 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 
@@ -73,54 +71,3 @@ def create_stock(
     stock.price = price  # type: ignore [assignment]
 
     return stock
-
-
-def create_venue(
-    offerer: Offerer,
-    address: Optional[str] = "123 rue de Paris",
-    booking_email: Optional[str] = None,
-    city: Optional[str] = "Montreuil",
-    comment: Optional[str] = None,
-    date_modified_at_last_provider: Optional[datetime] = None,
-    departement_code: Optional[str] = "93",
-    idx: Optional[int] = None,
-    id_at_providers: Optional[str] = None,
-    is_virtual: bool = False,
-    last_provider_id: Optional[int] = None,
-    latitude: Optional[float] = None,
-    longitude: Optional[float] = None,
-    name: str = "La petite librairie",
-    postal_code: Optional[str] = "93100",
-    public_name: Optional[str] = None,
-    siret: Optional[str] = "12345678912345",
-    thumb_count: int = 0,
-    validation_token: Optional[str] = None,
-    venue_type_code: Optional[offerers_models.VenueTypeCode] = None,
-    date_created: Optional[datetime] = datetime.utcnow(),
-) -> Venue:
-    venue = Venue()
-    venue.bookingEmail = booking_email
-    venue.comment = comment
-    venue.dateModifiedAtLastProvider = date_modified_at_last_provider
-    venue.dateCreated = date_created  # type: ignore [assignment]
-    venue.id = idx  # type: ignore [assignment]
-    venue.idAtProviders = id_at_providers
-    venue.isVirtual = is_virtual
-    venue.lastProviderId = last_provider_id
-    venue.managingOfferer = offerer
-    venue.name = name
-    venue.publicName = public_name
-    venue.thumbCount = thumb_count
-    venue.validationToken = validation_token
-    venue.siret = siret
-    venue.venueTypeCode = venue_type_code  # type: ignore [assignment]
-
-    if not is_virtual:
-        venue.address = address
-        venue.city = city
-        venue.departementCode = departement_code
-        venue.latitude = latitude  # type: ignore [assignment]
-        venue.longitude = longitude  # type: ignore [assignment]
-        venue.postalCode = postal_code
-
-    return venue

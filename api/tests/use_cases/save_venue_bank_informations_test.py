@@ -16,12 +16,9 @@ from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_rep
 from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_with_basic_information_sql_repository import (
     VenueWithBasicInformationSQLRepository,
 )
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.repository import repository
 from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations
 
 from tests.connector_creators.demarches_simplifiees_creators import (
@@ -129,17 +126,19 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret="79387503012345")
-                repository.save(venue)
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="refused",
                     )
                 )
@@ -148,9 +147,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
@@ -160,17 +158,19 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret="79387503012345")
-                repository.save(venue)
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="without_continuation",
                     )
                 )
@@ -179,9 +179,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
@@ -191,17 +190,19 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret="79387503012345")
-                repository.save(venue)
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="closed",
                         updated_at="2020-01-01T10:10:10.10Z",
                     )
@@ -211,9 +212,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic == "SOGEFRPP"
                 assert bank_information.iban == "FR7630007000111234567890144"
                 assert bank_information.status == BankInformationStatus.ACCEPTED
@@ -224,17 +224,19 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret="79387503012345")
-                repository.save(venue)
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="received",
                     )
                 )
@@ -243,29 +245,30 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
             @pytest.mark.usefixtures("db_session")
-            def test_when_siret_is_not_valid_should_not_create_the_correct_bank_information(
+            def test_when_siret_is_not_active_should_not_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret="79387503012345")
-                repository.save(venue)
-                mock_check_siret_is_still_active.return_value = False
+                mock_check_siret_is_still_active.return_value = False  # that's the difference
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="received",
                     )
                 )
@@ -274,25 +277,26 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 0
+                assert BankInformation.query.count() == 0
 
             @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    businessUnit=None,
+                    siret="79387503012345",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret="79387503012345")
-                repository.save(venue)
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="initiated",
                     )
                 )
@@ -301,9 +305,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
@@ -318,13 +321,12 @@ class SaveVenueBankInformationsTest:
                 offerers_factories.VenueFactory(
                     siret="79387503012345", managingOfferer__siren="123456789", businessUnit=None
                 )
-                bank_information_count = BankInformation.query.count()
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="closed",
                     )
                 )
@@ -334,9 +336,8 @@ class SaveVenueBankInformationsTest:
                     self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 0
                 assert error.value.errors == {"Offerer": ["Offerer not found"]}
+                assert BankInformation.query.count() == 0
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
@@ -350,7 +351,7 @@ class SaveVenueBankInformationsTest:
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="without_continuation",
                     )
                 )
@@ -359,24 +360,22 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 0
+                assert BankInformation.query.count() == 0
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                offerers_factories.OffererFactory(siren="793875030")
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                repository.save(offerer)
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="closed",
                     )
                 )
@@ -386,25 +385,24 @@ class SaveVenueBankInformationsTest:
                     self.save_venue_bank_informations.execute(application_id)
 
                 # Then
+                assert error.value.errors == {"Venue": ["Venue not found"]}
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
-                assert error.value.errors == {"Venue": ["Venue not found"]}
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
                 # Given
+                offerers_factories.OffererFactory(siren="793875030")
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                repository.save(offerer)
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="received",
                     )
                 )
@@ -413,8 +411,7 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 0
+                assert BankInformation.query.count() == 0
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
         @patch("pcapi.connectors.dms.api.get_application_details")
@@ -431,16 +428,20 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    name="VENUE_NAME",  # used in DMS response fixture
+                    businessUnit=None,
+                    siret=None,
+                    comment="no siret",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret=None, comment="comment", name="VENUE_NAME")
-                repository.save(venue)
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="refused",
                     )
                 )
@@ -449,9 +450,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
@@ -461,16 +461,20 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    name="VENUE_NAME",  # used in DMS response fixture
+                    businessUnit=None,
+                    siret=None,
+                    comment="no siret",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret=None, comment="comment", name="VENUE_NAME")
-                repository.save(venue)
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="without_continuation",
                     )
                 )
@@ -479,9 +483,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
@@ -491,16 +494,20 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    name="VENUE_NAME",  # used in DMS response fixture
+                    businessUnit=None,
+                    siret=None,
+                    comment="no siret",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret=None, comment="comment", name="VENUE_NAME")
-                repository.save(venue)
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="closed",
                     )
                 )
@@ -509,9 +516,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic == "SOGEFRPP"
                 assert bank_information.iban == "FR7630007000111234567890144"
                 assert bank_information.status == BankInformationStatus.ACCEPTED
@@ -521,16 +527,20 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    name="VENUE_NAME",  # used in DMS response fixture
+                    businessUnit=None,
+                    siret=None,
+                    comment="no siret",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret=None, comment="comment", name="VENUE_NAME")
-                repository.save(venue)
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="received",
                     )
                 )
@@ -539,9 +549,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
@@ -551,16 +560,20 @@ class SaveVenueBankInformationsTest:
                 self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
+                venue = offerers_factories.VenueFactory(
+                    name="VENUE_NAME",  # used in DMS response fixture
+                    businessUnit=None,
+                    siret=None,
+                    comment="no siret",
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret=None, comment="comment", name="VENUE_NAME")
-                repository.save(venue)
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="initiated",
                     )
                 )
@@ -569,9 +582,8 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 1
                 bank_information = BankInformation.query.one()
+                assert bank_information.venue == venue
                 assert bank_information.bic is None
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
@@ -587,7 +599,7 @@ class SaveVenueBankInformationsTest:
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="initiated",
                     )
                 )
@@ -596,8 +608,7 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 0
+                assert BankInformation.query.count() == 0
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(
@@ -610,7 +621,7 @@ class SaveVenueBankInformationsTest:
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="closed",
                     )
                 )
@@ -620,25 +631,27 @@ class SaveVenueBankInformationsTest:
                     self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 0
                 assert error.value.errors == {"Offerer": ["Offerer not found"]}
+                assert BankInformation.query.count() == 0
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_without_siret_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
                 # Given
+                offerers_factories.VenueFactory(
+                    name="VENUE_NAME",  # used in DMS response fixture
+                    businessUnit=None,
+                    siret=79387503012345,
+                    managingOfferer__siren="793875030",
+                )
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                venue = create_venue(offerer, siret="79387503012345")
-                repository.save(venue)
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="closed",
                     )
                 )
@@ -648,9 +661,8 @@ class SaveVenueBankInformationsTest:
                     self.save_venue_bank_informations.execute(application_id)
 
                 # Then
-                bank_information_count = BankInformation.query.count()
-                assert bank_information_count == 0
                 assert error.value.errors["Venue"] == ["Venue name not found"]
+                assert BankInformation.query.count() == 0
 
             @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_raise(
@@ -658,14 +670,13 @@ class SaveVenueBankInformationsTest:
             ):
                 # Given
                 application_id = "8"
-                offerer = create_offerer(siren="793875030")
-                repository.save(offerer)
+                offerers_factories.OffererFactory(siren="793875030")
                 mock_application_details.return_value = (
                     venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
-                        idx=8,
+                        idx=int(application_id),
                         state="received",
                     )
                 )
@@ -692,28 +703,28 @@ class SaveVenueBankInformationsTest:
             self, mock_archive_dossier, mock_application_details, app
         ):
             # Given
-            application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
-            new_offerer = create_offerer(siren="123456789")
-            new_venue = create_venue(new_offerer, siret="12345678912345")
             bank_information = offers_factories.BankInformationFactory(
                 applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
-                venue=venue,
+                venue=offerers_factories.VenueFactory(businessUnit=None),
             )
-            repository.save(new_venue, bank_information)
+            new_venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="12345678912345",
+                managingOfferer__siren="123456789",
+            )
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="12345678912345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8
+                siret="12345678912345",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=bank_information.applicationId,
             )
 
             # When
-            self.save_venue_bank_informations.execute(application_id)
+            self.save_venue_bank_informations.execute(str(bank_information.applicationId))
 
             # Then
-            bank_information_count = BankInformation.query.count()
-            assert bank_information_count == 1
             bank_information = BankInformation.query.one()
             assert bank_information.bic == "SOGEFRPP"
             assert bank_information.iban == "FR7630007000111234567890144"
@@ -725,9 +736,11 @@ class SaveVenueBankInformationsTest:
             self, mock_archive_dossier, mock_application_details, app
         ):
             # Given
-            application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
+            venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             bank_information = offers_factories.BankInformationFactory(
                 applicationId=8,
                 bic="QSDFGH8Z555",
@@ -735,18 +748,21 @@ class SaveVenueBankInformationsTest:
                 venue=venue,
                 status=BankInformationStatus.ACCEPTED,
             )
-            repository.save(offerer, bank_information)
+            application_id = "8"
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="QSDFGH8Z555", iban="NL36INGB2682297498", idx=8, state="initiated"
+                siret="79387503012345",
+                bic="QSDFGH8Z555",
+                iban="NL36INGB2682297498",
+                idx=int(application_id),
+                state="initiated",
             )
 
             # When
             self.save_venue_bank_informations.execute(application_id)
 
             # Then
-            bank_information_count = BankInformation.query.count()
-            assert bank_information_count == 1
             bank_information = BankInformation.query.one()
+            assert bank_information.venue == venue
             assert bank_information.bic == None
             assert bank_information.iban == None
             assert bank_information.status == BankInformationStatus.DRAFT
@@ -756,16 +772,21 @@ class SaveVenueBankInformationsTest:
             self, mock_archive_dossier, mock_application_details, app
         ):
             # Given
-            application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
-            other_offerer = create_offerer(siren="793875019")
-            other_venue = create_venue(other_offerer, siret="79387501912345")
+            venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             offers_factories.BankInformationFactory(
                 applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
                 venue=venue,
+            )
+            other_venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387501912345",
+                managingOfferer__siren="793875019",
             )
             offers_factories.BankInformationFactory(
                 applicationId=79,
@@ -773,8 +794,12 @@ class SaveVenueBankInformationsTest:
                 iban="NL36INGB2682297498",
                 venue=other_venue,
             )
+            application_id = "8"
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387501912345", bic="QSDFGH8Z555", iban="NL36INGB2682297498", idx=8
+                siret="79387501912345",
+                bic="QSDFGH8Z555",
+                iban="NL36INGB2682297498",
+                idx=int(application_id),
             )
 
             # When
@@ -803,9 +828,11 @@ class SaveVenueBankInformationsTest:
             self, mock_archive_dossier, mock_application_details, app
         ):
             # Given
-            application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
+            venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             bank_information = offers_factories.BankInformationFactory(
                 applicationId=79,
                 bic="QSDFGH8Z555",
@@ -813,16 +840,18 @@ class SaveVenueBankInformationsTest:
                 venue=venue,
                 dateModified=datetime(2018, 1, 1),
             )
+            application_id = "8"
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8
+                siret="79387503012345",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=int(application_id),
             )
 
             # When
             self.save_venue_bank_informations.execute(application_id)
 
             # Then
-            bank_information_count = BankInformation.query.count()
-            assert bank_information_count == 1
             bank_information = BankInformation.query.one()
             assert bank_information.bic == "SOGEFRPP"
             assert bank_information.iban == "FR7630007000111234567890144"
@@ -837,9 +866,12 @@ class SaveVenueBankInformationsTest:
             self, mock_application_details, app
         ):
             # Given
+            venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
             bank_information = offers_factories.BankInformationFactory(
                 applicationId=79,
                 bic=None,
@@ -848,7 +880,11 @@ class SaveVenueBankInformationsTest:
                 status=BankInformationStatus.REJECTED,
             )
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state="initiated"
+                siret="79387503012345",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=int(application_id),
+                state="initiated",
             )
 
             # When
@@ -865,9 +901,11 @@ class SaveVenueBankInformationsTest:
         @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_application_with_lower_status_should_reject(self, mock_application_details, app):
             # Given
-            application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
+            venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             bank_information = offers_factories.BankInformationFactory(
                 applicationId=79,
                 bic="QSDFGH8Z555",
@@ -875,8 +913,13 @@ class SaveVenueBankInformationsTest:
                 venue=venue,
                 status=BankInformationStatus.ACCEPTED,
             )
+            application_id = "8"
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state="initiated"
+                siret="79387503012345",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=int(application_id),
+                state="initiated",
             )
 
             # When
@@ -884,8 +927,6 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
             # Then
-            bank_information_count = BankInformation.query.count()
-            assert bank_information_count == 1
             bank_information = BankInformation.query.one()
             assert bank_information.bic == "QSDFGH8Z555"
             assert bank_information.iban == "NL36INGB2682297498"
@@ -898,9 +939,11 @@ class SaveVenueBankInformationsTest:
         @pytest.mark.usefixtures("db_session")
         def test_when_receive_older_application_should_reject(self, mock_application_details, app):
             # Given
-            application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
+            venue = offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             bank_information = offers_factories.BankInformationFactory(
                 applicationId=79,
                 bic="QSDFGH8Z555",
@@ -908,8 +951,12 @@ class SaveVenueBankInformationsTest:
                 venue=venue,
                 dateModified=datetime(2021, 1, 1),
             )
+            application_id = "8"
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8
+                siret="79387503012345",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=int(application_id),
             )
 
             # When
@@ -917,8 +964,6 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
             # Then
-            bank_information_count = BankInformation.query.count()
-            assert bank_information_count == 1
             bank_information = BankInformation.query.one()
             assert bank_information.bic == "QSDFGH8Z555"
             assert bank_information.iban == "NL36INGB2682297498"
@@ -929,13 +974,19 @@ class SaveVenueBankInformationsTest:
         @pytest.mark.usefixtures("db_session")
         def test_when_state_is_unknown(self, mock_application_details, app):
             # Given
+            offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             application_id = "8"
-            offerer = create_offerer(siren="793875030")
-            venue = create_venue(offerer, siret="79387503012345")
-            repository.save(venue)
             unknown_status = "unknown_status"
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="SOGEFRPP", iban="FR7630007000111234567890144", idx=8, state=unknown_status
+                siret="79387503012345",
+                bic="SOGEFRPP",
+                iban="FR7630007000111234567890144",
+                idx=int(application_id),
+                state=unknown_status,
             )
 
             # When
@@ -943,27 +994,31 @@ class SaveVenueBankInformationsTest:
                 self.save_venue_bank_informations.execute(application_id)
 
             # Then
-            bank_information_count = BankInformation.query.count()
-            assert bank_information_count == 0
             assert error.value.errors == {"BankInformation": f"Unknown Demarches Simplifiées state {unknown_status}"}
+            assert BankInformation.query.count() == 0
 
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_when_bank_information_data_is_invalid(self, mock_application_details, app):
+            offerers_factories.VenueFactory(
+                businessUnit=None,
+                siret="79387503012345",
+                managingOfferer__siren="793875030",
+            )
             application_id = "8"
-            offerer = offerers_factories.OffererFactory(siren="793875030")
-            offerers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="SOG", iban="FR76", idx=8
+                siret="79387503012345",
+                bic="SOG",
+                iban="FR76",
+                idx=int(application_id),
             )
             with pytest.raises(CannotRegisterBankInformation) as error:
                 self.save_venue_bank_informations.execute(application_id)
 
-            bank_information_count = BankInformation.query.count()
-            assert bank_information_count == 0
             assert error.value.errors == {
                 "bic": ['Le BIC renseigné ("SOG") est invalide'],
                 "iban": ['L’IBAN renseigné ("FR76") est invalide'],
             }
+            assert BankInformation.query.count() == 0
 
         @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_when_no_bank_information_data_is_provided(self, mock_application_details, app):
@@ -971,7 +1026,10 @@ class SaveVenueBankInformationsTest:
             offerer = offerers_factories.OffererFactory(siren="793875030")
             offerers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
             mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345", bic="", iban="", idx=8
+                siret="79387503012345",
+                bic="",
+                iban="",
+                idx=int(application_id),
             )
             with pytest.raises(CannotRegisterBankInformation) as error:
                 self.save_venue_bank_informations.execute(application_id)

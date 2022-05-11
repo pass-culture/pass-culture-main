@@ -1,62 +1,26 @@
-from pcapi.model_creators.generic_creators import create_offerer
-from pcapi.model_creators.generic_creators import create_venue
-from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+import pcapi.core.offers.factories as offers_factories
 from pcapi.validation.models.generic import validate_generic
 
 
 def test_should_return_error_when_information_is_mandatory():
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue, thing_name=None)
-
-    # When
+    offer = offers_factories.OfferFactory.build(name=None)
     api_error = validate_generic(offer)
-
-    # Then
     assert api_error.errors == {"name": ["Cette information est obligatoire"]}
 
 
 def test_should_return_error_when_information_requires_a_string_type():
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(venue, thing_name=1234)
-
-    # When
+    offer = offers_factories.OfferFactory.build(name=1234)
     api_error = validate_generic(offer)
-
-    # Then
     assert api_error.errors == {"name": ["doit être une chaîne de caractères"]}
 
 
 def test_should_return_error_when_information_requires_an_integer_type():
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_event_product(venue, duration_minutes="1")
-
-    # When
+    offer = offers_factories.OfferFactory.build(durationMinutes="not a number")
     api_error = validate_generic(offer)
-
-    # Then
     assert api_error.errors == {"durationMinutes": ["doit être un entier"]}
 
 
 def test_should_return_error_when_information_exceeds_column_size():
-    # Given
-    offerer = create_offerer()
-    venue = create_venue(offerer)
-    offer = create_offer_with_thing_product(
-        venue,
-        thing_name="qBWnUS4JTt5qPNkOv02oaBu3H7GfMY2H9vgocxsYNJrfvHuQaaRJn"
-        "2AI9V93Wds1nJS8NqBhJVNYzaNrgS1eldyn4HsIiUU3UqmPwPGHAcQ"
-        "e451TBYUO0xYiyQzTMOKxcYMJsd9FBbygb",
-    )
-
-    # When
+    offer = offers_factories.OfferFactory.build(name=141 * "a")
     api_error = validate_generic(offer)
-
-    # Then
     assert api_error.errors == {"name": ["Vous devez saisir moins de 140 caractères"]}
