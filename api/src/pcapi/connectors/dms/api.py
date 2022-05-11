@@ -1,3 +1,4 @@
+import datetime
 import logging
 import os
 import pathlib
@@ -98,11 +99,13 @@ class DMSGraphQLClient:
             )
 
     def get_deleted_applications(
-        self, procedure_id: int, page_token: Optional[str] = None
+        self, procedure_id: int, page_token: Optional[str] = None, deletedSince: Optional[datetime.datetime] = None
     ) -> Generator[dms_models.DmsDeletedApplication, None, None]:
         variables: dict[str, Any] = {"demarcheNumber": procedure_id}
         if page_token:
             variables["after"] = page_token
+        if deletedSince:
+            variables["deletedSince"] = deletedSince.isoformat()
         results = self.execute_query(GET_DELETED_APPLICATIONS_QUERY_NAME, variables=variables)
         # pylint: disable=unsubscriptable-object
         dms_response = dms_models.DmsDeletedApplicationsResponse(**results["demarche"]["deletedDossiers"])
@@ -116,7 +119,7 @@ class DMSGraphQLClient:
             yield application
 
         if dms_response.page_info.has_next_page:
-            yield from self.get_deleted_applications(procedure_id, dms_response.page_info.end_cursor)
+            yield from self.get_deleted_applications(procedure_id, dms_response.page_info.end_cursor, deletedSince)
 
     def send_user_message(self, application_scalar_id: str, instructeur_techid: str, body: str) -> Any:
         try:
