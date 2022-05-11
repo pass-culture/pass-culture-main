@@ -273,7 +273,11 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):  
         user_offerer = grant_user_offerer_access(offerer, user)
         repository.save(offerer, digital_venue, user_offerer)
 
-    _send_to_pc_admin_offerer_to_validate_email(offerer, user_offerer)
+    if not maybe_send_offerer_validation_email(offerer, user_offerer):
+        logger.warning(
+            "Could not send validation email to offerer",
+            extra={"user_offerer": user_offerer.id},
+        )
 
     update_external_pro(user.email)
 
@@ -282,14 +286,6 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):  
 
 def grant_user_offerer_access(offerer: Offerer, user: User) -> UserOfferer:
     return UserOfferer(offerer=offerer, user=user)
-
-
-def _send_to_pc_admin_offerer_to_validate_email(offerer: Offerer, user_offerer: UserOfferer) -> None:
-    if not maybe_send_offerer_validation_email(offerer, user_offerer):
-        logger.warning(
-            "Could not send validation email to offerer",
-            extra={"user_offerer": user_offerer.id},
-        )
 
 
 def validate_offerer_attachment(token: str) -> None:
