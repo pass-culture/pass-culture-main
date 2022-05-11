@@ -7,11 +7,12 @@ from wtforms import Form
 from pcapi.admin.custom_views.partner_user_view import PartnerUserView
 import pcapi.core.fraud.factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.subscription.api as subscription_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_settings
-from pcapi.core.users import models as users_models
 import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.core.users.models import User
 
 from tests.conftest import TestClient
@@ -221,3 +222,23 @@ class PartnerUserViewTest:
         )
 
         assert user.idPieceNumber is None
+
+
+def test_query(db_session):
+    partner_user = users_factories.UserFactory(roles=[])
+    _beneficiary = users_factories.BeneficiaryGrant18Factory()
+    _pro_with_offerer = offerers_factories.UserOffererFactory().user
+    _pro_without_offerer = users_factories.UserFactory(roles=[users_models.UserRole.PRO])
+    view = PartnerUserView(users_models.User, db_session)
+    users = list(view.get_query())
+    assert users == [partner_user]
+
+
+def test_count_query(db_session):
+    _partner_user = users_factories.UserFactory(roles=[])
+    _beneficiary = users_factories.BeneficiaryGrant18Factory()
+    _pro_with_offerer = offerers_factories.UserOffererFactory().user
+    _pro_without_offerer = users_factories.UserFactory(roles=[users_models.UserRole.PRO])
+    view = PartnerUserView(users_models.User, db_session)
+    count = view.get_count_query().scalar()
+    assert count == 1

@@ -130,6 +130,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             .filter(UserOfferer.userId.is_(None))
             .filter(User.is_beneficiary.is_(False))  # type: ignore [attr-defined]
             .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
+            .filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
         )
 
     def get_count_query(self) -> BaseQuery:
@@ -140,4 +141,5 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
             .filter(UserOfferer.userId.is_(None))
             .filter(User.is_beneficiary.is_(False))  # type: ignore [attr-defined]
             .filter(User.has_admin_role.is_(False))  # type: ignore [attr-defined]
+            .filter(User.has_pro_role.is_(False))  # type: ignore [attr-defined]
         )
