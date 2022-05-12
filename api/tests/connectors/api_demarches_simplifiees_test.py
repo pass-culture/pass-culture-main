@@ -46,6 +46,7 @@ class GraphqlResponseTest:
                 created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact@demarches-simplifiees.fr"
             )
         ]
+        assert results[0].state == dms_models.GraphQLApplicationStates.accepted
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_archive_application(self, execute_query):
@@ -71,6 +72,7 @@ class GraphqlResponseTest:
                 created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact@demarches-simplifiees.fr"
             )
         ]
+        assert result.state == dms_models.GraphQLApplicationStates.accepted
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_update_annotations(self, execute_query):
