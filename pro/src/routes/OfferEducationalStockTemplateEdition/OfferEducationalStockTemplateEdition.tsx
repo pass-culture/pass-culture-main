@@ -26,9 +26,27 @@ import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 
 import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
 import { GetCollectiveOfferTemplateSuccessPayload } from './types'
+import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+
+const getAdapter = (
+  educationalOfferType: EducationalOfferType,
+  isNewModelEnabled: boolean
+) => {
+  if (educationalOfferType === EducationalOfferType.CLASSIC) {
+    if (isNewModelEnabled) {
+      return patchCollectiveOfferTemplateIntoCollectiveOfferAdapter
+    }
+
+    return patchShadowStockIntoEducationalStockAdapter
+  }
+
+  return patchShadowStockAdapter
+}
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
+  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
@@ -49,17 +67,14 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
-    const adapter =
-      values.educationalOfferType === EducationalOfferType.CLASSIC
-        ? patchShadowStockIntoEducationalStockAdapter
-        : patchShadowStockAdapter
+    const adapter = getAdapter(values.educationalOfferType, isNewModelEnabled)
 
     const stockResponse = await adapter({
       offer,
       stockId: stock.id,
       values,
       initialValues,
-      enableIndividualAndCollectiveSeparation: true,
+      enableIndividualAndCollectiveSeparation: true
     })
 
     if (
