@@ -30,6 +30,18 @@ class SendIndividualBookingEventReminderEmailToBeneficiaryTest:
             TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value
         )
 
+    def should_not_try_to_send_email_when_there_is_no_data(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=None,
+                bookingLimitDatetime=None,
+            ),
+        )
+
+        send_individual_booking_event_reminder_email_to_beneficiary(booking.individualBooking)
+
+        assert len(mails_testing.outbox) == 0
+
 
 @freeze_time("2021-10-15 12:48:00")
 class GetBookingEventReminderToBeneficiaryEmailDataTest:
@@ -125,3 +137,15 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
         email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
 
         assert email_data.params["OFFER_WITHDRAWAL_DELAY"] == "2 jours"
+
+    def should_not_send_data_when_there_is_no_beginning_datetime(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=None,
+                bookingLimitDatetime=None,
+            ),
+        )
+
+        email_data = get_booking_event_reminder_to_beneficiary_email_data(booking.individualBooking)
+
+        assert email_data is None
