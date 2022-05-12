@@ -1365,8 +1365,16 @@ def test_public_api(client, app):
                             "anyOf": [{"$ref": "#/components/schemas/SubscriptionStep"}],
                             "nullable": True,
                         },
+                        "stepperIncludesPhoneValidation": {
+                            "title": "Stepperincludesphonevalidation",
+                            "type": "boolean",
+                        },
                     },
-                    "required": ["allowedIdentityCheckMethods", "hasIdentityCheckPending"],
+                    "required": [
+                        "stepperIncludesPhoneValidation",
+                        "allowedIdentityCheckMethods",
+                        "hasIdentityCheckPending",
+                    ],
                     "title": "NextSubscriptionStepResponse",
                     "type": "object",
                 },

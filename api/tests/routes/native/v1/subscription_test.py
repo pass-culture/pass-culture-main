@@ -35,6 +35,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
     def test_next_subscription_test_profile_completion(self, client):
@@ -64,6 +65,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
     @override_features(
@@ -88,6 +90,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": [],
             "maintenancePageType": "with-dms",
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
     @pytest.mark.parametrize(
@@ -157,6 +160,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
         # Perform phone validation and user profiling
@@ -179,6 +183,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
         # Perform first id check with Ubble
@@ -199,6 +204,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": pending_idcheck,
+            "stepperIncludesPhoneValidation": False,
         }
 
     @pytest.mark.parametrize(
@@ -253,6 +259,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
         # Perform phone validation
@@ -266,6 +273,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
         # Perform user profiling
@@ -287,6 +295,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
         # Perform id check with Ubble
@@ -308,6 +317,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": True,
+            "stepperIncludesPhoneValidation": False,
         }
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -325,6 +335,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": True,
+            "stepperIncludesPhoneValidation": False,
         }
 
         # ubble now confirms the status
@@ -341,6 +352,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
     @override_features(
@@ -389,6 +401,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
         user_not_eligible_for_ubble = users_factories.UserFactory(
@@ -418,6 +431,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": [],
             "maintenancePageType": "without-dms",
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
     @override_features(ENABLE_UBBLE=True)
@@ -463,6 +477,7 @@ class NextStepTest:
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
             "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
         }
 
 
