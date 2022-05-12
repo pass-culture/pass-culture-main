@@ -25,7 +25,7 @@ class GetRegistrationDatetimeTest:
 
 class OrphanDmsApplicationTest:
     def test_default_values_on_creation(self):
-        orphan = fraud_factories.OrphanDmsFraudCheckFactory(process_id=1, application_id=2)
+        orphan = fraud_factories.OrphanDmsFraudCheckFactory.build(process_id=1, application_id=2)
         assert orphan.email is None
 
 
