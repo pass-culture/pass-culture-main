@@ -1,5 +1,11 @@
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { FormikProvider, useFormik } from 'formik'
+import React from 'react'
+import { useHistory } from 'react-router-dom'
+
+import Spinner from 'components/layout/Spinner'
+import { TOffererName } from 'core/Offerers/types'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import {
   IOfferIndividualFormValues,
   OfferIndividualForm,
@@ -7,15 +13,8 @@ import {
 } from 'new_components/OfferIndividualForm'
 
 import { ActionBar } from '../ActionBar'
-import { OFFER_FORM_STEP_IDS } from 'screens/OfferIndividual/constants'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
-import React from 'react'
-import Spinner from 'components/layout/Spinner'
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import { TOffererName } from 'core/Offerers/types'
-import { fakeOffer } from '../constants'
+import { OFFER_FORM_STEP_IDS, fakeOffer } from '../constants'
 import { getStepsOffer } from '../utils/steps'
-import { useHistory } from 'react-router-dom'
 
 export interface IInformationsProps {
   createOfferAdapter: (
@@ -37,7 +36,7 @@ const Informations = ({
   const history = useHistory()
 
   // call getStep with offer when this screen get it as prop
-  const { stepList, activeSteps } = getStepsOffer(fakeOffer)
+  const { activeSteps } = getStepsOffer(fakeOffer)
   const handleNextStep = async () => formik.handleSubmit()
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
@@ -53,40 +52,25 @@ const Informations = ({
   })
 
   return (
-    <OfferFormLayout>
-      <OfferFormLayout.TitleBlock>
-        <h1>Créer une offe</h1>
-      </OfferFormLayout.TitleBlock>
+    <FormikProvider value={{ ...formik, resetForm }}>
+      <form onSubmit={formik.handleSubmit}>
+        {isParentReady ? (
+          <OfferIndividualForm
+            offererNames={offererNames}
+            venueList={venueList}
+          />
+        ) : (
+          <Spinner />
+        )}
 
-      <OfferFormLayout.Stepper>
-        <Breadcrumb
-          activeStep={OFFER_FORM_STEP_IDS.INFORMATIONS}
-          steps={Object.values(stepList)}
-          styleType={BreadcrumbStyle.TAB}
-        />
-      </OfferFormLayout.Stepper>
-
-      <OfferFormLayout.Content>
-        <FormikProvider value={{ ...formik, resetForm }}>
-          <form onSubmit={formik.handleSubmit}>
-            {isParentReady ? (
-              <OfferIndividualForm
-                offererNames={offererNames}
-                venueList={venueList}
-              />
-            ) : (
-              <Spinner />
-            )}
-            <OfferFormLayout.ActionBar>
-              <ActionBar
-                disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.STOCKS)}
-                onClickNext={handleNextStep}
-              />
-            </OfferFormLayout.ActionBar>
-          </form>
-        </FormikProvider>
-      </OfferFormLayout.Content>
-    </OfferFormLayout>
+        <OfferFormLayout.ActionBar>
+          <ActionBar
+            disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.STOCKS)}
+            onClickNext={handleNextStep}
+          />
+        </OfferFormLayout.ActionBar>
+      </form>
+    </FormikProvider>
   )
 }
 
