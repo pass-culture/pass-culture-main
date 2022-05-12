@@ -76,3 +76,10 @@ export const ADMINS_DISABLED_FILTERS_MESSAGE =
   'Sélectionnez une structure et/ou un lieu pour activer les filtres'
 
 export const LIVRE_PAPIER_SUBCATEGORY_ID = 'LIVRE_PAPIER'
+
+export enum OFFER_FORM_STEP_IDS {
+  INFORMATIONS = 'informations',
+  STOCKS = 'stocks',
+  SUMMARY = 'recapitulatif',
+  CONFIRMATION = 'confirmation',
+}

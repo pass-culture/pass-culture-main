@@ -4,14 +4,14 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 
+import { useOfferFormSteps } from 'core/Offers'
 import { fakeOffer } from 'screens/OfferIndividual/constants'
-import { getStepsOffer } from 'screens/OfferIndividual/utils/steps'
 import { OfferIndividualCreationInformations as InformationsRoute } from 'routes/OfferIndividualCreationInformations'
 import { OfferIndividualCreationStocks as StockRoute } from 'routes/OfferIndividualCreationStocks'
 import { OfferIndividualCreationSummary as ConfirmationRoute } from 'routes/OfferIndividualCreationSummary'
 
 const OfferIndividualCreation = (): JSX.Element => {
-  const { currentStep, stepList } = getStepsOffer(fakeOffer)
+  const { currentStep, stepList } = useOfferFormSteps(fakeOffer)
 
   return (
     <OfferFormLayout>
