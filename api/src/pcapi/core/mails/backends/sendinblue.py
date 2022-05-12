@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 
 
 class SendinblueBackend(BaseBackend):
-    def _send(
+    def send_mail(
         self,
         recipients: Iterable,
-        data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
+        data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
     ) -> MailResult:
         if isinstance(data, SendinblueTransactionalEmailData):
             payload = SendTransactionalEmailRequest(
@@ -65,7 +65,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
     def send_mail(
         self,
         recipients: Iterable,
-        data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
+        data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
     ) -> MailResult:
         whitelisted_recipients = set()
         for recipient in recipients:

@@ -36,7 +36,6 @@ ipaddress
 isort==5.6.4
 itsdangerous==2.0.1
 Jinja2==3.0.3
-mailjet-rest==1.3.3
 MarkupSafe==2.0.1
 mypy==0.941
 notion-client==0.9.0
@@ -59,12 +58,6 @@ pytest-dotenv==0.5.2
 python-dotenv==0.14.0
 python-swiftclient==3.10.1
 requests==2.26.0
-# FIXME (dbaty, 2021-04-28): as of version 1.9 [1], requests_mock
-# quotes URLs passed to Mocker. If we send a request on a URL that is
-# not quoted, requests_mock does not find a match anymore and the test
-# fails. This is the case on a few tests of the Mailjet client, which
-# does not quote URLs in its `build_url()` function.
-# [1] https://github.com/jamielennox/requests-mock/commit/f072845c0cb13c6c0fb18824160639a8bb3c7fe8
 requests_mock==1.8.0
 rq==1.5.2
 schwifty==2020.9.0

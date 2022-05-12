@@ -41,7 +41,7 @@ class SendBeneficiaryUserDrivenCancellationEmailToOffererTest:
 
 class MakeOffererBookingRecapEmailAfterUserCancellationTest:
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_mailjet_data_with_no_ongoing_booking(self):
+    def test_should_return_sendinblue_data_with_no_ongoing_booking(self):
         # Given
         stock = offers_factories.EventStockFactory(beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
         booking = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)
@@ -66,7 +66,7 @@ class MakeOffererBookingRecapEmailAfterUserCancellationTest:
         }
 
     @pytest.mark.usefixtures("db_session")
-    def test_should_return_mailjet_data_with_ongoing_bookings(self):
+    def test_should_return_sendinblue_data_with_ongoing_bookings(self):
         # Given
         stock = offers_factories.EventStockFactory(price=0, beginningDatetime=datetime(2019, 10, 9, 10, 20, 00))
         booking1 = bookings_factories.CancelledIndividualBookingFactory(stock=stock, quantity=2)

@@ -26,8 +26,6 @@ secrets:
   - name: GOOGLE_CLIENT_ID
   - name: GOOGLE_CLIENT_SECRET
   - name: JWT_SECRET_KEY
-  - name: MAILJET_API_KEY
-  - name: MAILJET_API_SECRET
   - name: NOTION_TOKEN
   - name: OBJECT_STORAGE_URL
   - name: OUTSCALE_ACCESS_KEY
