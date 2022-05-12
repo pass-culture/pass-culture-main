@@ -925,7 +925,7 @@ jobs:
             - run:
                 name: Update version.txt file
                 command: >
-                  cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > pro/build/version.txt
+                  cat pro/package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > pro/build/version.txt
       - push-to-bucket:
           build_path: ./pro/build/
           bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-pro
@@ -973,7 +973,7 @@ jobs:
             - run:
                 name: Update version.txt file
                 command: >
-                  cat package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > adage-front/build/version.txt
+                  cat adage-front/package.json | grep -E '"version": "[0-9]+.[0-9]+.[0-9]+"' | grep -Eo '[0-9]+.[0-9]+.[0-9]+' > adage-front/build/version.txt
       - push-to-bucket:
           build_path: ./adage-front/build/
           bucket_name: ${GCP_PROJECT}-<<parameters.app_environment>>-adage
