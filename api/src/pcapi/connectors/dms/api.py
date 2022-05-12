@@ -150,11 +150,13 @@ class DMSGraphQLClient:
                 },
             )
         except Exception:
-            logger.exception("Unexpected error when making on going", extra={"application_techid": application_techid})
+            logger.exception(
+                "[DMS] Unexpected error when marking on going", extra={"application_techid": application_techid}
+            )
             raise exceptions.DmsGraphQLApiException()
         if response["dossierPasserEnInstruction"]["errors"]:  # pylint: disable=unsubscriptable-object
             logger.error(
-                "Error while making application on going %s",
+                "[DMS] Error while marking application on going %s",
                 response["dossierPasserEnInstruction"]["errors"],  # pylint: disable=unsubscriptable-object
                 extra={"application_techid": application_techid},
             )
@@ -174,12 +176,13 @@ class DMSGraphQLClient:
             )
         except Exception:
             logger.exception(
-                "Unexpected error when marking without continuation", extra={"application_techid": application_techid}
+                "[DMS] Unexpected error when marking without continuation",
+                extra={"application_techid": application_techid},
             )
             raise exceptions.DmsGraphQLApiException()
         if response["dossierClasserSansSuite"]["errors"]:  # pylint: disable=unsubscriptable-object
             logger.error(
-                "Error while marking application without continuation %s",
+                "[DMS] Error while marking application without continuation %s",
                 response["dossierClasserSansSuite"]["errors"],  # pylint: disable=unsubscriptable-object
                 extra={"application_techid": application_techid},
             )
