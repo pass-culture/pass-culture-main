@@ -51,7 +51,7 @@ pysaml2
 pytest==6.2.5
 pytest-cov==2.10.1
 pytest-flask==1.0.0
-git+https://github.com/jeancochrane/pytest-flask-sqlalchemy@ea5c5ee935ed2d9cdc56061c243a6004d7c8fe7e#egg=pytest-flask-sqlalchemy
+pytest-flask-sqlalchemy
 python-keystoneclient==3.22.0
 pytest-mock==3.3.1
 pytest-dotenv==0.5.2
