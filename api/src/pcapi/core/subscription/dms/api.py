@@ -98,6 +98,7 @@ def handle_dms_application(
     logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
 
     current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, application_content)
+    current_fraud_check.resultContent = application_content.dict()
 
     if state == dms_models.GraphQLApplicationStates.draft:
         eligibility_type = current_fraud_check.eligibilityType

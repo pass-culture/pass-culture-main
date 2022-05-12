@@ -51,8 +51,8 @@ def create_fraud_check(
     return fraud_check
 
 
-def get_or_create_fraud_check(  # type: ignore [no-untyped-def]
-    user: users_models.User, application_id: int, result_content=None
+def get_or_create_fraud_check(
+    user: users_models.User, application_id: int, result_content: typing.Optional[fraud_models.DMSContent] = None
 ) -> fraud_models.BeneficiaryFraudCheck:
     fraud_check = get_fraud_check(user, application_id)
     if fraud_check is None:
