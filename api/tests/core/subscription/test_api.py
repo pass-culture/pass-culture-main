@@ -426,6 +426,49 @@ class NextSubscriptionStepTest:
         with override_features(**feature_flags):
             assert subscription_api.get_allowed_identity_check_methods(user) == expected_result
 
+    @pytest.mark.parametrize(
+        "feature_flags,user_age,expected_result",
+        [
+            # User 18
+            (
+                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                18,
+                True,
+            ),
+            (
+                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": False},
+                18,
+                False,
+            ),
+            (
+                {"ENABLE_PHONE_VALIDATION": False, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                18,
+                False,
+            ),
+            # User 15 - 17
+            (
+                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                15,
+                False,
+            ),
+            (
+                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                16,
+                False,
+            ),
+            (
+                {"ENABLE_PHONE_VALIDATION": True, "ENABLE_PHONE_VALIDATION_IN_STEPPER": True},
+                17,
+                False,
+            ),
+        ],
+    )
+    def test_is_phone_validation_in_stepper(self, feature_flags, user_age, expected_result):
+        dateOfBirth = datetime.today() - relativedelta(years=user_age, months=1)
+        user = users_factories.UserFactory(dateOfBirth=dateOfBirth)
+        with override_features(**feature_flags):
+            assert subscription_api.is_phone_validation_in_stepper(user) == expected_result
+
     def test_should_complete_profile_names_mandatory(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,

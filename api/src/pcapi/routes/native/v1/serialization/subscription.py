@@ -12,6 +12,7 @@ from pcapi.serialization.utils import to_camel
 
 class NextSubscriptionStepResponse(BaseModel):
     next_subscription_step: Optional[subscription_models.SubscriptionStep]
+    stepper_includes_phone_validation: bool
     maintenance_page_type: Optional[subscription_models.MaintenancePageType]
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
     has_identity_check_pending: bool

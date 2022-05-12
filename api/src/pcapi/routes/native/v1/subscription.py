@@ -33,6 +33,7 @@ def next_subscription_step(
     logger.info("next_subscription_step: %s", next_step.value if next_step else None, extra={"user_id": user.id})
     return serializers.NextSubscriptionStepResponse(
         next_subscription_step=next_step,
+        stepper_includes_phone_validation=subscription_api.is_phone_validation_in_stepper(user),
         allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
         maintenance_page_type=subscription_api.get_maintenance_page_type(user),
         has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
