@@ -44,6 +44,10 @@ def get_user_with_credentials(identifier: str, password: str) -> models.User:
     return user  # type: ignore [return-value]
 
 
+def get_user_by_id(user_id: int) -> models.User:
+    return models.User.query.get(user_id)
+
+
 def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]
     # FIXME (dbaty, 2021-05-02): remove call to `func.lower()` once
     # all emails have been sanitized in the database.

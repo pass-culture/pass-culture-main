@@ -3,6 +3,8 @@ from unittest import mock
 from flask import url_for
 import pytest
 
+from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions.factories import RoleFactory
 from pcapi.core.permissions.models import Permission
 from pcapi.core.permissions.models import Permissions
@@ -34,6 +36,15 @@ def create_bunch_of_accounts():
 def create_search_role():
     permission = Permission.query.filter_by(name=Permissions.SEARCH_PUBLIC_ACCOUNT.name).first()
     role = RoleFactory(name="public search")
+    role.permissions.append(permission)
+    repository.save(role)
+
+    return role
+
+
+def create_read_account_role():
+    permission = Permission.query.filter_by(name=Permissions.READ_PUBLIC_ACCOUNT.name).first()
+    role = RoleFactory(name="read user accounts")
     role.permissions.append(permission)
     repository.save(role)
 
@@ -174,6 +185,95 @@ class PublicAccountSearchTest:
 
         # when
         response = client.get(url_for("backoffice_blueprint.search_public_account", q="anything"))
+
+        # then
+        assert response.status_code == 401
+
+
+class GetBeneficiaryCreditTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_beneficiary_credit(self, client):
+        # given
+        _, grant_18, _, _ = create_bunch_of_accounts()
+        role = create_read_account_role()
+        admin = user_factories.UserFactory()
+
+        bookings_factories.IndividualBookingFactory(
+            individualBooking__user=grant_18,
+            stock__offer__product=offers_factories.DigitalProductFactory(),
+            amount=12.5,
+        )
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            admin.groups = [role.name]
+            current_user_mock.return_value = admin
+
+            # when
+            response = client.with_session_auth(admin.email).get(
+                url_for("backoffice_blueprint.get_beneficiary_credit", user_id=grant_18.id)
+            )
+
+        # then
+        assert response.status_code == 200
+        assert response.json == {
+            "initialCredit": 300.0,
+            "remainingCredit": 287.5,
+            "remainingDigitalCredit": 87.5,
+        }
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_non_beneficiary_credit(self, client):
+        # given
+        _, _, pro, random = create_bunch_of_accounts()
+        role = create_read_account_role()
+        admin = user_factories.UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            admin.groups = [role.name]
+            current_user_mock.return_value = admin
+
+            # when
+            responses = [
+                client.with_session_auth(admin.email).get(
+                    url_for("backoffice_blueprint.get_beneficiary_credit", user_id=user.id)
+                )
+                for user in (pro, random)
+            ]
+
+        # then
+        for response in responses:
+            assert response.status_code == 200
+            assert response.json == {
+                "initialCredit": 0.0,
+                "remainingCredit": 0.0,
+                "remainingDigitalCredit": 0.0,
+            }
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_beneficiary_credit_without_permission(self, client):
+        # given
+        no_perm_role = RoleFactory(name="no read user")
+        user = user_factories.UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [no_perm_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).get(
+                url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1)
+            )
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_beneficiary_credit_as_anonymous(self, client):
+        # given
+        create_search_role()
+
+        # when
+        response = client.get(url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1))
 
         # then
         assert response.status_code == 401
