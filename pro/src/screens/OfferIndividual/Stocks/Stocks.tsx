@@ -2,16 +2,17 @@ import { FormikProvider, useFormik } from 'formik'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
+import { useOfferFormSteps, OFFER_FORM_STEP_IDS } from 'core/Offers'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 
 import { ActionBar } from '../ActionBar'
-import { OFFER_FORM_STEP_IDS, fakeOffer } from '../constants'
-import { getStepsOffer } from '../utils/steps'
+import { fakeOffer } from '../constants'
+
 
 const Stocks = (): JSX.Element => {
   const history = useHistory()
   // call getStep with offer when this screen get it as prop
-  const { activeSteps } = getStepsOffer(fakeOffer)
+  const { activeSteps } = useOfferFormSteps(fakeOffer)
 
   const handleNextStep = () => {
     // TODO get offerId from url query string

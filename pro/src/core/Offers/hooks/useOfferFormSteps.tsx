@@ -1,13 +1,12 @@
 import { generatePath, matchPath, useLocation } from 'react-router-dom'
 
+import { OFFER_FORM_STEP_IDS } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { IStepPattern, Step } from 'new_components/Breadcrumb'
 
-import { OFFER_FORM_STEP_IDS } from '../constants'
-
 // Build steps for offer creation
 // We'll add other builder here for OfferProduct, OfferEvent, etc
-export const getStepsOffer = (
+const useOfferFormSteps = (
   offer?: Offer
 ): {
   activeSteps: string[]
@@ -67,3 +66,5 @@ export const getStepsOffer = (
   })
   return { activeSteps, currentStep, stepList }
 }
+
+export default useOfferFormSteps
