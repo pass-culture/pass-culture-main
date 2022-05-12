@@ -316,9 +316,9 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 @blueprint.cli.command("handle_inactive_dms_applications_cron")
 @log_cron_with_transaction
 def handle_inactive_dms_applications_cron() -> None:
+    # DMS_ENROLLMENT_PROCEDURE_ID_v4_ET is excluded because the review delay is longer
     procedures = [
         settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR,
-        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET,
         settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING,
         settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
     ]
