@@ -4,6 +4,7 @@ import io
 from dateutil.relativedelta import relativedelta
 import pytest
 
+from pcapi import settings
 from pcapi.core.offerers.models import Offerer
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
@@ -12,10 +13,10 @@ from pcapi.scripts.beneficiary import import_test_users
 
 AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
 
-CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Type
-Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,interne:test
-Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,interne:test
-Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,111222333,interne:test
+CSV = f"""Nom,Prénom,Mail,Téléphone,Département,Code postal,Date de naissance,Role,SIREN,Mot de passe,Type
+Doux,Jeanne,jeanne.doux@example.com,0102030405,86,86140,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
+Smisse,Jean,jean.smisse@example.com,0102030406,44,44000,{AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d},BENEFICIARY,,,interne:test
+Pro,Pierre,pro@example.com,0123456789,06,06000,2000-01-01,PRO,111222333,PierrePro$123,interne:test
 """
 
 
@@ -47,6 +48,8 @@ class ReadFileTest:
         assert jeanne.has_test_role
         assert len(jeanne.deposits) == 1
 
+        assert jeanne.checkPassword(settings.TEST_DEFAULT_PASSWORD)
+
         if update_if_exists:
             jean = users[1]
             assert jean.lastName == "Smisse"
@@ -71,6 +74,8 @@ class ReadFileTest:
         offerer = Offerer.query.one()
         assert offerer.siren == "111222333"
         assert offerer.isValidated
+
+        assert pierre.checkPassword("PierrePro$123")
 
         admin = User.query.filter_by(email="admin@example.com").one()
         assert admin.has_admin_role
