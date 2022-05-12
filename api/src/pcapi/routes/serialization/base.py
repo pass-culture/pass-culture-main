@@ -1,3 +1,4 @@
+import re
 import typing
 from typing import Optional
 
@@ -22,7 +23,7 @@ class VenueContactModel(BaseModel):
         extra = pydantic.Extra.forbid
 
     email: Optional[pydantic.EmailStr]
-    website: Optional[pydantic.HttpUrl]
+    website: Optional[str]
     phone_number: Optional[str]
     social_medias: Optional[SocialMedias]
 
@@ -35,6 +36,13 @@ class VenueContactModel(BaseModel):
             return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
         except Exception:
             raise ValueError(f"numéro de téléphone invalide: {phone_number}")
+
+    @validator("website")
+    def validate_website_url(cls, website: str) -> str:  # pylint: disable=no-self-argument
+        pattern = "^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$"  # pylint: disable=anomalous-backslash-in-string
+        if website is None or re.match(pattern, website):
+            return website
+        raise ValueError(f"url du site web invalide: {website}")
 
 
 VenueImageCredit = pydantic.constr(strip_whitespace=True, min_length=1, max_length=255)
