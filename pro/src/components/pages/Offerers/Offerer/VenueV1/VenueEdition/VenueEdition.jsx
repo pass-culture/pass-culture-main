@@ -185,7 +185,7 @@ const VenueEdition = () => {
       queryParams.delete('modification')
       handleSubmitRequestSuccess(action, { hasDelayedUpdates })
       formResolver()
-      history.replace(`${location.path}?${queryParams.toString()}`)
+      history.replace(`${location.pathname}?${queryParams.toString()}`)
       setIsRequestPending(false)
     }
 
