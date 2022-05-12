@@ -186,7 +186,7 @@ const routes = [
     component: OfferEducationalCreation,
     exact: true,
     path: '/offre/creation/collectif',
-    title: 'Offre Scolaire',
+    title: 'Offre collective',
   },
   {
     component: Offers,
@@ -205,7 +205,7 @@ const routes = [
     component: OfferEducationalStockCreation,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks',
-    title: 'Stock lié à une offre Scolaire',
+    title: 'Stock lié à une offre collective',
   },
   {
     component: OfferEducationalConfirmation,
@@ -217,26 +217,26 @@ const routes = [
     component: OfferEducationalEdition,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/edition',
-    title: 'Edition d’une offre scolaire',
+    title: 'Edition d’une offre collective',
   },
   {
     component: OfferEducationalEdition,
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/edition',
-    title: 'Edition d’une offre scolaire',
+    title: 'Edition d’une offre collective',
     featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: OfferEducationalStockEdition,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/stocks/edition',
-    title: 'Edition d’un stock d’une offre scolaire',
+    title: 'Edition d’un stock d’une offre collective',
   },
   {
     component: OfferEducationalStockTemplateEdition,
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/stocks/edition',
-    title: 'Edition d’un stock d’une offre scolaire',
+    title: 'Edition d’un stock d’une offre collective',
     featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
