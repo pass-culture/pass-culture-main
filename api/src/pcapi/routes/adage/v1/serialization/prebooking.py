@@ -284,7 +284,7 @@ def get_educational_booking_status(
     if educational_booking.status is not None:
         return educational_booking.status.value  # type: ignore [attr-defined]
 
-    return educational_booking.booking.status.value
+    return educational_booking.booking.status.value  # type: ignore [attr-defined]
 
 
 def get_collective_booking_status(
