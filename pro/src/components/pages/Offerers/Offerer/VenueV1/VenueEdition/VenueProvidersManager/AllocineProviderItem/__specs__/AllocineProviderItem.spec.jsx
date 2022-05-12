@@ -104,8 +104,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     const lastSyncDate = screen.getByTestId('last-sync-date')
 
     // then
-    /*eslint-disable-next-line no-irregular-whitespace*/
     expect(lastSyncDate.textContent).toMatchInlineSnapshot(
+      /*eslint-disable-next-line no-irregular-whitespace*/
       `" 01/01/2018 à 01:00"`
     )
   })

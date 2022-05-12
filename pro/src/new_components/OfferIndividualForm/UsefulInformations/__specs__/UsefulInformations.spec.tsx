@@ -38,7 +38,7 @@ const renderUsefulInformations = ({
 describe('OfferIndividual section: UsefulInformations', () => {
   let initialValues: IInitialValues
   let props: IUsefulInformationsProps
-  let onSubmit = jest.fn()
+  const onSubmit = jest.fn()
 
   beforeEach(() => {
     const offererNames: TOffererName[] = [

@@ -39,7 +39,7 @@ const renderVenue = ({
 describe('OfferIndividual section: venue', () => {
   let initialValues: IInitialValues
   let props: IVenueProps
-  let onSubmit = jest.fn()
+  const onSubmit = jest.fn()
 
   beforeEach(() => {
     const offererNames: TOffererName[] = [

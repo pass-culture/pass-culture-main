@@ -23,8 +23,10 @@ export const validateEmail = async val => {
 }
 
 export const validateUrl = async url => {
-  const urlRegex =
+  const urlRegex = new RegExp(
+    // eslint-disable-next-line no-useless-escape
     /^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/
+  )
   if (!url) {
     return
   }

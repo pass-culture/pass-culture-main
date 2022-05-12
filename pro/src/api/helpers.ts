@@ -2,9 +2,13 @@ import Package from '../../package.json'
 
 // TODO check empty response type from api
 // found the right type into fetch-node types if needed.
+// FIX ME
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface EmptyResponse {}
 
 // TODO: ModelObject should be removed when offer.extraData is correctly typed on api
+// FIX ME
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ModelObject {}
 
 export interface ApiErrorResonseMessages {

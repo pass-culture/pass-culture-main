@@ -32,6 +32,7 @@ const OfferCreation = ({
   )
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(async () => {
       if (isUserAdmin) {
         const offererResponse = await pcapi.getOfferer(initialValues.offererId)

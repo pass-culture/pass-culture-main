@@ -6,7 +6,7 @@ let bookingId = 1
 
 export const offerFactory = (
   customOffer = {},
-  customStock = stockFactory(),
+  customStock = stockFactory() || null,
   customVenue = venueFactory()
 ) => {
   const stocks = customStock === null ? [] : [customStock]
