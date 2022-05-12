@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def handle_inactive_dms_applications(procedure_id: int) -> None:
-    logger.info("Handling inactive application for procedure %d", procedure_id)
+    logger.info("[DMS] Handling inactive application for procedure %d", procedure_id)
 
     draft_applications = dms_api.DMSGraphQLClient().get_applications_with_details(
         procedure_id, dms_models.GraphQLApplicationStates.draft
@@ -28,7 +28,11 @@ def handle_inactive_dms_applications(procedure_id: int) -> None:
                 _mark_without_continuation_a_draft_application(draft_application)
                 _mark_cancel_dms_fraud_check(draft_application.number)
         except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
-            logger.exception("Could not mark application %s without continuation", draft_application.number)
+            logger.exception(
+                "[DMS] Could not mark application %s without continuation",
+                draft_application.number,
+                extra={"procedure_id": procedure_id},
+            )
             continue
 
 
@@ -71,7 +75,7 @@ def _mark_without_continuation_a_draft_application(dms_application: dms_models.D
         motivation=f"Aucune activité n'a eu lieu sur votre dossier depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours. Si vous souhaitez le soumettre à nouveau, vous pouvez contacter le support à l'adresse {settings.SUPPORT_EMAIL_ADDRESS}",
     )
 
-    logger.info("Marked application %s without continuation", dms_application.number)
+    logger.info("[DMS] Marked application %s without continuation", dms_application.number)
 
 
 def _mark_cancel_dms_fraud_check(application_number: int) -> None:
