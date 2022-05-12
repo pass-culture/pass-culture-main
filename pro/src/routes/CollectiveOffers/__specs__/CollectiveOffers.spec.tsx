@@ -142,9 +142,10 @@ describe('route CollectiveOffers', () => {
       },
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
-    ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
-      offersRecap
-    )
+    jest
+      .spyOn(api, 'getCollectiveListCollectiveOffers')
+      // @ts-ignore FIX ME
+      .mockResolvedValue(offersRecap)
   })
 
   describe('render', () => {
@@ -195,7 +196,9 @@ describe('route CollectiveOffers', () => {
 
         it('should indicate that no offers match selected filters', async () => {
           // Given
-          ;(api.getCollectiveListCollectiveOffers as jest.Mock)
+          jest
+            .spyOn(api, 'getCollectiveListCollectiveOffers')
+            // @ts-ignore FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
           renderOffers(store)
@@ -216,9 +219,9 @@ describe('route CollectiveOffers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          ;(
-            api.getCollectiveListCollectiveOffers as jest.Mock
-          ).mockResolvedValueOnce([])
+          jest
+            .spyOn(api, 'getCollectiveListCollectiveOffers')
+            .mockResolvedValueOnce([])
           // When
           renderOffers(store)
 
@@ -314,7 +317,8 @@ describe('route CollectiveOffers', () => {
           it('should reset and disable status filter when offerer filter is removed', async () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
-            ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValue(offerer)
+            // @ts-ignore FIX ME
+            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
               status: 'INACTIVE',
@@ -347,7 +351,8 @@ describe('route CollectiveOffers', () => {
             // Given
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
-            ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValue(offerer)
+            // @ts-ignore FIX ME
+            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
               status: 'INACTIVE',
@@ -535,9 +540,10 @@ describe('route CollectiveOffers', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
       const offersRecap = Array.from({ length: 11 }, () => offerFactory())
-      ;(
-        api.getCollectiveListCollectiveOffers as jest.Mock
-      ).mockResolvedValueOnce(offersRecap)
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        // @ts-ignore FIX ME
+        .mockResolvedValueOnce(offersRecap)
       const { history } = renderOffers(store)
       const nextPageIcon = await screen.findByAltText('page suivante')
       // When
@@ -624,10 +630,11 @@ describe('route CollectiveOffers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      ;(
-        api.getCollectiveListCollectiveOffers as jest.Mock
-      ).mockResolvedValueOnce(offersRecap)
-      ;(api.getOffersGetCategories as jest.Mock).mockResolvedValue({
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        // @ts-ignore FIX ME
+        .mockResolvedValueOnce(offersRecap)
+      jest.spyOn(api, 'getOffersGetCategories').mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
@@ -637,12 +644,14 @@ describe('route CollectiveOffers', () => {
           },
         ],
         subcategories: [
+          // @ts-ignore FIX ME
           {
             id: 'test_sub_id_1',
             categoryId: 'test_id_1',
             isSelectable: true,
             canBeEducational: true,
           },
+          // @ts-ignore FIX ME
           {
             id: 'test_sub_id_2',
             categoryId: 'test_id_2',
@@ -673,19 +682,20 @@ describe('route CollectiveOffers', () => {
 
     it('should have status value when user filters by status', async () => {
       // Given
-      ;(
-        api.getCollectiveListCollectiveOffers as jest.Mock
-      ).mockResolvedValueOnce([
-        offerFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
-            status: 'ACTIVE',
-          },
-          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
-      ])
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .mockResolvedValueOnce([
+          // @ts-ignore FIX ME
+          offerFactory(
+            {
+              id: 'KE',
+              availabilityMessage: 'Pas de stock',
+              status: 'ACTIVE',
+            },
+            // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+            null
+          ),
+        ])
       const { history } = renderOffers(store)
       fireEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
@@ -702,19 +712,20 @@ describe('route CollectiveOffers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      ;(
-        api.getCollectiveListCollectiveOffers as jest.Mock
-      ).mockResolvedValueOnce([
-        offerFactory(
-          {
-            id: 'KE',
-            availabilityMessage: 'Pas de stock',
-            status: 'ACTIVE',
-          },
-          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
-          null
-        ),
-      ])
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .mockResolvedValueOnce([
+          // @ts-ignore FIX ME
+          offerFactory(
+            {
+              id: 'KE',
+              availabilityMessage: 'Pas de stock',
+              status: 'ACTIVE',
+            },
+            // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+            null
+          ),
+        ])
       const { history } = renderOffers(store)
       fireEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
@@ -730,7 +741,8 @@ describe('route CollectiveOffers', () => {
     it('should have offerer filter when user filters by offerer', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValueOnce({
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       // When
@@ -743,7 +755,8 @@ describe('route CollectiveOffers', () => {
     it('should have offerer value be removed when user removes offerer filter', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValueOnce({
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       renderOffers(store, filters)
@@ -759,7 +772,9 @@ describe('route CollectiveOffers', () => {
   describe('page navigation', () => {
     it('should redirect to individual offers when user clicks on individual offers link', async () => {
       // Given
-      ;(api.getCollectiveListCollectiveOffers as jest.Mock).mockResolvedValue(
+
+      jest.spyOn(api, 'getCollectiveListCollectiveOffers').mockResolvedValue(
+        // @ts-ignore FIX ME
         offersRecap
       )
       const { history } = renderOffers(store)
@@ -791,9 +806,10 @@ describe('route CollectiveOffers', () => {
     it('should display next page when clicking on right arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      ;(
-        api.getCollectiveListCollectiveOffers as jest.Mock
-      ).mockResolvedValueOnce(offers)
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        // @ts-ignore FIX ME
+        .mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       // When
@@ -809,9 +825,10 @@ describe('route CollectiveOffers', () => {
     it('should display previous page when clicking on left arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      ;(
-        api.getCollectiveListCollectiveOffers as jest.Mock
-      ).mockResolvedValueOnce(offers)
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        // @ts-ignore FIX ME
+        .mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       const previousIcon = await screen.findByAltText('page précédente')
@@ -838,9 +855,10 @@ describe('route CollectiveOffers', () => {
 
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
-      ;(
-        api.getCollectiveListCollectiveOffers as jest.Mock
-      ).mockResolvedValueOnce(offersRecap)
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        // @ts-ignore FIX ME
+        .mockResolvedValueOnce(offersRecap)
       // When
       renderOffers(store)
       // Then
@@ -855,9 +873,10 @@ describe('route CollectiveOffers', () => {
 
       it('should have max number page of 50', async () => {
         // Given
-        ;(
-          api.getCollectiveListCollectiveOffers as jest.Mock
-        ).mockResolvedValueOnce(offersRecap)
+        jest
+          .spyOn(api, 'getCollectiveListCollectiveOffers')
+          // @ts-ignore FIX ME
+          .mockResolvedValueOnce(offersRecap)
         // When
         renderOffers(store)
         // Then
@@ -868,9 +887,10 @@ describe('route CollectiveOffers', () => {
 
       it('should not display the 501st offer', async () => {
         // Given
-        ;(
-          api.getCollectiveListCollectiveOffers as jest.Mock
-        ).mockResolvedValueOnce(offersRecap)
+        jest
+          .spyOn(api, 'getCollectiveListCollectiveOffers')
+          // @ts-ignore FIX ME
+          .mockResolvedValueOnce(offersRecap)
         renderOffers(store)
         const nextIcon = await screen.findByAltText('page suivante')
         // When
@@ -888,7 +908,9 @@ describe('route CollectiveOffers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      ;(api.getCollectiveListCollectiveOffers as jest.Mock)
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       renderOffers(store)
@@ -950,7 +972,9 @@ describe('route CollectiveOffers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
-      ;(api.getCollectiveListCollectiveOffers as jest.Mock)
+      jest
+        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 

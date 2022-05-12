@@ -3,4 +3,5 @@
 // it won't fail thanks to the empty file.
 
 // Required following https://create-react-app.dev/docs/making-a-progressive-web-app/#customization
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ignored = self.__WB_MANIFEST

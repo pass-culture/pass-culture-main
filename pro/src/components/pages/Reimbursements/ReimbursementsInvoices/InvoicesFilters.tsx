@@ -3,7 +3,6 @@ import React, { Dispatch, SetStateAction, useCallback } from 'react'
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'
 import { getToday } from 'utils/date'
-import { MouseEventHandler } from 'react'
 
 type selectableOptionsType = [
   {

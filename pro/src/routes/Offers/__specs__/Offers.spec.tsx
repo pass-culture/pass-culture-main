@@ -130,7 +130,8 @@ describe('route Offers', () => {
       },
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
-    ;(api.getOffersListOffers as jest.Mock).mockResolvedValue(offersRecap)
+    // @ts-ignore FIX ME
+    jest.spyOn(api, 'getOffersListOffers').mockResolvedValue(offersRecap)
   })
 
   describe('render', () => {
@@ -178,7 +179,9 @@ describe('route Offers', () => {
 
         it('should indicate that no offers match selected filters', async () => {
           // Given
-          ;(api.getOffersListOffers as jest.Mock)
+          jest
+            .spyOn(api, 'getOffersListOffers')
+            // @ts-ignore FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
           renderOffers(store)
@@ -199,7 +202,7 @@ describe('route Offers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce([])
+          jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce([])
           // When
           renderOffers(store)
 
@@ -291,7 +294,8 @@ describe('route Offers', () => {
           it('should reset and disable status filter when offerer filter is removed', async () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
-            ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValue(offerer)
+            // @ts-ignore FIX ME
+            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
               status: 'INACTIVE',
@@ -322,7 +326,8 @@ describe('route Offers', () => {
             // Given
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
-            ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValue(offerer)
+            // @ts-ignore FIX ME
+            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
               status: 'INACTIVE',
@@ -531,7 +536,8 @@ describe('route Offers', () => {
     it('should have page value when page value is not first page', async () => {
       // Given
       const offersRecap = Array.from({ length: 11 }, () => offerFactory())
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offersRecap)
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offersRecap)
       const { history } = renderOffers(store)
       const nextPageIcon = await screen.findByAltText('page suivante')
       // When
@@ -622,7 +628,8 @@ describe('route Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      ;(api.getOffersGetCategories as jest.Mock).mockResolvedValue({
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOffersGetCategories').mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
@@ -651,7 +658,9 @@ describe('route Offers', () => {
 
     it('should have status value when user filters by status', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce([
+
+      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce([
+        // @ts-ignore FIX ME
         offerFactory(
           {
             id: 'KE',
@@ -678,7 +687,8 @@ describe('route Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce([
+      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce([
+        // @ts-ignore FIX ME
         offerFactory(
           {
             id: 'KE',
@@ -704,7 +714,8 @@ describe('route Offers', () => {
     it('should have offerer filter when user filters by offerer', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValueOnce({
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       // When
@@ -717,7 +728,8 @@ describe('route Offers', () => {
     it('should have offerer value be removed when user removes offerer filter', async () => {
       // Given
       const filters = { offererId: 'A4' }
-      ;(api.getOfferersGetOfferer as jest.Mock).mockResolvedValueOnce({
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       renderOffers(store, filters)
@@ -766,7 +778,8 @@ describe('route Offers', () => {
   describe('page navigation', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValue(offersRecap)
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOffersListOffers').mockResolvedValue(offersRecap)
       const { history } = renderOffers(store)
       await screen.findByText('Lancer la recherche')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
@@ -785,7 +798,8 @@ describe('route Offers', () => {
     it('should display next page when clicking on right arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offers)
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       // When
@@ -801,7 +815,8 @@ describe('route Offers', () => {
     it('should display previous page when clicking on left arrow', async () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offers)
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       const previousIcon = await screen.findByAltText('page précédente')
@@ -828,7 +843,8 @@ describe('route Offers', () => {
 
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
-      ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(offersRecap)
+      // @ts-ignore FIX ME
+      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offersRecap)
       // When
       renderOffers(store)
       // Then
@@ -843,9 +859,10 @@ describe('route Offers', () => {
 
       it('should have max number page of 50', async () => {
         // Given
-        ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(
-          offersRecap
-        )
+        jest
+          .spyOn(api, 'getOffersListOffers')
+          // @ts-ignore FIX ME
+          .mockResolvedValueOnce(offersRecap)
         // When
         renderOffers(store)
         // Then
@@ -856,9 +873,10 @@ describe('route Offers', () => {
 
       it('should not display the 501st offer', async () => {
         // Given
-        ;(api.getOffersListOffers as jest.Mock).mockResolvedValueOnce(
-          offersRecap
-        )
+        jest
+          .spyOn(api, 'getOffersListOffers')
+          // @ts-ignore FIX ME
+          .mockResolvedValueOnce(offersRecap)
         renderOffers(store)
         const nextIcon = await screen.findByAltText('page suivante')
         // When
@@ -876,7 +894,9 @@ describe('route Offers', () => {
 
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
-      ;(api.getOffersListOffers as jest.Mock)
+      jest
+        .spyOn(api, 'getOffersListOffers')
+        // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
       renderOffers(store)
@@ -938,7 +958,9 @@ describe('route Offers', () => {
     })
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
-      ;(api.getOffersListOffers as jest.Mock)
+      jest
+        .spyOn(api, 'getOffersListOffers')
+        // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
 

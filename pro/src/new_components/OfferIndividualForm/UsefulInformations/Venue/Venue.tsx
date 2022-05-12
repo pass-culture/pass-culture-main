@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 
 import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'

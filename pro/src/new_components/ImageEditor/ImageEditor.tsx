@@ -7,7 +7,6 @@ import React, {
   forwardRef,
   useCallback,
   useState,
-  MouseEventHandler,
 } from 'react'
 import AvatarEditor, { Position } from 'react-avatar-editor'
 
