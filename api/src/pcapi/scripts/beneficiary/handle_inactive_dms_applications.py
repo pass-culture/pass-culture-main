@@ -8,14 +8,19 @@ from pcapi import settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
+from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.fraud import models as fraud_models
+from pcapi.core.subscription import exceptions as subscription_exceptions
+from pcapi.core.users import utils as users_utils
 from pcapi.repository import repository
 
 
 logger = logging.getLogger(__name__)
 
+PRE_GENERALISATION_DEPARTMENTS = ["08", "22", "25", "29", "34", "35", "56", "58", "67", "71", "84", "93", "94", "973"]
 
-def handle_inactive_dms_applications(procedure_id: int) -> None:
+
+def handle_inactive_dms_applications(procedure_id: int, with_never_eligible_applicant_rule: bool = False) -> None:
     logger.info("[DMS] Handling inactive application for procedure %d", procedure_id)
 
     draft_applications = dms_api.DMSGraphQLClient().get_applications_with_details(
@@ -24,9 +29,12 @@ def handle_inactive_dms_applications(procedure_id: int) -> None:
 
     for draft_application in draft_applications:
         try:
-            if _has_inactivity_delay_expired(draft_application):
-                _mark_without_continuation_a_draft_application(draft_application)
-                _mark_cancel_dms_fraud_check(draft_application.number)
+            if not _has_inactivity_delay_expired(draft_application):
+                continue
+            if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application, procedure_id):
+                continue
+            _mark_without_continuation_a_draft_application(draft_application)
+            _mark_cancel_dms_fraud_check(draft_application.number)
         except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
             logger.exception(
                 "[DMS] Could not mark application %s without continuation",
@@ -84,10 +92,25 @@ def _mark_cancel_dms_fraud_check(application_number: int) -> None:
             type=fraud_models.FraudCheckType.DMS, thirdPartyId=str(application_number)
         ).one_or_none()
     except sqla_exc.MultipleResultsFound:
-        logger.exception("Multiple fraud checks found for application %s", application_number)
+        logger.exception("[DMS] Multiple fraud checks found for application %s", application_number)
         return
 
     if fraud_check:
         fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
         fraud_check.reason = f"Automatiquement classé sans_suite car aucune activité n'a eu lieu depuis plus de {settings.DMS_INACTIVITY_TOLERANCE_DELAY} jours"
         repository.save(fraud_check)
+
+
+def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationResponse, procedure_id: int) -> bool:
+    try:
+        application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application, procedure_id)
+    except subscription_exceptions.DMSParsingError:
+        return True
+    applicant_birth_date = application_content.get_birth_date()
+    applicant_department = application_content.department
+    if applicant_birth_date is None or applicant_department is None:
+        return True
+
+    age_at_generalisation = users_utils.get_age_at_date(applicant_birth_date, datetime.datetime(2021, 5, 21))
+
+    return age_at_generalisation >= 19 and applicant_department not in PRE_GENERALISATION_DEPARTMENTS
