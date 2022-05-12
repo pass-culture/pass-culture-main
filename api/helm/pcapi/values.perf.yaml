@@ -26,8 +26,6 @@ secrets:
   - name: GCP_DATA_BUCKET_NAME
   - name: GCP_DATA_PROJECT_ID
   - name: JWT_SECRET_KEY
-  - name: MAILJET_API_KEY
-  - name: MAILJET_API_SECRET
   - name: NATIVE_RECAPTCHA_SECRET
   - name: OBJECT_STORAGE_PROVIDER
   - name: OVH_BUCKET_NAME

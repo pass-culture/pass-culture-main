@@ -57,7 +57,7 @@ def test_maybe_send_offerer_validation_email_does_not_send_email_if_all_validate
 
 @pytest.mark.usefixtures("db_session")
 class SendOfferCreationNotificationToAdministrationTest:
-    def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
+    def test_when_sendinblue_status_code_200_sends_email_to_administration_email(self, app):
         author = users_factories.UserFactory()
         offer = OfferFactory(author=author)
 
@@ -71,7 +71,7 @@ class SendOfferCreationNotificationToAdministrationTest:
 
 @pytest.mark.usefixtures("db_session")
 class SendOfferCreationRefusalNotificationToAdministrationTest:
-    def test_when_mailjet_status_code_200_sends_email_to_administration_email(self, app):
+    def test_when_sendinblue_status_code_200_sends_email_to_administration_email(self, app):
         author = users_factories.UserFactory(email="author@email.com")
         offer = OfferFactory(author=author)
 

@@ -39,7 +39,6 @@ LOG_LEVEL = int(os.environ.get("LOG_LEVEL", LOG_LEVEL_INFO))
 if IS_PROD or IS_INTEGRATION:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.SendinblueBackend"
-    _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.MailjetBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.GoogleDriveBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
@@ -47,7 +46,6 @@ if IS_PROD or IS_INTEGRATION:
 elif IS_STAGING or IS_TESTING:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"
-    _mailjet_email_backend = "pcapi.core.mails.backends.mailjet.ToDevMailjetBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.GoogleDriveBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
@@ -55,7 +53,6 @@ elif IS_STAGING or IS_TESTING:
 elif IS_RUNNING_TESTS:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
-    _mailjet_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.TestingBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.testing.TestingBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
@@ -63,7 +60,6 @@ elif IS_RUNNING_TESTS:
 elif IS_DEV:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
-    _mailjet_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
     _default_google_drive_backend = "pcapi.connectors.googledrive.TestingBackend"
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.logger.LoggerBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
@@ -133,8 +129,11 @@ MAX_API_KEY_PER_OFFERER = int(os.environ.get("MAX_API_KEY_PER_OFFERER", 5))
 ADMINISTRATION_EMAIL_ADDRESS = os.environ.get("ADMINISTRATION_EMAIL_ADDRESS")
 COMPLIANCE_EMAIL_ADDRESS = os.environ.get("COMPLIANCE_EMAIL_ADDRESS", "")
 DEV_EMAIL_ADDRESS = os.environ.get("DEV_EMAIL_ADDRESS")
+
+# When load testing, override `EMAIL_BACKEND` to avoid going over SendinBlue quota:
+#     EMAIL_BACKEND="pcapi.core.mails.backends.logger.LoggerBackend"
 EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND", _default_email_backend)
-MAILJET_EMAIL_BACKEND = os.environ.get("MAILJET_EMAIL_BACKEND", _mailjet_email_backend)
+
 REPORT_OFFER_EMAIL_ADDRESS = os.environ.get("REPORT_OFFER_EMAIL_ADDRESS", "")
 SUPER_ADMIN_EMAIL_ADDRESSES = utils.parse_str_to_list(os.environ.get("SUPER_ADMIN_EMAIL_ADDRESSES"))
 SUPPORT_EMAIL_ADDRESS = os.environ.get("SUPPORT_EMAIL_ADDRESS", "")
@@ -216,13 +215,6 @@ RECAPTCHA_RESET_PASSWORD_MINIMAL_SCORE = float(os.environ.get("RECAPTCHA_RESET_P
 RECAPTCHA_API_URL = "https://www.google.com/recaptcha/api/siteverify"
 RECAPTCHA_SECRET = os.environ.get("RECAPTCHA_SECRET")
 NATIVE_RECAPTCHA_SECRET = os.environ.get("NATIVE_RECAPTCHA_SECRET")
-
-
-# MAILJET
-MAILJET_API_KEY = os.environ.get("MAILJET_API_KEY", "")
-MAILJET_API_SECRET = os.environ.get("MAILJET_API_SECRET", "")
-MAILJET_TEMPLATE_DEBUGGING = os.environ.get("MAILJET_TEMPLATE_DEBUGGING", not IS_PROD)
-MAILJET_HTTP_TIMEOUT = int(os.environ.get("MAILJET_HTTP_TIMEOUT", 5))
 
 
 # JWT
