@@ -728,9 +728,6 @@ def test_public_api(client, app):
                             "type": "object",
                         },
                         "website": {
-                            "format": "uri",
-                            "maxLength": 2083,
-                            "minLength": 1,
                             "nullable": True,
                             "title": "Website",
                             "type": "string",
