@@ -12,10 +12,9 @@ import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
 import OfferEducationalStockTemplateEdition from 'routes/OfferEducationalStockTemplateEdition'
 import { OfferIndividualConfirmation } from 'routes/OfferIndividualConfirmation'
-import { OfferIndividualCreationInformations } from 'routes/OfferIndividualCreationInformations'
-import { OfferIndividualCreationStocks } from 'routes/OfferIndividualCreationStocks'
-import { OfferIndividualCreationSummary } from 'routes/OfferIndividualCreationSummary'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
+import { OfferIndividualCreation } from 'routes/OfferIndividualCreation'
+import Offers from 'routes/Offers'
 import OfferType from 'routes/OfferType'
 import OfferersLayout from 'components/pages/Offerers/OfferersLayout'
 import Offers from 'routes/Offers'
@@ -251,34 +250,20 @@ const routes = [
     },
   },
   {
-    component: OfferIndividualCreationInformations,
-    exact: true,
-    path: [
-      '/offre/v3/creation/individuelle/informations',
-      '/offre/:offerId/v3/creation/individuelle/informations',
-    ],
-    title: 'Créer une offre individuelle',
-    featureName: 'OFFER_FORM_V3',
-  },
-  {
-    component: OfferIndividualCreationStocks,
-    exact: false,
-    path: '/offre/:offerId/v3/creation/individuelle/stocks',
-    title: 'Ajouer des stocks',
-    featureName: 'OFFER_FORM_V3',
-  },
-  {
-    component: OfferIndividualCreationSummary,
-    exact: true,
-    path: '/offre/:offerId/v3/creation/individuelle/recapitulatif',
-    title: 'Résumé de votre offre',
-    featureName: 'OFFER_FORM_V3',
-  },
-  {
     component: OfferIndividualConfirmation,
     exact: true,
     path: '/offre/:offerId/v3/creation/individuelle/confirmation',
     title: "Confirmation de création d'offre",
+    featureName: 'OFFER_FORM_V3',
+  },
+  {
+    component: OfferIndividualCreation,
+    exact: false,
+    path: [
+      '/offre/v3/creation/individuelle',
+      '/offre/:offerId/v3/creation/individuelle',
+    ],
+    title: 'Résumé de votre offre',
     featureName: 'OFFER_FORM_V3',
   },
 ]
