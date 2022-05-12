@@ -39,7 +39,7 @@ const ContactInfosFields = ({ readOnly }) => (
       name="contact.website"
       placeholder="http://exemple.com"
       readOnly={readOnly}
-      type="url"
+      type="text"
       validate={validateUrl}
     />
   </div>
