@@ -64,3 +64,9 @@ class ListPublicAccountsResponseModel(BaseModel):
         orm_mode = True
 
     accounts: list[PublicAccount]
+
+
+class GetBeneficiaryCreditResponseModel(BaseModel):
+    initialCredit: float
+    remainingCredit: float
+    remainingDigitalCredit: float
