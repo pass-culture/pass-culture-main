@@ -154,6 +154,7 @@ class RunTest:
                 processed_datetime=datetime(2020, 5, 13, 10, 41, 21, tzinfo=timezone(timedelta(seconds=7200))),
                 registration_datetime=datetime(2020, 5, 13, 9, 9, 46, tzinfo=timezone(timedelta(seconds=7200))),
                 id_piece_number="123123121",
+                state="accepte",
             ),
         )
 
