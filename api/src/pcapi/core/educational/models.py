@@ -12,6 +12,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.relationships import RelationshipProperty
 from sqlalchemy.sql.functions import func
 from sqlalchemy.sql.schema import Index
 from sqlalchemy.sql.sqltypes import Boolean
@@ -123,6 +124,10 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
     contactPhone = sa.Column(sa.Text, nullable=False)
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [attr-defined]
+
+    domains: RelationshipProperty[list["EducationalDomain"]] = relationship(
+        "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
+    )
 
     @property
     def isEducational(self) -> bool:
@@ -288,6 +293,10 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
     contactPhone = sa.Column(sa.Text, nullable=False)
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [attr-defined]
+
+    domains: RelationshipProperty[list["EducationalDomain"]] = relationship(
+        "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
+    )
 
     @property
     def isEducational(self) -> bool:
@@ -776,6 +785,63 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
             raise exceptions.EducationalBookingAlreadyCancelled()
 
         self.status = CollectiveBookingStatus.CANCELLED  # type: ignore [assignment]
+
+
+class CollectiveOfferTemplateDomain(Model):  # type: ignore [valid-type, misc]
+    """An association table between CollectiveOfferTemplate and
+    EducationalDomain for their many-to-many relationship.
+    """
+
+    __tablename__ = "collective_offer_template_domain"
+
+    collectiveOfferTemplateId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+    collectiveOfferTemplate: RelationshipProperty["CollectiveOfferTemplate"] = relationship(
+        "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId]
+    )
+    educationalDomainId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+    educationalDomain: RelationshipProperty["EducationalDomain"] = relationship(
+        "EducationalDomain", foreign_keys=[educationalDomainId]
+    )
+
+
+class CollectiveOfferDomain(Model):  # type: ignore [valid-type, misc]
+    """An association table between CollectiveOffer and
+    EducationalDomain for their many-to-many relationship.
+    """
+
+    __tablename__ = "collective_offer_domain"
+
+    collectiveOfferId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+    collectiveOffer: RelationshipProperty["CollectiveOffer"] = relationship(
+        "CollectiveOffer", foreign_keys=[collectiveOfferId]
+    )
+    educationalDomainId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
+    )
+    educationalDomain: RelationshipProperty["EducationalDomain"] = relationship(
+        "EducationalDomain", foreign_keys=[educationalDomainId]
+    )
+
+
+class EducationalDomain(PcObject, Model):  # type: ignore[valid-type, misc]
+    __tablename__ = "educational_domain"
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+
+    name = sa.Column(sa.Text, nullable=False)
+
+    collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
+        "CollectiveOffer", secondary="collective_offer_domain", back_populates="domains"
+    )
+
+    collectiveOfferTemplates: RelationshipProperty[list["CollectiveOfferTemplate"]] = relationship(
+        "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
+    )
 
 
 CollectiveBooking.trig_ddl = f"""
