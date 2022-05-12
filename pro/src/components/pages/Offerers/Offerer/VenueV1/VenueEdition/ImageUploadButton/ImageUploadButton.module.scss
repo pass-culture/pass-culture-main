@@ -1,4 +1,4 @@
-@use 'sass:math';
+@use 'sass:math' as math;
 
 @use 'styles/variables/_colors.scss' as colors;
 @use 'styles/mixins/_fonts.scss' as fonts;
@@ -11,7 +11,7 @@
   align-items: center;
   gap: 16px;
   $height: rem.torem(176px);
-  width: div($height * 3, 2);
+  width: math.div($height * 3, 2);
   height: $height;
   border: 1px solid colors.$grey-medium;
   background-color: colors.$grey-light;
