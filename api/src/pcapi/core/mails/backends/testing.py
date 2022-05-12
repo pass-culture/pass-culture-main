@@ -15,15 +15,14 @@ class TestingBackend(BaseBackend):
     accessible from tests.
     """
 
-    def _send(
+    def send_mail(
         self,
         recipients: Iterable[str],
-        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
+        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
     ) -> MailResult:
-        if not isinstance(data, dict):
-            data = asdict(data)
-        data["To"] = ", ".join(recipients)
-        result = MailResult(sent_data=data, successful=True)
+        sent_data = asdict(data)
+        sent_data["To"] = ", ".join(recipients)
+        result = MailResult(sent_data=sent_data, successful=True)
         testing.outbox.append(result)
         return result
 
@@ -31,10 +30,11 @@ class TestingBackend(BaseBackend):
 class FailingBackend(BaseBackend):
     """A backend that... fails to send an e-mail."""
 
-    def _send(
+    def send_mail(
         self,
         recipients: Iterable[str],
-        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData, dict],
+        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
     ) -> MailResult:
-        data["To"] = ", ".join(recipients)  # type: ignore [index]
-        return MailResult(sent_data=data, successful=False)  # type: ignore [arg-type]
+        sent_data = asdict(data)
+        sent_data["To"] = ", ".join(recipients)
+        return MailResult(sent_data=sent_data, successful=False)

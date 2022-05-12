@@ -175,13 +175,6 @@ def make_suspended_fraudulent_beneficiary_by_ids_notification_email(
     )
 
 
-def _add_template_debugging(message_data: dict) -> None:
-    message_data["TemplateErrorReporting"] = {
-        "Email": settings.DEV_EMAIL_ADDRESS,
-        "Name": "Mailjet Template Errors",
-    }
-
-
 def _summarize_offerer_vars(offerer: offerers_models.Offerer, api_entreprise: dict) -> dict:
     return {
         "name": offerer.name,

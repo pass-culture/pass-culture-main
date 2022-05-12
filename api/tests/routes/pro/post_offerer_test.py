@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -129,7 +130,9 @@ class Returns201Test:
         self, mock_api_entreprise, make_offerer_internal_validation_email, app
     ):
         # Given
-        make_offerer_internal_validation_email.return_value = {"html_content": None}
+        make_offerer_internal_validation_email.return_value = SendinblueTransactionalWithoutTemplateEmailData(
+            subject=None, html_content=None
+        )
         mock_api_entreprise.return_value = MagicMock(
             status_code=200, text="", json=MagicMock(return_value=copy.deepcopy(api_entreprise_json_mock))
         )
