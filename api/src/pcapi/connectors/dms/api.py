@@ -281,4 +281,5 @@ def parse_beneficiary_information_graphql(
         procedure_id=procedure_id,
         processed_datetime=processed_datetime,
         registration_datetime=registration_datetime,
+        state=application_detail.state.value,
     )

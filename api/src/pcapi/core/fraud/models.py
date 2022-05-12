@@ -202,6 +202,7 @@ class DMSContent(common_models.IdentityCheckContent):
     procedure_id: int
     processed_datetime: typing.Optional[datetime.datetime]
     registration_datetime: typing.Optional[datetime.datetime]
+    state: typing.Optional[str]
 
     _parse_civility = pydantic.validator("civility", pre=True, allow_reuse=True)(_parse_dms_civility)
 

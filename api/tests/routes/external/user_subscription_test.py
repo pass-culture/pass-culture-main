@@ -249,14 +249,37 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
 
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.order_by(
-            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
-            fraud_models.BeneficiaryFraudCheck.id.desc(),
-        ).first()
+        fraud_check = (
+            fraud_models.BeneficiaryFraudCheck.query.filter(
+                fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
+            )
+            .order_by(fraud_models.BeneficiaryFraudCheck.id.desc())
+            .first()
+        )
 
         assert fraud_check.userId == user.id
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
+
+        content = fraud_check.source_data()
+        assert content.activity == "Étudiant"
+        assert content.address == "1 Promenade des Anglais 06000 Nice"
+        assert content.application_id == 7654321
+        assert content.birth_date == datetime.date(2003, 5, 5)
+        assert content.city == None
+        assert content.civility == None
+        assert content.department == None
+        assert content.email == "young@example.com"
+        assert content.first_name == "Young"
+        assert content.id_piece_number == "9X8Y7654Z"
+        assert content.last_name == "Beneficiary"
+        assert content.phone == "0706050403"
+        assert content.postal_code == "06000"
+        assert content.procedure_id == 45678
+        assert content.state == "accepte"
+        assert content.registration_datetime == datetime.datetime(
+            2022, 3, 17, 12, 19, 37, tzinfo=datetime.timezone(datetime.timedelta(seconds=3600))
+        )
 
         db.session.refresh(user)
 
@@ -291,6 +314,7 @@ class DmsWebhookApplicationTest:
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert fraud_check.source_data().state == "en_construction"
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
         assert (
@@ -323,6 +347,7 @@ class DmsWebhookApplicationTest:
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
+        assert fraud_check.source_data().state == "en_instruction"
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.FILE
         assert (
             user.subscriptionMessages[0].userMessage
@@ -354,6 +379,7 @@ class DmsWebhookApplicationTest:
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.type == fraud_models.FraudCheckType.DMS
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+        assert fraud_check.source_data().state == "refuse"
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.ERROR
         assert (
             user.subscriptionMessages[0].userMessage
