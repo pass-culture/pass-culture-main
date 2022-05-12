@@ -89,7 +89,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     <OfferEducationalLayout
       activeStep={OfferBreadcrumbStep.STOCKS}
       isCreatingOffer
-      title="Créer une nouvelle offre scolaire"
+      title="Créer une nouvelle offre collective"
     >
       {offer && isReady ? (
         <>
