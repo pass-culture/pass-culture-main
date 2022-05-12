@@ -1,4 +1,4 @@
-const { requiredIfComponentHasProp } = require('utils/propTypes')
+import { requiredIfComponentHasProp } from 'utils/propTypes'
 
 const VALIDATING_PROP_NAME = 'hrefName'
 

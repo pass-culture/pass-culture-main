@@ -49,27 +49,25 @@ jest.mock('utils/windowMatchMedia', () => ({
 }))
 
 const renderOffers = async (props, store, queryParams = '') => {
-  await act(async () => {
-    await render(
-      <Provider store={store}>
-        <MemoryRouter
-          initialEntries={[
-            {
-              pathname: '/offre/ABC12/individuel/edition',
-              search: queryParams,
-            },
-          ]}
-        >
-          <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
-            <>
-              <OfferLayout {...props} />
-              <NotificationContainer />
-            </>
-          </Route>
-        </MemoryRouter>
-      </Provider>
-    )
-  })
+  await render(
+    <Provider store={store}>
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: '/offre/ABC12/individuel/edition',
+            search: queryParams,
+          },
+        ]}
+      >
+        <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
+          <>
+            <OfferLayout {...props} />
+            <NotificationContainer />
+          </>
+        </Route>
+      </MemoryRouter>
+    </Provider>
+  )
 }
 
 describe('offerDetails - Edition', () => {
@@ -215,7 +213,7 @@ describe('offerDetails - Edition', () => {
 
         it('should display error when submitting empty values', async () => {
           // When
-          userEvent.click(screen.getByText('Enregistrer'))
+          await userEvent.click(await screen.findByText('Enregistrer'))
 
           // Then
           const errorNotification = await screen.findByText(
@@ -1574,22 +1572,28 @@ describe('offerDetails - Edition', () => {
         status: 'ACTIVE',
       }
       jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
-      pcapi.updateOffer.mockRejectedValue({
+      jest.spyOn(pcapi, 'updateOffer').mockRejectedValue({
         errors: { name: "Ce nom n'est pas valide" },
       })
       await renderOffers(props, store)
-      await setOfferValues({ name: 'Ce nom serait-il invalide ?' })
+      //
+      await userEvent.type(
+        await screen.findByLabelText(/Titre de l'offre/),
+        'Ce nom serait-il invalide ?'
+      )
 
       // When
       userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
-      const nameError = await screen.findByText("Ce nom n'est pas valide")
-      expect(nameError).toBeInTheDocument()
-      const errorNotification = await screen.findByText(
-        'Une ou plusieurs erreurs sont présentes dans le formulaire'
-      )
-      expect(errorNotification).toBeInTheDocument()
+      expect(
+        await screen.findByText("Ce nom n'est pas valide")
+      ).toBeInTheDocument()
+      expect(
+        await screen.findByText(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire'
+        )
+      ).toBeInTheDocument()
     })
 
     it('should show a success notification when a thumbnail submitted', async () => {

@@ -28,22 +28,14 @@ export const formatPhoneNumber = phoneNumber => {
     const r = /(\+?[0-9]+)([0-9])([0-9]{8})/g
     const parts = formatedNumber.split(r).slice(1, -1)
 
-    let internationalPrefix,
-      areaPrefix,
-      number,
-      isReginalNumber,
-      isInternationalNumber
-    let isValid = parts.length === 3
-    if (isValid) {
-      ;[internationalPrefix, areaPrefix, number] = parts
-      isReginalNumber = internationalPrefix === '0'
-      isInternationalNumber = /\+[0-9]+/.test(internationalPrefix)
-      isValid = isReginalNumber || isInternationalNumber
-    }
+    let isReginalNumber, isInternationalNumber
 
-    if (!isValid) {
-      return phoneNumber
-    }
+    if (!parts.length === 3) return phoneNumber
+
+    const [internationalPrefix, areaPrefix, number] = parts
+    isReginalNumber = internationalPrefix === '0'
+    isInternationalNumber = /\+[0-9]+/.test(internationalPrefix)
+    if (!(isReginalNumber || isInternationalNumber)) return phoneNumber
 
     let prefix = internationalPrefix + areaPrefix
     if (isInternationalNumber) {

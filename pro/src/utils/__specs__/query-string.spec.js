@@ -1,4 +1,4 @@
-const { parse, stringify } = require('utils/query-string')
+import { parse, stringify } from 'utils/query-string'
 
 describe('handling of URL', () => {
   it('should transform queryParams to object / keys-values', () => {

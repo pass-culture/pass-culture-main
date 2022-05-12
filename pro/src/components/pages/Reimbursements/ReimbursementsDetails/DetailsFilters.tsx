@@ -1,10 +1,4 @@
-import React, {
-  Dispatch,
-  MouseEventHandler,
-  SetStateAction,
-  useCallback,
-  useState,
-} from 'react'
+import React, { Dispatch, SetStateAction, useCallback, useState } from 'react'
 
 import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import Select from 'components/layout/inputs/Select'

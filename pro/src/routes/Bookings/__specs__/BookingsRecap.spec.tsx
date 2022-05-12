@@ -14,7 +14,6 @@ import { MemoryRouter } from 'react-router'
 import { api } from 'api/v1/api'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
-import { getVenuesForOfferer, getUserHasBookings } from 'repository/pcapi/pcapi'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
@@ -74,7 +73,7 @@ const renderBookingsRecap = async (
     </Provider>
   )
 
-  const { hasBoookings } = await getUserHasBookings()
+  const { hasBoookings } = await pcapi.getUserHasBookings()
   const displayBookingsButton = screen.getByRole('button', { name: 'Afficher' })
   const downloadBookingsCsvButton = screen.getByRole('button', {
     name: 'Télécharger',
@@ -116,9 +115,9 @@ describe('components | BookingsRecap | Pro user', () => {
       pages: 0,
       total: 0,
     }
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue(
-      emptyBookingsRecapPage
-    )
+    jest
+      .spyOn(api, 'getBookingsGetBookingsPro')
+      .mockResolvedValue(emptyBookingsRecapPage)
 
     user = {
       publicName: 'René',
@@ -130,14 +129,16 @@ describe('components | BookingsRecap | Pro user', () => {
         users: [user],
       },
     }
-    ;(pcapi.getUserInformations as jest.Mock).mockResolvedValue(user)
+    jest.spyOn(pcapi, 'getUserInformations').mockResolvedValue(user)
     venue = venueFactory()
-    ;(getVenuesForOfferer as jest.Mock).mockResolvedValue([venue])
-    ;(getUserHasBookings as jest.Mock).mockResolvedValue({ hasBookings: true })
+    jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue([venue])
+    jest
+      .spyOn(pcapi, 'getUserHasBookings')
+      .mockResolvedValue({ hasBookings: true })
   })
 
   afterEach(() => {
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockReset()
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockReset()
   })
 
   it('should show a pre-filter section', async () => {
@@ -179,10 +180,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -204,7 +206,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
     // Given
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -224,7 +226,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should allow user to reset its pre-filters in the no bookings warning', async () => {
     // Given
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -249,10 +251,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not allow user to reset prefilters when none were applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -269,10 +272,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should allow user to reset prefilters when some where applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -310,10 +314,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should ask user to select a pre-filter when user reset them', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -382,9 +387,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should display an error message on CSV download when API returns a status other than 200', async () => {
     // Given
-    ;(pcapi.getFilteredBookingsCSV as jest.Mock).mockImplementation(() =>
-      Promise.reject(new Error('An error happened.'))
-    )
+    jest
+      .spyOn(pcapi, 'getFilteredBookingsCSV')
+      .mockImplementation(() => Promise.reject(new Error('An error happened.')))
 
     const { submitDownloadFilters } = await renderBookingsRecap({
       ...store,
@@ -431,8 +436,11 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 2,
       bookingsRecap: [bookings2],
     }
-    ;(api.getBookingsGetBookingsPro as jest.Mock)
+    jest
+      .spyOn(api, 'getBookingsGetBookingsPro')
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce(secondPaginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -482,10 +490,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -509,10 +518,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set booking period to null when user select event date', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -542,10 +552,12 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of default period when user clicks on "Afficher" without selecting a period', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -574,10 +586,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -624,10 +637,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set default beginning period date when user empties it and clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -660,10 +674,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set default ending period date when user empties it and clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -696,10 +711,11 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not be possible to select ending period date greater than today', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    ;(api.getBookingsGetBookingsPro as jest.Mock).mockResolvedValue({
+    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
+      // @ts-ignore FIX ME
       bookingsRecap: [bookingRecap],
     })
     const { submitFilters } = await renderBookingsRecap(store)
@@ -729,7 +745,9 @@ describe('components | BookingsRecap | Pro user', () => {
     const booking = bookingRecapFactory()
     const otherVenueBooking = bookingRecapFactory()
     const otherVenue = venueFactory()
-    ;(getVenuesForOfferer as jest.Mock).mockResolvedValue([venue, otherVenue])
+    jest
+      .spyOn(pcapi, 'getVenuesForOfferer')
+      .mockResolvedValue([venue, otherVenue])
     const paginatedBookingRecapReturned = {
       page: 1,
       pages: 1,
@@ -742,8 +760,11 @@ describe('components | BookingsRecap | Pro user', () => {
       total: 1,
       bookingsRecap: [otherVenueBooking],
     }
-    ;(api.getBookingsGetBookingsPro as jest.Mock)
+    jest
+      .spyOn(api, 'getBookingsGetBookingsPro')
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
     const { submitFilters } = await renderBookingsRecap(store)
 
@@ -768,12 +789,19 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should show notification with information message when there are more than 5 pages', async () => {
     // Given
     const bookingsRecap = { pages: 6, bookingsRecap: [] }
-    ;(api.getBookingsGetBookingsPro as jest.Mock)
+    jest
+      .spyOn(api, 'getBookingsGetBookingsPro')
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 6 })
     await renderBookingsRecap(store)
 
@@ -792,11 +820,17 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not show notification with information message when there are 5 pages or less', async () => {
     // Given
     const bookingsRecap = { pages: 5, bookingsRecap: [] }
-    ;(api.getBookingsGetBookingsPro as jest.Mock)
+    jest
+      .spyOn(api, 'getBookingsGetBookingsPro')
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 2 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 3 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 4 })
+      // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 5 })
     await renderBookingsRecap(store)
 
@@ -872,7 +906,9 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should display no booking screen when user does not have any booking yet', async () => {
     //Given
-    ;(getUserHasBookings as jest.Mock).mockResolvedValue({ hasBookings: false })
+    jest
+      .spyOn(pcapi, 'getUserHasBookings')
+      .mockResolvedValue({ hasBookings: false })
     await renderBookingsRecap(store)
 
     //Then

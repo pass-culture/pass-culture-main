@@ -75,6 +75,7 @@ const Venue = ({
 
   useEffect(() => {
     if (isStatOpen && !isStatLoaded) {
+      // eslint-disable-next-line @typescript-eslint/no-extra-semi
       ;(async () => {
         const stats = await pcapi.getVenueStats(id)
         setStats({

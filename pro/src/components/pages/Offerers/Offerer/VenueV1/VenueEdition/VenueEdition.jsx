@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react'
 import { Form } from 'react-final-form'
-import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 import { useDispatch } from 'react-redux'
+import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+
 import {
   Link,
   NavLink,

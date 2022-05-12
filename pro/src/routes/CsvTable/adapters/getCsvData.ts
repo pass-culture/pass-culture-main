@@ -3,6 +3,7 @@ import csvConverter from 'utils/csvConverter'
 
 export const getCsvData = (csvUrl: string): Promise<ITableData | null> => {
   return new Promise((resolve, reject) => {
+    // eslint-disable-next-line @typescript-eslint/no-extra-semi
     ;(async () => {
       try {
         const result = await fetch(csvUrl, { credentials: 'include' })
