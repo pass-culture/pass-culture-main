@@ -26,10 +26,16 @@ def _get_birth_date(row: dict) -> datetime:
     return datetime.strptime(row["Date de naissance"], "%Y-%m-%d")
 
 
+def _get_password(row: dict) -> str:
+    if row.get("Mot de passe"):  # Keep compatibility with CSV without this column
+        return row["Mot de passe"]
+    return settings.TEST_DEFAULT_PASSWORD
+
+
 def _create_beneficiary(row: dict, role: Optional[UserRole]) -> User:
     user = users_api.create_account(
         email=sanitize_email(row["Mail"]),
-        password=settings.TEST_DEFAULT_PASSWORD,
+        password=_get_password(row),
         birthdate=_get_birth_date(row),
         is_email_validated=True,
         send_activation_mail=False,
@@ -55,7 +61,7 @@ def _create_pro_user(row: dict) -> User:
             city="MA VILLE",
             email=row["Mail"],
             name=f'Entreprise {row["Nom"]}',
-            password=settings.TEST_DEFAULT_PASSWORD,
+            password=_get_password(row),
             phoneNumber=row["Téléphone"],
             postalCode=row["Code postal"],
             publicName=f'{row["Prénom"]} {row["Nom"]}',
@@ -84,7 +90,7 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> Optional[
 
     if user:
         user.dateOfBirth = _get_birth_date(row)
-        user.setPassword(settings.TEST_DEFAULT_PASSWORD)
+        user.setPassword(_get_password(row))
     else:
         role = UserRole(row["Role"]) if row["Role"] else None
         if role == UserRole.PRO:
@@ -102,7 +108,9 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> Optional[
     user.add_test_role()
     repository.save(user)
 
-    logger.info("Created or updated user=%s %s from CSV import", user.id, [role.value for role in user.roles])
+    logger.info(
+        "Created or updated user=%s <%s> %s from CSV import", user.id, user.email, [role.value for role in user.roles]
+    )
 
     return user
 
