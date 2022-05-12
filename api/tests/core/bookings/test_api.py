@@ -390,7 +390,6 @@ class BookOfferTest:
 
 @pytest.mark.usefixtures("db_session")
 class CancelByBeneficiaryTest:
-    @pytest.mark.skip
     def test_cancel_booking(self):
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = booking_factories.IndividualBookingFactory.create_batch(20, stock=stock)[0]

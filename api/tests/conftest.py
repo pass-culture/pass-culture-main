@@ -3,6 +3,7 @@ from functools import wraps
 import os
 from pathlib import Path
 from pprint import pprint
+import sys
 import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -64,7 +65,7 @@ def app_fixture():
     #   - pytest tests/core/fraud/test_api.py
     # Leave an XXX note about why we need that.
     app.teardown_request_funcs[None].remove(flask_app.remove_db_session)
-
+    sys.setrecursionlimit(2000)
     with app.app_context():
         app.config["TESTING"] = True
 
