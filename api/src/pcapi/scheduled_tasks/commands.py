@@ -48,6 +48,7 @@ from pcapi.scripts.beneficiary.import_dms_accepted_applications import import_dm
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
+from pcapi.scripts.subscription.handle_deleted_dms_applications import handle_deleted_dms_applications
 from pcapi.tasks import batch_tasks
 from pcapi.utils.blueprint import Blueprint
 from pcapi.workers.push_notification_job import send_today_stock_notification
@@ -325,3 +326,18 @@ def handle_inactive_dms_applications_cron() -> None:
         procedures.append(DMS_OLD_PROCEDURE_ID)
     for procedure_id in procedures:
         handle_inactive_dms_applications(procedure_id)
+
+
+@blueprint.cli.command("handle_deleted_dms_applications_cron")
+@log_cron_with_transaction
+def handle_deleted_dms_applications_cron() -> None:
+    procedures = [
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR,
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_ET,
+        settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING,
+        settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID,
+    ]
+    if settings.IS_PROD:
+        procedures.append(DMS_OLD_PROCEDURE_ID)
+    for procedure_id in procedures:
+        handle_deleted_dms_applications(procedure_id)
