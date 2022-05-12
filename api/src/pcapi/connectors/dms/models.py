@@ -76,11 +76,13 @@ class FieldLabel(enum.Enum):
     CITY_ET = "Quelle est ta ville de résidence ?"
     DEPARTMENT_ET = "Veuillez indiquer votre département"
     DEPARTMENT_FR = "Veuillez indiquer votre département"
+    DEPARTMENT_OLD = "Veuillez indiquer votre département de résidence"
     ID_PIECE_NUMBER_ET = "Quel est le numéro de la pièce que tu viens de saisir ?"
     ID_PIECE_NUMBER_FR = "Quel est le numéro de la pièce que tu viens de saisir ?"
     ID_PIECE_NUMBER_PROCEDURE_4765 = "Quel est le numéro de la pièce que vous venez de saisir ?"
     POSTAL_CODE_ET = "Quel est le code postal de ta commune de résidence ?"
     POSTAL_CODE_FR = "Quel est le code postal de ta commune de résidence ? (ex : 25370)"
+    POSTAL_CODE_OLD = "Quel est le code postal de votre commune de résidence ?"
     TELEPHONE_ET = "Quel est ton numéro de téléphone ?"
     TELEPHONE_FR = "Quel est ton numéro de téléphone ?"
 
