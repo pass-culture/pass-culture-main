@@ -97,13 +97,12 @@ const Offers = ({
     [urlSearchFilters]
   )
 
-  const actionLink =
-    userHasNoOffers || isAdmin ? null : (
-      <Link className="primary-button with-icon" to="/offre/creation">
-        <AddOfferSvg />
-        Créer une offre
-      </Link>
-    )
+  const actionLink = isAdmin ? null : (
+    <Link className="primary-button with-icon" to="/offre/creation">
+      <AddOfferSvg />
+      Créer une offre
+    </Link>
+  )
 
   const nbSelectedOffers = areAllOffersSelected
     ? offers.length
