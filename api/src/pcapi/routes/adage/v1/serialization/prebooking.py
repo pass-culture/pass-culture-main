@@ -344,6 +344,9 @@ def _get_educational_offer_address(offer: offers_models.Offer) -> str:
 def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> str:
     default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
 
+    if offer.offerVenue is None:
+        return default_address
+
     address_type = offer.offerVenue["addressType"]
 
     if address_type == "offererVenue":
