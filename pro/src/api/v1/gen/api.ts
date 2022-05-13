@@ -105,7 +105,7 @@ export enum BookingRecapStatus {
     Confirmed = 'confirmed',
     Pending = 'pending'
 }
-export enum BookingStatusFilter {
+export enum BookingStatusFilterList {
     Booked = 'booked',
     Validated = 'validated',
     Reimbursed = 'reimbursed'
@@ -159,6 +159,11 @@ export interface CollectiveBookingResponseModel {
 export interface CollectiveBookingStatusFilter {
 }
 
+export enum CollectiveBookingStatusFilterList {
+    Booked = 'booked',
+    Validated = 'validated',
+    Reimbursed = 'reimbursed'
+}
 export interface CollectiveOfferOfferVenueResponseModel {
     addressType: OfferAddressType;
     otherAddress: string;
@@ -815,7 +820,7 @@ export interface ListBookingsQueryModel {
     eventDate?: string | null;
     exportType?: BookingExportType | null;
     extra?: string;
-    individualBookingStatusFilter?: BookingStatusFilter | null;
+    individualBookingStatusFilter?: BookingStatusFilterList | null;
     offerType?: OfferType | null;
     page?: number;
     venueId?: number | null;
@@ -831,7 +836,7 @@ export interface ListBookingsResponseModel {
 export interface ListCollectiveBookingsQueryModel {
     bookingPeriodBeginningDate?: string | null;
     bookingPeriodEndingDate?: string | null;
-    collectiveBookingStatusFilter?: CollectiveBookingStatusFilter | null;
+    collectiveBookingStatusFilter?: CollectiveBookingStatusFilterList | null;
     eventDate?: string | null;
     extra?: string;
     page?: number;
