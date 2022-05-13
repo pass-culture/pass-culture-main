@@ -291,7 +291,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
-    stock: GetCollectiveOfferCollectiveStockResponseModel = Field(alias="collectiveStock")
+    stock: Optional[GetCollectiveOfferCollectiveStockResponseModel] = Field(alias="collectiveStock")
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
