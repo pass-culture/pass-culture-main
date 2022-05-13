@@ -158,15 +158,15 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
-        const getStockAdapter = enableIndividualAndCollectiveSeparation
-          ? getCollectiveStockAdapter
-          : getEducationalStockAdapter
+        const getStockAdapter = () => enableIndividualAndCollectiveSeparation
+          ? getCollectiveStockAdapter({offerId, isNewCollectiveModelEnabled})
+          : getEducationalStockAdapter(offerId)
         const getOfferAdapter = getGetOfferAdapter(
           enableIndividualAndCollectiveSeparation
         )
         const [offerResponse, stockResponse] = await Promise.all([
           getOfferAdapter(offerId),
-          getStockAdapter(offerId),
+          getStockAdapter(),
         ])
         if (!offerResponse.isOk) {
           return notify.error(offerResponse.message)

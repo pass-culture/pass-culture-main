@@ -6,7 +6,7 @@ type IPayloadSuccess = {
 }
 type IPayloadFailure = { stock: null }
 type GetCollectiveStockAdapter = Adapter<
-  string,
+  { offerId: string; isNewCollectiveModelEnabled: boolean },
   IPayloadSuccess,
   IPayloadFailure
 >
@@ -17,17 +17,23 @@ const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   payload: { stock: null },
 }
 
-export const getCollectiveStockAdapter: GetCollectiveStockAdapter =
-  async offerId => {
-    try {
-      const stock = await pcapi.getCollectiveStockForOffer(offerId)
-      return {
-        isOk: true,
-        message: '',
-        // FIXME (MathildeDuboille, 25-04-22): remove id override when FF USE_NEW_COLLECTIVE_MODELS is active
-        payload: { stock: { ...stock, id: stock.stockId ?? '' } },
-      }
-    } catch (e) {
-      return FAILING_RESPONSE
+export const getCollectiveStockAdapter: GetCollectiveStockAdapter = async ({
+  offerId,
+  isNewCollectiveModelEnabled,
+}) => {
+  try {
+    const stock = await pcapi.getCollectiveStockForOffer(offerId)
+    return {
+      isOk: true,
+      message: '',
+      payload: {
+        stock: {
+          ...stock,
+          id: isNewCollectiveModelEnabled ? stock.id : stock.stockId ?? '',
+        },
+      },
     }
+  } catch (e) {
+    return FAILING_RESPONSE
   }
+}
