@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 HASHED_PLACEHOLDER = crypto.hash_password("placeholder")
 
 
-def check_user_and_credentials(user: models.User, password: str) -> None:
+def check_user_and_credentials(user: Optional[models.User], password: str, allow_inactive: bool = False) -> None:
     # Order is important to prevent end-user to guess user emails
     # We need to check email and password before checking email validation
     if not user:
@@ -32,14 +32,14 @@ def check_user_and_credentials(user: models.User, password: str) -> None:
         # response time.
         crypto.check_password(password, HASHED_PLACEHOLDER)  # type: ignore [arg-type]
         raise exceptions.InvalidIdentifier()
-    if not user.checkPassword(password) or not user.isActive:
+    if not (user.checkPassword(password) and (user.isActive or allow_inactive)):
         logging.info("Failed authentication attempt", extra={"user": user.id, "avoid_current_user": True})
         raise exceptions.InvalidIdentifier()
     if not user.isValidated or not user.isEmailValidated:
         raise exceptions.UnvalidatedAccount()
 
 
-def get_user_with_credentials(identifier: str, password: str) -> models.User:
+def get_user_with_credentials(identifier: str, password: str, allow_inactive: bool = False) -> models.User:
     user = find_user_by_email(identifier)
     check_user_and_credentials(user, password)
     return typing.cast(models.User, user)
