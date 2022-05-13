@@ -16,9 +16,8 @@ import { ReactComponent as HomeSvg } from './assets/home.svg'
 import { ReactComponent as OffersSvg } from './assets/offers.svg'
 import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 import { ReactComponent as SignoutSvg } from './assets/signout.svg'
-import { ReactComponent as StyleguideSvg } from './assets/styleguide.svg'
 
-const Header = ({ isStyleguideActive, isUserAdmin }) => {
+const Header = ({ isUserAdmin }) => {
   const dispatch = useDispatch()
   const history = useHistory()
   const logEvent = useSelector(state => state.app.logEvent)
@@ -110,18 +109,6 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
 
           <div className="separator" />
 
-          {isStyleguideActive && (
-            <NavLink
-              className="nav-item icon-only"
-              data-testid="styleguide"
-              role="menuitem"
-              title="Guide de style"
-              to="/styleguide"
-            >
-              <StyleguideSvg />
-            </NavLink>
-          )}
-
           <button
             className="nav-item icon-only"
             onClick={onSignoutClick}
@@ -137,7 +124,6 @@ const Header = ({ isStyleguideActive, isUserAdmin }) => {
 }
 
 Header.propTypes = {
-  isStyleguideActive: PropTypes.bool.isRequired,
   isUserAdmin: PropTypes.bool.isRequired,
 }
 
