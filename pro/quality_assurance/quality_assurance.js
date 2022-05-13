@@ -105,7 +105,6 @@ test('captures d’écran de toutes les pages du site', async () => {
     .takeScreenshot(optionsOfScreenshot('lieu-edition'))
   await takeScreenshot('structures?mots-cles=search-without-result')
   await takeScreenshot('structures/creation')
-  await takeScreenshot('styleguide')
   await takeScreenshot('remboursements')
   // TODO: Pourquoi vois-je du JS ?
   await takeScreenshot('remboursements/detail')

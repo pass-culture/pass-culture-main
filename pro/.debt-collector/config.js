@@ -137,13 +137,6 @@ module.exports = {
       matchRule: ({ directoryDepth }) => (directoryDepth > 6 ? 1 : 0),
     },
     {
-      title: 'should delete styleguide, and migrate components in storybook',
-      id: 'REMOVE_STYLEGUIDE_PAGES',
-      debtScore: 2,
-      tags: ['design system', 'new workshop rules'],
-      matchGlob: './src/components/pages/Styleguide/**/*.*',
-    },
-    {
       title:
         'should migrate everything in hoc directory and create hooks instead',
       id: 'REMOVE_HOC_DIRECTORY',
