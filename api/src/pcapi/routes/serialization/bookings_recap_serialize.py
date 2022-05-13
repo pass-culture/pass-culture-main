@@ -166,7 +166,7 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
     event_date: Optional[str]
-    booking_status_filter: Optional[BookingStatusFilter]
+    individual_booking_status_filter: Optional[BookingStatusFilter]
     booking_period_beginning_date: Optional[str]
     booking_period_ending_date: Optional[str]
     offer_type: Optional[OfferType]
