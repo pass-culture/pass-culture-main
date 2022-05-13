@@ -164,6 +164,7 @@ class AccountState(enum.Enum):
     ACTIVE = "ACTIVE"
     INACTIVE = "INACTIVE"
     SUSPENDED = "SUSPENDED"
+    SUSPENDED_UPON_USER_REQUEST = "SUSPENDED_UPON_USER_REQUEST"
     DELETED = "DELETED"
 
 
@@ -434,9 +435,10 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
 
             if suspension_event.eventType == SuspensionEventType.SUSPENDED:
 
-                # DELETED is a very specific suspension reason
                 if suspension_event.reasonCode == SuspensionReason.DELETED:
                     return AccountState.DELETED
+                if suspension_event.reasonCode == SuspensionReason.UPON_USER_REQUEST:
+                    return AccountState.SUSPENDED_UPON_USER_REQUEST
 
                 return AccountState.SUSPENDED
 
