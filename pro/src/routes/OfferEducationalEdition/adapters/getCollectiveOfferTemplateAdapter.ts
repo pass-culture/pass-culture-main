@@ -1,5 +1,6 @@
-import { CollectiveOfferTemplate } from 'core/OfferEducational/types'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { CollectiveOfferTemplate } from 'core/OfferEducational/types'
 
 type IPayloadFailure = null
 type GetCollectiveOfferTemplateAdapter = Adapter<

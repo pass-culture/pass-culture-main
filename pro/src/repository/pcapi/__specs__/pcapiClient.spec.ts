@@ -1,7 +1,7 @@
-import fetch from 'jest-fetch-mock'
+import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
 
 import { client } from 'repository/pcapi/pcapiClient'
-import { API_URL, URL_FOR_MAINTENANCE } from 'utils/config'
+import fetch from 'jest-fetch-mock'
 
 describe('pcapiClient', () => {
   beforeEach(() => {

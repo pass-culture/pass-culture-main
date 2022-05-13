@@ -1,9 +1,9 @@
-import createCachedSelector from 're-reselect'
-import type { KeySelector } from 're-reselect'
+import { ENTREPRISE_STATUS_ACTIVE, apiEntreprise } from 'api/api'
+import { HTTP_STATUS, isApiError } from 'api/helpers'
 
-import { apiEntreprise, ENTREPRISE_STATUS_ACTIVE } from 'api/api'
 import type { IEntrepriseSiretData } from 'api/entreprise/types'
-import { isApiError, HTTP_STATUS } from 'api/helpers'
+import type { KeySelector } from 're-reselect'
+import createCachedSelector from 're-reselect'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import { validateSiret } from 'core/Venue/validate'
 

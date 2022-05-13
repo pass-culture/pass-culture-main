@@ -1,7 +1,6 @@
-import { useField } from 'formik'
-import React from 'react'
-
 import { BaseCheckbox } from '../shared'
+import React from 'react'
+import { useField } from 'formik'
 
 interface ICheckboxProps {
   setGroupTouched(): void

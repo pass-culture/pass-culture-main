@@ -1,7 +1,7 @@
-import { Story } from '@storybook/react'
-import React from 'react'
+import { ConstraintCheck, ConstraintCheckProps } from './ConstraintCheck'
 
-import { ConstraintCheckProps, ConstraintCheck } from './ConstraintCheck'
+import React from 'react'
+import { Story } from '@storybook/react'
 import { imageConstraints } from './imageConstraints'
 
 export default {

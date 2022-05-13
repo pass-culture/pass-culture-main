@@ -1,6 +1,5 @@
-import React from 'react'
-
 import FieldError from './FieldError'
+import React from 'react'
 
 export default {
   title: 'ui-kit/forms/shared/FieldError',

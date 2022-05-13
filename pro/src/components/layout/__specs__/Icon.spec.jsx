@@ -1,7 +1,6 @@
-import { shallow } from 'enzyme'
-import React from 'react'
-
 import Icon from '../Icon'
+import React from 'react'
+import { shallow } from 'enzyme'
 
 describe('src | components | layout | Icon', () => {
   describe('render', () => {

@@ -1,9 +1,8 @@
-import cn from 'classnames'
 import React, { FunctionComponent, SVGProps } from 'react'
 
 import { OFFER_TYPES } from 'core/Offers'
 import { ReactComponent as TickIcon } from 'icons/tick.svg'
-
+import cn from 'classnames'
 import styles from './OfferTypeButton.module.scss'
 
 interface IOfferTypeButton {

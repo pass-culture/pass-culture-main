@@ -1,8 +1,6 @@
-import { connect } from 'react-redux'
-
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
-
 import OffererDetails from './OffererDetails'
+import { connect } from 'react-redux'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 
 export const mapStateToProps = (state, ownProps) => {
   const { match } = ownProps

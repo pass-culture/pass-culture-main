@@ -1,13 +1,12 @@
+import '@reach/menu-button/styles.css'
+
 import { Menu, MenuButton, MenuItem, MenuList } from '@reach/menu-button'
-import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
-import { ReactComponent as OptionMenuIcon } from 'icons/ico-more-horiz.svg'
-
 import { ReactComponent as AddActivationCodeIcon } from '../assets/add-activation-code-light.svg'
-
 import { ReactComponent as DeleteStockLightIcon } from './assets/delete-stock-light.svg'
-import '@reach/menu-button/styles.css'
+import { ReactComponent as OptionMenuIcon } from 'icons/ico-more-horiz.svg'
+import PropTypes from 'prop-types'
 
 const StockItemOptionsMenu = ({
   canAddActivationCodes,

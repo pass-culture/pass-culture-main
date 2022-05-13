@@ -1,6 +1,5 @@
-import React from 'react'
-
 import FormLayout from 'new_components/FormLayout'
+import React from 'react'
 
 const Categories = (): JSX.Element => {
   return (

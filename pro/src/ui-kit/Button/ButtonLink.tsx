@@ -1,9 +1,9 @@
-import cn from 'classnames'
+import { ButtonVariant, SharedButtonProps } from './types'
 import React, { MouseEventHandler } from 'react'
-import { Link } from 'react-router-dom'
 
+import { Link } from 'react-router-dom'
+import cn from 'classnames'
 import styles from './Button.module.scss'
-import { SharedButtonProps, ButtonVariant } from './types'
 
 interface IButtonProps extends SharedButtonProps {
   to: string

@@ -1,13 +1,12 @@
-import { array, number } from '@storybook/addon-knobs'
-import { Story } from '@storybook/react'
-import React from 'react'
-
-import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
-
 import {
   ImportFromComputer,
   ImportFromComputerProps,
 } from './ImportFromComputer'
+import { array, number } from '@storybook/addon-knobs'
+
+import React from 'react'
+import { Story } from '@storybook/react'
+import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 
 export default {
   title: 'components/ImportFromComputer',

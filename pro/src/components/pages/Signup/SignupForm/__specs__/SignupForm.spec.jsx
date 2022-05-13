@@ -1,15 +1,16 @@
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router-dom'
 
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
-import { configureTestStore } from 'store/testUtils'
 
+import { render, screen, waitFor } from '@testing-library/react'
+
+import { Provider } from 'react-redux'
+import React from 'react'
+import { Router } from 'react-router-dom'
 import SignupForm from '../SignupForm'
+import { configureTestStore } from 'store/testUtils'
+import { createBrowserHistory } from 'history'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
 

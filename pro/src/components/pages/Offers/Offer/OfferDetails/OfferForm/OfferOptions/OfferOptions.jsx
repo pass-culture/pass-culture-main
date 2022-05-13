@@ -1,9 +1,7 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-
-import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
-
 import { OFFER_OPTIONS } from '../../_constants'
+import PropTypes from 'prop-types'
+import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
+import React from 'react'
 
 const OfferOptions = ({ canOfferBeDuo, isDuo, isDuoDisabled, updateForm }) => {
   const handleOtherRadioInputChange = event => {

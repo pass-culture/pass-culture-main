@@ -1,28 +1,27 @@
-import React, { useState, useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
-import { useParams } from 'react-router-dom'
-
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
-  getStockCollectiveOfferAdapter,
-  getStockOfferAdapter,
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
+  getStockCollectiveOfferAdapter,
+  getStockOfferAdapter,
 } from 'core/OfferEducational'
+import React, { useEffect, useState } from 'react'
+
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-
+import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import Spinner from 'components/layout/Spinner'
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
 import postEducationalShadowStockAdapter from './adapters/postEducationalShadowStock'
 import postEducationalStockAdapter from './adapters/postEducationalStock'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import { useHistory } from 'react-router-dom'
+import useNotification from 'components/hooks/useNotification'
+import { useParams } from 'react-router-dom'
 
 const OfferEducationalStockCreation = (): JSX.Element => {
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
@@ -49,7 +48,11 @@ const OfferEducationalStockCreation = (): JSX.Element => {
         ? postCollectiveOfferTemplateAdapter
         : postEducationalShadowStockAdapter
       const response = await adapter({
-        offerId: enableIndividualAndCollectiveSeparation && !isNewCollectiveModelEnabled ? offer.offerId ?? '' : offer.id,
+        offerId:
+          enableIndividualAndCollectiveSeparation &&
+          !isNewCollectiveModelEnabled
+            ? offer.offerId ?? ''
+            : offer.id,
         values,
       })
       isOk = response.isOk

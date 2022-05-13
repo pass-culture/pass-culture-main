@@ -1,6 +1,5 @@
-import React from 'react'
-
 import Icon from 'components/layout/Icon'
+import React from 'react'
 
 const TooltipInvalidSiret = (): JSX.Element => {
   return (

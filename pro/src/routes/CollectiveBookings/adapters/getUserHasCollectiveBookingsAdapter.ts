@@ -1,5 +1,6 @@
-import { GetUserHasBookingsAdapter } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { GetUserHasBookingsAdapter } from 'core/Bookings'
 
 const FAILING_RESPONSE: AdapterFailure<boolean> = {
   isOk: false,

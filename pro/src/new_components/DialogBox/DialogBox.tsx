@@ -1,5 +1,6 @@
-import { DialogContent, DialogOverlay } from '@reach/dialog'
 import '@reach/dialog/styles.css'
+
+import { DialogContent, DialogOverlay } from '@reach/dialog'
 import React, { FunctionComponent } from 'react'
 
 import CloseButton from './CloseButton'

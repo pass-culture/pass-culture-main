@@ -1,7 +1,7 @@
-import React from 'react'
+import { TextArea, TextInput } from 'ui-kit'
 
 import FormLayout from 'new_components/FormLayout'
-import { TextInput, TextArea } from 'ui-kit'
+import React from 'react'
 
 const Informations = (): JSX.Element => {
   return (

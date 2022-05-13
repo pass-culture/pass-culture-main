@@ -1,26 +1,25 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-
-import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Titles from 'components/layout/Titles/Titles'
-import ActionsBarContainer from 'components/pages/Offers/Offers/ActionsBar/ActionsBarContainer'
-import OffersContainer from 'components/pages/Offers/Offers/OffersContainer'
 import {
   DEFAULT_SEARCH_FILTERS,
-  hasSearchFilters,
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
+  hasSearchFilters,
 } from 'core/Offers'
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
-import { Audience } from 'core/shared'
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
-import NoOffers from 'new_components/NoData'
-import Tabs from 'new_components/Tabs'
+import React, { useCallback, useEffect, useState } from 'react'
 
+import ActionsBarContainer from 'components/pages/Offers/Offers/ActionsBar/ActionsBarContainer'
+import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import { Audience } from 'core/shared'
+import { ReactComponent as LibraryIcon } from 'icons/library.svg'
+import { Link } from 'react-router-dom'
+import NoOffers from 'new_components/NoData'
+import OffersContainer from 'components/pages/Offers/Offers/OffersContainer'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import SearchFilters from './SearchFilters'
+import Tabs from 'new_components/Tabs'
+import Titles from 'components/layout/Titles/Titles'
+import { ReactComponent as UserIcon } from 'icons/user.svg'
 
 export interface IOffersProps {
   currentPageNumber: number

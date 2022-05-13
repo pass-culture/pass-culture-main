@@ -1,29 +1,28 @@
+import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
 import { Redirect, useHistory } from 'react-router-dom'
-
-import { api } from 'api/v1/api'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
-import { filterEducationalCategories } from 'core/OfferEducational'
-import { getOffererAdapter } from 'core/Offers/adapters'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Offer, Offerer, TSearchFilters, Option } from 'core/Offers/types'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils'
-import { hasSearchFilters } from 'core/Offers/utils'
-import { Audience } from 'core/shared/types'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
-import { sortByDisplayName } from 'utils/strings'
 
+import { Audience } from 'core/shared/types'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import OffersScreen from 'screens/Offers'
+import Spinner from 'components/layout/Spinner'
+import { api } from 'api/v1/api'
+import { computeCollectiveOffersUrl } from 'core/Offers/utils'
+import { filterEducationalCategories } from 'core/OfferEducational'
 import { getFilteredCollectiveOffersAdapter } from './adapters'
+import { getOffererAdapter } from 'core/Offers/adapters'
+import { hasSearchFilters } from 'core/Offers/utils'
+import { sortByDisplayName } from 'utils/strings'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import { useDispatch } from 'react-redux'
+import useNotification from 'components/hooks/useNotification'
+import { useQuerySearchFilters } from 'core/Offers/hooks'
 
 const CollectiveOffers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()

@@ -1,12 +1,10 @@
-import { Story } from '@storybook/react'
-import React from 'react'
-
-import { withRouterDecorator } from '../../stories/decorators/withRouter'
-
-import { ReactComponent as StoryIcon } from './assets/storyIcon.svg'
-import { SharedButtonProps, ButtonVariant } from './types'
-
 import { Button, ButtonLink } from './index'
+import { ButtonVariant, SharedButtonProps } from './types'
+
+import React from 'react'
+import { Story } from '@storybook/react'
+import { ReactComponent as StoryIcon } from './assets/storyIcon.svg'
+import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
 export default {
   title: 'ui-kit/Button',

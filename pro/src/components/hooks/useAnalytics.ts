@@ -1,12 +1,13 @@
+import * as firebase from '@firebase/app'
+
 import {
   getAnalytics,
   initializeAnalytics,
   setUserId,
 } from '@firebase/analytics'
-import { logEvent as analyticsLogEvent } from '@firebase/analytics'
-import * as firebase from '@firebase/app'
 import { useEffect, useState } from 'react'
 
+import { logEvent as analyticsLogEvent } from '@firebase/analytics'
 import { firebaseConfig } from 'config/firebase'
 
 type logEventType = () => (

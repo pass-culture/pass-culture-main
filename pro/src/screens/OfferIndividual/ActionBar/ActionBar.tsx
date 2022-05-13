@@ -1,8 +1,7 @@
-import React from 'react'
-
 import { Button, ButtonLink } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 
+import { ButtonVariant } from 'ui-kit/Button/types'
+import React from 'react'
 import style from './ActionBar.module.scss'
 
 interface IActionBarProps {

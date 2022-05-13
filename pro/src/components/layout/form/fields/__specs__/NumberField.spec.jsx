@@ -1,8 +1,7 @@
-import { mount } from 'enzyme'
-import React from 'react'
 import { Form } from 'react-final-form'
-
 import NumberField from '../NumberField'
+import React from 'react'
+import { mount } from 'enzyme'
 
 describe('src | components | layout | form | NumberField', () => {
   it('should submit a form with number field when number is a decimal with a dot', async () => {

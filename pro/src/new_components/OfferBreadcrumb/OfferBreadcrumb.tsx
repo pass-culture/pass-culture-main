@@ -1,12 +1,12 @@
-import React from 'react'
-
+import Breadcrumb, {
+  BreadcrumbStyle,
+} from 'new_components/Breadcrumb/Breadcrumb'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
-import Breadcrumb, {
-  BreadcrumbStyle,
-} from 'new_components/Breadcrumb/Breadcrumb'
+
+import React from 'react'
 
 export enum OfferBreadcrumbStep {
   DETAILS = 'details',

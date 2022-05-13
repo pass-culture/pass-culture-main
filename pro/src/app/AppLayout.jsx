@@ -1,14 +1,13 @@
-import classnames from 'classnames'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { NavLink } from 'react-router-dom'
-import ReactTooltip from 'react-tooltip'
-
+import DomainNameBanner from 'new_components/DomainNameBanner'
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import Icon from 'components/layout/Icon'
+import { NavLink } from 'react-router-dom'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import PropTypes from 'prop-types'
+import React from 'react'
+import ReactTooltip from 'react-tooltip'
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
-import DomainNameBanner from 'new_components/DomainNameBanner'
+import classnames from 'classnames'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props

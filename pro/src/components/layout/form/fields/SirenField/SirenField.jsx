@@ -1,10 +1,9 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Field } from 'react-final-form'
-
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { humanizeSiren, unhumanizeSiren } from 'core/Offerers/utils'
 
+import { Field } from 'react-final-form'
+import PropTypes from 'prop-types'
+import React from 'react'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import validate from './validate'
 
 const formatSiren = value => {

@@ -1,11 +1,9 @@
+import { ImagePreview, ImagePreviewsWrapper } from 'new_components/ImagePreview'
 import React, { FunctionComponent } from 'react'
 
-import { ImagePreviewsWrapper, ImagePreview } from 'new_components/ImagePreview'
-
 import homeShell from '../assets/offer-home-shell.png'
-import offerShell from '../assets/offer-shell.png'
-
 import homeStyle from './HomeScreenPreview.module.scss'
+import offerShell from '../assets/offer-shell.png'
 import offerStyle from './OfferScreenPreview.module.scss'
 
 interface Props {

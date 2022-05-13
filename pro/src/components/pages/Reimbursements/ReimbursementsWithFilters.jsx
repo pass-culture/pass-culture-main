@@ -1,22 +1,22 @@
-import PropTypes from 'prop-types'
+import './Reimbursement.scss'
+
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
+import { Banner } from 'ui-kit'
+import Breadcrumb from '../../../new_components/Breadcrumb'
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { Banner } from 'ui-kit'
-import { sortByDisplayName } from 'utils/strings'
-
-import './Reimbursement.scss'
-import Breadcrumb from '../../../new_components/Breadcrumb'
-import useActiveFeature from '../../hooks/useActiveFeature'
-
+import PropTypes from 'prop-types'
 import ReimbursementsDetails from './ReimbursementsDetails/ReimbursementsDetails'
 import ReimbursementsInvoices from './ReimbursementsInvoices/ReimbursementsInvoices'
+import Spinner from 'components/layout/Spinner'
+import Titles from 'components/layout/Titles/Titles'
+import { sortByDisplayName } from 'utils/strings'
+import useActiveFeature from '../../hooks/useActiveFeature'
 
 export const STEP_ID_INVOICES = 'justificatifs'
 export const STEP_ID_DETAILS = 'details'

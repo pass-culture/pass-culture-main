@@ -1,14 +1,13 @@
-import React from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import NotFound from 'components/pages/Errors/NotFound/NotFound'
-import FeaturedRoute from 'components/router/FeaturedRoute'
 import BusinessUnitList from 'routes/BusinessUnitList'
-
+import FeaturedRoute from 'components/router/FeaturedRoute'
+import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import OffererDetailsContainer from './OffererDetails/OffererDetailsContainer'
+import React from 'react'
 import VenueLayout from './Venue/VenueLayout'
 import VenueV1Layout from './VenueV1/VenueLayout'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 
 const OffererDetailsLayout = () => {
   const match = useRouteMatch()

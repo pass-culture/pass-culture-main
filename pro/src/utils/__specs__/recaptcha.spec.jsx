@@ -1,7 +1,6 @@
-import { mount } from 'enzyme'
 import React from 'react'
-
 import { initReCaptchaScript } from '../recaptcha'
+import { mount } from 'enzyme'
 
 jest.mock('../config', () => ({
   RECAPTCHA_SITE_KEY: 'recaptcha-site-key',

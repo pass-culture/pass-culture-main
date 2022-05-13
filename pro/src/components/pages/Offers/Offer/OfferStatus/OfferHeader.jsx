@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
 import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import StatusToggleButton from 'components/pages/Offers/Offer/OfferStatus/StatusToggleButtonContainer'
 

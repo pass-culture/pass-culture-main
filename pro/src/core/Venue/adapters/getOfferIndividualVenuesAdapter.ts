@@ -1,5 +1,6 @@
-import { IAPIVenue, TOfferIndividualVenue } from 'core/Venue/types'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { IAPIVenue, TOfferIndividualVenue } from 'core/Venue/types'
 
 type Params = void
 type IPayload = TOfferIndividualVenue[]

@@ -1,36 +1,35 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
 import {
-  cancelActiveBookingsAdapter,
-  cancelCollectiveBookingAdapter,
+  CollectiveStockResponseModel,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
-  getStockOfferAdapter,
-  getStockCollectiveOfferAdapter,
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
-  patchIsOfferActiveAdapter,
-  CollectiveStockResponseModel,
   StockResponse,
+  cancelActiveBookingsAdapter,
+  cancelCollectiveBookingAdapter,
   extractInitialStockValues,
+  getStockCollectiveOfferAdapter,
+  getStockOfferAdapter,
+  patchIsOfferActiveAdapter,
 } from 'core/OfferEducational'
+import React, { useEffect, useState } from 'react'
 import {
   getEducationalStockAdapter,
   patchShadowStockAdapter,
   patchShadowStockIntoEducationalStockAdapter,
 } from 'core/OfferEducational/adapters'
+import { useHistory, useParams } from 'react-router-dom'
+
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-
+import Spinner from 'components/layout/Spinner'
 import { getCollectiveStockAdapter } from './adapters/getCollectiveStockAdapter'
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
 import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
 
 const getAdapter = (
   offer: GetStockOfferSuccessPayload,

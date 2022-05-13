@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
-import { Redirect } from 'react-router'
 import { Link, useLocation } from 'react-router-dom'
+import React, { useCallback } from 'react'
 
-import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
-import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
-import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
-import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
+import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
+import PropTypes from 'prop-types'
+import { Redirect } from 'react-router'
+import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
+import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
+import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 
 const Confirmation = ({ isCreatingOffer, offer, setOffer }) => {
   const editionUrl = useOfferEditionURL(offer.isEducational, offer.id)

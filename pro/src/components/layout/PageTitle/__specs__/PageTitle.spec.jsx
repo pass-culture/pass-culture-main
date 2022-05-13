@@ -1,7 +1,6 @@
-import { render } from '@testing-library/react'
-import React from 'react'
-
 import PageTitle from '../PageTitle'
+import React from 'react'
+import { render } from '@testing-library/react'
 
 describe('pageTitle', () => {
   it('should override document title', () => {

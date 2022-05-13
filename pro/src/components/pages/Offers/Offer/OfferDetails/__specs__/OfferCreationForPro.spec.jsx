@@ -1,26 +1,8 @@
 import '@testing-library/jest-dom'
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-  within,
-} from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
 
-import { apiV1 } from 'api/api'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
-import { loadFakeApiCategories } from 'utils/fakeApi'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
 
-import OfferLayout from '../../OfferLayout'
-
+import { MemoryRouter, Route } from 'react-router'
 import {
   findInputErrorForField,
   getOfferInputForField,
@@ -28,6 +10,24 @@ import {
   setOfferValues,
   sidebarDisplayed,
 } from './helpers'
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+  within,
+} from '@testing-library/react'
+
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
+import OfferLayout from '../../OfferLayout'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { apiV1 } from 'api/api'
+import { configureTestStore } from 'store/testUtils'
+import { loadFakeApiCategories } from 'utils/fakeApi'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
+import userEvent from '@testing-library/user-event'
 
 Element.prototype.scrollIntoView = () => {}
 

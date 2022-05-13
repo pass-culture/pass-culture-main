@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import React from 'react'
 
-import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import ActionsBar from '../ActionsBar'
+import React from 'react'
+import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
 const renderActionsBar = props => {
   return render(<ActionsBar {...props} />)

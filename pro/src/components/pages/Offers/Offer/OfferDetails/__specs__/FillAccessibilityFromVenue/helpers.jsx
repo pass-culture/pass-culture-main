@@ -1,31 +1,31 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router-dom'
 
-import { apiV1 } from 'api/api'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
 
+import { MemoryRouter, Route } from 'react-router-dom'
+import {
+  categories,
+  offerer1,
+  offerer2,
+  offerer2VenuePhysicalAccessible,
+  offerer2VenueVirtual,
+  venuePhysicalAccessible,
+  venuePhysicalUndefinedAccessibility,
+  venueVirtual,
+} from './mocks'
 import {
   getOfferInputForField,
   setOfferValues,
   sidebarDisplayed,
 } from '../helpers'
+import { render, screen } from '@testing-library/react'
 
-import {
-  categories,
-  offerer1,
-  offerer2,
-  offerer2VenueVirtual,
-  offerer2VenuePhysicalAccessible,
-  venueVirtual,
-  venuePhysicalAccessible,
-  venuePhysicalUndefinedAccessibility,
-} from './mocks'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { apiV1 } from 'api/api'
+import { configureTestStore } from 'store/testUtils'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),

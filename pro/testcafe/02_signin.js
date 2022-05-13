@@ -1,10 +1,8 @@
-import { Selector } from 'testcafe'
-
-import { ROOT_PATH } from '../src/utils/config'
-
-import { getPathname } from './helpers/location'
 import { HOME_URL } from './helpers/navigations'
+import { ROOT_PATH } from '../src/utils/config'
+import { Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
+import { getPathname } from './helpers/location'
 
 const inputUserIdentifier = Selector('input[name="identifier"]')
 const inputUserPassword = Selector('input[name="password"]')

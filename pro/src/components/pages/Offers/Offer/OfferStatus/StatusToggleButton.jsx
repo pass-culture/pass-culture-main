@@ -1,13 +1,14 @@
-import PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
+import * as pcapi from 'repository/pcapi/pcapi'
 
-import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
+import React, { useCallback } from 'react'
+
+import Icon from 'components/layout/Icon'
+import PropTypes from 'prop-types'
 
 export const StatusToggleButton = ({
   notifyError,

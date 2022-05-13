@@ -1,17 +1,16 @@
-import PropTypes from 'prop-types'
-import React from 'react'
+import Breadcrumb, { STEP_ID_INFORMATIONS, mapPathToStep } from '../Breadcrumb'
 import {
-  Route,
   Redirect,
+  Route,
   Switch,
   useParams,
   useRouteMatch,
 } from 'react-router-dom'
 
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import PropTypes from 'prop-types'
+import React from 'react'
 import Titles from 'components/layout/Titles/Titles'
-
-import Breadcrumb, { mapPathToStep, STEP_ID_INFORMATIONS } from '../Breadcrumb'
 
 const VenueCreation = ({ isTemporary }) => {
   let { offererId, venueId } = useParams()

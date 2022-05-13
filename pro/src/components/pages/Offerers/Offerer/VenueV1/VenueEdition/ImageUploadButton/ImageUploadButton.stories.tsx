@@ -1,7 +1,7 @@
-import { Story } from '@storybook/react'
-import React from 'react'
-
 import { ImageUploadButton, ImageUploadButtonProps } from './ImageUploadButton'
+
+import React from 'react'
+import { Story } from '@storybook/react'
 
 export default {
   title: 'components/ImageUploadButton',

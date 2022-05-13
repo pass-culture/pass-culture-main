@@ -1,15 +1,16 @@
-import { setUser } from '@sentry/browser'
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
-import { URL_FOR_MAINTENANCE } from 'utils/config'
+
+import { render, screen } from '@testing-library/react'
 
 import { App } from '../App'
+import { MemoryRouter } from 'react-router'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { URL_FOR_MAINTENANCE } from 'utils/config'
+import { configureTestStore } from 'store/testUtils'
+import { setUser } from '@sentry/browser'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getUserInformations: jest.fn(),

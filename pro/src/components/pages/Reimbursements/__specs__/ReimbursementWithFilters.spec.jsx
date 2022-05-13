@@ -1,4 +1,7 @@
 import '@testing-library/jest-dom'
+
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
   fireEvent,
   render,
@@ -7,17 +10,15 @@ import {
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { createMemoryHistory } from 'history'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
 import { API_URL } from 'utils/config'
-
+import { Provider } from 'react-redux'
+import React from 'react'
 import Reimbursements from '../ReimbursementsWithFilters'
+import { Router } from 'react-router'
+import { configureTestStore } from 'store/testUtils'
+import { createMemoryHistory } from 'history'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),

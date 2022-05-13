@@ -1,6 +1,6 @@
-import { Selector } from 'testcafe'
-
 import { navigateToOfferAs, navigateToStocksAs } from './helpers/navigations'
+
+import { Selector } from 'testcafe'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 

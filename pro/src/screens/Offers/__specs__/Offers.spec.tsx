@@ -1,32 +1,31 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { createMemoryHistory } from 'history'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Router } from 'react-router'
-import type { Store } from 'redux'
-
-import { api } from 'api/v1/api'
 import {
+  ALL_CATEGORIES,
+  ALL_EVENT_PERIODS,
   ALL_OFFERERS,
   ALL_OFFERS,
   ALL_STATUS,
-  ALL_CATEGORIES,
   ALL_VENUES,
   ALL_VENUES_OPTION,
-  ALL_EVENT_PERIODS,
   DEFAULT_CREATION_MODE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
-import { Offer } from 'core/Offers/types'
-import { Audience } from 'core/shared'
-import { configureTestStore } from 'store/testUtils'
-import { offererFactory, offerFactory } from 'utils/apiFactories'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
-
+import { MemoryRouter, Router } from 'react-router'
 import Offers, { IOffersProps } from '../Offers'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { offerFactory, offererFactory } from 'utils/apiFactories'
+
+import { Audience } from 'core/shared'
+import { Offer } from 'core/Offers/types'
+import { Provider } from 'react-redux'
+import React from 'react'
+import type { Store } from 'redux'
+import { api } from 'api/v1/api'
+import { configureTestStore } from 'store/testUtils'
+import { createMemoryHistory } from 'history'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
+import userEvent from '@testing-library/user-event'
 
 const renderOffers = (props: IOffersProps, store: Store) => {
   const history = createMemoryHistory()

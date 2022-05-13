@@ -1,8 +1,7 @@
-import classnames from 'classnames'
+import PortalContainer from 'app/PortalContainer'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import PortalContainer from 'app/PortalContainer'
+import classnames from 'classnames'
 
 const ActionsBarPortal = ({ isVisible, children }) => (
   <PortalContainer>

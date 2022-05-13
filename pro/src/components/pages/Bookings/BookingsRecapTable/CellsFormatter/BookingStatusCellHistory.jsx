@@ -1,10 +1,8 @@
-import { format } from 'date-fns-tz'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import { toDateStrippedOfTimezone } from 'utils/date'
-
+import { format } from 'date-fns-tz'
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
+import { toDateStrippedOfTimezone } from 'utils/date'
 
 const BookingStatusCellHistory = ({ bookingStatusHistory }) => {
   const bookingsStatusHistoryItems = bookingStatusHistory.map(item => {

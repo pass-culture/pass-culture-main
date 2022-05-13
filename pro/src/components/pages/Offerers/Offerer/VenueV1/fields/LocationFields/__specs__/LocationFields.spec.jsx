@@ -1,12 +1,10 @@
-import { shallow } from 'enzyme'
-import React from 'react'
-
-import HiddenField from 'components/layout/form/fields/HiddenField'
-import NumberField from 'components/layout/form/fields/NumberField'
-import TextField from 'components/layout/form/fields/TextField'
-
 import AddressField from '../AddressField'
+import HiddenField from 'components/layout/form/fields/HiddenField'
 import LocationFields from '../LocationFields'
+import NumberField from 'components/layout/form/fields/NumberField'
+import React from 'react'
+import TextField from 'components/layout/form/fields/TextField'
+import { shallow } from 'enzyme'
 
 describe('src | components | pages | Venue | fields | LocationFields', () => {
   let props

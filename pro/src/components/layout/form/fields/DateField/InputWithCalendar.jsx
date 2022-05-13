@@ -1,6 +1,5 @@
-import React from 'react'
-
 import Icon from '../../../Icon'
+import React from 'react'
 
 export const InputWithCalendar = inputProps => (
   <label className="flex-columns items-center field-input field-date">

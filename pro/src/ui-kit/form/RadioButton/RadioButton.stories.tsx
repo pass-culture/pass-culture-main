@@ -1,8 +1,7 @@
-import { action } from '@storybook/addon-actions'
 import { Formik } from 'formik'
-import React from 'react'
-
 import RadioButton from './RadioButton'
+import React from 'react'
+import { action } from '@storybook/addon-actions'
 
 export default {
   title: 'ui-kit/forms/RadioButton',

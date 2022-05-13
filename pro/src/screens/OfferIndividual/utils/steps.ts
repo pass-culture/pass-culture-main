@@ -1,9 +1,8 @@
-import { generatePath } from 'react-router-dom'
-
-import { Offer } from 'core/Offers/types'
 import { IStepPattern, Step } from 'new_components/Breadcrumb'
 
 import { OFFER_FORM_STEP_IDS } from '../constants'
+import { Offer } from 'core/Offers/types'
+import { generatePath } from 'react-router-dom'
 
 // Build steps for offer creation
 // We'll add other builder here for OfferProduct, OfferEvent, etc

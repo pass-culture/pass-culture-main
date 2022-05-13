@@ -1,10 +1,9 @@
-import cn from 'classnames'
-import { useField } from 'formik'
+import { BaseRadio, FieldError } from '../shared'
+
 import React from 'react'
-
-import { FieldError, BaseRadio } from '../shared'
-
+import cn from 'classnames'
 import style from './RadioButton.module.scss'
+import { useField } from 'formik'
 
 interface IRadioButtonProps {
   name: string

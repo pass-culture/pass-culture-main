@@ -1,9 +1,7 @@
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-
-import { showNotification } from 'store/reducers/notificationReducer'
-
 import Offers from './Offers'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 export const mapDispatchToProps = dispatch => ({
   showInformationNotification: information =>

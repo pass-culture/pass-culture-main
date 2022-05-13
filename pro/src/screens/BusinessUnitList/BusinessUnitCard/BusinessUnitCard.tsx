@@ -1,11 +1,9 @@
-import React from 'react'
-
-import Icon from 'components/layout/Icon'
+import { IBusinessUnit, IBusinessUnitVenue } from '../BusinessUnitList'
 
 import BusinessUnitForm from '../BusinessUnitForm'
-import { IBusinessUnit, IBusinessUnitVenue } from '../BusinessUnitList'
+import Icon from 'components/layout/Icon'
+import React from 'react'
 import VenueListItem from '../VenueListItem/VenueListItem'
-
 import styles from './BusinessUnitCard.module.scss'
 
 interface IBusinessUnitCardProps {

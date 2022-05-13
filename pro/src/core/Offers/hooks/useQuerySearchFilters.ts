@@ -1,8 +1,4 @@
-import { useMemo } from 'react'
-import { useLocation } from 'react-router-dom'
-
 import { DEFAULT_PAGE, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { parse } from 'utils/query-string'
 import {
   mapBrowserToApi,
   translateQueryParamsToApiParams,
@@ -10,6 +6,9 @@ import {
 
 import { Audience } from '../../shared/types'
 import { TSearchFilters } from '../types'
+import { parse } from 'utils/query-string'
+import { useLocation } from 'react-router-dom'
+import { useMemo } from 'react'
 
 interface IUrlSearchFilters {
   nameOrIsbn?: string

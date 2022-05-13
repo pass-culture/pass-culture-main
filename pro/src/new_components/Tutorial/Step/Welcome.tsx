@@ -1,7 +1,5 @@
-import React from 'react'
-
 import { IStepComponentProps } from '../types'
-
+import React from 'react'
 import styles from './Step.module.scss'
 
 const Welcome = ({

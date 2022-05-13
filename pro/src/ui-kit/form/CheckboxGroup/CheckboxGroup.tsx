@@ -1,11 +1,9 @@
-import cn from 'classnames'
-import { useField } from 'formik'
-import React from 'react'
-
-import { FieldSetLayout } from '../shared'
-
-import styles from './CheckboxGroup.module.scss'
 import CheckboxGroupItem from './CheckboxGroupItem'
+import { FieldSetLayout } from '../shared'
+import React from 'react'
+import cn from 'classnames'
+import styles from './CheckboxGroup.module.scss'
+import { useField } from 'formik'
 
 interface ICheckboxGroupProps {
   groupName: string

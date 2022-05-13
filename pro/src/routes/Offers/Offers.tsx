@@ -1,27 +1,26 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-
-import { api } from 'api/v1/api'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
 import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
-import { getOffererAdapter } from 'core/Offers/adapters'
-import { useQuerySearchFilters } from 'core/Offers/hooks'
-import { Offerer, Offer, Option, TSearchFilters } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils'
-import { Audience } from 'core/shared'
+import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import React, { useCallback, useEffect, useState } from 'react'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import OffersScreen from 'screens/Offers'
 import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
-import { sortByDisplayName } from 'utils/strings'
 
+import { Audience } from 'core/shared'
+import OffersScreen from 'screens/Offers'
+import Spinner from 'components/layout/Spinner'
+import { api } from 'api/v1/api'
+import { computeOffersUrl } from 'core/Offers/utils'
 import { getFilteredOffersAdapter } from './adapters'
+import { getOffererAdapter } from 'core/Offers/adapters'
+import { sortByDisplayName } from 'utils/strings'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+import useNotification from 'components/hooks/useNotification'
+import { useQuerySearchFilters } from 'core/Offers/hooks'
 
 const Offers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()

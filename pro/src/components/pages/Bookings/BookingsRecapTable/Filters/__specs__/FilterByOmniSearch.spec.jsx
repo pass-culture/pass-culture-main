@@ -1,7 +1,6 @@
-import { shallow } from 'enzyme'
-import React from 'react'
-
 import FilterByOmniSearch from '../FilterByOmniSearch'
+import React from 'react'
+import { shallow } from 'enzyme'
 
 describe('components | FilterByOmniSearch', () => {
   let props

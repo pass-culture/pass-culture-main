@@ -1,4 +1,9 @@
 import '@testing-library/jest-dom'
+
+import * as computeUrl from 'core/Offers/utils'
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import { MemoryRouter, Route } from 'react-router'
 import {
   act,
   fireEvent,
@@ -7,27 +12,22 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
-
-import { apiV1 } from 'api/api'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import * as computeUrl from 'core/Offers/utils'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
-
-import { DEFAULT_FORM_VALUES } from '../_constants'
-
 import {
   fieldLabels,
   findInputErrorForField,
   getOfferInputForField,
   setOfferValues,
 } from './helpers'
+
+import { DEFAULT_FORM_VALUES } from '../_constants'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { apiV1 } from 'api/api'
+import { configureTestStore } from 'store/testUtils'
+import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
+import userEvent from '@testing-library/user-event'
 
 Element.prototype.scrollIntoView = () => {}
 
@@ -1583,7 +1583,7 @@ describe('offerDetails - Edition', () => {
       )
 
       // When
-      userEvent.click(screen.getByText('Enregistrer'))
+      await userEvent.click(screen.getByText('Enregistrer'))
 
       // Then
       expect(

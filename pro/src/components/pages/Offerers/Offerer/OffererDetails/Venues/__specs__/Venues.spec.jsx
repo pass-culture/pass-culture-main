@@ -1,7 +1,6 @@
-import { shallow } from 'enzyme'
 import React from 'react'
-
 import Venues from '../Venues'
+import { shallow } from 'enzyme'
 
 describe('src | components | pages | OffererCreation | Venues', () => {
   let props

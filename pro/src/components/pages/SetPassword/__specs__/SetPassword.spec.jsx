@@ -1,22 +1,23 @@
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { createBrowserHistory } from 'history'
-import React from 'react'
 import '@testing-library/jest-dom'
-import { act } from 'react-dom/test-utils'
-import { Provider } from 'react-redux'
-import { Router, Route } from 'react-router'
 
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
 
 import {
+  DIFFERENT_PASSWORDS_ERROR_MESSAGE,
   INVALID_FORM_MESSAGE,
   UNKNOWN_ERROR_MESSAGE,
-  DIFFERENT_PASSWORDS_ERROR_MESSAGE,
 } from '../SetPassword'
+import { Route, Router } from 'react-router'
+import { render, screen, waitFor } from '@testing-library/react'
+
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { Provider } from 'react-redux'
+import React from 'react'
 import SetPasswordContainer from '../SetPasswordContainer'
+import { act } from 'react-dom/test-utils'
+import { configureTestStore } from 'store/testUtils'
+import { createBrowserHistory } from 'history'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   setPassword: jest.fn(),

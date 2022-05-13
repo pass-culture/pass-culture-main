@@ -1,6 +1,5 @@
-import React from 'react'
-
 import { ROOT_PATH } from 'utils/config'
+import React from 'react'
 
 const SignupConfirmation = () => (
   <section className="sign-up-confirmation-page">

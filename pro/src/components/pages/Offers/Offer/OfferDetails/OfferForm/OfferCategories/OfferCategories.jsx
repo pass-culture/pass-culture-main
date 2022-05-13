@@ -1,13 +1,11 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import Select from 'components/layout/inputs/Select'
 import { CATEGORY_STATUS } from 'core/Offers'
-import { sortByDisplayName } from 'utils/strings'
-
 import { DEFAULT_FORM_VALUES } from '../../_constants'
-
+import PropTypes from 'prop-types'
+import Select from 'components/layout/inputs/Select'
 import { SubtypeSelects } from './SubtypeSelects'
+import { sortByDisplayName } from 'utils/strings'
 
 const OfferCategories = ({
   categories,

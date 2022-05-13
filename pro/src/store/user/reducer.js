@@ -1,4 +1,4 @@
-import { SET_USER_IS_INITIALIZED, RESET_USER_IS_INITIALIZED } from './actions'
+import { RESET_USER_IS_INITIALIZED, SET_USER_IS_INITIALIZED } from './actions'
 
 export const initialState = {
   initialized: false,

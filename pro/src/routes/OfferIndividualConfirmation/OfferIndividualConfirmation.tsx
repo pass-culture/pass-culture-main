@@ -1,6 +1,5 @@
-import React from 'react'
-
 import { OfferIndividualConfirmation as OfferIndividualConfirmationScreen } from 'screens/OfferIndividualConfirmation'
+import React from 'react'
 
 const OfferIndividualConfirmation = (): JSX.Element => {
   return (

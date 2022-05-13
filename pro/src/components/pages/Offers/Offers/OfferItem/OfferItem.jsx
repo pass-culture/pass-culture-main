@@ -1,20 +1,20 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-import { Link } from 'react-router-dom'
-
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
+
 import Icon from 'components/layout/Icon'
-import Thumb from 'components/layout/Thumb'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
+import { Link } from 'react-router-dom'
 import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
-import { computeVenueDisplayName } from 'repository/venuesService'
+import PropTypes from 'prop-types'
+import React from 'react'
+import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import { Tag } from 'ui-kit'
-import { pluralize } from 'utils/pluralize'
+import Thumb from 'components/layout/Thumb'
+import { computeVenueDisplayName } from 'repository/venuesService'
 import { formatLocalTimeDateString } from 'utils/timezone'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { pluralize } from 'utils/pluralize'
 
 const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer

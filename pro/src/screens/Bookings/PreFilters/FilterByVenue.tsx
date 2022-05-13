@@ -1,7 +1,7 @@
-import React from 'react'
-
-import Select from 'components/layout/inputs/Select'
 import { ALL_VENUES_OPTION, TPreFilters } from 'core/Bookings'
+
+import React from 'react'
+import Select from 'components/layout/inputs/Select'
 
 interface IFilterByVenueProps {
   isDisabled?: boolean

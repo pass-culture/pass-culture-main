@@ -1,21 +1,20 @@
-/*eslint no-undef: 0*/
-import classnames from 'classnames'
-import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-import { Field } from 'react-final-form'
-import { removeWhitespaces } from 'react-final-form-utils'
-import ReactTooltip from 'react-tooltip'
 
+import { CheckboxField } from 'ui-kit'
+import { Field } from 'react-final-form'
 import HiddenField from 'components/layout/form/fields/HiddenField'
-import { SiretField } from 'components/layout/form/fields/SiretField'
-import TextareaField from 'components/layout/form/fields/TextareaField'
-import TextField from 'components/layout/form/fields/TextField'
 import Icon from 'components/layout/Icon'
+import PropTypes from 'prop-types'
+import ReactTooltip from 'react-tooltip'
+import { SiretField } from 'components/layout/form/fields/SiretField'
+import TextField from 'components/layout/form/fields/TextField'
+import TextareaField from 'components/layout/form/fields/TextareaField'
 import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
 import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueType'
-import { CheckboxField } from 'ui-kit'
-
+/*eslint no-undef: 0*/
+import classnames from 'classnames'
 import getLabelFromList from './utils/getLabelFromList'
+import { removeWhitespaces } from 'react-final-form-utils'
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {

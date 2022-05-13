@@ -1,17 +1,18 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter, Route } from 'react-router'
 
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import { MemoryRouter, Route } from 'react-router'
+import { fireEvent, render, screen } from '@testing-library/react'
+
+import { Events } from 'core/FirebaseEvents/constants'
 import { HTTP_STATUS } from 'api/helpers'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { Events } from 'core/FirebaseEvents/constants'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
-
+import { Provider } from 'react-redux'
+import React from 'react'
 import SignIn from '../SignIn'
+import { configureTestStore } from 'store/testUtils'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getUserInformations: jest.fn(),

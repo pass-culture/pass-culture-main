@@ -1,5 +1,4 @@
 import { OfferEducationalStockFormValues, StockPayload } from '..'
-
 import {
   buildBeginningDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,

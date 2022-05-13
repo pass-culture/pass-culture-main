@@ -1,8 +1,7 @@
-import { createBrowserHistory } from 'history'
+import OfferType from './OfferType'
 import React from 'react'
 import { Router } from 'react-router-dom'
-
-import OfferType from './OfferType'
+import { createBrowserHistory } from 'history'
 
 export default {
   title: 'screens/OfferType',

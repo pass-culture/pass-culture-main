@@ -1,7 +1,6 @@
-import cn from 'classnames'
-import React from 'react'
-
 import Icon from 'components/layout/Icon'
+import React from 'react'
+import cn from 'classnames'
 
 export interface IBannerProps {
   icon?: string

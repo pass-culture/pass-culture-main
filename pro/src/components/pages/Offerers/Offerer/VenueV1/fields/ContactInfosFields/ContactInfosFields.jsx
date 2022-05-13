@@ -1,9 +1,8 @@
+import { validateEmail, validatePhone, validateUrl } from './validators'
+
 import PropTypes from 'prop-types'
 import React from 'react'
-
 import TextField from 'components/layout/form/fields/TextField'
-
-import { validatePhone, validateEmail, validateUrl } from './validators'
 
 const ContactInfosFields = ({ readOnly }) => (
   <div className="section vp-content-section bank-information">

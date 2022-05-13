@@ -1,10 +1,11 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
   IOfferEducationalFormValues,
   hasStatusCode,
 } from 'core/OfferEducational'
-import { Offer } from 'custom_types/offer'
-import * as pcapi from 'repository/pcapi/pcapi'
 
+import { Offer } from 'custom_types/offer'
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 
 type Params = {

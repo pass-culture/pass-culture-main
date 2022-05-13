@@ -1,9 +1,9 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import {
-  formatAndOrderVenues,
-  fetchAllVenuesByProUser,
   computeVenueDisplayName,
+  fetchAllVenuesByProUser,
+  formatAndOrderVenues,
 } from '../venuesService'
 
 describe('venuesService', () => {

@@ -1,9 +1,8 @@
-import { action } from '@storybook/addon-actions'
-import { Story } from '@storybook/react'
+import DatePicker from './DatePicker'
 import { Formik } from 'formik'
 import React from 'react'
-
-import DatePicker from './DatePicker'
+import { Story } from '@storybook/react'
+import { action } from '@storybook/addon-actions'
 
 export default {
   title: 'ui-kit/forms/DatePicker',

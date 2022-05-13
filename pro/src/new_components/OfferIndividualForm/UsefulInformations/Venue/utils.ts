@@ -1,5 +1,5 @@
-import { TOffererName } from 'core/Offerers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+import { TOffererName } from 'core/Offerers/types'
 
 export const buildOffererOptions = (
   offererNames: TOffererName[]

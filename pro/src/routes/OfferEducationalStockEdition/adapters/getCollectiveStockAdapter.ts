@@ -1,5 +1,6 @@
-import { CollectiveStockResponseModel } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { CollectiveStockResponseModel } from 'core/OfferEducational'
 
 type IPayloadSuccess = {
   stock: CollectiveStockResponseModel | null

@@ -1,8 +1,7 @@
-import { action } from '@storybook/addon-actions'
+import Checkbox from './Checkbox'
 import { Formik } from 'formik'
 import React from 'react'
-
-import Checkbox from './Checkbox'
+import { action } from '@storybook/addon-actions'
 
 export default {
   title: 'ui-kit/forms/Checkbox',

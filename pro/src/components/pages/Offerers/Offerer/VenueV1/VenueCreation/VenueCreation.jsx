@@ -1,47 +1,46 @@
-/*eslint no-undef: 0*/
-import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
-import { Form } from 'react-final-form'
-import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
-import { useDispatch, useSelector } from 'react-redux'
+import AccessibilityFields, {
+  autoFillNoDisabilityCompliantDecorator,
+} from '../fields/AccessibilityFields'
+import IdentifierFields, {
+  bindGetSiretInformationToSiret,
+} from '../fields/IdentifierFields'
+import LocationFields, {
+  FRANCE_POSITION,
+  bindGetSuggestionsToLatitude,
+  bindGetSuggestionsToLongitude,
+} from '../fields/LocationFields'
 import { NavLink, useHistory, useLocation, useParams } from 'react-router-dom'
-
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import Icon from 'components/layout/Icon'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
-import { unhumanizeSiret } from 'core/Venue/utils'
+import React, { PureComponent } from 'react'
 import {
   createVenue,
   getOfferer,
   getVenueLabels,
   getVenueTypes,
 } from 'repository/pcapi/pcapi'
-import { showNotification } from 'store/reducers/notificationReducer'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
-import { sortByLabel } from 'utils/strings'
+import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+import { useDispatch, useSelector } from 'react-redux'
 
-import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
-import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
-import AccessibilityFields, {
-  autoFillNoDisabilityCompliantDecorator,
-} from '../fields/AccessibilityFields'
 import BankInformation from '../fields/BankInformationFields'
 import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
 import ContactInfosFields from '../fields/ContactInfosFields'
-import IdentifierFields, {
-  bindGetSiretInformationToSiret,
-} from '../fields/IdentifierFields'
-import LocationFields, {
-  bindGetSuggestionsToLatitude,
-  bindGetSuggestionsToLongitude,
-  FRANCE_POSITION,
-} from '../fields/LocationFields'
-import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
+import { Form } from 'react-final-form'
+import Icon from 'components/layout/Icon'
+import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import NotificationMessage from '../Notification'
-import { formatVenuePayload } from '../utils/formatVenuePayload'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+/*eslint no-undef: 0*/
+import PropTypes from 'prop-types'
+import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
+import Spinner from 'components/layout/Spinner'
+import Titles from 'components/layout/Titles/Titles'
 import VenueType from '../ValueObjects/VenueType'
+import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
+import { formatVenuePayload } from '../utils/formatVenuePayload'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { showNotification } from 'store/reducers/notificationReducer'
+import { sortByLabel } from 'utils/strings'
+import { unhumanizeSiret } from 'core/Venue/utils'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 
 /* eslint-disable */
 const withRouter = Component => {
