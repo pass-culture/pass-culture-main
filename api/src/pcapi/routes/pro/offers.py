@@ -24,7 +24,7 @@ from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
+from pcapi.routes.serialization.stock_serialize import EducationalStockIdResponseModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -358,7 +358,7 @@ def create_shadow_stock_for_educational_showcase_offer(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        stock = offers_api.create_collective_shadow_offer(body, current_user, offer_id)
+        (stock, collective_offer_template_id) = offers_api.create_collective_shadow_offer(body, current_user, offer_id)
     except educational_exceptions.EducationalStockAlreadyExists:
         raise ApiErrors(
             {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
@@ -370,4 +370,4 @@ def create_shadow_stock_for_educational_showcase_offer(
             status_code=404,
         )
 
-    return StockIdResponseModel.from_orm(stock)  # type: ignore [return-value]
+    return EducationalStockIdResponseModel(id=stock.id, collectiveOfferTemplateId=collective_offer_template_id)  # type: ignore [return-value]
