@@ -8,6 +8,7 @@ import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
+  getStockCollectiveOfferAdapter,
   getStockOfferAdapter,
   GetStockOfferSuccessPayload,
   Mode,
@@ -31,6 +32,9 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const history = useHistory()
   const isNewCollectiveModelEnabled = useActiveFeature(
     'ENABLE_NEW_COLLECTIVE_MODEL'
+  )
+  const enableIndividualAndCollectiveSeparation = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
 
   const handleSubmitStock = async (
@@ -71,7 +75,10 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadOffer = async () => {
-        const { payload, message, isOk } = await getStockOfferAdapter(offerId)
+        const getOfferAdapter = enableIndividualAndCollectiveSeparation
+          ? getStockCollectiveOfferAdapter
+          : getStockOfferAdapter
+        const { payload, message, isOk } = await getOfferAdapter(offerId)
 
         if (!isOk) {
           return notify.error(message)
