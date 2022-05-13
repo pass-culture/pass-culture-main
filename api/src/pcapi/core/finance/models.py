@@ -377,7 +377,7 @@ class InvoiceCashflow(Model):  # type: ignore [valid-type, misc]
     cashflowId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, primary_key=True)
 
     __table_args__ = (
-        sqla.UniqueConstraint(
+        sqla.PrimaryKeyConstraint(
             "invoiceId",
             "cashflowId",
             name="unique_invoice_cashflow_association",
