@@ -153,7 +153,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
     status = Column("status", Enum(BookingStatus), nullable=False, default=BookingStatus.CONFIRMED)
     Index("ix_booking_status", status)
 
-    reimbursementDate = Column(DateTime, nullable=True)
+    reimbursementDate = Column(DateTime, nullable=True, index=True)
 
     educationalBookingId = Column(
         BigInteger,
