@@ -1964,3 +1964,34 @@ class GetAccountSuspendedDateTest:
             response = client.get("/native/v1/account/suspension_date")
 
             assert response.status_code == 403
+
+
+class SuspensionStatusTest:
+    def test_fraud_suspicion_account_status(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        users_factories.UserSuspensionByFraudFactory(user=user)
+
+        self.assert_status(client, user, "SUSPENDED")
+
+    def test_suspended_upon_user_request_status(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        users_factories.SuspendedUponUserRequestFactory(user=user)
+
+        self.assert_status(client, user, "SUSPENDED_UPON_USER_REQUEST")
+
+    def test_deleted_account_status(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        users_factories.DeletedAccountSuspensionFactory(user=user)
+
+        self.assert_status(client, user, "DELETED")
+
+    def test_active_account(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=True)
+        self.assert_status(client, user, "ACTIVE")
+
+    def assert_status(self, client, user, status):
+        client.with_token(email=user.email)
+        response = client.get("/native/v1/account/suspension_status")
+
+        assert response.status_code == 200
+        assert response.json["status"] == status

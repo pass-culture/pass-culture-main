@@ -295,6 +295,13 @@ def get_account_suspension_date(user: User) -> serializers.UserSuspensionDateRes
     return serializers.UserSuspensionDateResponse(date=user.suspension_date)
 
 
+@blueprint.native_v1.route("/account/suspension_status", methods=["GET"])
+@spectree_serialize(api=blueprint.api, on_success_status=200)
+@authenticated_maybe_inactive_user_required
+def get_account_suspension_status(user: User) -> serializers.UserSuspensionStatusResponse:
+    return serializers.UserSuspensionStatusResponse(status=user.account_state)
+
+
 @blueprint.native_v1.route("/user_profiling", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
