@@ -404,7 +404,7 @@ export const editCollectiveStock = (
   stockId: string,
   stock: Partial<EditCollectiveStockPayload>
 ) => {
-  return client.patch(`/stocks/educational/${stockId}`, stock)
+  return client.patch(`/collective/stocks/${stockId}`, stock)
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
