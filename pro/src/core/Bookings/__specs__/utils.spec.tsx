@@ -1,9 +1,9 @@
-import { BookingStatusFilter } from 'api/v1/gen'
 import {
-  formatBrowserTimezonedDateAsUTC,
   FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
 
+import { BookingStatusFilter } from 'api/v1/gen'
 import { DEFAULT_PRE_FILTERS } from '../constants'
 import { buildBookingsRecapQuery } from '../utils'
 

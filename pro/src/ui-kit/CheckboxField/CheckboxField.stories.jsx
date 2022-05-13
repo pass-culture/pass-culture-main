@@ -1,10 +1,8 @@
-import React from 'react'
-import { Form } from 'react-final-form'
-
-import TextField from 'components/layout/form/fields/TextField'
-import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
-
 import CheckboxField from './CheckboxField'
+import { Form } from 'react-final-form'
+import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
+import React from 'react'
+import TextField from 'components/layout/form/fields/TextField'
 
 export default {
   title: 'ui-kit/CheckboxField',

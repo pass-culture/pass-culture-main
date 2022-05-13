@@ -1,13 +1,13 @@
 import '@testing-library/jest-dom'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import configureStore from 'store'
+import { render, screen, waitFor } from '@testing-library/react'
 
 import LostPassword from '../LostPassword'
+import { MemoryRouter } from 'react-router'
+import { Provider } from 'react-redux'
+import React from 'react'
+import configureStore from 'store'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getUserInformations: jest.fn().mockResolvedValue({}),

@@ -1,6 +1,5 @@
-import { connect } from 'react-redux'
-
 import DeleteStockDialog from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialog'
+import { connect } from 'react-redux'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 const mapDispatchToProps = dispatch => ({

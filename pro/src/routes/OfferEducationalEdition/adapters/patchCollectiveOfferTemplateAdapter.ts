@@ -1,8 +1,9 @@
-import {
-  IOfferEducationalFormValues,
-  CollectiveOfferTemplate,
-} from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import {
+  CollectiveOfferTemplate,
+  IOfferEducationalFormValues,
+} from 'core/OfferEducational'
 
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 

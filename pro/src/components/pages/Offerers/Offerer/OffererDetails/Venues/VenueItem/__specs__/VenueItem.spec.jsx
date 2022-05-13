@@ -1,12 +1,11 @@
-import { mount } from 'enzyme'
-import { createBrowserHistory } from 'history'
-import React from 'react'
-import { Provider } from 'react-redux'
 import { Link, Router } from 'react-router-dom'
 
-import { configureTestStore } from 'store/testUtils'
-
+import { Provider } from 'react-redux'
+import React from 'react'
 import VenueItem from '../VenueItem'
+import { configureTestStore } from 'store/testUtils'
+import { createBrowserHistory } from 'history'
+import { mount } from 'enzyme'
 
 describe('src | components | pages | OffererCreation | VenueItem', () => {
   let props

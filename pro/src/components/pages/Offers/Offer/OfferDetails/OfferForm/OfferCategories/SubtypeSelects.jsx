@@ -1,12 +1,11 @@
 import * as PropTypes from 'prop-types'
-import React, { useEffect, useState } from 'react'
 
-import Select from 'components/layout/inputs/Select'
-import { sortByDisplayName } from 'utils/strings'
+import React, { useEffect, useState } from 'react'
+import { musicOptionsTree, showOptionsTree } from './subTypes'
 
 import { DEFAULT_FORM_VALUES } from '../../_constants'
-
-import { musicOptionsTree, showOptionsTree } from './subTypes'
+import Select from 'components/layout/inputs/Select'
+import { sortByDisplayName } from 'utils/strings'
 
 const initialSubTypesOptions = {
   musicType: sortByDisplayName(
@@ -82,7 +81,10 @@ export const SubtypeSelects = ({
 
   const ignoreValueToSort = valueToIgnor => {
     subTypesOptions.showType.sort((a, b) =>
-      b.displayName === valueToIgnor && a.displayName.localeCompare(b.displayName) ? -1 : +1
+      b.displayName === valueToIgnor &&
+      a.displayName.localeCompare(b.displayName)
+        ? -1
+        : +1
     )
   }
   ignoreValueToSort('Autre (spectacle sur glace, historique, aquatique…)  ')

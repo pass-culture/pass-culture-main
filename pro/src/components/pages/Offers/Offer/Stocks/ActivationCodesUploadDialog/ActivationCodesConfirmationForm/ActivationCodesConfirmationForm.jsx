@@ -1,7 +1,6 @@
+import DateInput from 'components/layout/inputs/DateInput/DateInput'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import DateInput from 'components/layout/inputs/DateInput/DateInput'
 
 const ActivationCodesConfirmationForm = ({
   activationCodes,

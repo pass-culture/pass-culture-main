@@ -1,9 +1,10 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
-import React from 'react'
+
+import { render, screen } from '@testing-library/react'
 
 import BannerRGS from '../BannerRGS'
+import React from 'react'
+import userEvent from '@testing-library/user-event'
 
 describe('src | new_components | BannerRGS', () => {
   it('should render a link to RGS information', () => {

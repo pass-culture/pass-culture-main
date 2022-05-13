@@ -1,8 +1,6 @@
-import React from 'react'
-
-import Icon from 'components/layout/Icon'
 import { Audience } from 'core/shared'
-
+import Icon from 'components/layout/Icon'
+import React from 'react'
 import styles from './NoData.module.scss'
 
 interface INoOffers {

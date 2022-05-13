@@ -1,7 +1,7 @@
 import {
+  SAVE_PAGE_NUMBER,
   SAVE_SEARCH_FILTERS,
   SET_CATEGORIES,
-  SAVE_PAGE_NUMBER,
 } from './actions'
 
 export const initialState = {

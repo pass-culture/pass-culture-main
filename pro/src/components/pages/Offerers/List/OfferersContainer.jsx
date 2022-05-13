@@ -1,9 +1,7 @@
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-
-import { isAPISireneAvailable } from 'store/features/selectors'
-
 import Offerers from './Offerers'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { isAPISireneAvailable } from 'store/features/selectors'
 
 export const mapStateToProps = state => {
   return {

@@ -1,11 +1,9 @@
-import cn from 'classnames'
-import { useField } from 'formik'
+import { FieldLayout } from '../shared'
 import React from 'react'
 import Textarea from 'react-autosize-textarea'
-
-import { FieldLayout } from '../shared'
-
+import cn from 'classnames'
 import styles from './TextArea.module.scss'
+import { useField } from 'formik'
 
 interface ITextAreaProps {
   name: string

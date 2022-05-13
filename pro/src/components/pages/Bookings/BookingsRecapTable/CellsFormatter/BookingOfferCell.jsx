@@ -1,10 +1,10 @@
-import { format } from 'date-fns-tz'
+import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
+
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 import { Tag } from 'ui-kit'
-import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
+import { format } from 'date-fns-tz'
+import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 
 const BookingOfferCell = ({ offer }) => {
   const editionUrl = useOfferEditionURL(

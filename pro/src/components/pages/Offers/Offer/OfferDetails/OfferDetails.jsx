@@ -1,24 +1,23 @@
-import PropTypes from 'prop-types'
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import useNotification from 'components/hooks/useNotification'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { loadCategories } from 'store/offers/thunks'
-
-import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
-
 import { DEFAULT_FORM_VALUES } from './_constants'
+import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import OfferCreation from './OfferCreation'
 import OfferEdition from './OfferEdition'
 import OfferPreview from './OfferPreview'
 import OfferStatusBanner from './OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import PropTypes from 'prop-types'
+import Spinner from 'components/layout/Spinner'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { loadCategories } from 'store/offers/thunks'
+import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+import useNotification from 'components/hooks/useNotification'
 
 const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
   const dispatch = useDispatch()

@@ -1,7 +1,7 @@
 import * as pcapi from 'repository/pcapi/pcapi'
-import { showNotification } from 'store/reducers/notificationReducer'
 
 import { mapDispatchToProps } from '../SignupFormContainer'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   signup: jest.fn().mockResolvedValue({}),

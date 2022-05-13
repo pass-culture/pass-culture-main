@@ -1,8 +1,8 @@
-import { useFormikContext } from 'formik'
-import isEqual from 'lodash.isequal'
 import { useEffect, useState } from 'react'
 
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import isEqual from 'lodash.isequal'
+import { useFormikContext } from 'formik'
 
 const useAccessibilityUpdates = (): void => {
   const { values, setFieldValue } =

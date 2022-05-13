@@ -1,3 +1,4 @@
+import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import React, { useCallback, useEffect, useState } from 'react'
 import {
   Route,
@@ -7,16 +8,14 @@ import {
   useRouteMatch,
 } from 'react-router-dom'
 
-import { apiV1 } from 'api/api'
-import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
-import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
-import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
-import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
-
 import OfferDetails from './OfferDetails'
+import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
+import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
+import Titles from 'components/layout/Titles/Titles'
+import { apiV1 } from 'api/api'
 
 const mapPathToStep = {
   creation: OfferBreadcrumbStep.DETAILS,

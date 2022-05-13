@@ -1,11 +1,10 @@
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
+import Icon from 'components/layout/Icon'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Link } from 'react-router-dom'
-
-import Icon from 'components/layout/Icon'
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-import { pluralize } from 'utils/pluralize'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
+import { pluralize } from 'utils/pluralize'
 
 const OffererItem = ({ offerer, isVenueCreationAvailable }) => {
   const { id: offererId, managedVenues: venues, name, nOffers } = offerer || {}

@@ -1,6 +1,5 @@
-import React from 'react'
-
 import Icon from 'components/layout/Icon'
+import React from 'react'
 
 type ColumnOptionType = {
   title: string

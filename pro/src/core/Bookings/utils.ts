@@ -1,7 +1,7 @@
-import { TPreFilters, TAPIFilters, DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { DEFAULT_PRE_FILTERS, TAPIFilters, TPreFilters } from 'core/Bookings'
 import {
-  formatBrowserTimezonedDateAsUTC,
   FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
 
 export const buildBookingsRecapQuery = ({

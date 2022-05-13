@@ -1,21 +1,20 @@
-import { screen } from '@testing-library/react'
-
-import { queryField, QueryFieldResponse } from 'ui-kit/form/__tests-utils__'
-
 import {
-  OFFERER_LABEL,
-  VENUE_LABEL,
   CATEGORY_LABEL,
-  SUBCATEGORY_LABEL,
-  TITLE_LABEL,
   DESCRIPTION_LABEL,
   DURATION_LABEL,
   EVENT_ADDRESS_OFFERER_LABEL,
-  EVENT_ADDRESS_SCHOOL_LABEL,
-  EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL,
   EVENT_ADDRESS_OTHER_ADDRESS_LABEL,
+  EVENT_ADDRESS_OTHER_LABEL,
+  EVENT_ADDRESS_SCHOOL_LABEL,
+  OFFERER_LABEL,
+  SUBCATEGORY_LABEL,
+  TITLE_LABEL,
+  VENUE_LABEL,
 } from '../constants/labels'
+import { QueryFieldResponse, queryField } from 'ui-kit/form/__tests-utils__'
+
+import { screen } from '@testing-library/react'
 
 export const elements = {
   queryOffererSelect: (): Promise<QueryFieldResponse<HTMLSelectElement>> =>

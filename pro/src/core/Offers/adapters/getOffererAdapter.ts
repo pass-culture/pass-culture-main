@@ -1,5 +1,5 @@
-import { api } from 'api/v1/api'
 import { Offerer } from 'core/Offers/types'
+import { api } from 'api/v1/api'
 
 type IPayload = Offerer
 

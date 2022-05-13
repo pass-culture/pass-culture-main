@@ -1,13 +1,12 @@
-import PropTypes from 'prop-types'
-import React, { Fragment, useState } from 'react'
-
-import Icon from 'components/layout/Icon'
 import {
   ADMINS_DISABLED_FILTERS_MESSAGE,
   OFFER_STATUS_LIST,
 } from 'core/Offers/constants'
+import React, { Fragment, useState } from 'react'
 
+import Icon from 'components/layout/Icon'
 import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
+import PropTypes from 'prop-types'
 
 const StatusFiltersButton = ({
   disabled,

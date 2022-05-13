@@ -1,6 +1,5 @@
-import { connect } from 'react-redux'
-
 import { StatusToggleButton } from 'components/pages/Offers/Offer/OfferStatus/StatusToggleButton'
+import { connect } from 'react-redux'
 import { showNotification } from 'store/reducers/notificationReducer'
 
 const mapDispatchToProps = dispatch => ({

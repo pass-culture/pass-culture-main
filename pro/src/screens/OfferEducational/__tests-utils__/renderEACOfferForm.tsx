@@ -1,9 +1,9 @@
-import { render } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
+import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
+
 import React from 'react'
 import { Router } from 'react-router-dom'
-
-import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
+import { createBrowserHistory } from 'history'
+import { render } from '@testing-library/react'
 
 export const renderEACOfferForm = (props: IOfferEducationalProps) => {
   const history = createBrowserHistory()

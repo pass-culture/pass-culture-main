@@ -1,9 +1,7 @@
-import { Selector } from 'testcafe'
-
 import { ROOT_PATH } from '../src/utils/config'
-
-import { getPathname } from './helpers/location'
+import { Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
+import { getPathname } from './helpers/location'
 import { getSirenRequestMockWithDefaultValues } from './helpers/sirenes'
 
 const emailInput = Selector('input[name="email"]')

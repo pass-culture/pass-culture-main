@@ -1,8 +1,6 @@
-import React from 'react'
-
-import FormLayout from 'new_components/FormLayout'
 import { CheckboxGroup } from 'ui-kit'
-
+import FormLayout from 'new_components/FormLayout'
+import React from 'react'
 import { accessibilityOptions } from './accessibilityOptions'
 import useAccessibilityUpdates from './useAccessibilityUpdates'
 

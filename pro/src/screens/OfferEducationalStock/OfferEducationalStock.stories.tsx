@@ -1,13 +1,12 @@
-import { Story } from '@storybook/react'
-import React from 'react'
-
-import { OfferStatus } from 'api/v1/gen'
 import { DEFAULT_EAC_STOCK_FORM_VALUES, Mode } from 'core/OfferEducational'
 
+import OfferEducationalStock from '.'
+import { OfferStatus } from 'api/v1/gen'
+import React from 'react'
+import { Story } from '@storybook/react'
 import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
 import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
-import OfferEducationalStock from '.'
 export default {
   title: 'screens/OfferEducationalStock',
   component: OfferEducationalStock,

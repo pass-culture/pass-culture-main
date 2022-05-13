@@ -1,14 +1,15 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
-import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
+import { render, screen } from '@testing-library/react'
+
+import { MemoryRouter } from 'react-router'
+import { Provider } from 'react-redux'
+import React from 'react'
 import Signup from '../Signup'
+import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+import { configureTestStore } from 'store/testUtils'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadFeatures: jest.fn(),

@@ -1,12 +1,12 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import {
-  createStockDataPayload,
   GetStockOfferSuccessPayload,
-  hasStatusCode,
   OfferEducationalStockFormValues,
   StockPayload,
   StockResponse,
+  createStockDataPayload,
+  hasStatusCode,
 } from '..'
 
 type Params = {

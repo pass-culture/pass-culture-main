@@ -1,6 +1,4 @@
-import { useFormik, FormikProvider } from 'formik'
-import React, { useEffect } from 'react'
-
+import { FormikProvider, useFormik } from 'formik'
 import {
   GetIsOffererEligible,
   IEducationalCategory,
@@ -9,10 +7,11 @@ import {
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
+import React, { useEffect } from 'react'
 
-import styles from './OfferEducational.module.scss'
+import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import OfferEducationalForm from './OfferEducationalForm'
+import styles from './OfferEducational.module.scss'
 import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalProps {

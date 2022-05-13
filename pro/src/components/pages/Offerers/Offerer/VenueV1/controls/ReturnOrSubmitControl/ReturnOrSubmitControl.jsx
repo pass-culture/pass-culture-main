@@ -1,7 +1,7 @@
-import classnames from 'classnames'
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import classnames from 'classnames'
 
 const ReturnOrSubmitControl = ({
   canSubmit,

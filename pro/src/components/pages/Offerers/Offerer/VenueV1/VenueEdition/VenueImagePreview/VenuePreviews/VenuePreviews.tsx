@@ -1,12 +1,10 @@
+import { ImagePreview, ImagePreviewsWrapper } from 'new_components/ImagePreview'
 import React, { useCallback } from 'react'
 
-import useNotification from 'components/hooks/useNotification'
-import { ImagePreviewsWrapper, ImagePreview } from 'new_components/ImagePreview'
-
 import homeShell from '../assets/venue-home-shell.png'
-import venueShell from '../assets/venue-shell.png'
-
 import homeStyle from './HomeScreenPreview.module.scss'
+import useNotification from 'components/hooks/useNotification'
+import venueShell from '../assets/venue-shell.png'
 import venueStyle from './VenueScreenPreview.module.scss'
 
 interface IVenuePreviewsProps {

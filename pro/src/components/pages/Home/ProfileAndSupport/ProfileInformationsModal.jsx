@@ -1,9 +1,7 @@
+import DialogBox from 'new_components/DialogBox/DialogBox'
+import ProfileForm from './ProfileForm'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import DialogBox from 'new_components/DialogBox/DialogBox'
-
-import ProfileForm from './ProfileForm'
 
 const ProfileInformationsModal = ({ hideProfileInfoModal, user }) => {
   const initialValues = {

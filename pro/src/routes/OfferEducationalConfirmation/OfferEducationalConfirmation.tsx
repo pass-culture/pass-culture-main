@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
-
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
 import {
-  getStockOfferAdapter,
   GetStockOfferSuccessPayload,
+  getStockOfferAdapter,
 } from 'core/OfferEducational'
+import React, { useEffect, useState } from 'react'
+
 import OfferEducationalConfirmationScreen from 'screens/OfferEducationalConfirmation'
+import Spinner from 'components/layout/Spinner'
+import useNotification from 'components/hooks/useNotification'
+import { useParams } from 'react-router-dom'
 
 const OfferEducationalConfirmation = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()

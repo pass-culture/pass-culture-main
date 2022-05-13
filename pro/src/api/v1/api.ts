@@ -1,6 +1,6 @@
-import { API_URL } from 'utils/config'
-
 import { APIConfiguration, DefaultApi } from './gen'
+
+import { API_URL } from 'utils/config'
 
 const configuration: APIConfiguration = {
   basePath: API_URL,

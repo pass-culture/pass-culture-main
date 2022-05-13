@@ -1,6 +1,5 @@
-import cn from 'classnames'
 import React from 'react'
-
+import cn from 'classnames'
 import styles from './BaseCheckbox.module.scss'
 
 interface IBaseCheckboxProps

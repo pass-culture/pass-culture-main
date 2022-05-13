@@ -1,12 +1,11 @@
-import React from 'react'
-import { useHistory } from 'react-router-dom'
-
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import { OFFER_FORM_STEP_IDS, fakeOffer } from '../constants'
 
 import { ActionBar } from '../ActionBar'
-import { fakeOffer, OFFER_FORM_STEP_IDS } from '../constants'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import React from 'react'
 import { getStepsOffer } from '../utils/steps'
+import { useHistory } from 'react-router-dom'
 
 const Summary = (): JSX.Element => {
   const history = useHistory()

@@ -1,5 +1,5 @@
-import { apiV1 } from 'api/api'
 import { TOffererName } from 'core/Offerers/types'
+import { apiV1 } from 'api/api'
 
 type Params = void
 type IPayload = TOffererName[]

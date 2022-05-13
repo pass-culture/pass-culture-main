@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom'
+
 import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import { configureTestStore } from 'store/testUtils'
-
+import { MemoryRouter } from 'react-router-dom'
+import { Provider } from 'react-redux'
+import React from 'react'
 import Support from '../Support'
+import { configureTestStore } from 'store/testUtils'
+import userEvent from '@testing-library/user-event'
 
 const mockLogEvent = jest.fn()
 

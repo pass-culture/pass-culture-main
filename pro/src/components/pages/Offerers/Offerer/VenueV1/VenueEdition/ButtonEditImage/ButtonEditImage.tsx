@@ -1,15 +1,12 @@
-import React from 'react'
-
-import Icon from 'components/layout/Icon'
-import { useModal } from 'hooks/useModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-
-import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
 import { IVenueBannerMetaProps } from '../ImageVenueUploaderSection/ImageVenueUploaderSection'
+import Icon from 'components/layout/Icon'
+import { ImageUploadButton } from '../ImageUploadButton/ImageUploadButton'
+import React from 'react'
 import { VenueImageUploaderModal } from '../ImageVenueUploaderSection/VenueImageUploaderModal'
-
 import styles from './ButtonEditImage.module.scss'
+import { useModal } from 'hooks/useModal'
 
 interface IButtonEditImage {
   venueId: string

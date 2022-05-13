@@ -1,21 +1,20 @@
-import cn from 'classnames'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
-
-import { Events } from 'core/FirebaseEvents/constants'
 import {
   CreateOffer,
   CreateVenue,
   ManageBookings,
   Welcome,
 } from 'new_components/Tutorial/Step'
-import { RootState } from 'store/reducers'
+import React, { useCallback, useEffect, useState } from 'react'
+
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-
-import { TUTO_DIALOG_LABEL_ID } from './constants'
-import styles from './Tutorial.module.scss'
+import { Events } from 'core/FirebaseEvents/constants'
 import { IStep } from './types'
+import { RootState } from 'store/reducers'
+import { TUTO_DIALOG_LABEL_ID } from './constants'
+import cn from 'classnames'
+import styles from './Tutorial.module.scss'
+import { useSelector } from 'react-redux'
 
 const steps: IStep[] = [
   {

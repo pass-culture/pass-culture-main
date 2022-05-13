@@ -1,9 +1,10 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
-  hasStatusCode,
   OfferEducationalStockFormValues,
+  hasStatusCode,
   hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 type Params = {
   offerId: string

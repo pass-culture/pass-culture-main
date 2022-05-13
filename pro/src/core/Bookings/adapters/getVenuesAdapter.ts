@@ -1,5 +1,7 @@
-import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings'
+
 import { formatAndOrderVenues } from 'repository/venuesService'
 
 const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {

@@ -1,10 +1,8 @@
+import AllocineProviderItem from '../AllocineProviderItem/AllocineProviderItem'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
-
-import AllocineProviderItem from '../AllocineProviderItem/AllocineProviderItem'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
+import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 
 const VenueProviderList = ({
   afterVenueProviderEdit,

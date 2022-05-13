@@ -1,11 +1,12 @@
-import PropTypes from 'prop-types'
-import React, { useCallback, useState } from 'react'
-import { useDispatch } from 'react-redux'
-
-import useNotification from 'components/hooks/useNotification'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import React, { useCallback, useState } from 'react'
+
+import PropTypes from 'prop-types'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { updateUser } from 'store/reducers/data'
+import { useDispatch } from 'react-redux'
+import useNotification from 'components/hooks/useNotification'
 
 const ProfileForm = ({ onCancel, onSuccess, initialValues }) => {
   const [lastName, setLastName] = useState(initialValues.lastName || '')

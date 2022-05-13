@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
-import { Provider } from 'react-redux'
+
 import { MemoryRouter, Route } from 'react-router'
+import { render, screen } from '@testing-library/react'
+
 import { Link } from 'react-router-dom'
-
-import { configureTestStore } from 'store/testUtils'
-
 import NavigationLogger from '../NavigationLogger'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { configureTestStore } from 'store/testUtils'
+import userEvent from '@testing-library/user-event'
 
 const mockLogEvent = jest.fn()
 

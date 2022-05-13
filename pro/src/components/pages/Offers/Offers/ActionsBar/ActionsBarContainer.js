@@ -1,8 +1,6 @@
-import { connect } from 'react-redux'
-
-import { showNotification } from 'store/reducers/notificationReducer'
-
 import ActionsBar from './ActionsBar'
+import { connect } from 'react-redux'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 export const mapStateToProps = state => {
   return {

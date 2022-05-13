@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Form } from 'react-final-form'
-import { getCanSubmit } from 'react-final-form-utils'
-import ReactTooltip from 'react-tooltip'
 
-import NumberField from 'components/layout/form/fields/NumberField'
+import { CheckboxField } from 'ui-kit'
+import { Form } from 'react-final-form'
 import Icon from 'components/layout/Icon'
 import Insert from 'components/layout/Insert/Insert'
-import { CheckboxField } from 'ui-kit'
+import NumberField from 'components/layout/form/fields/NumberField'
+import PropTypes from 'prop-types'
+import ReactTooltip from 'react-tooltip'
+import { getCanSubmit } from 'react-final-form-utils'
 
 const AllocineProviderForm = ({
   saveVenueProvider,

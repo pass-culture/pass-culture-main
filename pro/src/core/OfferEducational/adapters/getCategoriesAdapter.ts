@@ -1,8 +1,9 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
   IEducationalCategory,
   IEducationalSubCategory,
 } from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { filterEducationalCategories } from '../utils/filterEducationalCategories'
 

@@ -1,6 +1,5 @@
-import { unhumanizeSiren } from 'core/Offerers/utils'
-
 import getSirenDataAdapter from '../getSirenDataAdapter'
+import { unhumanizeSiren } from 'core/Offerers/utils'
 
 describe('getSirenDataAdapter', () => {
   beforeEach(() => {

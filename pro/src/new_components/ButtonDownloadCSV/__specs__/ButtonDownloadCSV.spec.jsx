@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'
-import { fireEvent, render, screen } from '@testing-library/react'
-import fetch from 'jest-fetch-mock'
-import React from 'react'
-import { Provider } from 'react-redux'
 
-import { configureTestStore } from '../../../store/testUtils'
+import { fireEvent, render, screen } from '@testing-library/react'
+
 import ButtonDownloadCSV from '../ButtonDownloadCSV'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { configureTestStore } from '../../../store/testUtils'
+import fetch from 'jest-fetch-mock'
 
 const renderButtonDownloadCSV = async ({ props, storeOverrides }) => {
   const store = configureTestStore(storeOverrides)

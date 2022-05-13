@@ -1,8 +1,6 @@
-import cn from 'classnames'
-import React from 'react'
-
 import FieldError from '../FieldError'
-
+import React from 'react'
+import cn from 'classnames'
 import styles from './FieldSetLayout.module.scss'
 
 interface IFieldSetLayoutProps {

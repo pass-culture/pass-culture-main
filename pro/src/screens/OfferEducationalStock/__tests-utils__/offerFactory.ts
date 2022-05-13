@@ -1,5 +1,5 @@
-import { OfferStatus } from 'api/v1/gen'
 import { GetStockOfferSuccessPayload } from 'core/OfferEducational'
+import { OfferStatus } from 'api/v1/gen'
 
 export const offerFactory = (
   offerExtend: Partial<GetStockOfferSuccessPayload>

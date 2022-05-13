@@ -1,33 +1,32 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
 import {
-  cancelActiveBookingsAdapter,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
-  patchIsOfferActiveAdapter,
-  extractOfferIdAndOfferTypeFromRouteParams,
   StockResponse,
+  cancelActiveBookingsAdapter,
   extractInitialStockValues,
+  extractOfferIdAndOfferTypeFromRouteParams,
+  patchIsOfferActiveAdapter,
 } from 'core/OfferEducational'
+import React, { useEffect, useState } from 'react'
 import {
   getEducationalStockAdapter,
   patchShadowStockAdapter,
   patchShadowStockIntoEducationalStockAdapter,
 } from 'core/OfferEducational/adapters'
+import { useHistory, useParams } from 'react-router-dom'
+
+import { GetCollectiveOfferTemplateSuccessPayload } from './types'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-
+import Spinner from 'components/layout/Spinner'
 import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
-import { GetCollectiveOfferTemplateSuccessPayload } from './types'
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
 
 const getAdapter = (
   educationalOfferType: EducationalOfferType,
@@ -74,7 +73,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       stockId: stock.id,
       values,
       initialValues,
-      enableIndividualAndCollectiveSeparation: true
+      enableIndividualAndCollectiveSeparation: true,
     })
 
     if (

@@ -1,21 +1,20 @@
-import cx from 'classnames'
-import React, { useState, useRef } from 'react'
-
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import Titles from 'components/layout/Titles/Titles'
 import { Banner, Button } from 'ui-kit'
-
-import { BookingDetails } from './BookingDetails'
-import { ButtonInvalidateToken } from './ButtonInvalidateToken'
-import styles from './Desk.module.scss'
 import {
-  MESSAGE_VARIANT,
-  IErrorMessage,
   IBooking,
   IDeskGetBookingResponse,
   IDeskProps,
   IDeskSubmitResponse,
+  IErrorMessage,
+  MESSAGE_VARIANT,
 } from './types'
+import React, { useRef, useState } from 'react'
+
+import { BookingDetails } from './BookingDetails'
+import { ButtonInvalidateToken } from './ButtonInvalidateToken'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import Titles from 'components/layout/Titles/Titles'
+import cx from 'classnames'
+import styles from './Desk.module.scss'
 import { validateToken } from './validation'
 
 const Desk = ({

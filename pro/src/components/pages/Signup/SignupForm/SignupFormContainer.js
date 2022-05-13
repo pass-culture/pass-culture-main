@@ -1,14 +1,13 @@
-import { removeWhitespaces } from 'react-final-form-utils'
-import { connect } from 'react-redux'
-import { compose } from 'redux'
-
 import * as pcapi from 'repository/pcapi/pcapi'
-import { removeErrors } from 'store/reducers/errors'
-import { showNotification } from 'store/reducers/notificationReducer'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
-import { withRouter } from 'utils/withRouter'
 
 import SignupForm from './SignupForm'
+import { compose } from 'redux'
+import { connect } from 'react-redux'
+import { removeErrors } from 'store/reducers/errors'
+import { removeWhitespaces } from 'react-final-form-utils'
+import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { showNotification } from 'store/reducers/notificationReducer'
+import { withRouter } from 'utils/withRouter'
 
 const STATE_ERROR_NAME = 'user'
 

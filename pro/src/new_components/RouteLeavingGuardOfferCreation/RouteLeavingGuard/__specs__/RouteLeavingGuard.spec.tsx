@@ -1,14 +1,15 @@
 import '@testing-library/jest-dom'
-import { render, screen, fireEvent, act } from '@testing-library/react'
-import { createBrowserHistory } from 'history'
-import type { History } from 'history'
-import React from 'react'
-import { Route, Router, Switch } from 'react-router'
-import { Link } from 'react-router-dom'
 
+import { Route, Router, Switch } from 'react-router'
 import RouteLeavingGuard, {
   IRouteLeavingGuardProps,
 } from '../RouteLeavingGuard'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+
+import type { History } from 'history'
+import { Link } from 'react-router-dom'
+import React from 'react'
+import { createBrowserHistory } from 'history'
 
 const MiniAppTest = () => (
   <div>

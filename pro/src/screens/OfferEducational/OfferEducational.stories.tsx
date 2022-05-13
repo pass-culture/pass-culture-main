@@ -1,17 +1,15 @@
-import React from 'react'
-
 import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
-
-import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
-import { withRouterDecorator } from '../../stories/decorators/withRouter'
-
 import {
   categoriesFactory,
   managedVenuesFactory,
   subCategoriesFactory,
   userOfferersFactory,
 } from './__tests-utils__'
+
 import OfferEducational from './OfferEducational'
+import React from 'react'
+import { withPageTemplate } from '../../stories/decorators/withPageTemplate'
+import { withRouterDecorator } from '../../stories/decorators/withRouter'
 
 const mockEducationalCategories = categoriesFactory([
   {

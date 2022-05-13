@@ -1,6 +1,5 @@
-import React, { useCallback, useState } from 'react'
-
 import { Constraint, getValidatorErrors } from './imageConstraints'
+import React, { useCallback, useState } from 'react'
 
 type UseCheckAndSetImage = (args: {
   constraints: Constraint[]

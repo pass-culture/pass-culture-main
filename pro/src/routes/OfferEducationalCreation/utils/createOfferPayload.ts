@@ -1,10 +1,11 @@
-import { PostCollectiveOfferBodyModel } from 'api/v1/gen'
 import {
   EducationalOfferModelPayload,
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
+
+import { PostCollectiveOfferBodyModel } from 'api/v1/gen'
 
 const disabilityCompliances = (
   accessibility: IOfferEducationalFormValues['accessibility']

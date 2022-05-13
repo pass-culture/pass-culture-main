@@ -1,15 +1,3 @@
-import { useFormikContext } from 'formik'
-import React, { useEffect, useState } from 'react'
-
-import {
-  IEducationalCategory,
-  IEducationalSubCategory,
-  DEFAULT_EAC_FORM_VALUES,
-  IOfferEducationalFormValues,
-} from 'core/OfferEducational'
-import FormLayout from 'new_components/FormLayout'
-import { Select, TextArea, TextInput } from 'ui-kit'
-
 import {
   CATEGORY_LABEL,
   DESCRIPTION_LABEL,
@@ -17,6 +5,17 @@ import {
   SUBCATEGORY_LABEL,
   TITLE_LABEL,
 } from '../../constants/labels'
+import {
+  DEFAULT_EAC_FORM_VALUES,
+  IEducationalCategory,
+  IEducationalSubCategory,
+  IOfferEducationalFormValues,
+} from 'core/OfferEducational'
+import React, { useEffect, useState } from 'react'
+import { Select, TextArea, TextInput } from 'ui-kit'
+
+import FormLayout from 'new_components/FormLayout'
+import { useFormikContext } from 'formik'
 
 interface IFormTypeProps {
   categories: IEducationalCategory[]

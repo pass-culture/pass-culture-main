@@ -1,6 +1,5 @@
-import React from 'react'
-
 import { ReactComponent as CloseDialogIcon } from 'icons/close-dialog.svg'
+import React from 'react'
 
 interface ICloseButtonProps {
   onCloseClick?: () => void

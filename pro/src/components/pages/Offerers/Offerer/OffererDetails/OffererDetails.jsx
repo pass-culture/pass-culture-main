@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types'
-import React, { useEffect, useState, useCallback } from 'react'
-import { NavLink } from 'react-router-dom'
-
-import Icon from 'components/layout/Icon'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+
+import React, { useCallback, useEffect, useState } from 'react'
 
 import ApiKey from './ApiKey/ApiKey'
+import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import Icon from 'components/layout/Icon'
+import { NavLink } from 'react-router-dom'
 import { Offerer } from './Offerer'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import PropTypes from 'prop-types'
+import Spinner from 'components/layout/Spinner'
+import Titles from 'components/layout/Titles/Titles'
 import VenuesContainer from './Venues/VenuesContainer'
 
 const OffererDetails = ({ offererId }) => {

@@ -1,11 +1,12 @@
-import PropTypes from 'prop-types'
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import React, { useEffect, useMemo, useState } from 'react'
 
-import { VenueDetails } from 'components/pages/Offers/Offer/OfferDetails/OfferPreview/VenueDetails'
 import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { ReactComponent as PassCultureSvg } from 'icons/ico-passculture.svg'
+import PropTypes from 'prop-types'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
-import * as pcapi from 'repository/pcapi/pcapi'
+import { VenueDetails } from 'components/pages/Offers/Offer/OfferDetails/OfferPreview/VenueDetails'
 
 const PREVIEW_TEXT_MAX_LENGTH = 300
 

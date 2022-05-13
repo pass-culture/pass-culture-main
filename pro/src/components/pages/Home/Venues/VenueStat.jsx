@@ -1,8 +1,8 @@
 import * as PropTypes from 'prop-types'
-import React from 'react'
-import { Link } from 'react-router-dom'
 
+import { Link } from 'react-router-dom'
 import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
+import React from 'react'
 
 export const VenueStat = ({ stat }) => (
   <div className="h-card-col" data-testid="venue-stat">

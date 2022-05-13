@@ -1,5 +1,6 @@
-import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
 
 type Params = string | null
 

@@ -3,7 +3,6 @@ import React, { useRef } from 'react'
 import { ReactComponent as AlertSvg } from 'icons/ico-alert-grey.svg'
 import DialogBox from 'new_components/DialogBox/DialogBox'
 import { SubmitButton } from 'ui-kit'
-
 import styles from './ConfirmDialog.module.scss'
 
 interface IConfirmDialogProps {

@@ -1,7 +1,7 @@
-import { api } from 'api/v1/api'
 import { Offer, TSearchFilters } from 'core/Offers/types'
+import { serializeApiFilters, serializeOffers } from './serializers'
 
-import { serializeOffers, serializeApiFilters } from './serializers'
+import { api } from 'api/v1/api'
 
 type IPayload = {
   offers: Offer[]

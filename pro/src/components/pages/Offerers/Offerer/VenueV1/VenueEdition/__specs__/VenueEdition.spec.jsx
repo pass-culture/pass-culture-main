@@ -1,4 +1,9 @@
 import '@testing-library/jest-dom'
+
+import * as pcapi from 'repository/pcapi/pcapi'
+import * as reactRouter from 'react-router-dom'
+import * as usersSelectors from 'store/selectors/data/usersSelectors'
+
 import {
   fireEvent,
   render,
@@ -7,19 +12,14 @@ import {
   waitForElementToBeRemoved,
   within,
 } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import React from 'react'
+
 import { Provider } from 'react-redux'
-import * as reactRouter from 'react-router-dom'
-
-import * as pcapi from 'repository/pcapi/pcapi'
-import * as usersSelectors from 'store/selectors/data/usersSelectors'
-import { configureTestStore } from 'store/testUtils'
-
-import VenueType from '../../ValueObjects/VenueType'
+import React from 'react'
 import VenueEditon from '../VenueEdition'
-
+import VenueType from '../../ValueObjects/VenueType'
+import { configureTestStore } from 'store/testUtils'
 import { getContactInputs } from './helpers'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('../../fields/LocationFields/utils/fetchAddressData', () => ({
   fetchAddressData: jest.fn(),

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types'
 import React from 'react'
-
 import Venue from 'components/pages/Home/Venues/VenueLegacy'
 
 export const VenueList = ({

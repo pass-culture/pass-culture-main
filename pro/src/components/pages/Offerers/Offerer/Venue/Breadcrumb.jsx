@@ -1,7 +1,7 @@
+import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
+
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 
 export const STEP_ID_INFORMATIONS = 'informations'
 export const STEP_ID_MANAGEMENT = 'management'

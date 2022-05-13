@@ -1,12 +1,10 @@
-import classnames from 'classnames'
+import { Field } from 'react-final-form'
+import FieldErrors from '../FieldErrors'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { Field } from 'react-final-form'
-import { createParseNumberValue } from 'react-final-form-utils'
-
+import classnames from 'classnames'
 import { composeValidators } from 'utils/react-final-form'
-
-import FieldErrors from '../FieldErrors'
+import { createParseNumberValue } from 'react-final-form-utils'
 import getRequiredValidate from '../utils/getRequiredValidate'
 
 function getInputValue(inputType, value) {

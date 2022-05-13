@@ -1,16 +1,17 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
-import { queryByTextTrimHtml } from 'utils/testHelpers'
 
+import { render, screen } from '@testing-library/react'
+
+import { MemoryRouter } from 'react-router'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { Provider } from 'react-redux'
+import React from 'react'
 import VenueProvidersManager from '../../VenueProvidersManager'
+import { configureTestStore } from 'store/testUtils'
+import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
+import { queryByTextTrimHtml } from 'utils/testHelpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),

@@ -1,11 +1,11 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
-import { useLocation } from 'react-router-dom'
-
-import Icon from 'components/layout/Icon'
 import './OperationProcedures.scss'
+
 import { Events } from 'core/FirebaseEvents/constants'
+import Icon from 'components/layout/Icon'
+import React from 'react'
 import { RootState } from 'store/reducers'
+import { useLocation } from 'react-router-dom'
+import { useSelector } from 'react-redux'
 
 const OperatingProcedures = (): JSX.Element => {
   const location = useLocation()

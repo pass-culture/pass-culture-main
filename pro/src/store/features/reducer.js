@@ -1,4 +1,4 @@
-import { SET_FEATURES_IS_INITIALIZED, SET_FEATURES } from './actions'
+import { SET_FEATURES, SET_FEATURES_IS_INITIALIZED } from './actions'
 
 export const initialState = {
   initialized: false,

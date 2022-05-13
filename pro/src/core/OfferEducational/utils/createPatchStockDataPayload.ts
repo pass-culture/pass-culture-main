@@ -1,11 +1,10 @@
-import isEqual from 'lodash.isequal'
-
 import { OfferEducationalStockFormValues, StockPayload } from '../types'
-
 import {
   buildBeginningDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
+
+import isEqual from 'lodash.isequal'
 
 type OfferEducationalStockFormValuesForSerializer = {
   eventDate: Date

@@ -1,13 +1,12 @@
-import { useFormikContext } from 'formik'
-import React from 'react'
+import { buildOffererOptions, buildVenueOptions } from './utils'
 
-import { TOffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
 import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
+import React from 'react'
 import { Select } from 'ui-kit'
-
-import { buildOffererOptions, buildVenueOptions } from './utils'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { TOffererName } from 'core/Offerers/types'
+import { useFormikContext } from 'formik'
 
 export interface IVenueProps {
   offererNames: TOffererName[]

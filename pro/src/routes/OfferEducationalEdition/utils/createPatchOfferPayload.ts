@@ -1,11 +1,11 @@
-import isEqual from 'lodash.isequal'
-
 import {
   EditEducationalOfferPayload,
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
+
+import isEqual from 'lodash.isequal'
 
 const serializer = {
   title: (

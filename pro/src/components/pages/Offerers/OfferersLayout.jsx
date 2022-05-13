@@ -1,11 +1,10 @@
-import React from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
-
-import OfferersContainer from './List/OfferersContainer'
-import OffererDetailsLayout from './Offerer/OffererDetailsLayout'
 import OffererCreation from './OffererCreation'
+import OffererDetailsLayout from './Offerer/OffererDetailsLayout'
+import OfferersContainer from './List/OfferersContainer'
+import React from 'react'
 
 const OfferersLayout = () => {
   const match = useRouteMatch()

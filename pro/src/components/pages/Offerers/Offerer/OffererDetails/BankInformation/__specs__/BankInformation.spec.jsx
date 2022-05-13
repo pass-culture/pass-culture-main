@@ -1,8 +1,7 @@
-import { shallow } from 'enzyme'
-import React from 'react'
-
-import { Offerer } from '../../Offerer'
 import BankInformation from '../BankInformation'
+import { Offerer } from '../../Offerer'
+import React from 'react'
+import { shallow } from 'enzyme'
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:

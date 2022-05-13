@@ -1,13 +1,12 @@
+import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import React, { useRef, useState } from 'react'
 
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { BannerRGS } from 'new_components/Banner'
-import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
-
-import HomepageBreadcrumb, { STEP_ID_OFFERERS } from './HomepageBreadcrumb'
 import Offerers from './Offerers/Offerers'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { ProfileAndSupport } from './ProfileAndSupport'
+import { setHasSeenRGSBanner } from 'repository/pcapi/pcapi'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 
 const Homepage = (): JSX.Element => {
   const profileRef = useRef(null)

@@ -1,5 +1,6 @@
-import { CollectiveOffer } from 'core/OfferEducational/types'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { CollectiveOffer } from 'core/OfferEducational/types'
 
 type IPayloadFailure = null
 type GetCollectiveOfferAdapter = Adapter<

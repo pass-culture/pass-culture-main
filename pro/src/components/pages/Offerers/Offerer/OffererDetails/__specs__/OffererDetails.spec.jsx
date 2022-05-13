@@ -1,13 +1,14 @@
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { MemoryRouter } from 'react-router'
 
 import * as pcapi from 'repository/pcapi/pcapi'
-import { configureTestStore } from 'store/testUtils'
 
+import { act, render, screen } from '@testing-library/react'
+
+import { MemoryRouter } from 'react-router'
 import OffererDetails from '../OffererDetails'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { configureTestStore } from 'store/testUtils'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),

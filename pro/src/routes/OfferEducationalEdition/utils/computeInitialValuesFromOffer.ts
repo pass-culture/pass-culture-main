@@ -1,10 +1,11 @@
 import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   PARTICIPANTS,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
 } from 'core/OfferEducational'
+
 import { Offer } from 'custom_types/offer'
 
 const computeDurationString = (
