@@ -21,7 +21,7 @@ from sqlalchemy.sql.expression import extract
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import BookingStatusFilter
+from pcapi.core.bookings.models import BookingStatusFilterList
 from pcapi.core.bookings.repository import field_to_venue_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational import models as educational_models
@@ -648,7 +648,7 @@ def _get_filtered_collective_bookings_query(
 def _get_filtered_collective_bookings_pro(
     pro_user: User,
     period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
+    status_filter: Optional[BookingStatusFilterList] = None,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
 ) -> Query:

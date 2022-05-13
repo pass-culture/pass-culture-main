@@ -5,7 +5,7 @@ from typing import Optional
 from pydantic import root_validator
 
 from pcapi.core.bookings.models import BookingExportType
-from pcapi.core.bookings.models import BookingStatusFilter
+from pcapi.core.bookings.models import BookingStatusFilterList
 from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.booking_recap import BookingRecapStatus
 from pcapi.domain.booking_recap.booking_recap_history import BookingRecapCancelledHistory
@@ -166,7 +166,7 @@ class ListBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
     event_date: Optional[str]
-    individual_booking_status_filter: Optional[BookingStatusFilter]
+    individual_booking_status_filter: Optional[BookingStatusFilterList]
     booking_period_beginning_date: Optional[str]
     booking_period_ending_date: Optional[str]
     offer_type: Optional[OfferType]

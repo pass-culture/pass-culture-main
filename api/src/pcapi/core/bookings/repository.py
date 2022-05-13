@@ -33,7 +33,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.models import BookingStatusFilter
+from pcapi.core.bookings.models import BookingStatusFilterList
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
@@ -72,9 +72,9 @@ BOOKING_STATUS_LABELS = {
 }
 
 BOOKING_DATE_STATUS_MAPPING = {
-    BookingStatusFilter.BOOKED: Booking.dateCreated,
-    BookingStatusFilter.VALIDATED: Booking.dateUsed,
-    BookingStatusFilter.REIMBURSED: Booking.reimbursementDate,
+    BookingStatusFilterList.BOOKED: Booking.dateCreated,
+    BookingStatusFilterList.VALIDATED: Booking.dateUsed,
+    BookingStatusFilterList.REIMBURSED: Booking.reimbursementDate,
 }
 
 BOOKING_EXPORT_HEADER = [
@@ -131,7 +131,7 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
 def find_by_pro_user(
     user: User,
     booking_period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
+    status_filter: Optional[BookingStatusFilterList] = None,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -415,7 +415,7 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
 def get_export(
     user: User,
     booking_period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = BookingStatusFilter.BOOKED,
+    status_filter: Optional[BookingStatusFilterList] = BookingStatusFilterList.BOOKED,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -443,7 +443,7 @@ def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
 def _get_filtered_bookings_query(
     pro_user: User,
     period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
+    status_filter: Optional[BookingStatusFilterList] = None,
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -473,7 +473,7 @@ def _get_filtered_bookings_query(
         period_attribut_filter = (
             BOOKING_DATE_STATUS_MAPPING[status_filter]
             if status_filter
-            else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilter.BOOKED]
+            else BOOKING_DATE_STATUS_MAPPING[BookingStatusFilterList.BOOKED]
         )
 
         bookings_query = bookings_query.filter(
@@ -498,7 +498,7 @@ def _get_filtered_bookings_query(
 def _get_filtered_bookings_count(
     pro_user: User,
     period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
+    status_filter: Optional[BookingStatusFilterList] = None,
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -517,7 +517,7 @@ def _get_filtered_bookings_count(
 def _get_filtered_booking_report(
     pro_user: User,
     period: tuple[date, date],
-    status_filter: BookingStatusFilter,
+    status_filter: BookingStatusFilterList,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
@@ -570,7 +570,7 @@ def _get_filtered_booking_report(
 def _get_filtered_booking_pro(
     pro_user: User,
     period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
+    status_filter: Optional[BookingStatusFilterList] = None,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,

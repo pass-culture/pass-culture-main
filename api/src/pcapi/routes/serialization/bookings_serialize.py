@@ -4,7 +4,7 @@ from enum import Enum
 import typing
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatusFilter
+from pcapi.core.bookings.models import BookingStatusFilterList
 from pcapi.core.categories import subcategories
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
