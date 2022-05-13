@@ -1276,14 +1276,18 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
         )
 
 
-def create_collective_shadow_offer(stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str):  # type: ignore [no-untyped-def]
+def create_collective_shadow_offer(
+    stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str
+) -> Tuple[Stock, int]:
     offer = Offer.query.filter_by(id=offer_id).options(sqla_orm.joinedload(Offer.stocks)).one()
     stock = create_educational_shadow_stock_and_set_offer_showcase(stock_data, user, offer)
-    create_collective_offer_template_and_delete_collective_offer(offer, stock, user)
-    return stock
+    collective_offer_template = create_collective_offer_template_and_delete_collective_offer(offer, stock, user)
+    return (stock, collective_offer_template.id)
 
 
-def create_collective_offer_template_and_delete_collective_offer(offer: Offer, stock: Stock, user: User) -> None:
+def create_collective_offer_template_and_delete_collective_offer(
+    offer: Offer, stock: Stock, user: User
+) -> CollectiveOfferTemplate:
     collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
     if collective_offer is None:
         raise offers_exceptions.CollectiveOfferNotFound()
@@ -1314,6 +1318,8 @@ def create_collective_offer_template_and_delete_collective_offer(offer: Offer, s
         "Collective offer template has been created and regular collective offer deleted if applicable",
         extra={"collectiveOfferTemplate": collective_offer_template.id, "offer": offer.id},
     )
+
+    return collective_offer_template
 
 
 def cancel_collective_offer_booking(offer_id: int, *, legacy: bool = False) -> None:
