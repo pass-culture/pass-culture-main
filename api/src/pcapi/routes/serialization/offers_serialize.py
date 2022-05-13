@@ -263,6 +263,19 @@ class OfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
+class EducationalOfferResponseIdModel(BaseModel):
+    id: str
+    collectiveOfferId: str
+
+    _humanize_id = humanize_field("id")
+    _humanize_collective_offer_id = humanize_field("collectiveOfferId")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+
+
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: list[int]

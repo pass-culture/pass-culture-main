@@ -108,15 +108,15 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
 @private_api.route("/offers/educational", methods=["POST"])
 @login_required
 @spectree_serialize(
-    response_model=offers_serialize.OfferResponseIdModel,
+    response_model=offers_serialize.EducationalOfferResponseIdModel,
     on_success_status=201,
     api=blueprint.pro_private_schema,
 )
 def create_educational_offer(
     body: offers_serialize.PostEducationalOfferBodyModel,
-) -> offers_serialize.OfferResponseIdModel:
+) -> offers_serialize.EducationalOfferResponseIdModel:
     try:
-        offer = offers_api.create_educational_offer(offer_data=body, user=current_user)
+        (offer, collective_offer_id) = offers_api.create_educational_offer(offer_data=body, user=current_user)
 
         # FIXME (cgaunet, 2022-01-26): This log is to investigate a bug causing extraData to be json_typeof 'null'
         if offer.extraData is None:
@@ -160,7 +160,7 @@ def create_educational_offer(
             status_code=400,
         )
 
-    return offers_serialize.OfferResponseIdModel.from_orm(offer)
+    return offers_serialize.EducationalOfferResponseIdModel(id=offer.id, collectiveOfferId=collective_offer_id)
 
 
 @private_api.route("/offers/active-status", methods=["PATCH"])
