@@ -325,7 +325,10 @@ def handle_inactive_dms_applications_cron() -> None:
     if settings.IS_PROD:
         procedures.append(DMS_OLD_PROCEDURE_ID)
     for procedure_id in procedures:
-        handle_inactive_dms_applications(procedure_id)
+        try:
+            handle_inactive_dms_applications(procedure_id)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Failed to handle inactive DMS applications for procedure %s", procedure_id)
 
 
 @blueprint.cli.command("handle_deleted_dms_applications_cron")
@@ -340,4 +343,7 @@ def handle_deleted_dms_applications_cron() -> None:
     if settings.IS_PROD:
         procedures.append(DMS_OLD_PROCEDURE_ID)
     for procedure_id in procedures:
-        handle_deleted_dms_applications(procedure_id)
+        try:
+            handle_deleted_dms_applications(procedure_id)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
