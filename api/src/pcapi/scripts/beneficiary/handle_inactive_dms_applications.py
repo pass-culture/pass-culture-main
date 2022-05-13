@@ -22,7 +22,7 @@ PRE_GENERALISATION_DEPARTMENTS = ["08", "22", "25", "29", "34", "35", "56", "58"
 
 def handle_inactive_dms_applications(procedure_id: int, with_never_eligible_applicant_rule: bool = False) -> None:
     logger.info("[DMS] Handling inactive application for procedure %d", procedure_id)
-
+    marked_applications_count = 0
     draft_applications = dms_api.DMSGraphQLClient().get_applications_with_details(
         procedure_id, dms_models.GraphQLApplicationStates.draft
     )
@@ -35,6 +35,7 @@ def handle_inactive_dms_applications(procedure_id: int, with_never_eligible_appl
                 continue
             _mark_without_continuation_a_draft_application(draft_application)
             _mark_cancel_dms_fraud_check(draft_application.number)
+            marked_applications_count += 1
         except (dms_exceptions.DmsGraphQLApiException, Exception):  # pylint: disable=broad-except
             logger.exception(
                 "[DMS] Could not mark application %s without continuation",
@@ -42,6 +43,8 @@ def handle_inactive_dms_applications(procedure_id: int, with_never_eligible_appl
                 extra={"procedure_id": procedure_id},
             )
             continue
+
+    logger.info("[DMS] Marked %d inactive applications for procedure %d", marked_applications_count, procedure_id)
 
 
 def _has_inactivity_delay_expired(dms_application: dms_models.DmsApplicationResponse) -> bool:
