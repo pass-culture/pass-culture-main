@@ -26,6 +26,7 @@ export interface IEntrepriseApiJson {
     nom: string | null
     denomination: string | null
     etablissement_siege: {
+      geo_adresse: string
       enseigne_1: string | null
       geo_l4: string
       libelle_commune: string
@@ -50,6 +51,7 @@ export interface IEntrepriseApiJson {
       etat_administratif: string
       etablissement_siege: {
         geo_l4: string
+        geo_adresse: string
         longitude: string
         latitude: string
       }

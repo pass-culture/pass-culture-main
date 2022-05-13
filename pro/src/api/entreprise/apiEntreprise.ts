@@ -33,7 +33,7 @@ export default {
     const longitude =
       data.longitude || data.unite_legale.etablissement_siege.longitude
     return {
-      address: data.geo_l4 || data.unite_legale.etablissement_siege.geo_l4,
+      address: data.geo_l4 || data.unite_legale.etablissement_siege.geo_l4 || data.unite_legale.etablissement_siege.geo_adresse,
       city: data.libelle_commune,
       latitude: latitude !== null ? parseFloat(latitude) : null,
       longitude: longitude !== null ? parseFloat(longitude) : null,
