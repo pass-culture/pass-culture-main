@@ -207,6 +207,12 @@ const routes = [
     title: 'Page de confirmation de création d’offre',
   },
   {
+    component: OfferEducationalConfirmation,
+    exact: true,
+    path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/confirmation',
+    title: 'Page de confirmation de création d’offre',
+  },
+  {
     component: OfferEducationalEdition,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/edition',
