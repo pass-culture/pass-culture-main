@@ -325,7 +325,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
         nullable=True,
     )
 
-    isEducational = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
+    isEducational = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False, index=True)
 
     subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
