@@ -133,6 +133,36 @@ describe('components | SiretField', () => {
       // then
       expect(errorMessage).toBeUndefined()
     })
+    it('should return an adresse when SIRET exists in INSEE registry without any geo_l4', async () => {
+      // given
+      const siret = '12345678101234'
+      fetch.mockResponseOnce(
+        JSON.stringify({
+          etablissement: {
+            libelle_commune: 'BAYEUX',
+            latitude: null,
+            longitude: null,
+            enseigne_1: 'MUSEE DE LA TAPISSERIE DE BAYEUX',
+            code_postal: '14400',
+            siret: '12345678101234',
+            etat_administratif: 'A',
+            unite_legale: {
+              etat_administratif: 'A',
+              etablissement_siege: {
+                geo_l4: null,
+                geo_adresse: 'Place du 8 Mai 1945 (Parc) Saint-Savin'
+              },
+            },
+          },
+        })
+      )
+
+      // when
+      const errorMessage = await siretApiValidate(siret, '')
+
+      // then
+      expect(errorMessage).toBeUndefined()
+    })
     it('should return another error message when API returns a status code >=400 and != 404', async () => {
       // given
       const siret = '12345678901534'
