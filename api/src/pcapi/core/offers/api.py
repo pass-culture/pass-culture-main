@@ -3,6 +3,7 @@ import datetime
 import logging
 from typing import List
 from typing import Optional
+from typing import Tuple
 from typing import Union
 
 from psycopg2.errorcodes import CHECK_VIOLATION
@@ -150,12 +151,12 @@ def list_offers_for_pro_user(
     )
 
 
-def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Offer:
+def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Tuple[Offer, int]:
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
     offer = create_offer(completed_data, user)
-    educational_api.create_collective_offer(offer_data, user, offer.id)
-    return offer
+    collective_offer = educational_api.create_collective_offer(offer_data, user, offer.id)
+    return (offer, collective_offer.id)
 
 
 def create_offer(
