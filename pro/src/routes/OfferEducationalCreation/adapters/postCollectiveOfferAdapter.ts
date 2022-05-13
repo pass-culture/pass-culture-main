@@ -8,8 +8,8 @@ import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = IOfferEducationalFormValues
 
-type IPayloadSuccess = { offerId: string }
-type IPayloadFailure = { offerId: null }
+type IPayloadSuccess = { offerId: string; collectiveOfferId: string }
+type IPayloadFailure = { offerId: null; collectiveOfferId: null }
 
 type PostOfferAdapter = Adapter<Params, IPayloadSuccess, IPayloadFailure>
 
@@ -18,6 +18,7 @@ const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   message: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
   payload: {
     offerId: null,
+    collectiveOfferId: null,
   },
 }
 
@@ -26,6 +27,7 @@ const UNKNOWN_FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   message: 'Une erreur est survenue lors de la création de votre offre',
   payload: {
     offerId: null,
+    collectiveOfferId: null,
   },
 }
 
@@ -42,6 +44,7 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async (
       message: null,
       payload: {
         offerId: response.id,
+        collectiveOfferId: response.id,
       },
     }
   } catch (error) {
