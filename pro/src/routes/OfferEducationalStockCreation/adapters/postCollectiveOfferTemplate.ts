@@ -11,7 +11,7 @@ type Params = {
   values: Pick<OfferEducationalStockFormValues, 'priceDetail'>
 }
 
-type PostCollectiveOfferTemplateAdapter = Adapter<Params, null, null>
+type PostCollectiveOfferTemplateAdapter = Adapter<Params, { id: string }, null>
 
 const KNOWN_BAD_REQUEST_CODES: Record<string, string> = {
   EDUCATIONAL_STOCK_ALREADY_EXISTS:
@@ -20,13 +20,13 @@ const KNOWN_BAD_REQUEST_CODES: Record<string, string> = {
     "Une erreur s'est produite. L'offre n'a pas été trouvée.",
 }
 
-const BAD_REQUEST_FAILING_RESPONSE = {
+const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
   message: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
   payload: null,
 }
 
-const UNKNOWN_FAILING_RESPONSE = {
+const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la création de votre stock.',
   payload: null,
@@ -38,14 +38,14 @@ const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
       educationalPriceDetail: values.priceDetail,
     }
     try {
-      await pcapi.createCollectiveOfferTemplate(
+      const { id } = await pcapi.createCollectiveOfferTemplate(
         offerId,
         collectiveOfferTemplatePayload
       )
       return {
         isOk: true,
         message: null,
-        payload: null,
+        payload: { id },
       }
     } catch (error) {
       if (hasStatusCodeAndErrorsCode(error) && error.status === 400) {
