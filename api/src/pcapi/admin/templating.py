@@ -24,6 +24,7 @@ def account_state_format(state: users_models.AccountState) -> str:
         users_models.AccountState.ACTIVE: {"css_class": "success", "text": "Activé"},
         users_models.AccountState.INACTIVE: {"css_class": "danger", "text": "Non activé"},
         users_models.AccountState.SUSPENDED: {"css_class": "info", "text": "Suspendu"},
+        users_models.AccountState.SUSPENDED_UPON_USER_REQUEST: {"css_class": "info", "text": "Suspendu"},
         users_models.AccountState.DELETED: {"css_class": "warning", "text": "Supprimé"},
     }
 

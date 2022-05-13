@@ -28,6 +28,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
+import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ActivityEnum
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
@@ -390,3 +391,7 @@ class UserSuspensionDateResponse(BaseModel):
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
+
+
+class UserSuspensionStatusResponse(BaseModel):
+    status: users_models.AccountState

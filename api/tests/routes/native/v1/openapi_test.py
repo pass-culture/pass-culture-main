@@ -1557,6 +1557,26 @@ def test_public_api(client, app):
                     "tags": [],
                 }
             },
+            "/native/v1/account/suspension_status": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/account/suspension_status",
+                    "parameters": [],
+                    "responses": {
+                        "200": {"description": "OK"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "get_account_suspension_status <GET>",
+                    "tags": [],
+                }
+            },
             "/native/v1/bookings": {
                 "get": {
                     "description": "",
