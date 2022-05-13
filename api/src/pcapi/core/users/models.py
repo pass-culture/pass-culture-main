@@ -209,7 +209,7 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
     )
     offerers = orm.relationship("Offerer", secondary="user_offerer")  # type: ignore [misc]
     password = sa.Column(sa.LargeBinary(60), nullable=False)
-    phoneNumber = sa.Column(sa.String(20), nullable=True)
+    phoneNumber = sa.Column(sa.String(20), nullable=True, index=True)
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
     publicName = sa.Column(sa.String(255), nullable=False)
