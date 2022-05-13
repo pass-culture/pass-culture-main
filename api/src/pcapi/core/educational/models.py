@@ -168,6 +168,8 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
+        if not self.collectiveStock:
+            return False
         return self.collectiveStock.hasBookingLimitDatetimePassed
 
     @hasBookingLimitDatetimesPassed.expression  # type: ignore[no-redef]
