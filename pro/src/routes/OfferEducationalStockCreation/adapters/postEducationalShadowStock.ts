@@ -10,20 +10,20 @@ type Params = {
   values: Pick<OfferEducationalStockFormValues, 'priceDetail'>
 }
 
-type PostEducationalShadowStockAdapter = Adapter<Params, null, null>
+type PostEducationalShadowStockAdapter = Adapter<Params, { id: string }, null>
 
 const KNOWN_BAD_REQUEST_CODES: Record<string, string> = {
   EDUCATIONAL_STOCK_ALREADY_EXISTS:
     "Une erreur s'est produite. Les informations date et prix existent déjà pour cette offre.",
 }
 
-const BAD_REQUEST_FAILING_RESPONSE = {
+const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
   message: 'Une ou plusieurs erreurs sont présentes dans le formulaire',
   payload: null,
 }
 
-const UNKNOWN_FAILING_RESPONSE = {
+const UNKNOWN_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
   message: 'Une erreur est survenue lors de la création de votre stock.',
   payload: null,
@@ -35,11 +35,14 @@ const postEducationalShadowStockAdapter: PostEducationalShadowStockAdapter =
       educationalPriceDetail: values.priceDetail,
     }
     try {
-      await pcapi.createEducationalShadowStock(offerId, shadowStockPayload)
+      const { collectiveOfferTemplateId } =
+        await pcapi.createEducationalShadowStock(offerId, shadowStockPayload)
       return {
         isOk: true,
         message: null,
-        payload: null,
+        payload: {
+          id: collectiveOfferTemplateId,
+        },
       }
     } catch (error) {
       if (hasStatusCodeAndErrorsCode(error) && error.status === 400) {
