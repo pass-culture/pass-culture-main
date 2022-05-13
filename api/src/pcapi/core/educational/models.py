@@ -77,7 +77,7 @@ class EducationalBookingStatus(enum.Enum):
     REFUSED = "REFUSED"
 
 
-class CollectiveBookingStatusFilter(enum.Enum):
+class CollectiveBookingStatusFilterList(enum.Enum):
     BOOKED = "booked"
     VALIDATED = "validated"
     REIMBURSED = "reimbursed"

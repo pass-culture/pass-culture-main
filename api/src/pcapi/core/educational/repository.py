@@ -32,7 +32,7 @@ from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.educational.exceptions import StockDoesNotExist
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveBookingStatusFilter
+from pcapi.core.educational.models import CollectiveBookingStatusFilterList
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalRedactor
@@ -52,9 +52,9 @@ from pcapi.models.feature import FeatureToggle
 
 
 BOOKING_DATE_STATUS_MAPPING = {
-    CollectiveBookingStatusFilter.BOOKED: CollectiveBooking.dateCreated,
-    CollectiveBookingStatusFilter.VALIDATED: CollectiveBooking.dateUsed,
-    CollectiveBookingStatusFilter.REIMBURSED: CollectiveBooking.reimbursementDate,
+    CollectiveBookingStatusFilterList.BOOKED: CollectiveBooking.dateCreated,
+    CollectiveBookingStatusFilterList.VALIDATED: CollectiveBooking.dateUsed,
+    CollectiveBookingStatusFilterList.REIMBURSED: CollectiveBooking.reimbursementDate,
 }
 
 CollectiveBookingNamedTuple = namedtuple(
@@ -602,7 +602,7 @@ def get_collective_offers_template_for_filters(
 def _get_filtered_collective_bookings_query(
     pro_user: User,
     period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[CollectiveBookingStatusFilter] = None,
+    status_filter: Optional[CollectiveBookingStatusFilterList] = None,
     event_date: Optional[date] = None,
     venue_id: Optional[int] = None,
     extra_joins: Optional[Iterable[Column]] = None,
@@ -627,7 +627,7 @@ def _get_filtered_collective_bookings_query(
         period_attribute_filter = (
             BOOKING_DATE_STATUS_MAPPING[status_filter]
             if status_filter
-            else BOOKING_DATE_STATUS_MAPPING[CollectiveBookingStatusFilter.BOOKED]
+            else BOOKING_DATE_STATUS_MAPPING[CollectiveBookingStatusFilterList.BOOKED]
         )
 
         collective_bookings_query = collective_bookings_query.filter(
@@ -693,7 +693,7 @@ def _get_filtered_collective_bookings_pro(
 def find_collective_bookings_by_pro_user(
     user: User,
     booking_period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[CollectiveBookingStatusFilter] = None,
+    status_filter: Optional[CollectiveBookingStatusFilterList] = None,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
     page: int = 1,
@@ -753,7 +753,7 @@ def find_collective_bookings_by_pro_user(
 def get_filtered_collective_booking_report(
     pro_user: User,
     period: tuple[date, date],
-    status_filter: CollectiveBookingStatusFilter,
+    status_filter: CollectiveBookingStatusFilterList,
     event_date: Optional[datetime] = None,
     venue_id: Optional[int] = None,
 ) -> str:

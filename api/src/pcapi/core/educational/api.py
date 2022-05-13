@@ -28,7 +28,7 @@ from pcapi.core.educational import validation
 import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveBookingStatusFilter
+from pcapi.core.educational.models import CollectiveBookingStatusFilterList
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
@@ -908,7 +908,7 @@ def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: i
 def get_collective_booking_report(
     user: User,
     booking_period: Optional[tuple[datetime.date, datetime.date]] = None,
-    status_filter: Optional[CollectiveBookingStatusFilter] = CollectiveBookingStatusFilter.BOOKED,
+    status_filter: Optional[CollectiveBookingStatusFilterList] = CollectiveBookingStatusFilterList.BOOKED,
     event_date: Optional[datetime.datetime] = None,
     venue_id: Optional[int] = None,
     export_type: Optional[BookingExportType] = BookingExportType.CSV,

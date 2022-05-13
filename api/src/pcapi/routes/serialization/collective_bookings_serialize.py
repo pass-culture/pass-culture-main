@@ -13,7 +13,7 @@ from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.repository import BOOKING_STATUS_LABELS
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveBookingStatusFilter
+from pcapi.core.educational.models import CollectiveBookingStatusFilterList
 from pcapi.core.educational.repository import CollectiveBookingNamedTuple
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
@@ -37,7 +37,7 @@ class ListCollectiveBookingsQueryModel(BaseModel):
     page: int = 1
     venue_id: Optional[int]
     event_date: Optional[str]
-    collective_booking_status_filter: Optional[CollectiveBookingStatusFilter]
+    collective_booking_status_filter: Optional[CollectiveBookingStatusFilterList]
     booking_period_beginning_date: Optional[str]
     booking_period_ending_date: Optional[str]
 
