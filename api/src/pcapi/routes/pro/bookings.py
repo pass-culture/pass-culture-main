@@ -10,7 +10,6 @@ from flask_login import login_required
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
-from pcapi.core.bookings.models import BookingStatusFilter
 import pcapi.core.bookings.repository as booking_repository
 import pcapi.core.bookings.validation as bookings_validation
 from pcapi.models.api_errors import ForbiddenError
