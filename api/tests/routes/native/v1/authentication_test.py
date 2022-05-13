@@ -28,6 +28,16 @@ from tests.scripts.beneficiary.fixture import make_single_application
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+@pytest.mark.parametrize("is_active", [True, False])
+def test_user_is_active_returned_value(client, is_active):
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=is_active)
+
+    response = client.post("/native/v1/signin", json=data)
+    assert response.status_code == 200
+    assert response.json["isActive"] == is_active
+
+
 def test_user_logs_in_and_refreshes_token(client):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
     user = users_factories.UserFactory(email=data["identifier"], password=data["password"])

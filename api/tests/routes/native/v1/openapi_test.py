@@ -828,8 +828,9 @@ def test_public_api(client, app):
                     "properties": {
                         "accessToken": {"title": "Accesstoken", "type": "string"},
                         "refreshToken": {"title": "Refreshtoken", "type": "string"},
+                        "isActive": {"title": "Isactive", "type": "boolean"},
                     },
-                    "required": ["refreshToken", "accessToken"],
+                    "required": ["refreshToken", "accessToken", "isActive"],
                     "title": "SigninResponse",
                     "type": "object",
                 },
