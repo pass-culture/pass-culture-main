@@ -32,26 +32,11 @@ describe('navigation menu', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
-  it('should have link to Styleguide when is enabled', () => {
-    // When
-    renderHeader({ isUserAdmin: false, isStyleguideActive: true })
-
-    // Then
-    expect(screen.queryByTestId('styleguide')).toBeInTheDocument()
-  })
-
-  it('should not have link to Styleguide when is disabled', () => {
-    // When
-    renderHeader({ isUserAdmin: false, isStyleguideActive: false })
-
-    // Then
-    expect(screen.queryByTestId('styleguide')).not.toBeInTheDocument()
-  })
 
   describe('when clicking on Home icon', () => {
     it('should redirect to /accueil when user is not admin', () => {
       // When
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
 
       // Then
       expect(screen.getByText('Accueil').closest('a')).toHaveAttribute(
@@ -62,7 +47,7 @@ describe('navigation menu', () => {
 
     it('should redirect to /structures when user is admin', () => {
       // When
-      renderHeader({ isUserAdmin: true, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: true })
 
       // Then
       expect(screen.getByText('Accueil').closest('a')).toHaveAttribute(
@@ -75,7 +60,7 @@ describe('navigation menu', () => {
   describe('trackers should have been called 1 time with pathname', () => {
     it('when clicking on Pro', async () => {
       // given
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
 
       // When
       await userEvent.click(
@@ -93,7 +78,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Home', async () => {
       // given
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
 
       // When
       await userEvent.click(screen.getByText('Accueil'))
@@ -107,7 +92,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Ticket', async () => {
       // given
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
 
       // When
       await userEvent.click(screen.getByText('Guichet'))
@@ -121,7 +106,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Offers', async () => {
       // given
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
 
       // When
       await userEvent.click(screen.getByText('Offres'))
@@ -135,7 +120,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Bookings', async () => {
       // given
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
 
       // When
       await userEvent.click(screen.getByText('Réservations'))
@@ -149,7 +134,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Reimbursement', async () => {
       // given
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
 
       // When
       await userEvent.click(screen.getByText('Remboursements'))
@@ -165,7 +150,7 @@ describe('navigation menu', () => {
 
     it('when clicking on Logout', async () => {
       // given
-      renderHeader({ isUserAdmin: false, isStyleguideActive: false })
+      renderHeader({ isUserAdmin: false })
       pcapi.signout.mockResolvedValue({})
 
       // When

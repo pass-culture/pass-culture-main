@@ -12,7 +12,6 @@ import SetPasswordContainer from 'components/pages/SetPassword/SetPasswordContai
 import SetPasswordConfirmContainer from 'components/pages/SetPasswordConfirm/SetPasswordConfirmContainer'
 import SignIn from 'components/pages/SignIn/SignIn'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
-import StyleguideContainer from 'components/pages/Styleguide/StyleguideContainer'
 import Bookings from 'routes/Bookings'
 import CollectiveBookings from 'routes/CollectiveBookings'
 import CollectiveOffers from 'routes/CollectiveOffers'
@@ -78,12 +77,6 @@ export const routesWithoutLayout = [
     exact: true,
     path: '/remboursements-details',
     title: 'Remboursements',
-  },
-  {
-    component: StyleguideContainer,
-    exact: true,
-    path: '/styleguide',
-    title: 'Styleguide',
   },
   {
     component: Unavailable,
