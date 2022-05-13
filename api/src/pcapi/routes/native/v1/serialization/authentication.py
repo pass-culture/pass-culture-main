@@ -12,6 +12,7 @@ class SigninRequest(BaseModel):
 class SigninResponse(BaseModel):
     refresh_token: str
     access_token: str
+    is_active: bool
 
     class Config:
         alias_generator = to_camel

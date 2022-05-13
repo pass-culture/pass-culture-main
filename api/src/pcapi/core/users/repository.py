@@ -41,7 +41,7 @@ def check_user_and_credentials(user: Optional[models.User], password: str, allow
 
 def get_user_with_credentials(identifier: str, password: str, allow_inactive: bool = False) -> models.User:
     user = find_user_by_email(identifier)
-    check_user_and_credentials(user, password)
+    check_user_and_credentials(user, password, allow_inactive)
     return typing.cast(models.User, user)
 
 

@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 @ip_rate_limiter()
 def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     try:
-        user = users_repo.get_user_with_credentials(body.identifier, body.password)
+        user = users_repo.get_user_with_credentials(body.identifier, body.password, allow_inactive=True)
     except users_exceptions.UnvalidatedAccount as exc:
         raise ApiErrors({"code": "EMAIL_NOT_VALIDATED", "general": ["L'email n'a pas été validé."]}) from exc
     except users_exceptions.CredentialsException as exc:
@@ -54,6 +54,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     return authentication.SigninResponse(
         access_token=users_api.create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
+        is_active=user.isActive,
     )
 
 
