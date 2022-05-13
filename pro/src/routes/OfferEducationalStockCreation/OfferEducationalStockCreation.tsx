@@ -42,8 +42,10 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   ) => {
     let isOk: boolean
     let message: string | null
+    let payload: {id: string} | null
+    const isTemplate = values.educationalOfferType === EducationalOfferType.SHOWCASE
 
-    if (values.educationalOfferType === EducationalOfferType.SHOWCASE) {
+    if (isTemplate) {
       const adapter = isNewCollectiveModelEnabled
         ? postCollectiveOfferTemplateAdapter
         : postEducationalShadowStockAdapter
@@ -57,6 +59,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       })
       isOk = response.isOk
       message = response.message
+      payload = response.payload
     } else {
       const adapter = isNewCollectiveModelEnabled
         ? postCollectiveStockAdapter
@@ -68,12 +71,17 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       })
       isOk = response.isOk
       message = response.message
+      payload = response.payload
     }
+
 
     if (!isOk) {
       return notify.error(message)
     }
-    history.push(`/offre/${offer.id}/collectif/confirmation`)
+
+    const successPayload = payload as unknown as {id: string}
+    const shouldUseNewTemplateIds = isTemplate && enableIndividualAndCollectiveSeparation
+    history.push(`/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${shouldUseNewTemplateIds ? successPayload.id : offer.id}/collectif/confirmation`)
   }
 
   useEffect(() => {

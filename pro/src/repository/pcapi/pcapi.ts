@@ -380,7 +380,7 @@ export const createCollectiveStock = (stock: CreateCollectiveStockPayload) => {
 export const createCollectiveOfferTemplate = (
   offerId: string,
   payload: CreateCollectiveOfferTemplatePayload
-) => {
+): Promise<{ id: string }> => {
   return client.post(`/collective/offers-template/${offerId}/`, payload)
 }
 
