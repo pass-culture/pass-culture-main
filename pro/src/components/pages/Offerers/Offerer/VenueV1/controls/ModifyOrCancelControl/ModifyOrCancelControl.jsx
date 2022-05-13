@@ -1,7 +1,8 @@
+import React, { PureComponent } from 'react'
+
+import { Link } from 'react-router-dom'
 /*eslint no-undef: 0*/
 import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
-import { Link } from 'react-router-dom'
 
 /**
  * @debt standard "Annaëlle: Composant de classe à migrer en fonctionnel"

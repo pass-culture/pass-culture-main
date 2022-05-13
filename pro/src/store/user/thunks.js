@@ -1,7 +1,7 @@
 import * as pcapi from 'repository/pcapi/pcapi'
-import { setUsers } from 'store/reducers/data'
 
 import { setIsInitialized } from './actions'
+import { setUsers } from 'store/reducers/data'
 
 export const loadUser = () => dispatch =>
   pcapi

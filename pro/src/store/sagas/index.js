@@ -1,8 +1,6 @@
-import { watchDataActions } from 'redux-saga-data'
-import { all } from 'redux-saga/effects'
-
 import { API_URL } from 'utils/config'
-
+import { all } from 'redux-saga/effects'
+import { watchDataActions } from 'redux-saga-data'
 import { watchErrorsActions } from './errors'
 
 function* rootSaga() {

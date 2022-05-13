@@ -1,12 +1,11 @@
 import React, { useCallback } from 'react'
-import { useLocation } from 'react-router-dom'
 
-import { Title } from 'ui-kit'
-
+import { IShouldBlockNavigationReturnValue } from './RouteLeavingGuard/RouteLeavingGuard'
 import { ReactComponent as InfoIcon } from './assets/info.svg'
 import RouteLeavingGuard from './RouteLeavingGuard'
-import { IShouldBlockNavigationReturnValue } from './RouteLeavingGuard/RouteLeavingGuard'
+import { Title } from 'ui-kit'
 import styles from './RouteLeavingGuardOfferCreation.module.scss'
+import { useLocation } from 'react-router-dom'
 
 const RouteLeavingGuardOfferCreation = ({
   when = true,

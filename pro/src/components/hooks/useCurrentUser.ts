@@ -1,9 +1,9 @@
-import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { loadUser } from 'store/user/thunks'
 import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
 import { selectUserInitialized } from 'store/user/selectors'
-import { loadUser } from 'store/user/thunks'
+import { useEffect } from 'react'
 
 // FIXME: use generated types from swagger codegens
 interface IAPICurrentUser {

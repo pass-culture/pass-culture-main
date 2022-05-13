@@ -1,12 +1,11 @@
+import NotMatch from 'components/pages/Errors/NotFound/NotFound'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useSelector } from 'react-redux'
 import { Route } from 'react-router-dom'
-
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import Spinner from 'components/layout/Spinner'
-import NotMatch from 'components/pages/Errors/NotFound/NotFound'
 import { selectFeaturesInitialized } from 'store/features/selectors'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import { useSelector } from 'react-redux'
 
 const FeaturedRoute = props => {
   const { children, featureName, ...routeProps } = props

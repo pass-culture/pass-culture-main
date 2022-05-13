@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types'
 import React, { forwardRef } from 'react'
+
+import PropTypes from 'prop-types'
 
 const InputWithCalendar = forwardRef(function InputWithCalendar(props, ref) {
   const { customClass, ariaLabel, ...inputProperties } = props

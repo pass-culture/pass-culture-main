@@ -1,9 +1,10 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
+  CollectiveOffer,
   IOfferEducationalFormValues,
   hasStatusCode,
-  CollectiveOffer,
 } from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 

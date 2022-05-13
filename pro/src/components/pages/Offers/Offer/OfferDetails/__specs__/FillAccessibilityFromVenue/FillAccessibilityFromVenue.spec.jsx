@@ -1,19 +1,19 @@
 import '@testing-library/jest-dom'
+
 import { fireEvent, screen } from '@testing-library/react'
-
 import { getOfferInputForField, setOfferValues } from '../helpers'
-
-import { initialize } from './helpers'
 import {
   offerAccessible,
   offerUndefinedAccessibility,
   offerUndefinedAccessibilityVenueAccessible,
   offerer2,
   offerer2VenuePhysicalAccessible,
-  venueVirtual,
   venuePhysicalAccessible,
   venuePhysicalUndefinedAccessibility,
+  venueVirtual,
 } from './mocks'
+
+import { initialize } from './helpers'
 
 describe('should initialize creation form with venue accessibility from query params', () => {
   it("should have empty accessibilty when venue don't have accessibility set.", async () => {

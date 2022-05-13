@@ -1,7 +1,6 @@
-import { mount } from 'enzyme'
 import React from 'react'
-
 import Titles from '../Titles'
+import { mount } from 'enzyme'
 
 describe('src | components | layout | Titles', () => {
   describe('render', () => {

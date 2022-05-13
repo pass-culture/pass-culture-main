@@ -1,9 +1,7 @@
-import { Story } from '@storybook/react'
-import React from 'react'
-
 import { BaseInput } from '../'
-
 import FieldGroup from './FieldGroup'
+import React from 'react'
+import { Story } from '@storybook/react'
 
 export default {
   title: 'ui-kit/forms/shared/FieldGroup',

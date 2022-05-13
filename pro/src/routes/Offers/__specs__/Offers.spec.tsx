@@ -1,18 +1,8 @@
 import '@testing-library/jest-dom'
-import { parse } from 'querystring'
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { createMemoryHistory } from 'history'
-import React from 'react'
-import { Provider } from 'react-redux'
-import { Router } from 'react-router'
-import type { Store } from 'redux'
-
-import { api } from 'api/v1/api'
 import {
-  ALL_OFFERS,
   ALL_CATEGORIES_OPTION,
+  ALL_OFFERS,
   ALL_VENUES,
   ALL_VENUES_OPTION,
   CREATION_MODES_FILTERS,
@@ -21,12 +11,21 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
-import { computeOffersUrl } from 'core/Offers/utils'
-import { Audience } from 'core/shared'
-import { configureTestStore } from 'store/testUtils'
-import { offerFactory } from 'utils/apiFactories'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
+import { Audience } from 'core/shared'
 import Offers from '../Offers'
+import { Provider } from 'react-redux'
+import React from 'react'
+import { Router } from 'react-router'
+import type { Store } from 'redux'
+import { api } from 'api/v1/api'
+import { computeOffersUrl } from 'core/Offers/utils'
+import { configureTestStore } from 'store/testUtils'
+import { createMemoryHistory } from 'history'
+import { offerFactory } from 'utils/apiFactories'
+import { parse } from 'querystring'
+import userEvent from '@testing-library/user-event'
 
 const renderOffers = (
   store: Store,

@@ -1,15 +1,16 @@
 import '@testing-library/jest-dom'
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import merge from 'lodash/merge'
 
 import {
   defaultCreationProps,
+  managedVenuesFactory,
   renderEACOfferForm,
   userOfferersFactory,
-  managedVenuesFactory,
 } from '../__tests-utils__'
+import { screen, waitFor } from '@testing-library/react'
+
 import { IOfferEducationalProps } from '../OfferEducational'
+import merge from 'lodash/merge'
+import userEvent from '@testing-library/user-event'
 
 const eligibilityResponse = (
   eligible: boolean,

@@ -1,5 +1,6 @@
-import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
+
+import PropTypes from 'prop-types'
 
 export const BicIbanFields = ({ iban, bic }) => (
   <Fragment>

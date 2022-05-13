@@ -1,8 +1,8 @@
-import cx from 'classnames'
-import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
-import { Field } from 'react-final-form'
 
+import { Field } from 'react-final-form'
+import PropTypes from 'prop-types'
+import cx from 'classnames'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
 
 const CheckboxField = ({

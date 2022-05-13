@@ -1,15 +1,14 @@
-import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
-import { Field } from 'react-final-form'
-
-import Icon from 'components/layout/Icon'
-import Spinner from 'components/layout/Spinner'
-import { humanizeSiret } from 'core/Venue/utils'
-import { getBusinessUnits } from 'repository/pcapi/pcapi'
-import { Banner } from 'ui-kit'
-import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 
 import { ApplicationBanner } from './ApplicationBanner'
+import { Banner } from 'ui-kit'
+import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+import { Field } from 'react-final-form'
+import Icon from 'components/layout/Icon'
+import PropTypes from 'prop-types'
+import Spinner from 'components/layout/Spinner'
+import { getBusinessUnits } from 'repository/pcapi/pcapi'
+import { humanizeSiret } from 'core/Venue/utils'
 
 const CREATE_DMS_FILE_BANNER = 'create_dms_file_banner'
 const REPLACE_DMS_FILE_BUTTON = 'replace_dms_file_button'

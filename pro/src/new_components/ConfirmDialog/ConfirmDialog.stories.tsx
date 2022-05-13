@@ -1,9 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import React from 'react'
-
-import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 
 import ConfirmDialog from './ConfirmDialog'
+import React from 'react'
+import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'
 
 export default {
   title: 'components/ConfirmDialog',

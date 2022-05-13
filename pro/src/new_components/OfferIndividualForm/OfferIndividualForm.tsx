@@ -1,17 +1,15 @@
-import React from 'react'
-
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import { TOffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import FormLayout from 'new_components/FormLayout'
-
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
 import { ExternalLink } from './ExternalLink'
+import FormLayout from 'new_components/FormLayout'
 import { Image } from './Image'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
+import React from 'react'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { TOffererName } from 'core/Offerers/types'
 import { UsefulInformations } from './UsefulInformations'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 
 interface IOfferIndividualForm {
   offererNames: TOffererName[]

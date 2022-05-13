@@ -1,8 +1,8 @@
-import { Selector } from 'testcafe'
-
-import { getPathname } from './helpers/location'
 import { HOME_URL, navigateToHomeAs } from './helpers/navigations'
+
+import { Selector } from 'testcafe'
 import { fetchSandbox } from './helpers/sandboxes'
+import { getPathname } from './helpers/location'
 
 fixture("En étant sur la page d'accueil,")
 

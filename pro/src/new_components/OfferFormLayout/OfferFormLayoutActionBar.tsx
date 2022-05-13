@@ -1,6 +1,5 @@
-import cn from 'classnames'
 import React from 'react'
-
+import cn from 'classnames'
 import style from './OfferFormLayout.module.scss'
 
 interface IOfferFormLayoutActionBarProps {

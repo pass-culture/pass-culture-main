@@ -1,33 +1,33 @@
-import type { Location } from 'history'
-import React, { useCallback, useState, useEffect } from 'react'
-
-import { BookingRecapResponseModel } from 'api/v1/gen'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
-import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
-import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
   CollectiveBookingResponseModel,
-  GetBookingsCSVFileAdapter, GetBookingsXLSFileAdapter,
+  GetBookingsCSVFileAdapter,
+  GetBookingsXLSFileAdapter,
   GetFilteredBookingsRecapAdapter,
   GetFilteredCollectiveBookingsRecapAdapter,
   GetUserHasBookingsAdapter,
   GetVenuesAdapter,
-  TPreFilters
-} from "core/Bookings";
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
-import { Audience } from 'core/shared/types'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
-import NoData from 'new_components/NoData'
-import Tabs from 'new_components/Tabs'
+  TPreFilters,
+} from 'core/Bookings'
+import React, { useCallback, useEffect, useState } from 'react'
 
+import { Audience } from 'core/shared/types'
+import { BookingRecapResponseModel } from 'api/v1/gen'
+import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
+import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { ReactComponent as LibraryIcon } from 'icons/library.svg'
+import type { Location } from 'history'
+import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+import NoData from 'new_components/NoData'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PreFilters from './PreFilters'
+import Spinner from 'components/layout/Spinner'
+import Tabs from 'new_components/Tabs'
+import Titles from 'components/layout/Titles/Titles'
+import { ReactComponent as UserIcon } from 'icons/user.svg'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
 
 interface IBookingsProps {
   locationState: Location['state']

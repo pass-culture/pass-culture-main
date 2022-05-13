@@ -1,12 +1,12 @@
+import { CollectiveStockResponseModel, StockResponse } from '../types'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
-  OfferEducationalStockFormValues,
-  GetStockOfferSuccessPayload,
   EducationalOfferType,
+  GetStockOfferSuccessPayload,
+  OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
-import { CollectiveStockResponseModel, StockResponse } from '../types'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (
   stock: StockResponse | CollectiveStockResponseModel | null,

@@ -1,7 +1,6 @@
-import cn from 'classnames'
-import React from 'react'
-
 import { ReactComponent as Down } from './assets/down.svg'
+import React from 'react'
+import cn from 'classnames'
 import styles from './Select.module.scss'
 
 type Option = {

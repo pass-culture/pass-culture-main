@@ -1,8 +1,7 @@
-import { shallow } from 'enzyme'
-import React from 'react'
 import { Link } from 'react-router-dom'
-
+import React from 'react'
 import ReturnOrSubmitControl from '../ReturnOrSubmitControl'
+import { shallow } from 'enzyme'
 
 describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', () => {
   let props

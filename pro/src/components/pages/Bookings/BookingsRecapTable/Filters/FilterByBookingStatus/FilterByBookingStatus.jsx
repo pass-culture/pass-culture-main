@@ -1,11 +1,10 @@
-import isEqual from 'lodash.isequal'
-import PropTypes from 'prop-types'
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
-import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
 import Icon from 'components/layout/Icon'
-
+import PropTypes from 'prop-types'
 import { getBookingStatusDisplayInformations } from '../../CellsFormatter/utils/bookingStatusConverter'
+import isEqual from 'lodash.isequal'
+import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
 
 function getAvailableBookingStatuses(bookingsRecap) {
   const presentBookingStatues = Array.from(

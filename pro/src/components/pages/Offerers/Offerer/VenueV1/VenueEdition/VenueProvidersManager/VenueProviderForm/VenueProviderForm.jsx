@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types'
-import React, { useCallback } from 'react'
-import { useDispatch } from 'react-redux'
-
-import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { showNotification } from 'store/reducers/notificationReducer'
+
+import React, { useCallback } from 'react'
 
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
+import PropTypes from 'prop-types'
 import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
+import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
+import { showNotification } from 'store/reducers/notificationReducer'
+import { useDispatch } from 'react-redux'
 
 const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
   const displayAllocineProviderForm = isAllocineProvider(provider)

@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
 import Icon from './Icon'
+import PropTypes from 'prop-types'
 
 const Spinner = ({ message }) => {
   const [nbDots, setNbDots] = useState(3)

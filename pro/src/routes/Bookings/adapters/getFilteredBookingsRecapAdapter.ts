@@ -1,9 +1,10 @@
-import { api } from 'api/v1/api'
-import { BookingRecapResponseModel } from 'api/v1/gen'
 import {
   GetFilteredBookingsRecapAdapter,
   GetFilteredBookingsRecapAdapterPayload,
 } from 'core/Bookings'
+
+import { BookingRecapResponseModel } from 'api/v1/gen'
+import { api } from 'api/v1/api'
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
 
 const MAX_LOADED_PAGES = 5

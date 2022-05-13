@@ -1,6 +1,5 @@
-import React from 'react'
-
 import { ReactComponent as Buble } from './assets/buble.svg'
+import React from 'react'
 import styles from './HelpLink.module.scss'
 
 const HelpLink = (): JSX.Element => (

@@ -1,7 +1,7 @@
-import { Offer } from 'custom_types/offer'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import { GetStockOfferSuccessPayload } from '../types'
+import { Offer } from 'custom_types/offer'
 
 type IPayloadFailure = null
 type GetOfferAdapter = Adapter<

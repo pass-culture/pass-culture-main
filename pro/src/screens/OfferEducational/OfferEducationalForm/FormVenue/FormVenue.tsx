@@ -1,16 +1,15 @@
-import { useFormikContext } from 'formik'
-import React from 'react'
-
 import {
   IOfferEducationalFormValues,
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
-import FormLayout from 'new_components/FormLayout'
-import { Select } from 'ui-kit'
-import { Banner } from 'ui-kit'
-
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
+
+import { Banner } from 'ui-kit'
+import FormLayout from 'new_components/FormLayout'
+import React from 'react'
+import { Select } from 'ui-kit'
+import { useFormikContext } from 'formik'
 
 interface IFormVenueProps {
   userOfferers: IUserOfferer[]

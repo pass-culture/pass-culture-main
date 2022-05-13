@@ -1,13 +1,13 @@
-import invert from 'lodash.invert'
-
 import {
   OFFER_STATUS_ACTIVE,
-  OFFER_STATUS_INACTIVE,
-  OFFER_STATUS_SOLD_OUT,
   OFFER_STATUS_EXPIRED,
+  OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
+  OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
+
+import invert from 'lodash.invert'
 
 export function collectionToPath(collectionName) {
   switch (collectionName) {

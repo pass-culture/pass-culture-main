@@ -1,22 +1,23 @@
 import '@testing-library/jest-dom'
-import { screen } from '@testing-library/react'
 
-import { apiV1 } from 'api/api'
-import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
-import {
-  offerFactory,
-  offererFactory,
-  venueFactory,
-  stockFactory,
-} from 'utils/apiFactories'
 import {
   getFakeApiUserValidatedOfferersNames,
   getFakeApiVenuesForOfferer,
-  loadFakeApiStocks,
   loadFakeApiCategories,
+  loadFakeApiStocks,
   loadFakeApiVenue,
 } from 'utils/fakeApi'
+import {
+  offerFactory,
+  offererFactory,
+  stockFactory,
+  venueFactory,
+} from 'utils/apiFactories'
+
+import { apiV1 } from 'api/api'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
+import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
+import { screen } from '@testing-library/react'
 
 describe('offer step', () => {
   describe('in creation mode', () => {

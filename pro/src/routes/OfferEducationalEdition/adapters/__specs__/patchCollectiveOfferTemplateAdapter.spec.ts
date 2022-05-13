@@ -1,9 +1,9 @@
-import { OfferAddressType } from 'api/v1/gen/api'
-
 import {
   Params,
   patchCollectiveOfferTemplateAdapter,
 } from '../patchCollectiveOfferTemplateAdapter'
+
+import { OfferAddressType } from 'api/v1/gen/api'
 
 describe('cancelCollectiveBookingAdapter', () => {
   let props: Params

@@ -1,7 +1,7 @@
-import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
+import PropTypes from 'prop-types'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 

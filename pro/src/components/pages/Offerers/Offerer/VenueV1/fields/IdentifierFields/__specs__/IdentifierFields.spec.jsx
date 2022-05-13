@@ -1,18 +1,19 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import React from 'react'
-import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
 
-import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
-import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueType'
 // TODO: move this into components/pages/Offerers/Offerer/VenueV1/__test-utils__
 import * as helpers from 'components/pages/Offerers/Offerer/VenueV1/VenueCreation/__specs__/helpers'
-import { humanizeSiret } from 'core/Venue'
-import { configureTestStore } from 'store/testUtils'
 
+import { render, screen } from '@testing-library/react'
+
+import { Form } from 'react-final-form'
 import IdentifierFields from '../IdentifierFields'
+import { Provider } from 'react-redux'
+import React from 'react'
+import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
+import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueType'
+import { configureTestStore } from 'store/testUtils'
 import getLabelFromList from '../utils/getLabelFromList'
+import { humanizeSiret } from 'core/Venue'
 
 const renderIdentifierFields = async ({
   props,

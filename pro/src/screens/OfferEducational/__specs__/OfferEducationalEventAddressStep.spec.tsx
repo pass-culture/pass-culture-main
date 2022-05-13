@@ -1,16 +1,17 @@
 import '@testing-library/jest-dom'
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
 import {
-  defaultCreationProps,
-  renderEACOfferForm,
   categoriesFactory,
+  defaultCreationProps,
+  managedVenueFactory,
+  renderEACOfferForm,
   subCategoriesFactory,
   userOfferersFactory,
-  managedVenueFactory,
 } from '../__tests-utils__'
+import { screen, waitFor } from '@testing-library/react'
+
 import { IOfferEducationalProps } from '../OfferEducational'
+import userEvent from '@testing-library/user-event'
 
 describe('screens | OfferEducational : event address step', () => {
   let props: IOfferEducationalProps

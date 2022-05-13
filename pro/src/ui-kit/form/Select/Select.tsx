@@ -1,9 +1,8 @@
-import { useField } from 'formik'
 import React, { useEffect } from 'react'
 
 import { FieldLayout } from '../shared'
-
 import SelectInput from './SelectInput'
+import { useField } from 'formik'
 
 type Option = {
   value: string

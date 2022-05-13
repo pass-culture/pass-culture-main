@@ -1,7 +1,6 @@
-import React from 'react'
-
 import Icon from 'components/layout/Icon'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import React from 'react'
 
 const Unavailable = () => {
   return (

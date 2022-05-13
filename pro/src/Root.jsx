@@ -1,14 +1,14 @@
-import React from 'react'
-import { Provider } from 'react-redux'
-import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom'
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
+import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 import AppContainer from 'app/AppContainer'
 import AppLayout from 'app/AppLayout'
-import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import FeaturedRoute from 'components/router/FeaturedRoute'
 import NavigationLogger from 'components/router/NavigationLogger'
+import NotFound from 'components/pages/Errors/NotFound/NotFound'
+import { Provider } from 'react-redux'
+import React from 'react'
 import configureStore from 'store'
-import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 const { store } = configureStore()
 

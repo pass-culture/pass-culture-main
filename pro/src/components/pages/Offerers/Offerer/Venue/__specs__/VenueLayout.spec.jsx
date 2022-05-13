@@ -1,11 +1,12 @@
-import { fireEvent } from '@testing-library/dom'
 import '@testing-library/jest-dom'
-import { act, render, screen } from '@testing-library/react'
-import React from 'react'
-import { MemoryRouter } from 'react-router'
-import { Route } from 'react-router-dom'
 
+import { act, render, screen } from '@testing-library/react'
+
+import { MemoryRouter } from 'react-router'
+import React from 'react'
+import { Route } from 'react-router-dom'
 import VenueLayout from '../VenueLayout'
+import { fireEvent } from '@testing-library/dom'
 
 const renderVenueLayout = async (offererId, url = '/') => {
   const baseUrl = `/structures/${offererId}/lieux`

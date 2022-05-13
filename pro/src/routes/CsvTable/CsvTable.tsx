@@ -1,9 +1,7 @@
-import React from 'react'
-
+import { CsvTableScreen } from 'screens/CsvTable'
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import { CsvTableScreen } from 'screens/CsvTable'
-
+import React from 'react'
 import { getCsvData } from './adapters/getCsvData'
 
 const CsvTable = (): JSX.Element => (

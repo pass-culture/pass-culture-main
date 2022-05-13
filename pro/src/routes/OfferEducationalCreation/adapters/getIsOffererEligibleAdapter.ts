@@ -1,5 +1,6 @@
-import { GetIsOffererEligible, hasStatusCode } from 'core/OfferEducational'
 import * as pcapi from 'repository/pcapi/pcapi'
+
+import { GetIsOffererEligible, hasStatusCode } from 'core/OfferEducational'
 
 const FAILING_RESPONSE: AdapterFailure<{
   isOffererEligibleToEducationalOffer: false

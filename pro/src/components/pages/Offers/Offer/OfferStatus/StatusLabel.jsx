@@ -1,15 +1,15 @@
-import PropTypes from 'prop-types'
-import React from 'react'
-
-import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_ACTIVE,
-  OFFER_STATUS_PENDING,
   OFFER_STATUS_EXPIRED,
   OFFER_STATUS_INACTIVE,
+  OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
+
+import Icon from 'components/layout/Icon'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 export const OFFER_STATUS_PROPERTIES = {
   [OFFER_STATUS_EXPIRED]: {

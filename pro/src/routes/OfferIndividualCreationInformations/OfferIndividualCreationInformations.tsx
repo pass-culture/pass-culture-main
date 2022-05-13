@@ -1,21 +1,20 @@
-import React, { useEffect, useState } from 'react'
-
-import Spinner from 'components/layout/Spinner'
-// TODO (rlecellier): rename into getOfferQueryParams
-import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
-import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters'
-import { getOffererNamesAdapter } from 'core/Offerers/adapters'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
   setInitialFormValues,
 } from 'new_components/OfferIndividualForm'
 import {
-  Informations as InformationsScreen,
   IInformationsProps,
+  Informations as InformationsScreen,
 } from 'screens/OfferIndividual/Informations'
+import React, { useEffect, useState } from 'react'
 
+import Spinner from 'components/layout/Spinner'
 import { createOfferAdapter } from './adapters'
+import { getOfferIndividualVenuesAdapter } from 'core/Venue/adapters'
+import { getOffererNamesAdapter } from 'core/Offerers/adapters'
+// TODO (rlecellier): rename into getOfferQueryParams
+import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 
 type TScreenProps = Pick<IInformationsProps, 'offererNames' | 'venueList'>
 

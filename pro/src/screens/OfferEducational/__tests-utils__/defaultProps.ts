@@ -1,9 +1,8 @@
-import { OfferAddressType } from 'api/v1/gen'
 import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
+import { categoriesFactory, subCategoriesFactory } from './categoryFactory'
 
 import { IOfferEducationalProps } from '../OfferEducational'
-
-import { categoriesFactory, subCategoriesFactory } from './categoryFactory'
+import { OfferAddressType } from 'api/v1/gen'
 import { userOfferersFactory } from './userOfferersFactory'
 
 const mockEducationalCategories = categoriesFactory([

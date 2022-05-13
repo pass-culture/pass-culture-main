@@ -1,11 +1,10 @@
-import { shallow } from 'enzyme'
-import React from 'react'
-
-import { EMPTY_FILTER_VALUE } from 'core/Bookings'
-
 import FilterByEventDate, {
   IFilterByEventDateProps,
 } from '../FilterByEventDate'
+
+import { EMPTY_FILTER_VALUE } from 'core/Bookings'
+import React from 'react'
+import { shallow } from 'enzyme'
 
 describe('components | FilterByEventDate', () => {
   let props: IFilterByEventDateProps

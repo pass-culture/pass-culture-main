@@ -1,12 +1,13 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
-  createPatchStockDataPayload,
   GetStockOfferSuccessPayload,
-  hasStatusCode,
   OfferEducationalStockFormValues,
   StockPayload,
   StockResponse,
+  createPatchStockDataPayload,
+  hasStatusCode,
 } from 'core/OfferEducational'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 type Params = {
   offer: GetStockOfferSuccessPayload

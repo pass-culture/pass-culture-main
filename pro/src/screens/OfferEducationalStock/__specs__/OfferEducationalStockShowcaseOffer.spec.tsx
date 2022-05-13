@@ -1,20 +1,20 @@
 import '@testing-library/jest-dom'
-import { waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   Mode,
 } from 'core/OfferEducational'
-
 import {
   defaultProps,
-  renderOfferEducationalStock,
   elements,
   offerFactory,
+  renderOfferEducationalStock,
 } from '../__tests-utils__'
+
 import { IOfferEducationalStockProps } from '../OfferEducationalStock'
+import userEvent from '@testing-library/user-event'
+import { waitFor } from '@testing-library/react'
 
 const {
   queryShowcaseOfferRadio,

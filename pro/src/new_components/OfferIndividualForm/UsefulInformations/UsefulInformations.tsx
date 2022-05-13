@@ -1,10 +1,8 @@
-import React from 'react'
-
-import { TOffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import FormLayout from 'new_components/FormLayout'
 import { Checkbox } from 'ui-kit'
-
+import FormLayout from 'new_components/FormLayout'
+import React from 'react'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { TOffererName } from 'core/Offerers/types'
 import { Venue } from './Venue'
 
 export interface IUsefulInformationsProps {

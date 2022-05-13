@@ -1,10 +1,8 @@
+import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { useSelector } from 'react-redux'
-
-import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
-
 import StatusFiltersButton from './StatusFiltersButton'
+import { useSelector } from 'react-redux'
 
 const OffersTableHead = ({
   areAllOffersSelected,

@@ -1,5 +1,5 @@
-import cn from 'classnames'
 import React from 'react'
+import cn from 'classnames'
 
 interface IOfferFormLayoutTitleBlockProps {
   children: React.ReactNode | React.ReactNode[]

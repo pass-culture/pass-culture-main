@@ -1,7 +1,6 @@
-import { Story } from '@storybook/react'
-import React from 'react'
-
 import HelpLink from './HelpLink'
+import React from 'react'
+import { Story } from '@storybook/react'
 
 export default {
   title: 'components/HelpLink',

@@ -1,7 +1,6 @@
-import React from 'react'
-import { MemoryRouter } from 'react-router-dom'
-
 import Hero from './Hero'
+import { MemoryRouter } from 'react-router-dom'
+import React from 'react'
 
 export default {
   title: 'components/Hero',

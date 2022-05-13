@@ -1,7 +1,6 @@
+import OfferItem from '../OfferItem/OfferItem'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import OfferItem from '../OfferItem/OfferItem'
 
 const OffersTableBody = ({
   areAllOffersSelected,

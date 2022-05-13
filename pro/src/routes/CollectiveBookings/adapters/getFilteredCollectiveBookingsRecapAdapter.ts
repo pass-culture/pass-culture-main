@@ -1,10 +1,12 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import {
+  CollectiveBookingResponseModel,
   GetFilteredCollectiveBookingsRecapAdapter,
   GetFilteredCollectiveBookingsRecapAdapterPayload,
-  CollectiveBookingResponseModel,
 } from 'core/Bookings'
+
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 const MAX_LOADED_PAGES = 5
 

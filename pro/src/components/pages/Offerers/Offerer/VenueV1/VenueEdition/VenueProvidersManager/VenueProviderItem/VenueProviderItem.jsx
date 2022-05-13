@@ -1,13 +1,12 @@
 import './VenueProviderItem.scss'
 
+import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
 import React from 'react'
-
-import Icon from 'components/layout/Icon'
+import { formatLocalTimeDateString } from 'utils/timezone'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import { pluralize } from 'utils/pluralize'
-import { formatLocalTimeDateString } from 'utils/timezone'
 
 const VenueProviderItem = ({
   venueProvider,

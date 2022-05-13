@@ -3,8 +3,9 @@ import {
   ListOffersOfferResponseModel,
   ListOffersQueryModel,
 } from 'api/v1/gen'
+import { Offer, Stock, TSearchFilters, Venue } from 'core/Offers/types'
+
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { Offer, Stock, Venue, TSearchFilters } from 'core/Offers/types'
 
 const serializeVenue = (
   venue: ListOffersOfferResponseModel['venue']

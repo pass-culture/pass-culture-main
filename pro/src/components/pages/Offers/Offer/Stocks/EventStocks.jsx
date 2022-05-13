@@ -1,4 +1,6 @@
-import PropTypes from 'prop-types'
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import React, {
   Fragment,
   useCallback,
@@ -6,26 +8,24 @@ import React, {
   useMemo,
   useState,
 } from 'react'
-import { Link, useHistory, useLocation } from 'react-router-dom'
-import { v4 as generateRandomUuid } from 'uuid'
-
-import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import {
   createEventStockPayload,
   formatAndSortStocks,
   validateCreatedStock,
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
-import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
-import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
-import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
-import * as pcapi from 'repository/pcapi/pcapi'
-import { SubmitButton } from 'ui-kit'
 
+import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
+import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
+import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import PropTypes from 'prop-types'
+import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
+import { SubmitButton } from 'ui-kit'
+import { v4 as generateRandomUuid } from 'uuid'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 
 const EMPTY_STRING_VALUE = ''
 

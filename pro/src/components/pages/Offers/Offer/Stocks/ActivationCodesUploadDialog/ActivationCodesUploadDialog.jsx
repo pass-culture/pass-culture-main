@@ -1,14 +1,13 @@
-import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useRef, useState } from 'react'
-
-import DialogBox from 'new_components/DialogBox/DialogBox'
-
-import { ReactComponent as ActivationCodeErrorIcon } from '../assets/add-activation-code-error.svg'
-import { ReactComponent as AddActivationCodeIcon } from '../assets/add-activation-code-light.svg'
-
-import ActivationCodesConfirmationForm from './ActivationCodesConfirmationForm/ActivationCodesConfirmationForm'
-import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
 import { checkAndParseUploadedFile, fileReader } from './UploadedFileChecker'
+
+import { ActivationCodeCsvForm } from './ActivationCodesCsvForm/ActivationCodesCsvForm'
+import { ReactComponent as ActivationCodeErrorIcon } from '../assets/add-activation-code-error.svg'
+import ActivationCodesConfirmationForm from './ActivationCodesConfirmationForm/ActivationCodesConfirmationForm'
+import { ReactComponent as AddActivationCodeIcon } from '../assets/add-activation-code-light.svg'
+import DialogBox from 'new_components/DialogBox/DialogBox'
+import PropTypes from 'prop-types'
+
 export const ACTIVATION_CODES_UPLOAD_ID = 'ACTIVATION_CODES_UPLOAD_ID'
 
 const ActivationCodesUploadDialog = ({

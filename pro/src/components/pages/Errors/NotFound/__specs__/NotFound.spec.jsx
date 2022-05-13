@@ -1,8 +1,7 @@
-import { mount } from 'enzyme'
-import React from 'react'
 import { MemoryRouter } from 'react-router'
-
 import NotFound from '../NotFound'
+import React from 'react'
+import { mount } from 'enzyme'
 
 describe('src | components | pages | NotFound', () => {
   it('should display a message notifying the user they are on a wrong path and add a link to home', () => {

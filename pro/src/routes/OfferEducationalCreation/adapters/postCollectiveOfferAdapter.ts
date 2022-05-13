@@ -1,9 +1,9 @@
-import { api } from 'api/v1/api'
 import {
   IOfferEducationalFormValues,
   hasStatusCode,
 } from 'core/OfferEducational'
 
+import { api } from 'api/v1/api'
 import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = IOfferEducationalFormValues

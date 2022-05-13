@@ -1,8 +1,7 @@
 import { Selector } from 'testcafe'
-
+import { fetchSandbox } from './helpers/sandboxes'
 import { getPathname } from './helpers/location'
 import { navigateToHomeAs } from './helpers/navigations'
-import { fetchSandbox } from './helpers/sandboxes'
 
 fixture(
   'Lorsque je clique sur le menu, je clique sur le lien pour atteindre mes "structures",'

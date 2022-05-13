@@ -1,21 +1,20 @@
-/* eslint no-undef: 0 */
-import PropTypes from 'prop-types'
-import React, { PureComponent } from 'react'
 import { Field, Form } from 'react-final-form'
-import { Link } from 'react-router-dom'
-
-import FieldErrors from 'components/layout/form/FieldErrors'
-import PasswordField from 'components/layout/form/fields/PasswordField'
+import React, { PureComponent } from 'react'
 import {
   SirenField,
   addressAndDesignationFromSirenDecorator,
 } from 'components/layout/form/fields/SirenField'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
-import { redirectLoggedUser } from 'components/router/helpers'
-import { BannerRGS } from 'new_components/Banner'
 
+import { BannerRGS } from 'new_components/Banner'
+import FieldErrors from 'components/layout/form/FieldErrors'
+import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
+import { Link } from 'react-router-dom'
 import OperatingProcedures from './OperationProcedures'
+import PasswordField from 'components/layout/form/fields/PasswordField'
+/* eslint no-undef: 0 */
+import PropTypes from 'prop-types'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import { redirectLoggedUser } from 'components/router/helpers'
 
 const required = value => (value ? undefined : 'Required')
 

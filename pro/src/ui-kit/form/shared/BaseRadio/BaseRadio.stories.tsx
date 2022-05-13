@@ -1,7 +1,6 @@
-import { Story } from '@storybook/react'
-import React from 'react'
-
 import BaseRadio from './BaseRadio'
+import React from 'react'
+import { Story } from '@storybook/react'
 
 export default {
   title: 'ui-kit/forms/shared/BaseRadio',

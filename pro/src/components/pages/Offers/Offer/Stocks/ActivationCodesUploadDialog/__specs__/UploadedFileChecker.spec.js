@@ -1,6 +1,6 @@
 import {
-  csvToRows,
   checkAndParseUploadedFile,
+  csvToRows,
   fileReader,
 } from '../UploadedFileChecker'
 

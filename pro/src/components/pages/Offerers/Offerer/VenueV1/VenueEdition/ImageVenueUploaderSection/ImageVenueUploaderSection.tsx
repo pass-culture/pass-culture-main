@@ -1,10 +1,8 @@
-import React from 'react'
-
 import ButtonEditImage from '../ButtonEditImage'
 import { ButtonImageDelete } from '../ButtonImageDelete'
 import ButtonPreviewImage from '../ButtonPreviewImage'
+import React from 'react'
 import { VenueImage } from '../VenueImage/VenueImage'
-
 import styles from './ImageVenueUploaderSection.module.scss'
 
 type ImageVenueUploaderSectionProps = {

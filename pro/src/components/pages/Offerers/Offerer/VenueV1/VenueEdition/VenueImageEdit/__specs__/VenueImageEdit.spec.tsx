@@ -1,10 +1,9 @@
 import { fireEvent, render } from '@testing-library/react'
-import React from 'react'
+
 import { Provider } from 'react-redux'
-
-import { configureTestStore } from 'store/testUtils'
-
+import React from 'react'
 import { VenueImageEdit } from '../VenueImageEdit'
+import { configureTestStore } from 'store/testUtils'
 
 const mockReplaceImage = jest.fn()
 const defaultProps = {

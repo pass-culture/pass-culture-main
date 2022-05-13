@@ -1,9 +1,7 @@
-import React from 'react'
-
 import InputError from 'components/layout/inputs/Errors/InputError'
-import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
-
+import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
+import React from 'react'
 import styles from './OfferWithdrawalTypeOptions.module.scss'
 
 interface IOfferWithdrawalTypeOptionsProps {

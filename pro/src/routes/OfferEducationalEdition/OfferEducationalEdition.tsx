@@ -1,36 +1,35 @@
+import {
+  CollectiveOffer,
+  CollectiveOfferTemplate,
+  DEFAULT_EAC_FORM_VALUES,
+  IOfferEducationalFormValues,
+  Mode,
+  cancelActiveBookingsAdapter,
+  cancelCollectiveBookingAdapter,
+  extractOfferIdAndOfferTypeFromRouteParams,
+  getCategoriesAdapter,
+  getOfferersAdapter,
+  patchIsOfferActiveAdapter,
+  setInitialFormValues,
+} from 'core/OfferEducational'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
-import {
-  IOfferEducationalFormValues,
-  DEFAULT_EAC_FORM_VALUES,
-  Mode,
-  getCategoriesAdapter,
-  getOfferersAdapter,
-  setInitialFormValues,
-  patchIsOfferActiveAdapter,
-  cancelActiveBookingsAdapter,
-  cancelCollectiveBookingAdapter,
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  extractOfferIdAndOfferTypeFromRouteParams,
-} from 'core/OfferEducational'
+import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
 import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
-import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
-
+import Spinner from 'components/layout/Spinner'
+import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 import getCollectiveOfferAdapter from './adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from './adapters/getCollectiveOfferTemplateAdapter'
 import getOfferAdapter from './adapters/getOfferAdapter'
 import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import patchOfferAdapter from './adapters/patchOfferAdapter'
-import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
