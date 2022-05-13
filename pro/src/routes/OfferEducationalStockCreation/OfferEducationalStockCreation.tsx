@@ -49,7 +49,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
         ? postCollectiveOfferTemplateAdapter
         : postEducationalShadowStockAdapter
       const response = await adapter({
-        offerId: offer.id,
+        offerId: enableIndividualAndCollectiveSeparation && !isNewCollectiveModelEnabled ? offer.offerId ?? '' : offer.id,
         values,
       })
       isOk = response.isOk
@@ -61,6 +61,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       const response = await adapter({
         offer,
         values,
+        enableIndividualAndCollectiveSeparation,
       })
       isOk = response.isOk
       message = response.message

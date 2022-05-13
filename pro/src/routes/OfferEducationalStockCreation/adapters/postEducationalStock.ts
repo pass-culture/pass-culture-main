@@ -11,6 +11,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 type Params = {
   offer: GetStockOfferSuccessPayload
   values: OfferEducationalStockFormValues
+  enableIndividualAndCollectiveSeparation: boolean
 }
 
 type PostEducationalStockAdapter = Adapter<Params, null, null>
@@ -35,12 +36,17 @@ const UNKNOWN_FAILING_RESPONSE = {
 const postEducationalStockAdapter: PostEducationalStockAdapter = async ({
   offer,
   values,
+  enableIndividualAndCollectiveSeparation,
 }: Params) => {
   const stockPayload: StockPayload = createStockDataPayload(
     values,
     offer.venueDepartmentCode
   )
-  const stockCreationPayload = { offerId: offer.id, ...stockPayload }
+  const offerId = enableIndividualAndCollectiveSeparation
+    ? offer.offerId
+    : offer.id
+
+  const stockCreationPayload = { offerId: offerId, ...stockPayload }
   try {
     await pcapi.createEducationalStock(stockCreationPayload)
     return {
