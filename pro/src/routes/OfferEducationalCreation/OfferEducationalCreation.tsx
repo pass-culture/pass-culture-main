@@ -36,6 +36,9 @@ const OfferEducationalCreation = (): JSX.Element => {
   const enableNewCollectiveModel = useActiveFeature(
     'ENABLE_NEW_COLLECTIVE_MODEL'
   )
+  const enableIndividualAndCollectiveSeparation = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
 
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
@@ -58,7 +61,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       return notify.error(message)
     }
 
-    history.push(`/offre/${payload.offerId}/collectif/stocks`)
+    history.push(`/offre/${enableIndividualAndCollectiveSeparation ? payload.collectiveOfferId : payload.offerId}/collectif/stocks`)
   }
 
   useEffect(() => {
