@@ -24,6 +24,7 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 import Spinner from 'components/layout/Spinner'
 import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
+import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
@@ -38,6 +39,10 @@ const getAdapter = (
     }
 
     return patchShadowStockIntoEducationalStockAdapter
+  }
+
+  if (isNewModelEnabled) {
+    return patchCollectiveOfferTemplateAdapter
   }
 
   return patchShadowStockAdapter
@@ -62,7 +67,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
   ) => {
-    if (!stock) {
+    if (!stock && !isNewModelEnabled) {
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
@@ -70,10 +75,10 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
     const stockResponse = await adapter({
       offer,
-      stockId: stock.id,
+      stockId: stock?.id || '',
       values,
-      initialValues,
       enableIndividualAndCollectiveSeparation: true,
+      initialValues,
     })
 
     if (
@@ -143,17 +148,20 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         }
 
         // a template offer does not have any stocks but to keep data duplication
-        // we must fetch the stock of the associated offer
-        const stockResponse = await getEducationalStockAdapter(
-          offerResponse.payload.offerId || ''
-        )
+        // we must fetch the stock of the associated offer if we still use both models
+        if (!isNewModelEnabled) {
+          const stockResponse = await getEducationalStockAdapter(
+            offerResponse.payload.offerId || ''
+          )
 
-        if (!stockResponse.isOk) {
-          return notify.error(stockResponse.message)
+          if (!stockResponse.isOk) {
+            return notify.error(stockResponse.message)
+          }
+
+          setStock(stockResponse.payload.stock)
         }
 
         setOffer(offerResponse.payload)
-        setStock(stockResponse.payload.stock)
         const initialValuesFromStock = {
           ...DEFAULT_EAC_STOCK_FORM_VALUES,
           priceDetail: offerResponse.payload.educationalPriceDetails ?? '',
@@ -177,9 +185,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         <OfferEducationalStockScreen
           cancelActiveBookings={cancelActiveBookings}
           initialValues={initialValues}
-          mode={
-            stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY
-          }
+          mode={Mode.EDITION} // a collective offer template is always editable
           offer={offer}
           onSubmit={handleSubmitStock}
           setIsOfferActive={setIsOfferActive}
