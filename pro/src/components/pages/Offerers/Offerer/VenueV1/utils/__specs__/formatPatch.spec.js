@@ -112,6 +112,7 @@ describe('formatPatch', () => {
 
       // then
       expect(result).toStrictEqual({
+        comment: '',
         venueTypeCode: '',
         venueLabelId: '',
         description: '',
@@ -131,6 +132,7 @@ describe('formatPatch', () => {
 
       // then
       expect(result).toStrictEqual({
+        comment: '',
         contact: {
           phoneNumber: '+33608080808',
         },

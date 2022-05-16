@@ -65,6 +65,10 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
       payload[inputName] = ''
     }
 
+    if (inputName === 'comment' && payload[inputName] === undefined) {
+      payload[inputName] = ''
+    }
+
     if (inputName === 'contact' && payload[inputName]?.phoneNumber === '') {
       payload[inputName].phoneNumber = null
     }
