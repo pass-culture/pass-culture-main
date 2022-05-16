@@ -1,3 +1,7 @@
+from datetime import datetime
+from datetime import timedelta
+import typing
+
 from redis import Redis
 
 from pcapi import settings
@@ -19,3 +23,19 @@ def is_SMS_sending_allowed(redis: Redis, user: User):  # type: ignore [no-untype
     sent_SMS_count = redis.get(_sent_SMS_counter_key_name(user))
 
     return not sent_SMS_count or int(sent_SMS_count) < settings.MAX_SMS_SENT_FOR_PHONE_VALIDATION
+
+
+def get_remaining_attempts(redis: Redis, user: User) -> int:
+    sent_SMS_count = redis.get(_sent_SMS_counter_key_name(user))
+
+    if sent_SMS_count:
+        return max(settings.MAX_SMS_SENT_FOR_PHONE_VALIDATION - int(sent_SMS_count), 0)
+    return settings.MAX_SMS_SENT_FOR_PHONE_VALIDATION
+
+
+def get_attempt_limitation_expiration_time(redis: Redis, user: User) -> typing.Optional[datetime]:
+    ttl = redis.ttl(_sent_SMS_counter_key_name(user))
+    if ttl > 0:
+        return datetime.utcnow() + timedelta(seconds=ttl)
+
+    return None
