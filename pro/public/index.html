@@ -9,10 +9,10 @@
     <meta name="version" content="%VERSION%">
     <% if (process.env.NODE_ENV === 'development') { %>
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' blob: data: https: http: gap://ready 'unsafe-inline'; connect-src 'self' https: http: ws://*:3001 wss://*:3001">
+          content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com 'unsafe-inline'; connect-src 'self' https: http: ws://*:3001 wss://*:3001">
     <% } else { %>
     <meta http-equiv="Content-Security-Policy"
-          content="default-src 'self' blob: data: https: http: gap://ready 'unsafe-inline'; connect-src 'self' https: http:">
+          content="default-src 'self' blob: data: https: http: gap://ready https://*.hotjar.com:* https://*.hotjar.io wss://*.hotjar.com 'unsafe-inline'; connect-src 'self' https: http:">
     <% } %>
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="shortcut icon" href="%PUBLIC_URL%/icon/app-icon-iphone.png">
