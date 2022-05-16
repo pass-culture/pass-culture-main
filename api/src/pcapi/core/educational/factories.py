@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 import factory
@@ -16,6 +17,13 @@ from .models import StudentLevels
 
 
 ADAGE_STARTING_EDUCATIONAL_YEAR = 2014
+
+
+class EducationalDomainFactory(BaseFactory):
+    class Meta:
+        model = models.EducationalDomain
+
+    name = "Architecture"
 
 
 class CollectiveOfferFactory(BaseFactory):
@@ -51,6 +59,21 @@ class CollectiveOfferFactory(BaseFactory):
 
         return super()._create(model_class, *args, **kwargs)
 
+    @factory.post_generation
+    def educational_domains(
+        self,
+        create: bool,
+        extracted: Optional[list[models.EducationalDomain]] = None,
+    ) -> None:
+        if not create or not extracted:
+            self.domains = [EducationalDomainFactory(name="Danse", collectiveOffers=[self])]
+
+        if extracted:
+            domains = []
+            for domain in extracted:
+                domains.append(domain)
+            self.domains = domains
+
 
 class CollectiveOfferTemplateFactory(BaseFactory):
     class Meta:
@@ -84,6 +107,21 @@ class CollectiveOfferTemplateFactory(BaseFactory):
             )
 
         return super()._create(model_class, *args, **kwargs)
+
+    @factory.post_generation
+    def educational_domains(
+        self,
+        create: bool,
+        extracted: Optional[list[models.EducationalDomain]] = None,
+    ) -> None:
+        if not create or not extracted:
+            self.domains = [EducationalDomainFactory(name="Danse", collectiveOfferTemplates=[self])]
+
+        if extracted:
+            domains = []
+            for domain in extracted:
+                domains.append(domain)
+            self.domains = domains
 
 
 class CollectiveStockFactory(BaseFactory):
