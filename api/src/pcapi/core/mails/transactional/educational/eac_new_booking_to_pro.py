@@ -32,12 +32,14 @@ def get_eac_new_booking_to_pro_email_data(
     if isinstance(booking, Booking):
         stock: Stock = booking.stock
         offer: Offer = stock.offer
+        price = f"{booking.amount} €" if booking.amount > 0 else "Gratuit"
         educational_redactor: EducationalRedactor = booking.educationalBooking.educationalRedactor  # type: ignore [union-attr]
         educational_institution: EducationalInstitution = booking.educationalBooking.educationalInstitution  # type: ignore [union-attr]
     else:
         # the below [no-redef] happen because the type of the same variable is not consistent in the function
         stock: CollectiveStock = booking.collectiveStock  # type: ignore [no-redef]
         offer: CollectiveOffer = stock.collectiveOffer  # type: ignore [no-redef]
+        price = f"{stock.price} €" if stock.price > 0 else "Gratuit"
         educational_redactor: EducationalRedactor = booking.educationalRedactor  # type: ignore [no-redef]
         educational_institution: EducationalInstitution = booking.educationalInstitution  # type: ignore [no-redef]
 
@@ -49,6 +51,7 @@ def get_eac_new_booking_to_pro_email_data(
             "EVENT_DATE": format_booking_date_for_email(booking),
             "EVENT_HOUR": format_booking_hours_for_email(booking),
             "QUANTITY": 1,  #  business rule: It must always be 1
+            "PRICE": price,
             "REDACTOR_FIRSTNAME": educational_redactor.firstName,
             "REDACTOR_LASTNAME": educational_redactor.lastName,
             "REDACTOR_EMAIL": educational_redactor.email,
