@@ -405,11 +405,6 @@ class CancelByBeneficiaryTest:
         queries += 1  # select exists booking
         queries += 1  # select stock
         queries += 1  # select booking, offer
-        queries += 2  # insert email ; release savepoint
-        queries += 3  # (TODO: optimize) select booking ; stock ; offer
-        queries += 2  # select venue ; individual_booking
-        queries += 1  # select user
-        queries += 2  # insert email ; release savepoint
 
         individual_booking = booking.individualBooking
         user = individual_booking.user
