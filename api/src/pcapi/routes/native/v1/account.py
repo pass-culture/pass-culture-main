@@ -228,7 +228,7 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
     except (exceptions.PhoneAlreadyExists):
         raise ApiErrors(
             {
-                "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi.",
+                "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
                 "code": "PHONE_ALREADY_EXISTS",
             },
             status_code=400,
