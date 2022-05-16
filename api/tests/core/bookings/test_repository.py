@@ -2684,8 +2684,8 @@ class GetEducationalEventOffersDoneYesterdayTest:
         assert set(educational_bookings) == {booking.educationalBooking for booking in bookings_created}
 
 
+@freeze_time("2020-10-15 09:00:00")
 class GetTomorrowEventOfferTest:
-    @freeze_time("2020-10-15 09:00:00")
     def test_find_tomorrow_event_offer(self):
         tomorrow = datetime.utcnow() + timedelta(days=1)
         bookings_factories.IndividualBookingFactory(
@@ -2775,3 +2775,16 @@ class GetTomorrowEventOfferTest:
         bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 1
+
+    def should_not_select_cancelled_booking(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        bookings_factories.IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(
+                beginningDatetime=tomorrow,
+            ),
+            status=BookingStatus.CANCELLED,
+        )
+
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 0
