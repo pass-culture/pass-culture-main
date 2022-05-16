@@ -1,3 +1,4 @@
+import datetime
 import decimal
 import enum
 import json
@@ -92,6 +93,8 @@ class JsonFormatterTest:
             "Frobulated %d blobs",
             12,
             extra={
+                "date": datetime.date(2020, 1, 1),
+                "datetime": datetime.datetime(2020, 1, 1, 12, 0),
                 "decimal": decimal.Decimal("12.34"),
                 "enum": TestingEnum.Foo,
                 "exception": ValueError("Wrong frobulation factor"),
@@ -104,6 +107,8 @@ class JsonFormatterTest:
         deserialized = json.loads(serialized)
         assert deserialized["message"] == "Frobulated 12 blobs"
         assert deserialized["extra"] == {
+            "date": "2020-01-01",
+            "datetime": "2020-01-01T12:00:00",
             "decimal": 12.34,
             "enum": "foo",
             "exception": "Wrong frobulation factor",

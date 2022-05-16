@@ -1,4 +1,5 @@
 import contextlib
+import datetime
 import decimal
 import enum
 import json
@@ -144,6 +145,10 @@ class JsonLogEncoder(json.JSONEncoder):
             return obj.id
         if isinstance(obj, bytes):
             return obj.decode("utf-8")
+        if isinstance(obj, datetime.date):
+            return obj.isoformat()
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
         if isinstance(obj, Exception):
             return str(obj)
         return super().default(obj)
