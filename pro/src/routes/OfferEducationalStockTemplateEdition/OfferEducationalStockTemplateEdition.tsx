@@ -1,33 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-
-import useNotification from 'components/hooks/useNotification'
-import Spinner from 'components/layout/Spinner'
 import {
-  cancelActiveBookingsAdapter,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
-  patchIsOfferActiveAdapter,
-  extractOfferIdAndOfferTypeFromRouteParams,
   StockResponse,
+  cancelActiveBookingsAdapter,
   extractInitialStockValues,
+  extractOfferIdAndOfferTypeFromRouteParams,
+  patchIsOfferActiveAdapter,
 } from 'core/OfferEducational'
+import React, { useEffect, useState } from 'react'
 import {
   getEducationalStockAdapter,
   patchShadowStockAdapter,
   patchShadowStockIntoEducationalStockAdapter,
 } from 'core/OfferEducational/adapters'
+import { useHistory, useParams } from 'react-router-dom'
+
+import { GetCollectiveOfferTemplateSuccessPayload } from './types'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-
+import Spinner from 'components/layout/Spinner'
 import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
-import { GetCollectiveOfferTemplateSuccessPayload } from './types'
+import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
 
 const getAdapter = (
   educationalOfferType: EducationalOfferType,
@@ -39,6 +39,10 @@ const getAdapter = (
     }
 
     return patchShadowStockIntoEducationalStockAdapter
+  }
+
+  if (isNewModelEnabled) {
+    return patchCollectiveOfferTemplateAdapter
   }
 
   return patchShadowStockAdapter
@@ -63,7 +67,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
   ) => {
-    if (!stock) {
+    if (!stock && !isNewModelEnabled) {
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
@@ -71,10 +75,10 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
     const stockResponse = await adapter({
       offer,
-      stockId: stock.id,
+      stockId: stock?.id || '',
       values,
+      enableIndividualAndCollectiveSeparation: true,
       initialValues,
-      enableIndividualAndCollectiveSeparation: true
     })
 
     if (
@@ -144,17 +148,20 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         }
 
         // a template offer does not have any stocks but to keep data duplication
-        // we must fetch the stock of the associated offer
-        const stockResponse = await getEducationalStockAdapter(
-          offerResponse.payload.offerId || ''
-        )
+        // we must fetch the stock of the associated offer if we still use both models
+        if (!isNewModelEnabled) {
+          const stockResponse = await getEducationalStockAdapter(
+            offerResponse.payload.offerId || ''
+          )
 
-        if (!stockResponse.isOk) {
-          return notify.error(stockResponse.message)
+          if (!stockResponse.isOk) {
+            return notify.error(stockResponse.message)
+          }
+
+          setStock(stockResponse.payload.stock)
         }
 
         setOffer(offerResponse.payload)
-        setStock(stockResponse.payload.stock)
         const initialValuesFromStock = {
           ...DEFAULT_EAC_STOCK_FORM_VALUES,
           priceDetail: offerResponse.payload.educationalPriceDetails ?? '',
@@ -178,9 +185,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
         <OfferEducationalStockScreen
           cancelActiveBookings={cancelActiveBookings}
           initialValues={initialValues}
-          mode={
-            stock?.isEducationalStockEditable ? Mode.EDITION : Mode.READ_ONLY
-          }
+          mode={Mode.EDITION} // a collective offer template is always editable
           offer={offer}
           onSubmit={handleSubmitStock}
           setIsOfferActive={setIsOfferActive}
