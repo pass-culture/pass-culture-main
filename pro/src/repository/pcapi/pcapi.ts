@@ -53,6 +53,25 @@ export const updateOffer = (offerId, offer) => {
   return client.patch(`/offers/${offerId}`, offer)
 }
 
+export const patchIsCollectiveOfferActive = (
+  offerIds: string[],
+  isActive: boolean
+) => {
+  return client.patch(`/collective/offers/active-status`, {
+    ids: offerIds,
+    isActive,
+  })
+}
+export const patchIsTemplateOfferActive = (
+  offerIds: string[],
+  isActive: boolean
+) => {
+  return client.patch(`/collective/offers-template/active-status`, {
+    ids: offerIds,
+    isActive,
+  })
+}
+
 export const updateEducationalOffer = (
   offerId: string,
   offer: EditEducationalOfferPayload
