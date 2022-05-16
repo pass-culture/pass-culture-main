@@ -95,6 +95,7 @@ describe('offererDetailsLegacy', () => {
           },
         ],
       },
+      app: { logEvent: mockLogEvent },
       user: { initialized: true },
     })
 
@@ -297,6 +298,19 @@ describe('offererDetailsLegacy', () => {
     expect(
       within(venues[0]).queryByText('Offre numérique')
     ).not.toBeInTheDocument()
+  })
+
+  describe('when user click on edit button', () => {
+    it('should trigger an event when clicking on "Modifier" for offerers', async () => {
+      const { waitForElements } = await renderHomePage({ store })
+      await waitForElements()
+
+      const editButton = screen.getAllByText('Modifier', { exact: false })[0]
+      await userEvent.click(editButton)
+
+      expect(mockLogEvent).toHaveBeenCalledWith('hasClickedModifyOfferer', { offerer_id: 'GE' })
+      expect(mockLogEvent).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('when selected offerer change', () => {
