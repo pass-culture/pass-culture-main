@@ -163,6 +163,10 @@ const OffererDetails = ({
             <Link
               className="tertiary-link"
               to={`/structures/${selectedOfferer.id}`}
+              onClick={() =>
+                logEvent(Events.CLICKED_MODIFY_OFFERER, {
+                  offerer_id: selectedOfferer.id,
+                })}
             >
               <Icon svg="ico-outer-pen" />
               Modifier
