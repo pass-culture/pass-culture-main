@@ -386,7 +386,9 @@ export const createCollectiveOfferTemplate = (
 
 export const patchCollectiveOfferTemplate = (
   offerId: string,
-  payload: Partial<CollectiveOfferTemplate>
+  payload: Partial<Omit<CollectiveOfferTemplate, 'educationalPriceDetails'>> & {
+    priceDetail?: string
+  }
 ) => {
   return client.patch(`/collective/offers-template/${offerId}/`, payload)
 }
