@@ -848,3 +848,43 @@ class CineDigitalServiceBookTicketTest:
         assert len(tickets) == 1
         assert tickets[0].barcode == "141414141414"
         assert not tickets[0].seat_number
+
+
+class CineDigitalServiceGetMoviesTest:
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_should_return_movies_information(self, mocked_get_resource):
+
+        # Given
+        cinema_id = "cinemaid_test"
+        token = "token_test"
+        api_url = "apiUrl_test/"
+        resource = ResourceCDS.MEDIA
+
+        json_movies = [
+            {
+                "id": 1,
+                "title": "Test movie #1",
+                "duration": 7200,
+                "storyline": "Test description #1",
+                "visanumber": "123",
+            },
+            {
+                "id": 2,
+                "title": "Test movie #2",
+                "duration": 5400,
+                "storyline": "Test description #2",
+                "visanumber": "456",
+            },
+        ]
+
+        mocked_get_resource.return_value = json_movies
+
+        # when
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test/"
+        )
+        movies = cine_digital_service.get_cinema_movies()
+
+        # then
+        mocked_get_resource.assert_called_once_with(api_url, cinema_id, token, resource)
+        assert len(movies) == 2
