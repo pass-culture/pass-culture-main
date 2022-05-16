@@ -22,6 +22,7 @@ from sqlalchemy import or_
 from sqlalchemy import text
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import load_only
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.elements import not_
 from sqlalchemy.sql.functions import coalesce
@@ -46,6 +47,7 @@ from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
@@ -856,27 +858,24 @@ def find_educational_bookings_done_yesterday() -> list[EducationalBooking]:
 
 
 def find_individual_bookings_event_happening_tomorrow_query() -> list[IndividualBooking]:
-    tomorrow = datetime.utcnow() + timedelta(days=1)
-    tomorrow_min = datetime.combine(tomorrow, time.min)
-    tomorrow_max = datetime.combine(tomorrow, time.max)
     return (
-        IndividualBooking.query.join(Booking, Booking.stock, Stock.offer)
-        .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
+        find_event_stocks_happening_in_x_days(1)
+        .join(IndividualBooking, Offer)
         .filter(Offer.isEvent)
         .filter(not_(Offer.isDigital))
+        .options(load_only(Stock.beginningDatetime))
+        .options(contains_eager(Stock.bookings).load_only(Booking.id, Booking.stockId, Booking.quantity, Booking.token))
         .options(
-            contains_eager(IndividualBooking.booking)
-            .load_only(Booking.id, Booking.stockId, Booking.quantity, Booking.token)
-            .contains_eager(Booking.stock)
-            .load_only(Stock.beginningDatetime)
-            .contains_eager(Stock.offer)
-            .load_only(
+            contains_eager(Stock.offer).load_only(
                 Offer.name,
                 Offer.subcategoryId,
                 Offer.withdrawalDelay,
                 Offer.withdrawalType,
                 Offer.withdrawalDetails,
             )
+        )
+        .options(
+            contains_eager(Stock.offer)
             .joinedload(Offer.venue, innerjoin=True)
             .load_only(Venue.name, Venue.publicName, Venue.address, Venue.city, Venue.postalCode)
         )
