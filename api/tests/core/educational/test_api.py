@@ -181,6 +181,7 @@ class ConfirmEducationalBookingTest:
             "EVENT_DATE": "15-May-2021",
             "EVENT_HOUR": "2h",
             "QUANTITY": 1,
+            "PRICE": "20.00 €",
             "REDACTOR_FIRSTNAME": "Georges",
             "REDACTOR_LASTNAME": "Moustaki",
             "REDACTOR_EMAIL": "professeur@example.com",
