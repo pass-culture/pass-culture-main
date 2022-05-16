@@ -38,7 +38,7 @@ const Support = () => {
                 className="hs-link tertiary-link"
                 href="mailto:support-pro@passculture.app"
                 onClick={() =>
-                  logEvent(Events.CLICKED_FAQ, { from: location.pathname })
+                  logEvent(Events.CLICKED_CONSULT_SUPPORT, { from: location.pathname })
                 }
                 rel="noopener noreferrer"
                 target="_blank"

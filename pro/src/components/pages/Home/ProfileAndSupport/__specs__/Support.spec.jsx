@@ -55,9 +55,11 @@ describe('homepage: ProfileAndSupport: Support', () => {
       userEvent.click(cguLink)
       userEvent.click(helpCenterLink)
       await waitFor(() => expect(mockLogEvent).toHaveBeenCalledTimes(3))
-      expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_FAQ, {
-        from: '/accueil',
-      })
+      expect(mockLogEvent).toHaveBeenNthCalledWith(
+        1,
+        Events.CLICKED_CONSULT_SUPPORT,
+        { from: '/accueil' }
+      )
       expect(mockLogEvent).toHaveBeenNthCalledWith(
         2,
         Events.CLICKED_CONSULT_CGU,
