@@ -96,7 +96,6 @@ const OffererDetails = ({
   )
 
   const toggleVisibility = () => {
-    console.log(logEvent)
     logEvent(Events.CLICKED_TOGGLE_HIDE_OFFERER_NAME, {
       isExpanded: isExpanded,
     })
