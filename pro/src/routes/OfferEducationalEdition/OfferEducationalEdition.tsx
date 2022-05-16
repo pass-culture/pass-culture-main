@@ -9,7 +9,9 @@ import {
   extractOfferIdAndOfferTypeFromRouteParams,
   getCategoriesAdapter,
   getOfferersAdapter,
+  patchIsCollectiveOfferActiveAdapter,
   patchIsOfferActiveAdapter,
+  patchIsTemplateOfferActiveAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -95,7 +97,15 @@ const OfferEducationalEdition = (): JSX.Element => {
       enableIndividualAndCollectiveSeparation && !isNewModelEnabled
         ? (offer as CollectiveOffer).offerId || ''
         : offerId
-    const { isOk, message } = await patchIsOfferActiveAdapter({
+    let patchAdapter
+    if (isNewModelEnabled) {
+      patchAdapter = isShowcase
+        ? patchIsTemplateOfferActiveAdapter
+        : patchIsCollectiveOfferActiveAdapter
+    } else {
+      patchAdapter = patchIsOfferActiveAdapter
+    }
+    const { isOk, message } = await patchAdapter({
       isActive,
       offerId: patchOfferId,
     })
