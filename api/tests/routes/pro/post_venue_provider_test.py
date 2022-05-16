@@ -54,7 +54,7 @@ class Returns201Test:
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        providers_factories.AllocinePivotFactory(venue=venue)
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {"providerId": humanize(provider.id), "venueId": humanize(venue.id), "price": "9.99"}
@@ -77,7 +77,7 @@ class Returns201Test:
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        providers_factories.AllocinePivotFactory(venue=venue)
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
@@ -227,7 +227,7 @@ class Returns400Test:
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        providers_factories.AllocinePivotFactory(venue=venue)
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
@@ -251,7 +251,7 @@ class Returns400Test:
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
-        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        providers_factories.AllocinePivotFactory(venue=venue)
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {
@@ -398,8 +398,8 @@ class ConnectProviderToVenueTest:
     ):
         # Given
         user = user_factories.AdminFactory()
-        venue = offerers_factories.VenueFactory(siret="12345678912345")
-        providers_factories.AllocinePivotFactory(siret=venue.siret)
+        venue = offerers_factories.VenueFactory()
+        providers_factories.AllocinePivotFactory(venue=venue)
         provider = providers_factories.AllocineProviderFactory()
 
         venue_provider_data = {"providerId": humanize(provider.id), "venueId": humanize(venue.id), "price": "33.33"}

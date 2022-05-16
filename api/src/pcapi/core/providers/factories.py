@@ -11,7 +11,6 @@ class AllocinePivotFactory(BaseFactory):
         model = models.AllocinePivot
 
     venue = factory.SubFactory(VenueFactory)
-    siret = factory.SelfAttribute("venue.siret")
     theaterId = "XXXXXXXXXXXXXXXXXX=="
     internalId = "PXXXXX"
 

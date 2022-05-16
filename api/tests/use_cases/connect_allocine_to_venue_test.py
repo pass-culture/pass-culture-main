@@ -14,7 +14,7 @@ def test_connect_venue_to_allocine_provider():
     venue = offerers_factories.VenueFactory()
     allocine_provider = providers_factories.AllocineProviderFactory()
     providers_factories.AllocinePivotFactory(
-        siret=venue.siret,
+        venue=venue,
         internalId="PXXXXXX",
         theaterId="123VHJ==",
     )

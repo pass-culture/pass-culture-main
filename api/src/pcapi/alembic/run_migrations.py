@@ -15,8 +15,10 @@ logger = logging.getLogger(__name__)
 target_metadata = db.metadata
 
 # List of columns to ignore keyed by table e.g {"user":  ("isAdmin", "isBeneficiary")}
-IGNORED_COLUMNS_BY_TABLE: Dict[str, tuple] = {"user": ("hasCompletedIdCheck")}
+# op.drop_constraint('allocine_pivot_siret_key', 'allocine_pivot', type_='unique')
+IGNORED_COLUMNS_BY_TABLE: Dict[str, tuple] = {"user": ("hasCompletedIdCheck",), "allocine_pivot": ("siret",)}
 IGNORED_TABLES = ("transaction", "activity")
+IGNORED_UNIQUE_CONSTRAINT_BY_TABLE: Dict[str, tuple] = {"allocine_pivot": ("allocine_pivot_siret_key",)}
 
 
 def include_object(
@@ -29,16 +31,24 @@ def include_object(
     # Don't generate DROP tables with autogenerate
     # https://alembic.sqlalchemy.org/en/latest/cookbook.html#don-t-generate-any-drop-table-directives-with-autogenerate
     if type_ == "table" and reflected and compare_to is None:
-        logger.warning(">>>>> Ignoring DROP TABLE for table '%s' <<<<<", object.name)
+        table_name = object.name  # type: ignore[attr-defined]
+        logger.warning(">>>>> Ignoring DROP TABLE for table '%s' <<<<<", table_name)
         return False
     if type_ == "table" and name in IGNORED_TABLES:
-        logger.warning(">>>>> Ignoring table '%s' from IGNORED_TABLES <<<<<", object.name)
+        logger.warning(">>>>> Ignoring table '%s' from IGNORED_TABLES <<<<<", object.name)  # type: ignore[attr-defined]
         return False
-    if type_ == "column" and name in IGNORED_COLUMNS_BY_TABLE.get(object.table.name, ()):
+    if type_ == "column" and name in IGNORED_COLUMNS_BY_TABLE.get(object.table.name, ()):  # type: ignore[attr-defined]
         logger.warning(
             ">>>>> Ignoring column '%s' in table '%s' from IGNORED_COLUMNS_BY_TABLE <<<<<",
-            object.name,
-            object.table.name,
+            object.name,  # type: ignore[attr-defined]
+            object.table.name,  # type: ignore[attr-defined]
+        )
+        return False
+    if type_ == "unique_constraint" and name in IGNORED_UNIQUE_CONSTRAINT_BY_TABLE.get(object.table.name, ()):  # type: ignore[attr-defined]
+        logger.warning(
+            ">>>>> Ignoring unique constraint '%s' in table '%s' from IGNORED_UNIQUE_CONSTRAINT_BY_TABLE <<<<<",
+            object.name,  # type: ignore[attr-defined]
+            object.table.name,  # type: ignore[attr-defined]
         )
         return False
     return True
