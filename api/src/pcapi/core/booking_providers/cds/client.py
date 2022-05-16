@@ -48,6 +48,11 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
+    def get_cinema_movies(self) -> cds_serializers.MediaCDS:
+        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.MEDIA)
+        movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
+        return movies
+
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.PAYMENT_TYPE)
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)

@@ -32,6 +32,17 @@ class ShowCDS(BaseModel):
         allow_population_by_field_name = True
 
 
+class MediaCDS(BaseModel):
+    id: int
+    title: str
+    duration: int
+    storyline: str
+    visanumber: str
+
+    class Config:
+        allow_population_by_field_name = True
+
+
 class PaymentTypeCDS(BaseModel):
     id: int
     internal_code: str = Field(alias="internalcode")
