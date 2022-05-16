@@ -5,12 +5,13 @@ from sqlalchemy import create_engine
 from pcapi import settings
 from pcapi.alembic.run_migrations import include_object
 from pcapi.models import db
+from pcapi.models import install_models
 
 
 connectable = create_engine(settings.DATABASE_URL)
 
 
-def main():
+def check_db_schema_alignment():
     with connectable.connect() as connection:
         migration_context = MigrationContext.configure(
             connection,
@@ -25,4 +26,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    install_models()
+    check_db_schema_alignment()
