@@ -1045,7 +1045,7 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
         assert response.json == {
-            "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi.",
+            "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
             "code": "PHONE_ALREADY_EXISTS",
         }
 
