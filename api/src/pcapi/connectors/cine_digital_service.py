@@ -18,6 +18,7 @@ from pcapi.utils import requests
 class ResourceCDS(enum.Enum):
     TARIFFS = "tariffs"
     SHOWS = "shows"
+    MEDIA = "media"
     PAYMENT_TYPE = "paiementtype"
     VOUCHER_TYPE = "vouchertype"
     SCREENS = "screens"
