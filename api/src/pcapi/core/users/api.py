@@ -23,6 +23,8 @@ import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
 import pcapi.core.fraud.models as fraud_models
+from pcapi.core.fraud.phone_validation.sending_limit import is_SMS_sending_allowed
+from pcapi.core.fraud.phone_validation.sending_limit import update_sent_SMS_counter
 import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
 from pcapi.core.mails.transactional.users import reset_password
@@ -54,8 +56,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.sms import send_transactional_sms
-from pcapi.notifications.sms.sending_limit import is_SMS_sending_allowed
-from pcapi.notifications.sms.sending_limit import update_sent_SMS_counter
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
