@@ -11,8 +11,8 @@ from pcapi.utils.human_ids import humanize
 def test_venue_has_known_allocine_id(client):
     # Given
     user = UserFactory()
-    venue = offerers_factories.VenueFactory(siret="12345678912345")
-    AllocinePivotFactory(siret="12345678912345")
+    venue = offerers_factories.VenueFactory()
+    AllocinePivotFactory(venue=venue)
 
     allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
     other_provider = providers_factories.ProviderFactory(localClass="B provider")

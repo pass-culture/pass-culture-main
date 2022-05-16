@@ -55,6 +55,10 @@ def get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_cla
     )
 
 
+def get_allocine_pivot_for_venue(venue: Venue) -> AllocinePivot:
+    return AllocinePivot.query.filter_by(venue=venue).one_or_none()
+
+
 def has_allocine_pivot_for_venue(venue: Venue) -> bool:
-    allocine_link = AllocinePivot.query.filter_by(siret=venue.siret).one_or_none()
-    return allocine_link is not None
+    allocine_pivot = get_allocine_pivot_for_venue(venue)
+    return allocine_pivot is not None
