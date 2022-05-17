@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import Field
 
-from pcapi.core.booking_providers.models import Movie
+import pcapi.core.booking_providers.models as booking_providers_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -36,16 +36,20 @@ class ShowCDS(BaseModel):
 class MediaCDS(BaseModel):
     id: int
     title: str
-    duration: int
+    duration: int  # CDS api returns duration in seconds
     storyline: str
     visanumber: str
 
     class Config:
         allow_population_by_field_name = True
 
-    def to_generic_movie(self) -> Movie:
-        return Movie(
-            id=self.id, title=self.title, duration=self.duration // 60, description=self.storyline, visa=self.visanumber
+    def to_generic_movie(self) -> booking_providers_models.Movie:
+        return booking_providers_models.Movie(
+            id=str(self.id),
+            title=self.title,
+            duration=self.duration // 60,
+            description=self.storyline,
+            visa=self.visanumber,
         )
 
 

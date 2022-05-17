@@ -62,9 +62,9 @@ class SeatMap:
 
 @dataclass
 class Movie:
-    id: int
+    id: str
     title: str
-    duration: int
+    duration: int  # duration in minutes
     description: str
     visa: str
 

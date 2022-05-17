@@ -4,6 +4,8 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.providers.factories import CinemaProviderPivotFactory
+from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users import factories as user_factories
 from pcapi.models.api_errors import ApiErrors
@@ -208,6 +210,51 @@ class Returns201Test:
         assert response.status_code == 400
         assert response.json == {"global": ["Votre lieu est déjà lié à cette source"]}
         assert venue_provider.venue.venueProviders == [venue_provider]
+
+    @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    def test_create_venue_provider_for_cds_cinema(self, mocked_get_resource, client):
+        # Given
+        user = user_factories.AdminFactory()
+        client = client.with_session_auth(email=user.email)
+        provider = Provider.query.filter(Provider.localClass == "CDSStocks").first()
+        provider.authToken = "fakeToken"
+        provider.apiUrl = "fakeUrl"
+
+        venue = offerers_factories.VenueFactory()
+        cds_pivot = CinemaProviderPivotFactory(venue=venue, provider=provider)
+        venue_provider_data = {
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
+            # TODO AMARINIER : add isDuo to payload when we implement cds modal
+        }
+        movies_json = [
+            {
+                "id": 1,
+                "title": "Test movie #1",
+                "duration": 7200,
+                "storyline": "Test description #1",
+                "visanumber": "123",
+            },
+            {
+                "id": 2,
+                "title": "Test movie #2",
+                "duration": 5400,
+                "storyline": "Test description #2",
+                "visanumber": "456",
+            },
+        ]
+
+        mocked_get_resource.return_value = movies_json
+
+        # When
+        response = client.post("/venueProviders", json=venue_provider_data)
+
+        # Then
+        assert response.json["nOffers"] == 2
+        assert response.json["providerId"] == humanize(provider.id)
+        assert response.json["venueId"] == humanize(venue.id)
+        assert response.json["venueIdAtOfferProvider"] == cds_pivot.idAtProvider
 
 
 class Returns400Test:

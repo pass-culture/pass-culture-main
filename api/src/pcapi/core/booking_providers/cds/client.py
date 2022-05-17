@@ -10,20 +10,15 @@ from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
-from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_TARIFF_LABEL_CDS
-from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_VOUCHER_CODE
-from pcapi.core.booking_providers.cds.constants import VOUCHER_PAYMENT_TYPE_CDS
+import pcapi.core.booking_providers.cds.constants as cds_constants
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
-from pcapi.core.booking_providers.models import BookingProviderClientAPI
-from pcapi.core.booking_providers.models import Movie
-from pcapi.core.booking_providers.models import SeatMap
-from pcapi.core.booking_providers.models import Ticket
+import pcapi.core.booking_providers.models as booking_providers_models
 
 
 CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
-class CineDigitalServiceAPI(BookingProviderClientAPI):
+class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
     def __init__(self, cinema_id: str, api_url: str, token: Optional[str]):
         if not token:
             raise ValueError(f"Missing token for {cinema_id}")
@@ -48,7 +43,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_venue_movies(self) -> list[Movie]:
+    def get_venue_movies(self) -> list[booking_providers_models.Movie]:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.MEDIA)
         cds_movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
         return [cds_movie.to_generic_movie() for cds_movie in cds_movies]
@@ -57,7 +52,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.PAYMENT_TYPE)
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)
         for payment_type in payment_types:
-            if payment_type.internal_code == VOUCHER_PAYMENT_TYPE_CDS:
+            if payment_type.internal_code == cds_constants.VOUCHER_PAYMENT_TYPE_CDS:
                 return payment_type
 
         raise cds_exceptions.CineDigitalServiceAPIException(
@@ -71,7 +66,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         return [
             voucher_type
             for voucher_type in voucher_types
-            if voucher_type.code == PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
+            if voucher_type.code == cds_constants.PASS_CULTURE_VOUCHER_CODE and voucher_type.tariff
         ]
 
     def get_tariff(self) -> cds_serializers.TariffCDS:
@@ -79,7 +74,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         tariffs = parse_obj_as(list[cds_serializers.TariffCDS], data)
 
         for tariff in tariffs:
-            if tariff.label == PASS_CULTURE_TARIFF_LABEL_CDS:
+            if tariff.label == cds_constants.PASS_CULTURE_TARIFF_LABEL_CDS:
                 return tariff
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Tariff Pass Culture not found in Cine Digital Service API for cinemaId={self.cinema_id}"
@@ -134,10 +129,10 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             cds_serializers.SeatCDS(second_seat, screen, seatmap),
         ]
 
-    def get_seatmap(self, show_id: int) -> SeatMap:
+    def get_seatmap(self, show_id: int) -> booking_providers_models.SeatMap:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
         seatmap_cds = parse_obj_as(cds_serializers.SeatmapCDS, data)
-        return SeatMap(seatmap_cds.map)
+        return booking_providers_models.SeatMap(seatmap_cds.map)
 
     def _get_closest_seat_to_center(
         self, center: tuple[float, float], seats_index: list[tuple[int, int]]
@@ -170,7 +165,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
                 f"Error while canceling bookings :{sep}{sep.join([f'{barcode} : {error_msg}' for barcode, error_msg in cancel_errors.__root__.items()])}"
             )
 
-    def book_ticket(self, show_id: int, quantity: int) -> list[Ticket]:
+    def book_ticket(self, show_id: int, quantity: int) -> list[booking_providers_models.Ticket]:
         if quantity < 0 or quantity > 2:
             raise cds_exceptions.CineDigitalServiceAPIException(f"Booking quantity={quantity} should be 1 or 2")
 
@@ -197,7 +192,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         create_transaction_response = parse_obj_as(cds_serializers.CreateTransactionResponseCDS, json_response)
 
         booking_informations = [
-            Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
+            booking_providers_models.Ticket(barcode=ticket.barcode, seat_number=ticket.seat_number)
             for ticket in create_transaction_response.tickets
         ]
         return booking_informations
