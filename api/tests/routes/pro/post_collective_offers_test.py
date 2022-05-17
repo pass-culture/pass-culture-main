@@ -250,3 +250,39 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
+
+    def test_create_collective_offer_empty_domains(self, client):
+        # Given
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
+
+        # When
+        data = {
+            "venueId": humanize(venue.id),
+            "bookingEmail": "offer@example.com",
+            "durationMinutes": 60,
+            "domains": [],
+            "name": "La pièce de théâtre",
+            "subcategoryId": subcategories.SPECTACLE_REPRESENTATION.id,
+            "contactEmail": "pouet@example.com",
+            "contactPhone": "01 99 00 25 68",
+            "offerVenue": {
+                "addressType": "school",
+                "venueId": humanize(125),
+                "otherAddress": "17 rue aléatoire",
+            },
+            "students": ["Lycée - Seconde", "Lycée - Première"],
+            "offererId": humanize(offerer.id),
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+        }
+        with patch("pcapi.core.offerers.api.can_offerer_create_educational_offer"):
+            response = client.with_session_auth(user.email).post("/collective/offers", json=data)
+
+        # Then
+        assert response.status_code == 400
+        assert CollectiveOffer.query.count() == 0
