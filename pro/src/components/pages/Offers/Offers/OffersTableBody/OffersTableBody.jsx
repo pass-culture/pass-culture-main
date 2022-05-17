@@ -13,7 +13,7 @@ const OffersTableBody = ({
       <OfferItem
         disabled={areAllOffersSelected}
         isSelected={selectedOfferIds.includes(offer.id)}
-        key={offer.id}
+        key={`${offer.isShowcase ? 'T-' : ''}${offer.id}`}
         offer={offer}
         selectOffer={selectOffer}
       />
