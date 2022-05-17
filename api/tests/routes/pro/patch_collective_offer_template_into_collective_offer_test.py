@@ -13,9 +13,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Return200Test:
     @freeze_time("2020-11-17 15:00:00")
-    def test_create_valid_stock_for_collective_offer(self, app, client):
+    def test_create_valid_stock_for_collective_offer(self, client):
         # Given
-        offer = educational_factories.CollectiveOfferTemplateFactory()
+        domain = educational_factories.EducationalDomainFactory(name="Yet Another Domain")
+        offer = educational_factories.CollectiveOfferTemplateFactory(educational_domains=[domain])
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -43,7 +44,8 @@ class Return200Test:
         collective_offer = educational_models.CollectiveOffer.query.filter_by(
             id=dehumanize(response_dict["offerId"])
         ).one()
-        assert collective_offer
+        assert collective_offer is not None
+        assert collective_offer.domains == [domain]
         assert educational_models.CollectiveOfferTemplate.query.filter_by(id=offer.id).one_or_none() is None
         assert created_stock.price == 1500
         assert created_stock.priceDetail == "Détail du prix"
