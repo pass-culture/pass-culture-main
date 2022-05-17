@@ -9,6 +9,9 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.search.backends import algolia
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 def get_backend():
     return algolia.AlgoliaBackend()
 
