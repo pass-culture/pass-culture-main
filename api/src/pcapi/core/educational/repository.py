@@ -35,6 +35,7 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.educational.models import EducationalDomain
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.finance.models import BusinessUnitStatus
@@ -949,3 +950,7 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: It
 
 def get_educational_domains_from_ids(ids: Iterable[int]) -> list[educational_models.EducationalDomain]:
     return educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids)).all()
+
+
+def get_all_educational_domains_ordered_by_name() -> list[EducationalDomain]:
+    return EducationalDomain.query.order_by(EducationalDomain.name).all()
