@@ -1,7 +1,8 @@
 import { Offer, TSearchFilters } from 'core/Offers/types'
-import { serializeApiFilters, serializeOffers } from './serializers'
 
 import { api } from 'api/v1/api'
+import { serializeApiFilters } from 'core/Offers/utils'
+import { serializeOffers } from './serializers'
 
 type IPayload = {
   offers: Offer[]

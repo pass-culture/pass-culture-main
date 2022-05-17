@@ -1,11 +1,8 @@
 import {
   ListCollectiveOffersResponseModel,
   ListOffersOfferResponseModel,
-  ListOffersQueryModel,
 } from 'api/v1/gen'
-import { Offer, Stock, TSearchFilters, Venue } from 'core/Offers/types'
-
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { Offer, Stock, Venue } from 'core/Offers/types'
 
 const serializeVenue = (
   venue: ListOffersOfferResponseModel['venue']
@@ -43,22 +40,3 @@ export const serializeOffers = (
     isEditable: offer.isEditable,
     isShowcase: offer.isShowcase,
   }))
-
-export const serializeApiFilters = <K extends keyof TSearchFilters>(
-  searchFilters: TSearchFilters & { page?: number }
-): ListOffersQueryModel => {
-  const keys = Object.keys(DEFAULT_SEARCH_FILTERS) as K[]
-
-  const body = {} as ListOffersQueryModel
-
-  keys.forEach(field => {
-    if (
-      searchFilters[field] &&
-      searchFilters[field] !== DEFAULT_SEARCH_FILTERS[field]
-    ) {
-      body[field] = searchFilters[field] as ListOffersQueryModel[typeof field]
-    }
-  })
-
-  return body
-}

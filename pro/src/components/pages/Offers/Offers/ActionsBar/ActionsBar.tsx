@@ -3,101 +3,96 @@ import React, { useCallback } from 'react'
 import Icon from 'components/layout/Icon'
 import { TSearchFilters } from 'core/Offers/types'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
-import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
-
-const computeActivationSuccessMessage = (nbSelectedOffers: number) => {
-  const successMessage =
-    nbSelectedOffers > 1
-      ? 'offres ont bien été activées'
-      : 'offre a bien été activée'
-  return `${nbSelectedOffers} ${successMessage}`
-}
-const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
-  const successMessage =
-    nbSelectedOffers > 1
-      ? 'offres ont bien été désactivées'
-      : 'offre a bien été désactivée'
-  return `${nbSelectedOffers} ${successMessage}`
-}
-
-const computeAllActivationSuccessMessage = (nbSelectedOffers: number) =>
-  nbSelectedOffers > 1
-    ? 'Les offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
-    : 'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
-
-const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
-  nbSelectedOffers > 1
-    ? 'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
-    : 'Une offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
+import { searchFiltersSelector } from 'store/offers/selectors'
+import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateAllCollectiveOffersActiveStatusAdapter'
+import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
+import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
+import { useSelector } from 'react-redux'
 
 interface IActionBarProps {
   areAllOffersSelected: boolean
   clearSelectedOfferIds: () => void
   nbSelectedOffers: number
   refreshOffers: () => void
-  searchFilters: TSearchFilters
   selectedOfferIds: string[]
-  showPendingNotification: (message: string) => void
-  showSuccessNotification: (message: string) => void
   toggleSelectAllCheckboxes: () => void
+}
+
+const getUpdateActiveStatusAdapter = (
+  areAllOffersSelected: boolean,
+  searchFilters: Partial<TSearchFilters>,
+  isActive: boolean,
+  nbSelectedOffers: number,
+  isNewModelEnabled: boolean,
+  selectedOfferIds: string[]
+) => {
+  if (areAllOffersSelected) {
+    if (isNewModelEnabled) {
+      return () =>
+        updateAllCollectiveOffersActiveStatusAdapter({
+          searchFilters: { ...searchFilters, isActive },
+          nbSelectedOffers,
+        })
+    }
+
+    return () =>
+      updateAllOffersActiveStatusAdapter({
+        searchFilters: { ...searchFilters, isActive },
+        nbSelectedOffers,
+      })
+  }
+
+  return () => updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
 }
 
 const ActionsBar = ({
   refreshOffers,
   selectedOfferIds,
   clearSelectedOfferIds,
-  showPendingNotification,
-  showSuccessNotification,
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
-  searchFilters,
   nbSelectedOffers,
 }: IActionBarProps): JSX.Element => {
+  const searchFilters = useSelector(searchFiltersSelector)
+  const notify = useNotification()
+  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
+
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
     areAllOffersSelected && toggleSelectAllCheckboxes()
   }, [clearSelectedOfferIds, areAllOffersSelected, toggleSelectAllCheckboxes])
 
   const handleUpdateOffersStatus = useCallback(
-    (isActivating: boolean) => {
-      const bodyAllActiveStatus = {
-        ...searchFilters,
-        isActive: isActivating,
-      }
-      const bodySomeActiveStatus = {
-        ids: selectedOfferIds,
-        isActive: isActivating,
-      }
-      const body = areAllOffersSelected
-        ? bodyAllActiveStatus
-        : bodySomeActiveStatus
+    async (isActivating: boolean) => {
+      const adapter = getUpdateActiveStatusAdapter(
+        areAllOffersSelected,
+        searchFilters,
+        isActivating,
+        nbSelectedOffers,
+        isNewModelEnabled,
+        selectedOfferIds
+      )
 
-      // @ts-expect-error Impossible d'assigner le type 'string' au type 'never'
-      updateOffersActiveStatus(areAllOffersSelected, body).then(() => {
-        refreshOffers()
-        areAllOffersSelected
-          ? showPendingNotification(
-              isActivating
-                ? computeAllActivationSuccessMessage(nbSelectedOffers)
-                : computeAllDeactivationSuccessMessage(nbSelectedOffers)
-            )
-          : showSuccessNotification(
-              isActivating
-                ? computeActivationSuccessMessage(nbSelectedOffers)
-                : computeDeactivationSuccessMessage(nbSelectedOffers)
-            )
-        handleClose()
-      })
+      const {isOk, message} = await adapter()
+      refreshOffers()
+
+      if (!isOk) {
+        notify.error(message)
+      }
+
+      areAllOffersSelected ? notify.pending(message) : notify.success(message)
+      handleClose()
     },
     [
       searchFilters,
       selectedOfferIds,
       areAllOffersSelected,
       refreshOffers,
-      showPendingNotification,
       nbSelectedOffers,
-      showSuccessNotification,
       handleClose,
+      notify,
     ]
   )
 
