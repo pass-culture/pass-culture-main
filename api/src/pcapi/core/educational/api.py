@@ -34,11 +34,6 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
-from pcapi.core.educational.models import EducationalDeposit
-from pcapi.core.educational.models import EducationalInstitution
-from pcapi.core.educational.models import EducationalRedactor
-from pcapi.core.educational.models import EducationalYear
-from pcapi.core.educational.models import Ministry
 from pcapi.core.educational.repository import find_collective_booking_by_booking_id
 from pcapi.core.educational.repository import get_and_lock_collective_stock
 from pcapi.core.educational.repository import get_collective_offers_for_filters
@@ -90,8 +85,8 @@ logger = logging.getLogger(__name__)
 OFFERS_RECAP_LIMIT = 501
 
 
-def _create_redactor(redactor_informations: AuthenticatedInformation) -> EducationalRedactor:
-    redactor = EducationalRedactor(
+def _create_redactor(redactor_informations: AuthenticatedInformation) -> educational_models.EducationalRedactor:
+    redactor = educational_models.EducationalRedactor(
         email=redactor_informations.email,
         firstName=redactor_informations.firstname,
         lastName=redactor_informations.lastname,
@@ -267,9 +262,9 @@ def book_collective_offer(redactor_informations: RedactorInformation, stock_id: 
 def create_collective_booking_with_collective_stock(
     stock_id: Union[int, str],
     booking_id: str,
-    educational_institution: EducationalInstitution,
-    educational_year: EducationalYear,
-    redactor: EducationalRedactor,
+    educational_institution: educational_models.EducationalInstitution,
+    educational_year: educational_models.EducationalYear,
+    redactor: educational_models.EducationalRedactor,
 ) -> Optional[CollectiveBooking]:
     with transaction():
         collective_stock = get_and_lock_collective_stock(stock_id=stock_id)  # type: ignore [arg-type]
@@ -571,8 +566,8 @@ def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:
     return collective_booking
 
 
-def create_educational_institution(institution_id: str) -> EducationalInstitution:
-    educational_institution = EducationalInstitution(institutionId=institution_id)
+def create_educational_institution(institution_id: str) -> educational_models.EducationalInstitution:
+    educational_institution = educational_models.EducationalInstitution(institutionId=institution_id)
     repository.save(educational_institution)
 
     return educational_institution
@@ -580,8 +575,10 @@ def create_educational_institution(institution_id: str) -> EducationalInstitutio
 
 def update_educational_institution_data(
     institution_id: str, institution_data: dict[str, str]
-) -> EducationalInstitution:
-    educational_institution = EducationalInstitution.query.filter_by(institutionId=institution_id).one()
+) -> educational_models.EducationalInstitution:
+    educational_institution = educational_models.EducationalInstitution.query.filter_by(
+        institutionId=institution_id
+    ).one()
     educational_institution.name = institution_data["name"]
     educational_institution.city = institution_data["city"]
     educational_institution.postalCode = institution_data["postalCode"]
@@ -592,9 +589,12 @@ def update_educational_institution_data(
 
 
 def create_educational_deposit(
-    educational_year_id: str, educational_institution_id: int, deposit_amount: int, ministry: Ministry
-) -> EducationalDeposit:
-    educational_deposit = EducationalDeposit(
+    educational_year_id: str,
+    educational_institution_id: int,
+    deposit_amount: int,
+    ministry: educational_models.Ministry,
+) -> educational_models.EducationalDeposit:
+    educational_deposit = educational_models.EducationalDeposit(
         educationalYearId=educational_year_id,
         educationalInstitutionId=educational_institution_id,
         amount=decimal.Decimal(deposit_amount),
