@@ -63,6 +63,15 @@ class VenueProviderFactory(BaseFactory):
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
 
 
+class CinemaProviderPivotFactory(BaseFactory):
+    class Meta:
+        model = models.CinemaProviderPivot
+
+    venue = factory.SubFactory(VenueFactory)
+    provider = factory.SubFactory(ProviderFactory)
+    idAtProvider = factory.Sequence("idProvider{}".format)
+
+
 class AllocineProviderFactory(BaseFactory):
     class Meta:
         model = models.Provider

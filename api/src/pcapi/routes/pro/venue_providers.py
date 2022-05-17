@@ -85,6 +85,15 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
             },
             404,
         )
+    except exceptions.NoCinemaProviderPivot:
+        raise ApiErrors(
+            {
+                "cinema_provider": [
+                    "Ce lieu n'est pas configuré pour effectuer une synchronisation avec nos fournisseurs."
+                ]
+            },
+            404,
+        )
     except exceptions.NoPriceSpecified:
         raise ApiErrors({"price": ["Il est obligatoire de saisir un prix."]})
     except exceptions.VenueProviderException:

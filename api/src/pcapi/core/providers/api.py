@@ -9,23 +9,12 @@ from pcapi.core import search
 from pcapi.core.logging import log_elapsed
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_venue_by_id
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
-from pcapi.core.offers.repository import get_offers_map_by_id_at_provider
-from pcapi.core.offers.repository import get_offers_map_by_venue_reference
-from pcapi.core.offers.repository import get_products_map_by_provider_reference
-from pcapi.core.offers.repository import get_stocks_by_id_at_providers
-from pcapi.core.providers.exceptions import NoSiretSpecified
-from pcapi.core.providers.exceptions import ProviderNotFound
-from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
-from pcapi.core.providers.exceptions import VenueNotFound
-from pcapi.core.providers.exceptions import VenueSiretNotRegistered
-from pcapi.core.providers.models import AllocineVenueProvider
-from pcapi.core.providers.models import Provider
-from pcapi.core.providers.models import StockDetail
-from pcapi.core.providers.models import VenueProvider
-from pcapi.core.providers.models import VenueProviderCreationPayload
-from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
+import pcapi.core.offers.models as offers_models
+import pcapi.core.offers.repository as offers_repository
+import pcapi.core.providers.constants as providers_constants
+import pcapi.core.providers.exceptions as providers_exceptions
+import pcapi.core.providers.models as providers_models
+import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import db
 from pcapi.models.product import Product
@@ -39,19 +28,23 @@ logger = logging.getLogger(__name__)
 
 
 def create_venue_provider(
-    provider_id: int, venue_id: int, payload: VenueProviderCreationPayload = VenueProviderCreationPayload()
-) -> VenueProvider:
-    provider = get_provider_enabled_for_pro_by_id(provider_id)
+    provider_id: int,
+    venue_id: int,
+    payload: providers_models.VenueProviderCreationPayload = providers_models.VenueProviderCreationPayload(),
+) -> providers_models.VenueProvider:
+    provider = providers_repository.get_provider_enabled_for_pro_by_id(provider_id)
     if not provider:
-        raise ProviderNotFound()
+        raise providers_exceptions.ProviderNotFound()
 
     venue = find_venue_by_id(venue_id)
 
     if not venue:
-        raise VenueNotFound()
+        raise providers_exceptions.VenueNotFound()
 
     if provider.localClass == "AllocineStocks":
         new_venue_provider = connect_venue_to_allocine(venue, provider_id, payload)
+    elif provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
+        new_venue_provider = connect_venue_to_cinema_provider(venue, provider, payload)
     else:
         new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
 
@@ -61,25 +54,34 @@ def create_venue_provider(
 def reset_stock_quantity(venue: Venue) -> None:
     """Reset all stock quantity with the number of non-cancelled bookings."""
     logger.info("Resetting all stock quantity for changed sync", extra={"venue": venue.id})
-    stocks = Stock.query.filter(Stock.offerId == Offer.id, Offer.venue == venue, Offer.idAtProvider.isnot(None))
-    stocks.update({"quantity": Stock.dnBookedQuantity}, synchronize_session=False)
+    stocks = offers_models.Stock.query.filter(
+        offers_models.Stock.offerId == offers_models.Offer.id,
+        offers_models.Offer.venue == venue,
+        offers_models.Offer.idAtProvider.isnot(None),
+    )
+    stocks.update({"quantity": offers_models.Stock.dnBookedQuantity}, synchronize_session=False)
     db.session.commit()
 
 
 def update_last_provider_id(venue: Venue, provider_id: int) -> None:
     """Update all offers' lastProviderId with the new provider_id."""
-    logger.info("Updating offer.last_provider_id for changed sync", extra={"venue": venue.id, "provider": provider_id})
-    offers = Offer.query.filter(Offer.venue == venue, Offer.idAtProvider.isnot(None))
+    logger.info(
+        "Updating Offer.last_provider_id for changed sync",
+        extra={"venue": venue.id, "provider": provider_id},
+    )
+    offers = offers_models.Offer.query.filter(
+        offers_models.Offer.venue == venue, offers_models.Offer.idAtProvider.isnot(None)
+    )
     offers.update({"lastProviderId": provider_id}, synchronize_session=False)
     db.session.commit()
 
 
 def change_venue_provider(
-    venue_provider: VenueProvider, new_provider_id: int, venueIdAtOfferProvider: str = None
-) -> VenueProvider:
-    new_provider = get_provider_enabled_for_pro_by_id(new_provider_id)
+    venue_provider: providers_models.VenueProvider, new_provider_id: int, venueIdAtOfferProvider: str = None
+) -> providers_models.VenueProvider:
+    new_provider = providers_repository.get_provider_enabled_for_pro_by_id(new_provider_id)
     if not new_provider:
-        raise ProviderNotFound()
+        raise providers_exceptions.ProviderNotFound()
 
     id_at_provider = _get_siret(venueIdAtOfferProvider, venue_provider.venue.siret)
 
@@ -102,8 +104,8 @@ def change_venue_provider(
 
 
 def update_allocine_venue_provider(
-    allocine_venue_provider: AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
-) -> AllocineVenueProvider:
+    allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
+) -> providers_models.AllocineVenueProvider:
     allocine_venue_provider.quantity = venue_provider_payload.quantity
     allocine_venue_provider.isDuo = venue_provider_payload.isDuo  # type: ignore [assignment]
     for price_rule in allocine_venue_provider.priceRules:
@@ -117,12 +119,14 @@ def update_allocine_venue_provider(
     return allocine_venue_provider
 
 
-def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferProvider: str = None) -> VenueProvider:
+def connect_venue_to_provider(
+    venue: Venue, provider: providers_models.Provider, venueIdAtOfferProvider: str = None
+) -> providers_models.VenueProvider:
     id_at_provider = _get_siret(venueIdAtOfferProvider, venue.siret)
 
     _check_provider_can_be_connected(provider, id_at_provider)
 
-    venue_provider = VenueProvider()
+    venue_provider = providers_models.VenueProvider()
     venue_provider.venue = venue
     venue_provider.provider = provider
     venue_provider.venueIdAtOfferProvider = id_at_provider
@@ -131,18 +135,37 @@ def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferPr
     return venue_provider
 
 
-def _check_provider_can_be_connected(provider: Provider, id_at_provider: str) -> None:
+def connect_venue_to_cinema_provider(
+    venue: Venue, provider: providers_models.Provider, payload: providers_models.VenueProviderCreationPayload
+) -> providers_models.VenueProvider:
+
+    provider_pivot = providers_repository.get_cinema_provider_pivot_for_venue(venue)
+
+    if not provider_pivot:
+        raise providers_exceptions.NoCinemaProviderPivot()
+
+    venue_provider = providers_models.VenueProvider()
+    venue_provider.venue = venue
+    venue_provider.provider = provider
+    venue_provider.isDuoOffers = payload.isDuo if payload.isDuo else False
+    venue_provider.venueIdAtOfferProvider = provider_pivot.idAtProvider
+
+    repository.save(venue_provider)
+    return venue_provider
+
+
+def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_provider: str) -> None:
     if not provider.implements_provider_api:
-        raise ProviderWithoutApiImplementation()
+        raise providers_exceptions.ProviderWithoutApiImplementation()
 
     if not _siret_can_be_synchronized(id_at_provider, provider):
-        raise VenueSiretNotRegistered(provider.name, id_at_provider)
+        raise providers_exceptions.VenueSiretNotRegistered(provider.name, id_at_provider)
     return
 
 
 def _siret_can_be_synchronized(
     siret: str,
-    provider: Provider,
+    provider: providers_models.Provider,
 ) -> bool:
     if not siret:
         return False
@@ -155,11 +178,13 @@ def _siret_can_be_synchronized(
 
 
 def synchronize_stocks(
-    stock_details: Iterable[StockDetail], venue: Venue, provider_id: Optional[int] = None
+    stock_details: Iterable[providers_models.StockDetail], venue: Venue, provider_id: Optional[int] = None
 ) -> dict[str, int]:
     products_provider_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
     # here product.id_at_providers is the "ref" field that provider api gives use.
-    products_by_provider_reference = get_products_map_by_provider_reference(products_provider_references)
+    products_by_provider_reference = offers_repository.get_products_map_by_provider_reference(
+        products_provider_references
+    )
 
     stock_details = [
         stock for stock in stock_details if stock.products_provider_reference in products_by_provider_reference
@@ -175,7 +200,9 @@ def synchronize_stocks(
             "ref_count": len(offers_provider_references),
         },
     ):
-        offers_by_provider_reference = get_offers_map_by_id_at_provider(offers_provider_references, venue)
+        offers_by_provider_reference = offers_repository.get_offers_map_by_id_at_provider(
+            offers_provider_references, venue
+        )
 
     products_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
     with log_elapsed(
@@ -186,12 +213,12 @@ def synchronize_stocks(
             "ref_count": len(products_references),
         },
     ):
-        offers_by_venue_reference = get_offers_map_by_venue_reference(products_references, venue.id)
+        offers_by_venue_reference = offers_repository.get_offers_map_by_venue_reference(products_references, venue.id)
 
     offers_update_mapping = [
         {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
     ]
-    db.session.bulk_update_mappings(Offer, offers_update_mapping)
+    db.session.bulk_update_mappings(offers_models.Offer, offers_update_mapping)
 
     new_offers = _build_new_offers_from_stock_details(
         stock_details,
@@ -205,11 +232,11 @@ def synchronize_stocks(
 
     db.session.bulk_save_objects(new_offers)
 
-    new_offers_by_provider_reference = get_offers_map_by_id_at_provider(new_offers_references, venue)  # type: ignore [arg-type]
+    new_offers_by_provider_reference = offers_repository.get_offers_map_by_id_at_provider(new_offers_references, venue)  # type: ignore [arg-type]
     offers_by_provider_reference = {**offers_by_provider_reference, **new_offers_by_provider_reference}
 
     stocks_provider_references = [stock.stocks_provider_reference for stock in stock_details]
-    stocks_by_provider_reference = get_stocks_by_id_at_providers(stocks_provider_references)
+    stocks_by_provider_reference = offers_repository.get_stocks_by_id_at_providers(stocks_provider_references)
     update_stock_mapping, new_stocks, offer_ids = _get_stocks_to_upsert(
         stock_details,
         stocks_by_provider_reference,
@@ -219,7 +246,7 @@ def synchronize_stocks(
     )
 
     db.session.bulk_save_objects(new_stocks)
-    db.session.bulk_update_mappings(Stock, update_stock_mapping)
+    db.session.bulk_update_mappings(offers_models.Stock, update_stock_mapping)
 
     db.session.commit()
 
@@ -229,13 +256,13 @@ def synchronize_stocks(
 
 
 def _build_new_offers_from_stock_details(
-    stock_details: list[StockDetail],
+    stock_details: list[providers_models.StockDetail],
     existing_offers_by_provider_reference: dict[str, int],
     products_by_provider_reference: dict[str, Product],
     existing_offers_by_venue_reference: dict[str, int],
     venue: Venue,
     provider_id: Optional[int],
-) -> list[Offer]:
+) -> list[offers_models.Offer]:
     new_offers = []
     for stock_detail in stock_details:
         if stock_detail.offers_provider_reference in existing_offers_by_provider_reference:
@@ -268,12 +295,12 @@ def _build_new_offers_from_stock_details(
 
 
 def _get_stocks_to_upsert(
-    stock_details: list[StockDetail],
+    stock_details: list[providers_models.StockDetail],
     stocks_by_provider_reference: dict[str, dict],
     offers_by_provider_reference: dict[str, int],
     products_by_provider_reference: dict[str, Product],
     provider_id: Optional[int],
-) -> tuple[list[dict], list[Stock], set[int]]:
+) -> tuple[list[dict], list[offers_models.Stock], set[int]]:
     update_stock_mapping = []
     new_stocks = []
     offer_ids = set()
@@ -337,9 +364,9 @@ def _get_stocks_to_upsert(
 
 
 def _build_stock_from_stock_detail(
-    stock_detail: StockDetail, offers_id: int, price: float, provider_id: Optional[int]
-) -> Stock:
-    return Stock(
+    stock_detail: providers_models.StockDetail, offers_id: int, price: float, provider_id: Optional[int]
+) -> offers_models.Stock:
+    return offers_models.Stock(
         quantity=stock_detail.available_quantity,
         rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
@@ -351,7 +378,7 @@ def _build_stock_from_stock_detail(
     )
 
 
-def _validate_stock_or_offer(model: Union[Offer, Stock]) -> bool:
+def _validate_stock_or_offer(model: Union[offers_models.Offer, offers_models.Stock]) -> bool:
     model_api_errors = validate(model)
     if model_api_errors.errors.keys():
         logger.exception(
@@ -366,8 +393,8 @@ def _validate_stock_or_offer(model: Union[Offer, Stock]) -> bool:
 
 def _build_new_offer(
     venue: Venue, product: Product, id_at_providers: str, id_at_provider: str, provider_id: Optional[int]
-) -> Offer:
-    return Offer(
+) -> offers_models.Offer:
+    return offers_models.Offer(
         bookingEmail=venue.bookingEmail,
         description=product.description,
         extraData=product.extraData,
@@ -387,7 +414,7 @@ def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: d
 
     is_existing_stock_empty = (
         # Existing stock could be None (i.e. infinite) if the offerer manually overrides
-        # the quantity of this synchronized stock.
+        # the quantity of this synchronized offers_models.Stock.
         existing_stock["quantity"] is not None
         and existing_stock["quantity"] <= existing_stock["booking_quantity"]
     )
@@ -401,4 +428,4 @@ def _get_siret(venue_id_at_offer_provider: Optional[str], siret: Optional[str]) 
         return venue_id_at_offer_provider
     if siret is not None:
         return siret
-    raise NoSiretSpecified()
+    raise providers_exceptions.NoSiretSpecified()
