@@ -2,7 +2,7 @@ import logging
 
 from pcapi.core.booking_providers.factories import ExternalBookingFactory
 from pcapi.core.booking_providers.factories import VenueBookingProviderFactory
-from pcapi.core.bookings.factories import BookingFactory
+from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
@@ -28,9 +28,13 @@ def create_offerer_with_booking_provider() -> None:
 
     user_bene = BeneficiaryGrant18Factory(email="jeune-has-external-bookings@example.com")
 
-    booking_solo = BookingFactory(quantity=1, stock=stock_solo, user=user_bene)
+    booking_solo = IndividualBookingFactory(
+        quantity=1, stock=stock_solo, user=user_bene, individualBooking__user=user_bene
+    )
     ExternalBookingFactory(booking=booking_solo)
-    booking_duo = BookingFactory(quantity=2, stock=stock_duo, user=user_bene)
+    booking_duo = IndividualBookingFactory(
+        quantity=2, stock=stock_duo, user=user_bene, individualBooking__user=user_bene
+    )
     ExternalBookingFactory(booking=booking_duo, seat="A_1")
     ExternalBookingFactory(booking=booking_duo, seat="A_2")
     logger.info("created 3 externalBookings")
