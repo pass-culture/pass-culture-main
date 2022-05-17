@@ -2,6 +2,7 @@ import factory
 
 from pcapi.core.booking_providers.models import BookingProvider
 from pcapi.core.booking_providers.models import BookingProviderName
+from pcapi.core.booking_providers.models import BookingProviderPivot
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
@@ -29,6 +30,16 @@ class VenueBookingProviderFactory(BaseFactory):
     provider = factory.SubFactory(ProviderFactory)
     venueIdAtOfferProvider = factory.Sequence("idProvider{}".format)
     token = factory.LazyFunction(random_token)
+
+
+class BookingProviderPivotFactory(BaseFactory):
+    class Meta:
+        model = BookingProviderPivot
+
+    venue = factory.SubFactory(VenueFactory)
+    bookingProvider = factory.SubFactory(BookingProviderFactory)
+    token = factory.LazyFunction(random_token)
+    idAtProvider = factory.Sequence("idProvider{}".format)
 
 
 class ExternalBookingFactory(BaseFactory):

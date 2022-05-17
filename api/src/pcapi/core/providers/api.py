@@ -6,6 +6,10 @@ from typing import Optional
 from typing import Union
 
 from pcapi.core import search
+from pcapi.core.booking_providers.models import BookingProvider
+from pcapi.core.booking_providers.models import BookingProviderName
+from pcapi.core.booking_providers.models import BookingProviderPivot
+from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.logging import log_elapsed
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_venue_by_id
@@ -15,6 +19,8 @@ from pcapi.core.offers.repository import get_offers_map_by_id_at_provider
 from pcapi.core.offers.repository import get_offers_map_by_venue_reference
 from pcapi.core.offers.repository import get_products_map_by_provider_reference
 from pcapi.core.offers.repository import get_stocks_by_id_at_providers
+from pcapi.core.providers.exceptions import NoBookingProvider
+from pcapi.core.providers.exceptions import NoBookingProviderPivot
 from pcapi.core.providers.exceptions import NoSiretSpecified
 from pcapi.core.providers.exceptions import ProviderNotFound
 from pcapi.core.providers.exceptions import ProviderWithoutApiImplementation
@@ -52,6 +58,8 @@ def create_venue_provider(
 
     if provider.localClass == "AllocineStocks":
         new_venue_provider = connect_venue_to_allocine(venue, provider_id, payload)
+    elif provider.localClass == "CDSStocks":
+        new_venue_provider = connect_venue_to_booking_provider(venue, provider, payload)
     else:
         new_venue_provider = connect_venue_to_provider(venue, provider, payload.venueIdAtOfferProvider)
 
@@ -129,6 +137,44 @@ def connect_venue_to_provider(venue: Venue, provider: Provider, venueIdAtOfferPr
 
     repository.save(venue_provider)
     return venue_provider
+
+
+def connect_venue_to_booking_provider(
+    venue: Venue, provider: Provider, payload: VenueProviderCreationPayload
+) -> VenueBookingProvider:
+
+    booking_provider = get_booking_provider(provider.name)
+    booking_provider_pivot = get_booking_provider_pivot(venue, booking_provider)
+
+    if not booking_provider_pivot:
+        raise NoBookingProviderPivot()
+
+    venue_booking_provider = VenueBookingProvider()
+    venue_booking_provider.venue = venue
+    venue_booking_provider.provider = provider
+    venue_booking_provider.bookingProvider = booking_provider
+    venue_booking_provider.isDuo = payload.isDuo if payload.isDuo else False
+    venue_booking_provider.token = booking_provider_pivot.token
+    venue_booking_provider.venueIdAtOfferProvider = booking_provider_pivot.idAtProvider
+
+    repository.save(venue_booking_provider)
+    return venue_booking_provider
+
+
+def get_booking_provider(name: str) -> BookingProvider:
+    if name == "CDS":
+        booking_provider = BookingProvider.query.filter(
+            BookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE
+        ).one_or_none()
+    if not booking_provider:
+        raise NoBookingProvider()
+    return booking_provider
+
+
+def get_booking_provider_pivot(venue: Venue, booking_provider: BookingProvider) -> BookingProviderPivot:
+    return BookingProviderPivot.query.filter(
+        BookingProviderPivot.venue == venue and BookingProviderPivot.bookingProvider == booking_provider
+    ).one_or_none()
 
 
 def _check_provider_can_be_connected(provider: Provider, id_at_provider: str) -> None:

@@ -45,7 +45,11 @@ class MediaCDS(BaseModel):
 
     def to_generic_movie(self) -> Movie:
         return Movie(
-            id=self.id, title=self.title, duration=self.duration // 60, description=self.storyline, visa=self.visanumber
+            id=str(self.id),
+            title=self.title,
+            duration=self.duration // 60,
+            description=self.storyline,
+            visa=self.visanumber,
         )
 
 

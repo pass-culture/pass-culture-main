@@ -8,9 +8,11 @@ from sqlalchemy import Column
 from sqlalchemy import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy import String
+from sqlalchemy import Text
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
+from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.models import VenueProvider
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
@@ -48,6 +50,30 @@ class VenueBookingProvider(VenueProvider):
     )
 
 
+class BookingProviderPivot(PcObject, Model):  # type: ignore [valid-type, misc]
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
+
+    venue = relationship(Venue, foreign_keys=[venueId])
+
+    bookingProviderId = Column(BigInteger, ForeignKey("booking_provider.id"), nullable=False)
+
+    bookingProvider = relationship("BookingProvider", foreign_keys=[bookingProviderId])
+
+    venue = relationship(Venue, foreign_keys=[venueId])
+
+    idAtProvider = Column(Text, nullable=False)
+
+    token = Column(String)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "venueId",
+            "bookingProviderId",
+            name="unique_pivot_venue_booking_provider",
+        ),
+    )
+
+
 class SeatMap:
     def __init__(self, seatmap: list[list[int]]):
         self.map = seatmap
@@ -57,7 +83,7 @@ class SeatMap:
 
 @dataclass
 class Movie:
-    id: int
+    id: str
     title: str
     duration: int
     description: str

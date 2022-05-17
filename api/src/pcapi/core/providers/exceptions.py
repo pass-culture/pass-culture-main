@@ -18,6 +18,14 @@ class NoAllocinePivot(VenueProviderException):
     pass
 
 
+class NoBookingProvider(VenueProviderException):
+    pass
+
+
+class NoBookingProviderPivot(VenueProviderException):
+    pass
+
+
 class ProviderWithoutApiImplementation(VenueProviderException):
     pass
 
