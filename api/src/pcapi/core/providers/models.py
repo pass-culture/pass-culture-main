@@ -25,6 +25,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
 from pcapi.core.offerers.models import Venue
+import pcapi.core.providers.constants as provider_constants
 from pcapi.domain.price_rule import PriceRule
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
 from pcapi.models import Model
@@ -64,6 +65,10 @@ class Provider(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, 
         return self.localClass == local_providers.AllocineStocks.__name__
 
     @property
+    def isCinemaProvider(self) -> bool:
+        return self.localClass in provider_constants.CINEMA_PROVIDER_NAMES
+
+    @property
     def implements_provider_api(self) -> bool:
         return self.apiUrl != None
 
@@ -87,6 +92,9 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type
     venueIdAtOfferProvider = Column(String(70), nullable=False)
 
     lastSyncDate = Column(DateTime, nullable=True)
+
+    # describe if synchronised offers are available for duo booking or not
+    isDuoOffers = Column(Boolean, nullable=True)
 
     isFromAllocineProvider = column_property(
         exists(select([Provider.id]).where(and_(Provider.id == providerId, Provider.localClass == "AllocineStocks")))
@@ -127,6 +135,26 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type
             .filter(Offer.lastProviderId == self.providerId)
             .count()
         )
+
+
+class CinemaProviderPivot(PcObject, Model):  # type: ignore [valid-type, misc]
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
+
+    venue = relationship(Venue, foreign_keys=[venueId])
+
+    providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
+
+    provider = relationship("Provider", foreign_keys=[providerId])
+
+    idAtProvider = Column(Text, nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "venueId",
+            "providerId",
+            name="unique_pivot_venue_provider",
+        ),
+    )
 
 
 class AllocineVenueProvider(VenueProvider):

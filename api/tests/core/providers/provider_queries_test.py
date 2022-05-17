@@ -5,7 +5,7 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.repository import get_enabled_providers_for_pro
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.providers.repository import get_provider_enabled_for_pro_by_id
-from pcapi.core.providers.repository import get_providers_enabled_for_pro_excluding_specific_provider
+from pcapi.core.providers.repository import get_providers_enabled_for_pro_excluding_specific_providers
 
 
 class GetEnabledProvidersForProTest:
@@ -39,7 +39,7 @@ class GetProvidersEnabledForProExcludingSpecificProviderTest:
         provider = providers_factories.APIProviderFactory(name="Provider2", isActive=True, enabledForPro=True)
 
         # When
-        providers = get_providers_enabled_for_pro_excluding_specific_provider("AllocineStocks")
+        providers = get_providers_enabled_for_pro_excluding_specific_providers(["AllocineStocks"])
 
         # Then
         assert providers == [provider]

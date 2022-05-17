@@ -46,11 +46,14 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
 
 
 def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None):  # type: ignore [no-untyped-def]
-    if venue_provider.provider.implements_provider_api:
+    if venue_provider.provider.implements_provider_api and not venue_provider.provider.isCinemaProvider:
         synchronize_provider_api.synchronize_venue_provider(venue_provider)
 
     else:
-        assert venue_provider.provider.localClass == "AllocineStocks", "Only AllocineStocks should reach this code"
+        assert venue_provider.provider.localClass in [
+            "AllocineStocks",
+            "CDSStocks",
+        ], "Only AllocineStocks or CDSStocks should reach this code"
         provider_class = get_local_provider_class_by_name(venue_provider.provider.localClass)
 
         logger.info(
