@@ -143,12 +143,15 @@ class Returns403Test:
         assert response.status_code == 403
         assert CollectiveOffer.query.count() == 0
 
+
+@pytest.mark.usefixtures("db_session")
+class Returns400Test:
     def test_create_collective_offer_unknown_category(self, client):
         # Given
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
         # When
         data = {
@@ -175,7 +178,7 @@ class Returns403Test:
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
-        assert response.status_code == 403
+        assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_unselectable_category(self, client):
@@ -183,7 +186,7 @@ class Returns403Test:
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
         # When
         data = {
@@ -210,7 +213,7 @@ class Returns403Test:
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
-        assert response.status_code == 403
+        assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
 
     def test_create_collective_offer_no_collective__category(self, client):
@@ -218,7 +221,7 @@ class Returns403Test:
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
-        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        offerers_factories.UserOffererFactory(offerer=offerer, user=user)
 
         # When
         data = {
@@ -245,5 +248,5 @@ class Returns403Test:
             response = client.with_session_auth(user.email).post("/collective/offers", json=data)
 
         # Then
-        assert response.status_code == 403
+        assert response.status_code == 400
         assert CollectiveOffer.query.count() == 0
