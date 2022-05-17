@@ -51,6 +51,16 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 
 
+COLLECTIVE_BOOKING_STATUS_LABELS = {
+    CollectiveBookingStatus.PENDING: "préréservé",
+    CollectiveBookingStatus.CONFIRMED: "réservé",
+    CollectiveBookingStatus.CANCELLED: "annulé",
+    CollectiveBookingStatus.USED: "validé",
+    CollectiveBookingStatus.REIMBURSED: "remboursé",
+    "confirmed": "confirmé",
+}
+
+
 BOOKING_DATE_STATUS_MAPPING = {
     CollectiveBookingStatusFilter.BOOKED: CollectiveBooking.dateCreated,
     CollectiveBookingStatusFilter.VALIDATED: CollectiveBooking.dateUsed,
@@ -783,6 +793,7 @@ def get_filtered_collective_booking_report(
             CollectiveBooking.dateCreated.label("bookedAt"),
             CollectiveBooking.dateUsed.label("usedAt"),
             CollectiveBooking.reimbursementDate.label("reimbursedAt"),
+            CollectiveBooking.status,
             CollectiveBooking.isConfirmed,
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field

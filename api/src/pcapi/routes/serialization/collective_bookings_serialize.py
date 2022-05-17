@@ -10,10 +10,10 @@ from pydantic import root_validator
 import xlsxwriter
 
 from pcapi.core.bookings.models import BookingStatus
-from pcapi.core.bookings.repository import BOOKING_STATUS_LABELS
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
+from pcapi.core.educational.repository import COLLECTIVE_BOOKING_STATUS_LABELS
 from pcapi.core.educational.repository import CollectiveBookingNamedTuple
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import BaseModel
@@ -109,8 +109,8 @@ class ListCollectiveBookingsResponseModel(BaseModel):
 def _get_booking_status(status: CollectiveBookingStatus, is_confirmed: bool) -> str:
     cancellation_limit_date_exists_and_past = is_confirmed
     if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
-        return BOOKING_STATUS_LABELS["confirmed"]
-    return BOOKING_STATUS_LABELS[status]
+        return COLLECTIVE_BOOKING_STATUS_LABELS["confirmed"]
+    return COLLECTIVE_BOOKING_STATUS_LABELS[status]
 
 
 def build_status_history(
@@ -239,6 +239,7 @@ COLLECTIVE_BOOKING_EXPORT_HEADER = [
     "Date et heure de réservation",
     "Date et heure de validation",
     "Prix de la réservation",
+    "Statut de la réservation",
     "Date et heure de remboursement",
 ]
 
@@ -260,6 +261,7 @@ def _serialize_collective_booking_csv_report(query: BaseQuery) -> str:
                 convert_booking_dates_utc_to_venue_timezone(collective_booking.bookedAt, collective_booking),
                 convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking),
                 collective_booking.price,
+                _get_booking_status(collective_booking.status, collective_booking.isConfirmed),
                 convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking),
             )
         )
@@ -303,9 +305,10 @@ def _serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
             row, 6, str(convert_booking_dates_utc_to_venue_timezone(collective_booking.usedAt, collective_booking))
         )
         worksheet.write(row, 7, collective_booking.price, currency_format)
+        worksheet.write(row, 8, _get_booking_status(collective_booking.status, collective_booking.isConfirmed))
         worksheet.write(
             row,
-            8,
+            9,
             str(convert_booking_dates_utc_to_venue_timezone(collective_booking.reimbursedAt, collective_booking)),
         )
         row += 1
