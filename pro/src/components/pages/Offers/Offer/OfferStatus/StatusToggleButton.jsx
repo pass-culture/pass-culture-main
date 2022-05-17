@@ -9,13 +9,11 @@ import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
+import useNotification from 'components/hooks/useNotification'
 
-export const StatusToggleButton = ({
-  notifyError,
-  notifySuccess,
-  offer,
-  reloadOffer,
-}) => {
+const StatusToggleButton = ({ offer, reloadOffer }) => {
+  const notification = useNotification()
+
   const toggleOfferActiveStatus = useCallback(() => {
     pcapi
       .updateOffersActiveStatus(false, {
@@ -24,13 +22,16 @@ export const StatusToggleButton = ({
       })
       .then(() => {
         reloadOffer()
-        notifySuccess(!offer.isActive)
+        notification.success(
+          `L’offre a bien été ${offer.isActive ? 'désactivée' : 'activée'}.`
+        )
       })
       .catch(() => {
-        notifyError()
+        notification.error(
+          'Une erreur est survenue, veuillez réessayer ultérieurement.'
+        )
       })
-  }, [offer, notifyError, notifySuccess, reloadOffer])
-
+  }, [offer, reloadOffer])
   return (
     <button
       className="tertiary-button with-icon"
@@ -56,8 +57,6 @@ export const StatusToggleButton = ({
 }
 
 StatusToggleButton.propTypes = {
-  notifyError: PropTypes.func.isRequired,
-  notifySuccess: PropTypes.func.isRequired,
   offer: PropTypes.shape({
     id: PropTypes.string,
     isActive: PropTypes.bool,
@@ -65,3 +64,5 @@ StatusToggleButton.propTypes = {
   }).isRequired,
   reloadOffer: PropTypes.func.isRequired,
 }
+
+export default StatusToggleButton
