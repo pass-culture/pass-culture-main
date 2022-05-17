@@ -11,6 +11,7 @@ import {
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
   getStockOfferAdapter,
+  patchIsCollectiveOfferActiveAdapter,
   patchIsOfferActiveAdapter,
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
@@ -119,9 +120,13 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   const setIsOfferActive = async (isActive: boolean) => {
     const patchOfferId =
       enableIndividualAndCollectiveSeparation && !isNewCollectiveModelEnabled
-        ? offer?.offerId || ''
+        ? (offer as GetStockOfferSuccessPayload).offerId || ''
         : offerId
-    const { isOk, message } = await patchIsOfferActiveAdapter({
+    const patchAdapter = isNewCollectiveModelEnabled
+      ? patchIsCollectiveOfferActiveAdapter
+      : patchIsOfferActiveAdapter
+
+    const { isOk, message } = await patchAdapter({
       isActive,
       offerId: patchOfferId,
     })
