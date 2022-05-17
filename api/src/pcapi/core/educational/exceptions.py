@@ -97,3 +97,7 @@ class CollectiveOfferTemplateNotFound(Exception):
 
 class CollectiveStockNotFound(Exception):
     pass
+
+
+class EducationalDomainsNotFound(Exception):
+    pass
