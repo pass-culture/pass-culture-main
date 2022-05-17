@@ -40,7 +40,9 @@ export const OffersSearchComponent = ({
 
   const handleLaunchSearchButton = (filters: Filters): void => {
     setIsLoading(true)
-    setFacetFilters(populateFacetFilters({ ...filters, venueFilter }))
+    setFacetFilters(
+      populateFacetFilters({ ...filters, venueFilter, useNewAlgoliaIndex })
+    )
     setQueryTag(query)
     refine(query)
   }
