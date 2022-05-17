@@ -132,21 +132,3 @@ class CancelledIndividualBookingFactory(CancelledBookingFactory):
 class UsedIndividualBookingFactory(UsedBookingFactory):
     individualBooking = factory.SubFactory(IndividualBookingSubFactory)
     user = None
-
-
-class ExternalBookingFactory(BaseFactory):
-    class Meta:
-        model = models.ExternalBooking
-
-    booking = factory.SubFactory(BookingFactory)
-    barcode = "1111111"
-    seat = "A15"
-
-
-class UsedExternalBookingFactory(BaseFactory):
-    class Meta:
-        model = models.ExternalBooking
-
-    booking = factory.SubFactory(UsedBookingFactory)
-    barcode = "1111111"
-    seat = "A15"
