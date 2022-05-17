@@ -9,13 +9,17 @@ export const populateFacetFilters = ({
   categories,
   students,
   venueFilter = null,
+  useNewAlgoliaIndex = false,
 }: {
   departments: Option[]
   categories: Option<string[]>[]
   students: Option[]
   venueFilter: VenueFilterType | null
+  useNewAlgoliaIndex: boolean
 }): Facets => {
-  const updatedFilters: Facets = [...LEGACY_INITIAL_FACET_FILTERS]
+  const updatedFilters: Facets = useNewAlgoliaIndex
+    ? []
+    : [...LEGACY_INITIAL_FACET_FILTERS]
   const filteredDepartments: string[] = departments.map(
     department => `venue.departmentCode:${department.value}`
   )
