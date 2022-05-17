@@ -172,7 +172,8 @@ def _process_parsing_error(
     subscription_messages.on_dms_application_parsing_errors(
         user,
         list(parsing_error.errors.keys()),
-        is_application_updatable=state == dms_models.GraphQLApplicationStates.draft,
+        is_application_updatable=state
+        in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going),
     )
 
     if state == dms_models.GraphQLApplicationStates.draft:

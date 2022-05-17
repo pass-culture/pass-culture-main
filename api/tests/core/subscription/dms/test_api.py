@@ -195,7 +195,7 @@ class HandleDmsApplicationTest:
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
             subscription_message.userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘ta pièce d'identité’ n’est pas valide."
+            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
         )
 
         send_dms_message_mock.assert_not_called()
