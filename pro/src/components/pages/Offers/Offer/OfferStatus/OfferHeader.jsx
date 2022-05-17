@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
-import StatusToggleButton from 'components/pages/Offers/Offer/OfferStatus/StatusToggleButtonContainer'
+import StatusToggleButton from 'components/pages/Offers/Offer/OfferStatus/StatusToggleButton'
 
 export const OfferHeader = ({ offer, reloadOffer }) => (
   <div className="offer-header">
