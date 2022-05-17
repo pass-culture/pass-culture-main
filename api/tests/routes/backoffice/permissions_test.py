@@ -1,8 +1,7 @@
-from unittest import mock
-
 from flask import url_for
 import pytest
 
+from pcapi.core.auth.api import generate_token
 from pcapi.core.permissions.factories import PermissionFactory
 from pcapi.core.permissions.factories import RoleFactory
 from pcapi.core.permissions.models import Permission
@@ -27,37 +26,37 @@ def create_admin_role():
 
 class RoleListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_list_roles_as_admin(self, client):
+    def test_can_list_roles(self, client):
         # given
-        admin_role = create_admin_role()
-        RoleFactory(name="test_role")
+        RoleFactory(name="test_role_1")
+        RoleFactory(name="test_role_2")
         user = UserFactory()
-        user.groups = [admin_role.name]
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(url_for("backoffice_blueprint.list_roles"))
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.list_roles"),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
         roles = response.json["roles"]
-        assert set(role["name"] for role in roles) == {"admin", "test_role"}
+        assert set(role["name"] for role in roles) == {"test_role_1", "test_role_2"}
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_list_roles_as_non_admin(self, client):
+    def test_cannot_list_roles_without_permission(self, client):
         # given
-        create_admin_role()
-        non_admin_role = RoleFactory(name="not_admin")
+        RoleFactory(name="test_role_1")
+        RoleFactory(name="test_role_2")
         user = UserFactory()
-        user.groups = [non_admin_role.name]
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(url_for("backoffice_blueprint.list_roles"))
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.list_roles"),
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -65,51 +64,55 @@ class RoleListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_roles_as_anonymous(self, client):
         # given
-        create_admin_role()
+        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.get(url_for("backoffice_blueprint.list_roles"))
+        response = client.get(
+            url_for("backoffice_blueprint.list_roles"),
+            headers={"Authorization": auth_token},
+        )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 class PermissionListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_list_permissions_as_admin(self, client):
+    def test_can_list_permissions(self, client):
         # given
-        admin_role = create_admin_role()
-        PermissionFactory(name="test_permission")
+        PermissionFactory(name="test_permission_1")
+        PermissionFactory(name="test_permission_2")
         user = UserFactory()
-        user.groups = [admin_role.name]
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(url_for("backoffice_blueprint.list_permissions"))
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.list_permissions"),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
         permissions = response.json["permissions"]
         assert set(perm["name"] for perm in permissions) == {
             *[p.name for p in Permissions],
-            "test_permission",
+            "test_permission_1",
+            "test_permission_2",
         }
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_list_permissions_as_non_admin(self, client):
+    def test_cannot_list_permissions_without_permission(self, client):
         # given
-        create_admin_role()
-        non_admin_role = RoleFactory(name="not_admin")
+        PermissionFactory(name="test_permission_1")
+        PermissionFactory(name="test_permission_2")
         user = UserFactory()
-        user.groups = [non_admin_role.name]
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(url_for("backoffice_blueprint.list_permissions"))
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.list_permissions"),
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -117,33 +120,33 @@ class PermissionListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_permissions_as_anonymous(self, client):
         # given
-        create_admin_role()
+        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.get(url_for("backoffice_blueprint.list_permissions"))
+        response = client.get(
+            url_for("backoffice_blueprint.list_permissions"),
+            headers={"Authorization": auth_token},
+        )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 class NewRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_create_new_role_with_permissions_as_admin(self, client):
+    def test_can_create_new_role_with_non_empty_permissions(self, client):
         # given
-        admin_role = create_admin_role()
         user = UserFactory()
-        user.groups = [admin_role.name]
         permissions = (PermissionFactory(), PermissionFactory())
         new_role_data = {"name": "dummy_role", "permissionIds": [p.id for p in permissions]}
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).post(
-                url_for("backoffice_blueprint.create_role"),
-                json=new_role_data,
-            )
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.create_role"),
+            json=new_role_data,
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -156,21 +159,18 @@ class NewRoleTest:
         assert set(inserted_role.permissions) == set(permissions)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_create_new_role_with_empty_permissions_as_admin(self, client):
+    def test_can_create_new_role_with_empty_permissions(self, client):
         # given
-        admin_role = create_admin_role()
         user = UserFactory()
-        user.groups = [admin_role.name]
         new_role_data = {"name": "dummy_role", "permissionIds": []}
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).post(
-                url_for("backoffice_blueprint.create_role"),
-                json=new_role_data,
-            )
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.create_role"),
+            json=new_role_data,
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -183,41 +183,34 @@ class NewRoleTest:
         assert inserted_role.permissions == []
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_create_new_role_with_empty_name_as_admin(self, client):
+    def test_cannot_create_new_role_with_empty_name(self, client):
         # given
-        admin_role = create_admin_role()
         user = UserFactory()
-        user.groups = [admin_role.name]
         new_role_data = {"name": "", "permissionIds": []}
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).post(
-                url_for("backoffice_blueprint.create_role"),
-                json=new_role_data,
-            )
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.create_role"),
+            json=new_role_data,
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 400
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_create_new_role_as_non_admin(self, client):
+    def test_cannot_create_new_role_without_permission(self, client):
         # given
-        create_admin_role()
-        non_admin_role = RoleFactory(name="not_admin")
         user = UserFactory()
-        user.groups = [non_admin_role.name]
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).post(
-                url_for("backoffice_blueprint.create_role"),
-                json={"name": "should not work", "permissionsIds": []},
-            )
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.create_role"),
+            json={"name": "should not work", "permissionsIds": []},
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -225,37 +218,35 @@ class NewRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_create_new_role_as_anonymous(self, client):
         # given
-        create_admin_role()
+        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.post(
             url_for("backoffice_blueprint.create_role"),
             json={"name": "should not work", "permissionsIds": []},
+            headers={"Authorization": auth_token},
         )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 class UpdateRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_update_role_with_permissions_as_admin(self, client):
+    def test_can_update_role_with_non_empty_permissions(self, client):
         # given
-        admin_role = create_admin_role()
         user = UserFactory()
-        user.groups = [admin_role.name]
         permissions = (PermissionFactory(), PermissionFactory())
         existing_role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
         new_role_data = {"name": "updated_role", "permissionIds": [p.id for p in permissions]}
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).put(
-                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
-                json=new_role_data,
-            )
+        # when
+        response = client.put(
+            url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+            json=new_role_data,
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -268,22 +259,19 @@ class UpdateRoleTest:
         assert set(inserted_role.permissions) == set(permissions)
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_update_role_with_empty_permissions_as_admin(self, client):
+    def test_can_update_role_with_empty_permissions(self, client):
         # given
-        admin_role = create_admin_role()
         user = UserFactory()
-        user.groups = [admin_role.name]
         existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
         new_role_data = {"name": "updated_role", "permissionIds": []}
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).put(
-                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
-                json=new_role_data,
-            )
+        # when
+        response = client.put(
+            url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+            json=new_role_data,
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -296,43 +284,36 @@ class UpdateRoleTest:
         assert inserted_role.permissions == []
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_update_role_with_empty_name_as_admin(self, client):
+    def test_cannot_update_role_with_empty_name(self, client):
         # given
-        admin_role = create_admin_role()
         user = UserFactory()
-        user.groups = [admin_role.name]
         existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
         new_role_data = {"name": "", "permissionIds": []}
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).put(
-                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
-                json=new_role_data,
-            )
+        # when
+        response = client.put(
+            url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+            json=new_role_data,
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 400
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_update_role_as_non_admin(self, client):
+    def test_cannot_update_role_without_permission(self, client):
         # given
-        create_admin_role()
-        non_admin_role = RoleFactory(name="not_admin")
         existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
         user = UserFactory()
-        user.groups = [non_admin_role.name]
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).put(
-                url_for("backoffice_blueprint.update_role", id_=existing_role.id),
-                json={"name": "should not work", "permissionsIds": []},
-            )
+        # when
+        response = client.put(
+            url_for("backoffice_blueprint.update_role", id_=existing_role.id),
+            json={"name": "should not work", "permissionsIds": []},
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -340,96 +321,86 @@ class UpdateRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_update_role_as_anonymous(self, client):
         # given
-        create_admin_role()
         existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.put(
             url_for("backoffice_blueprint.update_role", id_=existing_role.id),
             json={"name": "should not work", "permissionsIds": []},
+            headers={"Authorization": auth_token},
         )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 class DeleteRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_delete_role_with_permissions_as_admin(self, client):
+    def test_can_delete_role_with_non_empty_permissions(self, client):
         # given
-        admin_role = create_admin_role()
         permissions = (PermissionFactory(), PermissionFactory())
         role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
         user = UserFactory()
-        user.groups = [admin_role.name]
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).delete(
-                url_for("backoffice_blueprint.delete_role", id_=role.id)
-            )
+        # when
+        response = client.delete(
+            url_for("backoffice_blueprint.delete_role", id_=role.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 204
         assert Role.query.filter_by(id=role.id).count() == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_can_delete_role_with_empty_permissions_as_admin(self, client):
+    def test_can_delete_role_with_empty_permissions(self, client):
         # given
-        admin_role = create_admin_role()
         role = RoleFactory(name="dummy_role")
         user = UserFactory()
-        user.groups = [admin_role.name]
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).delete(
-                url_for("backoffice_blueprint.delete_role", id_=role.id)
-            )
+        # when
+        response = client.delete(
+            url_for("backoffice_blueprint.delete_role", id_=role.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 204
         assert Role.query.filter_by(id=role.id).count() == 0
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_delete_admin_role_as_admin(self, client):
+    def test_cannot_delete_admin_role(self, client):
         # given
         admin_role = create_admin_role()
         user = UserFactory()
-        user.groups = [admin_role.name]
+        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).delete(
-                url_for("backoffice_blueprint.delete_role", id_=admin_role.id)
-            )
+        # when
+        response = client.delete(
+            url_for("backoffice_blueprint.delete_role", id_=admin_role.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 400
         assert "Cannot delete admin role" in response.json.values()
 
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_delete_role_as_non_admin(self, client):
+    def test_cannot_delete_role_without_permission(self, client):
         # given
         create_admin_role()
-        non_admin_role = RoleFactory(name="not_admin")
         role = RoleFactory(name="dummy_role")
         user = UserFactory()
-        user.groups = [non_admin_role.name]
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).delete(
-                url_for("backoffice_blueprint.delete_role", id_=role.id)
-            )
+        # when
+        response = client.delete(
+            url_for("backoffice_blueprint.delete_role", id_=role.id),
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -437,11 +408,14 @@ class DeleteRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_delete_role_as_anonymous(self, client):
         # given
-        create_admin_role()
         role = RoleFactory(name="dummy_role")
+        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.delete(url_for("backoffice_blueprint.delete_role", id_=role.id))
+        response = client.delete(
+            url_for("backoffice_blueprint.delete_role", id_=role.id),
+            headers={"Authorization": auth_token},
+        )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
