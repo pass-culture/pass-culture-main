@@ -945,3 +945,7 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: It
         query = query.filter(and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None)))
     query = query.filter(educational_models.CollectiveOfferTemplate.id.in_(ids))
     return query
+
+
+def get_educational_domains_from_ids(ids: Iterable[int]) -> list[educational_models.EducationalDomain]:
+    return educational_models.EducationalDomain.query.filter(educational_models.EducationalDomain.id.in_(ids)).all()

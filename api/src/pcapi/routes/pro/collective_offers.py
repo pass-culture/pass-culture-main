@@ -157,6 +157,15 @@ def create_collective_offer(
             error.errors,
             status_code=400,
         )
+    except educational_exceptions.EducationalDomainsNotFound as error:
+        logger.info(
+            "Could not create offer: educational domains not found.",
+            extra={"offer_name": body.name, "venue_id": body.venue_id, "domains": body.domains},
+        )
+        raise ApiErrors(
+            {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
+            status_code=404,
+        )
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
 
