@@ -1258,6 +1258,20 @@ def test_public_api(client, app):
                     "enum": ["underage", "age-18"],
                     "title": "EligibilityType",
                 },
+                "PhoneValidationRemainingAttemptsRequest": {
+                    "properties": {
+                        "counterResetDatetime": {
+                            "format": "date-time",
+                            "nullable": True,
+                            "title": "Counterresetdatetime",
+                            "type": "string",
+                        },
+                        "remainingAttempts": {"title": "Remainingattempts", "type": "integer"},
+                    },
+                    "required": ["remainingAttempts"],
+                    "title": "PhoneValidationRemainingAttemptsRequest",
+                    "type": "object",
+                },
                 "PopOverIcon": {
                     "description": "An enumeration.",
                     "enum": ["INFO", "ERROR", "WARNING", "CLOCK", "FILE", "MAGNIFYING_GLASS"],
@@ -2023,6 +2037,33 @@ def test_public_api(client, app):
                     },
                     "security": [{"JWTAuth": []}],
                     "summary": "user_reported_offers <GET>",
+                    "tags": [],
+                }
+            },
+            "/native/v1/phone_validation/remaining_attempts": {
+                "get": {
+                    "description": "",
+                    "operationId": "get_/native/v1/phone_validation/remaining_attempts",
+                    "parameters": [],
+                    "responses": {
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/PhoneValidationRemainingAttemptsRequest"}
+                                }
+                            },
+                            "description": "OK",
+                        },
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable " "Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "phone_validation_remaining_attempts " "<GET>",
                     "tags": [],
                 }
             },

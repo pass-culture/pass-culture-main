@@ -336,6 +336,11 @@ class SendPhoneValidationRequest(BaseModel):
     phoneNumber: Optional[str]
 
 
+class PhoneValidationRemainingAttemptsRequest(BaseModel):
+    remainingAttempts: int
+    counterResetDatetime: Optional[datetime.datetime]
+
+
 class UploadIdentityDocumentRequest(BaseModel):
     token: str
 
