@@ -995,6 +995,21 @@ def list_collective_offers_for_pro_user(
     return merged_offers
 
 
+def get_educational_domains_from_ids(
+    educational_domain_ids: Optional[list[int]],
+) -> list[educational_models.EducationalDomain]:
+    if educational_domain_ids is None:
+        return []
+
+    unique_educational_domain_ids = set(educational_domain_ids)
+    educational_domains = educational_repository.get_educational_domains_from_ids(unique_educational_domain_ids)
+
+    if len(educational_domains) < len(unique_educational_domain_ids):
+        raise exceptions.EducationalDomainsNotFound()
+
+    return educational_domains
+
+
 def create_collective_offer(
     offer_data: Union[PostCollectiveOfferBodyModel, PostEducationalOfferBodyModel],
     user: User,
@@ -1006,12 +1021,16 @@ def create_collective_offer(
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
+    educational_domains = []
+    if isinstance(offer_data, PostCollectiveOfferBodyModel):
+        educational_domains = get_educational_domains_from_ids(offer_data.domains)
     collective_offer = educational_models.CollectiveOffer(
         venueId=venue.id,
         name=offer_data.name,
         offerId=offer_id,
         bookingEmail=offer_data.booking_email,
         description=offer_data.description,
+        domains=educational_domains,
         durationMinutes=offer_data.duration_minutes,
         subcategoryId=offer_data.subcategory_id,
         students=offer_data.extra_data.students
