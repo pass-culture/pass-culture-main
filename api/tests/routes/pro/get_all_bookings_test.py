@@ -7,6 +7,7 @@ from freezegun.api import freeze_time
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.booking_providers.factories import UsedExternalBookingFactory
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.offerers.factories as offerers_factories
@@ -291,9 +292,7 @@ class Returns200Test:
 
     @freeze_time("2020-08-11 13:00")
     def test_should_not_return_booking_token_when_booking_is_external(self, app, client):
-        externalbooking = bookings_factories.UsedExternalBookingFactory(
-            booking__dateCreated=datetime(2020, 8, 11, 12, 0, 0)
-        )
+        externalbooking = UsedExternalBookingFactory(booking__dateCreated=datetime(2020, 8, 11, 12, 0, 0))
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=externalbooking.booking.offerer)
 

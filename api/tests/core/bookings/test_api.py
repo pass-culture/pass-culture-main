@@ -10,6 +10,7 @@ from sqlalchemy import create_engine
 import sqlalchemy.exc
 from sqlalchemy.sql import text
 
+from pcapi.core.booking_providers.factories import ExternalBookingFactory
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as booking_factories
@@ -854,7 +855,7 @@ class AutoMarkAsUsedAfterEventTest:
 
     def test_update_external_booking_if_not_used(self):
         event_date = datetime.utcnow() - timedelta(days=3)
-        booking_factories.ExternalBookingFactory(
+        ExternalBookingFactory(
             booking__stock__beginningDatetime=event_date,
         )
         api.auto_mark_as_used_after_event()
