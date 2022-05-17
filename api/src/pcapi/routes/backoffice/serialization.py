@@ -78,6 +78,14 @@ class GetBeneficiaryCreditResponseModel(BaseModel):
     remainingDigitalCredit: float
 
 
+class AuthTokenQuery(BaseModel):
+    token: str
+
+
+class AuthTokenResponseModel(BaseModel):
+    token: str
+
+
 class SubscriptionItemModel(BaseModel):
     class Config:
         orm_mode = True
