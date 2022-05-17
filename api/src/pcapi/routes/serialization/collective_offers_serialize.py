@@ -322,6 +322,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     name: str
     booking_email: Optional[str]
     description: Optional[str]
+    domains: Optional[list[int]]
     duration_minutes: Optional[int]
     audio_disability_compliant: bool = False
     mental_disability_compliant: bool = False
@@ -336,6 +337,16 @@ class PostCollectiveOfferBodyModel(BaseModel):
     def validate_name(cls: BaseModel, name: str, values: str) -> str:  # pylint: disable=no-self-argument
         check_offer_name_length_is_valid(name)
         return name
+
+    @validator("domains", pre=True)
+    def validate_domains(  # pylint: disable=no-self-argument
+        cls: "PostCollectiveOfferBodyModel",
+        domains: Optional[list[str]],
+    ) -> Optional[list[str]]:
+        if domains is not None and len(domains) == 0:
+            raise ValueError("domains must have at least one value")
+
+        return domains
 
     class Config:
         alias_generator = to_camel
