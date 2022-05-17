@@ -1,62 +1,41 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
-from unittest import mock
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
 import pytest
 
+from pcapi.core.auth.api import generate_token
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offers import factories as offers_factories
-from pcapi.core.permissions.factories import RoleFactory
-from pcapi.core.permissions.models import Permission
 from pcapi.core.permissions.models import Permissions
 from pcapi.core.testing import override_features
-from pcapi.core.users import factories as user_factories
+from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models.beneficiary_import_status import ImportStatus
-from pcapi.repository import repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def create_bunch_of_accounts():
-    underage = user_factories.UnderageBeneficiaryFactory(
+    underage = users_factories.UnderageBeneficiaryFactory(
         firstName="Gédéon", lastName="Groidanlabénoir", email="gg@example.com", phoneNumber="0123456789"
     )
-    grant_18 = user_factories.BeneficiaryGrant18Factory(
+    grant_18 = users_factories.BeneficiaryGrant18Factory(
         firstName="Abdel Yves Akhim", lastName="Flaille", email="ayaf@example.com", phoneNumber="0516273849"
     )
-    pro = user_factories.ProFactory(
+    pro = users_factories.ProFactory(
         firstName="Gérard", lastName="Mentor", email="gm@example.com", phoneNumber="0246813579"
     )
-    random = user_factories.UserFactory(
+    random = users_factories.UserFactory(
         firstName="Anne", lastName="Algézic", email="aa@example.com", phoneNumber="0606060606"
     )
 
     return underage, grant_18, pro, random
-
-
-def create_search_role():
-    permission = Permission.query.filter_by(name=Permissions.SEARCH_PUBLIC_ACCOUNT.name).first()
-    role = RoleFactory(name="public search")
-    role.permissions.append(permission)
-    repository.save(role)
-
-    return role
-
-
-def create_read_account_role():
-    permission = Permission.query.filter_by(name=Permissions.READ_PUBLIC_ACCOUNT.name).first()
-    role = RoleFactory(name="read user accounts")
-    role.permissions.append(permission)
-    repository.save(role)
-
-    return role
 
 
 class PublicAccountSearchTest:
@@ -64,17 +43,14 @@ class PublicAccountSearchTest:
     def test_can_search_public_account_by_id(self, client):
         # given
         underage, _, _, _ = create_bunch_of_accounts()
-        search_role = create_search_role()
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [search_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.search_public_account", q=underage.id)
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.search_public_account", q=underage.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -93,17 +69,14 @@ class PublicAccountSearchTest:
     def test_can_search_public_account_by_name(self, client):
         # given
         _, grant_18, _, _ = create_bunch_of_accounts()
-        search_role = create_search_role()
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [search_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.search_public_account", q=grant_18.firstName)
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.search_public_account", q=grant_18.firstName),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -122,17 +95,14 @@ class PublicAccountSearchTest:
     def test_can_search_public_account_by_email(self, client):
         # given
         _, _, _, random = create_bunch_of_accounts()
-        search_role = create_search_role()
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [search_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.search_public_account", q=random.email)
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.search_public_account", q=random.email),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -151,17 +121,14 @@ class PublicAccountSearchTest:
     def test_can_search_public_account_by_phone(self, client):
         # given
         _, _, _, random = create_bunch_of_accounts()
-        search_role = create_search_role()
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [search_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.search_public_account", q=random.phoneNumber)
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.search_public_account", q=random.phoneNumber),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -179,17 +146,14 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_without_permission(self, client):
         # given
-        no_perm_role = RoleFactory(name="no public search")
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [no_perm_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.search_public_account", q="anything")
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.search_public_account", q="anything"),
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -197,13 +161,16 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_as_anonymous(self, client):
         # given
-        create_search_role()
+        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(url_for("backoffice_blueprint.search_public_account", q="anything"))
+        response = client.get(
+            url_for("backoffice_blueprint.search_public_account", q="anything"),
+            headers={"Authorization": auth_token},
+        )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 class GetPublicAccountTest:
@@ -215,19 +182,16 @@ class GetPublicAccountTest:
     def test_get_public_account(self, client, index, expected_roles):
         # given
         users = create_bunch_of_accounts()
-        role = create_read_account_role()
-        admin = user_factories.UserFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PUBLIC_ACCOUNT])
 
         user = users[index]
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            admin.groups = [role.name]
-            current_user_mock.return_value = admin
-
-            # when
-            response = client.with_session_auth(admin.email).get(
-                url_for("backoffice_blueprint.get_public_account", user_id=user.id)
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.get_public_account", user_id=user.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -245,17 +209,14 @@ class GetPublicAccountTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_get_public_account_without_permission(self, client):
         # given
-        no_perm_role = RoleFactory(name="no read user")
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [no_perm_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.get_public_account", user_id=user.id)
-            )
+        # when
+        response = client.with_session_auth(user.email).get(
+            url_for("backoffice_blueprint.get_public_account", user_id=user.id),
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -263,13 +224,16 @@ class GetPublicAccountTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_get_public_account_as_anonymous(self, client):
         # given
-        create_search_role()
+        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(url_for("backoffice_blueprint.get_public_account", user_id=1))
+        response = client.get(
+            url_for("backoffice_blueprint.get_public_account", user_id=1),
+            headers={"Authorization": auth_token},
+        )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 class GetBeneficiaryCreditTest:
@@ -277,8 +241,8 @@ class GetBeneficiaryCreditTest:
     def test_get_beneficiary_credit(self, client):
         # given
         _, grant_18, _, _ = create_bunch_of_accounts()
-        role = create_read_account_role()
-        admin = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.READ_PUBLIC_ACCOUNT])
 
         bookings_factories.IndividualBookingFactory(
             individualBooking__user=grant_18,
@@ -286,14 +250,11 @@ class GetBeneficiaryCreditTest:
             amount=12.5,
         )
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            admin.groups = [role.name]
-            current_user_mock.return_value = admin
-
-            # when
-            response = client.with_session_auth(admin.email).get(
-                url_for("backoffice_blueprint.get_beneficiary_credit", user_id=grant_18.id)
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.get_beneficiary_credit", user_id=grant_18.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -307,20 +268,17 @@ class GetBeneficiaryCreditTest:
     def test_get_non_beneficiary_credit(self, client):
         # given
         _, _, pro, random = create_bunch_of_accounts()
-        role = create_read_account_role()
-        admin = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.READ_PUBLIC_ACCOUNT])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            admin.groups = [role.name]
-            current_user_mock.return_value = admin
-
-            # when
-            responses = [
-                client.with_session_auth(admin.email).get(
-                    url_for("backoffice_blueprint.get_beneficiary_credit", user_id=user.id)
-                )
-                for user in (pro, random)
-            ]
+        # when
+        responses = [
+            client.get(
+                url_for("backoffice_blueprint.get_beneficiary_credit", user_id=user.id),
+                headers={"Authorization": f"Bearer {auth_token}"},
+            )
+            for user in (pro, random)
+        ]
 
         # then
         for response in responses:
@@ -334,17 +292,14 @@ class GetBeneficiaryCreditTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_get_beneficiary_credit_without_permission(self, client):
         # given
-        no_perm_role = RoleFactory(name="no read user")
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [no_perm_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1)
-            )
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1),
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -352,29 +307,29 @@ class GetBeneficiaryCreditTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_get_beneficiary_credit_as_anonymous(self, client):
         # given
-        create_search_role()
+        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1))
+        response = client.get(
+            url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1),
+            headers={"Authorization": auth_token},
+        )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
 
 
 class GetUserHistoryTest:
     def _test_user_history(self, client, user) -> dict:
         # given
-        role = create_read_account_role()
-        admin = user_factories.UserFactory()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.READ_PUBLIC_ACCOUNT])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            admin.groups = [role.name]
-            current_user_mock.return_value = admin
-
-            # when
-            response = client.with_session_auth(admin.email).get(
-                url_for("backoffice_blueprint.get_user_subscription_history", user_id=user.id)
-            )
+        # when
+        response = client.with_session_auth(admin.email).get(
+            url_for("backoffice_blueprint.get_user_subscription_history", user_id=user.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
 
         # then
         assert response.status_code == 200
@@ -382,7 +337,7 @@ class GetUserHistoryTest:
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_history_16y_no_subscription(self, client):
-        user = user_factories.UserFactory(
+        user = users_factories.UserFactory(
             dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=16, days=5)
         )
 
@@ -413,7 +368,7 @@ class GetUserHistoryTest:
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_history_18y_no_subscription(self, client):
-        user = user_factories.UserFactory(
+        user = users_factories.UserFactory(
             dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, days=5)
         )
 
@@ -444,7 +399,7 @@ class GetUserHistoryTest:
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_subscription_history_ubble(self, client):
-        user = user_factories.UserFactory(
+        user = users_factories.UserFactory(
             dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, days=5),
             activity=users_models.ActivityEnum.STUDENT.value,
         )
@@ -508,22 +463,22 @@ class GetUserHistoryTest:
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_subscription_history_dms(self, client):
-        user = user_factories.UserFactory(
+        user = users_factories.UserFactory(
             dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, days=5),
             activity=users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value,
         )
 
         # 15-17: no phone validation
 
-        beneficiary_import = user_factories.BeneficiaryImportFactory(
+        beneficiary_import = users_factories.BeneficiaryImportFactory(
             applicationId=24680,
             beneficiary=user,
-            source=user_factories.BeneficiaryImportSources.demarches_simplifiees.value,
+            source=users_factories.BeneficiaryImportSources.demarches_simplifiees.value,
             sourceId=13579,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        dms_author = user_factories.UserFactory(email="dms_author@exemple.com")
+        dms_author = users_factories.UserFactory(email="dms_author@exemple.com")
         beneficiary_import.setStatus(ImportStatus.CREATED, author=dms_author)
 
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -585,17 +540,14 @@ class GetUserHistoryTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_get_user_subscription_history_without_permission(self, client):
         # given
-        no_perm_role = RoleFactory(name="no read user")
-        user = user_factories.UserFactory()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [])
 
-        with mock.patch("flask_login.utils._get_user") as current_user_mock:
-            user.groups = [no_perm_role.name]
-            current_user_mock.return_value = user
-
-            # when
-            response = client.with_session_auth(user.email).get(
-                url_for("backoffice_blueprint.get_user_subscription_history", user_id=1)
-            )
+        # when
+        response = client.with_session_auth(user.email).get(
+            url_for("backoffice_blueprint.get_user_subscription_history", user_id=1),
+            headers={"Authorization": auth_token},
+        )
 
         # then
         assert response.status_code == 403
@@ -603,10 +555,13 @@ class GetUserHistoryTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_get_user_subscription_history_as_anonymous(self, client):
         # given
-        create_search_role()
+        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(url_for("backoffice_blueprint.get_user_subscription_history", user_id=1))
+        response = client.get(
+            url_for("backoffice_blueprint.get_user_subscription_history", user_id=1),
+            headers={"Authorization": auth_token},
+        )
 
         # then
-        assert response.status_code == 401
+        assert response.status_code == 403
