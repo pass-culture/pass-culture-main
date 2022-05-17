@@ -2,6 +2,8 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { IAPIVenue, TOfferIndividualVenue } from 'core/Venue/types'
 
+import { useAdapter } from 'hooks'
+
 type Params = void
 type IPayload = TOfferIndividualVenue[]
 type TGetOfferIndividualVenuesAdapter = Adapter<Params, IPayload, IPayload>
@@ -12,7 +14,7 @@ const FAILING_RESPONSE = {
   payload: [],
 }
 
-export const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
+const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
   async () => {
     try {
       const response = await pcapi.getVenuesForOfferer({
@@ -32,4 +34,7 @@ export const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
     }
   }
 
-export default getOfferIndividualVenuesAdapter
+const useGetOfferIndividualVenues = () =>
+  useAdapter<IPayload, IPayload>(getOfferIndividualVenuesAdapter)
+
+export default useGetOfferIndividualVenues

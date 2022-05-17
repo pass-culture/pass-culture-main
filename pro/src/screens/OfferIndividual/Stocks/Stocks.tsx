@@ -1,13 +1,11 @@
 import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
-import { useHistory } from 'react-router-dom'
-
-import { useOfferFormSteps, OFFER_FORM_STEP_IDS } from 'core/Offers'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
 
 import { ActionBar } from '../ActionBar'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import React from 'react'
 import { fakeOffer } from '../constants'
-
+import { useHistory } from 'react-router-dom'
 
 const Stocks = (): JSX.Element => {
   const history = useHistory()
