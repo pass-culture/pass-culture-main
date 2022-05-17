@@ -2,6 +2,7 @@ from datetime import datetime
 import logging
 import uuid
 
+from flask import current_app as app
 from flask import request
 from jwt import InvalidTokenError
 import pydantic
@@ -9,6 +10,7 @@ import pydantic
 from pcapi.connectors import api_recaptcha
 from pcapi.connectors import user_profiling
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.mails.transactional.users.delete_account import send_user_request_to_delete_account_reception_email
 from pcapi.core.subscription import api as subscription_api
@@ -259,6 +261,17 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
             )
         except exceptions.PhoneVerificationException:
             raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
+
+
+@blueprint.native_v1.route("/phone_validation/remaining_attempts", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=serializers.PhoneValidationRemainingAttemptsRequest)
+@authenticated_and_active_user_required
+def phone_validation_remaining_attempts(user: User) -> serializers.PhoneValidationRemainingAttemptsRequest:
+    remaining_attempts = sending_limit.get_remaining_attempts(app.redis_client, user)  # type: ignore [attr-defined]
+    expiration_time = sending_limit.get_attempt_limitation_expiration_time(app.redis_client, user)  # type: ignore [attr-defined]
+    return serializers.PhoneValidationRemainingAttemptsRequest(
+        remainingAttempts=remaining_attempts, counterResetDatetime=expiration_time
+    )
 
 
 @blueprint.native_v1.route("/account/suspend", methods=["POST"])

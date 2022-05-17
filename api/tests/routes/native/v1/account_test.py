@@ -1253,6 +1253,26 @@ class ValidatePhoneNumberTest:
         assert fraud_check.reason == expected_reason
         assert content["phone_number"] == "+33607080900"
 
+    @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
+    @freeze_time("2022-05-17 15:00")
+    def test_phone_validation_remaining_attempts(self, client):
+        user = users_factories.UserFactory(
+            phoneNumber="+33607080900",
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
+        client.with_token(email=user.email)
+        response = client.get("/native/v1/phone_validation/remaining_attempts")
+
+        assert response.json["counterResetDatetime"] == None
+        assert response.json["remainingAttempts"] == 1
+
+        client.post("/native/v1/send_phone_validation_code")
+
+        response = client.get("/native/v1/phone_validation/remaining_attempts")
+        assert response.json["counterResetDatetime"] == "2022-05-18T03:00:00"
+        assert response.json["remainingAttempts"] == 0
+
     def test_wrong_code(self, client, app):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
