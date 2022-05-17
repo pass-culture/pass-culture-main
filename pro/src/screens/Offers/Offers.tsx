@@ -7,7 +7,7 @@ import {
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import ActionsBarContainer from 'components/pages/Offers/Offers/ActionsBar/ActionsBarContainer'
+import ActionsBar from 'components/pages/Offers/Offers/ActionsBar'
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { Audience } from 'core/shared'
@@ -207,7 +207,7 @@ const Offers = ({
         />
       )}
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
-        <ActionsBarContainer
+        <ActionsBar
           areAllOffersSelected={areAllOffersSelected}
           clearSelectedOfferIds={clearSelectedOfferIds}
           nbSelectedOffers={nbSelectedOffers}

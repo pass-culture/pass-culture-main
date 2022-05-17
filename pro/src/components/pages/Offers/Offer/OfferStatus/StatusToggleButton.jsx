@@ -16,10 +16,7 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
 
   const toggleOfferActiveStatus = useCallback(() => {
     pcapi
-      .updateOffersActiveStatus(false, {
-        ids: [offer.id],
-        isActive: !offer.isActive,
-      })
+      .updateOffersActiveStatus([offer.id], !offer.isActive)
       .then(() => {
         reloadOffer()
         notification.success(
