@@ -1,18 +1,18 @@
 import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
+import { TSearchFilters } from 'core/Offers/types'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
-const computeActivationSuccessMessage = nbSelectedOffers => {
+const computeActivationSuccessMessage = (nbSelectedOffers: number) => {
   const successMessage =
     nbSelectedOffers > 1
       ? 'offres ont bien été activées'
       : 'offre a bien été activée'
   return `${nbSelectedOffers} ${successMessage}`
 }
-const computeDeactivationSuccessMessage = nbSelectedOffers => {
+const computeDeactivationSuccessMessage = (nbSelectedOffers: number) => {
   const successMessage =
     nbSelectedOffers > 1
       ? 'offres ont bien été désactivées'
@@ -20,36 +20,46 @@ const computeDeactivationSuccessMessage = nbSelectedOffers => {
   return `${nbSelectedOffers} ${successMessage}`
 }
 
-const computeAllActivationSuccessMessage = nbSelectedOffers =>
+const computeAllActivationSuccessMessage = (nbSelectedOffers: number) =>
   nbSelectedOffers > 1
     ? 'Les offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
     : 'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
 
-const computeAllDeactivationSuccessMessage = nbSelectedOffers =>
+const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
   nbSelectedOffers > 1
     ? 'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
     : 'Une offre est en cours de désactivation, veuillez rafraichir dans quelques instants'
 
-const ActionsBar = props => {
-  const {
-    refreshOffers,
-    selectedOfferIds,
-    clearSelectedOfferIds,
-    showPendingNotification,
-    showSuccessNotification,
-    toggleSelectAllCheckboxes,
-    areAllOffersSelected,
-    searchFilters,
-    nbSelectedOffers,
-  } = props
+interface IActionBarProps {
+  areAllOffersSelected: boolean
+  clearSelectedOfferIds: () => void
+  nbSelectedOffers: number
+  refreshOffers: () => void
+  searchFilters: TSearchFilters
+  selectedOfferIds: string[]
+  showPendingNotification: (message: string) => void
+  showSuccessNotification: (message: string) => void
+  toggleSelectAllCheckboxes: () => void
+}
 
+const ActionsBar = ({
+  refreshOffers,
+  selectedOfferIds,
+  clearSelectedOfferIds,
+  showPendingNotification,
+  showSuccessNotification,
+  toggleSelectAllCheckboxes,
+  areAllOffersSelected,
+  searchFilters,
+  nbSelectedOffers,
+}: IActionBarProps): JSX.Element => {
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
     areAllOffersSelected && toggleSelectAllCheckboxes()
   }, [clearSelectedOfferIds, areAllOffersSelected, toggleSelectAllCheckboxes])
 
   const handleUpdateOffersStatus = useCallback(
-    isActivating => {
+    (isActivating: boolean) => {
       const bodyAllActiveStatus = {
         ...searchFilters,
         isActive: isActivating,
@@ -62,8 +72,9 @@ const ActionsBar = props => {
         ? bodyAllActiveStatus
         : bodySomeActiveStatus
 
+      // @ts-expect-error Impossible d'assigner le type 'string' au type 'never'
       updateOffersActiveStatus(areAllOffersSelected, body).then(() => {
-        refreshOffers({ shouldTriggerSpinner: false })
+        refreshOffers()
         areAllOffersSelected
           ? showPendingNotification(
               isActivating
@@ -137,23 +148,6 @@ const ActionsBar = props => {
       </div>
     </div>
   )
-}
-
-ActionsBar.defaultProps = {
-  areAllOffersSelected: false,
-  selectedOfferIds: [],
-}
-
-ActionsBar.propTypes = {
-  areAllOffersSelected: PropTypes.bool,
-  clearSelectedOfferIds: PropTypes.func.isRequired,
-  nbSelectedOffers: PropTypes.number.isRequired,
-  refreshOffers: PropTypes.func.isRequired,
-  searchFilters: PropTypes.shape().isRequired,
-  selectedOfferIds: PropTypes.arrayOf(PropTypes.string),
-  showPendingNotification: PropTypes.func.isRequired,
-  showSuccessNotification: PropTypes.func.isRequired,
-  toggleSelectAllCheckboxes: PropTypes.func.isRequired,
 }
 
 export default ActionsBar
