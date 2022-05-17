@@ -1,9 +1,8 @@
 import { TOffererName } from 'core/Offerers/types'
 import { apiV1 } from 'api/api'
+import { useAdapter } from 'hooks'
 
-type Params = void
-type IPayload = TOffererName[]
-type TGetOffererNamesAdapter = Adapter<Params, IPayload, IPayload>
+type TGetOffererNamesAdapter = Adapter<void, TOffererName[], TOffererName[]>
 
 const FAILING_RESPONSE = {
   isOk: false,
@@ -11,7 +10,7 @@ const FAILING_RESPONSE = {
   payload: [],
 }
 
-export const getOffererNamesAdapter: TGetOffererNamesAdapter = async () => {
+const getOffererNamesAdapter: TGetOffererNamesAdapter = async () => {
   try {
     const response = await apiV1.getOfferersListOfferersNames()
     return {
@@ -24,4 +23,7 @@ export const getOffererNamesAdapter: TGetOffererNamesAdapter = async () => {
   }
 }
 
-export default getOffererNamesAdapter
+const useGetOffererNames = () =>
+  useAdapter<TOffererName[], TOffererName[]>(getOffererNamesAdapter)
+
+export default useGetOffererNames

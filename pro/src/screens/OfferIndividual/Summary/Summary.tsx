@@ -1,12 +1,8 @@
-
-
-import React from 'react'
-import { useHistory } from 'react-router-dom'
-
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
-
 import { ActionBar } from '../ActionBar'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import React from 'react'
 import { fakeOffer } from '../constants'
+import { useHistory } from 'react-router-dom'
 
 const Summary = (): JSX.Element => {
   const history = useHistory()
