@@ -1,4 +1,5 @@
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { BookingStatusFilter, ListOffersQueryModel } from 'api/v1/gen'
 import {
   CollectiveBookingsResponseModel,
   DEFAULT_PRE_FILTERS,
@@ -19,7 +20,6 @@ import {
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
 
-import { BookingStatusFilter } from 'api/v1/gen'
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { Offer } from 'custom_types/offer'
 import { client } from 'repository/pcapi/pcapiClient'
@@ -108,44 +108,16 @@ export const loadFilteredOffers = async ({
   return client.get(`/offers${queryParams ? `?${queryParams}` : ''}`)
 }
 
-export const updateOffersActiveStatus = (
-  // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'areAllOffersSelected' implicitly has an... Remove this comment to see the full error message
-  areAllOffersSelected,
-  {
-    // @ts-expect-error ts-migrate(2339) FIXME: Property 'name' does not exist on type 'TSearchFil... Remove this comment to see the full error message
-    name = DEFAULT_SEARCH_FILTERS.name,
-    offererId = DEFAULT_SEARCH_FILTERS.offererId,
-    venueId = DEFAULT_SEARCH_FILTERS.venueId,
-    categoryId = DEFAULT_SEARCH_FILTERS.categoryId,
-    status = DEFAULT_SEARCH_FILTERS.status,
-    creationMode = DEFAULT_SEARCH_FILTERS.creationMode,
-    ids = [],
-    // @ts-expect-error ts-migrate(7031) FIXME: Binding element 'isActive' implicitly has an 'any'... Remove this comment to see the full error message
-    isActive,
-    periodBeginningDate = DEFAULT_SEARCH_FILTERS.periodBeginningDate,
-    periodEndingDate = DEFAULT_SEARCH_FILTERS.periodEndingDate,
-  }
-) => {
-  const formattedBody = createRequestBody({
-    name,
-    offererId,
-    venueId,
-    categoryId,
-    status,
-    creationMode,
-    periodBeginningDate,
-    periodEndingDate,
-  })
+export const updateOffersActiveStatus = (ids: string[], isActive: boolean) =>
+  client.patch('/offers/active-status', { ids, isActive })
 
-  if (areAllOffersSelected) {
-    return client.patch('/offers/all-active-status', {
-      ...formattedBody,
-      isActive,
-    })
-  }
+export const updateAllOffersActiveStatus = (
+  body: ListOffersQueryModel & { isActive: boolean }
+) => client.patch('/offers/all-active-status', body)
 
-  return client.patch('/offers/active-status', { ids, isActive })
-}
+export const updateAllCollectiveOffersActiveStatus = (
+  body: ListOffersQueryModel & { isActive: boolean }
+) => client.patch('/collective/offers/all-active-status', body)
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'searchFilters' implicitly has an 'any' ... Remove this comment to see the full error message
 const createRequestBody = searchFilters => {

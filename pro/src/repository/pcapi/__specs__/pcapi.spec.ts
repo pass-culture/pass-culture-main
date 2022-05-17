@@ -5,6 +5,7 @@ import {
   loadFilteredOffers,
   postThumbnail,
   setHasSeenTutos,
+  updateAllOffersActiveStatus,
   updateOffersActiveStatus,
   validateDistantImage,
 } from '../pcapi'
@@ -126,7 +127,7 @@ describe('pcapi', () => {
         }
 
         // when
-        await updateOffersActiveStatus(true, body)
+        await updateAllOffersActiveStatus(body)
 
         // then
         expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
@@ -146,7 +147,8 @@ describe('pcapi', () => {
         }
 
         // when
-        await updateOffersActiveStatus(true, body)
+        // @ts-expect-error Impossible d'assigner le type 'string' au type 'number'
+        await updateAllOffersActiveStatus(body)
 
         // then
         expect(client.patch).toHaveBeenCalledWith('/offers/all-active-status', {
@@ -162,15 +164,8 @@ describe('pcapi', () => {
 
     describe('when updating some offers', () => {
       it('should call offers/active-status with proper params', async () => {
-        // given
-        const body = {
-          isActive: true,
-          ids: ['A3', 'E9'],
-        }
-
         // when
-        // @ts-expect-error ts-migrate(2345) FIXME: Argument of type '{ isActive: boolean; ids: string... Remove this comment to see the full error message
-        await updateOffersActiveStatus(false, body)
+        await updateOffersActiveStatus(['A3', 'E9'], true)
 
         // then
         expect(client.patch).toHaveBeenCalledWith('/offers/active-status', {
