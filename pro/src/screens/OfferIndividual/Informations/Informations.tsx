@@ -1,20 +1,18 @@
 import { FormikProvider, useFormik } from 'formik'
-import React from 'react'
-import { useHistory } from 'react-router-dom'
-
-import { useOfferFormSteps, OFFER_FORM_STEP_IDS } from 'core/Offers'
-import { TOffererName } from 'core/Offerers/types'
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import {
   IOfferIndividualFormValues,
   OfferIndividualForm,
   validationSchema,
 } from 'new_components/OfferIndividualForm'
+import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
 
 import { ActionBar } from '../ActionBar'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import React from 'react'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { TOffererName } from 'core/Offerers/types'
 import { fakeOffer } from '../constants'
-
+import { useHistory } from 'react-router-dom'
 
 export interface IInformationsProps {
   createOfferAdapter: (

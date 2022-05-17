@@ -1,70 +1,60 @@
-import React from 'react'
-import { useHistory } from 'react-router-dom'
-
-import useNotification from 'components/hooks/useNotification'
-// TODO (rlecellier): rename into getOfferQueryParams
-import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
-import { useHomePath } from 'hooks'
-
-import Spinner from 'components/layout/Spinner'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
-  setInitialFormValues,
+  setInitialFormValues
 } from 'new_components/OfferIndividualForm'
-import { Informations as InformationsScreen } from 'screens/OfferIndividual/Informations'
 
+import { Informations as InformationsScreen } from 'screens/OfferIndividual/Informations'
+import React from 'react'
+import Spinner from 'components/layout/Spinner'
 import { createOfferAdapter } from './adapters'
-import { useOffererNames, useOfferIndividualVenues } from './hooks'
+// TODO (rlecellier): rename into getOfferQueryParams
+import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
+import { useGetOfferIndividualVenues } from 'core/Venue/adapters'
+import { useGetOffererNames } from 'core/Offerers/adapters'
+import { useHistory } from 'react-router-dom'
+import { useHomePath } from 'hooks'
+import useNotification from 'components/hooks/useNotification'
 
 const OfferIndividualCreationInformations = (): JSX.Element | null => {
   const homePath = useHomePath()
   const notify = useNotification()
   const history = useHistory()
-  const {
-    offererNames,
-    isLoading: isOffererLoading,
-    error: offererError,
-  } = useOffererNames()
-  const {
-    offerIndividualVenues: venueList,
-    isLoading: isVenueLoading,
-    error: venueError,
-  } = useOfferIndividualVenues()
+
+  const {data: offererNames, isLoading: offererNamesIsLoading, error: offererNamesError} =
+    useGetOffererNames()
+  const {data: venueList, isLoading: venueListIsLoading, error: venueListError} =
+    useGetOfferIndividualVenues()
 
   const { structure: offererId, lieu: venueId } =
     queryParamsFromOfferer(location)
 
-  const hasError = offererError || venueError
-  const isReady = !isOffererLoading && !isVenueLoading
-  let initialValues: IOfferIndividualFormValues = FORM_DEFAULT_VALUES
-
-  if (hasError) {
-    notify.error(offererError || venueError)
-    history.push(homePath)
-  } else if (isReady) {
-    initialValues = setInitialFormValues(
-      initialValues,
-      offererNames,
-      offererId,
-      venueId,
-      venueList
-    )
+  if (offererNamesIsLoading || venueListIsLoading) {
+    return <Spinner />
   }
 
+  if (offererNamesError || venueListError) {
+    notify.error(offererNamesError || venueListError)
+    history.push(homePath)
+
+    return null
+  }
+
+  const initialValues: IOfferIndividualFormValues = setInitialFormValues(
+    FORM_DEFAULT_VALUES,
+    offererNames,
+    offererId,
+    venueId,
+    venueList
+  )
+
   return (
-    <>
-      {isReady ? (
-        <InformationsScreen
-          offererNames={offererNames}
-          venueList={venueList}
-          createOfferAdapter={createOfferAdapter}
-          initialValues={initialValues}
-        />
-      ) : (
-        <Spinner />
-      )}
-    </>
+    <InformationsScreen
+      offererNames={offererNames}
+      venueList={venueList}
+      createOfferAdapter={createOfferAdapter}
+      initialValues={initialValues}
+    />
   )
 }
 
