@@ -14,7 +14,8 @@ class Returns200Test:
         # Given
         venue = offerers_factories.VenueFactory()
         offerers_factories.UserOffererFactory(offerer=venue.managingOfferer, user__email="user@example.com")
-        offer = educational_factories.CollectiveOfferFactory(venue=venue)
+        domain = educational_factories.EducationalDomainFactory(name="Test domain")
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, educational_domains=[domain])
 
         # When
         data = {
@@ -35,6 +36,7 @@ class Returns200Test:
         assert template.priceDetail == data["educationalPriceDetail"]
         assert template.offerVenue == offer.offerVenue
         assert template.bookingEmail == offer.bookingEmail
+        assert template.domains == [domain]
 
     def test_create_collective_offer_template_without_price_detail(self, client):
         # Given
