@@ -9,6 +9,7 @@ import {
   extractInitialStockValues,
   extractOfferIdAndOfferTypeFromRouteParams,
   patchIsOfferActiveAdapter,
+  patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 import {
@@ -51,7 +52,9 @@ const getAdapter = (
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
   const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
-
+  const enableIndividualAndCollectiveSeparation = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
   const [offer, setOffer] =
@@ -112,9 +115,18 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const { isOk, message } = await patchIsOfferActiveAdapter({
+    const patchOfferId =
+      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
+        ? (offer as GetCollectiveOfferTemplateSuccessPayload).offerId || ''
+        : offerId
+
+    const patchAdapter = isNewModelEnabled
+      ? patchIsTemplateOfferActiveAdapter
+      : patchIsOfferActiveAdapter
+
+    const { isOk, message } = await patchAdapter({
       isActive,
-      offerId: offer?.offerId || '',
+      offerId: patchOfferId,
     })
 
     if (!isOk) {
