@@ -1,9 +1,12 @@
 import pytest
 
 from pcapi.core import testing
+from pcapi.core.educational.factories import CollectiveOfferFactory
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import humanize
 
 
@@ -19,6 +22,9 @@ def test_access_by_pro(client):
     offers_factories.OfferFactory.create_batch(1, venue=venue1)
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer2, name="lieu A2")
     offers_factories.OfferFactory.create_batch(2, venue=venue2)
+    # an offer that should not be taken into account
+    CollectiveOfferFactory(venue=venue2)
+
     offerers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
     pro = users_factories.ProFactory(offerers=[offerer1, offerer2, inactive])
     # Non-validated offerers should not be included.
@@ -31,6 +37,7 @@ def test_access_by_pro(client):
     n_queries += 1  # select offerers
     n_queries += 1  # select count of offerers
     n_queries += 1  # select count of offers for all venues
+    n_queries += 1  # select FF ENABLE_NEW_COLLECTIVE_MODEL
     with testing.assert_num_queries(n_queries):
         response = client.get("/offerers")
 
@@ -46,6 +53,30 @@ def test_access_by_pro(client):
     assert offerers[1]["userHasAccess"]
     assert offerers[0]["nOffers"] == 3
     assert offerers[1]["nOffers"] == 0
+
+
+@testing.override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+def test_access_by_pro_when_new_model_is_enabled(client):
+    offerer1 = offerers_factories.OffererFactory(name="offreur B")
+    venue1 = offerers_factories.VenueFactory(managingOfferer=offerer1, name="lieu A1")
+
+    CollectiveOfferFactory(venue=venue1)
+    CollectiveOfferFactory(venue=venue1, validation=OfferValidationStatus.DRAFT)
+    CollectiveOfferTemplateFactory(venue=venue1)
+    CollectiveOfferTemplateFactory(venue=venue1, validation=OfferValidationStatus.DRAFT)
+    # individual offer
+    offers_factories.OfferFactory.create_batch(1, venue=venue1)
+    # an offer that should not be taken into account
+    offers_factories.EducationalEventOfferFactory.create_batch(1, venue=venue1)
+
+    pro = users_factories.ProFactory(offerers=[offerer1])
+    client = client.with_session_auth(pro.email)
+    response = client.get("/offerers")
+
+    assert response.status_code == 200
+    offerers = response.json["offerers"]
+    assert len(offerers) == 1
+    assert offerers[0]["nOffers"] == 3
 
 
 def test_access_by_admin(client):
