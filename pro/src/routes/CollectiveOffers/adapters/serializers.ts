@@ -39,4 +39,5 @@ export const serializeOffers = (
     stocks: serializeStocks(offer.stocks),
     isEditable: offer.isEditable,
     isShowcase: offer.isShowcase,
+    offerId: offer.offerId,
   }))
