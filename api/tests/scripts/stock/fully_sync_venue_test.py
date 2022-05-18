@@ -26,7 +26,7 @@ def test_fully_sync_venue():
     with requests_mock.Mocker() as mock:
         response = {
             "total": 1,
-            "stocks": [{"ref": "1234", "available": 5}],
+            "stocks": [{"ref": "1234", "available": 5, "price": 10}],
         }
         mock.get(f"{api_url}/{venue_provider.venueIdAtOfferProvider}", [{"json": response}, {"json": {"stocks": []}}])
         fully_sync_venue.fully_sync_venue(venue)
