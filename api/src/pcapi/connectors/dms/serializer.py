@@ -1,3 +1,4 @@
+import logging
 import re
 from typing import Optional
 
@@ -7,7 +8,24 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
+from pcapi.core.users import models as users_models
 from pcapi.utils.date import FrenchParserInfo
+
+
+logger = logging.getLogger(__name__)
+
+
+DMS_ACTIVITY_ENUM_MAPPING = {
+    "Lycéen": users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value,
+    "Étudiant": users_models.ActivityEnum.STUDENT.value,
+    "Etudiant": users_models.ActivityEnum.STUDENT.value,
+    "Employé": users_models.ActivityEnum.EMPLOYEE.value,
+    "En recherche d'emploi ou chômeur": users_models.ActivityEnum.UNEMPLOYED.value,
+    "Inactif (ni en emploi ni au chômage), En incapacité de travailler": users_models.ActivityEnum.INACTIVE.value,
+    "Apprenti": users_models.ActivityEnum.APPRENTICE.value,
+    "Alternant": users_models.ActivityEnum.APPRENTICE_STUDENT.value,
+    "Volontaire en service civique rémunéré": users_models.ActivityEnum.VOLUNTEER.value,
+}
 
 
 def parse_beneficiary_information_graphql(
@@ -64,7 +82,10 @@ def parse_beneficiary_information_graphql(
                 parsing_errors["postal_code"] = value
 
         elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
-            activity = value
+            activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
+            if activity is None:
+                logger.error("Unknown activity value for application %s: %s", application_id, value)
+
         elif label in (
             dms_models.FieldLabel.ADDRESS_ET.value,
             dms_models.FieldLabel.ADDRESS_FR.value,
