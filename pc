@@ -247,13 +247,6 @@ elif [[ "$CMD" == "restore-db-intact" ]]; then
   source "$INFRA_SCRIPTS_PATH"/restore_db.sh
   restore_db_intact $1
 
-# Prepare backend for local use
-elif [[ "$CMD" == "set-backend" ]]; then
-  RUN='cd "$ROOT_PATH";
-    ./pc update-mocks;
-    ./pc update_providables -m -p SpreadsheetExpVenues;
-    ./pc update_providables -m -p SpreadsheetExpOffers;
-    ./pc sandbox --name=light;'
 
 # Start API server with database and nginx server
 elif [[ "$CMD" == "start-backend" ]]; then
