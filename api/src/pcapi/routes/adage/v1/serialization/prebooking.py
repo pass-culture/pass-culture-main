@@ -114,7 +114,7 @@ def get_collective_bookings_per_year_response(
         EducationalBookingPerYearResponse(
             id=educational_booking.id,
             UAICode=educational_booking.educationalInstitution.institutionId,
-            status=educational_booking.status,
+            status=get_collective_booking_status(educational_booking),
             confirmationLimitDate=educational_booking.confirmationLimitDate,
             totalAmount=educational_booking.collectiveStock.price,
             beginningDatetime=educational_booking.collectiveStock.beginningDatetime,
