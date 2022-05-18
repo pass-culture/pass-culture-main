@@ -2,7 +2,6 @@ import CheckboxField from './CheckboxField'
 import { Form } from 'react-final-form'
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
 import React from 'react'
-import TextField from 'components/layout/form/fields/TextField'
 
 export default {
   title: 'ui-kit/CheckboxField',
@@ -17,7 +16,6 @@ const Template = args => (
   <Form onSubmit={submitForm}>
     {() => (
       <div className="field-group">
-        <TextField label="Text field label" name="test-text-field" />
         <CheckboxField {...args} />
       </div>
     )}

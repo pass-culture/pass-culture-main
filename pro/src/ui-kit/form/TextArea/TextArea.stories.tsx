@@ -3,20 +3,22 @@ import React from 'react'
 import { Story } from '@storybook/react'
 import TextArea from './TextArea'
 import { action } from '@storybook/addon-actions'
-import { boolean } from '@storybook/addon-knobs'
 
 export default {
   title: 'ui-kit/forms/TextArea',
   component: TextArea,
 }
 
-const Template: Story<{ label: string }> = ({ label }) => (
+const Template: Story<{ label: string; disabled: boolean }> = ({
+  label,
+  disabled,
+}) => (
   <Formik initialValues={{ description: '' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return (
         <TextArea
           {...getFieldProps('description')}
-          disabled={boolean('disabled', false)}
+          disabled={disabled}
           label={label}
           placeholder="Description placeholder"
         />
@@ -27,4 +29,4 @@ const Template: Story<{ label: string }> = ({ label }) => (
 
 export const WithoutLabel = Template.bind({})
 export const WithLabel = Template.bind({})
-WithLabel.args = { label: 'Description' }
+WithLabel.args = { label: 'Description', disabled: false }
