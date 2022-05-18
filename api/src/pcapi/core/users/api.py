@@ -201,7 +201,8 @@ def update_user_information_from_external_source(
         user.lastName = data.last_name
         user.firstName = data.first_name
         user.publicName = "%s %s" % (data.first_name, data.last_name)
-        user.departementCode = data.department
+        if data.get_department_code():
+            user.departementCode = data.get_department_code()
         user.postalCode = data.postal_code
         user.address = data.address
         user.civility = data.civility.value if data.civility else None

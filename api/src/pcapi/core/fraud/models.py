@@ -11,6 +11,7 @@ import sqlalchemy as sa
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import models as users_models
+from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -193,7 +194,7 @@ class DMSContent(common_models.IdentityCheckContent):
     city: typing.Optional[str]
     civility: typing.Optional[users_models.GenderEnum]
     deletion_datetime: typing.Optional[datetime.datetime]
-    department: typing.Optional[str]
+    department: typing.Optional[str]  # this field is not filled anymore
     email: str
     first_name: str
     id_piece_number: typing.Optional[str]
@@ -224,6 +225,9 @@ class DMSContent(common_models.IdentityCheckContent):
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
+
+    def get_department_code(self) -> typing.Optional[str]:
+        return PostalCode(self.postal_code).get_departement_code() if self.postal_code else None
 
 
 class UserProfilingRiskRating(enum.Enum):
