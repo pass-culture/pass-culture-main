@@ -9,6 +9,7 @@ interface IConfirmDialogProps {
   onConfirm: () => void
   onCancel: () => void
   title: string
+  secondTitle?: string
   confirmText: string
   cancelText: string
   isLoading?: boolean
@@ -20,6 +21,7 @@ const ConfirmDialog = ({
   onConfirm,
   onCancel,
   title,
+  secondTitle,
   confirmText,
   cancelText,
   isLoading = false,
@@ -41,6 +43,7 @@ const ConfirmDialog = ({
       <Icon className={styles['confirm-dialog-icon']} />
       <div className={styles['confirm-dialog-title']}>
         <strong>{title}</strong>
+        <strong>{secondTitle}</strong>
       </div>
       <div className={styles['confirm-dialog-explanation']}>{children}</div>
       <div className={styles['confirm-dialog-actions']}>
