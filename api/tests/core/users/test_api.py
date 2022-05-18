@@ -748,25 +748,6 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.hasSeenTutorials == False
         assert not beneficiary.deposits
 
-    def test_update_user_information_from_jouve(self):
-        user = UserFactory(
-            activity=None,
-            address=None,
-            city=None,
-            firstName=None,
-            lastName=None,
-            postalCode=None,
-            publicName="UNSET",
-        )
-        jouve_data = fraud_factories.JouveContentFactory()
-        new_user = users_api.update_user_information_from_external_source(user, jouve_data)
-
-        assert new_user.activity == jouve_data.activity
-        assert new_user.address == jouve_data.address
-        assert new_user.city == jouve_data.city
-        assert new_user.firstName == jouve_data.firstName
-        assert new_user.lastName == jouve_data.lastName
-
     def test_update_user_information_from_educonnect(self):
         user = UserFactory(
             firstName=None,
@@ -785,89 +766,56 @@ class BeneficiaryInformationUpdateTest:
         assert new_user.dateOfBirth == datetime(2000, 5, 1, 0, 0)
         assert new_user.ineHash == "identifiantnati0naleleve"
 
-    def test_update_user_information_from_jouve_empty_source(self):
-        user = UserFactory(activity="Etudiant", postalCode="75001")
-        jouve_data = fraud_factories.JouveContentFactory(
-            activity=None,
-            address=None,
-            city=None,
-            departementCode=None,
-            firstName=None,
-            lastName=None,
-            postalCode=None,
-        )
-        new_user = users_api.update_user_information_from_external_source(user, jouve_data)
-
-        assert new_user.activity is not None
-        assert new_user.address is not None
-        assert new_user.city is not None
-        assert new_user.firstName is not None
-        assert new_user.lastName is not None
-
     def test_update_id_piece_number(self):
         user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
-        jouve_data = fraud_factories.JouveContentFactory(bodyPieceNumber="140767100016")
+        dms_data = fraud_factories.DMSContentFactory(id_piece_number="140767100016")
 
-        users_api.update_user_information_from_external_source(user, jouve_data)
+        users_api.update_user_information_from_external_source(user, dms_data)
         assert user.idPieceNumber == "140767100016"
 
     def test_update_id_piece_number_duplicate(self):
         user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber="140767100016")
-        jouve_data = fraud_factories.JouveContentFactory(bodyPieceNumber=user.idPieceNumber)
+        dms_data = fraud_factories.DMSContentFactory(id_piece_number=user.idPieceNumber)
         new_user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
 
-        users_api.update_user_information_from_external_source(user, jouve_data)
+        users_api.update_user_information_from_external_source(user, dms_data)
         assert new_user.idPieceNumber is None
-
-    def test_update_id_piece_number_invalid_format(self):
-        user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
-        jouve_data = fraud_factories.JouveContentFactory(bodyPieceNumber="ITT T TITITT")
-        users_api.update_user_information_from_external_source(user, jouve_data)
-        assert user.idPieceNumber is None
 
     def test_update_postal_code_from_empty_value(self):
         # when jouve sends the value, and it has not been updated from elsewhere we want to update it
         user = UserFactory(postalCode=None)
-        jouve_data = fraud_factories.JouveContentFactory(postalCode="22620")
-        users_api.update_user_information_from_external_source(user, jouve_data)
+        dms_data = fraud_factories.DMSContentFactory(postal_code="22620")
+        users_api.update_user_information_from_external_source(user, dms_data)
 
-        assert user.postalCode == jouve_data.postalCode
-
-    def test_postal_code_not_updated(self):
-        # when jouve sends the value, and it has not been updated from elsewhere we want to update it
-        user = UserFactory(postalCode="75009")
-        jouve_data = fraud_factories.JouveContentFactory()
-        users_api.update_user_information_from_external_source(user, jouve_data)
-
-        assert user.postalCode != jouve_data.postalCode
+        assert user.postalCode == dms_data.postal_code
 
     @override_features(ENABLE_PHONE_VALIDATION=True)
-    def test_phone_number_does_not_update_from_jouve(self):
+    def test_phone_number_does_not_update(self):
 
         user = UserFactory(phoneNumber="+33611111111")
-        jouve_data = fraud_factories.JouveContentFactory(phoneNumber="+33622222222")
+        dms_data = fraud_factories.DMSContentFactory(phoneNumber="+33622222222")
 
-        users_api.update_user_information_from_external_source(user, jouve_data)
+        users_api.update_user_information_from_external_source(user, dms_data)
 
         assert user.phoneNumber == "+33611111111"
 
     @override_features(ENABLE_PHONE_VALIDATION=False)
-    def test_phone_number_update_from_jouve_if_empty(self):
+    def test_phone_number_update_if_empty(self):
 
         user = UserFactory(phoneNumber=None)
-        jouve_data = fraud_factories.JouveContentFactory(phoneNumber="+33622222222")
+        dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
 
-        users_api.update_user_information_from_external_source(user, jouve_data)
+        users_api.update_user_information_from_external_source(user, dms_data)
 
         assert user.phoneNumber == "+33622222222"
 
     @override_features(ENABLE_PHONE_VALIDATION=False)
-    def test_phone_number_does_not_update_from_jouve_if_not_empty(self):
+    def test_phone_number_does_not_update_if_not_empty(self):
 
         user = UserFactory(phoneNumber="+33611111111")
-        jouve_data = fraud_factories.JouveContentFactory(phoneNumber="+33622222222")
+        dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
 
-        users_api.update_user_information_from_external_source(user, jouve_data)
+        users_api.update_user_information_from_external_source(user, dms_data)
 
         assert user.phoneNumber == "+33611111111"
 
