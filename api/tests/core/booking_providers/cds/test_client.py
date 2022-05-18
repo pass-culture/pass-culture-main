@@ -7,7 +7,6 @@ from pcapi.connectors.cine_digital_service import ResourceCDS
 import pcapi.connectors.serialization.cine_digital_service_serializers as cds_serializers
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
-from pcapi.core.booking_providers.models import SeatCDS
 from pcapi.core.booking_providers.models import SeatMap
 from pcapi.core.testing import override_settings
 
@@ -659,7 +658,9 @@ class CineDigitalServiceBookTicketTest:
         ]
 
         mocked_get_available_seat.return_value = [
-            SeatCDS((0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])),
+            cds_serializers.SeatCDS(
+                (0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])
+            ),
         ]
 
         mocked_get_show.return_value = create_show_cds(id_=181, shows_tariff_pos_type_ids=[42])
@@ -728,8 +729,12 @@ class CineDigitalServiceBookTicketTest:
         ]
 
         mocked_get_available_duo_seat.return_value = [
-            SeatCDS((0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])),
-            SeatCDS((0, 1), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])),
+            cds_serializers.SeatCDS(
+                (0, 0), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])
+            ),
+            cds_serializers.SeatCDS(
+                (0, 1), create_screen_cds(), SeatMap([["1", "1", "1"], ["1", "1", "1"], ["1", "1", "1"]])
+            ),
         ]
 
         mocked_get_show.return_value = create_show_cds(id_=181, shows_tariff_pos_type_ids=[42])
@@ -883,7 +888,7 @@ class CineDigitalServiceGetMoviesTest:
         cine_digital_service = CineDigitalServiceAPI(
             cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test/"
         )
-        movies = cine_digital_service.get_cinema_movies()
+        movies = cine_digital_service.get_venue_movies()
 
         # then
         mocked_get_resource.assert_called_once_with(api_url, cinema_id, token, resource)

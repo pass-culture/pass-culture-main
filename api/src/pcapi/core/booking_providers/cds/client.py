@@ -15,7 +15,7 @@ from pcapi.core.booking_providers.cds.constants import PASS_CULTURE_VOUCHER_CODE
 from pcapi.core.booking_providers.cds.constants import VOUCHER_PAYMENT_TYPE_CDS
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
-from pcapi.core.booking_providers.models import SeatCDS
+from pcapi.core.booking_providers.models import Movie
 from pcapi.core.booking_providers.models import SeatMap
 from pcapi.core.booking_providers.models import Ticket
 
@@ -48,10 +48,10 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             f"Show #{show_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_cinema_movies(self) -> cds_serializers.MediaCDS:
+    def get_venue_movies(self) -> list[Movie]:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.MEDIA)
-        movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
-        return movies
+        cds_movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
+        return [cds_movie.to_generic_movie() for cds_movie in cds_movies]
 
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.PAYMENT_TYPE)
@@ -97,7 +97,7 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             f"Screen #{screen_id} not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
         )
 
-    def get_available_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[SeatCDS]:
+    def get_available_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[cds_serializers.SeatCDS]:
         seatmap = self.get_seatmap(show_id)
         available_seats_index = [
             (i, j) for i in range(0, seatmap.nb_row) for j in range(0, seatmap.nb_col) if seatmap.map[i][j] % 10 == 1
@@ -105,9 +105,9 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
         if len(available_seats_index) == 0:
             return []
         best_seat = self._get_closest_seat_to_center((seatmap.nb_row // 2, seatmap.nb_col // 2), available_seats_index)
-        return [SeatCDS(best_seat, screen, seatmap)]
+        return [cds_serializers.SeatCDS(best_seat, screen, seatmap)]
 
-    def get_available_duo_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[SeatCDS]:
+    def get_available_duo_seat(self, show_id: int, screen: cds_serializers.ScreenCDS) -> list[cds_serializers.SeatCDS]:
         seatmap = self.get_seatmap(show_id)
         seatmap_center = ((seatmap.nb_row - 1) / 2, (seatmap.nb_col - 1) / 2)
 
@@ -130,8 +130,8 @@ class CineDigitalServiceAPI(BookingProviderClientAPI):
             second_seat = self._get_closest_seat_to_center(seatmap_center, available_seats_index)
 
         return [
-            SeatCDS(first_seat, screen, seatmap),
-            SeatCDS(second_seat, screen, seatmap),
+            cds_serializers.SeatCDS(first_seat, screen, seatmap),
+            cds_serializers.SeatCDS(second_seat, screen, seatmap),
         ]
 
     def get_seatmap(self, show_id: int) -> SeatMap:
