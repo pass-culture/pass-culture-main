@@ -6,6 +6,7 @@ import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffer
 import { searchFiltersSelector } from 'store/offers/selectors'
 import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateAllCollectiveOffersActiveStatusAdapter'
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
+import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
@@ -42,6 +43,10 @@ const getUpdateActiveStatusAdapter = (
         searchFilters: { ...searchFilters, isActive },
         nbSelectedOffers,
       })
+  }
+
+  if (isNewModelEnabled) {
+    return () => updateCollectiveOffersActiveStatusAdapter({ids: selectedOfferIds, isActive})
   }
 
   return () => updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
