@@ -146,7 +146,7 @@ class RunTest:
                 email="john.doe@test.com",
                 application_id=123,
                 procedure_id=6712558,
-                department="67",
+                department=None,
                 phone="0123456789",
                 birth_date=AGE18_ELIGIBLE_BIRTH_DATE.date(),
                 activity="Étudiant",
@@ -161,15 +161,6 @@ class RunTest:
 
 
 class ParseBeneficiaryInformationTest:
-    @pytest.mark.parametrize(
-        "department_code,expected_code",
-        [("67 - Bas-Rhin", "67"), ("973 - Guyane", "973"), ("2B - Haute-Corse", "2B"), ("2a - Corse-du-Sud", "2a")],
-    )
-    def test_handles_department_code(self, department_code, expected_code):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", department_code=department_code)
-        information = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=201201)
-        assert information.department == expected_code
-
     @pytest.mark.parametrize(
         "postal_code,expected_code",
         [
@@ -484,6 +475,7 @@ class RunIntegrationTest:
 
         assert user.firstName == "John"
         assert user.postalCode == "67200"
+        assert user.departementCode == "67"
         assert user.address == "3 La Bigotais 22800 Saint-Donan"
         assert user.has_beneficiary_role
         assert user.phoneNumber == "0123456789"

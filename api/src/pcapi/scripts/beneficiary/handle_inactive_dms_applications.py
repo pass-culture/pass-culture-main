@@ -110,7 +110,7 @@ def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationRespo
     except subscription_exceptions.DMSParsingError:
         return True
     applicant_birth_date = application_content.get_birth_date()
-    applicant_department = application_content.department
+    applicant_department = application_content.get_department_code()
     if applicant_birth_date is None or applicant_department is None:
         return True
 

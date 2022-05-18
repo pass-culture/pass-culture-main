@@ -61,9 +61,6 @@ class DmsField(pydantic.BaseModel):
 class FieldLabel(enum.Enum):
     """
     Ces champs sont tirés des labels des questions des démarches DMS
-    2 procédures sont acceptées:
-    - Jeune de nationalité étrangère: DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v4_ET
-    - Jeune de nationalité française: DEMARCHES_SIMPLIFIEES_ENROLLMENT_PROCEDURE_ID_v4_FR
     """
 
     ACTIVITY_ET = "Merci d' indiquer ton statut"
@@ -74,9 +71,6 @@ class FieldLabel(enum.Enum):
     BIRTH_DATE_FR = "Quelle est votre date de naissance"
     CITY_FR = "Quelle est ta ville de résidence ?"
     CITY_ET = "Quelle est ta ville de résidence ?"
-    DEPARTMENT_ET = "Veuillez indiquer votre département"
-    DEPARTMENT_FR = "Veuillez indiquer votre département"
-    DEPARTMENT_OLD = "Veuillez indiquer votre département de résidence"
     ID_PIECE_NUMBER_ET = "Quel est le numéro de la pièce que tu viens de saisir ?"
     ID_PIECE_NUMBER_FR = "Quel est le numéro de la pièce que tu viens de saisir ?"
     ID_PIECE_NUMBER_PROCEDURE_4765 = "Quel est le numéro de la pièce que vous venez de saisir ?"
