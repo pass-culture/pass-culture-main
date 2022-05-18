@@ -4,6 +4,7 @@ from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.utils.date import format_into_utc_date
@@ -25,7 +26,8 @@ class Returns200Test:
         booking2 = EducationalBookingFactory(
             educationalBooking__educationalYear=educationalYear,
             educationalBooking__educationalInstitution=other_educational_institution,
-            status="PENDING",
+            educationalBooking__status=EducationalBookingStatus.REFUSED,
+            status="CANCELLED",
         )
         educationalBooking2 = booking2.educationalBooking
         EducationalBookingFactory(educationalBooking__educationalYear=other_educational_year)
@@ -54,7 +56,7 @@ class Returns200Test:
                 {
                     "id": educationalBooking2.id,
                     "UAICode": other_educational_institution.institutionId,
-                    "status": "PENDING",
+                    "status": "REFUSED",
                     "confirmationLimitDate": format_into_utc_date(educationalBooking2.confirmationLimitDate),
                     "totalAmount": booking2.total_amount,
                     "beginningDatetime": format_into_utc_date(booking2.stock.beginningDatetime),
