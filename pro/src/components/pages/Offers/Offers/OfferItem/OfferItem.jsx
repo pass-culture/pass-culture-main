@@ -16,7 +16,14 @@ import { formatLocalTimeDateString } from 'utils/timezone'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { pluralize } from 'utils/pluralize'
 
-const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
+const OfferItem = ({
+  disabled,
+  offer,
+  isSelected,
+  selectOffer,
+  isNewModelEnabled,
+  enableIndividualAndCollectiveSeparation,
+}) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
   const editionOfferLink = useOfferEditionURL(isEducational, id, isShowcase)
   const editionStockLink = useOfferStockEditionURL(
@@ -26,7 +33,11 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   )
 
   function handleOnChangeSelected() {
-    selectOffer(offer.id, !isSelected, isShowcase)
+    const id =
+      !isNewModelEnabled && enableIndividualAndCollectiveSeparation
+        ? offer.offerId
+        : offer.id
+    selectOffer(id, !isSelected, isShowcase)
   }
 
   const computeNumberOfSoldOutStocks = () =>
@@ -187,6 +198,8 @@ OfferItem.propTypes = {
     isShowcase: PropTypes.bool,
   }).isRequired,
   selectOffer: PropTypes.func.isRequired,
+  isNewModelEnabled: PropTypes.bool.isRequired,
+  enableIndividualAndCollectiveSeparation: PropTypes.bool.isRequired,
 }
 
 export default OfferItem
