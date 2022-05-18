@@ -1,7 +1,8 @@
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
+from unittest import mock
 
+import freezegun
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -13,9 +14,9 @@ import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_features
-from pcapi.models import db
-from pcapi.repository import repository
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
+from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period
+from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_validation_period
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
 
@@ -26,136 +27,134 @@ reimbursement_period = (today, in_two_days)
 
 
 @pytest.mark.usefixtures("db_session")
+@mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class ReimbursementDetailsTest:
     def test_reimbursement_details_as_csv_individual_booking(self):
+        business_unit = offerers_factories.VenueFactory(
+            siret="siret bu",
+            name="Ma petite business unit",
+            address="1 rue de la business unit",
+            city="Nantes",
+            postalCode="44000",
+            businessUnit__bankAccount__iban="CF13QSDFGH456789",
+        ).businessUnit
         payment = finance_factories.PaymentFactory(
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
             booking__amount=10.5,
             booking__quantity=2,
-            booking__stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
+            booking__dateUsed=datetime(2022, 6, 18),
+            booking__stock__offer__venue__businessUnit=business_unit,
         )
-        finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.SENT,
+        )
+        booking = payment.booking
         finance_factories.PricingFactory(
-            booking=payment.booking,
+            booking=booking,
             amount=-2100,
             standardRule="Remboursement total pour les offres physiques",
             status=finance_models.PricingStatus.VALIDATED,
         )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-        )
+        with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
+            finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+            finance_api.generate_invoices()
+        cashflow = finance_models.Cashflow.query.one()
+        invoice = finance_models.Invoice.query.one()
+
         payments_info = finance_repository.find_all_offerer_payments(
             payment.booking.offerer.id,
             reimbursement_period,
         )
 
-        # legacy payment data
-        raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert raw_csv[0] == "2019"
-        assert raw_csv[1] == "juillet : remboursement 1ère quinzaine"
-        assert raw_csv[2] == payment.booking.venue.name
-        assert raw_csv[3] == payment.booking.venue.siret
-        assert raw_csv[4] == payment.booking.venue.address
-        assert raw_csv[5] == payment.iban
-        assert raw_csv[6] == payment.booking.venue.name
-        assert raw_csv[7] == payment.booking.stock.offer.name
-        assert raw_csv[8] == "Doux"
-        assert raw_csv[9] == "Jeanne"
-        assert raw_csv[10] == payment.booking.token
-        assert raw_csv[11] == payment.booking.dateUsed
-        assert raw_csv[12] == "21,00"
-        assert raw_csv[13] == f"{int(payment.reimbursementRate * 100)}%"
-        assert raw_csv[14] == "21,00"
-        assert raw_csv[15] == "Remboursement envoyé"
-        assert raw_csv[16] == "offre grand public"
-
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        # The first 2 cells are tested in a separate test below.
-        assert row[2] == payment.booking.venue.name
-        assert row[3] == payment.booking.venue.siret
-        assert row[4] == payment.booking.venue.address
-        assert row[5] == payment.iban
-        assert row[6] == payment.booking.venue.name
-        assert row[7] == payment.booking.stock.offer.name
-        assert row[8] == "Doux"
-        assert row[9] == "Jeanne"
-        assert row[10] == payment.booking.token
-        assert row[11] == payment.booking.dateUsed
-        assert row[12] == "21,00"
-        assert row[13] == f"{int(payment.reimbursementRate * 100)} %"
-        assert row[14] == "21,00"
-        assert row[15] == "Remboursement envoyé"
-        assert row[16] == "offre grand public"
+        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[1] == invoice.date
+        assert row[2] == invoice.reference
+        assert row[3] == cashflow.batch.label
+        # business unit
+        assert row[4] == "Ma petite business unit"
+        assert row[5] == "1 rue de la business unit 44000 Nantes"
+        assert row[6] == "siret bu"
+        assert row[7] == business_unit.bankAccount.iban
+        # venue
+        assert row[8] == booking.venue.name
+        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[10] == booking.venue.siret
+        # offer and booking
+        assert row[11] == booking.stock.offer.name
+        assert row[12] is None  # no redactor name..."Doux"
+        assert row[13] is None  # ... for individual offer
+        assert row[14] == booking.token
+        assert row[15] == booking.dateUsed
+        # reimbursement
+        assert row[16] == "21,00"
+        assert row[17] == "100 %"
+        assert row[18] == "21,00"
+        assert row[19] == "offre grand public"
+
+        # legacy payment data
+        row = ReimbursementDetails(payments_info[1]).as_csv_row()
+        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[1] == ""  # no invoice, no date
+        assert row[2] == ""  # no invoice, no label
+        assert row[3] == ""  # unknown transfer label
+        # business unit (not known, hence supposed to be the venue)
+        assert row[4] == booking.venue.name
+        assert row[5] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[6] == booking.venue.siret
+        assert row[7] == payment.iban
+        # venue
+        assert row[8] == booking.venue.name
+        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[10] == booking.venue.siret
+        # offer and booking
+        assert row[11] == booking.stock.offer.name
+        assert row[12] is None  # no redactor name...
+        assert row[13] is None  # ... for individual offer
+        assert row[14] == booking.token
+        assert row[15] == booking.dateUsed
+        # reimbursement
+        assert row[16] == "21,00"
+        assert row[17] == f"{int(payment.reimbursementRate * 100)}%"
+        assert row[18] == "21,00"
+        assert row[19] == "offre grand public"
 
     def test_reimbursement_details_as_csv_educational_booking(self):
         # given
         booking = bookings_factories.UsedEducationalBookingFactory(
-            amount=10.5,
-            quantity=2,
-            stock__beginningDatetime=datetime.utcnow(),
-            stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
+            dateUsed=datetime(2022, 6, 18),
         )
         payment = finance_factories.PaymentFactory(
             booking=booking,
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
         )
-        finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
-        finance_factories.PricingFactory(
-            booking=payment.booking,
-            amount=-2100,
-            standardRule="Remboursement total pour les offres physiques",
-            status=finance_models.PricingStatus.VALIDATED,
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.SENT,
         )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-            synchronize_session=False,
-        )
+        finance_factories.PricingFactory(booking=payment.booking)
+        with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
+            finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+            finance_api.generate_invoices()
+
         payments_info = finance_repository.find_all_offerer_payments(
             payment.booking.offerer.id,
             reimbursement_period,
         )
 
-        # legacy payment data
-        raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert raw_csv[0] == "2019"
-        assert raw_csv[1] == "juillet : remboursement 1ère quinzaine"
-        assert raw_csv[2] == payment.booking.venue.name
-        assert raw_csv[3] == payment.booking.venue.siret
-        assert raw_csv[4] == payment.booking.venue.address
-        assert raw_csv[5] == payment.iban
-        assert raw_csv[6] == payment.booking.venue.name
-        assert raw_csv[7] == payment.booking.stock.offer.name
-        assert raw_csv[8] == payment.booking.educationalBooking.educationalRedactor.lastName
-        assert raw_csv[9] == payment.booking.educationalBooking.educationalRedactor.firstName
-        assert raw_csv[10] == payment.booking.token
-        assert raw_csv[11] == payment.booking.dateUsed
-        assert raw_csv[12] == "21,00"
-        assert raw_csv[13] == f"{int(payment.reimbursementRate * 100)}%"
-        assert raw_csv[14] == "21,00"
-        assert raw_csv[15] == "Remboursement envoyé"
-        assert raw_csv[16] == "offre collective"
-
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        # The first 2 cells are tested in a separate test below.
-        assert row[2] == payment.booking.venue.name
-        assert row[3] == payment.booking.venue.siret
-        assert row[4] == payment.booking.venue.address
-        assert row[5] == payment.iban
-        assert row[6] == payment.booking.venue.name
-        assert row[7] == payment.booking.stock.offer.name
-        assert row[8] == payment.booking.educationalBooking.educationalRedactor.lastName
-        assert row[9] == payment.booking.educationalBooking.educationalRedactor.firstName
-        assert row[10] == payment.booking.token
-        assert row[11] == payment.booking.dateUsed
-        assert row[12] == "21,00"
-        assert row[13] == f"{int(payment.reimbursementRate * 100)} %"
-        assert row[14] == "21,00"
-        assert row[15] == "Remboursement envoyé"
-        assert row[16] == "offre collective"
+        assert row[12] == booking.educationalBooking.educationalRedactor.lastName
+        assert row[13] == booking.educationalBooking.educationalRedactor.firstName
+        assert row[19] == "offre collective"
+
+        # legacy payment data
+        row = ReimbursementDetails(payments_info[1]).as_csv_row()
+        assert row[12] == booking.educationalBooking.educationalRedactor.lastName
+        assert row[13] == booking.educationalBooking.educationalRedactor.firstName
+        assert row[19] == "offre collective"
 
     def test_reimbursement_details_with_custom_rule_as_csv(self):
         # given
@@ -164,7 +163,7 @@ class ReimbursementDetailsTest:
             rate=0.1234,
         )
         payment = finance_factories.PaymentWithCustomRuleFactory(
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
             amount=2.71,
             customReimbursementRule=custom_reimbursement_rule,
             booking__amount=10.5,
@@ -179,59 +178,25 @@ class ReimbursementDetailsTest:
             customRule=custom_reimbursement_rule,
             status=finance_models.PricingStatus.VALIDATED,
         )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-        )
+        finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+        finance_api.generate_invoices()
+
         payments_info = finance_repository.find_all_offerer_payments(
             payment.booking.offererId,
             reimbursement_period,
         )
 
-        # legacy payment data
-        row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[13] == ""
-
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[13] == "12,34 %"
+        assert row[17] == "12,34 %"
 
-    def test_reimbursement_details_date_columns(self):
-        # Date columns of ReimbursementDetails are populated from
-        # `Cashflow.creationDate` which is generated by the
-        # database. They cannot be controlled with freezetime in the
-        # tests above.
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            stock__offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
-        )
-        finance_factories.PricingFactory(
-            booking=booking,
-            status=finance_models.PricingStatus.VALIDATED,
-        )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-            synchronize_session=False,
-        )
-        cashflow = finance_models.Cashflow.query.one()
-
-        cashflow.creationDate = datetime(2021, 1, 1, 4, 0)
-        repository.save(cashflow)
-        period = (cashflow.creationDate.date(), date.today() + timedelta(days=1))
-        payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
-        row = ReimbursementDetails(payments[0]).as_csv_row()
-        assert row[0] == 2021
-        assert row[1] == "janvier : remboursement 1ère quinzaine"
-
-        cashflow.creationDate = datetime(2021, 2, 16, 4, 0)
-        repository.save(cashflow)
-        payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
-        row = ReimbursementDetails(payments[0]).as_csv_row()
-        assert row[0] == 2021
-        assert row[1] == "février : remboursement 2nde quinzaine"
+        # legacy payment data
+        row = ReimbursementDetails(payments_info[1]).as_csv_row()
+        assert row[17] == ""
 
 
 @pytest.mark.usefixtures("db_session")
+@mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 def test_generate_reimbursement_details_csv():
     # given
     payment = finance_factories.PaymentFactory(
@@ -243,9 +208,9 @@ def test_generate_reimbursement_details_csv():
         booking__token="0E2722",
         booking__amount=10.5,
         booking__quantity=2,
-        booking__dateUsed=datetime(2021, 1, 1, 12, 0),
+        booking__dateUsed=datetime(2022, 1, 18, 12, 0),
         iban="CF13QSDFGH456789",
-        transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+        transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
     )
     finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
     offerer = payment.booking.offerer
@@ -254,16 +219,16 @@ def test_generate_reimbursement_details_csv():
         booking=payment.booking,
         amount=-2100,
         standardRule="Remboursement total pour les offres physiques",
-        status=finance_models.PricingStatus.VALIDATED,
     )
-    finance_api.generate_cashflows(cutoff=datetime.utcnow())
-    finance_models.Pricing.query.update(
-        {"status": finance_models.PricingStatus.INVOICED},
-        synchronize_session=False,
-    )
-    finance_models.Cashflow.query.update({"creationDate": datetime(2019, 7, 1, 4, 0)}, synchronize_session=False)
+    with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
+        finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+        finance_api.generate_invoices()
+    # Invoice.date is generated by PostgreSQL, it cannot be controlled
+    # by freezegun.
+    invoice = finance_models.Invoice.query.one()
+    invoice_date_as_str = invoice.date.isoformat().replace("T", " ")
 
-    period = (datetime(2019, 7, 1, 4, 0).date(), datetime.utcnow().date())
+    period = (datetime(2022, 7, 1, 4, 0).date(), datetime.utcnow().date())
     reimbursement_details = find_all_offerer_reimbursement_details(offerer.id, period)
     csv = generate_reimbursement_details_csv(reimbursement_details)
 
@@ -271,25 +236,26 @@ def test_generate_reimbursement_details_csv():
     rows = csv.splitlines()
     assert (
         rows[0]
-        == '"Année";"Virement";"Créditeur";"SIRET créditeur";"Adresse créditeur";"IBAN";"Raison sociale du lieu";"Nom de l\'offre";"Nom utilisateur";"Prénom utilisateur";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Statut du remboursement";"Type d\'offre"'
-    )
-    assert (  # legacy payment data
-        rows[2]
-        == '"2019";"juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100%";"21,00";"Remboursement envoyé";"offre grand public"'
+        == '''"Réservations concernées par le remboursement";"Date du justificatif";"N° du justificatif";"N° de virement";"Point de remboursement";"Adresse du point de remboursement";"SIRET du point de remboursement";"IBAN";"Raison sociale du lieu";"Adresse du lieu";"SIRET du lieu";"Nom de l'offre";"Nom (offre collective)";"Prénom (offre collective)";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Type d'offre"'''
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == '2019;"juillet : remboursement 1ère quinzaine";"Mon lieu ; un peu ""spécial""";"siret-1234";"1 boulevard Poissonnière";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"Mon titre ; un peu ""spécial""";"Doux";"Jeanne";"0E2722";"2021-01-01 12:00:00";"21,00";"100 %";"21,00";"Remboursement envoyé";"offre grand public"'
+        == f'''"Validées et remboursées sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
+    )
+    assert (  # legacy payment data
+        rows[2]
+        == '''"Validées et remboursées sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
     )
 
 
 @pytest.mark.usefixtures("db_session")
+@mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 def test_find_all_offerer_reimbursement_details():
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
-    booking1 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue1)
-    booking2 = bookings_factories.UsedBookingFactory(stock__offer__venue=venue2)
+    booking1 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue1)
+    booking2 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue2)
     booking3 = bookings_factories.UsedEducationalBookingFactory(
         stock__beginningDatetime=datetime.utcnow(),
         stock__offer__venue=venue2,
@@ -303,15 +269,9 @@ def test_find_all_offerer_reimbursement_details():
     finance_factories.PaymentStatusFactory(payment=payment_3, status=finance_models.TransactionStatus.SENT)
 
     for booking in (booking1, booking2, booking3):
-        finance_factories.PricingFactory(
-            booking=booking,
-            status=finance_models.PricingStatus.VALIDATED,
-        )
-    finance_api.generate_cashflows(cutoff=datetime.utcnow())
-    finance_models.Pricing.query.update(
-        {"status": finance_models.PricingStatus.INVOICED},
-        synchronize_session=False,
-    )
+        finance_factories.PricingFactory(booking=booking)
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+    finance_api.generate_invoices()
 
     reimbursement_details = find_all_offerer_reimbursement_details(offerer.id, reimbursement_period)
 
@@ -319,6 +279,7 @@ def test_find_all_offerer_reimbursement_details():
 
 
 @pytest.mark.usefixtures("db_session")
+@mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class CollectiveReimbursementDetailsTest:
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_find_all_offerer_reimbursement_details_on_collective(self):
@@ -331,126 +292,164 @@ class CollectiveReimbursementDetailsTest:
             siret="12345678912345",
             businessUnit__bankAccount__iban="CF13QSDFGH456789",
         )
-        booking1 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue1)
-        booking2 = bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue2)
+        booking1 = bookings_factories.UsedIndividualBookingFactory(
+            dateUsed=datetime(2022, 6, 18), stock__offer__venue=venue1
+        )
+        booking2 = bookings_factories.UsedIndividualBookingFactory(
+            dateUsed=datetime(2022, 6, 18),
+            stock__offer__venue=venue2,
+        )
         booking3 = educational_factories.UsedCollectiveBookingFactory(
+            dateUsed=datetime(2022, 6, 18),
             collectiveStock__beginningDatetime=datetime.utcnow(),
             collectiveStock__collectiveOffer__venue=venue2,
             collectiveStock__collectiveOffer__name="Un super nom d'offre",
         )
         for booking in (booking1, booking2):
-            finance_factories.PricingFactory(
-                booking=booking,
-                status=finance_models.PricingStatus.VALIDATED,
-            )
+            finance_factories.PricingFactory(booking=booking)
+        finance_factories.CollectivePricingFactory(collectiveBooking=booking3)
 
-        finance_factories.CollectivePricingFactory(
-            collectiveBooking=booking3,
-            status=finance_models.PricingStatus.VALIDATED,
-            businessUnit=venue2.businessUnit,
-        )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-            synchronize_session=False,
-        )
+        with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
+            finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+            finance_api.generate_invoices()
+        cashflow = finance_models.Cashflow.query.filter_by(businessUnit=venue2.businessUnit).one()
+        invoice = finance_models.Invoice.query.filter_by(businessUnit=venue2.businessUnit).one()
 
         reimbursement_details = find_all_offerer_reimbursement_details(offerer.id, reimbursement_period)
 
         assert len(reimbursement_details) == 3
 
         collective_reimbursement_detail = reimbursement_details[2]
+
         assert collective_reimbursement_detail.as_csv_row() == [
-            collective_reimbursement_detail.year,  # This complex to test behavior is tested elsewhere
-            collective_reimbursement_detail.transfer_name,  # This complex to test behavior is tested elsewhere
+            "Validées et remboursées sur juin : 2nde quinzaine",
+            invoice.date,
+            invoice.reference,
+            cashflow.batch.label,
             "Le lieu unique",
-            "12345678912345",
-            "48 boulevard des turlupins",
-            "CF13QSDFGH456789",
-            "Le lieu unique",
-            "Un super nom d'offre",
+            "48 boulevard des turlupins 75000 Paris",
+            booking3.venue.siret,
+            venue2.businessUnit.bankAccount.iban,
+            booking3.venue.name,
+            "48 boulevard des turlupins 75000 Paris",
+            booking3.venue.siret,
+            booking3.collectiveStock.collectiveOffer.name,
             "Khteur",
             "Reda",
             None,
             booking3.dateUsed,
             "100,00",
-            "100\xa0%",
+            "100 %",
             "100,00",
-            "Remboursement envoyé",
             "offre collective",
         ]
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_reimbursement_details_as_csv_individual_booking(self):
-        venue = offerers_factories.VenueFactory(businessUnit__bankAccount__iban="CF13QSDFGH456789")
+        business_unit = offerers_factories.VenueFactory(
+            siret="siret bu",
+            name="Ma petite business unit",
+            address="1 rue de la business unit",
+            city="Nantes",
+            postalCode="44000",
+            businessUnit__bankAccount__iban="CF13QSDFGH456789",
+        ).businessUnit
+        venue = offerers_factories.VenueFactory(businessUnit=business_unit)
         payment = finance_factories.PaymentFactory(
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2022",
             booking__amount=10.5,
+            booking__dateUsed=datetime(2022, 6, 18),
             booking__quantity=2,
             booking__stock__offer__venue=venue,
         )
-        finance_factories.PaymentStatusFactory(payment=payment, status=finance_models.TransactionStatus.SENT)
+        booking = payment.booking
+        finance_factories.PaymentStatusFactory(
+            payment=payment,
+            status=finance_models.TransactionStatus.SENT,
+        )
         finance_factories.PricingFactory(
-            booking=payment.booking,
+            booking=booking,
             amount=-2100,
             standardRule="Remboursement total pour les offres physiques",
-            status=finance_models.PricingStatus.VALIDATED,
-            businessUnit=venue.businessUnit,
         )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-        )
+        with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
+            finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+            finance_api.generate_invoices()
+        cashflow = finance_models.Cashflow.query.one()
+        invoice = finance_models.Invoice.query.one()
+
         payments_info = finance_repository.find_all_offerer_payments(
             payment.booking.offerer.id,
             reimbursement_period,
         )
 
-        # legacy payment data
-        raw_csv = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert raw_csv[0] == "2019"
-        assert raw_csv[1] == "juillet : remboursement 1ère quinzaine"
-        assert raw_csv[2] == payment.booking.venue.name
-        assert raw_csv[3] == payment.booking.venue.siret
-        assert raw_csv[4] == payment.booking.venue.address
-        assert raw_csv[5] == payment.iban
-        assert raw_csv[6] == payment.booking.venue.name
-        assert raw_csv[7] == payment.booking.stock.offer.name
-        assert raw_csv[8] == "Doux"
-        assert raw_csv[9] == "Jeanne"
-        assert raw_csv[10] == payment.booking.token
-        assert raw_csv[11] == payment.booking.dateUsed
-        assert raw_csv[12] == "21,00"
-        assert raw_csv[13] == f"{int(payment.reimbursementRate * 100)}%"
-        assert raw_csv[14] == "21,00"
-        assert raw_csv[15] == "Remboursement envoyé"
-        assert raw_csv[16] == "offre grand public"
-
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        # The first 2 cells are tested in a separate test below.
-        assert row[2] == payment.booking.venue.name
-        assert row[3] == payment.booking.venue.siret
-        assert row[4] == payment.booking.venue.address
-        assert row[5] == payment.iban
-        assert row[6] == payment.booking.venue.name
-        assert row[7] == payment.booking.stock.offer.name
-        assert row[8] == "Doux"
-        assert row[9] == "Jeanne"
-        assert row[10] == payment.booking.token
-        assert row[11] == payment.booking.dateUsed
-        assert row[12] == "21,00"
-        assert row[13] == f"{int(payment.reimbursementRate * 100)} %"
-        assert row[14] == "21,00"
-        assert row[15] == "Remboursement envoyé"
-        assert row[16] == "offre grand public"
+        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[1] == invoice.date
+        assert row[2] == invoice.reference
+        assert row[3] == cashflow.batch.label
+        # business unit
+        assert row[4] == "Ma petite business unit"
+        assert row[5] == "1 rue de la business unit 44000 Nantes"
+        assert row[6] == "siret bu"
+        assert row[7] == business_unit.bankAccount.iban
+        # venue
+        assert row[8] == booking.venue.name
+        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[10] == booking.venue.siret
+        # offer and booking
+        assert row[11] == booking.stock.offer.name
+        assert row[12] == ""  # no redactor name...
+        assert row[13] == ""  # ... for individual offer
+        assert row[14] == booking.token
+        assert row[15] == booking.dateUsed
+        # reimbursement
+        assert row[16] == "21,00"
+        assert row[17] == "100 %"
+        assert row[18] == "21,00"
+        assert row[19] == "offre grand public"
+
+        # legacy payment data
+        row = ReimbursementDetails(payments_info[1]).as_csv_row()
+        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[1] == ""  # no invoice, no date
+        assert row[2] == ""  # no invoice, no label
+        assert row[3] == ""  # unknown transfer label
+        # business unit (not known, hence supposed to be the venue)
+        assert row[4] == booking.venue.name
+        assert row[5] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[6] == booking.venue.siret
+        assert row[7] == payment.iban
+        # venue
+        assert row[8] == booking.venue.name
+        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[10] == booking.venue.siret
+        # offer and booking
+        assert row[11] == booking.stock.offer.name
+        assert row[12] is None  # no redactor name...
+        assert row[13] is None  # ... for individual offer
+        assert row[14] == booking.token
+        assert row[15] == booking.dateUsed
+        # reimbursement
+        assert row[16] == "21,00"
+        assert row[17] == f"{int(payment.reimbursementRate * 100)}%"
+        assert row[18] == "21,00"
+        assert row[19] == "offre grand public"
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_reimbursement_details_as_csv_collective_booking(self):
-        # given
-        venue = offerers_factories.VenueFactory(businessUnit__bankAccount__iban="CF13QSDFGH456789")
+        business_unit = offerers_factories.VenueFactory(
+            siret="siret bu",
+            name="Ma petite business unit",
+            address="1 rue de la business unit",
+            city="Nantes",
+            postalCode="44000",
+            businessUnit__bankAccount__iban="CF13QSDFGH456789",
+        ).businessUnit
+        venue = offerers_factories.VenueFactory(businessUnit=business_unit)
         booking = educational_factories.UsedCollectiveBookingFactory(
+            dateUsed=datetime(2022, 6, 18),
             collectiveStock__price=21,
             collectiveStock__beginningDatetime=datetime.utcnow(),
             collectiveStock__collectiveOffer__venue=venue,
@@ -461,34 +460,42 @@ class CollectiveReimbursementDetailsTest:
             status=finance_models.PricingStatus.VALIDATED,
             businessUnit=venue.businessUnit,
         )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-            synchronize_session=False,
-        )
+        with freezegun.freeze_time(datetime(2022, 7, 1, 12, 0)):
+            finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+            finance_api.generate_invoices()
+        cashflow = finance_models.Cashflow.query.one()
+        invoice = finance_models.Invoice.query.one()
+
         payments_info = finance_repository.find_all_offerer_payments(
             booking.offerer.id,
             reimbursement_period,
         )
 
-        # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        # The first 2 cells are tested in a separate test below.
-        assert row[2] == venue.name
-        assert row[3] == venue.siret
-        assert row[4] == venue.address
-        assert row[5] == "CF13QSDFGH456789"
-        assert row[6] == venue.name
-        assert row[7] == booking.collectiveStock.collectiveOffer.name
-        assert row[8] == booking.educationalRedactor.lastName
-        assert row[9] == booking.educationalRedactor.firstName
-        assert row[10] == None
-        assert row[11] == booking.dateUsed
-        assert row[12] == "21,00"
-        assert row[13] == "100\xa0%"
-        assert row[14] == "21,00"
-        assert row[15] == "Remboursement envoyé"
-        assert row[16] == "offre collective"
+        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[1] == invoice.date
+        assert row[2] == invoice.reference
+        assert row[3] == cashflow.batch.label
+        # business unit
+        assert row[4] == "Ma petite business unit"
+        assert row[5] == "1 rue de la business unit 44000 Nantes"
+        assert row[6] == "siret bu"
+        assert row[7] == business_unit.bankAccount.iban
+        # venue
+        assert row[8] == booking.venue.name
+        assert row[9] == "1 boulevard Poissonnière 75000 Paris"
+        assert row[10] == booking.venue.siret
+        # offer and booking
+        assert row[11] == booking.collectiveStock.collectiveOffer.name
+        assert row[12] == booking.educationalRedactor.lastName
+        assert row[13] == booking.educationalRedactor.firstName
+        assert row[14] is None
+        assert row[15] == booking.dateUsed
+        # reimbursement
+        assert row[16] == "21,00"
+        assert row[17] == "100 %"
+        assert row[18] == "21,00"
+        assert row[19] == "offre collective"
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_reimbursement_details_with_custom_rule_as_csv(self):
@@ -513,10 +520,9 @@ class CollectiveReimbursementDetailsTest:
             customRule=custom_reimbursement_rule,
             status=finance_models.PricingStatus.VALIDATED,
         )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-        )
+        finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
+        finance_api.generate_invoices()
+
         payments_info = finance_repository.find_all_offerer_payments(
             payment.booking.offererId,
             reimbursement_period,
@@ -524,67 +530,26 @@ class CollectiveReimbursementDetailsTest:
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[13] == ""
+        assert row[17] == ""
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[13] == "12,34 %"
+        assert row[17] == "12,34 %"
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    def test_reimbursement_details_date_columns(self):
-        # Date columns of ReimbursementDetails are populated from
-        # `Cashflow.creationDate` which is generated by the
-        # database. They cannot be controlled with freezetime in the
-        # tests above.
-        venue = offerers_factories.VenueFactory(businessUnit__bankAccount__iban="CF13QSDFGH456789")
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            stock__offer__venue=venue,
-        )
-        collective_booking = educational_factories.UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__beginningDatetime=datetime.utcnow(),
-        )
-        finance_factories.PricingFactory(
-            booking=booking,
-            status=finance_models.PricingStatus.VALIDATED,
-        )
-        finance_factories.CollectivePricingFactory(
-            collectiveBooking=collective_booking,
-            status=finance_models.PricingStatus.VALIDATED,
-            businessUnit=venue.businessUnit,
-        )
-        finance_api.generate_cashflows(cutoff=datetime.utcnow())
-        finance_models.Pricing.query.update(
-            {"status": finance_models.PricingStatus.INVOICED},
-            synchronize_session=False,
-        )
-        finance_models.Cashflow.query.update(
-            {finance_models.Cashflow.creationDate: datetime(2021, 1, 1, 4, 0)},
-            synchronize_session=False,
-        )
-        db.session.commit()
-        period = (datetime(2021, 1, 1, 4, 0).date(), date.today() + timedelta(days=1))
-        payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
 
-        row_individual = ReimbursementDetails(payments[0]).as_csv_row()
-        assert row_individual[0] == 2021
-        assert row_individual[1] == "janvier : remboursement 1ère quinzaine"
-        row_collective = ReimbursementDetails(payments[1]).as_csv_row()
-        assert row_collective[0] == 2021
-        assert row_collective[1] == "janvier : remboursement 1ère quinzaine"
+def test_get_validation_period():
+    assert (
+        _get_validation_period(cutoff=datetime(2022, 1, 16)) == "Validées et remboursées sur janvier : 1ère quinzaine"
+    )
+    assert _get_validation_period(cutoff=datetime(2022, 2, 1)) == "Validées et remboursées sur janvier : 2nde quinzaine"
 
-        finance_models.Cashflow.query.update(
-            {finance_models.Cashflow.creationDate: datetime(2021, 2, 16, 4, 0)},
-            synchronize_session=False,
-        )
-        db.session.commit()
 
-        period = (datetime(2021, 2, 16, 4, 0).date(), date.today() + timedelta(days=1))
-        payments = finance_repository.find_all_offerer_payments(booking.offererId, period)
-        row_individual = ReimbursementDetails(payments[0]).as_csv_row()
-        assert row_individual[0] == 2021
-        assert row_individual[1] == "février : remboursement 2nde quinzaine"
-
-        row_collective = ReimbursementDetails(payments[1]).as_csv_row()
-        assert row_collective[0] == 2021
-        assert row_collective[1] == "février : remboursement 2nde quinzaine"
+def test_legacy_get_validation_period():
+    assert (
+        _legacy_get_validation_period("pass Culture Pro - remboursement 1ère quinzaine 06-2019")
+        == "Validées et remboursées sur mai : 2nde quinzaine"
+    )
+    assert (
+        _legacy_get_validation_period("pass Culture Pro - remboursement 2ème quinzaine 06-2019")
+        == "Validées et remboursées sur juin : 1ère quinzaine"
+    )

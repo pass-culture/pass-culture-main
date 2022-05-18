@@ -237,13 +237,10 @@ class HasActiveOrFutureCustomRemibursementRuleTest:
 
 @pytest.mark.usefixtures("db_session")
 class FindAllOffererPaymentsTest:
-    def test_should_not_return_payment_info_with_error_status(self, app):
+    def test_should_not_return_payment_info_with_error_status(self):
         # Given
-        booking = bookings_factories.UsedBookingFactory()
-        offerer = booking.offerer
-        payment = factories.PaymentFactory(
-            booking=booking, transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019"
-        )
+        payment = factories.PaymentFactory()
+        offerer = payment.booking.offerer
         factories.PaymentStatusFactory(
             payment=payment,
             status=models.TransactionStatus.ERROR,
@@ -257,224 +254,91 @@ class FindAllOffererPaymentsTest:
         # Then
         assert len(payments) == 0
 
-    def test_should_return_one_payment_info_with_sent_status(self, app):
+    def test_should_return_one_payment_info_with_sent_status(self):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
-        stock = offers_factories.ThingStockFactory(
-            offer__name="Test Book",
-            offer__venue__managingOfferer__address="7 rue du livre",
-            offer__venue__name="La petite librairie",
-            offer__venue__address="123 rue de Paris",
-            offer__venue__siret=12345678912345,
-            price=10,
-        )
-        now = datetime.datetime.utcnow()
-        booking = bookings_factories.UsedIndividualBookingFactory(
-            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF"
-        )
-
-        payment = factories.PaymentFactory(
-            amount=50,
-            reimbursementRate=0.5,
-            booking=booking,
-            iban="CF13QSDFGH456789",
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        )
-        factories.PaymentStatusFactory(
-            payment=payment,
-            status=models.TransactionStatus.ERROR,
-            detail="Iban non fourni",
-        )
-        factories.PaymentStatusFactory(
-            payment=payment,
-            status=models.TransactionStatus.RETRY,
-            detail="All good",
-        )
-        factories.PaymentStatusFactory(
-            payment=payment,
-            status=models.TransactionStatus.SENT,
-            detail="All good",
-        )
+        payment = factories.PaymentFactory()
+        for status in (
+            models.TransactionStatus.ERROR,
+            models.TransactionStatus.RETRY,
+            models.TransactionStatus.SENT,
+        ):
+            factories.PaymentStatusFactory(payment=payment, status=status)
+        offerer = payment.booking.offerer
 
         # When
         reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
-        payments = repository.find_all_offerer_payments(stock.offer.venue.managingOfferer.id, reimbursement_period)
+        payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
         assert len(payments) == 1
-        expected_elements = (
-            "User",
-            "Plus",
-            "ABCDEF",
-            now,
-            1,
-            decimal.Decimal("10.00"),
-            "Test Book",
-            False,
-            "7 rue du livre",
-            "La petite librairie",
-            "12345678912345",
-            "123 rue de Paris",
-            decimal.Decimal("50.00"),
-            decimal.Decimal("0.50"),
-            "CF13QSDFGH456789",
-            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        )
+        # No need to test the contents of `payments[0]`, it's already
+        # done in `test_with_new_models()` below.
 
-        assert set(expected_elements).issubset(set(payments[0]))
-
-    def test_should_return_one_payment_info_with_sent_status_when_offer_educational(self, app):
+    def test_should_return_one_payment_info_with_sent_status_when_offer_educational(self):
         # Given
-        now = datetime.datetime.utcnow()
         educational_booking = bookings_factories.UsedEducationalBookingFactory(
             educationalBooking__educationalRedactor__firstName="Dominique",
             educationalBooking__educationalRedactor__lastName="Leprof",
-            dateUsed=now,
-            token="ABCDEF",
-            quantity=5,
-            amount=50,
-            stock__price=10,
         )
-
-        payment = factories.PaymentFactory(
-            amount=50,
-            reimbursementRate=1,
-            booking=educational_booking,
-            iban="CF13QSDFGH456789",
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        )
-        factories.PaymentStatusFactory(
-            payment=payment,
-            status=models.TransactionStatus.ERROR,
-            detail="Iban non fourni",
-        )
-        factories.PaymentStatusFactory(
-            payment=payment,
-            status=models.TransactionStatus.RETRY,
-            detail="All good",
-        )
+        offerer = educational_booking.offerer
+        payment = factories.PaymentFactory(booking=educational_booking)
         factories.PaymentStatusFactory(
             payment=payment,
             status=models.TransactionStatus.SENT,
-            detail="All good",
         )
 
         # When
         reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
-        payments = repository.find_all_offerer_payments(
-            educational_booking.stock.offer.venue.managingOfferer.id, reimbursement_period
-        )
+        payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
         assert len(payments) == 1
-        assert payments[0] == (
-            None,
-            None,
-            "Dominique",
-            "Leprof",
-            "ABCDEF",
-            now,
-            educational_booking.quantity,
-            educational_booking.amount,
-            educational_booking.stock.offer.name,
-            educational_booking.stock.offer.isEducational,
-            educational_booking.stock.offer.venue.managingOfferer.address,
-            educational_booking.stock.offer.venue.name,
-            educational_booking.stock.offer.venue.siret,
-            educational_booking.stock.offer.venue.address,
-            decimal.Decimal("50.00"),
-            decimal.Decimal("1.00"),
-            "CF13QSDFGH456789",
-            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        )
+        assert payments[0].offer_is_educational
+        assert payments[0].redactor_firstname == "Dominique"
+        assert payments[0].redactor_lastname == "Leprof"
+        # The rest is tested in `test_with_new_models()` below.
 
-    def test_should_return_last_matching_status_based_on_date_for_each_payment(self, app):
+    def test_should_return_last_matching_status_based_on_date_for_each_payment(self):
         # Given
-        beneficiary = users_factories.BeneficiaryGrant18Factory(lastName="User", firstName="Plus")
-        stock = offers_factories.ThingStockFactory(
-            offer__name="Test Book",
-            offer__venue__managingOfferer__address="7 rue du livre",
-            offer__venue__name="La petite librairie",
-            offer__venue__address="123 rue de Paris",
-            offer__venue__siret=12345678912345,
-            price=10,
-        )
-        now = datetime.datetime.utcnow()
+        stock = offers_factories.ThingStockFactory()
+        offerer = stock.offer.venue.managingOfferer
         booking1 = bookings_factories.UsedIndividualBookingFactory(
-            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDEF"
+            stock=stock,
+            token="TOKEN1",
         )
         booking2 = bookings_factories.UsedIndividualBookingFactory(
-            individualBooking__user=beneficiary, stock=stock, dateUsed=now, token="ABCDFE"
+            stock=stock,
+            token="TOKEN2",
         )
 
-        payment = factories.PaymentFactory(
-            amount=50,
-            reimbursementRate=0.5,
-            booking=booking1,
-            iban="CF13QSDFGH456789",
-            transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        )
-        factories.PaymentStatusFactory(payment=payment, status=models.TransactionStatus.RETRY, detail="Retry")
-        factories.PaymentStatusFactory(payment=payment, status=models.TransactionStatus.SENT, detail="All good")
-
-        payment2 = factories.PaymentFactory(
-            amount=75,
-            reimbursementRate=0.5,
-            booking=booking2,
-            iban="CF13QSDFGH456789",
-            transactionLabel="pass Culture Pro - remboursement 2ème quinzaine 07-2019",
+        payment1 = factories.PaymentFactory(booking=booking1)
+        factories.PaymentStatusFactory(
+            payment=payment1,
+            status=models.TransactionStatus.RETRY,
         )
         factories.PaymentStatusFactory(
-            payment=payment2, status=models.TransactionStatus.ERROR, detail="Iban non fourni"
+            payment=payment1,
+            status=models.TransactionStatus.SENT,
         )
-        factories.PaymentStatusFactory(payment=payment2, status=models.TransactionStatus.SENT, detail="All realy good")
+
+        payment2 = factories.PaymentFactory(booking=booking2)
+        factories.PaymentStatusFactory(
+            payment=payment2,
+            status=models.TransactionStatus.ERROR,
+        )
+        factories.PaymentStatusFactory(
+            payment=payment2,
+            status=models.TransactionStatus.SENT,
+        )
 
         # When
         reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
-        payments = repository.find_all_offerer_payments(stock.offer.venue.managingOfferer.id, reimbursement_period)
+        payments = repository.find_all_offerer_payments(offerer.id, reimbursement_period)
 
         # Then
         assert len(payments) == 2
-        assert payments[0] == (
-            "User",
-            "Plus",
-            None,
-            None,
-            "ABCDFE",
-            now,
-            1,
-            decimal.Decimal("10.00"),
-            "Test Book",
-            False,
-            "7 rue du livre",
-            "La petite librairie",
-            "12345678912345",
-            "123 rue de Paris",
-            decimal.Decimal("75.00"),
-            decimal.Decimal("0.50"),
-            "CF13QSDFGH456789",
-            "pass Culture Pro - remboursement 2ème quinzaine 07-2019",
-        )
-        assert payments[1] == (
-            "User",
-            "Plus",
-            None,
-            None,
-            "ABCDEF",
-            now,
-            1,
-            decimal.Decimal("10.00"),
-            "Test Book",
-            False,
-            "7 rue du livre",
-            "La petite librairie",
-            "12345678912345",
-            "123 rue de Paris",
-            decimal.Decimal("50.00"),
-            decimal.Decimal("0.50"),
-            "CF13QSDFGH456789",
-            "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
-        )
+        assert payments[0].booking_token == "TOKEN2"
+        assert payments[1].booking_token == "TOKEN1"
 
     def test_should_return_payments_from_multiple_venues(self):
         # Given
@@ -513,7 +377,7 @@ class FindAllOffererPaymentsTest:
         assert payment_1.booking.token in payments[0]
         assert venue_1.name in payments[0]
 
-    def test_should_return_payments_filtered_by_payment_date(self, app):
+    def test_should_return_payments_filtered_by_payment_date(self):
         # Given
         tomorrow_at_nine = datetime.datetime.combine(
             datetime.date.today() + datetime.timedelta(days=1), datetime.datetime.min.time()
@@ -548,13 +412,13 @@ class FindAllOffererPaymentsTest:
             offer__venue__managingOfferer__address="7 rue du livre",
             offer__venue__name="La petite librairie",
             offer__venue__address="123 rue de Paris",
+            offer__venue__postalCode="75000",
+            offer__venue__city="Paris",
             offer__venue__siret=12345678912345,
             offer__venue__businessUnit__bankAccount__iban="CF13QSDFGH456789",
             price=10,
         )
         booking = bookings_factories.UsedIndividualBookingFactory(
-            individualBooking__user__lastName="Doe",
-            individualBooking__user__firstName="Jane",
             stock=stock,
             token="ABCDEF",
         )
@@ -582,42 +446,48 @@ class FindAllOffererPaymentsTest:
             standardRule="Remboursement à 95% au dessus de 20 000 € pour les livres",
             status=models.PricingStatus.VALIDATED,
         )
-        api.generate_cashflows(datetime.datetime.utcnow())
-        models.Pricing.query.update(
-            {"status": models.PricingStatus.INVOICED},
-            synchronize_session=False,
-        )
+        api.generate_cashflows_and_payment_files(datetime.datetime.utcnow())
+        api.generate_invoices()
+        cashflow = models.Cashflow.query.one()
+        invoice = models.Invoice.query.one()
 
         reimbursement_period = (datetime.date.today(), datetime.date.today() + datetime.timedelta(days=1))
         payments = repository.find_all_offerer_payments(booking.offerer.id, reimbursement_period)
 
         expected_in_both = {
-            "user_lastName": "Doe",
-            "user_firstName": "Jane",
             "redactor_firstname": None,
             "redactor_lastname": None,
             "booking_token": "ABCDEF",
-            "booking_dateUsed": booking.dateUsed,
+            "booking_used_date": booking.dateUsed,
             "booking_quantity": 1,
             "booking_amount": decimal.Decimal("10.00"),
             "offer_name": "Test Book",
             "offer_is_educational": False,
-            "offerer_address": "7 rue du livre",
             "venue_name": "La petite librairie",
-            "venue_siret": "12345678912345",
             "venue_address": "123 rue de Paris",
+            "venue_postal_code": "75000",
+            "venue_city": "Paris",
+            "venue_siret": "12345678912345",
             "iban": "CF13QSDFGH456789",
         }
         specific_for_payment = {
             "amount": decimal.Decimal("9.50"),
             "reimbursement_rate": decimal.Decimal("0.95"),
-            "transactionLabel": "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
+            "transaction_label": "pass Culture Pro - remboursement 1ère quinzaine 07-2019",
         }
         specific_for_pricing = {
             "amount": decimal.Decimal("9500"),
             "rule_name": "Remboursement à 95% au dessus de 20 000 € pour les livres",
             "rule_id": None,
-            "cashflow_date": booking.pricings[0].cashflows[0].creationDate,
+            "business_unit_name": "La petite librairie",
+            "business_unit_address": "123 rue de Paris",
+            "business_unit_postal_code": "75000",
+            "business_unit_city": "Paris",
+            "business_unit_siret": "12345678912345",
+            "cashflow_batch_cutoff": cashflow.batch.cutoff,
+            "cashflow_batch_label": cashflow.batch.label,
+            "invoice_date": invoice.date,
+            "invoice_reference": invoice.reference,
         }
 
         missing_for_payment = (set(expected_in_both.keys()) | set(specific_for_payment.keys())).symmetric_difference(
@@ -625,7 +495,7 @@ class FindAllOffererPaymentsTest:
         )
         assert missing_for_payment == set()
         for attr, expected in expected_in_both.items():
-            assert getattr(payments[1], attr) == expected
+            assert getattr(payments[1], attr) == expected, f"wrong {attr}"
         for attr, expected in specific_for_payment.items():
             assert getattr(payments[1], attr) == expected, f"wrong {attr}"
 
@@ -634,6 +504,6 @@ class FindAllOffererPaymentsTest:
         )
         assert missing_for_pricing == set()
         for attr, expected in expected_in_both.items():
-            assert getattr(payments[0], attr) == expected
+            assert getattr(payments[0], attr) == expected, f"wrong {attr}"
         for attr, expected in specific_for_pricing.items():
-            assert getattr(payments[0], attr) == expected
+            assert getattr(payments[0], attr) == expected, f"wrong {attr}"
