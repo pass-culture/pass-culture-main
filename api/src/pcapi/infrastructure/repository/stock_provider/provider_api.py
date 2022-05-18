@@ -77,6 +77,14 @@ class ProviderAPI:
                 )
                 continue
 
+            if "price" not in stock_response:
+                logger.exception(
+                    "[%s SYNC] missing price key in response with ref %s",
+                    self.name,
+                    stock_response_ref,
+                )
+                continue
+
             validated_stock_responses.append(stock_response)
 
         api_responses["stocks"] = validated_stock_responses

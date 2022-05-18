@@ -1,3 +1,4 @@
+from decimal import Decimal
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
@@ -55,13 +56,19 @@ class SynchronizeVenueProviderTest:
             extraData={"prix_livre": 10},
             subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
+        another_product_to_synchronized = offers_factories.ProductFactory(
+            idAtProviders="6789",
+            extraData={"prix_livre": 7},
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
 
         with requests_mock.Mocker() as mock:
             response = {
                 "total": 1,
                 "stocks": [
-                    {"ref": "1234", "available": 5},
-                    {"ref": "4321", "available": 12},
+                    {"ref": "1234", "available": 5, "price": 10},
+                    {"ref": "4321", "available": 12, "price": 10.30},
+                    {"ref": "6789", "available": 3},
                 ],
             }
             mock.get(
@@ -71,11 +78,16 @@ class SynchronizeVenueProviderTest:
 
         # Check that previously synchronized stock have been updated.
         assert existing_stock.offer.lastProviderId == provider.id
+        assert existing_stock.price == Decimal("10.30")
         assert existing_stock.quantity == 12 + existing_stock.dnBookedQuantity
 
         # Check that offers and stocks have been created.
         created_offer = Offer.query.filter_by(product=product_to_synchronized).one()
         assert created_offer.stocks[0].quantity == 5
+
+        # Check that offers and stocks have not been created when price is missing.
+        no_offer_created = Offer.query.filter_by(product=another_product_to_synchronized).one_or_none()
+        assert no_offer_created is None
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.get_local_provider_class_by_name")
