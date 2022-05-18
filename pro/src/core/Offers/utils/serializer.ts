@@ -17,6 +17,7 @@ export const serializeApiFilters = <K extends keyof TSearchFilters>(
       body[field] = searchFilters[field] as ListOffersQueryModel[typeof field]
     }
   })
+  console.log(searchFilters, body)
 
   return body
 }

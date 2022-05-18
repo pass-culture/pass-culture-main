@@ -1,12 +1,12 @@
 import { updateAllCollectiveOffersActiveStatusAdapter } from '../updateAllCollectiveOffersActiveStatusAdapter'
 
-describe('updateAllCollectiveOfferActiveStatusAdapter', () => {
+describe('updateAllCollectiveOffersActiveStatusAdapter', () => {
   it('should deactivate all collective offers and confirm', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 204,
-    })
+    jest
+      .spyOn(window, 'fetch')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateAllCollectiveOffersActiveStatusAdapter({
       searchFilters: { isActive: false },
@@ -23,9 +23,9 @@ describe('updateAllCollectiveOfferActiveStatusAdapter', () => {
   it('should activate all collective offers and confirm', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 204,
-    })
+    jest
+      .spyOn(window, 'fetch')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateAllCollectiveOffersActiveStatusAdapter({
       searchFilters: { isActive: true },

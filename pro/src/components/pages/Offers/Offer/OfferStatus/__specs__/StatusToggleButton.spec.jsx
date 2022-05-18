@@ -58,10 +58,7 @@ describe('StatusToggleButton', () => {
     fireEvent.click(screen.getByRole('button', { name: /Désactiver/ }))
 
     expect(toggle).toHaveBeenCalledTimes(1)
-    expect(toggle).toHaveBeenNthCalledWith(1, false, {
-      ids: ['AG3A'],
-      isActive: false,
-    })
+    expect(toggle).toHaveBeenNthCalledWith(1, ['AG3A'], false)
     await waitFor(() =>
       expect(notifySuccess).toHaveBeenNthCalledWith(
         1,
@@ -88,10 +85,7 @@ describe('StatusToggleButton', () => {
     // then
     fireEvent.click(screen.getByText(/Activer/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
-    expect(toggleFunction).toHaveBeenNthCalledWith(1, false, {
-      ids: ['AG3A'],
-      isActive: true,
-    })
+    expect(toggleFunction).toHaveBeenNthCalledWith(1, ['AG3A'], true)
     await waitFor(() =>
       expect(notifySuccess).toHaveBeenNthCalledWith(
         1,

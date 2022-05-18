@@ -158,10 +158,9 @@ describe('offerLayout', () => {
       )
 
       // Then
-      expect(pcapi.updateOffersActiveStatus).toHaveBeenNthCalledWith(1, false, {
-        ids: [editedOffer.id],
-        isActive: true,
-      })
+      expect(pcapi.updateOffersActiveStatus).toHaveBeenNthCalledWith(1, [editedOffer.id],
+        true,
+      )
       expect(
         screen.queryByRole('button', { name: 'Activer' })
       ).not.toBeInTheDocument()
@@ -200,10 +199,10 @@ describe('offerLayout', () => {
       )
 
       // Then
-      expect(pcapi.updateOffersActiveStatus).toHaveBeenCalledWith(false, {
-        ids: [editedOffer.id],
-        isActive: false,
-      })
+      expect(pcapi.updateOffersActiveStatus).toHaveBeenCalledWith(
+        [editedOffer.id],
+        false
+      )
       expect(
         screen.queryByRole('button', { name: 'Désactiver' })
       ).not.toBeInTheDocument()

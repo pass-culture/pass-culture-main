@@ -1,21 +1,29 @@
 import '@testing-library/jest-dom'
 
+import * as useNotification from 'components/hooks/useNotification'
+
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { updateAllOffersActiveStatus, updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
 import ActionsBar from '../ActionsBar'
+import {Provider} from 'react-redux'
 import React from 'react'
-import { updateOffersActiveStatus } from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
-const renderActionsBar = props => {
-  return render(<ActionsBar {...props} />)
+const renderActionsBar = (props, store) => {
+  return render(<Provider store={store}><ActionsBar {...props} /></Provider>)
 }
 
 jest.mock('repository/pcapi/pcapi', () => ({
   updateOffersActiveStatus: jest.fn().mockResolvedValue({}),
+  updateAllOffersActiveStatus: jest.fn().mockResolvedValue({}),
 }))
+
+
 
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props
+  let store
   beforeEach(() => {
     props = {
       refreshOffers: jest.fn(),
@@ -24,20 +32,19 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       toggleSelectAllCheckboxes: jest.fn(),
       showSuccessNotification: jest.fn(),
       showPendingNotification: jest.fn(),
-      searchFilters: {
-        name: 'keyword',
-        venueId: 'E3',
-        offererId: 'A4',
-        active: 'non',
-      },
       switchAllOffersStatus: jest.fn(),
       nbSelectedOffers: 2,
     }
+    store = configureTestStore({ offers: {searchFilters: {
+      nameOrIsbn: 'keyword',
+      venueId: 'E3',
+      offererId: 'A4',
+    }} })
   })
 
   it('should have buttons to activate and deactivate offers, and to abort action', () => {
     // when
-    renderActionsBar(props)
+    renderActionsBar(props, store)
 
     // then
     expect(
@@ -56,7 +63,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     props.nbSelectedOffers = 1
 
     // when
-    renderActionsBar(props)
+    renderActionsBar(props, store)
 
     // then
     expect(screen.queryByText('1 offre sélectionnée')).toBeInTheDocument()
@@ -64,7 +71,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
   it('should say how many offers are selected when more than 1 offer are selected', () => {
     // when
-    renderActionsBar(props)
+    renderActionsBar(props, store)
 
     // then
     expect(screen.queryByText('2 offres sélectionnées')).toBeInTheDocument()
@@ -75,7 +82,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     props.nbSelectedOffers = 501
 
     // when
-    renderActionsBar(props)
+    renderActionsBar(props, store)
 
     // then
     expect(screen.queryByText('500+ offres sélectionnées')).toBeInTheDocument()
@@ -84,11 +91,11 @@ describe('src | components | pages | Offers | ActionsBar', () => {
   describe('on click on "Activer" button', () => {
     it('should activate selected offers', async () => {
       // given
-      renderActionsBar(props)
-      const expectedBody = {
-        ids: ['testId1', 'testId2'],
-        isActive: true,
-      }
+      const notifySuccess = jest.fn()
+      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+        success: notifySuccess,
+      }))
+      renderActionsBar(props, store)
 
       // when
       fireEvent.click(screen.queryByText('Activer'))
@@ -96,56 +103,24 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
-          false,
-          expectedBody
+          ['testId1', 'testId2'],
+          true
         )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({
-          shouldTriggerSpinner: false,
-        })
+        expect(props.refreshOffers).toHaveBeenCalled()
       })
-    })
-
-    it('should show notification with success message when only 1 offer is activated', async () => {
-      // given
-      props.nbSelectedOffers = 1
-      renderActionsBar(props)
-
-      // when
-      fireEvent.click(screen.queryByText('Activer'))
-
-      // then
-      await waitFor(() => {
-        expect(props.showSuccessNotification).toHaveBeenCalledWith(
-          '1 offre a bien été activée'
-        )
-      })
-    })
-
-    it('should show notification with success message when more than 1 offer are activated', async () => {
-      // given
-      renderActionsBar(props)
-
-      // when
-      fireEvent.click(screen.queryByText('Activer'))
-
-      // then
-      await waitFor(() => {
-        expect(props.showSuccessNotification).toHaveBeenCalledWith(
-          '2 offres ont bien été activées'
-        )
-      })
+      expect(notifySuccess).toHaveBeenCalledWith('2 offres ont bien été activées')
     })
   })
 
   describe('on click on "Désactiver" button', () => {
     it('should deactivate selected offers', async () => {
       // given
-      renderActionsBar(props)
-      const expectedBody = {
-        ids: ['testId1', 'testId2'],
-        isActive: false,
-      }
+      const notifySuccess = jest.fn()
+      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+        success: notifySuccess,
+      }))
+      renderActionsBar(props, store)
 
       // when
       fireEvent.click(screen.queryByText('Désactiver'))
@@ -153,51 +128,19 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
-          false,
-          expectedBody
+          ['testId1', 'testId2'],
+          false
         )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({
-          shouldTriggerSpinner: false,
-        })
+        expect(props.refreshOffers).toHaveBeenCalledWith()
       })
-    })
-
-    it('should show success notificiation with correct message when only 1 offer is deactivated', async () => {
-      // given
-      props.nbSelectedOffers = 1
-      renderActionsBar(props)
-
-      // when
-      fireEvent.click(screen.queryByText('Désactiver'))
-
-      // then
-      await waitFor(() => {
-        expect(props.showSuccessNotification).toHaveBeenCalledWith(
-          '1 offre a bien été désactivée'
-        )
-      })
-    })
-
-    it('should show success notificiation with correct message when more than 1 offer are deactivated', async () => {
-      // given
-      renderActionsBar(props)
-
-      // when
-      fireEvent.click(screen.queryByText('Désactiver'))
-
-      // then
-      await waitFor(() => {
-        expect(props.showSuccessNotification).toHaveBeenCalledWith(
-          '2 offres ont bien été désactivées'
-        )
-      })
+      expect(notifySuccess).toHaveBeenCalledWith('2 offres ont bien été désactivées')
     })
   })
 
   it('should unselect offers and hide action bar on click on "Annuler" button', () => {
     // given
-    renderActionsBar(props)
+    renderActionsBar(props, store)
     // when
     fireEvent.click(screen.queryByText('Annuler'))
 
@@ -209,12 +152,11 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     it('should activate all offers on click on "Activer" button', async () => {
       // given
       props.areAllOffersSelected = true
-      renderActionsBar(props)
+      renderActionsBar(props, store)
       const activateButton = screen.getByText('Activer')
       const expectedBody = {
-        active: 'non',
         isActive: true,
-        name: 'keyword',
+        nameOrIsbn: 'keyword',
         offererId: 'A4',
         venueId: 'E3',
       }
@@ -224,29 +166,22 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
-          true,
+        expect(updateAllOffersActiveStatus).toHaveBeenLastCalledWith(
           expectedBody
         )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({
-          shouldTriggerSpinner: false,
-        })
-        expect(props.showPendingNotification).toHaveBeenCalledWith(
-          'Les offres sont en cours d’activation, veuillez rafraichir dans quelques instants'
-        )
+        expect(props.refreshOffers).toHaveBeenCalledWith()
       })
     })
 
     it('should deactivate all offers on click on "Désactiver" button', async () => {
       // given
       props.areAllOffersSelected = true
-      renderActionsBar(props)
+      renderActionsBar(props, store)
       const deactivateButton = screen.getByText('Désactiver')
       const expectedBody = {
-        active: 'non',
         isActive: false,
-        name: 'keyword',
+        nameOrIsbn: 'keyword',
         offererId: 'A4',
         venueId: 'E3',
       }
@@ -256,17 +191,11 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // then
       await waitFor(() => {
-        expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
-          true,
+        expect(updateAllOffersActiveStatus).toHaveBeenLastCalledWith(
           expectedBody
         )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
-        expect(props.refreshOffers).toHaveBeenCalledWith({
-          shouldTriggerSpinner: false,
-        })
-        expect(props.showPendingNotification).toHaveBeenCalledWith(
-          'Les offres sont en cours de désactivation, veuillez rafraichir dans quelques instants'
-        )
+        expect(props.refreshOffers).toHaveBeenCalledWith()
       })
     })
   })
