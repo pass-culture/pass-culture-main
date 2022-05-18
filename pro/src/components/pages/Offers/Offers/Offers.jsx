@@ -11,6 +11,7 @@ import Spinner from 'components/layout/Spinner'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 
 const Offers = ({
   applyFilters,
@@ -41,6 +42,7 @@ const Offers = ({
     },
     [currentUser.isAdmin]
   )
+  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const updateStatusFilter = useCallback(
     selectedStatus => {
@@ -69,13 +71,14 @@ const Offers = ({
   }, [currentPageNumber, applyUrlFiltersAndRedirect, urlSearchFilters])
 
   const selectOffer = useCallback(
-    (offerId, selected) => {
+    (offerId, selected, isTemplate) => {
       setSelectedOfferIds(currentSelectedIds => {
         let newSelectedOfferIds = [...currentSelectedIds]
+        const id = isNewModelEnabled ? `${isTemplate ? 'T-' : ''}${offerId}` : offerId
         if (selected) {
-          newSelectedOfferIds.push(offerId)
+          newSelectedOfferIds.push(id)
         } else {
-          const offerIdIndex = newSelectedOfferIds.indexOf(offerId)
+          const offerIdIndex = newSelectedOfferIds.indexOf(id)
           newSelectedOfferIds.splice(offerIdIndex, 1)
         }
         return newSelectedOfferIds
@@ -132,6 +135,7 @@ const Offers = ({
               offers={currentPageOffersSubset}
               selectOffer={selectOffer}
               selectedOfferIds={selectedOfferIds}
+              isNewModelEnabled={isNewModelEnabled}
             />
           </table>
           {hasOffers && (
