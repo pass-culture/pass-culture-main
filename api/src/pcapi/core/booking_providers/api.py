@@ -3,6 +3,7 @@ import sqlalchemy.orm as sqla_orm
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
 from pcapi.core.booking_providers.models import BookingProviderName
+from pcapi.core.booking_providers.models import Movie
 from pcapi.core.booking_providers.models import SeatMap
 from pcapi.core.booking_providers.models import Ticket
 from pcapi.core.booking_providers.models import VenueBookingProvider
@@ -32,6 +33,9 @@ def book_ticket(venue_id: int, show_id: int, quantity: int) -> list[Ticket]:
     client = _get_booking_provider_client_api(venue_id)
     return client.book_ticket(show_id, quantity)
 
+def get_venue_movies(venue_id: int) -> list[Movie]:
+    client = _get_booking_provider_client_api(venue_id)
+    return client.get_venue_movies()
 
 def _get_booking_provider_client_api(venue_id: int) -> BookingProviderClientAPI:
     venue_booking_provider = _get_venue_booking_provider(venue_id)
