@@ -104,3 +104,35 @@ class ParseBeneficiaryInformationTest:
             dms_models.DmsApplicationResponse(**raw_data), 32
         )
         assert content.processed_datetime == datetime(2020, 5, 13, 10, 41, 21, tzinfo=timezone(timedelta(seconds=7200)))
+
+    @pytest.mark.parametrize(
+        "dms_activity, expected_activity",
+        [
+            ("Lycéen", users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value),
+            ("Etudiant", users_models.ActivityEnum.STUDENT.value),
+            ("Employé", users_models.ActivityEnum.EMPLOYEE.value),
+            ("En recherche d'emploi ou chômeur", users_models.ActivityEnum.UNEMPLOYED.value),
+            (
+                "Inactif (ni en emploi ni au chômage), En incapacité de travailler",
+                users_models.ActivityEnum.INACTIVE.value,
+            ),
+            ("Apprenti", users_models.ActivityEnum.APPRENTICE.value),
+            ("Alternant", users_models.ActivityEnum.APPRENTICE_STUDENT.value),
+            ("Volontaire en service civique rémunéré", users_models.ActivityEnum.VOLUNTEER.value),
+        ],
+    )
+    def test_activity_accepted_values(self, dms_activity, expected_activity):
+        raw_data = fixture.make_graphql_application(1, "accepte", activity=dms_activity)
+        content = dms_serializer.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**raw_data), 32
+        )
+        assert content.activity == expected_activity
+
+    @patch("pcapi.connectors.dms.serializer.logger.error")
+    def test_activity_unknown_values(self, mocked_logger):
+        raw_data = fixture.make_graphql_application(1, "accepte", activity="invalid")
+        content = dms_serializer.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**raw_data), 32
+        )
+        assert content.activity == None
+        mocked_logger.assert_called_once_with("Unknown activity value for application %s: %s", 1, "invalid")
