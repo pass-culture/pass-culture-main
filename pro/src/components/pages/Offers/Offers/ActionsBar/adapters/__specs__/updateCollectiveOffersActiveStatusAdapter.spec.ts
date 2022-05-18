@@ -2,15 +2,15 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { updateCollectiveOffersActiveStatusAdapter } from '../updateCollectiveOffersActiveStatusAdapter'
 
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
-
-describe('updateAllOffersActiveStatusAdapter', () => {
+describe('updateCollectiveOffersActiveStatusAdapter', () => {
   it('should deactivate all offers and confirm', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 204,
-    })
+    jest
+      .spyOn(pcapi, 'patchIsCollectiveOfferActive')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
+    jest
+      .spyOn(pcapi, 'patchIsTemplateOfferActive')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateCollectiveOffersActiveStatusAdapter({
       ids: ['T-A1', 'A1'],
@@ -20,22 +20,21 @@ describe('updateAllOffersActiveStatusAdapter', () => {
     // then
     expect(response.isOk).toBeTruthy()
     expect(response.message).toBe('2 offres ont bien été désactivées')
-    expect(mockedPcapi.patchIsCollectiveOfferActive).toHaveBeenCalledWith(
+    expect(pcapi.patchIsCollectiveOfferActive).toHaveBeenCalledWith(
       ['A1'],
       false
     )
-    expect(mockedPcapi.patchIsTemplateOfferActive).toHaveBeenCalledWith(
-      ['A1'],
-      false
-    )
+    expect(pcapi.patchIsTemplateOfferActive).toHaveBeenCalledWith(['A1'], false)
   })
 
   it('should activate all offers and confirm', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 204,
-    })
+    jest
+      .spyOn(pcapi, 'patchIsCollectiveOfferActive')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
+    jest
+      .spyOn(pcapi, 'patchIsTemplateOfferActive')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateCollectiveOffersActiveStatusAdapter({
       ids: ['T-A1', 'A1'],
@@ -45,27 +44,26 @@ describe('updateAllOffersActiveStatusAdapter', () => {
     // then
     expect(response.isOk).toBeTruthy()
     expect(response.message).toBe('2 offres ont bien été activées')
-    expect(mockedPcapi.patchIsCollectiveOfferActive).toHaveBeenCalledWith(
+    expect(pcapi.patchIsCollectiveOfferActive).toHaveBeenCalledWith(
       ['A1'],
       true
     )
-    expect(mockedPcapi.patchIsTemplateOfferActive).toHaveBeenCalledWith(
-      ['A1'],
-      true
-    )
+    expect(pcapi.patchIsTemplateOfferActive).toHaveBeenCalledWith(['A1'], true)
   })
 
   it('should return an error when the update has failed', async () => {
     // given
-    // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
+    jest.spyOn(pcapi, 'patchIsCollectiveOfferActive').mockRejectedValueOnce({
       status: 422,
     })
+    jest
+      .spyOn(pcapi, 'patchIsTemplateOfferActive')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     // when
     const response = await updateCollectiveOffersActiveStatusAdapter({
       ids: ['T-A1', 'A1'],
-      isActive: true,
+      isActive: false,
     })
 
     // then

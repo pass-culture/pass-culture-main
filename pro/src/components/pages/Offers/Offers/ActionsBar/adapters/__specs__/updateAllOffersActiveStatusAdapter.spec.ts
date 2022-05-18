@@ -4,9 +4,9 @@ describe('updateAllOffersActiveStatusAdapter', () => {
   it('should deactivate all offers and confirm', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 204,
-    })
+    jest
+      .spyOn(window, 'fetch')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateAllOffersActiveStatusAdapter({
       searchFilters: { isActive: false },
@@ -23,9 +23,9 @@ describe('updateAllOffersActiveStatusAdapter', () => {
   it('should activate all offers and confirm', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 204,
-    })
+    jest
+      .spyOn(window, 'fetch')
+      .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateAllOffersActiveStatusAdapter({
       searchFilters: { isActive: true },
