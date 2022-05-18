@@ -39,7 +39,6 @@ from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import GenderEnum
 from pcapi.core.users.models import NotificationSubscriptions
 from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.core.users.models import Token
@@ -53,7 +52,6 @@ from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.sms import send_transactional_sms
 from pcapi.repository import repository
@@ -216,39 +214,6 @@ def update_user_information_from_external_source(
             user.phoneNumber = data.phone
         if data.city:
             user.city = data.city
-
-    elif isinstance(data, fraud_models.JouveContent):
-        if data.activity:
-            user.activity = data.activity
-        if data.address:
-            user.address = data.address
-        if data.city:
-            user.city = data.city
-        if data.gender:
-            user.civility = GenderEnum.F.value if data.gender == "F" else GenderEnum.M.value
-        if data.birthDateTxt:
-            user.dateOfBirth = data.birthDateTxt
-        if data.firstName:
-            user.firstName = data.firstName
-        if data.lastName:
-            user.lastName = data.lastName
-        if data.postalCode and not user.postalCode:
-            user.postalCode = data.postalCode
-            user.departementCode = PostalCode(data.postalCode).get_departement_code()
-        if data.firstName and data.lastName:
-            user.publicName = f"{user.firstName} {user.lastName}"
-
-        if data.bodyPieceNumber:
-            items = (
-                fraud_api.validate_id_piece_number_format_fraud_item(data.get_id_piece_number()),
-                fraud_api.duplicate_id_piece_number_fraud_item(user, data.get_id_piece_number()),  # type: ignore [arg-type]
-            )
-            if all((item.status == fraud_models.FraudStatus.OK) for item in items):
-                user.idPieceNumber = data.bodyPieceNumber
-
-        if not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-            if not user.phoneNumber and data.phoneNumber:
-                user.phoneNumber = data.phoneNumber
 
     elif isinstance(data, fraud_models.EduconnectContent):
         user.firstName = data.first_name
