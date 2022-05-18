@@ -7,17 +7,21 @@ const OffersTableBody = ({
   offers,
   selectOffer,
   selectedOfferIds,
+  isNewModelEnabled,
 }) => (
   <tbody className="offers-list">
-    {offers.map(offer => (
-      <OfferItem
-        disabled={areAllOffersSelected}
-        isSelected={selectedOfferIds.includes(offer.id)}
-        key={`${offer.isShowcase ? 'T-' : ''}${offer.id}`}
-        offer={offer}
-        selectOffer={selectOffer}
-      />
-    ))}
+    {offers.map(offer => {
+      const offerId = isNewModelEnabled ? `${offer.isShowcase ? `T-` : ''}${offer.id}` : offer.id
+      return (
+        <OfferItem
+          disabled={areAllOffersSelected}
+          isSelected={selectedOfferIds.includes(offerId)}
+          key={offerId}
+          offer={offer}
+          selectOffer={selectOffer}
+        />
+      )
+    })}
   </tbody>
 )
 
@@ -26,6 +30,7 @@ OffersTableBody.propTypes = {
   offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   selectOffer: PropTypes.func.isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isNewModelEnabled: PropTypes.bool.isRequired
 }
 
 export default OffersTableBody

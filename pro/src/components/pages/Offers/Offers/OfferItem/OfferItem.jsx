@@ -26,7 +26,7 @@ const OfferItem = ({ disabled, offer, isSelected, selectOffer }) => {
   )
 
   function handleOnChangeSelected() {
-    selectOffer(offer.id, !isSelected)
+    selectOffer(offer.id, !isSelected, isShowcase)
   }
 
   const computeNumberOfSoldOutStocks = () =>
