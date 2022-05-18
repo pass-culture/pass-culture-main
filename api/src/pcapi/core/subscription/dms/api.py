@@ -132,7 +132,7 @@ def handle_dms_application(
     return current_fraud_check
 
 
-def _notify_parsing_error(parsing_errors: dict[str, str], application_scalar_id: str) -> None:
+def _notify_parsing_error(parsing_errors: dict[str, typing.Optional[str]], application_scalar_id: str) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     if "birth_date" in parsing_errors:
         client.send_user_message(

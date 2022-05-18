@@ -24,7 +24,7 @@ class CannotUpgradeBeneficiaryRole(SubscriptionException):
 
 
 class DMSParsingError(ValueError):
-    def __init__(self, user_email: str, errors: dict[str, str], *args, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, user_email: str, errors: dict[str, Optional[str]], *args, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(*args, **kwargs)
         self.errors = errors
         self.user_email = user_email
