@@ -1,5 +1,7 @@
-import React, { useCallback } from 'react'
+import React, {useCallback, useState} from 'react'
 
+import ConfirmDialog from "new_components/ConfirmDialog"
+import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
 import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
@@ -96,6 +98,7 @@ const ActionsBar = props => {
 
   const handleDeactivate = useCallback(() => {
     handleUpdateOffersStatus(false)
+    setIsConfirmDialogOpen(false)
   }, [handleUpdateOffersStatus])
 
   const computeSelectedOffersLabel = () => {
@@ -106,14 +109,30 @@ const ActionsBar = props => {
     return `${nbSelectedOffers} offre sélectionnée`
   }
 
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+
   return (
     <div className="offers-actions-bar" data-testid="offers-actions-bar">
       <span>{computeSelectedOffersLabel()}</span>
-
+      {
+        isConfirmDialogOpen &&
+        <ConfirmDialog
+          cancelText={'Annuler'}
+          confirmText={'Désactiver'}
+          onCancel={()=>setIsConfirmDialogOpen(false)}
+          onConfirm={handleDeactivate}
+          icon={EyeIcon}
+          title={ nbSelectedOffers === 1 ?
+            `Vous avez sélectionné ${nbSelectedOffers} offre êtes-vous sur de vouloir la désactiver ?`
+            : `Vous avez sélectionné ${nbSelectedOffers} offres êtes-vous sur de vouloir toutes les désactiver ?`}
+        >
+          {nbSelectedOffers === 1 ? "Dans ce cas elle ne sera plus visible sur l’application pass Culture par les jeunes." : "Dans ce cas elles ne seront plus visibles sur l’application pass Culture par les jeunes."}
+        </ConfirmDialog>
+      }
       <div className="actions-container">
         <button
           className="primary-button with-icon"
-          onClick={handleDeactivate}
+          onClick={()=>setIsConfirmDialogOpen(true)}
           type="button"
         >
           <Icon svg="ico-status-inactive" />

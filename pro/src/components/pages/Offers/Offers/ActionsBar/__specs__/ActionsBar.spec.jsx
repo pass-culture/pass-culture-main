@@ -149,6 +149,8 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // when
       fireEvent.click(screen.queryByText('Désactiver'))
+      const confirmDeactivateButton = screen.getAllByText('Désactiver')
+      fireEvent.click(confirmDeactivateButton[1])
 
       // then
       await waitFor(() => {
@@ -170,6 +172,8 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // when
       fireEvent.click(screen.queryByText('Désactiver'))
+      const confirmDeactivateButton = screen.getAllByText('Désactiver')
+      fireEvent.click(confirmDeactivateButton[1])
 
       // then
       await waitFor(() => {
@@ -185,6 +189,8 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // when
       fireEvent.click(screen.queryByText('Désactiver'))
+      const confirmDeactivateButton = screen.getAllByText('Désactiver')
+      fireEvent.click(confirmDeactivateButton[1])
 
       // then
       await waitFor(() => {
@@ -253,6 +259,8 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
       // when
       fireEvent.click(deactivateButton)
+      const confirmDeactivateButton = screen.getAllByText('Désactiver')
+      fireEvent.click(confirmDeactivateButton[1])
 
       // then
       await waitFor(() => {
