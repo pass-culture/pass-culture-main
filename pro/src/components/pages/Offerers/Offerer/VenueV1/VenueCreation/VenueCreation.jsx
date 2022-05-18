@@ -227,6 +227,7 @@ class VenueCreation extends PureComponent {
             formLongitude === '' ? FRANCE_POSITION.longitude : formLongitude
           }
           readOnly={readOnly}
+          isAddressRequired={true}
         />
         <AccessibilityFields />
         <ContactInfosFields readOnly={false} />

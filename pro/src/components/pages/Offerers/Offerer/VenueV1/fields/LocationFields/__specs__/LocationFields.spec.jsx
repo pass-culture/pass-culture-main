@@ -17,6 +17,7 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       formLatitude: 1,
       formLongitude: 1,
       readOnly: true,
+      isAddressRequired: false
     }
   })
 
@@ -44,8 +45,19 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       expect(addressField.prop('longitude')).toBe(1)
       expect(addressField.prop('name')).toBe('address')
       expect(addressField.prop('readOnly')).toBe(true)
-      expect(addressField.prop('required')).toBe(true)
+      expect(addressField.prop('required')).toBe(false)
       expect(addressField.prop('withMap')).toBe(true)
+    })
+
+    it('should display an AddressField component with required address field', () => {
+      // when
+      props.isAddressRequired = true
+      const wrapper = shallow(<LocationFields {...props} />)
+
+      // then
+      const addressField = wrapper.find(AddressField)
+      expect(addressField).toHaveLength(1)
+      expect(addressField.prop('required')).toBe(true)
     })
 
     it('should display two TextField components with the right props', () => {
