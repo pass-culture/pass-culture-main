@@ -853,6 +853,7 @@ def get_collective_bookings_query_for_pricing_generation(window: Tuple[datetime,
         )
         .outerjoin(Pricing, Pricing.collectiveBookingId == educational_models.CollectiveBooking.id)
         .filter(Pricing.id.is_(None))
+        .filter(CollectiveBooking.bookingId.is_(None))
         .join(educational_models.CollectiveBooking.venue)
         .join(offerers_models.Venue.businessUnit)
         # FIXME (dbaty, 2021-12-08): we can get rid of this filter
