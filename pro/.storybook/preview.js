@@ -1,7 +1,6 @@
-import '../src/styles/index.scss'
+import '!style-loader!css-loader!resolve-url-loader!sass-loader!../src/styles/index.scss'
 
 export const parameters = {
-  actions: { argTypesRegex: '^on[A-Z].*' },
   backgrounds: {
     grid: {
       cellSize: 8,
@@ -15,7 +14,7 @@ export const parameters = {
   },
   options: {
     storySort: {
-      order: ['ui-kit', 'components', 'screens'],
+      order: ['ui-kit', 'components'],
     },
   },
 }

@@ -1,10 +1,13 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
 .home-screen-shell {
   position: absolute;
   height: 515px;
 }
 
 .preview-on-home-screen {
-  background-color: $white;
+  background-color: colors.$white;
   border-radius: rem.torem(5px);
   left: rem.torem(17px);
   position: absolute;
@@ -19,7 +22,7 @@
 }
 
 .blurred-preview-on-offer-screen {
-  background-color: $white;
+  background-color: colors.$white;
   filter: blur(2px);
   left: rem.torem(1px);
   position: absolute;
@@ -29,7 +32,7 @@
 }
 
 .preview-on-offer-screen {
-  background-color: $white;
+  background-color: colors.$white;
   border-radius: rem.torem(5px);
   left: rem.torem(65px);
   position: absolute;
