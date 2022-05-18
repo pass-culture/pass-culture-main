@@ -315,6 +315,7 @@ const VenueEdition = () => {
                     : formLongitude
                 }
                 readOnly={readOnly}
+                isAddressRequired={false}
               />
               <AccessibilityFields
                 formValues={values}

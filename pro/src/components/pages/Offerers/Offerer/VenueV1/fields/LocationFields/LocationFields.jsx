@@ -19,6 +19,7 @@ const LocationFields = ({
   formLongitude,
   formIsLocationFrozen,
   readOnly,
+  isAddressRequired,
 }) => {
   const fieldIsFrozen =
     readOnly || formIsLocationFrozen || fieldReadOnlyBecauseFrozenFormSiret
@@ -37,7 +38,7 @@ const LocationFields = ({
           name="address"
           readOnly={readOnly || fieldReadOnlyBecauseFrozenFormSiret}
           withMap
-          required={true}
+          required={isAddressRequired}
         />
         <TextField
           autoComplete="postal-code"
