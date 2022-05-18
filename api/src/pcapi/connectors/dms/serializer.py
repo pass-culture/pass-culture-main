@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from dateutil import parser as date_parser
 
@@ -31,7 +32,7 @@ def parse_beneficiary_information_graphql(
     phone = None
     postal_code = None
 
-    parsing_errors = {}
+    parsing_errors: dict[str, Optional[str]] = {}
 
     if not fraud_api.is_subscription_name_valid(first_name):
         parsing_errors["first_name"] = first_name
@@ -47,7 +48,7 @@ def parse_beneficiary_information_graphql(
             try:
                 birth_date = date_parser.parse(value, FrenchParserInfo())  # type: ignore [arg-type]
             except Exception:  # pylint: disable=broad-except
-                parsing_errors["birth_date"] = value  # type: ignore [assignment]
+                parsing_errors["birth_date"] = value
 
         elif label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
             phone = value.replace(" ", "")  # type: ignore [union-attr]
@@ -60,7 +61,7 @@ def parse_beneficiary_information_graphql(
             try:
                 postal_code = re.search("^[0-9]{5}", space_free).group(0)  # type: ignore [union-attr]
             except Exception:  # pylint: disable=broad-except
-                parsing_errors["postal_code"] = value  # type: ignore [assignment]
+                parsing_errors["postal_code"] = value
 
         elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
             activity = value
