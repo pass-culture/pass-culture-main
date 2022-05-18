@@ -1,5 +1,4 @@
 import logging
-from typing import Union
 
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.educational import api
@@ -148,17 +147,14 @@ def refuse_pre_booking(educational_booking_id: int) -> prebooking_serialization.
 @blueprint.adage_v1.route("/years/<string:educational_year_id>/prebookings", methods=["GET"])
 @spectree_serialize(
     api=blueprint.api,
-    response_model=prebooking_serialization.CollectiveBookingsPerYearResponse,
+    response_model=prebooking_serialization.EducationalBookingsPerYearResponse,
     tags=("get bookings per year",),
 )
 @adage_api_key_required
 def get_all_bookings_per_year(
     educational_year_id: str,
     query: prebooking_serialization.GetAllBookingsPerYearQueryModel,
-) -> Union[
-    prebooking_serialization.EducationalBookingsPerYearResponse,
-    prebooking_serialization.CollectiveBookingsPerYearResponse,
-]:
+) -> prebooking_serialization.EducationalBookingsPerYearResponse:
 
     if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
         educational_bookings = get_paginated_collective_bookings_for_educational_year(
@@ -189,7 +185,7 @@ def get_all_bookings_per_year(
             )
             for educational_booking in educational_bookings
         ]
-        serialized_bookings_container = prebooking_serialization.EducationalBookingsPerYearResponse(  # type: ignore [assignment]
+        serialized_bookings_container = prebooking_serialization.EducationalBookingsPerYearResponse(
             bookings=serialized_bookings
         )
     return serialized_bookings_container

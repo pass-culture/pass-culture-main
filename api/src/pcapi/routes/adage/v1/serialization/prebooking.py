@@ -98,7 +98,7 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
-    status: Union[EducationalBookingStatus, BookingStatus]
+    status: Union[EducationalBookingStatus, BookingStatus, CollectiveBookingStatus]
     confirmationLimitDate: datetime
     totalAmount: float
     beginningDatetime: datetime
@@ -109,9 +109,9 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
 
 def get_collective_bookings_per_year_response(
     educational_bookings: Iterable[CollectiveBooking],
-) -> "CollectiveBookingsPerYearResponse":
+) -> "EducationalBookingsPerYearResponse":
     serialized_bookings = [
-        CollectiveBookingPerYearResponse(
+        EducationalBookingPerYearResponse(
             id=educational_booking.id,
             UAICode=educational_booking.educationalInstitution.institutionId,
             status=educational_booking.status,
@@ -124,27 +124,11 @@ def get_collective_bookings_per_year_response(
         )
         for educational_booking in educational_bookings
     ]
-    return CollectiveBookingsPerYearResponse(bookings=serialized_bookings)
-
-
-class CollectiveBookingPerYearResponse(AdageBaseResponseModel):
-    id: int
-    UAICode: str
-    status: Union[CollectiveBookingStatus]
-    confirmationLimitDate: datetime
-    totalAmount: float
-    beginningDatetime: datetime
-    venueTimezone: str
-    name: str
-    redactorEmail: str
+    return EducationalBookingsPerYearResponse(bookings=serialized_bookings)
 
 
 class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
     bookings: list[EducationalBookingPerYearResponse]
-
-
-class CollectiveBookingsPerYearResponse(AdageBaseResponseModel):
-    bookings: list[CollectiveBookingPerYearResponse]
 
 
 class GetAllBookingsPerYearQueryModel(BaseModel):
