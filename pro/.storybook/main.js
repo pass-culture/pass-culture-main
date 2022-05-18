@@ -1,5 +1,5 @@
 const path = require('path')
-const configPaths = require('../config/paths')
+const webpack = require('webpack')
 
 function resolve(dir) {
   return path.join(__dirname, dir)
@@ -21,45 +21,63 @@ const aliases = {
   hooks: resolve('../src/hooks'),
 }
 
-const sassResourcesLoader = {
-  loader: 'sass-resources-loader',
-  options: {
-    hoistUseStatements: true,
-    resources: [
-      path.resolve(configPaths.appSrc, './styles/variables/index.scss'),
-      path.resolve(configPaths.appSrc, './styles/mixins/index.scss'),
-    ],
-  },
-}
-
 module.exports = {
-  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
+  core: {
+    builder: 'webpack5',
+  },
+  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
   addons: [
-    '@storybook/addon-links',
-    '@storybook/addon-essentials',
     'storybook-svgr-react-component',
-    '@storybook/addon-a11y',
-    '@storybook/addon-knobs',
+    '@storybook/addon-docs',
+    '@storybook/addon-actions',
+    '@storybook/addon-links',
+    {
+      name: '@storybook/addon-essentials',
+      options: {
+        // https://github.com/storybookjs/storybook/issues/15901
+        // docs not compatible with webpack 5.
+        docs: false,
+      },
+    },
+  ],
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {},
+      'process.env.NODE_ENV': JSON.stringify('development'),
+      'process.env.FLAG': JSON.stringify('false'),
+    }),
   ],
   webpackFinal: config => {
     config.module.rules.push({
       test: /\.scss$/,
       use: [
         'style-loader',
-        'css-loader',
         {
-          loader: 'resolve-url-loader',
+          loader: 'css-loader',
           options: {
-            sourceMap: true,
-            root: configPaths.appSrc,
+            importLoaders: 1,
+            modules: {
+              localIdentName: '[name]__[local]___[hash:base64:5]',
+            },
           },
         },
+        'resolve-url-loader',
         'sass-loader',
-        sassResourcesLoader,
       ],
-      include: path.resolve(__dirname, '../'),
+      include: path.resolve(__dirname, '../src'),
     })
-
+    config.module.rules.push({
+      test: /\.svg$/,
+      include: path.resolve(__dirname, '../src'),
+      use: [
+        {
+          loader: '@svgr/webpack',
+          options: {
+            icon: true,
+          },
+        },
+      ],
+    })
     return {
       ...config,
       resolve: {

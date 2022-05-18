@@ -2,7 +2,6 @@ import {
   ImportFromComputer,
   ImportFromComputerProps,
 } from './ImportFromComputer'
-import { array, number } from '@storybook/addon-knobs'
 
 import React from 'react'
 import { Story } from '@storybook/react'
@@ -20,9 +19,9 @@ const Template: Story<ImportFromComputerProps> = props => (
 export const Portrait = Template.bind({})
 Portrait.args = {
   constraints: [
-    imageConstraints.formats(array('formats', ['image/jpeg', 'image/png'])),
-    imageConstraints.size(number('size', 10_000_000)),
-    imageConstraints.width(number('width', 300)),
+    imageConstraints.formats(['image/jpeg', 'image/png']),
+    imageConstraints.size(10_000_000),
+    imageConstraints.width(300),
   ],
   orientation: 'portrait',
   imageTypes: ['image/jpeg', 'image/png'],
@@ -32,9 +31,9 @@ Portrait.args = {
 export const Landscape = Template.bind({})
 Landscape.args = {
   constraints: [
-    imageConstraints.formats(array('formats', ['image/jpeg', 'image/png'])),
-    imageConstraints.size(number('size', 10_000_000)),
-    imageConstraints.width(number('width', 400)),
+    imageConstraints.formats(['image/jpeg', 'image/png']),
+    imageConstraints.size(10_000_000),
+    imageConstraints.width(400),
   ],
   orientation: 'landscape',
   imageTypes: ['image/jpeg', 'image/png'],
