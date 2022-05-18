@@ -43,6 +43,9 @@ const Offers = ({
     [currentUser.isAdmin]
   )
   const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
+  const enableIndividualAndCollectiveSeparation = useActiveFeature(
+    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
+  )
 
   const updateStatusFilter = useCallback(
     selectedStatus => {
@@ -74,7 +77,9 @@ const Offers = ({
     (offerId, selected, isTemplate) => {
       setSelectedOfferIds(currentSelectedIds => {
         let newSelectedOfferIds = [...currentSelectedIds]
-        const id = isNewModelEnabled ? `${isTemplate ? 'T-' : ''}${offerId}` : offerId
+        const id = isNewModelEnabled
+          ? `${isTemplate ? 'T-' : ''}${offerId}`
+          : offerId
         if (selected) {
           newSelectedOfferIds.push(id)
         } else {
@@ -136,6 +141,9 @@ const Offers = ({
               selectOffer={selectOffer}
               selectedOfferIds={selectedOfferIds}
               isNewModelEnabled={isNewModelEnabled}
+              enableIndividualAndCollectiveSeparation={
+                enableIndividualAndCollectiveSeparation
+              }
             />
           </table>
           {hasOffers && (
