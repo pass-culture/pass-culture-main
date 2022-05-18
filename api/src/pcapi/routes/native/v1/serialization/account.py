@@ -5,7 +5,6 @@ from typing import Optional
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
-import flask
 from jwt import DecodeError
 from jwt import ExpiredSignatureError
 from jwt import InvalidSignatureError
@@ -20,7 +19,6 @@ from pcapi.connectors.user_profiling import AgentType
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import IndividualBooking
-from pcapi.core.offers import validation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.payments.models import DepositType
@@ -29,7 +27,6 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 import pcapi.core.users.models as users_models
-from pcapi.core.users.models import ActivityEnum
 from pcapi.core.users.models import EligibilityType
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserRole
@@ -52,14 +49,6 @@ class AccountRequest(BaseModel):
     token: str
     apps_flyer_user_id: Optional[str] = None
     apps_flyer_platform: Optional[str] = None
-
-    class Config:
-        alias_generator = to_camel
-
-
-class InstitutionalProjectRedactorAccountRequest(BaseModel):
-    email: str
-    password: str
 
     class Config:
         alias_generator = to_camel
@@ -311,20 +300,6 @@ class UpdateEmailTokenExpiration(BaseModel):
     expiration: Optional[datetime.datetime]
 
 
-class BeneficiaryInformationUpdateRequest(BaseModel):
-    activity: ActivityEnum
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    address: Optional[str]
-    city: str
-    phone: Optional[str]
-    postal_code: str
-
-    class Config:
-        use_enum_values = True
-        alias_generator = to_camel
-
-
 class ResendEmailValidationRequest(BaseModel):
     email: str
 
@@ -340,23 +315,6 @@ class SendPhoneValidationRequest(BaseModel):
 class PhoneValidationRemainingAttemptsRequest(BaseModel):
     remainingAttempts: int
     counterResetDatetime: Optional[datetime.datetime]
-
-
-class UploadIdentityDocumentRequest(BaseModel):
-    token: str
-
-    def get_image_as_bytes(self, request: flask.Request) -> bytes:
-        """
-        Get the image from the POSTed data (request) or from the form field
-        (in which case it's supposed to be an URL that we are going to request.
-        Only the max size is checked at this stage, and possibly the content type header
-        """
-        if "identityDocumentFile" in request.files:
-            blob = request.files["identityDocumentFile"]
-            image_as_bytes = blob.read()
-            return validation.get_uploaded_image(image_as_bytes, 10 * 1000 * 1000)
-
-        raise validation.exceptions.MissingImage
 
 
 class UserProfilingFraudRequest(BaseModel):
