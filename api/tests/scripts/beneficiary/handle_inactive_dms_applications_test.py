@@ -68,7 +68,7 @@ class HandleInactiveApplicationTest:
             state="en_construction",
             last_modification_date="2021-11-11T00:00:00+02:00",
             birth_date=datetime.datetime(2002, 1, 1),
-            department_code="12",
+            postal_code="12400",
         )
 
         inactive_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -95,7 +95,7 @@ class IsNeverEligibleTest:
             application_id=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 1, 1),
-            department_code="12",
+            postal_code="12400",
         )
         assert _is_never_eligible_applicant(inactive_application, 1)
 
@@ -105,7 +105,7 @@ class IsNeverEligibleTest:
             application_id=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 1, 1),
-            department_code="56",
+            postal_code="56510",
         )
         assert not _is_never_eligible_applicant(inactive_application, 1)
 
@@ -115,7 +115,7 @@ class IsNeverEligibleTest:
             application_id=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 6, 1),
-            department_code="12",
+            postal_code="12400",
         )
         assert not _is_never_eligible_applicant(inactive_application, 1)
 

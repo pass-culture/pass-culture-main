@@ -64,11 +64,6 @@ def make_graphql_application(
                 "stringValue": "",
             },
             {
-                "id": "Q2hhbXAtNTk2NDUz",
-                "label": "Veuillez indiquer votre département",
-                "stringValue": department_code,
-            },
-            {
                 "id": "Q2hhbXAtNTgyMjIw",
                 "label": "Quelle est votre date de naissance",
                 "stringValue": babel.dates.format_date(birth_date, format="long", locale="fr"),
