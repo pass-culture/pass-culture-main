@@ -686,7 +686,8 @@ def validate_phone_number(user: User, code: str) -> None:
     ).one_or_none()
 
     if not token:
-        raise exceptions.NotValidCode()
+        code_validation_attempts = get_code_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
+        raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)
 
     if token.expirationDate and token.expirationDate < datetime.utcnow():
         raise exceptions.ExpiredCode()
