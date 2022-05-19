@@ -264,7 +264,7 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
 @spectree_serialize(api=blueprint.api, response_model=serializers.PhoneValidationRemainingAttemptsRequest)
 @authenticated_and_active_user_required
 def phone_validation_remaining_attempts(user: User) -> serializers.PhoneValidationRemainingAttemptsRequest:
-    remaining_attempts = sending_limit.get_remaining_attempts(app.redis_client, user)  # type: ignore [attr-defined]
+    remaining_attempts = sending_limit.get_remaining_sms_sending_attempts(app.redis_client, user)  # type: ignore [attr-defined]
     expiration_time = sending_limit.get_attempt_limitation_expiration_time(app.redis_client, user)  # type: ignore [attr-defined]
     return serializers.PhoneValidationRemainingAttemptsRequest(
         remainingAttempts=remaining_attempts, counterResetDatetime=expiration_time

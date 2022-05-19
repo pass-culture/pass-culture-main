@@ -25,7 +25,7 @@ def is_SMS_sending_allowed(redis: Redis, user: User) -> bool:
     return not sent_SMS_count or int(sent_SMS_count) < settings.MAX_SMS_SENT_FOR_PHONE_VALIDATION
 
 
-def get_remaining_attempts(redis: Redis, user: User) -> int:
+def get_remaining_sms_sending_attempts(redis: Redis, user: User) -> int:
     sent_SMS_count = redis.get(_sent_SMS_counter_key_name(user))
 
     if sent_SMS_count:
