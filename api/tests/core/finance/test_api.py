@@ -19,6 +19,7 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import Ministry
 from pcapi.core.finance import api
 from pcapi.core.finance import exceptions
@@ -779,6 +780,7 @@ class GenerateCashflowsTest:
             businessUnit=business_unit1,
             amount=-1000,
         )
+        # booking that has been priced before FF activation (no pricing will be generated for the associated collective booking)
         educational_pricing = factories.EducationalPricingFactory(
             status=models.PricingStatus.VALIDATED,
             businessUnit=business_unit1,
@@ -804,16 +806,21 @@ class GenerateCashflowsTest:
         assert batch.id == batch_id
         assert batch.cutoff == cutoff
         assert pricing.status == models.PricingStatus.PROCESSED
+        assert educational_pricing.status == models.PricingStatus.PROCESSED
         assert pricing_collective_booking.status == models.PricingStatus.PROCESSED
+        assert pricing_collective_booking_future_event.status == models.PricingStatus.VALIDATED
         assert models.Cashflow.query.count() == 2
         assert len(pricing.cashflows) == 1
+        assert len(educational_pricing.cashflows) == 1
         assert len(pricing_collective_booking.cashflows) == 1
-        assert pricing.cashflows[0].amount == -1000
+        assert pricing.cashflows[0].amount == -2000  # pricing and educational_pricing have the same business unit
+        assert (
+            educational_pricing.cashflows[0].amount == -2000
+        )  # pricing and educational_pricing have the same business unit
         assert pricing.cashflows[0].bankAccount == business_unit1.bankAccount
         assert pricing_collective_booking.cashflows[0].amount == -1000
         assert pricing_collective_booking.cashflows[0].bankAccount == business_unit2.bankAccount
 
-        assert not educational_pricing.cashflows
         assert not pricing_collective_booking_future_event.cashflows
 
 
@@ -1527,6 +1534,7 @@ class GenerateInvoiceTest:
         + 1  # update Cashflow.status
         + 1  # update Pricing.status
         + 1  # update Booking.status
+        # + 1  # FF is cached in all test due to generate_cashflows call
         + 1  # commit
     )
 
@@ -1752,6 +1760,39 @@ class GenerateInvoiceTest:
         assert pricing_statuses == {models.PricingStatus.INVOICED}
         assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_update_statuses_when_new_model_is_enabled(self):
+        booking1 = bookings_factories.UsedEducationalBookingFactory(
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+        )
+        collective_booking1 = UsedCollectiveBookingFactory(
+            bookingId=booking1.id,
+            venue=booking1.venue,
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        collective_booking2 = UsedCollectiveBookingFactory(
+            venue=booking1.venue,
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        business_unit_id = booking1.venue.businessUnitId
+        api.price_booking(booking1)
+        api.price_booking(collective_booking1)
+        api.price_booking(collective_booking2)
+        api.generate_cashflows(datetime.datetime.utcnow())
+        cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
+
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):  # update collective_booking
+            api._generate_invoice(business_unit_id, cashflow_ids)
+
+        get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
+        cashflow_statuses = get_statuses(models.Cashflow)
+        assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
+        pricing_statuses = get_statuses(models.Pricing)
+        assert pricing_statuses == {models.PricingStatus.INVOICED}
+        assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
+        assert collective_booking1.status == CollectiveBookingStatus.REIMBURSED  # updated
+        assert collective_booking2.status == CollectiveBookingStatus.REIMBURSED  # updated
 
 
 class PrepareInvoiceContextTest:
