@@ -14,7 +14,9 @@ class Returns202Test:
         user_offerer = offerers_factories.UserOffererFactory(validationToken="TOKEN")
 
         # When
-        response = client.get(f"/validate/user-offerer/{user_offerer.validationToken}")
+        response = client.with_session_auth(user_offerer.user.email).get(
+            f"/validate/user-offerer/{user_offerer.validationToken}"
+        )
 
         # Then
         assert response.status_code == 202
@@ -27,8 +29,11 @@ class Returns202Test:
 
 class Returns404Test:
     def test_user_offerer_attachment_not_to_be_validated_with_unknown_token(self, client):
+        # Given
+        user_offerer = offerers_factories.UserOffererFactory()
+
         # When
-        response = client.get("/validate/user-offerer/123")
+        response = client.with_session_auth(user_offerer.user.email).get("/validate/user-offerer/123")
 
         # Then
         assert response.status_code == 404
