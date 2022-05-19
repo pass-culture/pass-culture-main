@@ -3,6 +3,7 @@ import typing
 
 import pydantic
 
+from pcapi.core.users import models as users_models
 from pcapi.routes.serialization import BaseModel
 
 
@@ -46,6 +47,7 @@ class RoleRequestModel(BaseModel):
 class PublicAccount(BaseModel):
     class Config:
         orm_mode = True
+        use_enum_values = True
 
     id: int
     firstName: typing.Optional[str]
@@ -53,6 +55,8 @@ class PublicAccount(BaseModel):
     dateOfBirth: typing.Optional[datetime.datetime]
     email: str
     phoneNumber: typing.Optional[str]
+    roles: list[users_models.UserRole]
+    isActive: bool
 
 
 class PublicAccountSearchQuery(BaseModel):
