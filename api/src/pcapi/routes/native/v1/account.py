@@ -250,8 +250,14 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
             )
         except exceptions.ExpiredCode:
             raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
-        except exceptions.NotValidCode:
-            raise ApiErrors({"message": "Le code est invalide", "code": "INVALID_VALIDATION_CODE"}, status_code=400)
+        except exceptions.NotValidCode as error:
+            raise ApiErrors(
+                {
+                    "message": f"Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste {error.remaining_attempts} tentative{'s' if error.remaining_attempts and error.remaining_attempts > 1 else ''}.",
+                    "code": "INVALID_VALIDATION_CODE",
+                },
+                status_code=400,
+            )
         except exceptions.InvalidPhoneNumber:
             raise ApiErrors(
                 {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400

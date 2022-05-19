@@ -1285,6 +1285,17 @@ class ValidatePhoneNumberTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_VALIDATION_CODE"
+        assert (
+            response.json["message"]
+            == "Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste 2 tentatives."
+        )
+        response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
+        assert response.status_code == 400
+        assert response.json["code"] == "INVALID_VALIDATION_CODE"
+        assert (
+            response.json["message"]
+            == "Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste 1 tentative."
+        )
 
         assert not User.query.get(user.id).is_phone_validated
         assert user.is_subscriptionState_phone_validation_ko
