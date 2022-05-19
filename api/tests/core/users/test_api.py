@@ -714,7 +714,6 @@ class BeneficiaryInformationUpdateTest:
             publicName="UNSET",
         )
         beneficiary_information = fraud_models.DMSContent(
-            department="67",
             last_name="Doe",
             first_name="Jane",
             activity="Lycéen",
@@ -766,28 +765,29 @@ class BeneficiaryInformationUpdateTest:
         assert new_user.dateOfBirth == datetime(2000, 5, 1, 0, 0)
         assert new_user.ineHash == "identifiantnati0naleleve"
 
+    def test_update_user_information_from_ubble(self):
+        user = UserFactory(civility=None)
+        ubble_data = fraud_factories.UbbleContentFactory(
+            first_name="Raoul",
+            last_name="Dufy",
+            birth_date=date(2000, 5, 1).isoformat(),
+            id_document_number="123456789",
+            gender="M",
+        )
+        new_user = users_api.update_user_information_from_external_source(user, ubble_data)
+
+        assert new_user.firstName == "Raoul"
+        assert new_user.lastName == "Dufy"
+        assert new_user.dateOfBirth == datetime(2000, 5, 1, 0, 0)
+        assert new_user.idPieceNumber == "123456789"
+        assert new_user.civility == "M."
+
     def test_update_id_piece_number(self):
         user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
         dms_data = fraud_factories.DMSContentFactory(id_piece_number="140767100016")
 
         users_api.update_user_information_from_external_source(user, dms_data)
         assert user.idPieceNumber == "140767100016"
-
-    def test_update_id_piece_number_duplicate(self):
-        user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber="140767100016")
-        dms_data = fraud_factories.DMSContentFactory(id_piece_number=user.idPieceNumber)
-        new_user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
-
-        users_api.update_user_information_from_external_source(user, dms_data)
-        assert new_user.idPieceNumber is None
-
-    def test_update_postal_code_from_empty_value(self):
-        # when jouve sends the value, and it has not been updated from elsewhere we want to update it
-        user = UserFactory(postalCode=None)
-        dms_data = fraud_factories.DMSContentFactory(postal_code="22620")
-        users_api.update_user_information_from_external_source(user, dms_data)
-
-        assert user.postalCode == dms_data.postal_code
 
     @override_features(ENABLE_PHONE_VALIDATION=True)
     def test_phone_number_does_not_update(self):
@@ -818,6 +818,15 @@ class BeneficiaryInformationUpdateTest:
         users_api.update_user_information_from_external_source(user, dms_data)
 
         assert user.phoneNumber == "+33611111111"
+
+    def test_incomplete_data(self):
+        user = UserFactory(firstName="Julie")
+        dms_data = fraud_factories.DMSContentFactory(birth_date=None)
+
+        with pytest.raises(users_exceptions.IncompleteDataException):
+            users_api.update_user_information_from_external_source(user, dms_data)
+
+        assert user.firstName == "Julie"
 
 
 class UpdateUserLastConnectionDateTest:

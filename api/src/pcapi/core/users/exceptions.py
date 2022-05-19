@@ -18,6 +18,10 @@ class UnderAgeUserException(Exception):
     pass
 
 
+class IncompleteDataException(Exception):
+    pass
+
+
 class EmailNotSent(Exception):
     pass
 

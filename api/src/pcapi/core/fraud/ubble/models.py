@@ -58,6 +58,9 @@ class UbbleContent(IdentityCheckContent):
     )
     _parse_gender = pydantic.validator("gender", pre=True, allow_reuse=True)(_parse_ubble_gender)
 
+    def get_birth_date(self) -> typing.Optional[datetime.date]:
+        return self.birth_date
+
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return (
             self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
@@ -69,11 +72,11 @@ class UbbleContent(IdentityCheckContent):
     def get_last_name(self) -> typing.Optional[str]:
         return self.last_name
 
+    def get_civility(self) -> typing.Optional[str]:
+        return self.gender.value if self.gender else None
+
     def get_married_name(self) -> typing.Optional[str]:
         return self.married_name
-
-    def get_birth_date(self) -> typing.Optional[datetime.date]:
-        return self.birth_date
 
     def get_id_piece_number(self) -> typing.Optional[str]:
         return self.id_document_number
