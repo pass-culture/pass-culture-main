@@ -172,7 +172,7 @@ class Deposit(PcObject, Model):  # type: ignore [valid-type, misc]
         server_default=DepositType.GRANT_18.value,
     )
 
-    recredits = relationship("Recredit", order_by="Recredit.dateCreated.desc()")
+    recredits = relationship("Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit")
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -205,7 +205,7 @@ class RecreditType(enum.Enum):
 class Recredit(PcObject, Model):  # type: ignore [valid-type, misc]
     depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
 
-    deposit = relationship("Deposit", foreign_keys=[depositId])
+    deposit = relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")
 
     dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 
