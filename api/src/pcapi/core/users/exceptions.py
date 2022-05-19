@@ -119,3 +119,19 @@ class InvalidEmailError(Exception):
 
 class EmailUpdateTokenExists(Exception):
     pass
+
+
+class ReactivationNotEnabled(Exception):
+    pass
+
+
+class CantAskForReactivation(Exception):
+    pass
+
+
+class ReactivationTimeLimitExceeded(Exception):
+    pass
+
+
+class NotSuspended(Exception):
+    pass
