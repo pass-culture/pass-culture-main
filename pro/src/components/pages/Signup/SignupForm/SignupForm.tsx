@@ -4,21 +4,25 @@ import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { ISignupApiErrorResponse, ISignupFormValues } from './types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { BannerRGS } from 'new_components/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Checkbox } from 'ui-kit'
+import { Events } from 'core/FirebaseEvents/constants'
 import FormLayout from 'new_components/FormLayout'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import OperatingProcedures from './OperationProcedures'
+import { RootState } from 'store/reducers'
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
 import { redirectLoggedUser } from 'components/router/helpers'
 import { removeWhitespaces } from 'utils/string'
 import useCurrentUser from 'components/hooks/useCurrentUser'
+import useLogEventOnUnload from 'components/hooks/useLogEventOnUnload'
 import useNotification from 'components/hooks/useNotification'
+import { useSelector } from 'react-redux'
 import { validationSchema } from './validationSchema'
 
 const SignupForm = (): JSX.Element => {
@@ -26,9 +30,9 @@ const SignupForm = (): JSX.Element => {
   const notification = useNotification()
   const { currentUser } = useCurrentUser()
   const location = useLocation()
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
 
   useEffect(() => {
-    console.log('useEffectRedirection')
     redirectLoggedUser(history, location, currentUser)
   }, [currentUser])
 
@@ -63,6 +67,7 @@ const SignupForm = (): JSX.Element => {
   }
 
   const onHandleSuccess = () => {
+    logEvent(Events.SIGNUP_FORM_SUCCESS)
     history.replace('/inscription/confirmation')
   }
 
@@ -89,6 +94,44 @@ const SignupForm = (): JSX.Element => {
       formik.setFieldValue('legalUnitValues', response.payload.values)
     else formik.setFieldError('siren', response.message)
   }
+
+  // Track the state of the form when the user gives up
+  const touchedRef = useRef(formik.touched)
+  const errorsRef = useRef(formik.errors)
+
+  useEffect(() => {
+    touchedRef.current = formik.touched
+    errorsRef.current = formik.errors
+  }, [formik.touched, formik.errors])
+
+  const logFormAbort = () => {
+    const filledFields = Object.keys(touchedRef.current)
+    if (filledFields.length === 0) return
+    // formik.errors contains every fields with errors even if they have not been touched.
+    // We filter theses errors by touched fields to only have fields filled by the user with errors
+    const filledWithErrors = Object.keys(
+      Object.fromEntries(
+        Object.entries(errorsRef.current).filter(([errorKey]) =>
+          filledFields.includes(errorKey)
+        )
+      )
+    )
+    return logEvent(Events.SIGNUP_FORM_ABORT, {
+      filled: filledFields,
+      filledWithErrors: filledWithErrors,
+    })
+  }
+
+  // Track the form state on tab closing
+  useLogEventOnUnload(() => logFormAbort())
+
+  // Track the form state on component unmount
+  useEffect(() => {
+    return () => {
+      if (Object.entries(errorsRef.current).length === 0) return
+      logFormAbort()
+    }
+  }, [])
 
   return (
     <section className="sign-up-form-page">
@@ -119,7 +162,11 @@ const SignupForm = (): JSX.Element => {
                   />
                 </FormLayout.Row>
                 <FormLayout.Row>
-                  <TextInput label="Nom" name="lastName" placeholder="Mon nom" />
+                  <TextInput
+                    label="Nom"
+                    name="lastName"
+                    placeholder="Mon nom"
+                  />
                 </FormLayout.Row>
                 <FormLayout.Row>
                   <TextInput
