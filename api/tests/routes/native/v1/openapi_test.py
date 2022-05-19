@@ -1569,6 +1569,26 @@ def test_public_api(client, app):
                     "tags": [],
                 }
             },
+            "/native/v1/account/unsuspend": {
+                "post": {
+                    "description": "",
+                    "operationId": "post_/native/v1/account/unsuspend",
+                    "parameters": [],
+                    "responses": {
+                        "204": {"description": "No Content"},
+                        "403": {"description": "Forbidden"},
+                        "422": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/ValidationError"}}
+                            },
+                            "description": "Unprocessable Entity",
+                        },
+                    },
+                    "security": [{"JWTAuth": []}],
+                    "summary": "unsuspend_account <POST>",
+                    "tags": [],
+                }
+            },
             "/native/v1/account/suspension_date": {
                 "get": {
                     "description": "",
