@@ -695,8 +695,6 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                     educational_models.CollectiveStock.beginningDatetime < cutoff,
                 ),
             ),
-            # We do not want to include educational booking since we include collective bookings
-            bookings_models.Booking.educationalBookingId.is_(None),
         )
     else:
         filters = (
@@ -1523,6 +1521,34 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]):  # type: 
             "reimbursement_date": datetime.datetime.utcnow(),
         },
     )
+
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        db.session.execute(
+            """
+            UPDATE collective_booking
+            SET
+            status =
+                CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
+                THEN CAST(:cancelled AS bookingstatus)
+                ELSE CAST(:reimbursed AS bookingstatus)
+                END,
+            "reimbursementDate" = :reimbursement_date
+            FROM pricing, cashflow_pricing
+            WHERE
+            (
+                collective_booking.id = pricing."collectiveBookingId" OR
+                (pricing."bookingId" is not null AND collective_booking."bookingId" = pricing."bookingId")
+            )
+            AND pricing.id = cashflow_pricing."pricingId"
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """,
+            {
+                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+                "cashflow_ids": tuple(cashflow_ids),
+                "reimbursement_date": datetime.datetime.utcnow(),
+            },
+        )
     db.session.commit()
     return invoice
 
