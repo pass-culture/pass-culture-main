@@ -4,8 +4,9 @@ import logging
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
-from pcapi.core.bookings import exceptions as bookings_exceptions
 import pcapi.core.bookings.api as bookings_api
+from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
+from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.bookings.repository import find_educational_bookings_done_yesterday
 import pcapi.core.finance.api as finance_api
@@ -27,7 +28,6 @@ from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
 from pcapi.core.offers.repository import find_event_stocks_happening_in_x_days
-from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.users import api as users_api
 import pcapi.core.users.constants as users_constants
@@ -37,9 +37,6 @@ from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.notifications.push.transactional_notifications import (
-    get_soon_expiring_bookings_with_offers_notification_data,
-)
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.beneficiary import archive_dms_applications
@@ -49,11 +46,10 @@ from pcapi.scripts.booking import handle_expired_bookings as handle_expired_book
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
 from pcapi.scripts.subscription.handle_deleted_dms_applications import handle_deleted_dms_applications
-from pcapi.tasks import batch_tasks
 from pcapi.utils.blueprint import Blueprint
-from pcapi.workers.push_notification_job import send_today_stock_notification
 
-from .clock import DMS_OLD_PROCEDURE_ID
+
+DMS_OLD_PROCEDURE_ID = 44623
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -177,17 +173,13 @@ def send_yesterday_event_offers_notifications() -> None:
 
 @blueprint.cli.command("send_today_events_notifications_metropolitan_france")
 @log_cron_with_transaction
-def send_today_events_notifications_metropolitan_france() -> None:
+def send_today_events_notifications_metropolitan_france_command() -> None:
     """
     Find bookings (grouped by stocks) that occur today in metropolitan
     France but not the morning (11h UTC -> 12h/13h local time), and
     send notification to all the user to remind them of the event.
     """
-    today_min = datetime.datetime.combine(datetime.date.today(), datetime.time(hour=11))
-    stock_ids = find_today_event_stock_ids_metropolitan_france(today_min)
-
-    for stock_id in stock_ids:
-        send_today_stock_notification.delay(stock_id)
+    send_today_events_notifications_metropolitan_france()
 
 
 @blueprint.cli.command("send_email_reminder_7_days_before_event")
@@ -282,24 +274,12 @@ def users_one_year_with_pass_automation() -> None:
 
 @blueprint.cli.command("notify_users_bookings_not_retrieved")
 @log_cron_with_transaction
-def notify_users_bookings_not_retrieved() -> None:
+def notify_users_bookings_not_retrieved_command() -> None:
     """
     Find soon expiring bookings that will expire in exactly N days and
     send a notification to each user.
     """
-    bookings = bookings_repository.get_soon_expiring_bookings(settings.SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION)
-    for booking in bookings:
-        try:
-            notification_data = get_soon_expiring_bookings_with_offers_notification_data(booking)
-            batch_tasks.send_transactional_notification_task.delay(notification_data)
-        except bookings_exceptions.BookingIsExpired:
-            logger.exception("Booking %d is expired", booking.id, extra={"booking": booking.id, "user": booking.userId})
-        except Exception:  # pylint: disable=broad-except
-            logger.exception(
-                "Failed to register send_transactional_notification_task for booking %d",
-                booking.id,
-                extra={"booking": booking.id, "user": booking.userId},
-            )
+    notify_users_bookings_not_retrieved()
 
 
 @blueprint.cli.command("delete_suspended_accounts_after_withdrawal_period")

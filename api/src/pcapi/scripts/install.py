@@ -5,9 +5,6 @@ import flask
 
 def install_commands(app: flask.Flask) -> None:
     module_paths = (
-        "pcapi.scheduled_tasks.algolia_clock",
-        "pcapi.scheduled_tasks.clock",
-        "pcapi.scheduled_tasks.titelive_clock",
         "pcapi.scheduled_tasks.search_commands",
         "pcapi.scheduled_tasks.commands",
         "pcapi.scheduled_tasks.titelive_commands",
