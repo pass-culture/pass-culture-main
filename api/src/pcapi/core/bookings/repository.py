@@ -39,6 +39,8 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
@@ -348,29 +350,65 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
     )
 
 
-def get_legacy_active_bookings_quantity_for_venue(venue_id: int) -> int:
+def get_legacy_active_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
-    return (
-        Booking.query.filter(
-            Booking.venueId == venue_id,
-            Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
-            Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
-        )
-        .with_entities(coalesce(func.sum(Booking.quantity), 0))
-        .one()[0]
+    active_bookings_query = Booking.query.filter(
+        Booking.venueId == venue_id,
+        Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
+        Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
     )
 
+    if is_new_model_enabled:
+        active_bookings_query = active_bookings_query.filter(Booking.educationalBookingId.is_(None))
 
-def get_legacy_validated_bookings_quantity_for_venue(venue_id: int) -> int:
-    return (
-        Booking.query.filter(
-            Booking.venueId == venue_id,
-            Booking.status != BookingStatus.CANCELLED,
-            or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
+    n_active_bookings = active_bookings_query.with_entities(coalesce(func.sum(Booking.quantity), 0)).one()[0]
+
+    n_active_collective_bookings = 0
+
+    if is_new_model_enabled:
+        n_active_collective_bookings = (
+            CollectiveBooking.query.filter(
+                CollectiveBooking.venueId == venue_id,
+                CollectiveBooking.status.in_((CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CONFIRMED)),
+                CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+            )
+            .with_entities(coalesce(func.sum(1), 0))
+            .one()[0]
         )
-        .with_entities(coalesce(func.sum(Booking.quantity), 0))
-        .one()[0]
+
+    return n_active_bookings + n_active_collective_bookings
+
+
+def get_legacy_validated_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
+    validated_bookings_quantity_query = Booking.query.filter(
+        Booking.venueId == venue_id,
+        Booking.status != BookingStatus.CANCELLED,
+        or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
     )
+
+    if is_new_model_enabled:
+        validated_bookings_quantity_query = validated_bookings_quantity_query.filter(
+            Booking.educationalBookingId.is_(None)
+        )
+
+    n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
+        coalesce(func.sum(Booking.quantity), 0)
+    ).one()[0]
+
+    n_validated_collective_bookings_quantity = 0
+
+    if is_new_model_enabled:
+        n_validated_collective_bookings_quantity = (
+            CollectiveBooking.query.filter(
+                CollectiveBooking.venueId == venue_id,
+                CollectiveBooking.status != CollectiveBookingStatus.CANCELLED,
+                or_(CollectiveBooking.is_used_or_reimbursed.is_(True), CollectiveBooking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
+            )
+            .with_entities(coalesce(func.sum(1), 0))
+            .one()[0]
+        )
+
+    return n_validated_bookings_quantity + n_validated_collective_bookings_quantity
 
 
 def find_offers_booked_by_beneficiaries(users: list[User]) -> list[Offer]:
