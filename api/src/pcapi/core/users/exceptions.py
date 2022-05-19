@@ -1,3 +1,6 @@
+import typing
+
+
 class CredentialsException(Exception):
     pass
 
@@ -61,7 +64,9 @@ class UserAlreadyBeneficiary(PhoneVerificationException):
 
 
 class NotValidCode(PhoneVerificationException):
-    pass
+    def __init__(self, remaining_attempts: typing.Optional[int] = None):
+        self.remaining_attempts = remaining_attempts
+        super().__init__()
 
 
 class ExpiredCode(NotValidCode):
