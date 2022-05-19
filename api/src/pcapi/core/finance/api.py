@@ -1004,7 +1004,7 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
     # the business unit ; and once to get the venue of the offer. To
     # distinguish them in `with_entities()`, we need aliases.
     BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
-    OfferVenue = sqla_orm.aliased(offers_models.Offer.venue)
+    OfferVenue = sqla_orm.aliased(offerers_models.Venue)
     query = (
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
