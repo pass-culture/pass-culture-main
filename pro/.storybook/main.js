@@ -39,6 +39,7 @@ module.exports = {
         docs: false,
       },
     },
+    '@storybook/addon-a11y',
   ],
   plugins: [
     new webpack.DefinePlugin({
