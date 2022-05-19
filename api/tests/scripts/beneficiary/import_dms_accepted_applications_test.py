@@ -386,7 +386,7 @@ class RunIntegrationTest:
         assert user.departementCode == "67"
         assert user.address == "3 La Bigotais 22800 Saint-Donan"
         assert user.has_beneficiary_role
-        assert user.phoneNumber == "0123456789"
+        assert user.phoneNumber is None
         assert user.idPieceNumber == "123123123"
 
         assert len(user.beneficiaryFraudChecks) == 3

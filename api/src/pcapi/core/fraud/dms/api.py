@@ -14,11 +14,7 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-def get_fraud_check(
-    user: users_models.User,
-    application_id: int,
-) -> Optional[fraud_models.BeneficiaryFraudCheck]:
-    # replace with one_or_one once the data are cleaned up
+def get_fraud_check(user: users_models.User, application_id: int) -> Optional[fraud_models.BeneficiaryFraudCheck]:
     return (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,

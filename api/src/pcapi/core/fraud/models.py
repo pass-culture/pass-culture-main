@@ -114,14 +114,11 @@ class EduconnectContent(common_models.IdentityCheckContent):
     def get_last_name(self) -> str:
         return self.last_name
 
-    def get_married_name(self) -> None:
-        return None
-
     def get_birth_date(self) -> datetime.date:
         return self.birth_date
 
-    def get_id_piece_number(self) -> typing.Optional[str]:
-        return None
+    def get_ine_hash(self) -> typing.Optional[str]:
+        return self.ine_hash
 
 
 class JouveContent(common_models.IdentityCheckContent):
@@ -215,20 +212,35 @@ class DMSContent(common_models.IdentityCheckContent):
     def get_first_name(self) -> str:
         return self.first_name
 
-    def get_id_piece_number(self) -> typing.Optional[str]:
-        return self.id_piece_number
-
     def get_last_name(self) -> str:
         return self.last_name
 
-    def get_married_name(self) -> None:
-        return None
+    def get_activity(self) -> typing.Optional[str]:
+        return self.activity
 
-    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
-        return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
+    def get_address(self) -> typing.Optional[str]:
+        return self.address
+
+    def get_civility(self) -> typing.Optional[str]:
+        return self.civility.value if self.civility else None
+
+    def get_city(self) -> typing.Optional[str]:
+        return self.city
 
     def get_department_code(self) -> typing.Optional[str]:
         return PostalCode(self.postal_code).get_departement_code() if self.postal_code else None
+
+    def get_id_piece_number(self) -> typing.Optional[str]:
+        return self.id_piece_number
+
+    def get_phone_number(self) -> typing.Optional[str]:
+        return self.phone
+
+    def get_postal_code(self) -> typing.Optional[str]:
+        return self.postal_code
+
+    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
+        return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
 
     def get_author_email(self) -> typing.Optional[str]:
         beneficiary_import = get_beneficiary_import_for_application_id_and_source_id(
