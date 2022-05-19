@@ -1,4 +1,5 @@
 import dataclasses
+from datetime import date
 from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
@@ -34,6 +35,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.api import create_phone_validation_token
+import pcapi.core.users.constants as users_constants
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.email import update as email_update
 from pcapi.core.users.models import ActivityEnum
@@ -2014,3 +2016,59 @@ class SuspensionStatusTest:
 
         assert response.status_code == 200
         assert response.json["status"] == status
+
+
+class UnsuspendAccountTest:
+    def test_suspended_upon_user_request(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        users_factories.SuspendedUponUserRequestFactory(user=user)
+
+        with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+            client.with_token(email=user.email)
+            response = client.post("/native/v1/account/unsuspend")
+
+            assert response.status_code == 204
+
+            db.session.refresh(user)
+            assert user.isActive
+
+    def test_error_when_ff_not_enabled(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        users_factories.SuspendedUponUserRequestFactory(user=user)
+
+        self.assert_code_and_not_active(client, user, "ACCOUNT_REACTIVATION_NOT_ENABLED")
+
+    def test_error_when_not_suspended(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=True)
+
+        with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+            self.assert_code(client, user, "ALREADY_UNSUSPENDED")
+
+    def test_error_when_not_suspended_upon_user_request(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+        users_factories.UserSuspensionByFraudFactory(user=user)
+
+        with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+            self.assert_code_and_not_active(client, user, "REACTIVATION_NOT_ALLOWED")
+
+    def test_error_when_suspension_time_limit_reached(self, client):
+        user = users_factories.BeneficiaryGrant18Factory(isActive=False)
+
+        suspension_date = date.today() - timedelta(days=users_constants.ACCOUNT_REACTIVATION_DELAY + 1)
+        users_factories.SuspendedUponUserRequestFactory(user=user, eventDate=suspension_date)
+
+        with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+            self.assert_code_and_not_active(client, user, "REACTIVATION_LIMIT_REACHED")
+
+    def assert_code(self, client, user, code):
+        client.with_token(email=user.email)
+        response = client.post("/native/v1/account/unsuspend")
+
+        assert response.status_code == 403
+        assert response.json["code"] == code
+
+    def assert_code_and_not_active(self, client, user, code):
+        self.assert_code(client, user, code)
+
+        db.session.refresh(user)
+        assert not user.isActive

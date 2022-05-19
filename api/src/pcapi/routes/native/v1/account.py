@@ -310,6 +310,24 @@ def get_account_suspension_status(user: User) -> serializers.UserSuspensionStatu
     return serializers.UserSuspensionStatusResponse(status=user.account_state)
 
 
+@blueprint.native_v1.route("/account/unsuspend", methods=["POST"])
+@spectree_serialize(api=blueprint.api, on_success_status=204)
+@authenticated_maybe_inactive_user_required
+def unsuspend_account(user: User) -> None:
+    try:
+        api.check_can_unsuspend(user)
+    except exceptions.ReactivationNotEnabled:
+        raise api_errors.ForbiddenError({"code": "ACCOUNT_REACTIVATION_NOT_ENABLED"})
+    except exceptions.NotSuspended:
+        raise api_errors.ForbiddenError({"code": "ALREADY_UNSUSPENDED"})
+    except exceptions.CantAskForReactivation:
+        raise api_errors.ForbiddenError({"code": "REACTIVATION_NOT_ALLOWED"})
+    except exceptions.ReactivationTimeLimitExceeded:
+        raise api_errors.ForbiddenError({"code": "REACTIVATION_LIMIT_REACHED"})
+
+    api.unsuspend_account(user, actor=user)
+
+
 @blueprint.native_v1.route("/user_profiling", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required

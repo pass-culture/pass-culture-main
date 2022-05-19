@@ -51,6 +51,7 @@ from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.sms import send_transactional_sms
 from pcapi.repository import repository
@@ -293,6 +294,27 @@ def fulfill_beneficiary_data(
 
 def _generate_random_password(user):  # type: ignore [no-untyped-def]
     user.password = random_hashed_password()
+
+
+def check_can_unsuspend(user: User) -> None:
+    """
+    A user can ask for unsuspension if it has been suspended upon his
+    own request and if the reactivation time limit has not been exceeded
+    """
+    if not FeatureToggle.ALLOW_ACCOUNT_REACTIVATION.is_active():
+        raise exceptions.ReactivationNotEnabled()
+
+    reason = user.suspension_reason
+    if not reason:
+        raise exceptions.NotSuspended()
+
+    if reason != constants.SuspensionReason.UPON_USER_REQUEST:
+        raise exceptions.CantAskForReactivation()
+
+    suspension_date = typing.cast(datetime, user.suspension_date)
+    days_delta = timedelta(days=constants.ACCOUNT_REACTIVATION_DELAY)
+    if suspension_date.date() + days_delta < date.today():
+        raise exceptions.ReactivationTimeLimitExceeded()
 
 
 def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optional[User]) -> dict[str, int]:
