@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import Any
 from typing import Callable
 
@@ -27,6 +28,12 @@ logger = logging.getLogger(__name__)
 REQUEST_TIMEOUT_IN_SECOND = 10
 
 
+def _redact_url(url: str) -> str:
+    # Cine Digital Service (CDS) wants authentication token to appear in GET
+    # requests. We don't want to log them.
+    return re.sub("api_token=[^&^$]+", "api_token=[REDACTED]", url)
+
+
 def _wrapper(request_func: Callable, method: str, url: str, log_at_error_level=True, **kwargs: Any) -> Response:  # type: ignore [no-untyped-def]
     timeout = kwargs.pop("timeout", REQUEST_TIMEOUT_IN_SECOND)
     try:
@@ -39,13 +46,13 @@ def _wrapper(request_func: Callable, method: str, url: str, log_at_error_level=T
             logger_method = logger.exception
         else:
             logger_method = logger.info
-        logger_method("Call to external service failed with %s", exc, extra={"method": method, "url": url})
+        logger_method("Call to external service failed with %s", exc, extra={"method": method, "url": _redact_url(url)})
         raise exc
     else:
         logger.info(
             "External service called",
             extra={
-                "url": response.url,
+                "url": _redact_url(response.url),
                 "statusCode": response.status_code,
                 "duration": response.elapsed.total_seconds(),
             },
