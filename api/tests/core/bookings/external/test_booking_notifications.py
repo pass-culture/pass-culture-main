@@ -6,18 +6,18 @@ import pytest
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import factories as bookings_factories
+from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
+from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.notifications.push import testing
-from pcapi.scheduled_tasks.clock import pc_notify_users_bookings_not_retrieved
-from pcapi.scheduled_tasks.clock import pc_send_today_events_notifications_metropolitan_france
 
 
 @pytest.mark.usefixtures("db_session")
 @freeze_time("2020-10-15 15:00:00")
-def test_pc_send_today_events_notifications_only_to_individual_bookings_users():
+def test_send_today_events_notifications_only_to_individual_bookings_users():
     """
     Test that each stock that is linked to an offer that occurs today and
     creates a job that will send a notification to all of the stock's users
@@ -45,7 +45,7 @@ def test_pc_send_today_events_notifications_only_to_individual_bookings_users():
     # should not be fetched: next week
     bookings_factories.IndividualBookingFactory(stock=stock_next_week, user=user2)
 
-    pc_send_today_events_notifications_metropolitan_france()
+    send_today_events_notifications_metropolitan_france()
 
     assert len(testing.requests) == 2
     assert all(data["message"]["title"] == "C'est aujourd'hui !" for data in testing.requests)
@@ -56,7 +56,7 @@ def test_pc_send_today_events_notifications_only_to_individual_bookings_users():
 
 @pytest.mark.usefixtures("db_session")
 @override_settings(SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION=3)
-def test_pc_notify_users_bookings_not_retrieved() -> None:
+def test_notify_users_bookings_not_retrieved() -> None:
     user = users_factories.BeneficiaryGrant18Factory()
     stock = offers_factories.ThingStockFactory()
     creation_date = datetime.utcnow() - constants.BOOKINGS_AUTO_EXPIRY_DELAY + timedelta(days=3)
@@ -64,7 +64,7 @@ def test_pc_notify_users_bookings_not_retrieved() -> None:
     # booking that will expire in three days
     booking = bookings_factories.IndividualBookingFactory(user=user, stock=stock, dateCreated=creation_date)
 
-    pc_notify_users_bookings_not_retrieved()
+    notify_users_bookings_not_retrieved()
     assert len(testing.requests) == 1
 
     data = testing.requests[0]
