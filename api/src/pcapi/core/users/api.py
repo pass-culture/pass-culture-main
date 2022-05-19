@@ -22,10 +22,8 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
-import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.phone_validation.sending_limit import is_SMS_sending_allowed
 from pcapi.core.fraud.phone_validation.sending_limit import update_sent_SMS_counter
-import pcapi.core.fraud.ubble.models as ubble_fraud_models
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
 from pcapi.core.mails.transactional.users import reset_password
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
@@ -195,42 +193,51 @@ def update_user_information_from_external_source(
     data: common_fraud_models.IdentityCheckContent,
     commit: bool = False,
 ) -> User:
-    if isinstance(data, fraud_models.DMSContent):
-        user.lastName = data.last_name
-        user.firstName = data.first_name
-        user.publicName = "%s %s" % (data.first_name, data.last_name)
-        if data.get_department_code():
-            user.departementCode = data.get_department_code()
-        user.postalCode = data.postal_code
-        user.address = data.address
-        user.civility = data.civility.value if data.civility else None
-        user.activity = data.activity
-        user.remove_admin_role()
-        user.hasSeenTutorials = False
-        user.idPieceNumber = data.id_piece_number
-        if data.birth_date:
-            user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
-        if not user.phoneNumber:
-            user.phoneNumber = data.phone
-        if data.city:
-            user.city = data.city
+    first_name = data.get_first_name()
+    last_name = data.get_last_name()
+    birth_date = data.get_birth_date()
 
-    elif isinstance(data, fraud_models.EduconnectContent):
-        user.firstName = data.first_name
-        user.lastName = data.last_name
-        user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0))
-        user.ineHash = data.ine_hash
+    activity = data.get_activity()
+    address = data.get_address()
+    civility = data.get_civility()
+    city = data.get_city()
+    departement_code = data.get_department_code()
+    id_piece_number = data.get_id_piece_number()
+    ine_hash = data.get_ine_hash()
+    married_name = data.get_married_name()
+    phone_number = data.get_phone_number()
+    postal_code = data.get_postal_code()
 
-    elif isinstance(data, ubble_fraud_models.UbbleContent):
-        user.firstName = data.first_name
-        user.lastName = data.last_name
-        user.dateOfBirth = datetime.combine(data.birth_date, time(0, 0)) if data.birth_date else None
-        user.idPieceNumber = data.get_id_piece_number()
-        user.civility = data.gender.value if data.gender else None
-        user.married_name = data.married_name
+    if not first_name or not last_name or not birth_date:
+        raise exceptions.IncompleteDataException()
 
-    # update user fields to be correctly initialized
-    user.hasSeenTutorials = False
+    user.firstName = first_name
+    user.lastName = last_name
+    user.publicName = "%s %s" % (first_name, last_name)
+    user.dateOfBirth = datetime.combine(birth_date, time(0, 0))
+
+    if address:
+        user.address = address
+    if activity:
+        user.activity = activity
+    if city:
+        user.city = city
+    if civility:
+        user.civility = civility
+    if departement_code:
+        user.departementCode = departement_code
+    if postal_code:
+        user.postalCode = postal_code
+    if id_piece_number:
+        user.idPieceNumber = id_piece_number
+    if ine_hash:
+        user.ineHash = ine_hash
+    if married_name:
+        user.married_name = married_name
+    if phone_number and not user.phoneNumber and not user.is_phone_validated:
+        user.phoneNumber = phone_number
+
+    user.hasSeenTutorials = False  # TODO (viconnex): remove this deprecated field
     user.remove_admin_role()
 
     db.session.add(user)
