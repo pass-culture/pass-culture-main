@@ -3,14 +3,11 @@ from flask_login import current_user
 from flask_login import login_required
 import pydantic
 
-from pcapi.core.bookings.repository import get_legacy_active_bookings_quantity_for_venue
-from pcapi.core.bookings.repository import get_legacy_validated_bookings_quantity_for_venue
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.repository import get_active_offers_count_for_venue
-from pcapi.core.offers.repository import get_sold_out_offers_count_for_venue
+from pcapi.core.venues import repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
@@ -184,13 +181,15 @@ def delete_venue_banner(venue_id: str) -> None:
 @login_required
 @spectree_serialize(on_success_status=200, response_model=VenueStatsResponseModel, api=blueprint.pro_private_schema)
 def get_venue_stats(humanized_venue_id: str) -> VenueStatsResponseModel:
-    venue = load_or_404(Venue, humanized_venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+    venue: Venue = load_or_404(Venue, humanized_venue_id)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
-    active_bookings_quantity = get_legacy_active_bookings_quantity_for_venue(venue.id)  # type: ignore [attr-defined]
-    validated_bookings_count = get_legacy_validated_bookings_quantity_for_venue(venue.id)  # type: ignore [attr-defined]
-    active_offers_count = get_active_offers_count_for_venue(venue.id)  # type: ignore [attr-defined]
-    sold_out_offers_count = get_sold_out_offers_count_for_venue(venue.id)  # type: ignore [attr-defined]
+    (
+        active_bookings_quantity,
+        validated_bookings_count,
+        active_offers_count,
+        sold_out_offers_count,
+    ) = repository.get_venue_stats(venue.id)
 
     return VenueStatsResponseModel(
         activeBookingsQuantity=active_bookings_quantity,

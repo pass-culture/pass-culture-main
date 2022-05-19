@@ -235,7 +235,6 @@ class CollectiveBookingFactory(BaseFactory):
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
-    collectiveStock = factory.SubFactory(CollectiveStockFactory)
     confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=1))
 
 

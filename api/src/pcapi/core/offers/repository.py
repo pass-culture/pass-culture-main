@@ -435,16 +435,58 @@ def get_stocks_by_id_at_providers(id_at_providers: list[str]) -> dict:
     }
 
 
-def get_active_offers_count_for_venue(venue_id) -> int:  # type: ignore [no-untyped-def]
-    query = Offer.query.filter(Offer.venueId == venue_id)
-    query = _filter_by_status(query, OfferStatus.ACTIVE.name)
-    return query.distinct(Offer.id).count()
+def get_active_offers_count_for_venue(venue_id, is_new_model_enabled: bool = False) -> int:  # type: ignore [no-untyped-def]
+    active_offers_query = Offer.query.filter(Offer.venueId == venue_id)
+    active_offers_query = _filter_by_status(active_offers_query, OfferStatus.ACTIVE.name)
+
+    if is_new_model_enabled:
+        active_offers_query = active_offers_query.filter(Offer.isEducational.is_(False))
+
+    n_active_offers = active_offers_query.distinct(Offer.id).count()
+
+    n_active_collective_offer = 0
+    n_active_collective_offer_template = 0
+
+    if is_new_model_enabled:
+        n_active_collective_offer = (
+            CollectiveOffer.query.filter(CollectiveOffer.venueId == venue_id)
+            .filter(CollectiveOffer.status == OfferStatus.ACTIVE.name)
+            .distinct(CollectiveOffer.id)
+            .count()
+        )
+
+        n_active_collective_offer_template = (
+            CollectiveOfferTemplate.query.filter(CollectiveOfferTemplate.venueId == venue_id)
+            .filter(CollectiveOfferTemplate.status == OfferStatus.ACTIVE.name)
+            .distinct(CollectiveOfferTemplate.id)
+            .count()
+        )
+
+    print(n_active_offers, n_active_collective_offer, n_active_collective_offer_template)
+
+    return n_active_offers + n_active_collective_offer + n_active_collective_offer_template
 
 
-def get_sold_out_offers_count_for_venue(venue_id) -> int:  # type: ignore [no-untyped-def]
-    query = Offer.query.filter(Offer.venueId == venue_id)
-    query = _filter_by_status(query, OfferStatus.SOLD_OUT.name)
-    return query.distinct(Offer.id).count()
+def get_sold_out_offers_count_for_venue(venue_id, is_new_model_enabled: bool = False) -> int:  # type: ignore [no-untyped-def]
+    sold_out_offers_query = Offer.query.filter(Offer.venueId == venue_id)
+    sold_out_offers_query = _filter_by_status(sold_out_offers_query, OfferStatus.SOLD_OUT.name)
+
+    if is_new_model_enabled:
+        sold_out_offers_query = sold_out_offers_query.filter(Offer.isEducational.is_(False))
+
+    n_sold_out_offers = sold_out_offers_query.distinct(Offer.id).count()
+
+    n_sold_out_collective_offers = 0
+
+    if is_new_model_enabled:
+        n_sold_out_collective_offers = (
+            CollectiveOffer.query.filter(CollectiveOffer.venueId == venue_id)
+            .filter(CollectiveOffer.status == OfferStatus.SOLD_OUT.name)
+            .distinct(CollectiveOffer.id)
+            .count()
+        )
+
+    return n_sold_out_offers + n_sold_out_collective_offers
 
 
 def get_and_lock_stock(stock_id: int) -> Stock:
