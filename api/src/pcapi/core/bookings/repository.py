@@ -352,7 +352,7 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
     )
 
 
-def get_legacy_active_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
+def get_active_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
     active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
         Booking.venueId == venue_id,
@@ -398,7 +398,7 @@ def get_legacy_active_bookings_quantity_for_venue(venue_id: int, is_new_model_en
     return n_active_bookings + n_active_collective_bookings
 
 
-def get_legacy_validated_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
+def get_validated_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
     validated_bookings_quantity_query = Booking.query.filter(
         Booking.venueId == venue_id,
         Booking.status != BookingStatus.CANCELLED,
