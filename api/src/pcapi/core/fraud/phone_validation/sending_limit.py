@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import datetime
 from datetime import timedelta
 import typing
@@ -6,6 +7,12 @@ from redis import Redis
 
 from pcapi import settings
 from pcapi.core.users.models import User
+
+
+@dataclass
+class PhoneValidationCodeAttempts:
+    remaining: int
+    attempts: int
 
 
 def _sent_SMS_counter_key_name(user: User) -> str:
@@ -39,3 +46,14 @@ def get_attempt_limitation_expiration_time(redis: Redis, user: User) -> typing.O
         return datetime.utcnow() + timedelta(seconds=ttl)
 
     return None
+
+
+def get_code_validation_attempts(redis: Redis, user: User) -> PhoneValidationCodeAttempts:
+    phone_validation_attempts_key = f"phone_validation_attempts_user_{user.id}"
+    phone_validation_attempts = redis.get(phone_validation_attempts_key)
+
+    if phone_validation_attempts:
+        remaining_attempts = max(settings.MAX_PHONE_VALIDATION_ATTEMPTS - int(phone_validation_attempts), 0)
+        return PhoneValidationCodeAttempts(attempts=int(phone_validation_attempts), remaining=remaining_attempts)
+
+    return PhoneValidationCodeAttempts(attempts=0, remaining=settings.MAX_PHONE_VALIDATION_ATTEMPTS)
