@@ -54,7 +54,7 @@ def get_resource(
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        raise cds_exceptions.CineDigitalServiceAPIException(f"API CDS - url : {url} - error : {e}")
+        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on GET {resource} : {e}")
 
     return response.json()
 
@@ -72,7 +72,7 @@ def put_resource(
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        raise cds_exceptions.CineDigitalServiceAPIException(f"API CDS - url : {url} - error : {e}")
+        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on PUT {resource} : {e}")
 
     response_headers = response.headers.get("Content-Type")
     if response_headers and "application/json" in response_headers:
@@ -88,7 +88,7 @@ def post_resource(api_url: str, cinema_id: str, token: Optional[str], resource: 
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        raise cds_exceptions.CineDigitalServiceAPIException(f"API CDS - url : {url} - error : {e}")
+        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on POST {resource} : {e}")
 
     return response.json()
 
