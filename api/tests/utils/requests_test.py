@@ -10,6 +10,7 @@ class RequestWrapperTest:
     def test_call_given_request_function_with_params(self):
         # given
         mocked_request_function = Mock()
+        mocked_request_function.return_value.url = "https://example.net"
 
         # when
         _wrapper(mocked_request_function, "GET", "https://example.net")
@@ -20,6 +21,7 @@ class RequestWrapperTest:
     def test_call_given_request_function_with_custom_timeout_params(self):
         # given
         mocked_request_function = Mock()
+        mocked_request_function.return_value.url = "https://example.net"
 
         # when
         _wrapper(mocked_request_function, "GET", "https://example.net", **dict(timeout=40))
