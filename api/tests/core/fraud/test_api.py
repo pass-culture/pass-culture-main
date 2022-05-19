@@ -33,12 +33,7 @@ class CommonTest:
 
     @pytest.mark.parametrize(
         "id_piece_number",
-        [
-            "I III1",
-            "I I 1JII 11IB I E",
-            "",
-            "Passeport n: XXXXX",
-        ],
+        ["I III1", "I I 1JII 11IB I E", "", "Passeport n: XXXXX", "15347402 5 ZX9 "],
     )
     def test_id_piece_number_wrong_format(self, id_piece_number):
         item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
