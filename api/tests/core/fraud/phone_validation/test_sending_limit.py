@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.fraud.phone_validation import sending_limit
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 
 
@@ -33,3 +34,11 @@ def test_get_attempt_limitation_expiration_time(app):
     sending_limit.update_sent_SMS_counter(app.redis_client, user)
 
     assert sending_limit.get_attempt_limitation_expiration_time(app.redis_client, user) is not None
+
+
+@override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
+def test_get_code_validation_attempts(app):
+    user = users_factories.UserFactory()
+
+    assert sending_limit.get_code_validation_attempts(app.redis_client, user).attempts == 0
+    assert sending_limit.get_code_validation_attempts(app.redis_client, user).remaining == 1
