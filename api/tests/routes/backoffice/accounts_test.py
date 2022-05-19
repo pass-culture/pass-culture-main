@@ -78,6 +78,8 @@ class PublicAccountSearchTest:
         assert found_user["id"] == underage.id
         assert found_user["email"] == underage.email
         assert found_user["phoneNumber"] == underage.phoneNumber
+        assert found_user["roles"] == ["UNDERAGE_BENEFICIARY"]
+        assert found_user["isActive"] is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_name(self, client):
@@ -105,6 +107,8 @@ class PublicAccountSearchTest:
         assert found_user["id"] == grant_18.id
         assert found_user["email"] == grant_18.email
         assert found_user["phoneNumber"] == grant_18.phoneNumber
+        assert found_user["roles"] == ["BENEFICIARY"]
+        assert found_user["isActive"] is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_email(self, client):
@@ -132,6 +136,8 @@ class PublicAccountSearchTest:
         assert found_user["id"] == random.id
         assert found_user["email"] == random.email
         assert found_user["phoneNumber"] == random.phoneNumber
+        assert found_user["roles"] == []
+        assert found_user["isActive"] is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_phone(self, client):
@@ -159,6 +165,8 @@ class PublicAccountSearchTest:
         assert found_user["id"] == random.id
         assert found_user["email"] == random.email
         assert found_user["phoneNumber"] == random.phoneNumber
+        assert found_user["roles"] == []
+        assert found_user["isActive"] is True
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_without_permission(self, client):
@@ -191,33 +199,40 @@ class PublicAccountSearchTest:
 
 
 class GetPublicAccountTest:
+    @pytest.mark.parametrize(
+        "index,expected_roles",
+        [(0, ["UNDERAGE_BENEFICIARY"]), (1, ["BENEFICIARY"]), (2, ["PRO"]), (3, [])],
+    )
     @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_get_public_account(self, client):
+    def test_get_public_account(self, client, index, expected_roles):
         # given
-        underage, grant_18, pro, random = create_bunch_of_accounts()
+        users = create_bunch_of_accounts()
         role = create_read_account_role()
         admin = user_factories.UserFactory()
 
-        for user in (underage, grant_18, pro, random):
-            with mock.patch("flask_login.utils._get_user") as current_user_mock:
-                admin.groups = [role.name]
-                current_user_mock.return_value = admin
+        user = users[index]
 
-                # when
-                response = client.with_session_auth(admin.email).get(
-                    url_for("backoffice_blueprint.get_public_account", user_id=user.id)
-                )
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            admin.groups = [role.name]
+            current_user_mock.return_value = admin
 
-            # then
-            assert response.status_code == 200
-            assert response.json == {
-                "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
-                "email": user.email,
-                "firstName": user.firstName,
-                "id": user.id,
-                "lastName": user.lastName,
-                "phoneNumber": user.phoneNumber,
-            }
+            # when
+            response = client.with_session_auth(admin.email).get(
+                url_for("backoffice_blueprint.get_public_account", user_id=user.id)
+            )
+
+        # then
+        assert response.status_code == 200
+        assert response.json == {
+            "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
+            "email": user.email,
+            "firstName": user.firstName,
+            "id": user.id,
+            "isActive": True,
+            "lastName": user.lastName,
+            "phoneNumber": user.phoneNumber,
+            "roles": expected_roles,
+        }
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_get_public_account_without_permission(self, client):
