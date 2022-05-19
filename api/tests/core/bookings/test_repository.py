@@ -2411,7 +2411,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
         bookings_factories.IndividualBookingFactory(stock__offer__venue=venue)
 
         # When
-        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 3
@@ -2421,7 +2421,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
         venue = offerers_factories.VenueFactory()
 
         # When
-        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 0
@@ -2438,7 +2438,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
         )
 
         # When
-        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 1
@@ -2451,7 +2451,7 @@ class GetLegacyActiveBookingsQuantityForVenueTest:
         bookings_factories.IndividualBookingFactory(stock__offer__venue=another_venue)
 
         # When
-        active_bookings_quantity = booking_repository.get_legacy_active_bookings_quantity_for_venue(venue.id)
+        active_bookings_quantity = booking_repository.get_active_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert active_bookings_quantity == 1
@@ -2465,7 +2465,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
         bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=venue)
 
         # When
-        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 3
@@ -2477,7 +2477,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
         venue = booking.venue
 
         # When
-        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 2
@@ -2487,7 +2487,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
         venue = offerers_factories.VenueFactory()
 
         # When
-        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 0
@@ -2500,7 +2500,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
         bookings_factories.CancelledIndividualBookingFactory(stock__offer__venue=venue)
 
         # When
-        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 1
@@ -2513,7 +2513,7 @@ class GetLegacyValidatedBookingsQuantityForVenueTest:
         bookings_factories.UsedIndividualBookingFactory(stock__offer__venue=another_venue)
 
         # When
-        validated_bookings_quantity = booking_repository.get_legacy_validated_bookings_quantity_for_venue(venue.id)
+        validated_bookings_quantity = booking_repository.get_validated_bookings_quantity_for_venue(venue.id)
 
         # Then
         assert validated_bookings_quantity == 1
