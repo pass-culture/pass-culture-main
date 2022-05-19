@@ -1,5 +1,7 @@
 import logging
 
+from flask_login import login_required
+
 from pcapi.core.mails.transactional.pro.welcome_to_pro import send_welcome_to_pro_email
 from pcapi.core.offerers import api
 from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
@@ -18,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 @blueprint.pro_public_api_v1.route("/validate/user-offerer/<token>", methods=["GET"])
+@login_required
 @spectree_serialize(on_success_status=202, json_format=False)
 def validate_offerer_attachment(token) -> str:  # type: ignore [no-untyped-def]
     try:
