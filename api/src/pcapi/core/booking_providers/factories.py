@@ -7,6 +7,7 @@ from pcapi.core.bookings.factories import IndividualBookingFactory
 from pcapi.core.bookings.factories import UsedIndividualBookingFactory
 from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.offerers.factories import VenueFactory
+from pcapi.core.providers.factories import ProviderFactory
 from pcapi.core.testing import BaseFactory
 from pcapi.utils.token import random_token
 
@@ -25,7 +26,8 @@ class VenueBookingProviderFactory(BaseFactory):
 
     venue = factory.SubFactory(VenueFactory)
     bookingProvider = factory.SubFactory(BookingProviderFactory)
-    idAtProvider = factory.Sequence("idProvider{}".format)
+    provider = factory.SubFactory(ProviderFactory)
+    venueIdAtOfferProvider = factory.Sequence("idProvider{}".format)
     token = factory.LazyFunction(random_token)
 
 

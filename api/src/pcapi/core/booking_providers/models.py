@@ -13,6 +13,7 @@ from sqlalchemy.orm import relationship
 
 from pcapi.connectors.serialization.cine_digital_service_serializers import ScreenCDS
 from pcapi.connectors.serialization.cine_digital_service_serializers import SeatmapCDS
+from pcapi.core.providers.models import VenueProvider
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -29,26 +30,20 @@ class BookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
     apiUrl = Column(String, nullable=False)
 
 
-class VenueBookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
-    id = Column(BigInteger, primary_key=True)
-
-    isActive = Column(Boolean, nullable=False, default=True)
-
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-
-    venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
+class VenueBookingProvider(VenueProvider):
+    venueProviderId = Column(BigInteger, ForeignKey("venue_provider.id"), primary_key=True, nullable=False)
 
     bookingProviderId = Column(BigInteger, ForeignKey("booking_provider.id"), nullable=False)
 
     bookingProvider = relationship("BookingProvider", foreign_keys=[bookingProviderId])
 
-    idAtProvider = Column(String(70), nullable=False)
-
     token = Column(String)
+
+    isDuo = Column(Boolean, nullable=False, default=False)
 
     __table_args__ = (
         UniqueConstraint(
-            "venueId",
+            "venueProviderId",
             "bookingProviderId",
             name="unique_venue_booking_provider",
         ),

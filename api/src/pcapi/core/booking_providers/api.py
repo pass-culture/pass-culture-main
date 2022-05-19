@@ -29,7 +29,7 @@ def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
 
 def _get_booking_provider_client_api(venue_id: int) -> BookingProviderClientAPI:
     venue_booking_provider = _get_venue_booking_provider(venue_id)
-    cinema_id = venue_booking_provider.idAtProvider
+    cinema_id = venue_booking_provider.venueIdAtOfferProvider
     token = venue_booking_provider.token
     api_url = venue_booking_provider.bookingProvider.apiUrl
     if venue_booking_provider.bookingProvider.name == BookingProviderName.CINE_DIGITAL_SERVICE:

@@ -22,7 +22,7 @@ class GetBookingProviderTest:
         # Given
         booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="api_url_test")
         venue_booking_provider = VenueBookingProviderFactory(
-            token="test_token", idAtProvider="test_id", bookingProvider=booking_provider
+            token="test_token", venueIdAtOfferProvider="test_id", bookingProvider=booking_provider
         )
         venue_id = venue_booking_provider.venueId
 
@@ -47,7 +47,7 @@ class GetBookingProviderClientApiTest:
         # Given
         booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="test_api_url")
         venue_booking_provider = VenueBookingProviderFactory(
-            token="test_token", idAtProvider="test_id", bookingProvider=booking_provider
+            token="test_token", venueIdAtOfferProvider="test_id", bookingProvider=booking_provider
         )
         venue_id = venue_booking_provider.venueId
 
@@ -64,7 +64,7 @@ class GetBookingProviderClientApiTest:
         # Given
         booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="test_api_url")
         venue_booking_provider = VenueBookingProviderFactory(
-            idAtProvider="test_id", bookingProvider=booking_provider, token=None
+            venueIdAtOfferProvider="test_id", bookingProvider=booking_provider, token=None
         )
         venue_id = venue_booking_provider.venueId
 
@@ -73,7 +73,7 @@ class GetBookingProviderClientApiTest:
             _get_booking_provider_client_api(venue_id)
 
         # Then
-        assert str(e.value) == f"Missing token for {venue_booking_provider.idAtProvider}"
+        assert str(e.value) == f"Missing token for {venue_booking_provider.venueIdAtOfferProvider}"
 
 
 @pytest.mark.usefixtures("db_session")
