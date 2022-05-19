@@ -166,24 +166,22 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: typing.Optional[
     # https://regex101.com/ FTW
     regexp = "|".join(
         (
-            r"(^\d{18}$)",  # ID Algérienne
-            r"(^(\w){8,12}|[\s\w]{14}$)",  # ID Europeene ID Française
-            r"(^\w{1}\d{6}$)",  # ID Tunisienne
-            r"(^\w{1}\ *\d{8}$)",  # ID Turque
-            r"(^\w{2}\ *\d{7}$)",  # Ancienne ID Italienne
-            r"(^\d{3}\-\d{7}\-\d{2}$)",  # ID Belge
-            r"(^\d{7}$)",  # ID Congolaise, Camerounaise, Mauricienne
-            r"(^\w{3}\ *\d{6}$)",  # ID Polonaise
-            r"(^(\d\ *){17}$)",  # ID Sénégalaise
-            r"(^\d{6}\w{1}$)",  # Titre de séjour français
-            r"(^\d{6,8}-\d{4}$)",  # ID Suédoise
+            r"^\d{18}$",  # ID Algérienne
+            r"^\w{8,12}$",  # ID Europeene
+            r"^[\s\w]{14}$",  # ID Française
+            r"^\w{1}\d{6}$",  # ID Tunisienne
+            r"^\w{1} *\d{8}$",  # ID Turque
+            r"^\w{2} *\d{7}$",  # Ancienne ID Italienne
+            r"^\d{3}-\d{7}-\d{2}$",  # ID Belge
+            r"^\d{7}$",  # ID Congolaise, Camerounaise, Mauricienne
+            r"^\w{3} *\d{6}$",  # ID Polonaise
+            r"^(\d *){17}$",  # ID Sénégalaise
+            r"^\d{6}\w{1}$",  # Titre de séjour français
+            r"^\d{6,8}-\d{4}$",  # ID Suédoise
         )
     )
-
-    if not re.fullmatch(
-        regexp,
-        id_piece_number,
-    ):
+    match = re.match(regexp, id_piece_number)
+    if not match or match.group(0) != id_piece_number:
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
             detail="Le format du numéro de la pièce d'identité n'est pas valide",
