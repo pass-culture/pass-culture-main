@@ -190,6 +190,65 @@ class PublicAccountSearchTest:
         assert response.status_code == 401
 
 
+class GetPublicAccountTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_get_public_account(self, client):
+        # given
+        underage, grant_18, pro, random = create_bunch_of_accounts()
+        role = create_read_account_role()
+        admin = user_factories.UserFactory()
+
+        for user in (underage, grant_18, pro, random):
+            with mock.patch("flask_login.utils._get_user") as current_user_mock:
+                admin.groups = [role.name]
+                current_user_mock.return_value = admin
+
+                # when
+                response = client.with_session_auth(admin.email).get(
+                    url_for("backoffice_blueprint.get_public_account", user_id=user.id)
+                )
+
+            # then
+            assert response.status_code == 200
+            assert response.json == {
+                "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
+                "email": user.email,
+                "firstName": user.firstName,
+                "id": user.id,
+                "lastName": user.lastName,
+                "phoneNumber": user.phoneNumber,
+            }
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_public_account_without_permission(self, client):
+        # given
+        no_perm_role = RoleFactory(name="no read user")
+        user = user_factories.UserFactory()
+
+        with mock.patch("flask_login.utils._get_user") as current_user_mock:
+            user.groups = [no_perm_role.name]
+            current_user_mock.return_value = user
+
+            # when
+            response = client.with_session_auth(user.email).get(
+                url_for("backoffice_blueprint.get_public_account", user_id=user.id)
+            )
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_public_account_as_anonymous(self, client):
+        # given
+        create_search_role()
+
+        # when
+        response = client.get(url_for("backoffice_blueprint.get_public_account", user_id=1))
+
+        # then
+        assert response.status_code == 401
+
+
 class GetBeneficiaryCreditTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_beneficiary_credit(self, client):

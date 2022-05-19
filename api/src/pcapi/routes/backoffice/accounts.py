@@ -26,6 +26,19 @@ def search_public_account(query: PublicAccountSearchQuery) -> ListPublicAccounts
     return ListPublicAccountsResponseModel(accounts=[PublicAccount.from_orm(account) for account in accounts])
 
 
+@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>", methods=["GET"])
+@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
+@spectree_serialize(
+    response_model=PublicAccount,
+    on_success_status=200,
+    api=blueprint.api,
+)
+def get_public_account(user_id: int) -> PublicAccount:
+    user = users_repository.get_user_by_id(user_id)
+
+    return PublicAccount.from_orm(user)
+
+
 @blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>/credit", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
