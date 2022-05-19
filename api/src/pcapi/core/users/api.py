@@ -22,6 +22,8 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
+import pcapi.core.fraud.models as fraud_models
+from pcapi.core.fraud.phone_validation.sending_limit import get_code_validation_attempts
 from pcapi.core.fraud.phone_validation.sending_limit import is_SMS_sending_allowed
 from pcapi.core.fraud.phone_validation.sending_limit import update_sent_SMS_counter
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
@@ -720,17 +722,17 @@ def _check_phone_number_validation_is_authorized(user: User) -> None:
 
 
 def check_and_update_phone_validation_attempts(redis: Redis, user: User) -> None:
-    phone_validation_attempts_key = f"phone_validation_attempts_user_{user.id}"
-    phone_validation_attempts = redis.get(phone_validation_attempts_key)
+    code_validation_attempts = get_code_validation_attempts(redis, user)
 
-    if phone_validation_attempts and int(phone_validation_attempts) >= settings.MAX_PHONE_VALIDATION_ATTEMPTS:
+    if code_validation_attempts.remaining == 0:
         logger.warning(
             "Phone number validation limit reached for user with id=%s",
             user.id,
-            extra={"attempts_count": int(phone_validation_attempts)},
+            extra={"attempts_count": int(code_validation_attempts.attempts)},
         )
-        raise exceptions.PhoneValidationAttemptsLimitReached(int(phone_validation_attempts))
+        raise exceptions.PhoneValidationAttemptsLimitReached(code_validation_attempts.attempts)
 
+    phone_validation_attempts_key = f"phone_validation_attempts_user_{user.id}"
     count = redis.incr(phone_validation_attempts_key)
     if count == 1:
         redis.expire(phone_validation_attempts_key, settings.PHONE_VALIDATION_ATTEMPTS_TTL)
