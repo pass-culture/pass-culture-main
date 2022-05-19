@@ -26,5 +26,7 @@ export enum Events {
   CLICKED_TOGGLE_HIDE_OFFERER_NAME = 'hasClickedToggleHideOffererName',
   FIRST_LOGIN = 'firstLogin',
   PAGE_VIEW = 'page_view',
+  SIGNUP_FORM_ABORT = 'signupFormAbort',
+  SIGNUP_FORM_SUCCESS = 'signupFormSuccess',
   TUTO_PAGE_VIEW = 'tutoPageView',
 }

@@ -1,14 +1,20 @@
 import '@testing-library/jest-dom'
+
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import * as pcapi from 'repository/pcapi/pcapi'
+
 import { ApiError, HTTP_STATUS } from 'api/helpers'
 import { MemoryRouter, Route } from 'react-router'
 import { render, screen, waitFor } from '@testing-library/react'
+
+import { Events } from 'core/FirebaseEvents/constants'
 import { Provider } from 'react-redux'
 import React from 'react'
 import SignupForm from '../SignupForm'
 import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
+
+const mockLogEvent = jest.fn()
 
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
 jest.mock('repository/pcapi/pcapi', () => ({
@@ -48,6 +54,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
+      app: { logEvent: mockLogEvent }
     }
     pcapi.signup.mockResolvedValue({})
   })
@@ -194,6 +201,49 @@ describe('src | components | pages | Signup | SignupForm', () => {
         })
       ).toBeInTheDocument()
     })
+    describe('formlogEvents', () => {
+      describe('on component unmount', () => {
+        it('should trigger an event with touched fields', async () => {
+          const { unmount } = renderSignUp(store)
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Adresse e-mail/,
+            }),
+            'test@example.com'
+          )
+          await userEvent.type(
+            screen.getByRole('textbox', {
+              name: /Téléphone/,
+            }), '1234'
+          )
+          // We simulate onBlur to have email field touched
+          await userEvent.tab()
+
+          await unmount()
+          expect(mockLogEvent).toHaveBeenCalledTimes(1)
+          expect(mockLogEvent).toHaveBeenNthCalledWith(
+            1, Events.SIGNUP_FORM_ABORT, { "filled": ["email", "phoneNumber"], "filledWithErrors": ["phoneNumber"] })
+        })
+        it('should not trigger an event if no field has been touched', async () => {
+          const { unmount } = renderSignUp(store)
+          await unmount()
+          expect(mockLogEvent).toHaveBeenCalledTimes(0)
+        })
+      })
+      it('should have an beforeunload event listener attached to the window', async () => {
+        const spyAddEvent = jest.fn()
+        const spyRemoveEvent = jest.fn()
+        window.addEventListener = spyAddEvent
+        window.removeEventListener = spyRemoveEvent
+
+        const { unmount } = renderSignUp(store)
+        // Count calls to window.addEventListener with "beforeunload" as first argument
+        expect(spyAddEvent.mock.calls.map(args => args[0] === "beforeunload").filter(Boolean).length).toEqual(1)
+        expect(spyRemoveEvent.mock.calls.map(args => args[0] === "beforeunload").filter(Boolean).length).toEqual(0)
+        await unmount()
+        expect(spyRemoveEvent.mock.calls.map(args => args[0] === "beforeunload").filter(Boolean).length).toEqual(1)
+      })
+    })
     describe('formValidation', () => {
       beforeEach(() => {
         jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
@@ -286,6 +336,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
         await expect(
           screen.findByText("I'm the confirmation page")
         ).resolves.toBeInTheDocument()
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.SIGNUP_FORM_SUCCESS)
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })
       it('should show a notification on api call error', async () => {
         pcapi.signup.mockRejectedValue(

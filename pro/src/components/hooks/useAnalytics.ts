@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { logEvent as analyticsLogEvent } from '@firebase/analytics'
 import { firebaseConfig } from 'config/firebase'
 
-type logEventType = () => (
+export type logEventType = () => (
   event: string,
   params: { [key: string]: string }
 ) => void
