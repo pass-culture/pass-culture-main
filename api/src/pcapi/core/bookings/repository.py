@@ -6,6 +6,7 @@ from datetime import timedelta
 from io import BytesIO
 from io import StringIO
 import math
+from operator import and_
 import typing
 from typing import Iterable
 from typing import List
@@ -41,6 +42,7 @@ from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezon
 from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
+from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalRedactor
@@ -352,10 +354,18 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
 
 def get_legacy_active_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
-    active_bookings_query = Booking.query.filter(
+    active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
         Booking.venueId == venue_id,
-        Booking.status.in_((BookingStatus.PENDING, BookingStatus.CONFIRMED)),
-        Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+        or_(
+            and_(
+                Booking.status == BookingStatus.PENDING,
+                not_(Stock.hasBookingLimitDatetimePassed),
+            ),
+            and_(
+                Booking.status == BookingStatus.CONFIRMED,
+                Booking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+            ),
+        ),
     )
 
     if is_new_model_enabled:
@@ -367,10 +377,19 @@ def get_legacy_active_bookings_quantity_for_venue(venue_id: int, is_new_model_en
 
     if is_new_model_enabled:
         n_active_collective_bookings = (
-            CollectiveBooking.query.filter(
+            CollectiveBooking.query.join(CollectiveStock, CollectiveBooking.collectiveStock)
+            .filter(
                 CollectiveBooking.venueId == venue_id,
-                CollectiveBooking.status.in_((CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CONFIRMED)),
-                CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+                or_(
+                    and_(
+                        CollectiveBooking.status == CollectiveBookingStatus.PENDING,
+                        not_(CollectiveStock.hasBookingLimitDatetimePassed),
+                    ),
+                    and_(
+                        CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED,
+                        CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+                    ),
+                ),
             )
             .with_entities(coalesce(func.sum(1), 0))
             .one()[0]
@@ -383,6 +402,7 @@ def get_legacy_validated_bookings_quantity_for_venue(venue_id: int, is_new_model
     validated_bookings_quantity_query = Booking.query.filter(
         Booking.venueId == venue_id,
         Booking.status != BookingStatus.CANCELLED,
+        Booking.status != BookingStatus.PENDING,
         or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
     )
 
@@ -402,6 +422,7 @@ def get_legacy_validated_bookings_quantity_for_venue(venue_id: int, is_new_model
             CollectiveBooking.query.filter(
                 CollectiveBooking.venueId == venue_id,
                 CollectiveBooking.status != CollectiveBookingStatus.CANCELLED,
+                CollectiveBooking.status != CollectiveBookingStatus.PENDING,
                 or_(CollectiveBooking.is_used_or_reimbursed.is_(True), CollectiveBooking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
             )
             .with_entities(coalesce(func.sum(1), 0))
