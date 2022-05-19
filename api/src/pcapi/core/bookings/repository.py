@@ -40,12 +40,7 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.utils import _apply_departement_timezone
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.categories import subcategories
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalInstitution
-from pcapi.core.educational.models import EducationalRedactor
+from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
@@ -116,9 +111,11 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
             )
         elif offer_is_educational:
             query = (
-                query.join(EducationalBooking)
-                .join(EducationalBooking.educationalRedactor)
-                .filter(func.lower(EducationalBooking.educationalRedactor.email) == sanitize_email(email))
+                query.join(educational_models.EducationalBooking)
+                .join(educational_models.EducationalBooking.educationalRedactor)
+                .filter(
+                    func.lower(educational_models.EducationalBooking.educationalRedactor.email) == sanitize_email(email)
+                )
             )
 
     if offer_id is not None:
@@ -227,9 +224,9 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
 def find_expiring_educational_bookings_query() -> BaseQuery:
     today_at_midnight = datetime.combine(date.today(), time(0, 0))
 
-    return EducationalBooking.query.join(Booking).filter(
+    return educational_models.EducationalBooking.query.join(Booking).filter(
         Booking.status == BookingStatus.PENDING,
-        EducationalBooking.confirmationLimitDate <= today_at_midnight,
+        educational_models.EducationalBooking.confirmationLimitDate <= today_at_midnight,
     )
 
 
@@ -325,15 +322,15 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None)
     )
 
 
-def find_expired_educational_bookings() -> list[EducationalBooking]:
+def find_expired_educational_bookings() -> list[educational_models.EducationalBooking]:
     expired_on = date.today()
     return (
-        EducationalBooking.query.join(Booking)
+        educational_models.EducationalBooking.query.join(Booking)
         .filter(Booking.status == BookingStatus.CANCELLED)
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .options(
-            contains_eager(EducationalBooking.booking)
+            contains_eager(educational_models.EducationalBooking.booking)
             .load_only(Booking.stockId)
             .joinedload(Booking.stock, innerjoin=True)
             .load_only(Stock.beginningDatetime)
@@ -343,11 +340,13 @@ def find_expired_educational_bookings() -> list[EducationalBooking]:
             .load_only(Venue.name)
         )
         .options(
-            joinedload(EducationalBooking.educationalRedactor, innerjoin=True).load_only(
-                EducationalRedactor.email, EducationalRedactor.firstName, EducationalRedactor.lastName
+            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
+                educational_models.EducationalRedactor.email,
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
             )
         )
-        .options(joinedload(EducationalBooking.educationalInstitution, innerjoin=True))
+        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
         .all()
     )
 
@@ -377,17 +376,21 @@ def get_active_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: 
 
     if is_new_model_enabled:
         n_active_collective_bookings = (
-            CollectiveBooking.query.join(CollectiveStock, CollectiveBooking.collectiveStock)
+            educational_models.CollectiveBooking.query.join(
+                educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
+            )
             .filter(
-                CollectiveBooking.venueId == venue_id,
+                educational_models.CollectiveBooking.venueId == venue_id,
                 or_(
                     and_(
-                        CollectiveBooking.status == CollectiveBookingStatus.PENDING,
-                        not_(CollectiveStock.hasBookingLimitDatetimePassed),
+                        educational_models.CollectiveBooking.status
+                        == educational_models.CollectiveBookingStatus.PENDING,
+                        not_(educational_models.CollectiveStock.hasBookingLimitDatetimePassed),
                     ),
                     and_(
-                        CollectiveBooking.status == CollectiveBookingStatus.CONFIRMED,
-                        CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+                        educational_models.CollectiveBooking.status
+                        == educational_models.CollectiveBookingStatus.CONFIRMED,
+                        educational_models.CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
                     ),
                 ),
             )
@@ -419,11 +422,11 @@ def get_validated_bookings_quantity_for_venue(venue_id: int, is_new_model_enable
 
     if is_new_model_enabled:
         n_validated_collective_bookings_quantity = (
-            CollectiveBooking.query.filter(
-                CollectiveBooking.venueId == venue_id,
-                CollectiveBooking.status != CollectiveBookingStatus.CANCELLED,
-                CollectiveBooking.status != CollectiveBookingStatus.PENDING,
-                or_(CollectiveBooking.is_used_or_reimbursed.is_(True), CollectiveBooking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
+            educational_models.CollectiveBooking.query.filter(
+                educational_models.CollectiveBooking.venueId == venue_id,
+                educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
+                educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.PENDING,
+                or_(educational_models.CollectiveBooking.is_used_or_reimbursed.is_(True), educational_models.CollectiveBooking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
             )
             .with_entities(coalesce(func.sum(1), 0))
             .one()[0]
@@ -649,7 +652,7 @@ def _get_filtered_booking_pro(
                 Booking.individualBooking,
                 IndividualBooking.user,
                 Booking.educationalBooking,
-                EducationalBooking.educationalRedactor,
+                educational_models.EducationalBooking.educationalRedactor,
             ),
         )
         .with_entities(
@@ -665,10 +668,10 @@ def _get_filtered_booking_pro(
             Booking.educationalBookingId,
             Booking.isExternal,
             Booking.isConfirmed,
-            EducationalBooking.confirmationDate,
-            EducationalRedactor.firstName.label("redactorFirstname"),
-            EducationalRedactor.lastName.label("redactorLastname"),
-            EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
+            educational_models.EducationalBooking.confirmationDate,
+            educational_models.EducationalRedactor.firstName.label("redactorFirstname"),
+            educational_models.EducationalRedactor.lastName.label("redactorLastname"),
+            educational_models.EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
             Offer.extraData["isbn"].label("offerIsbn"),
@@ -876,20 +879,20 @@ def offerer_has_ongoing_bookings(offerer_id: int) -> bool:
     ).scalar()
 
 
-def find_educational_bookings_done_yesterday() -> list[EducationalBooking]:
+def find_educational_bookings_done_yesterday() -> list[educational_models.EducationalBooking]:
     yesterday = datetime.utcnow() - timedelta(days=1)
     yesterday_min = datetime.combine(yesterday, time.min)
     yesterday_max = datetime.combine(yesterday, time.max)
 
     return (
-        EducationalBooking.query.join(EducationalBooking.booking)
+        educational_models.EducationalBooking.query.join(educational_models.EducationalBooking.booking)
         .join(Booking.stock)
         .filter(
             Stock.beginningDatetime >= yesterday_min,
             Stock.beginningDatetime <= yesterday_max,
         )
         .options(
-            contains_eager(EducationalBooking.booking)
+            contains_eager(educational_models.EducationalBooking.booking)
             .load_only(Booking.stockId)
             .joinedload(Booking.stock, innerjoin=True)
             .load_only(Stock.beginningDatetime)
@@ -899,17 +902,17 @@ def find_educational_bookings_done_yesterday() -> list[EducationalBooking]:
             .load_only(Venue.name, Venue.publicName)
         )
         .options(
-            joinedload(EducationalBooking.educationalRedactor, innerjoin=True).load_only(
-                EducationalRedactor.firstName,
-                EducationalRedactor.lastName,
-                EducationalRedactor.email,
+            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+                educational_models.EducationalRedactor.email,
             )
         )
         .options(
-            joinedload(EducationalBooking.educationalInstitution, innerjoin=True).load_only(
-                EducationalInstitution.name,
-                EducationalInstitution.city,
-                EducationalInstitution.postalCode,
+            joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True).load_only(
+                educational_models.EducationalInstitution.name,
+                educational_models.EducationalInstitution.city,
+                educational_models.EducationalInstitution.postalCode,
             )
         )
         .all()
