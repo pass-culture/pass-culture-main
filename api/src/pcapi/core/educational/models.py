@@ -24,7 +24,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions
 from pcapi.core.offers.models import Offer
 from pcapi.models import Model
-from pcapi.models.offer_mixin import AccessibilityMixin
+from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import StatusMixin
 from pcapi.models.offer_mixin import ValidationMixin
