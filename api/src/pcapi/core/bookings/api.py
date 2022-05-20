@@ -7,12 +7,16 @@ import pytz
 from sqlalchemy import and_
 
 from pcapi.core import search
+from pcapi.core.booking_providers.api import book_ticket
+from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.bookings.models import ExternalBooking
 from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.bookings.repository import generate_booking_token
+from pcapi.core.categories import subcategories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -124,6 +128,32 @@ def book_offer(
             userId=beneficiary.id,
         )
         stock.dnBookedQuantity += booking.quantity
+
+        is_active_venue_booking_provider = db.session.query(
+            VenueBookingProvider.query.filter(
+                VenueBookingProvider.venueId == stock.offer.venueId, VenueBookingProvider.isActive
+            ).exists()
+        ).scalar()
+
+        if (
+            FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
+            and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
+            and is_active_venue_booking_provider
+        ):
+
+            if stock.idAtProviders and stock.idAtProviders.isdigit():
+                show_id = int(stock.idAtProviders)
+            else:
+                logger.error("stock.idAtProviders is not a digit: %s", stock.idAtProviders)
+
+            tickets = book_ticket(
+                venue_id=stock.offer.venueId,
+                show_id=show_id,
+                quantity=quantity,
+            )
+            booking.externalBookings = [
+                ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
+            ]
 
         repository.save(individual_booking, stock)
 
