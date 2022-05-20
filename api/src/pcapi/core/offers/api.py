@@ -708,7 +708,10 @@ def upsert_stocks(
 
 
 def update_offer_fraud_information(
-    offer: Union[educational_models.CollectiveOffer, Offer], user: User, *, silent: bool = False
+    offer: Union[educational_models.CollectiveOffer, educational_models.CollectiveOfferTemplate, Offer],
+    user: User,
+    *,
+    silent: bool = False,
 ) -> None:
     venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
 
