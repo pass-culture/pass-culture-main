@@ -193,6 +193,15 @@ def edit_collective_offer(
         )
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
+    except educational_exceptions.EducationalDomainsNotFound:
+        logger.info(
+            "Could not update offer: educational domains not found.",
+            extra={"collective_offer_id": offer_id, "domains": body.domains},
+        )
+        raise ApiErrors(
+            {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
+            status_code=404,
+        )
     else:
         offer = educational_api.get_collective_offer_by_id(dehumanized_id)
         return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)
@@ -258,6 +267,15 @@ def edit_collective_offer_template(
         )
     except offers_exceptions.SubcategoryNotEligibleForEducationalOffer:
         raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
+    except educational_exceptions.EducationalDomainsNotFound:
+        logger.info(
+            "Could not update offer: educational domains not found.",
+            extra={"collective_offer_id": offer_id, "domains": body.domains},
+        )
+        raise ApiErrors(
+            {"code": "EDUCATIONAL_DOMAIN_NOT_FOUND"},
+            status_code=404,
+        )
     else:
         offer = educational_api.get_collective_offer_template_by_id(dehumanized_id)
         return collective_offers_serialize.GetCollectiveOfferTemplateResponseModel.from_orm(offer)
