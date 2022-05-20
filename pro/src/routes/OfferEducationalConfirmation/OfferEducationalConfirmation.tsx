@@ -52,6 +52,7 @@ const OfferEducationalConfirmation = (): JSX.Element => {
       isShowcase={offer?.isShowcase}
       offerStatus={offer?.status}
       offererId={offer?.managingOffererId}
+      enableIndividualAndCollectiveSeparation={enableIndividualAndCollectiveSeparation}
     />
   )
 }
