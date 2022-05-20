@@ -21,6 +21,7 @@ from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
 from pcapi.core.mails.transactional.users import reset_password
 from pcapi.core.mails.transactional.users.email_address_change_confirmation import send_email_confirmation_email
+import pcapi.core.mails.transactional.users.unsuspension as suspension_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
@@ -363,7 +364,7 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optio
     return {"cancelled_bookings": n_bookings}
 
 
-def unsuspend_account(user: User, actor: User) -> None:
+def unsuspend_account(user: User, actor: User, send_email: bool = False) -> None:
     user.isActive = True
     user_suspension = models.UserSuspension(
         user=user,
@@ -378,8 +379,12 @@ def unsuspend_account(user: User, actor: User) -> None:
         extra={
             "actor": actor.id,
             "user": user.id,
+            "send_email": send_email,
         },
     )
+
+    if send_email:
+        suspension_mails.send_unsuspension_email(user)
 
 
 def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
