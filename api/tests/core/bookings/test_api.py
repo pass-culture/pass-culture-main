@@ -1,7 +1,9 @@
 import dataclasses
+import datetime
 from datetime import datetime
 from datetime import timedelta
 from unittest import mock
+from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
 from freezegun import freeze_time
@@ -11,6 +13,8 @@ import sqlalchemy.exc
 from sqlalchemy.sql import text
 
 from pcapi.core.booking_providers.factories import ExternalBookingFactory
+from pcapi.core.booking_providers.factories import VenueBookingProviderFactory
+from pcapi.core.booking_providers.models import Ticket
 from pcapi.core.bookings import api
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings import factories as booking_factories
@@ -386,6 +390,81 @@ class BookOfferTest:
             assert error.value.errors == {
                 "noActivationCodeAvailable": ["Ce stock ne contient plus de code d'activation disponible."]
             }
+
+    class WhenBookingIsExternalBookingTest:
+        @patch("pcapi.core.bookings.api.book_ticket")
+        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        def test_book_offer_with_solo_external_booking(
+            self,
+            mocked_book_ticket,
+        ):
+            mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
+
+            # Given
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            venue_provider = VenueBookingProviderFactory()
+            offer_solo = offers_factories.EventOfferFactory(
+                name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
+            )
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
+
+            # When
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+
+            # Then
+            assert len(booking.externalBookings) == 1
+            assert booking.externalBookings[0].barcode == "testbarcode"
+            assert booking.externalBookings[0].seat == "A_1"
+
+        @patch("pcapi.core.bookings.api.book_ticket")
+        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        def test_book_offer_with_duo_external_booking(self, mocked_book_ticket):
+            mocked_book_ticket.return_value = [
+                Ticket(barcode="barcode1", seat_number="B_1"),
+                Ticket(barcode="barcode2", seat_number="B_2"),
+            ]
+            # Given
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            venue_provider = VenueBookingProviderFactory()
+            offer_duo = offers_factories.EventOfferFactory(
+                name="Séance ciné duo",
+                venue=venue_provider.venue,
+                subcategoryId=subcategories.SEANCE_CINE.id,
+            )
+            stock_duo = offers_factories.EventStockFactory(offer=offer_duo, idAtProviders="1111")
+
+            # When
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_duo.id, quantity=1)
+
+            # Then
+            assert len(booking.externalBookings) == 2
+            assert booking.externalBookings[0].barcode == "barcode1"
+            assert booking.externalBookings[0].seat == "B_1"
+            assert booking.externalBookings[1].barcode == "barcode2"
+            assert booking.externalBookings[1].seat == "B_2"
+
+        @patch("pcapi.core.bookings.api.book_ticket")
+        @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+        def should_not_create_external_booking_when_venue_booking_provider_is_not_active(
+            self,
+            mocked_book_ticket,
+        ):
+            mocked_book_ticket.return_value = [Ticket(barcode="testbarcode", seat_number="A_1")]
+
+            # Given
+            beneficiary = users_factories.BeneficiaryGrant18Factory()
+            venue_provider = VenueBookingProviderFactory(isActive=False)
+            offer_solo = offers_factories.EventOfferFactory(
+                name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
+            )
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
+
+            # When
+            booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
+
+            # Then
+            assert len(booking.externalBookings) == 0
+            mocked_book_ticket.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")

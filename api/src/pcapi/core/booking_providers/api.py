@@ -4,6 +4,7 @@ from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.models import BookingProviderClientAPI
 from pcapi.core.booking_providers.models import BookingProviderName
 from pcapi.core.booking_providers.models import SeatMap
+from pcapi.core.booking_providers.models import Ticket
 from pcapi.core.booking_providers.models import VenueBookingProvider
 
 
@@ -25,6 +26,11 @@ def get_available_seats(venue_id: int, show_id: int) -> SeatMap:
 def cancel_booking(venue_id: int, barcodes: list[str]) -> None:
     client = _get_booking_provider_client_api(venue_id)
     client.cancel_booking(barcodes)
+
+
+def book_ticket(venue_id: int, show_id: int, quantity: int) -> list[Ticket]:
+    client = _get_booking_provider_client_api(venue_id)
+    return client.book_ticket(show_id, quantity)
 
 
 def _get_booking_provider_client_api(venue_id: int) -> BookingProviderClientAPI:
