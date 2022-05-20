@@ -392,12 +392,23 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     motorDisabilityCompliant: Optional[bool]
     visualDisabilityCompliant: Optional[bool]
     subcategoryId: Optional[SubcategoryIdEnum]
+    domains: Optional[list[int]]
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         assert name is not None and name.strip() != ""
         check_offer_name_length_is_valid(name)
         return name
+
+    @validator("domains")
+    def validate_domains_collective_offer_edition(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferBodyModel",
+        domains: Optional[list[int]],
+    ) -> Optional[list[int]]:
+        if domains is not None and len(domains) == 0:
+            raise ValueError("domains must have at least one value")
+
+        return domains
 
     class Config:
         alias_generator = to_camel
@@ -406,12 +417,23 @@ class PatchCollectiveOfferBodyModel(BaseModel):
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     priceDetail: Optional[str]
+    domains: Optional[list[int]]
 
     @validator("priceDetail")
     def validate_price_detail(cls, price_detail: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
         if price_detail and len(price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return price_detail
+
+    @validator("domains")
+    def validate_domains_collective_offer_template_edition(  # pylint: disable=no-self-argument
+        cls: "PatchCollectiveOfferTemplateBodyModel",
+        domains: Optional[list[int]],
+    ) -> Optional[list[int]]:
+        if domains is not None and len(domains) == 0:
+            raise ValueError("domains must have at least one value")
+
+        return domains
 
     class Config:
         alias_generator = to_camel
