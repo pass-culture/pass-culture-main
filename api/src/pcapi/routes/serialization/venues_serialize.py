@@ -14,6 +14,7 @@ from pydantic import validator
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
 from pcapi.routes.serialization.finance_serialize import BusinessUnitResponseModel
@@ -30,7 +31,7 @@ MAX_LONGITUDE = 180
 MAX_LATITUDE = 90
 
 
-class PostVenueBodyModel(BaseModel):
+class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     # pydantic constrained types do not work well with Mypy, see https://github.com/samuelcolvin/pydantic/issues/156
     address: pydantic.constr(max_length=200)  # type: ignore
     bookingEmail: pydantic.constr(max_length=120)  # type: ignore
@@ -47,10 +48,6 @@ class PostVenueBodyModel(BaseModel):
     venueTypeCode: str
     withdrawalDetails: Optional[str]
     description: Optional[base.VenueDescription]  # type: ignore
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     contact: Optional[base.VenueContactModel]
     businessUnitId: Optional[int]
 
@@ -139,7 +136,7 @@ class BannerMetaModel(BaseModel):
         return raw_crop_params
 
 
-class GetVenueResponseModel(base.BaseVenueResponse):
+class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     id: str
     dateCreated: datetime
     isValidated: bool
@@ -164,10 +161,6 @@ class GetVenueResponseModel(base.BaseVenueResponse):
     siret: Optional[str]
     venueLabelId: Optional[str]
     venueTypeCode: Optional[offerers_models.VenueTypeCode]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -202,7 +195,7 @@ class GetVenueResponseModel(base.BaseVenueResponse):
         return super().from_orm(venue)
 
 
-class EditVenueBodyModel(BaseModel):
+class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     name: Optional[pydantic.constr(max_length=140)]  # type: ignore
     address: Optional[pydantic.constr(max_length=200)]  # type: ignore
     siret: Optional[pydantic.constr(min_length=14, max_length=14)]  # type: ignore
@@ -220,17 +213,13 @@ class EditVenueBodyModel(BaseModel):
     isWithdrawalAppliedOnAllOffers: Optional[bool]
     isEmailAppliedOnAllOffers: Optional[bool]
     description: Optional[base.VenueDescription]  # type: ignore
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     contact: Optional[base.VenueContactModel]
     businessUnitId: Optional[int]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
 
 
-class VenueListItemResponseModel(BaseModel):
+class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: str
     managingOffererId: str
     name: str
@@ -239,10 +228,6 @@ class VenueListItemResponseModel(BaseModel):
     isVirtual: bool
     bookingEmail: Optional[str]
     withdrawalDetails: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     businessUnitId: Optional[int]
     businessUnit: Optional[BusinessUnitResponseModel]
     siret: Optional[str]
