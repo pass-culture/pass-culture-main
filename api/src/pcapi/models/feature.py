@@ -106,6 +106,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
+    ENABLE_EDUCATIONAL_DOMAINS = "Active l'utilisation du champs domaines sur les offres collectives"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -167,6 +168,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_ACCOUNT_REACTIVATION,
     FeatureToggle.ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE,
     FeatureToggle.ENABLE_VENUE_STRICT_SEARCH,
+    FeatureToggle.ENABLE_EDUCATIONAL_DOMAINS,
 )
 
 
