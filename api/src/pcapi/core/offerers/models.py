@@ -38,6 +38,7 @@ from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.has_address_mixin import HasAddressMixin
@@ -124,7 +125,7 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 )
 
 
-class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin):  # type: ignore [valid-type, misc]
+class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
     id = Column(BigInteger, primary_key=True)
@@ -194,14 +195,6 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     withdrawalDetails = Column(Text, nullable=True)
-
-    audioDisabilityCompliant = Column(Boolean, nullable=True)
-
-    mentalDisabilityCompliant = Column(Boolean, nullable=True)
-
-    motorDisabilityCompliant = Column(Boolean, nullable=True)
-
-    visualDisabilityCompliant = Column(Boolean, nullable=True)
 
     description = Column(Text, nullable=True)
 
