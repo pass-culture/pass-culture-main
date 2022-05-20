@@ -444,6 +444,11 @@ def _update_collective_offer(offer: Union[CollectiveOffer, CollectiveOfferTempla
             setattr(offer, key, students)
             continue
 
+        if key == "domains":
+            domains = educational_api.get_educational_domains_from_ids(value)
+            offer.domains = domains
+            continue
+
         setattr(offer, key, value)
 
     db.session.add(offer)

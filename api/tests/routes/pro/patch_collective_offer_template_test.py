@@ -4,6 +4,7 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
+from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.models import CollectiveOfferTemplate
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
@@ -19,12 +20,14 @@ class Returns200Test:
     @freeze_time("2019-01-01T12:00:00Z")
     def test_patch_collective_offer_template(self, client):
         # Given
+        domain = EducationalDomainFactory(name="Danse")
         offer = CollectiveOfferTemplateFactory(
             mentalDisabilityCompliant=False,
             contactEmail="johndoe@yopmail.com",
             contactPhone="0600000000",
             subcategoryId="CINE_PLEIN_AIR",
             priceDetail="price detail",
+            domains=[],
         )
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
@@ -38,6 +41,7 @@ class Returns200Test:
             "contactEmail": "toto@example.com",
             "subcategoryId": "CONCERT",
             "priceDetail": "pouet",
+            "domains": [domain.id],
         }
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers-template/{humanize(offer.id)}", json=data
@@ -59,6 +63,7 @@ class Returns200Test:
         assert updated_offer.contactPhone == "0600000000"
         assert updated_offer.subcategoryId == "CONCERT"
         assert updated_offer.priceDetail == "pouet"
+        assert updated_offer.domains == [domain]
 
 
 class Returns400Test:
@@ -157,6 +162,23 @@ class Returns400Test:
         # Then
         assert response.status_code == 400
 
+    def test_patch_offer_with_empty_educational_domains(self, client):
+        # Given
+        offer = CollectiveOfferTemplateFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {"domains": []}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers-template/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 400
+
 
 class Returns403Test:
     def when_user_is_not_attached_to_offerer(self, app, client):
@@ -188,3 +210,21 @@ class Returns404Test:
 
         # then
         assert response.status_code == 404
+
+    def test_patch_offer_with_unknwon_educational_domain(self, client):
+        # Given
+        offer = CollectiveOfferTemplateFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        data = {"domains": [0]}
+        response = client.with_session_auth("user@example.com").patch(
+            f"/collective/offers-template/{humanize(offer.id)}", json=data
+        )
+
+        # Then
+        assert response.status_code == 404
+        assert response.json["code"] == "EDUCATIONAL_DOMAIN_NOT_FOUND"
