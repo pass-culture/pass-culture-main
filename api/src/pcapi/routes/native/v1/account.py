@@ -331,7 +331,7 @@ def unsuspend_account(user: User) -> None:
     except exceptions.ReactivationTimeLimitExceeded:
         raise api_errors.ForbiddenError({"code": "REACTIVATION_LIMIT_REACHED"})
 
-    api.unsuspend_account(user, actor=user)
+    api.unsuspend_account(user, actor=user, send_email=True)
 
 
 @blueprint.native_v1.route("/user_profiling", methods=["POST"])

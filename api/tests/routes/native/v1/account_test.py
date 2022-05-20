@@ -1965,6 +1965,12 @@ class UnsuspendAccountTest:
             db.session.refresh(user)
             assert user.isActive
 
+            assert len(mails_testing.outbox) == 1
+
+            mail = mails_testing.outbox[0]
+            assert mail.sent_data["template"] == dataclasses.asdict(TransactionalEmail.ACCOUNT_UNSUSPENDED.value)
+            assert mail.sent_data["To"] == user.email
+
     def test_error_when_ff_not_enabled(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         users_factories.SuspendedUponUserRequestFactory(user=user)
