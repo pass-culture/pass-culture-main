@@ -10,6 +10,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { BannerRGS } from 'new_components/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Checkbox } from 'ui-kit'
+import FormLayout from 'new_components/FormLayout'
 import LegalInfos from 'components/layout/LegalInfos/LegalInfos'
 import OperatingProcedures from './OperationProcedures'
 import { SIGNUP_FORM_DEFAULT_VALUES } from './constants'
@@ -101,66 +102,82 @@ const SignupForm = (): JSX.Element => {
         </div>
         <FormikProvider value={formik}>
           <Form onSubmit={formik.handleSubmit}>
-            <div className="sign-up-form">
-              <TextInput
-                label="Adresse e-mail"
-                name="email"
-                placeholder="nom@example.fr"
-              />
-              <PasswordInput
-                name="password"
-                label="Mot de passe"
-                placeholder="Mon mot de passe"
-              />
-              <TextInput label="Nom" name="lastName" placeholder="Mon nom" />
-              <TextInput
-                label="Prénom"
-                name="firstName"
-                placeholder="Mon prénom"
-              />
-              <TextInput
-                label="Téléphone (utilisé uniquement par l’équipe du pass Culture)"
-                name="phoneNumber"
-                placeholder="Mon numéro de téléphone"
-              />
-              <div className="siren-field">
-                <SirenInput
-                  label="SIREN de la structure que vous représentez"
-                  onValidSiren={getSirenAPIData}
-                />
-                <span className="field-siren-value">
-                  {formik.values.legalUnitValues.name}
-                </span>
-              </div>
-              <Checkbox
-                hideFooter
-                label="J’accepte d’être contacté par e-mail pour recevoir les
+            <FormLayout>
+              <div className="sign-up-form">
+                <FormLayout.Row>
+                  <TextInput
+                    label="Adresse e-mail"
+                    name="email"
+                    placeholder="nom@exemple.fr"
+                  />
+                </FormLayout.Row>
+                <FormLayout.Row>
+                  <PasswordInput
+                    name="password"
+                    label="Mot de passe"
+                    placeholder="Mon mot de passe"
+                  />
+                </FormLayout.Row>
+                <FormLayout.Row>
+                  <TextInput label="Nom" name="lastName" placeholder="Mon nom" />
+                </FormLayout.Row>
+                <FormLayout.Row>
+                  <TextInput
+                    label="Prénom"
+                    name="firstName"
+                    placeholder="Mon prénom"
+                  />
+                </FormLayout.Row>
+                <FormLayout.Row>
+                  <TextInput
+                    label="Téléphone (utilisé uniquement par l’équipe du pass Culture)"
+                    name="phoneNumber"
+                    placeholder="Mon numéro de téléphone"
+                  />
+                </FormLayout.Row>
+                <div className="siren-field">
+                  <FormLayout.Row>
+                    <SirenInput
+                      label="SIREN de la structure que vous représentez"
+                      onValidSiren={getSirenAPIData}
+                    />
+                  </FormLayout.Row>
+                  <span className="field-siren-value">
+                    {formik.values.legalUnitValues.name}
+                  </span>
+                </div>
+                <FormLayout.Row>
+                  <Checkbox
+                    hideFooter
+                    label="J’accepte d’être contacté par e-mail pour recevoir les
                       nouveautés du pass Culture et contribuer à son
                       amélioration (facultatif)"
-                name="contactOk"
-                value={formik.values.contactOk}
-              />
-              <LegalInfos
-                className="sign-up-infos-before-signup"
-                title="Créer mon compte"
-              />
-              <BannerRGS />
-            </div>
-            <div className="buttons-field">
-              <Button
-                onClick={() => history.push('/connexion')}
-                variant={ButtonVariant.SECONDARY}
-              >
-                J’ai déjà un compte
-              </Button>
-              <SubmitButton
-                className="primary-button"
-                isLoading={formik.isSubmitting}
-                disabled={!formik.dirty || !formik.isValid}
-              >
-                Créer mon compte
-              </SubmitButton>
-            </div>
+                    name="contactOk"
+                    value={formik.values.contactOk}
+                  />
+                </FormLayout.Row>
+                <LegalInfos
+                  className="sign-up-infos-before-signup"
+                  title="Créer mon compte"
+                />
+                <BannerRGS />
+              </div>
+              <div className="buttons-field">
+                <Button
+                  onClick={() => history.push('/connexion')}
+                  variant={ButtonVariant.SECONDARY}
+                >
+                  J’ai déjà un compte
+                </Button>
+                <SubmitButton
+                  className="primary-button"
+                  isLoading={formik.isSubmitting}
+                  disabled={!formik.dirty || !formik.isValid}
+                >
+                  Créer mon compte
+                </SubmitButton>
+              </div>
+            </FormLayout>
           </Form>
         </FormikProvider>
       </div>
