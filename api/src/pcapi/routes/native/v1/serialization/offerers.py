@@ -7,15 +7,15 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import base
 
 
+class BannerMetaModel(TypedDict, total=False):
+    image_credit: typing.Optional[base.VenueImageCredit]  # type: ignore [valid-type]
+
+
 class VenueAccessibilityModel(BaseModel):
     audioDisability: typing.Optional[bool]
     mentalDisability: typing.Optional[bool]
     motorDisability: typing.Optional[bool]
     visualDisability: typing.Optional[bool]
-
-
-class BannerMetaModel(TypedDict, total=False):
-    image_credit: typing.Optional[base.VenueImageCredit]  # type: ignore [valid-type]
 
 
 class VenueResponse(base.BaseVenueResponse):

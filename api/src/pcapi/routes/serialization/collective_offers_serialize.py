@@ -13,6 +13,7 @@ from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.offers_serialize import ListOffersVenueResponseModel
@@ -183,7 +184,7 @@ class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
         orm_mode = True
 
 
-class GetCollectiveOfferVenueResponseModel(BaseModel):
+class GetCollectiveOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: Optional[str]
     bookingEmail: Optional[str]
     city: Optional[str]
@@ -207,10 +208,6 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
     siret: Optional[str]
     thumbCount: int
     venueLabelId: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -246,7 +243,7 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class GetCollectiveOfferBaseResponseModel(BaseModel):
+class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: str
     bookingEmail: Optional[str]
     dateCreated: datetime
@@ -259,10 +256,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel):
     hasBookingLimitDatetimesPassed: bool
     offerId: Optional[str]
     isActive: bool
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     nonHumanizedId: int
     name: str
     subcategoryId: SubcategoryIdEnum
@@ -384,7 +377,7 @@ class CollectiveOfferTemplateResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
-class PatchCollectiveOfferBodyModel(BaseModel):
+class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: Optional[str]
     description: Optional[str]
     name: Optional[str]
@@ -393,10 +386,6 @@ class PatchCollectiveOfferBodyModel(BaseModel):
     contactEmail: Optional[str]
     contactPhone: Optional[str]
     durationMinutes: Optional[int]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     subcategoryId: Optional[SubcategoryIdEnum]
     domains: Optional[list[int]]
 
