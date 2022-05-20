@@ -126,7 +126,6 @@
     "babel-jest": "^27.5.1",
     "babel-loader": "^8.2.2",
     "babel-plugin-typescript-to-proptypes": "^1.4.2",
-    "commander": "^2.14.1",
     "count-lines-in-file": "^1.1.0",
     "debt-collector": "gael-boyenval/debt-collector#v1.1.6-alpha",
     "enzyme": "^3.11.0",

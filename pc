@@ -278,23 +278,6 @@ elif [[ "$CMD" == "test-backend" ]]; then
 elif [[ "$CMD" == "test-backend-provider" ]]; then
   RUN='"$ROOT_PATH"/pc test-backend tests/10_local_providers.py::test_15_spreadsheet_exp_venue_provider tests/10_local_providers.py::test_15_spreadsheet_exp_stocks_provider tests/10_local_providers.py::test_16_openagenda_events_provider'
 
-# Run functional tests for pro application
-# Need to run start-backend & start-frontend
-elif [[ "$CMD" == "test-cafe-pro" ]]; then
-  APP_PATH="$ROOT_PATH"/pro
-  if [[ $# == 0 ]]; then
-    if [[ "$MACHINE" == "Mac" ]]; then
-      BROWSER="chrome"
-    else
-      BROWSER="chromium"
-    fi
-    confirm "Warning: your database will be wiped. Is this OK ?"
-    "$ROOT_PATH"/pc -e "$ENV" sandbox --name=industrial
-    RUN='cd $APP_PATH && ./scripts/manager.js testcafe -b $BROWSER:headless'
-  else
-    RUN='cd $APP_PATH && ./scripts/manager.js testcafe '"$*"
-  fi
-
 # Start Metabase container with sandbox data
 elif [[ "$CMD" == "start-metabase" ]]; then
   source "$INFRA_SCRIPTS_PATH"/start-metabase.sh
