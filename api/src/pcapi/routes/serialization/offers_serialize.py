@@ -17,6 +17,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
@@ -182,7 +183,7 @@ class CompletedEducationalOfferModel(EducationalOfferBodyModel):
     external_ticket_office_url: Optional[str] = None
 
 
-class PatchOfferBodyModel(BaseModel):
+class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: Optional[str]
     description: Optional[str]
     isNational: Optional[bool]
@@ -202,10 +203,6 @@ class PatchOfferBodyModel(BaseModel):
     conditions: Optional[str]
     venueId: Optional[str]
     productId: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -229,16 +226,12 @@ class EducationalOfferPartialExtraDataBodyModel(BaseModel):
         extra = "forbid"
 
 
-class PatchEducationalOfferBodyModel(BaseModel):
+class PatchEducationalOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmail: Optional[str]
     description: Optional[str]
     name: Optional[str]
     extraData: Optional[EducationalOfferPartialExtraDataBodyModel]
     durationMinutes: Optional[int]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     subcategoryId: Optional[SubcategoryIdEnum]
 
     @validator("name", allow_reuse=True)
@@ -475,7 +468,7 @@ class GetOfferManagingOffererResponseModel(BaseModel):
         orm_mode = True
 
 
-class GetOfferVenueResponseModel(BaseModel):
+class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: Optional[str]
     bookingEmail: Optional[str]
     city: Optional[str]
@@ -499,10 +492,6 @@ class GetOfferVenueResponseModel(BaseModel):
     siret: Optional[str]
     thumbCount: int
     venueLabelId: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -553,7 +542,7 @@ class GetOfferMediationResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class GetOfferResponseModel(BaseModel):
+class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: Optional[GetOfferMediationResponseModel]
     ageMax: Optional[int]
     ageMin: Optional[int]
@@ -577,11 +566,7 @@ class GetOfferResponseModel(BaseModel):
     isEvent: bool
     isNational: bool
     isThing: bool
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
     nonHumanizedId: int
-    visualDisabilityCompliant: Optional[bool]
     lastProvider: Optional[GetOfferLastProviderResponseModel]
     lastProviderId: Optional[str]
     mediaUrls: list[str]

@@ -8,13 +8,14 @@ from pcapi.core.offerers.repository import get_api_key_prefixes
 from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
 from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
 import pcapi.core.users.models as users_models
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.utils import humanize_field
 from pcapi.utils.date import format_into_utc_date
 
 
-class GetOffererVenueResponseModel(BaseModel):
+class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: Optional[str]
     bookingEmail: Optional[str]
     businessUnitId: Optional[int]
@@ -30,10 +31,6 @@ class GetOffererVenueResponseModel(BaseModel):
     publicName: Optional[str]
     venueLabelId: Optional[str]
     withdrawalDetails: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
@@ -121,7 +118,7 @@ class GetOfferersNamesQueryModel(BaseModel):
         extra = "forbid"
 
 
-class GetEducationalOffererVenueResponseModel(BaseModel):
+class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     address: Optional[str]
     city: Optional[str]
     id: str
@@ -129,10 +126,6 @@ class GetEducationalOffererVenueResponseModel(BaseModel):
     publicName: Optional[str]
     name: str
     postalCode: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
     _humanize_id = humanize_field("id")
 
     class Config:

@@ -12,6 +12,7 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
+from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceStrictMixin
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
@@ -66,7 +67,7 @@ class OfferVenueResponse(BaseModel):
         allow_population_by_field_name = True
 
 
-class OfferResponse(BaseModel):
+class OfferResponse(BaseModel, AccessibilityComplianceStrictMixin):
     @classmethod
     def from_orm(cls: Any, offer: Offer):  # type: ignore
         offer.subcategoryLabel = offer.subcategory.app_label
@@ -86,10 +87,6 @@ class OfferResponse(BaseModel):
     venue: OfferVenueResponse
     extraData: Any
     durationMinutes: Optional[int]
-    motorDisabilityCompliant: bool
-    visualDisabilityCompliant: bool
-    audioDisabilityCompliant: bool
-    mentalDisabilityCompliant: bool
 
     class Config:
         orm_mode = True
@@ -162,7 +159,7 @@ class EducationalInstitutionResponseModel(BaseModel):
         extra = "forbid"
 
 
-class CollectiveOfferResponseModel(BaseModel):
+class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin):
     id: int
     subcategoryLabel: str
     description: Optional[str]
@@ -176,10 +173,6 @@ class CollectiveOfferResponseModel(BaseModel):
     contactEmail: str
     contactPhone: str
     durationMinutes: Optional[int]
-    motorDisabilityCompliant: bool
-    visualDisabilityCompliant: bool
-    audioDisabilityCompliant: bool
-    mentalDisabilityCompliant: bool
     offerId: Optional[str]
     educationalPriceDetail: Optional[str]
     domains: list[OfferDomain]
@@ -206,7 +199,7 @@ class CollectiveOfferResponseModel(BaseModel):
         extra = "forbid"
 
 
-class CollectiveOfferTemplateResponseModel(BaseModel):
+class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStrictMixin):
     id: int
     subcategoryLabel: str
     description: Optional[str]
@@ -219,10 +212,6 @@ class CollectiveOfferTemplateResponseModel(BaseModel):
     contactEmail: str
     contactPhone: str
     durationMinutes: Optional[int]
-    motorDisabilityCompliant: bool
-    visualDisabilityCompliant: bool
-    audioDisabilityCompliant: bool
-    mentalDisabilityCompliant: bool
     educationalPriceDetail: Optional[str]
     offerId: Optional[str]
     domains: list[OfferDomain]
