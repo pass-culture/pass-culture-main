@@ -831,6 +831,19 @@ def test_public_api(client, app):
                     "title": "SigninResponse",
                     "type": "object",
                 },
+                "UserSuspensionDateResponse": {
+                    "properties": {
+                        "date": {"format": "date-time", "nullable": True, "title": "Date", "type": "string"}
+                    },
+                    "title": "UserSuspensionDateResponse",
+                    "type": "object",
+                },
+                "UserSuspensionStatusResponse": {
+                    "properties": {"status": {"$ref": "#/components/schemas/AccountState"}},
+                    "required": ["status"],
+                    "title": "UserSuspensionStatusResponse",
+                    "type": "object",
+                },
                 "ValidateEmailRequest": {
                     "properties": {"emailValidationToken": {"title": "Emailvalidationtoken", "type": "string"}},
                     "required": ["emailValidationToken"],
@@ -1472,6 +1485,11 @@ def test_public_api(client, app):
                     "title": "ProfileUpdateRequest",
                     "type": "object",
                 },
+                "AccountState": {
+                    "description": "An enumeration.",
+                    "enum": ["ACTIVE", "INACTIVE", "SUSPENDED", "SUSPENDED_UPON_USER_REQUEST", "DELETED"],
+                    "title": "AccountState",
+                },
                 "ActivityIdEnum": {
                     "description": "An enumeration.",
                     "enum": [
@@ -1557,7 +1575,14 @@ def test_public_api(client, app):
                     "operationId": "get_/native/v1/account/suspension_date",
                     "parameters": [],
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/UserSuspensionDateResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
@@ -1577,7 +1602,14 @@ def test_public_api(client, app):
                     "operationId": "get_/native/v1/account/suspension_status",
                     "parameters": [],
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/UserSuspensionStatusResponse"}
+                                }
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {
@@ -2299,7 +2331,12 @@ def test_public_api(client, app):
                     "operationId": "post_/native/v1/reset_recredit_amount_to_show",
                     "parameters": [],
                     "responses": {
-                        "200": {"description": "OK"},
+                        "200": {
+                            "content": {
+                                "application/json": {"schema": {"$ref": "#/components/schemas/UserProfileResponse"}}
+                            },
+                            "description": "OK",
+                        },
                         "403": {"description": "Forbidden"},
                         "422": {
                             "content": {

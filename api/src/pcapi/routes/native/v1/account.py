@@ -62,12 +62,9 @@ def update_user_profile(user: User, body: serializers.UserProfileUpdateRequest) 
 
 
 @blueprint.native_v1.route("/reset_recredit_amount_to_show", methods=["POST"])
-@spectree_serialize(
-    on_success_status=200,
-    api=blueprint.api,
-)
+@spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserProfileResponse)
 @authenticated_and_active_user_required
-def reset_recredit_amount_to_show(user: User) -> None:
+def reset_recredit_amount_to_show(user: User) -> serializers.UserProfileResponse:
     api.reset_recredit_amount_to_show(user)
 
     return serializers.UserProfileResponse.from_orm(user)
@@ -283,7 +280,7 @@ def suspend_account(user: User) -> None:
 
 
 @blueprint.native_v1.route("/account/suspension_date", methods=["GET"])
-@spectree_serialize(api=blueprint.api, on_success_status=200)
+@spectree_serialize(response_model=serializers.UserSuspensionDateResponse, api=blueprint.api, on_success_status=200)
 @authenticated_maybe_inactive_user_required
 def get_account_suspension_date(user: User) -> serializers.UserSuspensionDateResponse:
     reason = user.suspension_reason
@@ -296,7 +293,7 @@ def get_account_suspension_date(user: User) -> serializers.UserSuspensionDateRes
 
 
 @blueprint.native_v1.route("/account/suspension_status", methods=["GET"])
-@spectree_serialize(api=blueprint.api, on_success_status=200)
+@spectree_serialize(response_model=serializers.UserSuspensionStatusResponse, api=blueprint.api, on_success_status=200)
 @authenticated_maybe_inactive_user_required
 def get_account_suspension_status(user: User) -> serializers.UserSuspensionStatusResponse:
     return serializers.UserSuspensionStatusResponse(status=user.account_state)
