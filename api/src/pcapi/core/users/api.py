@@ -687,6 +687,13 @@ def validate_phone_number(user: User, code: str) -> None:
 
     if not token:
         code_validation_attempts = get_code_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
+        if code_validation_attempts.remaining == 0:
+            logger.warning(
+                "Phone number validation limit reached for user with id=%s",
+                user.id,
+                extra={"attempts_count": int(code_validation_attempts.attempts)},
+            )
+            raise exceptions.PhoneValidationAttemptsLimitReached(code_validation_attempts.attempts)
         raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)
 
     if token.expirationDate and token.expirationDate < datetime.utcnow():
@@ -726,11 +733,6 @@ def check_and_update_phone_validation_attempts(redis: Redis, user: User) -> None
     code_validation_attempts = get_code_validation_attempts(redis, user)
 
     if code_validation_attempts.remaining == 0:
-        logger.warning(
-            "Phone number validation limit reached for user with id=%s",
-            user.id,
-            extra={"attempts_count": int(code_validation_attempts.attempts)},
-        )
         raise exceptions.PhoneValidationAttemptsLimitReached(code_validation_attempts.attempts)
 
     phone_validation_attempts_key = f"phone_validation_attempts_user_{user.id}"
