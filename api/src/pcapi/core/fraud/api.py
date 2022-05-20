@@ -261,10 +261,19 @@ def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_numbe
 
 
 def find_duplicate_id_piece_number_user(
-    id_piece_number: str, excluded_user_id: int
+    id_piece_number: typing.Optional[str], excluded_user_id: int
 ) -> typing.Optional[users_models.User]:
+    if not id_piece_number:
+        return None
     return users_models.User.query.filter(
-        users_models.User.id != excluded_user_id, users_models.User.idPieceNumber == id_piece_number
+        users_models.User.id != excluded_user_id,
+        users_models.User.idPieceNumber.isnot(None),
+        sqlalchemy.sql.func.replace(
+            users_models.User.idPieceNumber,
+            " ",
+            "",
+        )
+        == id_piece_number.replace(" ", ""),
     ).first()
 
 

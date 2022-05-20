@@ -109,7 +109,7 @@ class CommonFraudCheckTest:
         assert fraud_item.status == fraud_models.FraudStatus.OK
 
     def test_duplicate_id_piece_number_suspicious(self):
-        user = users_factories.BeneficiaryGrant18Factory()
+        user = users_factories.BeneficiaryGrant18Factory(idPieceNumber="random_id")
         applicant = users_factories.UserFactory()
 
         fraud_item = fraud_api.duplicate_id_piece_number_fraud_item(applicant, user.idPieceNumber)
@@ -290,6 +290,21 @@ class FindDuplicateUserTest:
             )
             == existing_user
         )
+
+    @pytest.mark.parametrize(
+        "existing_id_piece_number,new_id_piece_number",
+        [
+            ("123456789", "123456789"),
+            ("123 456 789", "123456789"),
+            ("123456789", "123 456 789"),
+            ("1 2345678 9", "123 456 789"),
+        ],
+    )
+    def test_find_duplicate_id_piece_number_user(self, existing_id_piece_number, new_id_piece_number):
+        existing_user = users_factories.UserFactory(idPieceNumber=existing_id_piece_number)
+        new_user = users_factories.UserFactory()
+
+        assert fraud_api.find_duplicate_id_piece_number_user(new_id_piece_number, new_user.id) == existing_user
 
 
 @pytest.mark.usefixtures("db_session")
