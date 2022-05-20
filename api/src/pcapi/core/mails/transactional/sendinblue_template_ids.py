@@ -78,6 +78,7 @@ class TransactionalEmail(Enum):
     USER_REQUEST_DELETE_ACCOUNT_RECEPTION = Template(
         id_prod=511, id_not_prod=54, tags=["reception_demande_suppression_compte_jeune"]
     )
+    ACCOUNT_UNSUSPENDED = Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])
 
     # PRO EMAIL
 
