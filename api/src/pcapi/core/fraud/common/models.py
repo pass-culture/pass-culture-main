@@ -1,8 +1,6 @@
 import datetime
 import typing
 
-import pydantic
-import pydantic.datetime_parse
 import pydantic.errors
 
 from pcapi.core.users import models as users_models
