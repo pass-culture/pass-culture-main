@@ -1,5 +1,6 @@
 import enum
 import logging
+from typing import Optional
 
 import flask
 from werkzeug import Response
@@ -17,6 +18,8 @@ from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+
+from . import exceptions
 
 
 logger = logging.getLogger(__name__)
@@ -82,6 +85,22 @@ def on_admin_review(review: fraud_models.BeneficiaryFraudReview, user: users_mod
 
         source_data: common_fraud_models.IdentityCheckContent = fraud_check.source_data()  # type: ignore [assignment]
 
+        try:
+            _check_id_piece_number_unicity(user, source_data.get_id_piece_number())
+            _check_ine_hash_unicity(user, source_data.get_ine_hash())
+        except exceptions.DuplicateIdPieceNumber as e:
+            flask.flash(
+                f"Le numéro de CNI {e.id_piece_number} est déjà utilisé par l'utilisateur {e.duplicate_user_id}",
+                "error",
+            )
+            return flask.redirect(flask.url_for(".details_view", id=user.id))
+        except exceptions.DuplicateIneHash as e:
+            flask.flash(
+                f"Le numéro INE {e.ine_hash} est déjà utilisé par l'utilisateur {e.duplicate_user_id}",
+                "error",
+            )
+            return flask.redirect(flask.url_for(".details_view", id=user.id))
+
         users_api.update_user_information_from_external_source(user, source_data)
         if data["eligibility"] == "Par défaut":
             eligibility = fraud_api.decide_eligibility(
@@ -135,3 +154,23 @@ def on_admin_review(review: fraud_models.BeneficiaryFraudReview, user: users_mod
 
     flask.flash("Une revue manuelle ajoutée pour l'utilisateur")
     return flask.redirect(flask.url_for(".details_view", id=user.id))
+
+
+def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: Optional[str]) -> None:
+    if not id_piece_number:
+        return
+
+    duplicate_user = fraud_api.find_duplicate_id_piece_number_user(id_piece_number, user.id)
+
+    if duplicate_user:
+        raise exceptions.DuplicateIdPieceNumber(id_piece_number, duplicate_user.id)
+
+
+def _check_ine_hash_unicity(user: users_models.User, ine_hash: Optional[str]) -> None:
+    if not ine_hash:
+        return
+
+    duplicate_user = fraud_api.find_duplicate_ine_hash_user(ine_hash, user.id)
+
+    if duplicate_user:
+        raise exceptions.DuplicateIneHash(ine_hash, duplicate_user.id)
