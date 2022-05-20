@@ -12,10 +12,10 @@ import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import subcategories
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.extra_data_mixin import ExtraDataMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
-from pcapi.models.offer_mixin import AccessibilityMixin
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import StatusMixin
 from pcapi.models.offer_mixin import ValidationMixin

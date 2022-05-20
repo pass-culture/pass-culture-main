@@ -30,16 +30,6 @@ class OfferValidationType(enum.Enum):
     MANUAL = "MANUAL"
 
 
-class AccessibilityMixin:
-    audioDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
-    mentalDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
-    motorDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
-    visualDisabilityCompliant = sa.Column(sa.Boolean, nullable=True)
-
-
 class StatusMixin:
     @sa.ext.hybrid.hybrid_property
     def status(self) -> OfferStatus:
