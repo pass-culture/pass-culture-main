@@ -175,6 +175,58 @@ class BeneficiaryValidationViewTest:
         assert user.lastName == ubble_content.get_last_name()
         assert user.idPieceNumber == ubble_content.get_id_piece_number()
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    @patch("flask.flash")
+    def test_ine_hash_duplicate(self, flash_mock, client):
+        other_user_with_same_ine = users_factories.UserFactory(ineHash="shotgun")
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=2))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.EduconnectContentFactory(ine_hash="shotgun"),
+        )
+        admin = users_factories.AdminFactory()
+        client.with_session_auth(admin.email)
+
+        response = client.post(
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
+        )
+        assert response.status_code == 302
+
+        assert not user.has_underage_beneficiary_role
+        assert len(user.deposits) == 0
+        flash_mock.assert_called_once_with(
+            f"Le numéro INE shotgun est déjà utilisé par l'utilisateur {other_user_with_same_ine.id}", "error"
+        )
+
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    @patch("flask.flash")
+    def test_id_piece_number_duplicate(self, flash_mock, client):
+        other_user_with_same_id = users_factories.UserFactory(idPieceNumber="123456")
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=2))
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.DMSContentFactory(id_piece_number="123456"),
+        )
+        admin = users_factories.AdminFactory()
+        client.with_session_auth(admin.email)
+
+        response = client.post(
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "Par défaut"},
+        )
+        assert response.status_code == 302
+
+        assert not user.has_underage_beneficiary_role
+        assert len(user.deposits) == 0
+        flash_mock.assert_called_once_with(
+            f"Le numéro de CNI 123456 est déjà utilisé par l'utilisateur {other_user_with_same_id.id}", "error"
+        )
+
     @patch("flask.flash")
     @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
     def test_validation_view_no_age_found(self, flash_mock, client):

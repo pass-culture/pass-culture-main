@@ -271,9 +271,7 @@ def find_duplicate_id_piece_number_user(
 
 
 def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> models.FraudItem:
-    duplicate_user = users_models.User.query.filter(
-        users_models.User.ineHash == ine_hash, users_models.User.id != excluded_user_id
-    ).first()
+    duplicate_user = find_duplicate_ine_hash_user(ine_hash, excluded_user_id)
 
     if duplicate_user:
         return models.FraudItem(
@@ -283,6 +281,12 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> mode
         )
 
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE n'est pas déjà pris")
+
+
+def find_duplicate_ine_hash_user(ine_hash: str, excluded_user_id: int) -> typing.Optional[users_models.User]:
+    return users_models.User.query.filter(
+        users_models.User.id != excluded_user_id, users_models.User.ineHash == ine_hash
+    ).first()
 
 
 def _check_user_has_no_active_deposit(
