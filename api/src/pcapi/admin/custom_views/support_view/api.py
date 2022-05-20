@@ -12,6 +12,7 @@ from pcapi.core.payments import exceptions as payment_exceptions
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.models import SubscriptionItemStatus
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
@@ -39,7 +40,9 @@ SUBSCRIPTION_ITEM_METHODS = [
 ]
 
 
-def get_subscription_items_by_eligibility(user: users_models.User):  # type: ignore [no-untyped-def]
+def get_subscription_items_by_eligibility(
+    user: users_models.User,
+) -> list[dict[str, subscription_models.SubscriptionItem]]:
     subscription_items = []
     for method in SUBSCRIPTION_ITEM_METHODS:
         subscription_items.append(
