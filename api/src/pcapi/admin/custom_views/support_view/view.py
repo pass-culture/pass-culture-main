@@ -219,7 +219,8 @@ class BeneficiaryView(base_configuration.BaseAdminView):
         review = fraud_models.BeneficiaryFraudReview(
             user=user, author=flask_login.current_user, reason=form.data["reason"], review=form.data["review"]
         )
-        return support_api.on_admin_review(review, user, form.data)
+        support_api.on_admin_review(review, user, form.data)
+        return flask.redirect(flask.url_for(".details_view", id=user.id))
 
     @flask_admin.expose("/validate/beneficiary/phone_number/<user_id>", methods=["POST"])
     def validate_phone_number(self, user_id: int) -> Response:
