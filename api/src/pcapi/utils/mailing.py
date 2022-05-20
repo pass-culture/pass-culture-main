@@ -9,6 +9,7 @@ from pcapi.connectors import api_entreprises
 from pcapi.core.bookings.models import Booking
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalSender
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
@@ -96,8 +97,8 @@ def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
     )
 
 
-def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer]) -> dict:
-    author = offer.author or offer.venue.managingOfferer.UserOfferers[0].user
+def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer, CollectiveOfferTemplate]) -> dict:
+    author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
     pro_link_to_offer = build_pc_pro_offer_link(offer)
     pro_venue_link = f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
