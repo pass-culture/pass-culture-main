@@ -1236,22 +1236,20 @@ class ValidatePhoneNumberTest:
         attempts_count = int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}"))
         assert attempts_count == 1
 
-        # check that a fraud check has been created
-        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+        fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=user.id,
             type=fraud_models.FraudCheckType.PHONE_VALIDATION,
             thirdPartyId=f"PC-{user.id}",
-        ).one_or_none()
+        ).all()
+        for fraud_check in fraud_checks:
+            assert fraud_check.eligibilityType == EligibilityType.AGE18
 
-        assert fraud_check is not None
-        assert fraud_check.eligibilityType == EligibilityType.AGE18
+            expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
+            content = fraud_check.resultContent
+            assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
-        expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
-        content = fraud_check.resultContent
-        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
-
-        assert fraud_check.reason == expected_reason
-        assert content["phone_number"] == "+33607080900"
+            assert fraud_check.reason == expected_reason
+            assert content["phone_number"] == "+33607080900"
 
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
     @freeze_time("2022-05-17 15:00")
@@ -1296,10 +1294,16 @@ class ValidatePhoneNumberTest:
             response.json["message"]
             == "Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste 1 tentative."
         )
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).first() is None
+
         response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_VALIDATION_ATTEMPTS"
         assert response.json["message"] == "Le nombre de tentatives maximal est dépassé"
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
         assert not User.query.get(user.id).is_phone_validated
         assert user.is_subscriptionState_phone_validation_ko

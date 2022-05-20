@@ -22,7 +22,6 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.fraud.api as fraud_api
 from pcapi.core.fraud.common import models as common_fraud_models
-import pcapi.core.fraud.models as fraud_models
 from pcapi.core.fraud.phone_validation.sending_limit import get_code_validation_attempts
 from pcapi.core.fraud.phone_validation.sending_limit import is_SMS_sending_allowed
 from pcapi.core.fraud.phone_validation.sending_limit import update_sent_SMS_counter
@@ -688,12 +687,7 @@ def validate_phone_number(user: User, code: str) -> None:
     if not token:
         code_validation_attempts = get_code_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
         if code_validation_attempts.remaining == 0:
-            logger.warning(
-                "Phone number validation limit reached for user with id=%s",
-                user.id,
-                extra={"attempts_count": int(code_validation_attempts.attempts)},
-            )
-            raise exceptions.PhoneValidationAttemptsLimitReached(code_validation_attempts.attempts)
+            fraud_api.handle_phone_validation_attempts_limit_reached(user, code_validation_attempts.attempts)
         raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)
 
     if token.expirationDate and token.expirationDate < datetime.utcnow():
