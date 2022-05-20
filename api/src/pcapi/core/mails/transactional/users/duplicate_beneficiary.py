@@ -18,7 +18,7 @@ def send_duplicate_beneficiary_email(
 ) -> bool:
     if is_id_piece_number_duplicate:
         duplicate_beneficiary = fraud_api.find_duplicate_id_piece_number_user(
-            identity_content.get_id_piece_number(), rejected_user.id  # type: ignore [arg-type]
+            identity_content.get_id_piece_number(), rejected_user.id
         )
     else:
         duplicate_beneficiary = fraud_api.find_duplicate_beneficiary(
