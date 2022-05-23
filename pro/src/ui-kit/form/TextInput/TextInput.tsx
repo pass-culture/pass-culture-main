@@ -3,10 +3,12 @@ import { BaseInput, FieldLayout } from '../shared'
 import React from 'react'
 import { useField } from 'formik'
 
-interface ITextInputProps {
+interface ITextInputProps
+  extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {
   name: string
   className?: string
   disabled?: boolean
+  hideFooter?: boolean
   label: string
   placeholder?: string
   type?: 'text' | 'number' | 'email' | 'url' | 'password' | 'tel'
@@ -23,6 +25,7 @@ const TextInput = ({
   type = 'text',
   className,
   disabled,
+  hideFooter,
   label,
   placeholder,
   countCharacters,
@@ -31,6 +34,7 @@ const TextInput = ({
   isOptional = false,
   rightButton,
   step,
+  ...props
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
     name,
@@ -42,6 +46,7 @@ const TextInput = ({
       className={className}
       count={countCharacters ? field.value.length : undefined}
       error={meta.error}
+      hideFooter={hideFooter}
       isOptional={isOptional}
       label={label}
       maxLength={maxLength}
@@ -58,6 +63,7 @@ const TextInput = ({
         type={type}
         rightButton={rightButton}
         {...field}
+        {...props}
       />
     </FieldLayout>
   )
