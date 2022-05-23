@@ -313,6 +313,7 @@ def find_collective_bookings_for_adage(
         .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
         .options(
             joinedload(educational_models.CollectiveOffer.venue, innerjoin=True),
+            joinedload(educational_models.CollectiveOffer.domains),
         )
     )
     query = query.join(educational_models.EducationalInstitution)
@@ -454,6 +455,11 @@ def get_paginated_collective_bookings_for_educational_year(
         .load_only(offerers_models.Venue.managingOffererId, offerers_models.Venue.departementCode)
         .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
         .load_only(offerers_models.Offerer.postalCode)
+    )
+    query = query.options(
+        joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+        .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+        .joinedload(educational_models.CollectiveOffer.domains)
     )
     query = query.options(joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
     query = query.order_by(educational_models.CollectiveBooking.id)

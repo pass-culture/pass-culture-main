@@ -92,7 +92,7 @@ class Returns200Test:
             "participants": [],
             "priceDetail": stock.educationalPriceDetail,
             "postalCode": venue.postalCode,
-            "price": booking.amount,
+            "price": float(booking.amount),
             "quantity": booking.quantity,
             "redactor": {
                 "email": "jean.doux@example.com",
@@ -105,9 +105,11 @@ class Returns200Test:
             "status": "REFUSED",
             "subcategoryLabel": "Séance de cinéma",
             "venueTimezone": venue.timezone,
-            "totalAmount": booking.total_amount,
+            "totalAmount": float(booking.total_amount),
             "url": offer_app_link(offer),
             "withdrawalDetails": offer.withdrawalDetails,
+            "domainIds": [],
+            "domainLabels": [],
         }
 
         # It should be 0 because on booking factory creation it goes to 20, then on cancellation it goes 20-20

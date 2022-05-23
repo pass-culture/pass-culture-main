@@ -96,7 +96,7 @@ class Returns200Test:
                     "participants": [],
                     "priceDetail": stock.educationalPriceDetail,
                     "postalCode": venue.postalCode,
-                    "price": booking.amount,
+                    "price": float(booking.amount),
                     "quantity": booking.quantity,
                     "redactor": {
                         "email": "jean.doux@example.com",
@@ -109,9 +109,11 @@ class Returns200Test:
                     "status": "CONFIRMED",
                     "subcategoryLabel": "Séance de cinéma",
                     "venueTimezone": venue.timezone,
-                    "totalAmount": booking.amount * booking.quantity,
+                    "totalAmount": float(booking.amount * booking.quantity),
                     "url": offer_app_link(offer),
                     "withdrawalDetails": offer.withdrawalDetails,
+                    "domainIds": [],
+                    "domainLabels": [],
                 }
             ],
         }
@@ -212,6 +214,8 @@ class Returns200Test:
                     "totalAmount": float(stock.price),
                     "url": offer_app_link(offer),
                     "withdrawalDetails": None,
+                    "domainIds": [domain.id for domain in offer.domains],
+                    "domainLabels": [domain.name for domain in offer.domains],
                 }
             ],
         }

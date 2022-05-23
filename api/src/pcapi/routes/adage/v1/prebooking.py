@@ -182,6 +182,8 @@ def get_all_bookings_per_year(
                 venueTimezone=educational_booking.booking.stock.offer.venue.timezone,
                 name=educational_booking.booking.stock.offer.name,
                 redactorEmail=educational_booking.educationalRedactor.email,
+                domainIds=[],
+                domainLabels=[],
             )
             for educational_booking in educational_bookings
         ]
