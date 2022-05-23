@@ -16,9 +16,9 @@ target_metadata = db.metadata
 
 # List of columns to ignore keyed by table e.g {"user":  ("isAdmin", "isBeneficiary")}
 # op.drop_constraint('allocine_pivot_siret_key', 'allocine_pivot', type_='unique')
-IGNORED_COLUMNS_BY_TABLE: Dict[str, tuple] = {"user": ("hasCompletedIdCheck",), "allocine_pivot": ("siret",)}
+IGNORED_COLUMNS_BY_TABLE: Dict[str, tuple] = {"user": ("hasCompletedIdCheck",)}
 IGNORED_TABLES = ("transaction", "activity")
-IGNORED_UNIQUE_CONSTRAINT_BY_TABLE: Dict[str, tuple] = {"allocine_pivot": ("allocine_pivot_siret_key",)}
+IGNORED_UNIQUE_CONSTRAINT_BY_TABLE: Dict[str, tuple] = {}
 
 
 def include_object(

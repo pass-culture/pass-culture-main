@@ -196,7 +196,7 @@ class StockDetail:
 
 
 class AllocinePivot(PcObject, Model):  # type: ignore [valid-type, misc]
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
     venue = relationship(Venue, foreign_keys=[venueId])
 
