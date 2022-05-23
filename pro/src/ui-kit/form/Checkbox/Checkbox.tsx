@@ -27,7 +27,6 @@ const Checkbox = ({
   hideFooter,
 }: ICheckboxProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'checkbox' })
-
   return (
     <div className={cn(styles['checkbox'], className)}>
       <BaseCheckbox

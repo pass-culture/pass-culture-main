@@ -1,6 +1,7 @@
+import React, { ChangeEventHandler } from 'react'
+
 import BaseCheckbox from './BaseCheckbox'
 import { ReactComponent as Icon } from 'icons/ico-calendar.svg'
-import React from 'react'
 import { Story } from '@storybook/react'
 
 export default {
@@ -12,7 +13,7 @@ const Template: Story<{
   label: string
   hasError: boolean
   disabled: boolean
-  checked: boolean
+  onChange: ChangeEventHandler<HTMLInputElement>
   Icon: React.FunctionComponent<
     React.SVGProps<SVGSVGElement> & {
       title?: string | undefined
@@ -30,6 +31,6 @@ Default.args = {
   label: 'radio label',
   hasError: false,
   disabled: false,
-  checked: false,
+  onChange: () => {},
   Icon,
 }
