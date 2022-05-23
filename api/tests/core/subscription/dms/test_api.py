@@ -11,6 +11,7 @@ from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.dms import api as dms_subscription_api
+from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 
@@ -268,3 +269,29 @@ class HandleDmsApplicationTest:
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+
+    @override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
+    def test_parsing_error_allows_fraud_check_content(self):
+        user = users_factories.UserFactory()
+        dms_response = make_parsed_graphql_application(
+            application_id=1,
+            state=dms_models.GraphQLApplicationStates.refused,
+            email=user.email,
+            id_piece_number="(wrong_number)",
+            first_name="",
+            application_techid="XYZQVM",
+        )
+        dms_subscription_api.handle_dms_application(dms_response, 123)
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
+            userId=user.id, type=fraud_models.FraudCheckType.DMS
+        ).first()
+        assert fraud_check.status == fraud_models.FraudCheckStatus.KO
+
+        result_content = fraud_check.source_data()
+        assert result_content.application_id == 1
+        assert result_content.birth_date == datetime.date(2004, 1, 1)
+        assert result_content.registration_datetime == datetime.datetime(
+            2020, 5, 13, 9, 9, 46, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))
+        )
+        assert result_content.first_name == ""

@@ -104,9 +104,7 @@ def parse_beneficiary_information_graphql(
         elif label in (dms_models.FieldLabel.CITY_FR.value, dms_models.FieldLabel.CITY_ET.value):
             city = value
 
-    if parsing_errors:
-        raise subscription_exceptions.DMSParsingError(email, parsing_errors, "Error validating")
-    return fraud_models.DMSContent(
+    result_content = fraud_models.DMSContent(
         activity=activity,
         address=address,
         application_id=application_id,
@@ -125,3 +123,7 @@ def parse_beneficiary_information_graphql(
         registration_datetime=registration_datetime,
         state=application_detail.state.value,
     )
+
+    if parsing_errors:
+        raise subscription_exceptions.DMSParsingError(email, parsing_errors, result_content, "Error validating")
+    return result_content
