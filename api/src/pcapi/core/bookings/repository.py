@@ -928,17 +928,10 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
         .filter(not_(Offer.isDigital))
         .filter(Booking.status != BookingStatus.CANCELLED)
         .options(
-            contains_eager(IndividualBooking.booking).contains_eager(Booking.stock).load_only(Stock.beginningDatetime)
-        )
-        .options(
             contains_eager(IndividualBooking.booking)
-            .contains_eager(Booking.stock)
-            .contains_eager(Stock.bookings)
             .load_only(Booking.id, Booking.stockId, Booking.quantity, Booking.token)
-        )
-        .options(
-            contains_eager(IndividualBooking.booking)
             .contains_eager(Booking.stock)
+            .load_only(Stock.beginningDatetime)
             .contains_eager(Stock.offer)
             .load_only(
                 Offer.name,
@@ -947,11 +940,6 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
                 Offer.withdrawalType,
                 Offer.withdrawalDetails,
             )
-        )
-        .options(
-            contains_eager(IndividualBooking.booking)
-            .contains_eager(Booking.stock)
-            .contains_eager(Stock.offer)
             .joinedload(Offer.venue, innerjoin=True)
             .load_only(Venue.name, Venue.publicName, Venue.address, Venue.city, Venue.postalCode)
         )
