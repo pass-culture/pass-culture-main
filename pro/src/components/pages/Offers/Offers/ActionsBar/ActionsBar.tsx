@@ -141,8 +141,8 @@ const ActionsBar = ({
             `Vous avez sélectionné ${nbSelectedOffers} offre,`
             : `Vous avez sélectionné ${nbSelectedOffers} offres,`}
           secondTitle={ nbSelectedOffers === 1 ?
-            `êtes-vous sur de vouloir la désactiver${NBSP}?`
-            : `êtes-vous sur de vouloir toutes les désactiver${NBSP}?`}
+            `êtes-vous sûr de vouloir la désactiver${NBSP}?`
+            : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`}
         >
           {nbSelectedOffers === 1 ? "Dans ce cas, elle ne sera plus visible sur l’application pass Culture par les jeunes." : "Dans ce cas, elles ne seront plus visibles sur l’application pass Culture par les jeunes."}
         </ConfirmDialog>
