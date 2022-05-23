@@ -176,6 +176,8 @@ def test_serialize_eligible_for_strict_search_venue():
 
 
 def test_serialize_collective_offer():
+    domain1 = educational_factories.EducationalDomainFactory(name="Danse")
+    domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
     collective_offer = educational_factories.CollectiveOfferFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
@@ -186,6 +188,7 @@ def test_serialize_collective_offer():
         venue__publicName="La Moyenne Librairie",
         venue__managingOfferer__name="Les Librairies Associées",
         venue__departementCode="86",
+        educational_domains=[domain1, domain2],
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
@@ -196,6 +199,7 @@ def test_serialize_collective_offer():
             "name": "Titre formidable",
             "students": ["CAP - 1re année", "CAP - 2e année"],
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "domains": [domain1.id, domain2.id],
         },
         "offerer": {
             "name": "Les Librairies Associées",
@@ -211,6 +215,8 @@ def test_serialize_collective_offer():
 
 
 def test_serialize_collective_offer_template():
+    domain1 = educational_factories.EducationalDomainFactory(name="Danse")
+    domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
         dateCreated=datetime.datetime(2022, 1, 1, 10, 0, 0),
         name="Titre formidable",
@@ -221,6 +227,7 @@ def test_serialize_collective_offer_template():
         venue__publicName="La Moyenne Librairie",
         venue__managingOfferer__name="Les Librairies Associées",
         venue__departementCode="86",
+        educational_domains=[domain1, domain2],
     )
 
     serialized = algolia.AlgoliaBackend().serialize_collective_offer_template(collective_offer_template)
@@ -231,6 +238,7 @@ def test_serialize_collective_offer_template():
             "name": "Titre formidable",
             "students": ["CAP - 1re année", "CAP - 2e année"],
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
+            "domains": [domain1.id, domain2.id],
         },
         "offerer": {
             "name": "Les Librairies Associées",

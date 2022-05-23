@@ -475,6 +475,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": collective_offer.name,
                 "students": [student.value for student in collective_offer.students],
                 "subcategoryId": collective_offer.subcategoryId,
+                "domains": [domain.id for domain in collective_offer.domains],
             },
             "offerer": {
                 "name": offerer.name,
@@ -503,6 +504,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": collective_offer_template.name,
                 "students": [student.value for student in collective_offer_template.students],
                 "subcategoryId": collective_offer_template.subcategoryId,
+                "domains": [domain.id for domain in collective_offer_template.domains],
             },
             "offerer": {
                 "name": offerer.name,
