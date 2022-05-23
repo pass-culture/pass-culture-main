@@ -52,6 +52,8 @@ class Returns200Test:
                     "venueTimezone": booking1.stock.offer.venue.timezone,
                     "name": booking1.stock.offer.name,
                     "redactorEmail": educationalBooking1.educationalRedactor.email,
+                    "domainIds": [],
+                    "domainLabels": [],
                 },
                 {
                     "id": educationalBooking2.id,
@@ -63,6 +65,8 @@ class Returns200Test:
                     "venueTimezone": booking2.stock.offer.venue.timezone,
                     "name": booking2.stock.offer.name,
                     "redactorEmail": educationalBooking2.educationalRedactor.email,
+                    "domainIds": [],
+                    "domainLabels": [],
                 },
             ],
         }
@@ -153,6 +157,8 @@ class Returns200Test:
                     "venueTimezone": booking1.collectiveStock.collectiveOffer.venue.timezone,
                     "name": booking1.collectiveStock.collectiveOffer.name,
                     "redactorEmail": booking1.educationalRedactor.email,
+                    "domainIds": [domain.id for domain in booking1.collectiveStock.collectiveOffer.domains],
+                    "domainLabels": [domain.name for domain in booking1.collectiveStock.collectiveOffer.domains],
                 },
                 {
                     "id": booking2.id,
@@ -164,6 +170,8 @@ class Returns200Test:
                     "venueTimezone": booking2.collectiveStock.collectiveOffer.venue.timezone,
                     "name": booking2.collectiveStock.collectiveOffer.name,
                     "redactorEmail": booking2.educationalRedactor.email,
+                    "domainIds": [domain.id for domain in booking2.collectiveStock.collectiveOffer.domains],
+                    "domainLabels": [domain.name for domain in booking2.collectiveStock.collectiveOffer.domains],
                 },
             ],
         }
