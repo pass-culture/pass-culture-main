@@ -199,6 +199,7 @@ def _create_parsing_error_fraud_check(
     errors = ",".join([f"'{key}' ({value})" for key, value in sorted(parsing_error.errors.items())])
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
+    fraud_check.resultContent = parsing_error.result_content.dict()
 
     if state == dms_models.GraphQLApplicationStates.draft:
         status = fraud_models.FraudCheckStatus.STARTED
