@@ -19,6 +19,11 @@ export enum ADRESS_TYPE {
   OTHER = 'other',
 }
 
+export type EducationalDomain = {
+  id: number
+  name: string
+}
+
 export interface OfferType {
   id: number
   name: string
@@ -44,6 +49,7 @@ export interface OfferType {
     students?: string[]
     isShowcase?: boolean
   }
+  domains?: EducationalDomain[]
 }
 
 export interface VenueFilterType {
@@ -85,6 +91,7 @@ export type CollectiveOfferBaseModel = {
   mentalDisabilityCompliant: boolean
   offerId?: string
   educationalPriceDetail?: string
+  domains?: EducationalDomain[]
 }
 
 export type CollectiveOffer = CollectiveOfferBaseModel & {
