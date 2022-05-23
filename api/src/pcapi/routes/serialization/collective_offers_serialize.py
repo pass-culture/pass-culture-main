@@ -156,6 +156,15 @@ def _serialize_venue(venue: Venue) -> dict:
     }
 
 
+class OfferDomain(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+
+
 class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
     address: Optional[str]
     city: str
@@ -265,6 +274,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel):
     venue: GetCollectiveOfferVenueResponseModel
     venueId: str
     status: OfferStatus
+    domains: list[OfferDomain]
 
     _humanize_id = humanize_field("id")
     _humanize_offerId = humanize_field("offerId")

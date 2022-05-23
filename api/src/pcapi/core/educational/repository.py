@@ -821,6 +821,7 @@ def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOf
                     innerjoin=True,
                 )
             )
+            .options(joinedload(educational_models.CollectiveOffer.domains))
             .one()
         )
     except NoResultFound:
@@ -837,6 +838,7 @@ def get_collective_offer_template_by_id(offer_id: int) -> educational_models.Col
                 innerjoin=True,
             )
         )
+        query = query.options(joinedload(educational_models.CollectiveOfferTemplate.domains))
         return query.one()
     except NoResultFound:
         raise CollectiveOfferTemplateNotFound()
