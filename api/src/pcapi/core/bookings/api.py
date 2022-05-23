@@ -7,7 +7,7 @@ import pytz
 from sqlalchemy import and_
 
 from pcapi.core import search
-from pcapi.core.booking_providers.api import book_ticket
+import pcapi.core.booking_providers.api as booking_providers_api
 from pcapi.core.booking_providers.models import VenueBookingProvider
 from pcapi.core.bookings import constants
 from pcapi.core.bookings.models import Booking
@@ -39,6 +39,7 @@ from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary
 from pcapi.core.mails.transactional.bookings.new_booking_to_pro import send_user_new_booking_to_pro_email
 from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.models as offers_models
+from pcapi.core.offers.models import Stock
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.external import update_external_user
 from pcapi.core.users.models import User
@@ -128,32 +129,7 @@ def book_offer(
             userId=beneficiary.id,
         )
         stock.dnBookedQuantity += booking.quantity
-
-        is_active_venue_booking_provider = db.session.query(
-            VenueBookingProvider.query.filter(
-                VenueBookingProvider.venueId == stock.offer.venueId, VenueBookingProvider.isActive
-            ).exists()
-        ).scalar()
-
-        if (
-            FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
-            and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
-            and is_active_venue_booking_provider
-        ):
-
-            if stock.idAtProviders and stock.idAtProviders.isdigit():
-                show_id = int(stock.idAtProviders)
-            else:
-                logger.error("stock.idAtProviders is not a digit: %s", stock.idAtProviders)
-
-            tickets = book_ticket(
-                venue_id=stock.offer.venueId,
-                show_id=show_id,
-                quantity=quantity,
-            )
-            booking.externalBookings = [
-                ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
-            ]
+        _book_external_offer(booking, stock)
 
         repository.save(individual_booking, stock)
 
@@ -184,6 +160,34 @@ def book_offer(
     return individual_booking.booking
 
 
+def _book_external_offer(booking: Booking, stock: Stock) -> None:
+    is_active_venue_booking_provider = db.session.query(
+        VenueBookingProvider.query.filter(
+            VenueBookingProvider.venueId == stock.offer.venueId, VenueBookingProvider.isActive
+        ).exists()
+    ).scalar()
+
+    if (
+        FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
+        and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
+        and is_active_venue_booking_provider
+    ):
+
+        if stock.idAtProviders and stock.idAtProviders.isdigit():
+            show_id = int(stock.idAtProviders)
+        else:
+            logger.error("stock.idAtProviders is not a digit: %s", stock.idAtProviders)
+
+        tickets = booking_providers_api.book_ticket(
+            venue_id=stock.offer.venueId,
+            show_id=show_id,
+            quantity=booking.quantity,
+        )
+        booking.externalBookings = [
+            ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
+        ]
+
+
 def _cancel_booking(
     booking: Booking,
     reason: BookingCancellationReasons,
@@ -197,6 +201,7 @@ def _cancel_booking(
         old_status = booking.status
         try:
             booking.cancel_booking(cancel_even_if_used)
+            _cancel_external_booking(booking, stock)
         except (BookingIsAlreadyUsed, BookingIsAlreadyCancelled) as e:
             if raise_if_error:
                 raise
@@ -227,6 +232,16 @@ def _cancel_booking(
         update_external_pro(booking.venue.bookingEmail)
     search.async_index_offer_ids([booking.stock.offerId])
     return True
+
+
+def _cancel_external_booking(booking: Booking, stock: Stock) -> None:
+    if (
+        FeatureToggle.ENABLE_CDS_IMPLEMENTATION.is_active()
+        and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
+        and booking.isExternal
+    ):
+        barcodes = [external_booking.barcode for external_booking in booking.externalBookings]
+        booking_providers_api.cancel_booking(stock.offer.venueId, barcodes)
 
 
 def _cancel_collective_booking(

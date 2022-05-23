@@ -392,7 +392,7 @@ class BookOfferTest:
             }
 
     class WhenBookingIsExternalBookingTest:
-        @patch("pcapi.core.bookings.api.book_ticket")
+        @patch("pcapi.core.bookings.api.booking_providers_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_offer_with_solo_external_booking(
             self,
@@ -416,7 +416,7 @@ class BookOfferTest:
             assert booking.externalBookings[0].barcode == "testbarcode"
             assert booking.externalBookings[0].seat == "A_1"
 
-        @patch("pcapi.core.bookings.api.book_ticket")
+        @patch("pcapi.core.bookings.api.booking_providers_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def test_book_offer_with_duo_external_booking(self, mocked_book_ticket):
             mocked_book_ticket.return_value = [
@@ -443,7 +443,7 @@ class BookOfferTest:
             assert booking.externalBookings[1].barcode == "barcode2"
             assert booking.externalBookings[1].seat == "B_2"
 
-        @patch("pcapi.core.bookings.api.book_ticket")
+        @patch("pcapi.core.bookings.api.booking_providers_api.book_ticket")
         @override_features(ENABLE_CDS_IMPLEMENTATION=True)
         def should_not_create_external_booking_when_venue_booking_provider_is_not_active(
             self,
@@ -475,16 +475,17 @@ class CancelByBeneficiaryTest:
 
         queries = 1  # select stock for update
         queries += 1  # select booking
-        queries += 3  # update stock ; update booking ; release savepoint
+        queries += 2  # update booking ; select feature_flag
+        queries += 3  # update stock ; update booking ;  release savepoint
         queries += 8  # (update batch attributes): select booking ; individualBooking ; user ; user_offerer ; user.bookings ;  favorites ; deposit ; stock
         queries += 1  # select venue by id
-        queries += 2  # select user by email, select venue by same booking email
+        queries += 2  # select user by email ; select venue by same booking email
         queries += 1  # select offerer by id
         queries += 1  # select bank_information by venue.id
         queries += 1  # select exists offer
         queries += 1  # select exists booking
         queries += 1  # select stock
-        queries += 1  # select booking, offer
+        queries += 1  # select booking ; offer
         queries += 2  # insert email ; release savepoint
         queries += 3  # (TODO: optimize) select booking ; stock ; offer
         queries += 2  # select venue ; individual_booking
@@ -591,6 +592,24 @@ class CancelByBeneficiaryTest:
             api.cancel_booking_by_beneficiary(other_beneficiary, booking)
         assert booking.status is not BookingStatus.CANCELLED
         assert not booking.cancellationReason
+
+    @patch("pcapi.core.bookings.api.booking_providers_api.cancel_booking")
+    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
+    def test_cancel_external_booking(self, mocked_cancel_booking):
+        mocked_cancel_booking.return_value = None
+
+        # Given
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        venue_provider = VenueBookingProviderFactory()
+        offer_solo = offers_factories.EventOfferFactory(
+            name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
+        )
+        stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
+        booking = booking_factories.IndividualBookingFactory(stock=stock_solo, individualBooking__user=beneficiary)
+        ExternalBookingFactory(booking=booking)
+        api._cancel_booking(booking, BookingCancellationReasons.BENEFICIARY)
+
+        mocked_cancel_booking.assert_called()
 
 
 @pytest.mark.usefixtures("db_session")
