@@ -284,8 +284,8 @@ class EduconnectTest:
         assert caplog.records[0].message == "Wrong user type of educonnect user"
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
-    def test_duplicate_beneficiary(self, mock_get_educonnect_user, client, app, caplog):
-        user, request_id = self.connect_to_educonnect(client, app)
+    def test_duplicate_beneficiary(self, mock_get_educonnect_user, client, app):
+        duplicate_user, request_id = self.connect_to_educonnect(client, app)
         educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id)
         mock_get_educonnect_user.return_value = educonnect_user
 
@@ -297,18 +297,39 @@ class EduconnectTest:
             roles=[user_models.UserRole.UNDERAGE_BENEFICIARY],
         )
 
-        with caplog.at_level(logging.WARNING):
-            response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
 
         assert response.status_code == 302
-        assert response.location.startswith("https://webapp-v2.example.com/educonnect/validation")
-        assert caplog.messages == ["Fraud suspicion after educonnect authentication with codes: duplicate_user"]
-        assert caplog.records[0].extra == {"user_id": user.id}
+        assert response.location == (
+            "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=DuplicateUser"
+        )
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"] == {
             "DUPLICATE_BENEFICIARY_EMAIL": "tit***@quartier-latin.com"
         }
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one().reasonCodes == [
+            fraud_models.FraudReasonCode.DUPLICATE_USER
+        ]
+
+    @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
+    def test_duplicate_ine(self, mock_get_educonnect_user, client, app):
+        duplicate_user, request_id = self.connect_to_educonnect(client, app)
+        educonnect_user = users_factories.EduconnectUserFactory(saml_request_id=request_id, ine_hash="shotgun_ine")
+        mock_get_educonnect_user.return_value = educonnect_user
+
+        users_factories.UserFactory(ineHash="shotgun_ine")
+
+        response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
+
+        assert response.status_code == 302
+        assert response.location == (
+            "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=DuplicateINE"
+        )
+
+        assert fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=duplicate_user.id).one().reasonCodes == [
+            fraud_models.FraudReasonCode.DUPLICATE_INE
+        ]
 
     @patch("pcapi.connectors.beneficiaries.educonnect.educonnect_connector.get_educonnect_user")
     @freezegun.freeze_time("2021-12-21")
@@ -323,7 +344,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -344,7 +365,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid18YearsOld&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid18YearsOld"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -365,7 +386,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
         assert len(user.subscriptionMessages) == 1
         assert (
@@ -409,7 +430,7 @@ class EduconnectTest:
 
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
 
         assert not user.is_beneficiary
@@ -417,7 +438,7 @@ class EduconnectTest:
         response = client.post("/saml/acs", form={"SAMLResponse": "encrypted_data"})
         assert response.status_code == 302
         assert response.location == (
-            "https://webapp-v2.example.com/educonnect/erreur?code=UserAgeNotValid&logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout"
+            "https://webapp-v2.example.com/educonnect/erreur?logoutUrl=https%3A%2F%2Feduconnect.education.gouv.fr%2FLogout&code=UserAgeNotValid"
         )
 
     @pytest.mark.parametrize(
