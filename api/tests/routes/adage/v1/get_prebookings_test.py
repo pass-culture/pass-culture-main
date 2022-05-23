@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
@@ -8,12 +10,10 @@ from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils.date import format_into_utc_date
 
-from tests.conftest import TestClient
-
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def test_get_prebookings_without_query_params(self, app) -> None:
+    def test_get_prebookings_without_query_params(self, client: Any) -> None:
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
@@ -50,8 +50,7 @@ class Returns200Test:
         EducationalBookingFactory(educationalBooking__educationalYear=other_educational_year)
         EducationalBookingFactory(educationalBooking__educationalInstitution=other_educational_institution)
 
-        client = TestClient(app.test_client()).with_eac_token()
-        response = client.get(
+        response = client.with_eac_token().get(
             f"/adage/v1/years/{booking.educationalBooking.educationalYear.adageId}/educational_institution/{booking.educationalBooking.educationalInstitution.institutionId}/prebookings"
         )
 
@@ -94,7 +93,7 @@ class Returns200Test:
                     ],
                     "priceDetail": "Le prix inclus l'accès à la séance et un atelier une fois la séance terminée. 1000 caractères max.",
                     "postalCode": venue.postalCode,
-                    "price": booking.amount,
+                    "price": float(booking.amount),
                     "quantity": booking.quantity,
                     "redactor": {
                         "email": "jean.doux@example.com",
@@ -107,14 +106,16 @@ class Returns200Test:
                     "status": "CONFIRMED",
                     "subcategoryLabel": offer.subcategory.app_label,
                     "venueTimezone": venue.timezone,
-                    "totalAmount": booking.amount * booking.quantity,
+                    "totalAmount": float(booking.amount * booking.quantity),
                     "url": offer_app_link(offer),
                     "withdrawalDetails": offer.withdrawalDetails,
+                    "domainIds": [],
+                    "domainLabels": [],
                 }
             ],
         }
 
-    def test_get_prebookings_with_query_params(self, app) -> None:
+    def test_get_prebookings_with_query_params(self, client: Any) -> None:
         redactor = EducationalRedactorFactory(
             civility="M.",
             firstName="Jean",
@@ -146,8 +147,7 @@ class Returns200Test:
             educationalBooking__educationalInstitution=educationalInstitution,
         )
 
-        client = TestClient(app.test_client()).with_eac_token()
-        response = client.get(
+        response = client.with_eac_token().get(
             f"/adage/v1/years/{booking.educationalBooking.educationalYear.adageId}/educational_institution/{booking.educationalBooking.educationalInstitution.institutionId}/prebookings?status=PENDING&redactorEmail={redactor.email}"
         )
 
@@ -187,7 +187,7 @@ class Returns200Test:
                     "participants": [],
                     "priceDetail": stock.educationalPriceDetail,
                     "postalCode": venue.postalCode,
-                    "price": booking.amount,
+                    "price": float(booking.amount),
                     "quantity": booking.quantity,
                     "redactor": {
                         "email": "jean.doux@example.com",
@@ -200,9 +200,11 @@ class Returns200Test:
                     "status": "PENDING",
                     "subcategoryLabel": "Séance de cinéma",
                     "venueTimezone": venue.timezone,
-                    "totalAmount": booking.total_amount,
+                    "totalAmount": float(booking.total_amount),
                     "url": offer_app_link(offer),
                     "withdrawalDetails": offer.withdrawalDetails,
+                    "domainIds": [],
+                    "domainLabels": [],
                 }
             ],
         }

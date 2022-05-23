@@ -84,6 +84,8 @@ class Returns200Test:
             },
             "creationDate": format_into_utc_date(booking.dateCreated),
             "description": offer.description,
+            "domainIds": [],
+            "domainLabels": [],
             "durationMinutes": offer.durationMinutes,
             "expirationDate": booking.expirationDate,
             "id": educational_booking.id,
@@ -94,7 +96,7 @@ class Returns200Test:
             "participants": [],
             "priceDetail": stock.educationalPriceDetail,
             "postalCode": venue.postalCode,
-            "price": booking.amount,
+            "price": float(booking.amount),
             "quantity": booking.quantity,
             "redactor": {
                 "email": "jeanne.dodu@example.com",
@@ -107,7 +109,7 @@ class Returns200Test:
             "status": "CONFIRMED",
             "subcategoryLabel": "Séance de cinéma",
             "venueTimezone": venue.timezone,
-            "totalAmount": booking.total_amount,
+            "totalAmount": float(booking.total_amount),
             "url": offer_app_link(offer),
             "withdrawalDetails": offer.withdrawalDetails,
         }
@@ -236,6 +238,8 @@ class Returns200Test:
             "totalAmount": float(stock.price),
             "url": offer_app_link(offer),
             "withdrawalDetails": None,
+            "domainLabels": [domain.name for domain in offer.domains],
+            "domainIds": [domain.id for domain in offer.domains],
         }
         assert (
             CollectiveBooking.query.filter(CollectiveBooking.id == booking.id).one().status

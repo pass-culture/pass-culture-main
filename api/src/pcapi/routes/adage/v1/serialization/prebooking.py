@@ -81,6 +81,8 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     totalAmount: float = Field(description="Total price of the prebooking")
     url: Optional[str] = Field(description="Url to access the offer")
     withdrawalDetails: Optional[str]
+    domain_ids: list[int]
+    domain_labels: list[str]
 
     class Config:
         title = "Prebooking detailed response"
@@ -105,6 +107,8 @@ class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     venueTimezone: str
     name: str
     redactorEmail: str
+    domainIds: list[int]
+    domainLabels: list[str]
 
 
 def get_collective_bookings_per_year_response(
@@ -121,6 +125,8 @@ def get_collective_bookings_per_year_response(
             venueTimezone=educational_booking.collectiveStock.collectiveOffer.venue.timezone,
             name=educational_booking.collectiveStock.collectiveOffer.name,
             redactorEmail=educational_booking.educationalRedactor.email,
+            domainIds=[domain.id for domain in educational_booking.collectiveStock.collectiveOffer.domains],
+            domainLabels=[domain.name for domain in educational_booking.collectiveStock.collectiveOffer.domains],
         )
         for educational_booking in educational_bookings
     ]
@@ -203,12 +209,15 @@ def serialize_educational_booking(educational_booking: EducationalBooking) -> Ed
         totalAmount=booking.total_amount,
         url=offer_app_link(offer),
         withdrawalDetails=offer.withdrawalDetails,
+        domain_ids=[],
+        domain_labels=[],
     )
 
 
 def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
     stock: educational_models.CollectiveStock = collective_booking.collectiveStock
     offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    domains = offer.domains
     venue: offerers_models.Venue = offer.venue
     return EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
@@ -252,6 +261,8 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
+        domain_ids=[domain.id for domain in domains],
+        domain_labels=[domain.name for domain in domains],
     )
 
 

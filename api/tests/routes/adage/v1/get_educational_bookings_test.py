@@ -86,6 +86,8 @@ class Returns200Test:
                     "totalAmount": float(stock1.price),
                     "url": offer_app_link(offer1),
                     "withdrawalDetails": None,
+                    "domainIds": [domain.id for domain in offer1.domains],
+                    "domainLabels": [domain.name for domain in offer1.domains],
                 },
                 {
                     "address": offer2.offerVenue["otherAddress"],
@@ -129,6 +131,8 @@ class Returns200Test:
                     "totalAmount": float(stock2.price),
                     "url": offer_app_link(offer2),
                     "withdrawalDetails": None,
+                    "domainIds": [domain.id for domain in offer2.domains],
+                    "domainLabels": [domain.name for domain in offer2.domains],
                 },
             ]
         }
@@ -204,6 +208,8 @@ class Returns200Test:
                     "totalAmount": float(stock1.price),
                     "url": offer_app_link(offer1),
                     "withdrawalDetails": None,
+                    "domainIds": [domain.id for domain in offer1.domains],
+                    "domainLabels": [domain.name for domain in offer1.domains],
                 }
             ]
         }
@@ -279,6 +285,8 @@ class Returns200Test:
                     "totalAmount": float(stock1.price),
                     "url": offer_app_link(offer1),
                     "withdrawalDetails": None,
+                    "domainIds": [domain.id for domain in offer1.domains],
+                    "domainLabels": [domain.name for domain in offer1.domains],
                 }
             ]
         }
@@ -354,6 +362,8 @@ class Returns200Test:
                     "totalAmount": float(stock1.price),
                     "url": offer_app_link(offer1),
                     "withdrawalDetails": None,
+                    "domainIds": [domain.id for domain in offer1.domains],
+                    "domainLabels": [domain.name for domain in offer1.domains],
                 }
             ]
         }
@@ -429,6 +439,8 @@ class Returns200Test:
                     "totalAmount": float(stock1.price),
                     "url": offer_app_link(offer1),
                     "withdrawalDetails": None,
+                    "domainIds": [domain.id for domain in offer1.domains],
+                    "domainLabels": [domain.name for domain in offer1.domains],
                 }
             ]
         }
