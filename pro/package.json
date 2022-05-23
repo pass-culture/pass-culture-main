@@ -156,7 +156,8 @@
     "url-loader": "^4.1.1"
   },
   "resolutions": {
-    "autoprefixer": "10.4.5"
+    "autoprefixer": "10.4.5",
+    "@babel/core": "7.17.12"
   },
   "engines": {
     "node": ">=14 <15"

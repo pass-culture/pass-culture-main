@@ -106,7 +106,7 @@ const OfferItem = ({
       </td>
       <td className="title-column">
         {offer.isEducational && (
-          <Tag className="educational-tag">Offre collective</Tag>
+          <Tag className="educational-tag" label="Offre collective" />
         )}
         <Link
           className="name"

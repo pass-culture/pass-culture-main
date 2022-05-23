@@ -29,7 +29,7 @@ const BookingOfferCell = ({ offer }) => {
       title={`${offer.offer_name} (ouverture dans un nouvel onglet)`}
     >
       {offer.offer_is_educational && (
-        <Tag className="booking-educational-tag">Offre collective</Tag>
+        <Tag className="booking-educational-tag" label="Offre collective" />
       )}
       <div className="booking-offer-name">{offer.offer_name}</div>
       {isbn ||

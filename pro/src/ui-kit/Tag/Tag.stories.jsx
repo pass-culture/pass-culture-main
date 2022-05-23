@@ -1,5 +1,4 @@
 import React from 'react'
-
 import Tag from './Tag'
 
 export default {
@@ -12,5 +11,15 @@ const Template = args => <Tag {...args}>{args.children}</Tag>
 export const Default = Template.bind({})
 
 Default.args = {
-  children: 'Offre collective',
+  label: 'Offre collective',
+}
+
+export const Closeable = Template.bind({})
+
+Closeable.args = {
+  label: 'Offre collective',
+  closeable: {
+    onClose: () => {},
+    closeLabel: 'Supprimer le tag',
+  },
 }
