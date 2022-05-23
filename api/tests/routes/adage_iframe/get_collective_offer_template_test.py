@@ -78,6 +78,7 @@ class Returns200Test:
             "students": ["Lycée - Seconde"],
             "offerId": None,
             "educationalPriceDetail": "détail du prix",
+            "domains": [{"id": offer.domains[0].id, "name": offer.domains[0].name}],
         }
 
 

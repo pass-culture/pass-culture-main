@@ -88,6 +88,7 @@ class Returns200Test:
             "students": ["Lycée - Seconde"],
             "offerId": None,
             "educationalPriceDetail": stock.priceDetail,
+            "domains": [{"id": stock.collectiveOffer.domains[0].id, "name": stock.collectiveOffer.domains[0].name}],
         }
 
 

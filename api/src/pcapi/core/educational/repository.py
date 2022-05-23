@@ -913,6 +913,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:
                 offerers_models.Offerer.isActive,
             )
         )
+        .options(joinedload(educational_models.CollectiveOffer.domains))
         .one()
     )
 
@@ -931,6 +932,7 @@ def get_collective_offer_template_by_id_for_adage(offer_id: int) -> CollectiveOf
                 offerers_models.Offerer.isActive,
             )
         )
+        .options(joinedload(educational_models.CollectiveOfferTemplate.domains))
         .one()
     )
 
