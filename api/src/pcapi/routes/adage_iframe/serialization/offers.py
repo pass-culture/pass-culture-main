@@ -142,6 +142,15 @@ class CollectiveOfferOfferVenue(BaseModel):
         extra = "forbid"
 
 
+class OfferDomain(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+
+
 class CollectiveOfferResponseModel(BaseModel):
     id: int
     subcategoryLabel: str
@@ -162,6 +171,7 @@ class CollectiveOfferResponseModel(BaseModel):
     mentalDisabilityCompliant: bool
     offerId: Optional[str]
     educationalPriceDetail: Optional[str]
+    domains: list[OfferDomain]
 
     @classmethod
     def from_orm(cls: Any, offer: CollectiveOffer):  # type: ignore
@@ -202,6 +212,7 @@ class CollectiveOfferTemplateResponseModel(BaseModel):
     mentalDisabilityCompliant: bool
     educationalPriceDetail: Optional[str]
     offerId: Optional[str]
+    domains: list[OfferDomain]
 
     @classmethod
     def from_orm(cls: Any, offer: CollectiveOfferTemplate):  # type: ignore
