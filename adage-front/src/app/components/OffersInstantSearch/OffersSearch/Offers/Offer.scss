@@ -40,13 +40,27 @@
       margin: 0;
       font-size: rem(20px);
       font-weight: 700;
-      margin-bottom: rem(6px);
       padding-right: rem(150px);
     }
 
     .offer-venue-name {
       font-weight: 400;
       margin: 0;
+    }
+
+    .offer-domains-list {
+      padding-left: unset;
+      display: flex;
+      flex-wrap: wrap;
+      gap: rem(8px);
+
+      &-item {
+        list-style: none;
+      }
+    }
+
+    & > *:not(:last-child) {
+      margin-bottom: rem(8px);
     }
   }
 
