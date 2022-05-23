@@ -624,7 +624,7 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
 
 
 def _set_offerer_departement_code(new_user: User, offerer: offerers_models.Offerer) -> User:
-    if offerer.postalCode is not None:
+    if offerer.postalCode:  # not None, not ""
         new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
     else:
         new_user.departementCode = None
