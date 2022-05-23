@@ -3,19 +3,20 @@
 @use 'styles/mixins/_rem.scss' as rem;
 
 .multi-select-autocomplete-container {
-  width: rem.torem(213px);
   box-sizing: border-box;
-  
-  .field-overlay{
-    position: absolute;
-    height: 0;
-    
+  position: relative;
+  width: 100%;
+
+  .field-overlay {
+    position: relative;
+    height:0px;
+
     .dropdown-indicator {
       background: none;
       border: none;
       fill: colors.$grey-light;
-      position: relative;
-      left: 11rem;
+      position: absolute;
+      right: 1rem;
       top: -1.8rem;
       & img {
         width: rem.torem(1rem);
@@ -26,36 +27,39 @@
     }
 
     .pellet {
-      width: rem.torem(18px);
-      height: rem.torem(18px);
-      padding: rem.torem(6px);
-      border-radius: rem.torem(100px);
-      background-color: colors.$primary;
-      color: colors.$white;
-      font-size: rem.torem(9px);
-      box-sizing: border-box;
-      display: flex;
       align-items: center;
+      background-color: colors.$primary;
+      border-radius: rem.torem(100px);
+      box-sizing: border-box;
+      color: colors.$white;
+      display: flex;
+      font-size: rem.torem(9px);
+      height: rem.torem(18px);
       justify-content: center;
-      position: relative;
-      top: -3rem;
+      padding: rem.torem(6px);
+      position: absolute;
       left: 0.8rem;
+      top: -1.8rem;
+      width: rem.torem(18px);
     }
   }
 
   .multi-select-autocomplete__menu {
-    padding: 0.5rem 0;
-    margin: 0;
-    width: rem.torem(256px);
-    right: 0;
+    border-radius: rem.torem(6px);
+    box-shadow: 0px  rem.torem(3px)  rem.torem(4px) rgba(103, 104, 107, 0.1);
     font-size: rem.torem(15px);
-    box-shadow: 0px rem.torem(2px) rem.torem(16px) rgba(37, 2, 108, 0.15);
-    max-height: 19rem;
+    margin: 0 0.1rem;
+    max-height: 18.5rem;
     overflow-y: scroll;
+    padding: 0.5rem 0;
+    position: relative;
+    right: 0;
+
     label {
       display: flex;
       padding: 0.7rem 1rem;
     }
+    
     label:hover, label:focus-within {
       background-color: colors.$grey-light;
     }

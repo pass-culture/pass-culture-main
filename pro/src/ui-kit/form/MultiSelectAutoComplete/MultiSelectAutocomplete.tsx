@@ -11,11 +11,7 @@ export type Option = { value: string; label: string }
 
 export interface MultiSelectAutocompleteProps {
   options: Option[]
-  onChange?: (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.KeyboardEvent<HTMLInputElement>
-  ) => void
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   label: string
   className?: string
   fieldName: string
@@ -58,7 +54,7 @@ const MultiSelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
-    const regExp = new RegExp(searched === '*' ? /./ : searched, 'i')
+    const regExp = new RegExp(searched, 'i')
     setFilteredOptions(
       options.filter(option => searched === '' || option.label.match(regExp))
     )
