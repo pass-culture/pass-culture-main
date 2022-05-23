@@ -2788,3 +2788,15 @@ class GetTomorrowEventOfferTest:
         bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 0
+
+    def should_select_several_bookings_given_one_stock_with_several_bookings(self):
+        tomorrow = datetime.utcnow() + timedelta(days=1)
+        stock = offers_factories.EventStockFactory(
+            beginningDatetime=tomorrow,
+        )
+        bookings_factories.IndividualBookingFactory(stock=stock)
+        bookings_factories.IndividualBookingFactory(stock=stock)
+
+        bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
+
+        assert len(bookings) == 2
