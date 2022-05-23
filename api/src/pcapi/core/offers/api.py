@@ -38,7 +38,6 @@ import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.models import ADAGE_STUDENT_LEVEL_MAPPING
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import StudentLevels
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.transactional.bookings.booking_cancellation_by_pro_to_beneficiary import (
     send_booking_cancellation_by_pro_to_beneficiary_email,
@@ -428,7 +427,7 @@ def _update_collective_offer(offer: Union[CollectiveOffer, CollectiveOfferTempla
 
                 if extra_data_key == "students":
                     students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in extra_data_value]
-                    setattr(offer, extra_data_key, students)
+                    offer.students = students
                     continue
 
                 setattr(offer, extra_data_key, extra_data_value)
@@ -439,18 +438,12 @@ def _update_collective_offer(offer: Union[CollectiveOffer, CollectiveOfferTempla
             offer.subcategoryId = value.name
             continue
 
-        if key == "students":
-            students = [StudentLevels(student) for student in value]
-            setattr(offer, key, students)
-            continue
-
         if key == "domains":
             domains = educational_api.get_educational_domains_from_ids(value)
             offer.domains = domains
             continue
 
         setattr(offer, key, value)
-
     db.session.add(offer)
     db.session.commit()
     return updated_fields

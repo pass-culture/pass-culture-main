@@ -8,6 +8,7 @@ from pcapi.core.educational.factories import CollectiveOfferFactory
 from pcapi.core.educational.factories import EducationalDomainFactory
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+from pcapi.core.educational.models import StudentLevels
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.models import OfferValidationStatus
@@ -33,6 +34,7 @@ class Returns200Test:
             contactPhone="0600000000",
             subcategoryId="CINE_PLEIN_AIR",
             educational_domains=None,
+            students=[StudentLevels.CAP1],
         )
         booking = CollectiveBookingFactory(
             collectiveStock__collectiveOffer=offer, collectiveStock__beginningDatetime=datetime(2020, 1, 1)
@@ -50,6 +52,7 @@ class Returns200Test:
             "contactEmail": "toto@example.com",
             "subcategoryId": "CONCERT",
             "domains": [domain.id],
+            "students": ["Collège - 4e"],
         }
         response = client.with_session_auth("user@example.com").patch(
             f"/collective/offers/{humanize(offer.id)}", json=data
@@ -62,6 +65,7 @@ class Returns200Test:
         assert response.json["contactPhone"] == "0600000000"
         assert response.json["contactEmail"] == "toto@example.com"
         assert response.json["subcategoryId"] == "CONCERT"
+        assert response.json["students"] == ["Collège - 4e"]
 
         updated_offer = CollectiveOffer.query.get(offer.id)
         assert updated_offer.name == "New name"
@@ -69,11 +73,12 @@ class Returns200Test:
         assert updated_offer.contactEmail == "toto@example.com"
         assert updated_offer.contactPhone == "0600000000"
         assert updated_offer.subcategoryId == "CONCERT"
+        assert updated_offer.students == [StudentLevels.COLLEGE4]
         assert updated_offer.domains == [domain]
 
         expected_payload = EducationalBookingEdition(
             **serialize_collective_booking(booking).dict(),
-            updatedFields=["name", "contactEmail", "mentalDisabilityCompliant", "subcategoryId", "domains"],
+            updatedFields=["name", "students", "contactEmail", "mentalDisabilityCompliant", "subcategoryId", "domains"],
         )
         assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
         assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
