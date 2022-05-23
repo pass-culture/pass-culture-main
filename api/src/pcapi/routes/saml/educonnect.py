@@ -117,21 +117,19 @@ def on_educonnect_authentication_response() -> Response:
         },
     )
 
-    success_query_params = {
-        "firstName": educonnect_user.first_name,
-        "lastName": educonnect_user.last_name,
-        "dateOfBirth": educonnect_user.birth_date,
-    } | base_query_param
-
     try:
         error_codes = educonnect_subscription_api.handle_educonnect_authentication(user, educonnect_user)
     except educonnect_subscription_exceptions.EduconnectSubscriptionException:
         return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
 
     if error_codes:
-        return _on_educonnect_authentication_errors(
-            error_codes, educonnect_user, base_query_param, success_query_params
-        )
+        return _on_educonnect_authentication_errors(error_codes, educonnect_user, base_query_param)
+
+    success_query_params = {
+        "firstName": educonnect_user.first_name,
+        "lastName": educonnect_user.last_name,
+        "dateOfBirth": educonnect_user.birth_date,
+    } | base_query_param
 
     return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
 
@@ -145,20 +143,17 @@ def _on_educonnect_authentication_errors(
     error_codes: list[fraud_models.FraudReasonCode],
     educonnect_user: educonnect_models.EduconnectUser,
     base_query_param: dict,
-    success_query_params: dict,
 ) -> Response:
+    error_query_param = base_query_param
+
     if fraud_models.FraudReasonCode.DUPLICATE_USER in error_codes:
-        return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
+        error_query_param |= {"code": "DuplicateUser"}
+    elif fraud_models.FraudReasonCode.DUPLICATE_INE in error_codes:
+        error_query_param |= {"code": "DuplicateINE"}
+    elif fraud_models.FraudReasonCode.AGE_NOT_VALID or fraud_models.FraudReasonCode.NOT_ELIGIBLE in error_codes:
+        if users_utils.get_age_from_birth_date(educonnect_user.birth_date) == ELIGIBILITY_AGE_18:
+            error_query_param |= {"code": "UserAgeNotValid18YearsOld"}
+        else:
+            error_query_param |= {"code": "UserAgeNotValid"}
 
-    if (
-        fraud_models.FraudReasonCode.AGE_NOT_VALID in error_codes
-        or fraud_models.FraudReasonCode.NOT_ELIGIBLE in error_codes
-    ):
-        error_query_param = {
-            "code": "UserAgeNotValid18YearsOld"
-            if users_utils.get_age_from_birth_date(educonnect_user.birth_date) == ELIGIBILITY_AGE_18
-            else "UserAgeNotValid"
-        } | base_query_param
-        return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
-
-    return redirect(ERROR_PAGE_URL + urlencode(base_query_param), code=302)
+    return redirect(ERROR_PAGE_URL + urlencode(error_query_param), code=302)
