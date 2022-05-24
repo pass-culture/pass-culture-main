@@ -93,6 +93,24 @@ def create_industrial_educational_bookings() -> None:
         venueTypeCode=VenueTypeCode.PERFORMING_ARTS,  # type: ignore [attr-defined]
     )
 
+    deposits = []
+    for educational_institution in educational_institutions:
+        deposits.append(
+            educational_factories.EducationalDepositFactory(
+                educationalInstitution=educational_institution,
+                educationalYear=educational_current_year,
+                amount=20000,
+            )
+        )
+        deposits.append(
+            educational_factories.EducationalDepositFactory(
+                educationalInstitution=educational_institution,
+                educationalYear=educational_next_year,
+                amount=25000,
+                isFinal=False,
+            )
+        )
+
     for stock_data in FAKE_STOCK_DATA:
         stocks.append(
             EducationalEventStockFactory(
@@ -183,24 +201,6 @@ def create_industrial_educational_bookings() -> None:
             offer__visualDisabilityCompliant=True,
         ),
     ]
-
-    deposits = []
-    for educational_institution in educational_institutions:
-        deposits.append(
-            educational_factories.EducationalDepositFactory(
-                educationalInstitution=educational_institution,
-                educationalYear=educational_current_year,
-                amount=20000,
-            )
-        )
-        deposits.append(
-            educational_factories.EducationalDepositFactory(
-                educationalInstitution=educational_institution,
-                educationalYear=educational_next_year,
-                amount=25000,
-                isFinal=False,
-            )
-        )
 
     for stock in stocks:
         for educational_institution in educational_institutions:
