@@ -4,9 +4,11 @@ import React, {
 } from 'react'
 
 import ConfirmDialog from 'new_components/ConfirmDialog'
+import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
 import Icon from 'components/layout/Icon'
 import { NBSP } from '../../Offer/Thumbnail/_constants'
+import { RootState } from 'store/reducers'
 import { TSearchFilters } from 'core/Offers/types'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { searchFiltersSelector } from 'store/offers/selectors'
@@ -15,6 +17,7 @@ import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersAc
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import { useLocation } from 'react-router-dom'
 import useNotification from 'components/hooks/useNotification'
 import { useSelector } from 'react-redux'
 
@@ -66,8 +69,10 @@ const ActionsBar = ({
   areAllOffersSelected,
   nbSelectedOffers,
 }: IActionBarProps): JSX.Element => {
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
+  const location = useLocation()
   const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const handleClose = useCallback(() => {
@@ -134,8 +139,21 @@ const ActionsBar = ({
         <ConfirmDialog
           cancelText={'Annuler'}
           confirmText={'Désactiver'}
-          onCancel={()=>setIsConfirmDialogOpen(false)}
-          onConfirm={handleDeactivate}
+          onCancel={()=> {
+            logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
+              from: location.pathname,
+              has_selected_all_offers: areAllOffersSelected
+            })
+            setIsConfirmDialogOpen(false)
+          }}
+          onConfirm={()=> {
+            logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
+              from: location.pathname,
+              has_selected_all_offers: areAllOffersSelected
+            })
+            handleDeactivate()
+          }
+          }
           icon={EyeIcon}
           title={ nbSelectedOffers === 1 ?
             `Vous avez sélectionné ${nbSelectedOffers} offre,`
