@@ -6,12 +6,22 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { updateAllOffersActiveStatus, updateOffersActiveStatus } from 'repository/pcapi/pcapi'
 
 import ActionsBar from '../ActionsBar'
+import {Events} from 'core/FirebaseEvents/constants';
+import {MemoryRouter} from 'react-router';
 import {Provider} from 'react-redux'
 import React from 'react'
 import { configureTestStore } from 'store/testUtils'
+import userEvent from "@testing-library/user-event";
 
 const renderActionsBar = (props, store) => {
-  return render(<Provider store={store}><ActionsBar {...props} /></Provider>)
+
+  return render(
+    <Provider store={store}>
+      <MemoryRouter initialEntries={['/offres']}>
+        <ActionsBar {...props} />
+      </MemoryRouter>
+    </Provider>
+  )
 }
 
 jest.mock('repository/pcapi/pcapi', () => ({
@@ -19,7 +29,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   updateAllOffersActiveStatus: jest.fn().mockResolvedValue({}),
 }))
 
-
+const mockLogEvent = jest.fn()
 
 describe('src | components | pages | Offers | ActionsBar', () => {
   let props
@@ -35,7 +45,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       switchAllOffersStatus: jest.fn(),
       nbSelectedOffers: 2,
     }
-    store = configureTestStore({ offers: {searchFilters: {
+    store = configureTestStore({
+    app: { logEvent: mockLogEvent },
+    offers: {searchFilters: {
       nameOrIsbn: 'keyword',
       venueId: 'E3',
       offererId: 'A4',
@@ -98,7 +110,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       renderActionsBar(props, store)
 
       // when
-      fireEvent.click(screen.queryByText('Activer'))
+      await userEvent.click(screen.queryByText('Activer'))
 
       // then
       await waitFor(() => {
@@ -116,6 +128,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
   describe('on click on "Désactiver" button', () => {
     it('should deactivate selected offers', async () => {
       // given
+      props.areAllOffersSelected = false
       const notifySuccess = jest.fn()
       jest.spyOn(useNotification, 'default').mockImplementation(() => ({
         success: notifySuccess,
@@ -123,12 +136,17 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       renderActionsBar(props, store)
 
       // when
-      fireEvent.click(screen.queryByText('Désactiver'))
+      await userEvent.click(screen.queryByText('Désactiver'))
       const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
-      fireEvent.click(confirmDeactivateButton)
+      await userEvent.click(confirmDeactivateButton)
 
       // then
       await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_DISABLED_SELECTED_OFFERS, {
+          from: '/offres',
+          has_selected_all_offers: false,
+        })
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
           ['testId1', 'testId2'],
           false
@@ -154,6 +172,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     it('should activate all offers on click on "Activer" button', async () => {
       // given
       props.areAllOffersSelected = true
+
       renderActionsBar(props, store)
       const activateButton = screen.getByText('Activer')
       const expectedBody = {
@@ -164,7 +183,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       }
 
       // when
-      fireEvent.click(activateButton)
+      await userEvent.click(activateButton)
 
       // then
       await waitFor(() => {
@@ -175,7 +194,6 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(props.refreshOffers).toHaveBeenCalledWith()
       })
     })
-
     it('should deactivate all offers on click on "Désactiver" button', async () => {
       // given
       props.areAllOffersSelected = true
@@ -189,17 +207,62 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       }
 
       // when
-      fireEvent.click(deactivateButton)
+      await userEvent.click(deactivateButton)
       const confirmDeactivateButton = screen.getAllByText('Désactiver')[1]
-      fireEvent.click(confirmDeactivateButton)
+      await userEvent.click(confirmDeactivateButton)
 
       // then
       await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_DISABLED_SELECTED_OFFERS, {
+          from: '/offres',
+          has_selected_all_offers: true,
+        })
         expect(updateAllOffersActiveStatus).toHaveBeenLastCalledWith(
           expectedBody
         )
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith()
+      })
+    })
+    it('should track cancel all offers on click on "Annuler" button', async () => {
+      // given
+      props.areAllOffersSelected = true
+      renderActionsBar(props, store)
+      const deactivateButton = screen.getByText('Désactiver')
+
+      // when
+      await userEvent.click(deactivateButton)
+      const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
+      await userEvent.click(cancelDeactivateButton)
+
+      // then
+      await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_CANCELED_SELECTED_OFFERS, {
+          from: '/offres',
+          has_selected_all_offers: true,
+        })
+      })
+    })
+    it('should track cancel offer on click on "Annuler" button', async () => {
+      // given
+      props.areAllOffersSelected = false
+      renderActionsBar(props, store)
+      const deactivateButton = screen.getByText('Désactiver')
+
+      // when
+      await userEvent.click(deactivateButton)
+      const cancelDeactivateButton = screen.getAllByText('Annuler')[1]
+      await userEvent.click(cancelDeactivateButton)
+
+      // then
+      await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledTimes(1)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_CANCELED_SELECTED_OFFERS, {
+          from: '/offres',
+          has_selected_all_offers: false,
+        })
       })
     })
   })
