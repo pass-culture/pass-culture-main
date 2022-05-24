@@ -76,7 +76,7 @@ def create_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
         raise ApiErrors(
             {"provider": ["Le fournisseur choisi n'est pas correctement implémenté, veuillez contacter le support."]}
         )
-    except exceptions.NoAllocinePivot:
+    except exceptions.NoAllocineTheater:
         raise ApiErrors(
             {
                 "allocine": [

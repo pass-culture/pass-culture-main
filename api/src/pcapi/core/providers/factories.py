@@ -1,3 +1,6 @@
+import base64
+import random
+
 import factory
 
 from pcapi.core.offerers.factories import VenueFactory
@@ -13,6 +16,19 @@ class AllocinePivotFactory(BaseFactory):
     venue = factory.SubFactory(VenueFactory)
     theaterId = "XXXXXXXXXXXXXXXXXX=="
     internalId = "PXXXXX"
+
+
+class AllocineTheaterFactory(BaseFactory):
+    class Meta:
+        model = models.AllocineTheater
+
+    siret = "12345678912345"
+
+    internalId = factory.LazyFunction(lambda: random.choice(["B", "C", "P", "W"]) + str(random.randrange(1000, 9999)))
+
+    theaterId = factory.LazyAttribute(
+        lambda o: (base64.urlsafe_b64encode(bytearray(f"Theater:{o.internalId}", "utf-8"))).decode("utf-8")
+    )
 
 
 class ProviderFactory(BaseFactory):

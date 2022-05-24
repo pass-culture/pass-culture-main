@@ -205,6 +205,14 @@ class AllocinePivot(PcObject, Model):  # type: ignore [valid-type, misc]
     internalId = Column(Text, nullable=False, unique=True)
 
 
+class AllocineTheater(PcObject, Model):  # type: ignore [valid-type, misc]
+    siret = Column(String(14), nullable=True, unique=True)
+
+    theaterId = Column(String(20), nullable=False, unique=True)
+
+    internalId = Column(Text, nullable=False, unique=True)
+
+
 class LocalProviderEventType(enum.Enum):
     SyncError = "SyncError"
 
