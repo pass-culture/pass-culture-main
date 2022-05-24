@@ -825,9 +825,9 @@ def test_public_api(client, app):
                     "properties": {
                         "accessToken": {"title": "Accesstoken", "type": "string"},
                         "refreshToken": {"title": "Refreshtoken", "type": "string"},
-                        "isActive": {"title": "Isactive", "type": "boolean"},
+                        "accountState": {"$ref": "#/components/schemas/AccountState"},
                     },
-                    "required": ["refreshToken", "accessToken", "isActive"],
+                    "required": ["refreshToken", "accessToken", "accountState"],
                     "title": "SigninResponse",
                     "type": "object",
                 },

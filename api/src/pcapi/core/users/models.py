@@ -167,6 +167,10 @@ class AccountState(enum.Enum):
     SUSPENDED_UPON_USER_REQUEST = "SUSPENDED_UPON_USER_REQUEST"
     DELETED = "DELETED"
 
+    @property
+    def is_deleted(self) -> bool:
+        return self == AccountState.DELETED
+
 
 class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "user"
