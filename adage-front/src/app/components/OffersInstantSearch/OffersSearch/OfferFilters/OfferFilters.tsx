@@ -98,6 +98,21 @@ export const OfferFilters = ({
           options={categoriesOptions}
           pluralLabel="Catégories"
         />
+        {displayEducationalDomains && (
+          <MultiSelectAutocomplete<number>
+            className="offer-filters-filter"
+            initialValues={currentFilters.domains}
+            label="Domaine"
+            onChange={domains =>
+              dispatchCurrentFilters({
+                type: 'POPULATE_DOMAINS_FILTER',
+                domainFilters: domains,
+              })
+            }
+            options={domainsOptions}
+            pluralLabel="Domaines"
+          />
+        )}
         <MultiSelectAutocomplete
           className="offer-filters-filter"
           initialValues={currentFilters.students}

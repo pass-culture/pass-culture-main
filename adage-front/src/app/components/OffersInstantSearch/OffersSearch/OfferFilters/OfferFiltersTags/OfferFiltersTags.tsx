@@ -19,7 +19,7 @@ export const OfferFiltersTags = ({
   handleResetFilters: () => void
 }): JSX.Element => {
   const {
-    currentFilters: { categories, students, departments },
+    currentFilters: { categories, students, departments, domains },
     dispatchCurrentFilters,
   } = useContext(FiltersContext)
   const { queryTag, removeQuery } = useContext(AlgoliaQueryContext)
@@ -29,7 +29,8 @@ export const OfferFiltersTags = ({
       venueFilter?.id ||
       departments.length > 0 ||
       students.length > 0 ||
-      categories.length > 0
+      categories.length > 0 ||
+      domains.length > 0
   )
 
   const handleRemoveDepartmentFilter = (
@@ -47,6 +48,15 @@ export const OfferFiltersTags = ({
     dispatchCurrentFilters({
       type: 'REMOVE_ONE_CATEGORY_FILTER',
       categoryFilter: categoryToBeRemoved,
+    })
+  }
+
+  const handleRemoveDomainsFilter = (
+    domainToBeRemoved: Option<number>
+  ): void => {
+    dispatchCurrentFilters({
+      type: 'REMOVE_ONE_DOMAIN_FILTER',
+      domainFilter: domainToBeRemoved,
     })
   }
 
@@ -86,6 +96,13 @@ export const OfferFiltersTags = ({
             key={category.value.join(',')}
             label={category.label}
             onClick={() => handleRemoveCategoriesFilter(category)}
+          />
+        ))}
+        {domains.map(domain => (
+          <Tag
+            key={domain.value}
+            label={domain.label}
+            onClick={() => handleRemoveDomainsFilter(domain)}
           />
         ))}
         {students.map(student => (
