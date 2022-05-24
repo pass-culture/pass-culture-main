@@ -32,6 +32,8 @@ export interface IPreFiltersProps {
   wereBookingsRequested: boolean
   isLocalLoading: boolean
   resetPreFilters: () => void
+  urlParams?:TPreFilters
+  updateUrl?: (selectedPreFilters: TPreFilters) => void
   venues: { id: string; displayName: string }[]
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
   getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
@@ -48,6 +50,7 @@ const PreFilters = ({
   isLocalLoading,
   resetPreFilters,
   venues,
+  updateUrl,
   getBookingsCSVFileAdapter,
   getBookingsXLSFileAdapter,
 }: IPreFiltersProps): JSX.Element => {
@@ -93,6 +96,7 @@ const PreFilters = ({
           updatedFilter.bookingEndingDate = appliedPreFilters.bookingEndingDate
         }
       }
+
       setSelectedPreFilters(currentFilters => ({
         ...currentFilters,
         ...updatedFilter,
@@ -105,6 +109,9 @@ const PreFilters = ({
     (event: any) => {
       event.preventDefault()
       applyPreFilters(selectedPreFilters)
+      if (updateUrl) {
+        updateUrl(selectedPreFilters)
+      }
     },
     [applyPreFilters, selectedPreFilters]
   )
@@ -228,19 +235,18 @@ const PreFilters = ({
                 Télécharger
               </button>
             )}
-
-            <button
-              className="secondary-button"
+            <Button
               disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
+              variant={ButtonVariant.SECONDARY}
               onClick={() => {
+                updateUrl && updateUrl(selectedPreFilters)
                 logEvent(Events.CLICKED_SHOW_BOOKINGS, {
                   from: location.pathname,
                 })
               }}
-              type="submit"
             >
               Afficher
-            </button>
+            </Button>
           </div>
         </div>
       </form>

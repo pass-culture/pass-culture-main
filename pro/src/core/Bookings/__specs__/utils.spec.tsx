@@ -38,7 +38,8 @@ describe('buildBookingsRecapQuery', () => {
       venueId: 'AY',
       offerType: 'individual',
       eventDate: formatBrowserTimezonedDateAsUTC(
-        new Date('2022-01-01T10:00:00.000Z')
+        new Date('2022-01-01T10:00:00.000Z'),
+        FORMAT_ISO_DATE_ONLY
       ),
       bookingPeriodBeginningDate: formatBrowserTimezonedDateAsUTC(
         new Date('2022-01-01T00:00:00.000Z'),
