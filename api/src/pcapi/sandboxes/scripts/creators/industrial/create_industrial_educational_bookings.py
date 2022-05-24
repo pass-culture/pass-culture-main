@@ -3,10 +3,13 @@ import datetime
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.factories import UsedEducationalBookingFactory
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import EducationalEventStockFactory
+from pcapi.models.feature import FeatureToggle
 
 
 FAKE_STOCK_DATA = [
@@ -71,8 +74,6 @@ def create_industrial_educational_bookings() -> None:
         educational_factories.EducationalInstitutionFactory(institutionId="0560071Y"),
     ]
 
-    now = datetime.datetime.utcnow()
-    stocks = []
     venue = offerers_factories.VenueFactory(
         name="Opéra Royal de Versailles",
         isPermanent=True,
@@ -111,6 +112,27 @@ def create_industrial_educational_bookings() -> None:
             )
         )
 
+    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        _create_educational_bookings_data(
+            educational_redactor,
+            educational_institutions,
+            educational_current_year,
+            educational_next_year,
+            venue,
+            venue_reimbursements,
+        )
+
+
+def _create_educational_bookings_data(
+    educational_redactor: educational_models.EducationalRedactor,
+    educational_institutions: list[educational_models.EducationalInstitution],
+    educational_current_year: educational_models.EducationalYear,
+    educational_next_year: educational_models.EducationalYear,
+    venue: offerers_models.Venue,
+    venue_reimbursements: offerers_models.Venue,
+) -> None:
+    now = datetime.datetime.utcnow()
+    stocks = []
     for stock_data in FAKE_STOCK_DATA:
         stocks.append(
             EducationalEventStockFactory(
