@@ -22,7 +22,7 @@ import pcapi.core.subscription.api as subscription_api
 import pcapi.core.users.models as users_models
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
-from pcapi.models.feature import FeatureToggle
+from pcapi.models.feature import DisabledFeatureError
 
 
 logger = logging.getLogger(__name__)
@@ -198,12 +198,15 @@ class BeneficiaryView(base_configuration.BaseAdminView):
 
     @flask_admin.expose("/validate/beneficiary/<user_id>", methods=["POST"])
     def validate_beneficiary(self, user_id: int) -> Response:
-        if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
-            flask.flash("Fonctionnalité non activée", "error")
-            return flask.redirect(flask.url_for(".details_view", id=user_id))
         if not self.check_super_admins():
             flask.flash("Vous n'avez pas les droits suffisants pour activer ce bénéficiaire", "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+        user = users_models.User.query.get(user_id)
+        if not user:
+            flask.flash("Cet utilisateur n'existe pas", "error")
+            return flask.redirect(flask.url_for(".index_view"))
+
         form = FraudReviewForm(flask.request.form)
         if not form.validate():
             errors_html = Markup("Erreurs lors de la validation du formulaire: <br>")
@@ -211,15 +214,25 @@ class BeneficiaryView(base_configuration.BaseAdminView):
                 errors_html += Markup("{field}: {error[0]}").format(field=field, error=error)
             flask.flash(errors_html, "error")
             return flask.redirect(flask.url_for(".details_view", id=user_id))
-        user = users_models.User.query.get(user_id)
-        if not user:
-            flask.flash("Cet utilisateur n'existe pas", "error")
-            return flask.redirect(flask.url_for(".index_view"))
 
-        review = fraud_models.BeneficiaryFraudReview(
-            user=user, author=flask_login.current_user, reason=form.data["reason"], review=form.data["review"]
+        eligibility = (
+            None if form.data["eligibility"] == "Par défaut" else users_models.EligibilityType(form.data["eligibility"])
         )
-        support_api.on_admin_review(review, user, form.data)
+
+        try:
+            fraud_api.validate_beneficiary(
+                user=user,
+                reviewer=flask_login.current_user,
+                reason=form.data["reason"],
+                review=fraud_models.FraudReviewStatus(form.data["review"]),
+                eligibility=eligibility,
+            )
+
+        except (DisabledFeatureError, fraud_api.FraudCheckError, fraud_api.EligibilityError) as err:
+            flask.flash(str(err), "error")
+            return flask.redirect(flask.url_for(".details_view", id=user_id))
+
+        flask.flash("Une revue manuelle ajoutée pour l'utilisateur")
         return flask.redirect(flask.url_for(".details_view", id=user.id))
 
     @flask_admin.expose("/validate/beneficiary/phone_number/<user_id>", methods=["POST"])

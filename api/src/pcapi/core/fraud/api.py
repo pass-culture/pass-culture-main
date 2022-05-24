@@ -9,17 +9,24 @@ from sqlalchemy.orm import Query
 
 from pcapi import settings
 from pcapi.core.fraud.utils import is_latin
+from pcapi.core.mails.transactional.users.subscription_document_error import send_subscription_document_error_email
+from pcapi.core.payments import exceptions as payments_exceptions
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import exceptions as subscription_exceptions
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.users import api as users_api
 from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.models import db
+from pcapi.models.feature import DisabledFeatureError
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository.user_queries import matching
 
 from . import models
+from .common.models import IdentityCheckContent
 from .dms import api as dms_api
 from .ubble import api as ubble_api
 
@@ -43,6 +50,28 @@ USER_PROFILING_FRAUD_CHECK_STATUS_RISK_MAPPING = {
     models.UserProfilingRiskRating.MEDIUM: models.FraudCheckStatus.SUSPICIOUS,
     models.UserProfilingRiskRating.HIGH: models.FraudCheckStatus.KO,
 }
+
+
+class FraudCheckError(Exception):
+    pass
+
+
+class EligibilityError(Exception):
+    pass
+
+
+class DuplicateIdPieceNumber(Exception):
+    def __init__(self, id_piece_number: str, duplicate_user_id: int) -> None:
+        self.id_piece_number = id_piece_number
+        self.duplicate_user_id = duplicate_user_id
+        super().__init__()
+
+
+class DuplicateIneHash(Exception):
+    def __init__(self, ine_hash: str, duplicate_user_id: int) -> None:
+        self.ine_hash = ine_hash
+        self.duplicate_user_id = duplicate_user_id
+        super().__init__()
 
 
 def on_educonnect_result(
@@ -314,8 +343,6 @@ def _check_user_has_no_active_deposit(
 def _check_user_eligibility(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.FraudItem:
-    from pcapi.core.users import api as users_api
-
     if not eligibility:
         return models.FraudItem(
             status=models.FraudStatus.KO,
@@ -417,12 +444,11 @@ def on_user_profiling_check_result(
     risk_rating: models.UserProfilingRiskRating,
 ) -> None:
     user_profiling_status = USER_PROFILING_RISK_MAPPING[risk_rating]
+
     if not user_profiling_status == models.FraudStatus.OK:
         user.validate_profiling_failed()
-
-        from pcapi.core.subscription import messages as subscription_messages
-
         subscription_messages.on_user_subscription_journey_stopped(user)
+
     else:
         user.validate_profiling()
 
@@ -548,8 +574,6 @@ def has_user_pending_identity_check(user: users_models.User) -> bool:
 
 
 def has_user_performed_identity_check(user: users_models.User) -> bool:
-    from pcapi.core.users import api as users_api
-
     if user.is_beneficiary and not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         return True
 
@@ -614,8 +638,6 @@ def decide_eligibility(
     It may be the current eligibility of the user if the age is between 15 and 18, or it may be the eligibility AGE18
     if the user is over 19 and had previously tried to register when the age was 18.
     """
-    from pcapi.core.users import api as users_api
-
     if registration_datetime is None or birth_date is None:
         return None
 
@@ -674,3 +696,130 @@ def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int
     )
 
     return query
+
+
+def handle_ok_manual_review(
+    user: users_models.User,
+    _review: models.BeneficiaryFraudReview,
+    eligibility: typing.Optional[users_models.EligibilityType],
+) -> None:
+    fraud_check = get_last_filled_identity_fraud_check(user)
+    if not fraud_check:
+        raise FraudCheckError("Pas de vérification d'identité effectuée")
+
+    source_data: IdentityCheckContent = fraud_check.source_data()  # type: ignore[assignment]
+    try:
+        _check_id_piece_number_unicity(user, source_data.get_id_piece_number())
+        _check_ine_hash_unicity(user, source_data.get_ine_hash())
+    except DuplicateIdPieceNumber as err:
+        raise FraudCheckError(
+            f"Le numéro de CNI {err.id_piece_number} est déjà utilisé par l'utilisateur {err.duplicate_user_id}"
+        ) from err
+    except DuplicateIneHash as err:
+        raise FraudCheckError(
+            f"Le numéro INE {err.ine_hash} est déjà utilisé par l'utilisateur {err.duplicate_user_id}"
+        ) from err
+
+    users_api.update_user_information_from_external_source(user, source_data)
+
+    if eligibility is None:
+        eligibility = decide_eligibility(user, source_data.get_birth_date(), source_data.get_registration_datetime())
+        if not eligibility:
+            raise EligibilityError(
+                "Aucune éligibilité trouvée. Veuillez choisir une autre Eligibilité que 'Par défaut'"
+            )
+
+    try:
+        subscription_api.activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)
+
+    except subscription_exceptions.InvalidEligibilityTypeException as err:
+        raise EligibilityError(f"L'égibilité '{eligibility.value}' n'existe pas !") from err
+
+    except subscription_exceptions.InvalidAgeException as err:
+        err_msg = (
+            "L'âge de l'utilisateur à l'inscription n'a pas pu être déterminé"
+            if err.age is None
+            else f"L'âge de l'utilisateur à l'inscription ({err.age} ans) est incompatible avec l'éligibilité choisie"
+        )
+        raise EligibilityError(err_msg) from err
+
+    except subscription_exceptions.CannotUpgradeBeneficiaryRole as err:
+        raise EligibilityError(f"L'utilisateur ne peut pas être promu au rôle {eligibility.value}") from err
+
+    except payments_exceptions.UserHasAlreadyActiveDeposit as err:
+        raise EligibilityError(
+            f"L'utilisateur bénéficie déjà d'un déposit non expiré du type '{eligibility.value}'"
+        ) from err
+
+    except payments_exceptions.DepositTypeAlreadyGrantedException as err:
+        raise EligibilityError("Un déposit de ce type a déjà été créé") from err
+
+
+def handle_dms_redirection_review(
+    user: users_models.User,
+    review: models.BeneficiaryFraudReview,
+    _eligibility: typing.Optional[users_models.EligibilityType],
+) -> None:
+    if review.reason is None:
+        review.reason = "Redirigé vers DMS"
+    else:
+        review.reason += " ; Redirigé vers DMS"
+
+    send_subscription_document_error_email(user.email, "unread-document")
+    subscription_messages.on_redirect_to_dms_from_idcheck(user)
+
+
+def handle_ko_review(
+    user: users_models.User,
+    _review: models.BeneficiaryFraudReview,
+    _eligibility: typing.Optional[users_models.EligibilityType],
+) -> None:
+    subscription_messages.on_fraud_review_ko(user)
+
+
+REVIEW_HANDLERS = {
+    models.FraudReviewStatus.OK: handle_ok_manual_review,
+    models.FraudReviewStatus.REDIRECTED_TO_DMS: handle_dms_redirection_review,
+    models.FraudReviewStatus.KO: handle_ko_review,
+}
+
+
+def validate_beneficiary(
+    user: users_models.User,
+    reviewer: users_models.User,
+    reason: str,
+    review: models.FraudReviewStatus,
+    eligibility: typing.Optional[users_models.EligibilityType],
+) -> models.BeneficiaryFraudReview:
+    if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
+        raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
+
+    review = models.BeneficiaryFraudReview(user=user, author=reviewer, reason=reason, review=review.value)
+
+    if review.review is not None:
+        handler = REVIEW_HANDLERS.get(models.FraudReviewStatus(review.review))
+        if handler:
+            handler(user, review, eligibility)
+
+    repository.save(review)
+    return review
+
+
+def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: typing.Optional[str]) -> None:
+    if not id_piece_number:
+        return
+
+    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)
+
+    if duplicate_user:
+        raise DuplicateIdPieceNumber(id_piece_number, duplicate_user.id)
+
+
+def _check_ine_hash_unicity(user: users_models.User, ine_hash: typing.Optional[str]) -> None:
+    if not ine_hash:
+        return
+
+    duplicate_user = find_duplicate_ine_hash_user(ine_hash, user.id)
+
+    if duplicate_user:
+        raise DuplicateIneHash(ine_hash, duplicate_user.id)
