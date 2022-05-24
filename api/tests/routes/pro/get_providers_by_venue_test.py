@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
-from pcapi.core.providers.factories import AllocinePivotFactory
 from pcapi.core.users.factories import UserFactory
 from pcapi.utils.human_ids import humanize
 
@@ -12,7 +11,7 @@ def test_venue_has_known_allocine_id(client):
     # Given
     user = UserFactory()
     venue = offerers_factories.VenueFactory()
-    AllocinePivotFactory(venue=venue)
+    providers_factories.AllocineTheaterFactory(siret=venue.siret)
 
     allocine_provider = providers_factories.ProviderFactory(localClass="AllocineStocks")
     other_provider = providers_factories.ProviderFactory(localClass="B provider")

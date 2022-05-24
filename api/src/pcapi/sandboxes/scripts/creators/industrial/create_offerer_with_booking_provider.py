@@ -8,6 +8,7 @@ from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import EventOfferFactory
 from pcapi.core.offers.factories import EventStockFactory
+from pcapi.core.providers.factories import AllocineTheaterFactory
 from pcapi.core.users.factories import BeneficiaryGrant18Factory
 
 
@@ -19,6 +20,7 @@ def create_offerer_with_booking_provider() -> None:
 
     user_offerer = UserOffererFactory(user__email="pro-with-venue-booking-provider@example.com")
     venue = VenueFactory(name="Cinéma synchro avec booking provider", managingOfferer=user_offerer.offerer)
+    AllocineTheaterFactory(siret=venue.siret)
     offer_solo = EventOfferFactory(name="Séance ciné solo", venue=venue, subcategoryId=subcategories.SEANCE_CINE.id)
     stock_solo = EventStockFactory(offer=offer_solo)
     offer_duo = EventOfferFactory(name="Séance ciné duo", venue=venue, subcategoryId=subcategories.SEANCE_CINE.id)

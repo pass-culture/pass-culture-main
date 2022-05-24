@@ -4,7 +4,7 @@ from typing import Optional
 from flask_sqlalchemy import BaseQuery
 
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.models import AllocinePivot
+from pcapi.core.providers.models import AllocineTheater
 from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 
@@ -55,10 +55,10 @@ def get_providers_enabled_for_pro_excluding_specific_provider(allocine_local_cla
     )
 
 
-def get_allocine_pivot_for_venue(venue: Venue) -> AllocinePivot:
-    return AllocinePivot.query.filter_by(venue=venue).one_or_none()
+def get_allocine_theater(venue: Venue) -> AllocineTheater:
+    return AllocineTheater.query.filter_by(siret=venue.siret).one_or_none()
 
 
-def has_allocine_pivot_for_venue(venue: Venue) -> bool:
-    allocine_pivot = get_allocine_pivot_for_venue(venue)
-    return allocine_pivot is not None
+def is_venue_known_by_allocine(venue: Venue) -> bool:
+    allocine_theater = get_allocine_theater(venue)
+    return allocine_theater is not None

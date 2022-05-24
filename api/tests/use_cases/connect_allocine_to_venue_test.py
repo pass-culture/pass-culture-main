@@ -13,8 +13,8 @@ def test_connect_venue_to_allocine_provider():
     # Given
     venue = offerers_factories.VenueFactory()
     allocine_provider = providers_factories.AllocineProviderFactory()
-    providers_factories.AllocinePivotFactory(
-        venue=venue,
+    providers_factories.AllocineTheaterFactory(
+        siret=venue.siret,
         internalId="PXXXXXX",
         theaterId="123VHJ==",
     )
@@ -32,6 +32,7 @@ def test_connect_venue_to_allocine_provider():
 
     # Then
     allocine_venue_provider = providers_models.AllocineVenueProvider.query.one()
+    allocine_pivot = providers_models.AllocinePivot.query.one()
     venue_provider_price_rule = providers_models.AllocineVenueProviderPriceRule.query.one()
 
     assert allocine_venue_provider.venue == venue
@@ -40,3 +41,4 @@ def test_connect_venue_to_allocine_provider():
     assert allocine_venue_provider.internalId == "PXXXXXX"
     assert allocine_venue_provider.venueIdAtOfferProvider == "123VHJ=="
     assert venue_provider_price_rule.price == Decimal("9.99")
+    assert allocine_pivot.venueId == venue.id

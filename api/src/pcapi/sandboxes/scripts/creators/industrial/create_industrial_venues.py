@@ -4,7 +4,9 @@ import re
 
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import BankInformationFactory
@@ -22,7 +24,7 @@ DEFAULT_VENUE_IMAGES = 4
 VENUE_IMAGE_INDEX_START_AT = 21
 
 
-def add_default_image_to_venue(image_venue_counter, offerer, venue):  # type: ignore [no-untyped-def]
+def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue: Venue) -> None:
     image_number = image_venue_counter + VENUE_IMAGE_INDEX_START_AT
     with open(
         f"./src/pcapi/sandboxes/thumbs/generic_pictures/Picture_0{image_number}.jpg",
@@ -32,7 +34,7 @@ def add_default_image_to_venue(image_venue_counter, offerer, venue):  # type: ig
             user=offerer.users[0],
             venue=venue,
             content=file.read(),
-            image_credit=None,
+            image_credit="industrial sandbox picture provider",
         )
 
 
@@ -129,7 +131,10 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
         name="Lieu synchro allociné", siret="87654321", businessUnit__name="Business Unit du Lieu synchro allociné"
     )
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
-    pivot = providers_factories.AllocinePivotFactory(venue=venue_synchronized_with_allocine)
+    theater = providers_factories.AllocineTheaterFactory(siret=venue_synchronized_with_allocine.siret)
+    pivot = providers_factories.AllocinePivotFactory(
+        venue=venue_synchronized_with_allocine, theaterId=theater.theaterId, internalId=theater.internalId
+    )
     venue_provider = providers_factories.AllocineVenueProviderFactory(
         venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
     )

@@ -1,14 +1,15 @@
 from decimal import Decimal
 
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.exceptions import NoAllocinePivot
+from pcapi.core.providers.exceptions import NoAllocineTheater
 from pcapi.core.providers.exceptions import NoPriceSpecified
 from pcapi.core.providers.models import AllocinePivot
+from pcapi.core.providers.models import AllocineTheater
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
-from pcapi.core.providers.repository import get_allocine_pivot_for_venue
+from pcapi.core.providers.repository import get_allocine_theater
 from pcapi.domain.price_rule import PriceRule
 from pcapi.repository import repository
 
@@ -20,12 +21,15 @@ ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 def connect_venue_to_allocine(
     venue: Venue, provider_id: int, venue_provider_payload: VenueProviderCreationPayload
 ) -> AllocineVenueProvider:
-    allocine_pivot = get_allocine_pivot_for_venue(venue)
+    allocine_theater = get_allocine_theater(venue)
 
-    if not allocine_pivot:
-        raise NoAllocinePivot()
+    if not allocine_theater:
+        raise NoAllocineTheater()
     if not venue_provider_payload.price:
         raise NoPriceSpecified()
+
+    allocine_pivot = _create_allocine_pivot_for_venue(allocine_theater, venue)
+    repository.save(allocine_pivot)
 
     venue_provider = _create_allocine_venue_provider(allocine_pivot, provider_id, venue_provider_payload, venue)
     venue_provider_price_rule = _create_allocine_venue_provider_price_rule(venue_provider, venue_provider_payload.price)  # type: ignore [arg-type]
@@ -58,3 +62,12 @@ def _create_allocine_venue_provider(
     allocine_venue_provider.internalId = allocine_pivot.internalId
 
     return allocine_venue_provider
+
+
+def _create_allocine_pivot_for_venue(allocine_theater: AllocineTheater, venue: Venue) -> AllocinePivot:
+    allocine_pivot = AllocinePivot()
+    allocine_pivot.venue = venue
+    allocine_pivot.theaterId = allocine_theater.theaterId
+    allocine_pivot.internalId = allocine_theater.internalId
+
+    return allocine_pivot
