@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
+import { getEducationalDomainsOptionsAdapter } from 'app/adapters/getEducationalDomainsOptionsAdapter'
+import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters, Option } from 'app/types'
@@ -30,8 +32,12 @@ export const OfferFilters = ({
   const [categoriesOptions, setCategoriesOptions] = useState<
     Option<string[]>[]
   >([])
+  const [domainsOptions, setDomainsOptions] = useState<Option<number>[]>([])
   const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { removeQuery } = useContext(AlgoliaQueryContext)
+  const displayEducationalDomains = useActiveFeature(
+    'ENABLE_EDUCATIONAL_DOMAINS'
+  )
 
   const handleResetFilters = () => {
     removeVenueFilter()
@@ -42,18 +48,25 @@ export const OfferFilters = ({
   }
 
   useEffect(() => {
-    const loadSubCategoriesOptions = async () => {
-      const { payload, isOk } = await getEducationalCategoriesOptionsAdapter(
-        null
-      )
+    const loadFiltersOptions = async () => {
+      const [categoriesResponse, domainsResponse] = await Promise.all([
+        getEducationalCategoriesOptionsAdapter(null),
+        displayEducationalDomains
+          ? getEducationalDomainsOptionsAdapter()
+          : Promise.resolve({ isOk: true, payload: [], message: null }),
+      ])
 
-      if (isOk) {
-        setCategoriesOptions(payload.educationalCategories)
+      if (categoriesResponse.isOk) {
+        setCategoriesOptions(categoriesResponse.payload.educationalCategories)
+      }
+
+      if (domainsResponse.isOk) {
+        setDomainsOptions(domainsResponse.payload)
       }
     }
 
-    loadSubCategoriesOptions()
-  }, [])
+    loadFiltersOptions()
+  }, [displayEducationalDomains])
 
   return (
     <div className={className}>
