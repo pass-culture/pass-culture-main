@@ -2,6 +2,7 @@ from decimal import Decimal
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+from freezegun import freeze_time
 import pytest
 import requests_mock
 
@@ -28,6 +29,8 @@ def mock_init_provider(*arg):
 
 class SynchronizeVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
+    # FIXME (jsdupuis, 2022-05-24) : freeze_time to be removed after the 1st of june
+    @freeze_time("2022-06-01 09:00:00")
     def test_synchronize_venue_provider(self, app):
         api_url = "https://example.com/provider/api"
         old_provider = providers_factories.APIProviderFactory(id=1)
