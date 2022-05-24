@@ -8,12 +8,14 @@ export const populateFacetFilters = ({
   departments,
   categories,
   students,
+  domains,
   venueFilter = null,
   useNewAlgoliaIndex = false,
 }: {
   departments: Option[]
   categories: Option<string[]>[]
   students: Option[]
+  domains: Option<number>[]
   venueFilter: VenueFilterType | null
   useNewAlgoliaIndex: boolean
 }): Facets => {
@@ -34,6 +36,9 @@ export const populateFacetFilters = ({
   const filteredStudents: string[] = students.map(
     student => `offer.students:${student.value}`
   )
+  const filteredDomains: string[] = domains.map(
+    domain => `offer.domains:${domain.value}`
+  )
 
   if (filteredDepartments.length > 0) {
     updatedFilters.push(filteredDepartments)
@@ -43,6 +48,9 @@ export const populateFacetFilters = ({
   }
   if (filteredStudents.length > 0) {
     updatedFilters.push(filteredStudents)
+  }
+  if (filteredDomains.length > 0) {
+    updatedFilters.push(filteredDomains)
   }
 
   if (venueFilter?.id) {
