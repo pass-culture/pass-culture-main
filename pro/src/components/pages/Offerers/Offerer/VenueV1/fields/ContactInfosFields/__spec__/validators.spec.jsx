@@ -68,14 +68,18 @@ describe('has fill fields with correct format', () => {
   it('should return undefined when Url is valid or empty', async () => {
     const httpUrl = 'http://someFakeUrl.com'
     const httpsUrl = 'https://someFakeUrl.com'
+    const httpUrlWithUppercase = 'HTTP://www.someFakeUrl.com'
     const classicUrl = 'someFakeUrl.com'
+    const classicUrlWithParameters = 'www.someFakeUrl.com?%20%23%42'
     const wwwClassicUrl = 'www.someFakeUrl.com'
     const emptyUrl = ''
 
     await expect(validateUrl(httpUrl)).resolves.toBeUndefined()
     await expect(validateUrl(httpsUrl)).resolves.toBeUndefined()
+    await expect(validateUrl(httpUrlWithUppercase)).resolves.toBeUndefined()
     await expect(validateUrl(emptyUrl)).resolves.toBeUndefined()
     await expect(validateUrl(classicUrl)).resolves.toBeUndefined()
+    await expect(validateUrl(classicUrlWithParameters)).resolves.toBeUndefined()
     await expect(validateUrl(wwwClassicUrl)).resolves.toBeUndefined()
   })
 

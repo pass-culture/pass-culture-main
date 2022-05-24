@@ -23,9 +23,11 @@ export const validateEmail = async val => {
 }
 
 export const validateUrl = async url => {
+  const IGNORE_CASE_FLAG = 'i'
   const urlRegex = new RegExp(
     // eslint-disable-next-line no-useless-escape
-    /^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/
+    /^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$/,
+    IGNORE_CASE_FLAG
   )
   if (!url) {
     return
