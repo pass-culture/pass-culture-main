@@ -176,7 +176,8 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         if stock.idAtProviders and stock.idAtProviders.isdigit():
             show_id = int(stock.idAtProviders)
         else:
-            logger.error("stock.idAtProviders is not a digit: %s", stock.idAtProviders)
+            logger.error('Stock %d has invalid (non-digit) idAtProviders "%s"', stock.id, stock.idAtProviders)
+            raise TypeError("Only digit is allowed for stock.idAtProviders ")
 
         tickets = booking_providers_api.book_ticket(
             venue_id=stock.offer.venueId,
