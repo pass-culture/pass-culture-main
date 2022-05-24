@@ -206,10 +206,14 @@ class Returns200Test:
 
         expected_payload = EducationalBookingEdition(
             **serialize_educational_booking(booking.educationalBooking).dict(),
-            updatedFields=["name", "contactEmail", "mentalDisabilityCompliant", "subcategoryId"],
+            updatedFields=sorted(["name", "contactEmail", "mentalDisabilityCompliant", "subcategoryId"]),
         )
-        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
-        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
+
+        adage_request = adage_api_testing.adage_requests[0]
+        adage_request["sent_data"].updatedFields = sorted(adage_request["sent_data"].updatedFields)
+
+        assert adage_request["sent_data"] == expected_payload
+        assert adage_request["url"] == "https://adage_base_url/v1/prereservation-edit"
 
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_patch_educational_offer_do_not_notify_educational_redactor_when_no_active_booking(
