@@ -16,6 +16,7 @@ from pcapi.core.subscription import api as subscription_api
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
+from pcapi.core.users.models import AccountState
 from pcapi.core.users.models import Token
 from pcapi.core.users.models import TokenType
 from pcapi.models import db
@@ -28,15 +29,36 @@ from tests.scripts.beneficiary.fixture import make_single_application
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.mark.parametrize("is_active", [True, False])
-def test_user_is_active_returned_value(client, is_active):
+def test_account_is_active_account_state(client):
     data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
-    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=is_active)
+    users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=True)
 
     with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
         response = client.post("/native/v1/signin", json=data)
         assert response.status_code == 200
-        assert response.json["isActive"] == is_active
+        assert response.json["accountState"] == AccountState.ACTIVE.value
+
+
+def test_account_suspended_upon_user_request_account_state(client):
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+    users_factories.SuspendedUponUserRequestFactory(user=user)
+
+    with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 200
+        assert response.json["accountState"] == AccountState.SUSPENDED_UPON_USER_REQUEST.value
+
+
+def test_account_deleted_account_state(client):
+    data = {"identifier": "user@test.com", "password": settings.TEST_DEFAULT_PASSWORD}
+    user = users_factories.UserFactory(email=data["identifier"], password=data["password"], isActive=False)
+    users_factories.DeletedAccountSuspensionFactory(user=user)
+
+    with override_features(ALLOW_ACCOUNT_REACTIVATION=True):
+        response = client.post("/native/v1/signin", json=data)
+        assert response.status_code == 400
+        assert response.json["code"] == "ACCOUNT_DELETED"
 
 
 def test_allow_inactive_user_sign_when_ff_is_active(client):

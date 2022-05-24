@@ -51,11 +51,14 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
     except users_exceptions.CredentialsException as exc:
         raise ApiErrors({"general": ["Identifiant ou Mot de passe incorrect"]}) from exc
 
+    if user.account_state.is_deleted:
+        raise ApiErrors({"code": "ACCOUNT_DELETED", "general": ["Le compte a été supprimé"]})
+
     users_api.update_last_connection_date(user)
     return authentication.SigninResponse(
         access_token=users_api.create_user_access_token(user),
         refresh_token=create_refresh_token(identity=user.email),
-        is_active=user.isActive,
+        account_state=user.account_state,
     )
 
 

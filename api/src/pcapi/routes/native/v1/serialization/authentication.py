@@ -1,5 +1,6 @@
 from typing import Optional
 
+from pcapi.core.users.models import AccountState
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
 
@@ -12,7 +13,7 @@ class SigninRequest(BaseModel):
 class SigninResponse(BaseModel):
     refresh_token: str
     access_token: str
-    is_active: bool
+    account_state: AccountState
 
     class Config:
         alias_generator = to_camel
