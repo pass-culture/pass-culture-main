@@ -17,6 +17,10 @@ from pcapi.models.pc_object import PcObject
 logger = logging.getLogger(__name__)
 
 
+class DisabledFeatureError(Exception):
+    pass
+
+
 class FeatureToggle(enum.Enum):
     ALLOW_IDCHECK_REGISTRATION = "Autoriser les utilisateurs de 18 ans à suivre le parcours d inscription ID Check"
     ALLOW_IDCHECK_REGISTRATION_FOR_EDUCONNECT_ELIGIBLE = (

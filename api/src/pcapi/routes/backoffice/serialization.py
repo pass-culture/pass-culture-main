@@ -129,3 +129,17 @@ class EligibilitySubscriptionHistoryModel(BaseModel):
 
 class GetUserSubscriptionHistoryResponseModel(BaseModel):
     subscriptions: dict[str, EligibilitySubscriptionHistoryModel]
+
+
+class BeneficiaryReviewRequestModel(BaseModel):
+    class Config:
+        extra = pydantic.Extra.forbid
+
+    reason: str
+    review: fraud_models.FraudReviewStatus
+    eligibility: typing.Optional[users_models.EligibilityType]
+
+
+class BeneficiaryReviewResponseModel(BeneficiaryReviewRequestModel):
+    userId: int
+    authorId: int

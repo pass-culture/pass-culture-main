@@ -94,7 +94,7 @@ def test_no_need_for_permissions_on_testing_environment(db_session, client):
     auth_token = generate_token(user, [permission])
 
     with mock.patch("pcapi.core.permissions.utils.send_403") as unauthorized_mock:
-        with current_app.test_request_context("http://any.thing", headers={"Authorization": auth_token}):
+        with current_app.test_request_context("http://any.thing", headers={"Authorization": f"Bearer {auth_token}"}):
 
             # when
             perm_decorator(view_func_stub)("test_arg")
