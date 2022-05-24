@@ -39,8 +39,8 @@ class VenueContactModel(BaseModel):
 
     @validator("website")
     def validate_website_url(cls, website: str) -> str:  # pylint: disable=no-self-argument
-        pattern = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$"
-        if website is None or re.match(pattern, website):
+        pattern = r"^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$"
+        if website is None or re.match(pattern, website, re.IGNORECASE):
             return website
         raise ValueError(f"url du site web invalide: {website}")
 
