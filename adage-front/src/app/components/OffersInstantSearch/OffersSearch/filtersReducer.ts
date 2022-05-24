@@ -6,6 +6,7 @@ type PopulateAllFiltersAction = {
     departments: Option[]
     categories: Option<string[]>[]
     students: Option[]
+    domains: Option<number>[]
   }
 }
 
@@ -28,6 +29,11 @@ type PopulateStudentsFilterAction = {
   studentFilters: Option[]
 }
 
+type PopulateDomainsFilterAction = {
+  type: 'POPULATE_DOMAINS_FILTER'
+  domainFilters: Option<number>[]
+}
+
 type RemoveDepartmentFilterAction = {
   type: 'REMOVE_ONE_DEPARTMENT_FILTER'
   departmentFilter: Option
@@ -43,15 +49,22 @@ type RemoveStudentFilterAction = {
   studentFilter: Option
 }
 
+type RemoveDomainFilterAction = {
+  type: 'REMOVE_ONE_DOMAIN_FILTER'
+  domainFilter: Option<number>
+}
+
 export type FiltersReducerAction =
   | PopulateAllFiltersAction
   | ResetCurrentFiltersAction
   | PopulateDepartmentsFilterAction
   | PopulateCategoriesFilterAction
   | PopulateStudentsFilterAction
+  | PopulateDomainsFilterAction
   | RemoveDepartmentFilterAction
   | RemoveCategoryFilterAction
   | RemoveStudentFilterAction
+  | RemoveDomainFilterAction
 
 export const filtersReducer = (
   state: Filters,
@@ -63,6 +76,7 @@ export const filtersReducer = (
         departments: action.allFilters.departments,
         categories: action.allFilters.categories,
         students: action.allFilters.students,
+        domains: action.allFilters.domains,
       }
     case 'REMOVE_ONE_DEPARTMENT_FILTER': {
       const newDepartments = state.departments?.filter(
@@ -82,14 +96,22 @@ export const filtersReducer = (
       )
       return { ...state, students: newStudents }
     }
+    case 'REMOVE_ONE_DOMAIN_FILTER': {
+      const newDomains = state.domains?.filter(
+        domain => domain.value !== action.domainFilter.value
+      )
+      return { ...state, domains: newDomains }
+    }
     case 'POPULATE_DEPARTMENTS_FILTER':
       return { ...state, departments: action.departmentFilters }
     case 'POPULATE_CATEGORIES_FILTER':
       return { ...state, categories: action.categoryFilters }
     case 'POPULATE_STUDENTS_FILTER':
       return { ...state, students: action.studentFilters }
+    case 'POPULATE_DOMAINS_FILTER':
+      return { ...state, domains: action.domainFilters }
     case 'RESET_CURRENT_FILTERS':
-      return { departments: [], categories: [], students: [] }
+      return { departments: [], categories: [], students: [], domains: [] }
     default:
       return state
   }
