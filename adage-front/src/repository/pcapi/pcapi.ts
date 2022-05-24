@@ -2,6 +2,7 @@ import { Category, Feature, SubCategory } from 'app/types'
 import {
   CollectiveOffer,
   CollectiveOfferTemplate,
+  EducationalDomain,
   OfferType,
   VenueFilterType,
 } from 'app/types/offers'
@@ -61,3 +62,6 @@ export const getEducationalCategories = async (): Promise<{
 
 export const getFeatures = async (): Promise<Feature[]> =>
   client.get('/adage-iframe/features')
+
+export const getEducationalDomains = async (): Promise<EducationalDomain[]> =>
+  client.get('/collective/educational-domains')
