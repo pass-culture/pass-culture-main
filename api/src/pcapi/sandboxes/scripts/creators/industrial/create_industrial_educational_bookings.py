@@ -7,8 +7,6 @@ import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import EducationalEventStockFactory
-from pcapi.core.offers.factories import MediationFactory
-from pcapi.sandboxes.scripts.utils.storage_utils import store_public_object_from_sandbox_assets
 
 
 FAKE_STOCK_DATA = [
@@ -126,10 +124,6 @@ def create_industrial_educational_bookings() -> None:
                 offer__visualDisabilityCompliant=True,
             )
         )
-
-    for stock in stocks:
-        mediation = MediationFactory(offer=stock.offer, credit="Crédit photo")
-        store_public_object_from_sandbox_assets("thumbs", mediation, mediation.offer.subcategoryId)
 
     next_year_stocks = [
         EducationalEventStockFactory(
