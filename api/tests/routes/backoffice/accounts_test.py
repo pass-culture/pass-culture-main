@@ -12,9 +12,11 @@ from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions.models import Permissions
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users.factories import DepositGrantFactory
 from pcapi.models.beneficiary_import_status import ImportStatus
 
 
@@ -565,3 +567,288 @@ class GetUserHistoryTest:
 
         # then
         assert response.status_code == 403
+
+
+class PostManualReviewTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_review_ko_application(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
+        )
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 200
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=reviewer).first()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_beneficiary_role is True
+
+        dms_content = fraud_models.DMSContent(**check.resultContent)
+        assert user.firstName == dms_content.first_name
+        assert user.lastName == dms_content.last_name
+        assert user.idPieceNumber == dms_content.id_piece_number
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).first()
+        assert fraud_check.status == check.status
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_review_dms_application(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 200
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=reviewer).first()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_beneficiary_role is True
+        assert len(user.deposits) == 1
+
+        dms_content = fraud_models.DMSContent(**check.resultContent)
+        assert user.firstName == dms_content.first_name
+        assert user.lastName == dms_content.last_name
+        assert user.idPieceNumber == dms_content.id_piece_number
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_review_educonnect_application(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 200
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=reviewer).one()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_underage_beneficiary_role
+        assert len(user.deposits) == 1
+
+        educonnect_content = fraud_models.EduconnectContent(**check.resultContent)
+        assert user.firstName == educonnect_content.get_first_name()
+        assert user.lastName == educonnect_content.get_last_name()
+        assert user.idPieceNumber == educonnect_content.get_id_piece_number()
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_review_ubble_application(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 200
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=reviewer).one()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_beneficiary_role
+        assert len(user.deposits) == 1
+
+        ubble_content = fraud_models.ubble_fraud_models.UbbleContent(**check.resultContent)
+        assert user.firstName == ubble_content.get_first_name()
+        assert user.lastName == ubble_content.get_last_name()
+        assert user.idPieceNumber == ubble_content.get_id_piece_number()
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_ko_review_does_not_activate_beneficiary(self, client):
+        # given
+        user = users_factories.UserFactory()
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        reviewer = users_factories.AdminFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "KO", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 200
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=reviewer).one_or_none()
+        assert review is not None
+        assert review.author == reviewer
+        assert review.review == fraud_models.FraudReviewStatus.KO
+        assert user.has_beneficiary_role is False
+
+        assert subscription_models.SubscriptionMessage.query.count() == 1
+        message = subscription_models.SubscriptionMessage.query.first()
+        assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
+        assert message.userMessage == "Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture."
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_review_with_unknown_data(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None, "pouet": "coin coin"},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 400
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_review_with_missing_data(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 400
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_review_without_permission(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_review_as_anonymous(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_review_when_no_age_is_found(self, client):
+        # given
+        birth_date_15_yo = datetime.utcnow() - relativedelta(years=15, months=2)
+        user = users_factories.UserFactory(dateOfBirth=birth_date_15_yo)
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.UBBLE,
+            eligibilityType=None,
+            resultContent=fraud_factories.UbbleContentFactory(birth_date=birth_date_15_yo.date().isoformat()),
+        )
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 412
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_review_unknown_account(self, client):
+        # given
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            # a user with this id should not exist
+            url_for("backoffice_blueprint.review_public_account", user_id=15041980),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 412
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_review_ok_already_beneficiary_account(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
+        DepositGrantFactory(user=user)
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": None},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 412
