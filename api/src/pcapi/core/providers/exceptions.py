@@ -14,7 +14,7 @@ class NoPriceSpecified(VenueProviderException):
     pass
 
 
-class NoAllocinePivot(VenueProviderException):
+class NoAllocineTheater(VenueProviderException):
     pass
 
 
