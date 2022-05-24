@@ -18,7 +18,7 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def when_venue_provider_is_successfully_created(
+    def test_when_venue_provider_is_successfully_created(
         self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app
     ):
         # Given
@@ -50,7 +50,9 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
-    def when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(self, mock_synchronize_venue_provider, app):
+    def test_when_add_allocine_stocks_provider_with_price_but_no_isDuo_config(
+        self, mock_synchronize_venue_provider, app
+    ):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
@@ -73,7 +75,9 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
-    def when_add_allocine_stocks_provider_with_default_settings_at_import(self, mock_synchronize_venue_provider, app):
+    def test_when_add_allocine_stocks_provider_with_default_settings_at_import(
+        self, mock_synchronize_venue_provider, app
+    ):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
@@ -104,7 +108,7 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def when_no_regression_on_format(self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app):
+    def test_when_no_regression_on_format(self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app):
         # Given
         user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(siret="12345678912345")
@@ -153,7 +157,7 @@ class Returns201Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def when_venue_id_at_offer_provider_is_ignored_for_pro(
+    def test_when_venue_id_at_offer_provider_is_ignored_for_pro(
         self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app
     ):
         # Given
@@ -208,7 +212,7 @@ class Returns201Test:
 
 class Returns400Test:
     @pytest.mark.usefixtures("db_session")
-    def when_api_error_raise_when_missing_fields(self, app):
+    def test_when_api_error_raise_when_missing_fields(self, app):
         # Given
         user = user_factories.AdminFactory()
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -223,7 +227,7 @@ class Returns400Test:
         assert response.json["providerId"] == ["Ce champ est obligatoire"]
 
     @clean_database
-    def when_add_allocine_stocks_provider_with_wrong_format_price(self, app):
+    def test_when_add_allocine_stocks_provider_with_wrong_format_price(self, app):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
@@ -247,7 +251,7 @@ class Returns400Test:
         assert VenueProvider.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
-    def when_add_allocine_stocks_provider_with_no_price(self, app):
+    def test_when_add_allocine_stocks_provider_with_no_price(self, app):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
@@ -272,7 +276,7 @@ class Returns400Test:
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
-    def when_user_is_not_logged_in(self, app):
+    def test_when_user_is_not_logged_in(self, app):
         # when
         response = TestClient(app.test_client()).post("/venueProviders")
 
@@ -282,7 +286,7 @@ class Returns401Test:
 
 class Returns404Test:
     @pytest.mark.usefixtures("db_session")
-    def when_venue_does_not_exist(self, app):
+    def test_when_venue_does_not_exist(self, app):
         # Given
         user = user_factories.AdminFactory()
 
@@ -302,7 +306,7 @@ class Returns404Test:
         assert response.status_code == 404
 
     @pytest.mark.usefixtures("db_session")
-    def when_add_allocine_pivot_is_missing(self, app):
+    def test_when_add_allocine_pivot_is_missing(self, app):
         # Given
         venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464")
         user = user_factories.AdminFactory()
@@ -331,7 +335,7 @@ class Returns404Test:
 class Returns422Test:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
-    def when_provider_api_not_available(self, mock_siret_can_be_synchronized, app):
+    def test_when_provider_api_not_available(self, mock_siret_can_be_synchronized, app):
         # Given
         user = user_factories.AdminFactory()
         venue = offerers_factories.VenueFactory(siret="12345678912345")
@@ -368,7 +372,7 @@ class ConnectProviderToVenueTest:
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     @patch("pcapi.core.providers.api.connect_venue_to_provider")
-    def should_inject_the_appropriate_repository_to_the_usecase(
+    def test_should_inject_the_appropriate_repository_to_the_usecase(
         self, mocked_connect_venue_to_provider, mock_siret_can_be_synchronized, app
     ):
         # Given
@@ -392,7 +396,7 @@ class ConnectProviderToVenueTest:
         mocked_connect_venue_to_provider.assert_called_once_with(venue, provider, None)
 
     @pytest.mark.usefixtures("db_session")
-    def should_connect_to_allocine(
+    def test_should_connect_to_allocine(
         self,
         app,
     ):
