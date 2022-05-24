@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 
 from requests.exceptions import RequestException
@@ -78,12 +79,16 @@ class ProviderAPI:
                 continue
 
             if "price" not in stock_response:
-                logger.exception(
-                    "[%s SYNC] missing price key in response with ref %s",
-                    self.name,
-                    stock_response_ref,
-                )
-                continue
+                # FIXME (jsdupuis, 2022-05-24) : to be removed after the start_blocking_date
+                start_blocking_date = datetime.strptime("2022-06-01 00:00:00", "%Y-%m-%d %H:%M:%S")
+
+                if datetime.utcnow() > start_blocking_date:
+                    logger.exception(
+                        "[%s SYNC] missing price key in response with ref %s",
+                        self.name,
+                        stock_response_ref,
+                    )
+                    continue
 
             validated_stock_responses.append(stock_response)
 
