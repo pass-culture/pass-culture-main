@@ -61,6 +61,14 @@ class VenueFactory(BaseFactory):
         return finance_factories.BusinessUnitVenueLinkFactory(venue=venue, businessUnit=venue.businessUnit)
 
 
+class CollectiveVenueFactory(VenueFactory):
+    venueTypeCode = models.VenueTypeCode.PERFORMING_ARTS  # type: ignore[attr-defined]
+
+    isPermanent = True
+
+    adageId = factory.Sequence(str)
+
+
 class VirtualVenueFactory(VenueFactory):
     isVirtual = True
     address = None

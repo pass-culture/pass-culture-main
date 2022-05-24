@@ -7,7 +7,6 @@ from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.models.feature import FeatureToggle
 
@@ -74,12 +73,12 @@ def create_industrial_educational_bookings() -> None:
         educational_factories.EducationalInstitutionFactory(institutionId="0560071Y"),
     ]
 
-    venue = offerers_factories.VenueFactory(
+    # This venue has no adageId hence its validation go through siren validation
+    venue = offerers_factories.CollectiveVenueFactory(
         name="Opéra Royal de Versailles",
-        isPermanent=True,
         siret="95046949400021",
         managingOfferer__siren="950469494",
-        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,  # type: ignore [attr-defined]
+        adageId=None,
     )
     offerers_factories.UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
@@ -87,11 +86,9 @@ def create_industrial_educational_bookings() -> None:
     user_offerer_reimbursements = offerers_factories.UserOffererFactory(
         validationToken=None, user__email="pc.test.payments.eac@example.com"
     )
-    venue_reimbursements = offerers_factories.VenueFactory(
+    venue_reimbursements = offerers_factories.CollectiveVenueFactory(
         name="Théâtre des potirons",
-        isPermanent=True,
         managingOfferer=user_offerer_reimbursements.offerer,
-        venueTypeCode=VenueTypeCode.PERFORMING_ARTS,  # type: ignore [attr-defined]
     )
 
     deposits = []
