@@ -12,7 +12,6 @@ import { getVenuesAdapter } from 'core/Bookings/adapters'
 import { useLocation } from 'react-router-dom'
 
 export type CollectiveBookingsRouterState = {
-  venueId?: string
   statuses?: string[]
 }
 
@@ -30,7 +29,6 @@ const CollectiveBookings = (): JSX.Element => {
       getUserHasBookingsAdapter={getUserHasCollectiveBookingsAdapter}
       getVenuesAdapter={getVenuesAdapter}
       locationState={location.state}
-      venueId={location.state?.venueId}
     />
   )
 }

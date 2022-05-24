@@ -158,15 +158,6 @@ describe('components | BookingsRecap | Pro user', () => {
     expect(eventDateFilter).not.toHaveValue()
   })
 
-  it('should init venue pre-filter with venueId in router state', async () => {
-    // When
-    await renderBookingsRecap(store, { venueId: venue.id, statuses: [] })
-
-    // Then
-    const eventVenueFilter = screen.getByLabelText('Lieu')
-    expect(eventVenueFilter).toHaveValue(venue.id)
-  })
-
   it('should ask user to select a pre-filter before clicking on "Afficher"', async () => {
     // When
     await renderBookingsRecap(store)
@@ -293,8 +284,8 @@ describe('components | BookingsRecap | Pro user', () => {
     const bookingPeriodEndingDateInput = screen.getByDisplayValue(
       defaultBookingPeriodEndingDateInput
     )
-    fireEvent.click(bookingPeriodEndingDateInput)
-    fireEvent.click(screen.getAllByText('5')[0])
+    await userEvent.click(bookingPeriodEndingDateInput)
+    await userEvent.click(screen.getAllByText('5')[0])
     await submitFilters()
 
     // When
@@ -514,7 +505,7 @@ describe('components | BookingsRecap | Pro user', () => {
         1,
         NTH_ARGUMENT_GET_BOOKINGS.eventDate
       )
-    ).toStrictEqual(formatBrowserTimezonedDateAsUTC(new Date(2020, 5, 8)))
+    ).toStrictEqual(formatBrowserTimezonedDateAsUTC(new Date(2020, 5, 8), FORMAT_ISO_DATE_ONLY))
   })
 
   it('should set booking period to null when user select event date', async () => {
