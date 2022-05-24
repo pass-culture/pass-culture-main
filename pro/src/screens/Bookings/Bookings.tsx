@@ -8,7 +8,19 @@ import {
   GetVenuesAdapter,
   TPreFilters,
 } from 'core/Bookings'
-import React, { useCallback, useEffect, useState } from 'react'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
+} from '../../utils/date'
+import React, {
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
+import {
+  useHistory,
+  useLocation,
+} from 'react-router-dom'
 
 import { Audience } from 'core/shared/types'
 import { BookingRecapResponseModel } from 'api/v1/gen'
@@ -17,7 +29,8 @@ import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersM
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import type { Location } from 'history'
-import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
+import NoBookingsForPreFiltersMessage
+  from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import NoData from 'new_components/NoData'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PreFilters from './PreFilters'
@@ -25,13 +38,13 @@ import Spinner from 'components/layout/Spinner'
 import Tabs from 'new_components/Tabs'
 import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
+import { stringify } from '../../utils/query-string'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
 
 interface IBookingsProps {
   locationState: Location['state']
-  venueId?: string
   audience: Audience
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter
   getBookingsXLSFileAdapter: GetBookingsXLSFileAdapter
@@ -45,15 +58,14 @@ interface IBookingsProps {
 const MAX_LOADED_PAGES = 5
 
 const Bookings = ({
-  locationState,
-  venueId,
-  audience,
-  getBookingsCSVFileAdapter,
-  getBookingsXLSFileAdapter,
-  getFilteredBookingsRecapAdapter,
-  getUserHasBookingsAdapter,
-  getVenuesAdapter,
-}: IBookingsProps): JSX.Element => {
+    locationState,
+    audience,
+    getBookingsCSVFileAdapter,
+    getBookingsXLSFileAdapter,
+    getFilteredBookingsRecapAdapter,
+    getUserHasBookingsAdapter,
+    getVenuesAdapter,
+  }: IBookingsProps): JSX.Element => {
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
@@ -62,18 +74,16 @@ const Bookings = ({
   )
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     ...DEFAULT_PRE_FILTERS,
-    offerVenueId: venueId || DEFAULT_PRE_FILTERS.offerVenueId,
   })
   const [isTableLoading, setIsTableLoading] = useState(false)
-  const [bookings, setBookings] = useState<
-    BookingRecapResponseModel[] | CollectiveBookingResponseModel[]
-  >([])
+  const [bookings, setBookings] = useState<BookingRecapResponseModel[] | CollectiveBookingResponseModel[]>([])
   const [wereBookingsRequested, setWereBookingsRequested] = useState(false)
   const [hasBooking, setHasBooking] = useState(true)
   const [isLocalLoading, setIsLocalLoading] = useState(false)
   const [venues, setVenues] = useState<{ id: string; displayName: string }[]>(
     []
   )
+  const [urlParams, setUrlParams] = useState<TPreFilters>(DEFAULT_PRE_FILTERS)
 
   const resetPreFilters = useCallback(() => {
     setWereBookingsRequested(false)
@@ -84,7 +94,6 @@ const Bookings = ({
     setAppliedPreFilters(filters)
     loadBookingsRecap(filters)
   }
-
   const loadBookingsRecap = async (preFilters: TPreFilters) => {
     setIsTableLoading(true)
     setBookings([])
@@ -120,7 +129,58 @@ const Bookings = ({
   useEffect(() => {
     checkUserHasBookings()
   }, [checkUserHasBookings])
+  const dateFilterFormat = (date: Date | string) =>
+    formatBrowserTimezonedDateAsUTC(date, FORMAT_ISO_DATE_ONLY)
 
+  const location = useLocation()
+  const history = useHistory()
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const paramVenueId:string =params.get('offerVenueId') ?? DEFAULT_PRE_FILTERS.offerVenueId
+    const paramBookingStatusFilter:string = params.get('bookingStatusFilter')?? DEFAULT_PRE_FILTERS.bookingStatusFilter
+    const paramBookingBeginningDate: Date| null = !params.has('bookingBeginningDate') ?params.has('offerEventDate')  ? null: DEFAULT_PRE_FILTERS.bookingBeginningDate: new Date(params.get('bookingBeginningDate')as string)
+    const paramBookingEndingDate: Date | null= !params.has('bookingEndingDate') ? params.has('offerEventDate') ? null : DEFAULT_PRE_FILTERS.bookingEndingDate: new Date(params.get('bookingEndingDate')as string)
+    const paramOfferType:string = params.get('offerType')?? DEFAULT_PRE_FILTERS.offerType
+    const paramOfferEventDate:string | Date = params.has('offerEventDate') ? params.get('offerEventDate') === 'all' ? 'all': new Date(params.get('offerEventDate')as string): DEFAULT_PRE_FILTERS.offerEventDate
+
+    if (!(DEFAULT_PRE_FILTERS.offerVenueId === paramVenueId
+      && DEFAULT_PRE_FILTERS.bookingStatusFilter === paramBookingStatusFilter
+      && DEFAULT_PRE_FILTERS.offerEventDate === paramOfferEventDate
+      && DEFAULT_PRE_FILTERS.offerType === paramOfferType
+      && DEFAULT_PRE_FILTERS.bookingBeginningDate === paramBookingBeginningDate
+      && DEFAULT_PRE_FILTERS.bookingEndingDate === paramBookingEndingDate)) {
+
+      const filterToLoad: TPreFilters = {
+        offerVenueId: paramVenueId,
+        bookingStatusFilter: paramBookingStatusFilter,
+        bookingBeginningDate: paramBookingBeginningDate,
+        bookingEndingDate: paramBookingEndingDate,
+        offerType: paramOfferType,
+        offerEventDate: paramOfferEventDate,
+      } as TPreFilters
+
+      loadBookingsRecap(filterToLoad)
+      setAppliedPreFilters(filterToLoad)
+    }
+  }, [location])
+
+  const updateUrl = (filter: TPreFilters) => {
+
+    const partialUrlInfo = {
+      ...(filter.offerEventDate && filter.offerEventDate !== "all")?{offerEventDate: dateFilterFormat(filter.offerEventDate)}:{},
+      ...filter.bookingBeginningDate?{bookingBeginningDate: dateFilterFormat(filter.bookingBeginningDate)}:{},
+      ...filter.bookingEndingDate?{ bookingEndingDate: dateFilterFormat(filter.bookingEndingDate)}:{},
+      ...filter.bookingStatusFilter?{ bookingStatusFilter: filter.bookingStatusFilter}:{},
+      ...filter.offerType?{ offerType: filter.offerType}:{},
+      ...filter.offerVenueId?{ offerVenueId: filter.offerVenueId}:{}
+    } as Partial<TPreFilters>
+    setUrlParams({
+      ...urlParams,
+      ...partialUrlInfo
+    })
+    history.push(`/reservations?page=1&${stringify(partialUrlInfo)}`)
+  }
   useEffect(() => {
     async function fetchVenues() {
       setIsLocalLoading(true)
@@ -132,6 +192,7 @@ const Bookings = ({
       setVenues(payload.venues)
       setIsLocalLoading(false)
     }
+
     fetchVenues()
   }, [setIsLocalLoading, setVenues, notify, getVenuesAdapter])
 
@@ -170,6 +231,8 @@ const Bookings = ({
         isTableLoading={isTableLoading}
         resetPreFilters={resetPreFilters}
         venues={venues}
+        urlParams={urlParams}
+        updateUrl={updateUrl}
         wereBookingsRequested={wereBookingsRequested}
       />
       {wereBookingsRequested ? (

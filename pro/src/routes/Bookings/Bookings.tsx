@@ -11,7 +11,7 @@ import React from 'react'
 import { getVenuesAdapter } from 'core/Bookings/adapters'
 import { useLocation } from 'react-router-dom'
 
-export type BookingsRouterState = { venueId?: string; statuses?: string[] }
+export type BookingsRouterState = { statuses?: string[] }
 
 const Bookings = (): JSX.Element => {
   const location = useLocation<BookingsRouterState>()
@@ -25,7 +25,6 @@ const Bookings = (): JSX.Element => {
       getUserHasBookingsAdapter={getUserHasBookingsAdapter}
       getVenuesAdapter={getVenuesAdapter}
       locationState={location.state}
-      venueId={location.state?.venueId}
     />
   )
 }
