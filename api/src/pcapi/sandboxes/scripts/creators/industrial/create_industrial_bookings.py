@@ -4,9 +4,11 @@ import logging
 from random import choice
 
 from pcapi.core.bookings.factories import IndividualBookingFactory
+from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.finance import api as finance_api
+from pcapi.core.offers.models import Offer
 from pcapi.core.users.api import get_domains_credit
 from pcapi.core.users.models import User
 from pcapi.repository import repository
@@ -21,12 +23,12 @@ OFFER_WITH_SEVERAL_STOCKS_REMOVE_MODULO = 2
 BOOKINGS_USED_REMOVE_MODULO = 5
 
 
-def create_industrial_bookings(offers_by_name, users_by_name):  # type: ignore [no-untyped-def]
+def create_industrial_bookings(offers_by_name: dict[str, Offer], users_by_name: dict[str, User]) -> None:
     logger.info("create_industrial_bookings")
 
-    bookings_by_name = {}
+    bookings_by_name: dict[str, Booking] = {}
 
-    list_of_users_with_no_more_money = []
+    list_of_users_with_no_more_money: list[User] = []
 
     token = 100000
 
@@ -57,8 +59,13 @@ def create_industrial_bookings(offers_by_name, users_by_name):  # type: ignore [
     finance_api.price_bookings()
 
 
-def _create_bookings_for_other_beneficiaries(  # type: ignore [no-untyped-def]
-    bookings_by_name, list_of_users_with_no_more_money, offers_by_name, token: int, user: User, user_name: str
+def _create_bookings_for_other_beneficiaries(
+    bookings_by_name: dict[str, Booking],
+    list_of_users_with_no_more_money: list[User],
+    offers_by_name: dict[str, Offer],
+    token: int,
+    user: User,
+    user_name: str,
 ) -> int:
     user_should_have_no_more_money = "has-no-more-money" in user.email
     for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
@@ -123,7 +130,9 @@ def _create_bookings_for_other_beneficiaries(  # type: ignore [no-untyped-def]
     return token
 
 
-def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, user_name):  # type: ignore [no-untyped-def]
+def _create_has_booked_some_bookings(
+    bookings_by_name: dict[str, Booking], offers_by_name: dict[str, Offer], user: User, user_name: str
+) -> None:
 
     for (offer_index, (offer_name, offer)) in enumerate(list(offers_by_name.items())):
         # FIXME (viconnex, 2020-12-22) trying to adapt previous code - not sure of the result and intention
@@ -132,6 +141,8 @@ def _create_has_booked_some_bookings(bookings_by_name, offers_by_name, user, use
         if offer_index % OFFER_WITH_BOOKINGS_RATIO != 0:
             continue
         domains_credit = get_domains_credit(user)
+        if not domains_credit:
+            continue
         digital_credit = domains_credit.digital
         all_credit = domains_credit.all
 

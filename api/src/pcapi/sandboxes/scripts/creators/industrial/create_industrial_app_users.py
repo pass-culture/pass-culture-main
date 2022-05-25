@@ -17,6 +17,7 @@ from pcapi.core.payments.models import DepositType
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.models import TokenType
+from pcapi.core.users.models import User
 from pcapi.models import db
 
 
@@ -41,7 +42,7 @@ AGE_TAGS = ["age-more-than-18yo", "age-less-than-18yo", "age-18yo"]
 GRANT_18_DEPOSIT_VERSIONS = [1, 2]
 
 
-def create_industrial_app_users():  # type: ignore [no-untyped-def]
+def create_industrial_app_users() -> dict[str, User]:
     beneficiaries = create_industrial_app_beneficiaries()
     underage_beneficiaries = create_industrial_app_underage_beneficiaries()
     other_users = create_industrial_app_other_users()
@@ -54,7 +55,7 @@ def create_industrial_app_users():  # type: ignore [no-untyped-def]
     return app_users
 
 
-def create_industrial_app_beneficiaries():  # type: ignore [no-untyped-def]
+def create_industrial_app_beneficiaries() -> dict[str, User]:
     logger.info("create_industrial_app_beneficiaries")
 
     users_by_name = {}
@@ -96,7 +97,7 @@ def create_industrial_app_beneficiaries():  # type: ignore [no-untyped-def]
     return users_by_name
 
 
-def create_industrial_app_underage_beneficiaries():  # type: ignore [no-untyped-def]
+def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
     logger.info("create_industrial_app_underage_beneficiaries")
 
     users_by_name = {}
@@ -138,7 +139,7 @@ def create_industrial_app_underage_beneficiaries():  # type: ignore [no-untyped-
     return users_by_name
 
 
-def create_industrial_app_other_users():  # type: ignore [no-untyped-def]
+def create_industrial_app_other_users() -> dict[str, User]:
     logger.info("create_industrial_app_other_users")
 
     users_by_name = {}
@@ -193,7 +194,7 @@ def create_industrial_app_other_users():  # type: ignore [no-untyped-def]
     return users_by_name
 
 
-def create_industrial_app_general_public_users():  # type: ignore [no-untyped-def]
+def create_industrial_app_general_public_users() -> dict[str, User]:
     logger.info("create_industrial_app_general_public_users")
 
     users_by_name = {}
@@ -235,7 +236,7 @@ def create_industrial_app_general_public_users():  # type: ignore [no-untyped-de
     return users_by_name
 
 
-def create_short_email_beneficiaries() -> dict:
+def create_short_email_beneficiaries() -> dict[str, User]:
     fake = Faker("fr_FR")
     users = []
 

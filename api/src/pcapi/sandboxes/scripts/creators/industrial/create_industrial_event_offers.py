@@ -1,6 +1,9 @@
 import logging
 
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offers.models import Offer
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
+from pcapi.models.product import Product
 from pcapi.repository import repository
 
 
@@ -11,7 +14,9 @@ DEACTIVATED_OFFERS_PICK_MODULO = 3
 EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
 
-def create_industrial_event_offers(events_by_name, offerers_by_name):  # type: ignore [no-untyped-def]
+def create_industrial_event_offers(
+    events_by_name: dict[str, Product], offerers_by_name: dict[str, Offerer]
+) -> dict[str, Offer]:
     logger.info("create_industrial_event_offers")
 
     event_offers_by_name = {}

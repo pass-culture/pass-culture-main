@@ -1,6 +1,7 @@
 import logging
 
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import User
 
 
 logger = logging.getLogger(__name__)
@@ -10,7 +11,7 @@ ADMINS_COUNT = 1
 departement_codes = ["93", "97"]
 
 
-def create_industrial_admin_users():  # type: ignore [no-untyped-def]
+def create_industrial_admin_users() -> dict[str, User]:
     logger.info("create_industrial_admin_users")
 
     users_by_name = {}
