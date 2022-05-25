@@ -482,7 +482,7 @@ def update_user_info(  # type: ignore [no-untyped-def]
         user.publicName = public_name
     repository.save(user)
 
-    # TODO(prouzet) even for young users, we should probbaly remove contact with former email from sendinblue lists
+    # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
         update_external_pro(old_email)
     update_external_user(user)

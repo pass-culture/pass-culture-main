@@ -1,10 +1,13 @@
+from dataclasses import dataclass
 import logging
 
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offerers.models as offerers_models
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.repository import check_if_siren_already_exists
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
@@ -29,78 +32,39 @@ OFFERERS_WITH_THREE_ATTACHED_USERS_PICK_MODULO = 2
 
 # Declare locations in various timezones: metropolitan France
 # (UTC+1/+2), Guyane (UTC-3) and Wallis-et-Futuna (UTC+12).
+@dataclass
+class Location:
+    address: str
+    city: str
+    latitude: float
+    longitude: float
+    postalCode: str
+
+
 OFFERER_LOCATIONS = [
-    {
-        "address": "Rue des Poilus",
-        "city": "Drancy",
-        "latitude": 48.928099,
-        "longitude": 2.460249,
-        "postalCode": "93700",
-    },
-    {
-        "address": "Rue de Nieuport",
-        "city": "Drancy",
-        "latitude": 48.91683,
-        "longitude": 2.438839,
-        "postalCode": "93700",
-    },
-    {
-        "address": "Rue Francois Rude",
-        "city": "Drancy",
-        "latitude": 48.926432,
-        "longitude": 2.432279,
-        "postalCode": "93700",
-    },
-    {
-        "address": "Rue Pollet",
-        "city": "Aulnay-sous-Bois",
-        "latitude": 48.945379,
-        "longitude": 2.502902,
-        "postalCode": "93600",
-    },
-    {
-        "address": "Rue de Pimodan",
-        "city": "Aulnay-sous-Bois",
-        "latitude": 48.926299,
-        "longitude": 2.490079,
-        "postalCode": "93600",
-    },
-    {
-        "address": "Rue de Pologne",
-        "city": "Aulnay-sous-Bois",
-        "latitude": 48.940826,
-        "longitude": 2.479869,
-        "postalCode": "93600",
-    },
-    {"address": "Rue Pasteur", "city": "Kourou", "latitude": 5.170549, "longitude": -52.649077, "postalCode": "97310"},
-    {"address": "Rue de Cali", "city": "Kourou", "latitude": 5.158387, "longitude": -52.637413, "postalCode": "97310"},
-    {"address": "Rue de Paris", "city": "Kourou", "latitude": 5.161934, "longitude": -52.639804, "postalCode": "97310"},
-    {
-        "address": "Rue Panacoco",
-        "city": "Cayenne",
-        "latitude": 4.916571,
-        "longitude": -52.319168,
-        "postalCode": "97300",
-    },
-    {
-        "address": "Rue Aristote",
-        "city": "Cayenne",
-        "latitude": 4.934074,
-        "longitude": -52.297176,
-        "postalCode": "97300",
-    },
-    {"address": "Cayenne", "city": "Cayenne", "latitude": 4.925246, "longitude": -52.311586, "postalCode": "97300"},
-    {
-        "address": "RT3",
-        "city": "Matāʻutu",
-        "latitude": -13.282339262455315,
-        "longitude": -176.1771062948854,
-        "postalCode": "98600",
-    },
+    Location(address="Rue des Poilus", city="Drancy", latitude=48.928099, longitude=2.460249, postalCode="93700"),
+    Location(address="Rue de Nieuport", city="Drancy", latitude=48.91683, longitude=2.438839, postalCode="93700"),
+    Location(address="Rue Francois Rude", city="Drancy", latitude=48.926432, longitude=2.432279, postalCode="93700"),
+    Location(address="Rue Pollet", city="Aulnay-sous-Bois", latitude=48.945379, longitude=2.502902, postalCode="93600"),
+    Location(
+        address="Rue de Pimodan", city="Aulnay-sous-Bois", latitude=48.926299, longitude=2.490079, postalCode="93600"
+    ),
+    Location(
+        address="Rue de Pologne", city="Aulnay-sous-Bois", latitude=48.940826, longitude=2.479869, postalCode="93600"
+    ),
+    Location(address="Rue Pasteur", city="Kourou", latitude=5.170549, longitude=-52.649077, postalCode="97310"),
+    Location(address="Rue de Cali", city="Kourou", latitude=5.158387, longitude=-52.637413, postalCode="97310"),
+    Location(address="Rue de Paris", city="Kourou", latitude=5.161934, longitude=-52.639804, postalCode="97310"),
+    Location(address="Rue Panacoco", city="Cayenne", latitude=4.916571, longitude=-52.319168, postalCode="97300"),
+    Location(address="Rue Aristote", city="Cayenne", latitude=4.934074, longitude=-52.297176, postalCode="97300"),
+    Location(address="Cayenne", city="Cayenne", latitude=4.925246, longitude=-52.311586, postalCode="97300"),
+    Location(
+        address="RT3", city="Matāʻutu", latitude=-13.282339262455315, longitude=-176.1771062948854, postalCode="98600"
+    ),
 ]
 
 
-def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def]
+def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dict[str, User]]:
     logger.info("create_industrial_offerers_with_pro_users")
 
     offerers_by_name = {}
@@ -123,7 +87,7 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
         )
         offerers_by_name[offerer_name] = offerer
 
-        departement_code = 75
+        departement_code = "75"
 
         domain = MOCK_DOMAINS[user_index]
         first_name = MOCK_FIRST_NAMES[user_index]
@@ -131,7 +95,7 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
         email = get_email(first_name, last_name, domain)
         user_name = "{} {}".format(first_name, last_name)
         pro = users_factories.ProFactory(
-            departementCode=str(departement_code),
+            departementCode=departement_code,
             email=email,
             firstName=first_name,
             lastName=last_name,
@@ -157,25 +121,25 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
     user_offerer_validation_prefix, user_offerer_validation_suffix = "AZERTY", 123
     application_id_prefix = "23"
 
-    for (location_index, location) in enumerate(OFFERER_LOCATIONS):
+    for location_index, location in enumerate(OFFERER_LOCATIONS):
         create_educational_offerer = location_index == 0
 
         mock_index = location_index % len(MOCK_NAMES) + starting_index
 
-        departement_code = location["postalCode"][:2]
+        departement_code = location.postalCode[:2]
 
-        offerer_name = "{} lat:{} lon:{}".format(incremented_siren, location["latitude"], location["longitude"])
+        offerer_name = "{} lat:{} lon:{}".format(incremented_siren, location.latitude, location.longitude)
 
         offerer = create_offerer(
-            address=location["address"].upper(),
-            city=location["city"],
+            address=location.address.upper(),
+            city=location.city,
             name=MOCK_NAMES[mock_index],
-            postal_code=location["postalCode"],
+            postal_code=location.postalCode,
             siren=str(incremented_siren),
         )
 
         if create_educational_offerer:
-            offerer.siren = MOCK_ADAGE_ELIGIBLE_SIREN
+            offerer.siren = str(MOCK_ADAGE_ELIGIBLE_SIREN)
             offerers_factories.VenueFactory(
                 managingOfferer=offerer,
                 address=offerer.address,
@@ -185,7 +149,7 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
                 name=offerer.name + " - Salle 1",
                 postalCode=offerer.postalCode,
                 siret="88145723811111",
-                venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
+                venueTypeCode=VenueTypeCode.MOVIE,  # type: ignore [attr-defined]
             )
 
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
@@ -218,7 +182,7 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
             offerer.generate_validation_token()
 
         pro = users_factories.ProFactory(
-            departementCode=str(departement_code),
+            departementCode=departement_code,
             email=email,
             firstName=first_name,
             lastName=last_name,
@@ -252,7 +216,7 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
                 user_validation_token = "{}{}".format(user_validation_prefix, user_validation_suffix)
             user_name = "{} {}".format(first_name, last_name)
             pro = users_factories.ProFactory(
-                departementCode=str(departement_code),
+                departementCode=departement_code,
                 email=email,
                 firstName=first_name,
                 lastName=last_name,
@@ -314,4 +278,4 @@ def create_industrial_offerers_with_pro_users():  # type: ignore [no-untyped-def
 
     logger.info("created %d offerers with pro users", len(offerers_by_name))
 
-    return (offerers_by_name, users_by_name)
+    return offerers_by_name, users_by_name
