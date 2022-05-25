@@ -13,7 +13,7 @@
     "generate:api:client": "./scripts/generate_api_client.sh",
     "generate:api:client:local": "./scripts/generate_api_client_local.sh",
     "licenses": "node_modules/.bin/license-reporter save --json licenses.json",
-    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx,ts,tsx}' --max-warnings=0",
+    "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx,ts,tsx}'",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
