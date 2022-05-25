@@ -172,7 +172,7 @@ const OfferEducationalStock = ({
               </Link>
               <SubmitButton
                 className=""
-                disabled={offerIsDisbaled}
+                disabled={offerIsDisbaled || mode === Mode.READ_ONLY || !formik.dirty}
                 isLoading={isLoading}
               >
                 {mode === Mode.CREATION
