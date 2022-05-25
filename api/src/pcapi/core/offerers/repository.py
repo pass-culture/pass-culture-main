@@ -333,3 +333,13 @@ def find_venues_by_managing_offerer_id(offerer_id: int) -> list[models.Venue]:
 def find_venues_by_offerers(*offerers: models.Offerer) -> list[models.Venue]:
     """Get all venues managed by any offerer given in arguments"""
     return models.Venue.query.filter(models.Venue.managingOffererId.in_([offerer.id for offerer in offerers])).all()
+
+
+def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
+    query = db.session.query(models.Venue.id)
+    query = query.join(models.Offerer, models.Venue.managingOfferer)
+    query = query.filter(
+        models.Venue.adageId != None,
+        models.Offerer.id == offerer_id,
+    )
+    return bool(query.count())
