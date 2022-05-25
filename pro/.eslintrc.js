@@ -8,7 +8,12 @@ module.exports = {
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint'],
-  ignorePatterns: ['src/api/v1/gen/*', 'src/api/v2/gen/*'],
+  ignorePatterns: [
+    'src/api/v1/gen/*',
+    'src/api/v2/gen/*',
+    '**/*.svg',
+    '**/*.scss',
+  ],
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 6,
