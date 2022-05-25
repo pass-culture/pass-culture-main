@@ -1,3 +1,6 @@
+from typing import Any
+import unittest
+
 import pytest
 import requests_mock
 
@@ -6,15 +9,13 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
-
 
 @override_settings(ADAGE_API_URL="https://adage-api-url")
 @override_settings(ADAGE_API_KEY="adage-api-key")
 @override_settings(ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient")
 @pytest.mark.usefixtures("db_session")
 class CanOffererCreateEducationalOfferTest:
-    def test_offerer_can_create_educational_offer(self, app):
+    def test_offerer_can_create_educational_offer(self, client: Any) -> None:
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
@@ -52,15 +53,22 @@ class CanOffererCreateEducationalOfferTest:
                 ],
             )
 
-            response = (
-                TestClient(app.test_client())
-                .with_session_auth(pro.email)
-                .get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
-            )
+            response = client.with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
 
         assert response.status_code == 204
 
-    def test_offerer_cannot_create_educational_offer_because_not_in_adage(self, app):
+    def test_offerer_can_create_educational_offer_already_known(self, client: Any) -> None:
+        venue = offerers_factories.VenueFactory(adageId="pouet")
+        pro = users_factories.ProFactory()
+
+        with unittest.mock.patch("pcapi.core.educational.adage_backends") as adage_client:
+            offerer_id = humanize(venue.managingOffererId)
+            response = client.with_session_auth(pro.email).get(f"/offerers/{offerer_id}/eac-eligibility")
+            adage_client.assert_not_called()
+
+        assert response.status_code == 204
+
+    def test_offerer_cannot_create_educational_offer_because_not_in_adage(self, client: Any) -> None:
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
@@ -73,16 +81,12 @@ class CanOffererCreateEducationalOfferTest:
                 status_code=404,
             )
 
-            response = (
-                TestClient(app.test_client())
-                .with_session_auth(pro.email)
-                .get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
-            )
+            response = client.with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
 
         assert response.status_code == 404
         assert response.json == {"offerer": "not found in adage"}
 
-    def test_offerer_cannot_create_educational_offer_because_adage_failed(self, app):
+    def test_offerer_cannot_create_educational_offer_because_adage_failed(self, client: Any) -> None:
         offerer = offerers_factories.OffererFactory()
         pro = users_factories.ProFactory()
 
@@ -95,11 +99,7 @@ class CanOffererCreateEducationalOfferTest:
                 status_code=500,
             )
 
-            response = (
-                TestClient(app.test_client())
-                .with_session_auth(pro.email)
-                .get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
-            )
+            response = client.with_session_auth(pro.email).get(f"/offerers/{humanize(offerer.id)}/eac-eligibility")
 
         assert response.status_code == 500
         assert response.json == {"adage_api": "error"}

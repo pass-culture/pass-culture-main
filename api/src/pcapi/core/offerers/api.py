@@ -31,6 +31,7 @@ from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
 from pcapi.core.offerers.repository import get_all_offerers_for_user
 from pcapi.core.offerers.repository import get_by_collective_offer_id
 from pcapi.core.offerers.repository import get_by_collective_offer_template_id
+from pcapi.core.offerers.repository import offerer_has_venue_with_adage_id
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
@@ -408,7 +409,10 @@ def delete_venue_banner(venue: Venue) -> None:
 def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:
     import pcapi.core.educational.adage_backends as adage_client
 
-    if not offerer_id:
+    if offerer_id is None:
+        return
+
+    if offerer_has_venue_with_adage_id(offerer_id):
         return
 
     siren = find_siren_by_offerer_id(offerer_id)
