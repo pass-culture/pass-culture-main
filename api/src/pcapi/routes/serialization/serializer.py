@@ -1,6 +1,8 @@
 from datetime import datetime
 import enum
 from functools import singledispatch
+from typing import Any
+from typing import Optional
 
 from psycopg2._range import DateTimeRange
 import sqlalchemy
@@ -17,8 +19,8 @@ def serialize(value, column=None):  # type: ignore [no-untyped-def]
 
 
 @serialize.register(int)
-def _(value, column=None):  # type: ignore [no-untyped-def]
-    if column is not None and isinstance(column.type, Integer) and column.key.lower().endswith("id"):
+def _(value: Any, column: Optional[sqlalchemy.orm.properties.ColumnProperty] = None):  # type: ignore [no-untyped-def]
+    if column is not None and isinstance(column.expression.type, Integer) and column.key.lower().endswith("id"):
         return humanize(value)
 
     return value
