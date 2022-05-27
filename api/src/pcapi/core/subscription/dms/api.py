@@ -9,6 +9,7 @@ from pcapi.core import logging as core_logging
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
+from pcapi.core.mails.transactional.users import dms_subscription_emails
 from pcapi.core.mails.transactional.users import duplicate_beneficiary
 from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
     send_pre_subscription_from_dms_error_email_to_beneficiary,
@@ -237,6 +238,8 @@ def _process_user_not_found_error(
             settings.DMS_INSTRUCTOR_ID,
             subscription_messages.DMS_ERROR_MESSAGE_USER_NOT_FOUND,
         )
+    elif state == dms_models.GraphQLApplicationStates.accepted:
+        dms_subscription_emails.send_create_account_after_dms_email(email)
 
 
 def _process_accepted_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:

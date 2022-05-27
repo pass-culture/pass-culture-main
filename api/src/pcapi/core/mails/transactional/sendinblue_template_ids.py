@@ -23,6 +23,7 @@ class TransactionalEmail(Enum):
     BOOKING_SOON_TO_BE_EXPIRED_TO_BENEFICIARY = Template(
         id_prod=144, id_not_prod=42, tags=["jeunes_reservation_bientot_expiree"]
     )
+    CREATE_ACCOUNT_AFTER_DMS = Template(id_prod=678, id_not_prod=85, tags=["jeunes_creation_compte_apres_dms"])
     EMAIL_ALREADY_EXISTS = Template(id_prod=617, id_not_prod=79, tags=["email_existant_en_base"])
     EMAIL_CHANGE_CONFIRMATION = Template(
         id_prod=253, id_not_prod=18, tags=["changement_email_confirmation"], use_priority_queue=True

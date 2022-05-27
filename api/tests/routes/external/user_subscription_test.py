@@ -480,6 +480,31 @@ class DmsWebhookApplicationTest:
         assert fraud_models.OrphanDmsApplication.query.count() == 1
         # assert the message is not sent again
         assert send_user_message.call_count == 0
+        assert len(mails_testing.outbox) == 0
+
+    @patch.object(api_dms.DMSGraphQLClient, "execute_query")
+    def test_dms_request_with_unexisting_user_with_accepted_application(self, execute_query, client):
+        fraud_factories.OrphanDmsApplicationFactory(application_id=6044787, email="user@example.com")
+        execute_query.return_value = make_single_application(
+            6044787, state=dms_models.GraphQLApplicationStates.accepted.value, email="user@example.com"
+        )
+        form_data = {
+            "procedure_id": 48860,
+            "dossier_id": 6044787,
+            "state": dms_models.GraphQLApplicationStates.accepted.value,
+            "updated_at": "2021-09-30 17:55:58 +0200",
+        }
+        client.post(
+            f"/webhooks/dms/application_status?token={settings.DMS_WEBHOOK_TOKEN}",
+            form=form_data,
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+        # assert an OrphanApplication is not created again
+        assert fraud_models.OrphanDmsApplication.query.count() == 1
+        # assert an email is sent to ask to create account
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 678
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
