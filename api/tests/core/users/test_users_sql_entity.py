@@ -163,8 +163,8 @@ class SQLFunctionsTest:
     def test_deposit_balance(self):
         deposit = users_factories.DepositGrantFactory()
 
-        bookings_factories.UsedIndividualBookingFactory(individualBooking__attached_deposit=deposit, amount=10)
-        bookings_factories.IndividualBookingFactory(individualBooking__attached_deposit=deposit, amount=1)
+        bookings_factories.UsedIndividualBookingFactory(individualBooking__deposit=deposit, amount=10)
+        bookings_factories.IndividualBookingFactory(individualBooking__deposit=deposit, amount=1)
 
         assert db.session.query(func.get_deposit_balance(deposit.id, False)).first()[0] == 289
         assert db.session.query(func.get_deposit_balance(deposit.id, True)).first()[0] == 290

@@ -107,16 +107,7 @@ class IndividualBookingSubFactory(BaseFactory):
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
 
-    @factory.post_generation
-    def attached_deposit(self, create, extracted, **kwargs):  # type: ignore [no-untyped-def]
-        if extracted == "forced_none":
-            self.deposit = None
-            return
-        if extracted is not None:
-            self.deposit = extracted
-            return
-
-        self.deposit = self.user.deposit if self.user.has_active_deposit else None
+    deposit = factory.LazyAttribute(lambda o: o.user.deposit)
 
 
 class IndividualBookingFactory(BookingFactory):
