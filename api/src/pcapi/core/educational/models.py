@@ -856,14 +856,8 @@ class CollectiveOfferTemplateDomain(Model):  # type: ignore [valid-type, misc]
     collectiveOfferTemplateId = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id", ondelete="CASCADE"), index=True, primary_key=True
     )
-    collectiveOfferTemplate: RelationshipProperty["CollectiveOfferTemplate"] = relationship(
-        "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId]
-    )
     educationalDomainId = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
-    )
-    educationalDomain: RelationshipProperty["EducationalDomain"] = relationship(
-        "EducationalDomain", foreign_keys=[educationalDomainId]
     )
 
 
@@ -877,14 +871,8 @@ class CollectiveOfferDomain(Model):  # type: ignore [valid-type, misc]
     collectiveOfferId = sa.Column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id", ondelete="CASCADE"), index=True, primary_key=True
     )
-    collectiveOffer: RelationshipProperty["CollectiveOffer"] = relationship(
-        "CollectiveOffer", foreign_keys=[collectiveOfferId]
-    )
     educationalDomainId = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, primary_key=True
-    )
-    educationalDomain: RelationshipProperty["EducationalDomain"] = relationship(
-        "EducationalDomain", foreign_keys=[educationalDomainId]
     )
 
 
