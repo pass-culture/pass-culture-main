@@ -135,6 +135,7 @@ class VenueView(BaseAdminView):
         "managingOfferer.name",
         "dateCreated",
         "isActive",
+        "adageId",
     ]
     column_labels = {
         "name": "Nom",
@@ -153,6 +154,7 @@ class VenueView(BaseAdminView):
         "managingOfferer.name": "Structure",
         "dateCreated": "Date de création",
         "isActive": "Structure active",
+        "adageId": "ID Adage",
     }
     column_searchable_list = ["name", "siret", "publicName"]
     column_filters = [
@@ -174,6 +176,7 @@ class VenueView(BaseAdminView):
         "publicName",
         "latitude",
         "longitude",
+        "adageId",
         "isPermanent",
         "criteria",
     ]

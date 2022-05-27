@@ -29,7 +29,7 @@ class VenueViewTest:
     ):
         AdminFactory(email="user@example.com")
         business_unit = finance_factories.BusinessUnitFactory(siret="11111111111111")
-        venue = offerers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit)
+        venue = offerers_factories.VenueFactory(siret="22222222222222", businessUnit=business_unit, adageId="123")
         id_at_provider = "11111"
         old_id_at_providers = f"{id_at_provider}@{venue.siret}"
         stock = offers_factories.StockFactory(
@@ -46,6 +46,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            adageId="456",
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -57,6 +58,7 @@ class VenueViewTest:
         stock_edited = offers_models.Stock.query.get(stock.id)
 
         assert venue_edited.siret == "88888888888888"
+        assert venue_edited.adageId == "456"
         assert stock_edited.idAtProviders == "11111@88888888888888"
 
         mocked_async_index_offers_of_venue_ids.assert_not_called()
@@ -81,6 +83,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            adageId=venue.adageId,
         )
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
@@ -115,6 +118,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            adageId=venue.adageId,
         )
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
         response = client.post(f"/pc/back-office/venue/edit/?id={venue.id}", form=data)
@@ -150,6 +154,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            adageId=venue.adageId,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -184,6 +189,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=venue.isPermanent,
+            adageId=venue.adageId,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -209,6 +215,7 @@ class VenueViewTest:
             latitude="42.01",
             longitude=venue.longitude,
             isPermanent=True,
+            adageId=venue.adageId,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -242,6 +249,7 @@ class VenueViewTest:
             latitude=venue.latitude,
             longitude=venue.longitude,
             isPermanent=True,
+            adageId=venue.adageId,
         )
 
         client = TestClient(app.test_client()).with_session_auth("user@example.com")
@@ -282,6 +290,7 @@ class VenueViewTest:
             "latitude": venue.latitude,
             "longitude": venue.longitude,
             "isPermanent": True,
+            "adageId": venue.adageId,
         }
 
         client = client.with_session_auth(admin.email)
