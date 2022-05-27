@@ -25,7 +25,7 @@ def _(model, column=None, includes: Iterable = ()):  # type: ignore [no-untyped-
 
     for key in _keys_to_serialize(model, includes):
         value = getattr(model, key)
-        columns = model.__class__.__table__.columns._data
+        columns = model.__mapper__.column_attrs
         column = columns.get(key)
         result[key] = as_dict(value, column=column)
 
