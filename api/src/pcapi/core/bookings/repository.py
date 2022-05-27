@@ -565,7 +565,7 @@ def _get_filtered_booking_report(
             Booking.dateUsed.label("usedAt"),
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.cancellationDate.label("cancelledAt"),
-            Booking.isExternal,
+            Booking.isExternal.label("isExternal"),  # type: ignore [attr-defined]
             Booking.isConfirmed,
             # `get_batch` function needs a field called exactly `id` to work,
             # the label prevents SA from using a bad (prefixed) label for this field
