@@ -3,6 +3,7 @@ from functools import wraps
 import os
 from pathlib import Path
 from pprint import pprint
+import sys
 import typing
 from unittest.mock import MagicMock
 from unittest.mock import patch
@@ -64,6 +65,10 @@ def app_fixture():
     #   - pytest tests/core/fraud/test_api.py
     # Leave an XXX note about why we need that.
     app.teardown_request_funcs[None].remove(flask_app.remove_db_session)
+
+    # Since sqla1.4, in tests teardown, all nested transactions (the way to handle 'savepoints') are closed recursively.
+    # But in some tests, there are more recursions than the default accepted number (1000)
+    sys.setrecursionlimit(3000)
 
     with app.app_context():
         app.config["TESTING"] = True
