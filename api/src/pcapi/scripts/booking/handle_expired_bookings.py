@@ -72,53 +72,45 @@ def cancel_expired_individual_bookings(batch_size: int = 500) -> None:
 
 
 def cancel_expired_bookings(query: BaseQuery, batch_size: int = 500) -> None:
-    expiring_bookings_count = query.count()
-    logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", expiring_bookings_count)
-    if expiring_bookings_count == 0:
-        return
-
     updated_total = 0
-    expiring_booking_ids = bookings_repository.find_expiring_booking_ids_from_query(query).limit(batch_size).all()
-    max_id = expiring_booking_ids[-1][0]
+    expiring_booking_ids = [b[0] for b in query.with_entities(Booking.id).all()]
+
+    logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", len(expiring_booking_ids))
 
     # we commit here to make sure there is no unexpected objects in SQLA cache before the update,
     # as we use synchronize_session=False
     db.session.commit()
 
-    while expiring_booking_ids:
-        updated = (
-            Booking.query.filter(Booking.id <= max_id)
-            .filter(Booking.id.in_(expiring_booking_ids))
-            .update(
-                {
-                    "status": BookingStatus.CANCELLED,
-                    "cancellationReason": BookingCancellationReasons.EXPIRED,
-                    "cancellationDate": datetime.datetime.utcnow(),
-                },
-                synchronize_session=False,
-            )
+    start_index = 0
+
+    while start_index < len(expiring_booking_ids):
+        booking_ids_to_update = expiring_booking_ids[start_index : start_index + batch_size]
+        updated = Booking.query.filter(Booking.id.in_(booking_ids_to_update)).update(
+            {
+                "status": BookingStatus.CANCELLED,
+                "cancellationReason": BookingCancellationReasons.EXPIRED,
+                "cancellationDate": datetime.datetime.utcnow(),
+            },
+            synchronize_session=False,
         )
         # Recompute denormalized stock quantity
         stocks_to_recompute = [
             row[0]
-            for row in db.session.query(Booking.stockId).filter(Booking.id.in_(expiring_booking_ids)).distinct().all()
+            for row in db.session.query(Booking.stockId).filter(Booking.id.in_(booking_ids_to_update)).distinct().all()
         ]
         recompute_dnBookedQuantity(stocks_to_recompute)
         db.session.commit()
 
         updated_total += updated
-        expiring_booking_ids = bookings_repository.find_expiring_booking_ids_from_query(query).limit(batch_size).all()
-        if expiring_booking_ids:
-            max_id = expiring_booking_ids[-1][0]
+
         logger.info(
             "[cancel_expired_bookings] %d Bookings have been cancelled in this batch",
             updated,
         )
 
-    logger.info(
-        "[cancel_expired_bookings] %d Bookings have been cancelled",
-        updated_total,
-    )
+        start_index += batch_size
+
+    logger.info("[cancel_expired_bookings] %d Bookings have been cancelled", updated_total)
 
 
 def notify_users_of_expired_individual_bookings(expired_on: datetime.date = None) -> None:
