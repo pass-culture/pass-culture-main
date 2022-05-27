@@ -332,13 +332,13 @@ class VenueLabel(PcObject, Model):  # type: ignore [valid-type, misc]
 
     label = Column(String(100), nullable=False)
 
-    venue = relationship("Venue")
+    venue = relationship("Venue", back_populates="venueLabel")
 
 
 class VenueType(PcObject, Model):  # type: ignore [valid-type, misc]
     label = Column(String(100), nullable=False)
 
-    venue = relationship("Venue")
+    venue = relationship("Venue", back_populates="venueType")
 
 
 class VenueContact(PcObject, Model):  # type: ignore [valid-type, misc]
