@@ -613,7 +613,7 @@ def _get_filtered_booking_pro(
             Booking.status,
             Booking.reimbursementDate.label("reimbursedAt"),
             Booking.educationalBookingId,
-            Booking.isExternal,
+            Booking.isExternal.label("isExternal"),  # type: ignore [attr-defined]
             Booking.isConfirmed,
             educational_models.EducationalBooking.confirmationDate,
             educational_models.EducationalRedactor.firstName.label("redactorFirstname"),
