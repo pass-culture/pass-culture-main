@@ -6,9 +6,12 @@ from pcapi.models import db
 
 
 def deactivate_300e_thing_offers() -> None:
-    stock_offer_ids = (
-        Stock.query.filter(Stock.beginningDatetime == None, Stock.price > 300).with_entities(Stock.offerId).all()
-    )
+    stock_offer_ids = [
+        stock[0]
+        for stock in Stock.query.filter(Stock.beginningDatetime == None, Stock.price > 300)
+        .with_entities(Stock.offerId)
+        .all()
+    ]
     offer_qs = Offer.query.filter(Offer.id.in_(stock_offer_ids)).filter(Offer.isEducational == False)
     offer_ids = [offer_id for offer_id, in offer_qs.with_entities(Offer.id)]
     print("Nombre d'offres desactivées: ", len(offer_ids))
