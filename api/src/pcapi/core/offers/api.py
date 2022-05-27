@@ -316,11 +316,12 @@ def update_offer(
         validation.check_update_only_allowed_fields_for_offer_from_provider(set(modifications), offer.lastProvider)
 
     offer.populate_from_dict(modifications)
-    if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:
-        offer.product.populate_from_dict(modifications)
-        product_has_been_updated = True
-    else:
-        product_has_been_updated = False
+    with db.session.no_autoflush:
+        if offer.product.owningOfferer and offer.product.owningOfferer == offer.venue.managingOfferer:
+            offer.product.populate_from_dict(modifications)
+            product_has_been_updated = True
+        else:
+            product_has_been_updated = False
 
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
