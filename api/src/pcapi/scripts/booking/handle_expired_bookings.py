@@ -208,54 +208,36 @@ def cancel_expired_collective_bookings(batch_size: int = 500) -> None:
 
     expiring_collective_bookings_query = educational_repository.find_expiring_collective_bookings_query()
 
-    expiring_bookings_count = expiring_collective_bookings_query.count()
-    logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", expiring_bookings_count)
-    if expiring_bookings_count == 0:
-        return
+    expiring_booking_ids = [b[0] for b in expiring_collective_bookings_query.with_entities(CollectiveBooking.id).all()]
 
-    updated_total = 0
-    expiring_booking_ids = (
-        educational_repository.find_expiring_collective_booking_ids_from_query(expiring_collective_bookings_query)
-        .limit(batch_size)
-        .all()
-    )
-    max_id = expiring_booking_ids[-1][0]
+    logger.info("[cancel_expired_bookings] %d expiring bookings to cancel", len(expiring_booking_ids))
 
     # we commit here to make sure there is no unexpected objects in SQLA cache before the update,
     # as we use synchronize_session=False
     db.session.commit()
 
-    while expiring_booking_ids:
-        updated = (
-            CollectiveBooking.query.filter(CollectiveBooking.id <= max_id)
-            .filter(CollectiveBooking.id.in_(expiring_booking_ids))
-            .update(
-                {
-                    "status": CollectiveBookingStatus.CANCELLED,
-                    "cancellationReason": CollectiveBookingCancellationReasons.EXPIRED,
-                    "cancellationDate": datetime.datetime.utcnow(),
-                },
-                synchronize_session=False,
-            )
+    updated_total = 0
+    start_index = 0
+
+    while start_index < len(expiring_booking_ids):
+        booking_to_update_ids = expiring_booking_ids[start_index : start_index + batch_size]
+        updated = CollectiveBooking.query.filter(CollectiveBooking.id.in_(booking_to_update_ids)).update(
+            {
+                "status": CollectiveBookingStatus.CANCELLED,
+                "cancellationReason": CollectiveBookingCancellationReasons.EXPIRED,
+                "cancellationDate": datetime.datetime.utcnow(),
+            },
+            synchronize_session=False,
         )
         db.session.commit()
 
-        updated_total += updated
-        expiring_booking_ids = (
-            educational_repository.find_expiring_collective_booking_ids_from_query(expiring_collective_bookings_query)
-            .limit(batch_size)
-            .all()
-        )
-        if expiring_booking_ids:
-            max_id = expiring_booking_ids[-1][0]
         logger.info(
             "[cancel_expired_bookings] %d Bookings have been cancelled in this batch",
             updated,
         )
 
-    logger.info(
-        "[cancel_expired_bookings] %d Bookings have been cancelled",
-        updated_total,
-    )
+        updated_total += updated
+        start_index += batch_size
 
+    logger.info("[cancel_expired_bookings] %d Bookings have been cancelled", updated_total)
     logger.info("[cancel_expired_collective_bookings] End")
