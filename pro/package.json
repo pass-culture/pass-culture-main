@@ -24,7 +24,7 @@
     "test:cafe": "yarn testcafe testcafe",
     "test:eslint": "jest eslint-plugin-pass-culture/tests",
     "test:stylelint": "jest stylelint-pass-culture/tests",
-    "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest",
+    "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --coverage",
     "test:unit:ci": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --max-workers=2",
     "test:unit:one": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --bail",
     "testcafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless'",
