@@ -140,6 +140,12 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
     )
 
+    institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
+
+    institution: RelationshipProperty["EducationalInstitution"] = relationship(
+        "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
+    )
+
     @property
     def isEducational(self) -> bool:
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
@@ -507,6 +513,10 @@ class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type, misc]
     email: str = sa.Column(sa.Text(), nullable=True)  # type: ignore [assignment]
 
     phoneNumber: str = sa.Column(sa.String(30), nullable=True)  # type: ignore [assignment]
+
+    collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
+        "CollectiveOffer", back_populates="institution"
+    )
 
 
 class EducationalYear(PcObject, Model):  # type: ignore[valid-type, misc]
