@@ -101,7 +101,7 @@ class FeatureToggle(enum.Enum):
         "Sépare la visualisation des offres et des remboursements sur le portail PRO"
     )
     OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
-    ALLOW_ACCOUNT_REACTIVATION = "Activer le nouveau parcours de réactivation de compte"
+    ALLOW_ACCOUNT_UNSUSPENSION = "Activer le nouveau parcours de réactivation de compte"
     ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE = "Active l'utilisation des nouveaux indexes algolia sur adage"
     ENABLE_VENUE_STRICT_SEARCH = (
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
@@ -165,7 +165,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
-    FeatureToggle.ALLOW_ACCOUNT_REACTIVATION,
+    FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION,
     FeatureToggle.ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE,
     FeatureToggle.ENABLE_VENUE_STRICT_SEARCH,
     FeatureToggle.ENABLE_EDUCATIONAL_DOMAINS,
