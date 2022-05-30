@@ -57,7 +57,7 @@ const OfferEducationalStock = ({
   cancelActiveBookings,
   setIsOfferActive,
 }: IOfferEducationalStockProps): JSX.Element => {
-  const offerIsDisbaled = isOfferDisabled(offer.status)
+  const offerIsDisabled = isOfferDisabled(offer.status)
   const [isLoading, setIsLoading] = useState(false)
 
   const submitForm = async (values: OfferEducationalStockFormValues) => {
@@ -172,7 +172,7 @@ const OfferEducationalStock = ({
               </Link>
               <SubmitButton
                 className=""
-                disabled={offerIsDisbaled || mode === Mode.READ_ONLY || !formik.dirty}
+                disabled={offerIsDisabled || mode === Mode.READ_ONLY || !formik.dirty}
                 isLoading={isLoading}
               >
                 {mode === Mode.CREATION
