@@ -188,9 +188,9 @@ class DMSGraphQLClient:
             )
             raise exceptions.DmsGraphQLApiException()
 
-    def get_single_application_details(self, application_id: int) -> dms_models.DmsApplicationResponse:
+    def get_single_application_details(self, application_number: int) -> dms_models.DmsApplicationResponse:
         response = self.execute_query(
-            GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": application_id}
+            GET_SINGLE_APPLICATION_QUERY_NAME, variables={"applicationNumber": application_number}
         )
 
         return dms_models.DmsApplicationResponse(**response["dossier"])  # pylint: disable=unsubscriptable-object

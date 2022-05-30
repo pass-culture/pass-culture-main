@@ -11,26 +11,26 @@ from pcapi.core.users import models as users_models
 class DmsApiTest:
     def test_get_or_create_fraud_check_creates(self):
         user = users_factories.UserFactory()
-        application_id = 1
+        application_number = 1
         result_content = None
 
-        fraud_check = get_or_create_fraud_check(user, application_id, result_content)
+        fraud_check = get_or_create_fraud_check(user, application_number, result_content)
 
         user_fraud_checks = user.beneficiaryFraudChecks
         assert len(user_fraud_checks) == 1
         assert user_fraud_checks[0] == fraud_check
-        assert user_fraud_checks[0].thirdPartyId == str(application_id)
+        assert user_fraud_checks[0].thirdPartyId == str(application_number)
         assert user_fraud_checks[0].resultContent == None
 
     def test_get_or_create_fraud_check_gets(self):
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS, thirdPartyId=1)
-        application_id = 1
+        application_number = 1
 
-        fraud_check = get_or_create_fraud_check(user, application_id)
+        fraud_check = get_or_create_fraud_check(user, application_number)
 
         user_fraud_checks = user.beneficiaryFraudChecks
         assert len(user_fraud_checks) == 1
         assert user_fraud_checks[0] == fraud_check
-        assert user_fraud_checks[0].thirdPartyId == str(application_id)
+        assert user_fraud_checks[0].thirdPartyId == str(application_number)
         assert user_fraud_checks[0].eligibilityType == users_models.EligibilityType.AGE18

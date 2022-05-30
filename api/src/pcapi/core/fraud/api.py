@@ -97,13 +97,13 @@ def on_dms_fraud_result(
     dms_content: models.DMSContent,
 ) -> models.BeneficiaryFraudCheck:
     eligibility_type = decide_eligibility(user, dms_content.get_birth_date(), dms_content.get_registration_datetime())
-    fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_id))  # type: ignore [arg-type]
+    fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_number))  # type: ignore [arg-type]
     if not fraud_check:
         logger.warning("DMS fraud check from user %d not previously created", user.id)
         fraud_check = models.BeneficiaryFraudCheck(
             user=user,
             type=models.FraudCheckType.DMS,
-            thirdPartyId=str(dms_content.application_id),
+            thirdPartyId=str(dms_content.application_number),
             resultContent=dms_content.dict(),
             eligibilityType=eligibility_type,
             status=models.FraudCheckStatus.PENDING,

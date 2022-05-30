@@ -144,7 +144,7 @@ class RunTest:
                 first_name="John",
                 civility=dms_models.Civility.MME,
                 email="john.doe@test.com",
-                application_id=123,
+                application_number=123,
                 procedure_id=6712558,
                 department=None,
                 phone="0123456789",
@@ -194,7 +194,7 @@ class RunIntegrationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_id=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
         import_dms_accepted_applications(procedure_id=6712558)
 
@@ -230,7 +230,7 @@ class RunIntegrationTest:
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.AGE18,
         )
-        details = fixture.make_parsed_graphql_application(application_id=123, state="accepte", email=user.email)
+        details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         details.draft_date = datetime.utcnow().isoformat()
         get_applications_with_details.return_value = [details]
         import_dms_accepted_applications(procedure_id=6712558)
@@ -255,7 +255,7 @@ class RunIntegrationTest:
         # when
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=123, state="accepte", email="nonexistant@example.com"
+                application_number=123, state="accepte", email="nonexistant@example.com"
             )
         ]
 
@@ -286,7 +286,7 @@ class RunIntegrationTest:
             phoneValidationStatus=None,
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_id=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
         # when
         import_dms_accepted_applications(procedure_id=6712558)
@@ -326,7 +326,7 @@ class RunIntegrationTest:
             city="Quito",
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_id=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
         # when
         import_dms_accepted_applications(procedure_id=6712558)
@@ -379,7 +379,7 @@ class RunIntegrationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_id=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
 
         import_dms_accepted_applications(procedure_id=6712558)
@@ -437,7 +437,7 @@ class RunIntegrationTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_id=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
         import_dms_accepted_applications(procedure_id=6712558)
 
@@ -470,7 +470,7 @@ class RunIntegrationTest:
 
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=123, state="accepte", email=user.email, birth_date=self.BENEFICIARY_BIRTH_DATE
+                application_number=123, state="accepte", email=user.email, birth_date=self.BENEFICIARY_BIRTH_DATE
             )
         ]
         import_dms_accepted_applications(procedure_id=6712558)
@@ -507,7 +507,7 @@ class RunIntegrationTest:
         )
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=123,
+                application_number=123,
                 state="accepte",
                 email=applicant.email,
                 id_piece_number="1234123412",
@@ -553,7 +553,7 @@ class RunIntegrationTest:
         push_testing.reset_requests()
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=123,
+                application_number=123,
                 state="accepte",
                 email=user.email,
             )
@@ -580,7 +580,7 @@ class RunIntegrationTest:
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=123,
+                application_number=123,
                 state="accepte",
                 email=user.email,
                 postal_code="Strasbourg",
@@ -614,7 +614,11 @@ class RunIntegrationTest:
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=1, state="accepte", postal_code="Strasbourg", id_piece_number="121314", email=user.email
+                application_number=1,
+                state="accepte",
+                postal_code="Strasbourg",
+                id_piece_number="121314",
+                email=user.email,
             )
         ]
         import_dms_accepted_applications(procedure_id=6712558)
@@ -655,7 +659,7 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
                 email=user.email,
-                application_id=123,
+                application_number=123,
                 state="accepte",
             )
         ]
@@ -686,7 +690,7 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
                 email=user.email,
-                application_id=123,
+                application_number=123,
                 state="accepte",
                 city="Strasbourg",
             )
@@ -705,8 +709,8 @@ class RunIntegrationTest:
 class GraphQLSourceProcessApplicationTest:
     def test_process_accepted_application_user_already_created(self):
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
-        application_id = 123123
-        application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
+        application_number = 123123
+        application_details = fixture.make_parsed_graphql_application(application_number, "accepte", email=user.email)
         information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
@@ -736,8 +740,8 @@ class GraphQLSourceProcessApplicationTest:
             user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
 
-        application_id = 123123
-        application_details = fixture.make_parsed_graphql_application(application_id, "accepte", email=user.email)
+        application_number = 123123
+        application_details = fixture.make_parsed_graphql_application(application_number, "accepte", email=user.email)
         information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
@@ -757,9 +761,9 @@ class GraphQLSourceProcessApplicationTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        application_id = 123123
+        application_number = 123123
         application_details = fixture.make_parsed_graphql_application(
-            application_id,
+            application_number,
             "accepte",
             email=user.email,
             birth_date=user.dateOfBirth,
@@ -777,9 +781,9 @@ class GraphQLSourceProcessApplicationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
-        application_id = 123123
+        application_number = 123123
         application_details = fixture.make_parsed_graphql_application(
-            application_id,
+            application_number,
             "accepte",
             email=user.email,
             birth_date=user.dateOfBirth,
@@ -799,7 +803,11 @@ class GraphQLSourceProcessApplicationTest:
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=1, state="accepte", postal_code="Strasbourg", id_piece_number="121314", email=user.email
+                application_number=1,
+                state="accepte",
+                postal_code="Strasbourg",
+                id_piece_number="121314",
+                email=user.email,
             )
         ]
 
@@ -835,7 +843,7 @@ class GraphQLSourceProcessApplicationTest:
 
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_id=2,
+                application_number=2,
                 state="accepte",
                 email=already_imported_user.email,
             ),

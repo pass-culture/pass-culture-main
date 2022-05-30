@@ -264,7 +264,7 @@ class DmsWebhookApplicationTest:
         content = fraud_check.source_data()
         assert content.activity == "Étudiant"
         assert content.address == "1 Promenade des Anglais 06000 Nice"
-        assert content.application_id == 7654321
+        assert content.application_number == 7654321
         assert content.birth_date == datetime.date(2003, 5, 5)
         assert content.city == None
         assert content.civility == None
