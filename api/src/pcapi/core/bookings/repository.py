@@ -884,7 +884,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
     tomorrow_min = datetime.combine(tomorrow, time.min)
     tomorrow_max = datetime.combine(tomorrow, time.max)
     return (
-        IndividualBooking.query.join(Booking, Booking.stock, Stock.offer)
+        IndividualBooking.query.join(Booking, Booking.stock, Stock.offer, Offer.venue)
         .filter(Stock.beginningDatetime >= tomorrow_min, Stock.beginningDatetime <= tomorrow_max)
         .filter(Offer.isEvent)
         .filter(not_(Offer.isDigital))
@@ -902,7 +902,7 @@ def find_individual_bookings_event_happening_tomorrow_query() -> list[Individual
                 Offer.withdrawalType,
                 Offer.withdrawalDetails,
             )
-            .joinedload(Offer.venue, innerjoin=True)
+            .contains_eager(Offer.venue)
             .load_only(Venue.name, Venue.publicName, Venue.address, Venue.city, Venue.postalCode)
         )
         .all()
