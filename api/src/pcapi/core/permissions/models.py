@@ -21,6 +21,7 @@ class Permissions(enum.Enum):
     SEARCH_PUBLIC_ACCOUNT = "rechercher un compte bénéficiaire/grand public"
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     REVIEW_PUBLIC_ACCOUNT = "faire une revue manuelle d'un compte bénéficiaire/grand public"
+    MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
 
 
 def sync_enum_with_db_field(session: sa.orm.Session, py_enum: Type[enum.Enum], db_field: sa.Column) -> None:

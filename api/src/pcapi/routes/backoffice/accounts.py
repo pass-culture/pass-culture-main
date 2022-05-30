@@ -61,7 +61,7 @@ def get_public_account(user_id: int) -> s11n.PublicAccount:
 def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseModel:
     user = users_repository.get_user_by_id(user_id)
     if not user:
-        raise ApiErrors(errors={"user_id": "User does not exist"})
+        raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
 
     domains_credit = users_api.get_domains_credit(user) if user.is_beneficiary else None
 
@@ -84,7 +84,7 @@ def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseMod
 def get_user_subscription_history(user_id: int) -> s11n.GetUserSubscriptionHistoryResponseModel:
     user = users_repository.get_user_by_id(user_id)
     if not user:
-        raise ApiErrors(errors={"user_id": "User does not exist"})
+        raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
 
     subscriptions = {}
 
@@ -137,3 +137,20 @@ def review_public_account(
         review=getattr(review.review, "value", None),
         reason=review.reason,
     )
+
+
+@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>/resend-validation-email", methods=["POST"])
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def resend_validation_email(user_id: int) -> None:
+    user = users_repository.get_user_by_id(user_id)
+    if not user:
+        raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
+
+    if user.has_admin_role or user.has_pro_role:
+        raise ApiErrors(errors={"user_id": "Cette action n'est pas supportée pour les utilisateurs admin ou pro"})
+
+    if user.isEmailValidated:
+        raise ApiErrors(errors={"user_id": "L'adresse email est déjà validée"})
+
+    users_api.request_email_confirmation(user)
