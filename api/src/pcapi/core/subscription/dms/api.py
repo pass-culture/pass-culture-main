@@ -11,9 +11,6 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.dms import api as fraud_dms_api
 from pcapi.core.mails.transactional.users import dms_subscription_emails
 from pcapi.core.mails.transactional.users import duplicate_beneficiary
-from pcapi.core.mails.transactional.users.pre_subscription_dms_error import (
-    send_pre_subscription_from_dms_error_email_to_beneficiary,
-)
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -180,7 +177,7 @@ def _process_parsing_error(
     if state == dms_models.GraphQLApplicationStates.draft:
         _notify_parsing_error(parsing_error.errors, application_scalar_id)
     elif state == dms_models.GraphQLApplicationStates.accepted:
-        send_pre_subscription_from_dms_error_email_to_beneficiary(
+        dms_subscription_emails.send_pre_subscription_from_dms_error_email_to_beneficiary(
             parsing_error.user_email,
             parsing_error.errors.get("postal_code"),
             parsing_error.errors.get("id_piece_number"),
