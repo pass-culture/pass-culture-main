@@ -18,8 +18,8 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
+from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
-import pcapi.core.users.models as users_models
 from pcapi.core.users.repository import find_user_by_email
 import pcapi.repository as pcapi_repository
 
@@ -258,7 +258,7 @@ def _process_accepted_application(user: users_models.User, result_content: fraud
         user, "honor statement contained in DMS application", fraud_check.eligibilityType  # type: ignore [arg-type]
     )
     try:
-        subscription_api.on_successful_application(user=user, source_data=result_content)
+        has_completed_all_steps = subscription_api.on_successful_application(user=user, source_data=result_content)
     except Exception:  # pylint: disable=broad-except
         logger.exception(
             "[DMS] Could not save application %s - Procedure %s",
@@ -268,10 +268,13 @@ def _process_accepted_application(user: users_models.User, result_content: fraud
         return
 
     logger.info(
-        "[DMS] Successfully imported DMS application %s - Procedure %s",
+        "[DMS] Successfully imported accepted DMS application %s - Procedure %s",
         result_content.application_id,
         result_content.procedure_id,
     )
+
+    if not has_completed_all_steps:
+        dms_subscription_emails.send_complete_subscription_after_dms_email(user.email)
 
 
 def _handle_validation_errors(

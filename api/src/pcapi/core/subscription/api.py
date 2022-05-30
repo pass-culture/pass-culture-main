@@ -424,22 +424,26 @@ def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models
     return models.MaintenancePageType.WITHOUT_DMS
 
 
-def activate_beneficiary_if_no_missing_step(user: users_models.User, always_update_attributes=True) -> None:  # type: ignore [no-untyped-def]
+def activate_beneficiary_if_no_missing_step(user: users_models.User, always_update_attributes: bool = True) -> bool:
     if has_passed_all_checks_to_become_beneficiary(user):
         activate_beneficiary(user)  # calls update_external_user
-    elif always_update_attributes:
+        return True
+
+    if always_update_attributes:
         users_external.update_external_user(user)
+
+    return False
 
 
 def on_successful_application(
     user: users_models.User,
     source_data: common_fraud_models.IdentityCheckContent,
-) -> None:
+) -> bool:
     users_api.update_user_information_from_external_source(user, source_data)
 
     pcapi_repository.repository.save(user)
 
-    activate_beneficiary_if_no_missing_step(user)
+    return activate_beneficiary_if_no_missing_step(user)
 
 
 # TODO (Lixxday): use a proper BeneficiaryFraudCHeck History model to track these kind of updates
