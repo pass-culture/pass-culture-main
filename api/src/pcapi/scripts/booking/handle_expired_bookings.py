@@ -31,26 +31,7 @@ logger = logging.getLogger(__name__)
 
 def handle_expired_bookings() -> None:
     handle_expired_individual_bookings()
-    handle_expired_educational_bookings()
     handle_expired_collective_bookings()
-
-
-def handle_expired_educational_bookings() -> None:
-    logger.info("[handle_expired_educational_bookings] Start")
-
-    try:
-        logger.info("[handle_expired_educational_bookings] STEP 1 : cancel_expired_educational_bookings()")
-        cancel_expired_educational_bookings()
-    except Exception as e:  # pylint: disable=broad-except
-        logger.exception("[handle_expired_educational_bookings] Error in STEP 1 : %s", e)
-
-    try:
-        logger.info("[handle_expired_educational_bookings] STEP 2 : notify_offerers_of_expired_individual_bookings()")
-        notify_offerers_of_expired_educational_bookings()
-    except Exception as e:  # pylint: disable=broad-except
-        logger.exception("[handle_expired_educational_bookings] Error in STEP 2 : %s", e)
-
-    logger.info("[handle_expired_educational_bookings] End")
 
 
 def handle_expired_individual_bookings() -> None:
@@ -79,15 +60,6 @@ def handle_expired_individual_bookings() -> None:
             logger.exception("[handle_expired_individual_bookings] Error in STEP 3 : %s", e)
 
     logger.info("[handle_expired_individual_bookings] End")
-
-
-def cancel_expired_educational_bookings(batch_size: int = 500) -> None:
-    logger.info("[cancel_expired_educational_bookings] Start")
-
-    expiring_educational_bookings_query = bookings_repository.find_expiring_educational_bookings_query()
-    cancel_expired_bookings(expiring_educational_bookings_query, batch_size)
-
-    logger.info("[cancel_expired_educational_bookings] End")
 
 
 def cancel_expired_individual_bookings(batch_size: int = 500) -> None:
@@ -203,22 +175,6 @@ def notify_offerers_of_expired_individual_bookings(expired_on: datetime.date = N
     )
 
     logger.info("[notify_offerers_of_expired_individual_bookings] End")
-
-
-def notify_offerers_of_expired_educational_bookings() -> None:
-    logger.info("[notify_offerers_of_expired_educational_bookings] Start")
-
-    expired_educational_bookings = bookings_repository.find_expired_educational_bookings()
-
-    for educational_booking in expired_educational_bookings:
-        send_education_booking_cancellation_by_institution_email(educational_booking)
-
-    logger.info(
-        "[notify_offerers_of_expired_educational_bookings] %d Offerers have been notified",
-        len(expired_educational_bookings),
-    )
-
-    logger.info("[notify_offerers_of_expired_educational_bookings] End")
 
 
 def notify_offerers_of_expired_collective_bookings() -> None:
