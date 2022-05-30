@@ -62,6 +62,9 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_BANNER_ONE_YEAR = "Active la bannière des 1 an du pass sur la Home"
     ENABLE_CSV_MULTI_DOWNLOAD_BUTTON = "Active le multi-téléchargement des réservations"
+    ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION = (
+        "Active l'association d'une offre collective à un établissement scolaire"
+    )
     ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
     ENABLE_NEW_COLLECTIVE_MODEL = "Utiliser le nouveau modèle des offres collectives"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
@@ -169,6 +172,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE,
     FeatureToggle.ENABLE_VENUE_STRICT_SEARCH,
     FeatureToggle.ENABLE_EDUCATIONAL_DOMAINS,
+    FeatureToggle.ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION,
 )
 
 
