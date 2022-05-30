@@ -18,7 +18,7 @@ DEFAULT_MESSAGES = [
 
 
 def make_graphql_application(
-    application_id: int,
+    application_number: int,
     state: str,
     activity: str = "Étudiant",
     birth_date: Optional[datetime.datetime] = datetime.datetime(2004, 1, 1),
@@ -43,7 +43,7 @@ def make_graphql_application(
 
     data = {
         "id": application_techid or "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(20)),
-        "number": application_id,
+        "number": application_number,
         "archived": False,
         "state": state,
         "dateDepot": "2020-05-13T00:09:46+02:00",
@@ -524,7 +524,7 @@ def make_new_stranger_application():
     return data
 
 
-def make_graphql_deleted_applications(procedure_id: int, application_ids: Iterable[int]):
+def make_graphql_deleted_applications(procedure_id: int, application_numbers: Iterable[int]):
     return {
         "demarche": {
             "id": "PROCEDURE_ID_AT_DMS",
@@ -535,11 +535,11 @@ def make_graphql_deleted_applications(procedure_id: int, application_ids: Iterab
                     {
                         "dateSupression": "2021-10-02T00:00:00+02:00",
                         "id": "".join(random.choice(string.ascii_letters) for _ in range(28)),
-                        "number": application_id,
+                        "number": application_number,
                         "reason": "user_request",
                         "state": "en_construction",
                     }
-                    for application_id in application_ids
+                    for application_number in application_numbers
                 ],
             },
         }

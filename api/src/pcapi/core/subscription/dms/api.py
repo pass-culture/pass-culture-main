@@ -64,13 +64,13 @@ def try_dms_orphan_adoption(user: users_models.User):  # type: ignore [no-untype
 def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse, procedure_id: int
 ) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
-    application_id = dms_application.number
+    application_number = dms_application.number
     user_email = users_utils.sanitize_email(dms_application.profile.email)
     application_scalar_id = dms_application.id
     state = dms_models.GraphQLApplicationStates(dms_application.state)
 
     log_extra_data = {
-        "application_id": application_id,
+        "application_number": application_number,
         "application_scalar_id": application_scalar_id,
         "procedure_id": procedure_id,
         "user_email": user_email,
@@ -80,7 +80,7 @@ def handle_dms_application(
 
     if not user:
         logger.info("[DMS] User not found for application", extra=log_extra_data)
-        _process_user_not_found_error(user_email, application_id, procedure_id, state, application_scalar_id)
+        _process_user_not_found_error(user_email, application_number, procedure_id, state, application_scalar_id)
         return None
     try:
         application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application, procedure_id)
@@ -92,11 +92,11 @@ def handle_dms_application(
         )
     except subscription_exceptions.DMSParsingError as parsing_error:
         logger.info("[DMS] Parsing error in application", extra=log_extra_data)
-        return _process_parsing_error(parsing_error, user, application_id, state, application_scalar_id)
+        return _process_parsing_error(parsing_error, user, application_number, state, application_scalar_id)
 
     logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
 
-    current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id, application_content)
+    current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number, application_content)
     current_fraud_check.resultContent = application_content.dict()
 
     if state == dms_models.GraphQLApplicationStates.draft:
@@ -163,7 +163,7 @@ def _notify_parsing_error(parsing_errors: dict[str, typing.Optional[str]], appli
 def _process_parsing_error(
     parsing_error: subscription_exceptions.DMSParsingError,
     user: users_models.User,
-    application_id: int,
+    application_number: int,
     state: dms_models.GraphQLApplicationStates,
     application_scalar_id: str,
 ) -> fraud_models.BeneficiaryFraudCheck:
@@ -183,16 +183,16 @@ def _process_parsing_error(
             parsing_error.errors.get("id_piece_number"),
         )
 
-    return _create_parsing_error_fraud_check(user, application_id, state, parsing_error)
+    return _create_parsing_error_fraud_check(user, application_number, state, parsing_error)
 
 
 def _create_parsing_error_fraud_check(
     user: users_models.User,
-    application_id: int,
+    application_number: int,
     state: dms_models.GraphQLApplicationStates,
     parsing_error: subscription_exceptions.DMSParsingError,
 ) -> fraud_models.BeneficiaryFraudCheck:
-    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_id)
+    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number)
 
     errors = ",".join([f"'{key}' ({value})" for key, value in sorted(parsing_error.errors.items())])
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
@@ -221,13 +221,13 @@ def _create_parsing_error_fraud_check(
 
 def _process_user_not_found_error(
     email: str,
-    application_id: int,
+    application_number: int,
     procedure_id: int,
     state: dms_models.GraphQLApplicationStates,
     application_scalar_id: str,
 ) -> None:
     dms_repository.create_orphan_dms_application_if_not_exists(
-        application_id=application_id, procedure_id=procedure_id, email=email
+        application_number=application_number, procedure_id=procedure_id, email=email
     )
     if state == dms_models.GraphQLApplicationStates.draft:
         dms_connector_api.DMSGraphQLClient().send_user_message(
@@ -259,14 +259,14 @@ def _process_accepted_application(user: users_models.User, result_content: fraud
     except Exception:  # pylint: disable=broad-except
         logger.exception(
             "[DMS] Could not save application %s - Procedure %s",
-            result_content.application_id,
+            result_content.application_number,
             result_content.procedure_id,
         )
         return
 
     logger.info(
         "[DMS] Successfully imported accepted DMS application %s - Procedure %s",
-        result_content.application_id,
+        result_content.application_number,
         result_content.procedure_id,
     )
 
@@ -290,7 +290,7 @@ def _handle_validation_errors(
 
     logger.warning(
         "[DMS] Rejected application %s because of '%s' - Procedure %s",
-        dms_content.application_id,
+        dms_content.application_number,
         reason,
         dms_content.procedure_id,
         extra={"user_id": user.id},

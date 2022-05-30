@@ -594,7 +594,7 @@ class OnSuccessfulDMSApplicationTest:
             phone="0612345678",
             postal_code="93130",
             address="11 Rue du Test",
-            application_id=123,
+            application_number=123,
             procedure_id=123456,
             civility=dms_models.Civility.MME,
             activity="Étudiant",
@@ -630,7 +630,7 @@ class OnSuccessfulDMSApplicationTest:
             phone="0612345678",
             postal_code="93130",
             address="11 Rue du Test",
-            application_id=123,
+            application_number=123,
             procedure_id=123456,
             civility=dms_models.Civility.MME,
             activity="Étudiant",
@@ -665,7 +665,7 @@ class OnSuccessfulDMSApplicationTest:
     @patch("pcapi.repository.repository")
     def test_error_is_collected_if_beneficiary_could_not_be_saved(self, mock_repository):
         # given
-        information = fraud_factories.DMSContentFactory(application_id=123)
+        information = fraud_factories.DMSContentFactory(application_number=123)
         applicant = users_factories.UserFactory(email=information.email)
 
         mock_repository.save.side_effect = [api_errors.ApiErrors({"postalCode": ["baaaaad value"]})]
@@ -729,7 +729,7 @@ class OnSuccessfulDMSApplicationTest:
                 phone="0612345678",
                 postal_code="93130",
                 address="11 Rue du Test",
-                application_id=123,
+                application_number=123,
                 procedure_id=123456,
                 civility="Mme",
                 activity="Étudiant",

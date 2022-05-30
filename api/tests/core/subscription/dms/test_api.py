@@ -87,15 +87,17 @@ class DMSSubscriptionItemStatusTest:
 class DMSOrphanSubsriptionTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_orphan_corresponding_user(self, execute_query):
-        application_id = 1234
+        application_number = 1234
         procedure_id = 4321
         email = "dms_orphan@example.com"
 
         user = users_factories.UserFactory(email=email)
-        fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id, process_id=procedure_id)
+        fraud_factories.OrphanDmsApplicationFactory(
+            email=email, application_id=application_number, process_id=procedure_id
+        )
 
         execute_query.return_value = make_single_application(
-            application_id, dms_models.GraphQLApplicationStates.draft, email=email
+            application_number, dms_models.GraphQLApplicationStates.draft, email=email
         )
 
         dms_subscription_api.try_dms_orphan_adoption(user)
@@ -108,15 +110,17 @@ class DMSOrphanSubsriptionTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_orphan_corresponding_user_with_parsing_error(self, execute_query):
-        application_id = 1234
+        application_number = 1234
         procedure_id = 4321
         email = "dms_orphan@example.com"
 
         user = users_factories.UserFactory(email=email)
-        fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id, process_id=procedure_id)
+        fraud_factories.OrphanDmsApplicationFactory(
+            email=email, application_id=application_number, process_id=procedure_id
+        )
 
         execute_query.return_value = make_single_application(
-            application_id, dms_models.GraphQLApplicationStates.draft, email=email, postal_code="1234"
+            application_number, dms_models.GraphQLApplicationStates.draft, email=email, postal_code="1234"
         )
 
         dms_subscription_api.try_dms_orphan_adoption(user)
@@ -134,7 +138,7 @@ class HandleDmsApplicationTest:
     def test_parsing_failure(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
-            application_id=1, state=dms_models.GraphQLApplicationStates.draft, email=user.email
+            application_number=1, state=dms_models.GraphQLApplicationStates.draft, email=user.email
         )
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
@@ -147,7 +151,7 @@ class HandleDmsApplicationTest:
     def test_parsing_error_when_draft(self, send_dms_message_mock):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=user.email,
             id_piece_number="(wrong_number)",
@@ -175,16 +179,16 @@ class HandleDmsApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_parsing_error_when_on_going(self, send_dms_message_mock):
-        application_id = 1
+        application_number = 1
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            thirdPartyId=str(application_id),
+            thirdPartyId=str(application_number),
             status=fraud_models.FraudCheckStatus.STARTED,
             type=fraud_models.FraudCheckType.DMS,
         )
         dms_response = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
             id_piece_number="(wrong_number)",
@@ -207,16 +211,16 @@ class HandleDmsApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_parsing_error_when_accepted(self, send_dms_message_mock):
-        application_id = 1
+        application_number = 1
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            thirdPartyId=str(application_id),
+            thirdPartyId=str(application_number),
             status=fraud_models.FraudCheckStatus.STARTED,
             type=fraud_models.FraudCheckType.DMS,
         )
         dms_response = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
             id_piece_number="(wrong_number)",
@@ -240,16 +244,16 @@ class HandleDmsApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_parsing_error_when_refused(self, send_dms_message_mock):
-        application_id = 1
+        application_number = 1
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            thirdPartyId=str(application_id),
+            thirdPartyId=str(application_number),
             status=fraud_models.FraudCheckStatus.STARTED,
             type=fraud_models.FraudCheckType.DMS,
         )
         dms_response = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
             email=user.email,
             id_piece_number="(wrong_number)",
@@ -274,7 +278,7 @@ class HandleDmsApplicationTest:
     def test_parsing_error_allows_fraud_check_content(self):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
             email=user.email,
             id_piece_number="(wrong_number)",
@@ -289,7 +293,7 @@ class HandleDmsApplicationTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
         result_content = fraud_check.source_data()
-        assert result_content.application_id == 1
+        assert result_content.application_number == 1
         assert result_content.birth_date == datetime.date(2004, 1, 1)
         assert result_content.registration_datetime == datetime.datetime(
             2020, 5, 13, 9, 9, 46, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))

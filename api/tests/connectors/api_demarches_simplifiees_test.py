@@ -92,7 +92,7 @@ class GraphqlResponseTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_deleted_applications(self, execute_query):
         procedure_id = 1
-        execute_query.return_value = make_graphql_deleted_applications(procedure_id, application_ids=[1, 2, 3])
+        execute_query.return_value = make_graphql_deleted_applications(procedure_id, application_numbers=[1, 2, 3])
 
         client = api_dms.DMSGraphQLClient()
 

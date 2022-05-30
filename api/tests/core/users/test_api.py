@@ -723,7 +723,7 @@ class BeneficiaryInformationUpdateTest:
             phone="0612345678",
             postal_code="67200",
             address="11 Rue du Test",
-            application_id=123,
+            application_number=123,
             procedure_id=98012,
             registration_datetime=datetime(2020, 5, 1),
         )

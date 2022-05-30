@@ -419,7 +419,7 @@ def test_validate_email_when_not_eligible(client):
 
 @patch.object(api_dms.DMSGraphQLClient, "execute_query")
 def test_validate_email_dms_orphan(execute_query, client):
-    application_id = 1234
+    application_number = 1234
     email = "dms_orphan@example.com"
 
     user = users_factories.UserFactory(isEmailValidated=False, dateOfBirth=datetime(2000, 7, 1), email=email)
@@ -427,10 +427,10 @@ def test_validate_email_dms_orphan(execute_query, client):
 
     assert not user.isEmailValidated
 
-    fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_id)
+    fraud_factories.OrphanDmsApplicationFactory(email=email, application_id=application_number)
 
     execute_query.return_value = make_single_application(
-        application_id, dms_models.GraphQLApplicationStates.accepted, email=email
+        application_number, dms_models.GraphQLApplicationStates.accepted, email=email
     )
     response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 

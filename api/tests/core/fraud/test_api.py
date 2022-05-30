@@ -330,7 +330,7 @@ class DMSFraudCheckTest:
             user=user,
             type=fraud_models.FraudCheckType.DMS,
             eligibilityType=user.eligibility,
-            thirdPartyId=str(content.application_id),
+            thirdPartyId=str(content.application_number),
         )
         fraud_api.on_dms_fraud_result(user, content)
 

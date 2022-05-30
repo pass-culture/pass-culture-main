@@ -32,7 +32,7 @@ def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse, procedure_id: int
 ) -> fraud_models.DMSContent:
 
-    application_id = application_detail.number
+    application_number = application_detail.number
     civility = application_detail.applicant.civility
     email = application_detail.profile.email
     first_name = application_detail.applicant.first_name
@@ -84,7 +84,7 @@ def parse_beneficiary_information_graphql(
         elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
             activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
             if activity is None:
-                logger.error("Unknown activity value for application %s: %s", application_id, value)
+                logger.error("Unknown activity value for application %s: %s", application_number, value)
 
         elif label in (
             dms_models.FieldLabel.ADDRESS_ET.value,
@@ -107,7 +107,7 @@ def parse_beneficiary_information_graphql(
     result_content = fraud_models.DMSContent(
         activity=activity,
         address=address,
-        application_id=application_id,
+        application_number=application_number,
         birth_date=birth_date,
         city=city,
         civility=civility,
