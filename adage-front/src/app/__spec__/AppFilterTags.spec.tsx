@@ -9,6 +9,7 @@ import {
   FacetFiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
+import { FeaturesContextProvider } from 'app/providers/FeaturesContextProvider'
 import { VenueFilterType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { Role } from 'utils/types'
@@ -18,6 +19,7 @@ import { App } from '../App'
 import {
   findCategoriesFilter,
   findDepartmentFilter,
+  findDomainsFilter,
   findLaunchSearchButton,
   findSearchBox,
   findStudentsFilter,
@@ -70,17 +72,28 @@ jest.mock('repository/pcapi/pcapi', () => ({
       },
     ],
   }),
+  getEducationalDomains: jest.fn().mockResolvedValue([
+    { id: 1, name: 'Danse' },
+    { id: 2, name: 'Architecture' },
+  ]),
+  getFeatures: jest
+    .fn()
+    .mockResolvedValue([
+      { name: 'ENABLE_EDUCATIONAL_DOMAINS', isActive: true },
+    ]),
 }))
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
 const renderApp = () => {
   render(
     <FiltersContextProvider>
-      <AlgoliaQueryContextProvider>
-        <FacetFiltersContextProvider>
-          <App />
-        </FacetFiltersContextProvider>
-      </AlgoliaQueryContextProvider>
+      <FeaturesContextProvider>
+        <AlgoliaQueryContextProvider>
+          <FacetFiltersContextProvider>
+            <App />
+          </FacetFiltersContextProvider>
+        </AlgoliaQueryContextProvider>
+      </FeaturesContextProvider>
     </FiltersContextProvider>
   )
 }
@@ -117,6 +130,7 @@ describe('app', () => {
     const departmentFilter = await findDepartmentFilter()
     const studentsFilter = await findStudentsFilter()
     const categoriesFilter = await findCategoriesFilter()
+    const domainsFilter = await findDomainsFilter()
     const launchSearchButton = await findLaunchSearchButton()
 
     // When
@@ -125,6 +139,7 @@ describe('app', () => {
     await selectEvent.select(departmentFilter, '59 - Nord')
     await selectEvent.select(studentsFilter, 'Collège - 4e')
     await selectEvent.select(categoriesFilter, 'Cinéma')
+    await selectEvent.select(domainsFilter, 'Danse')
     await selectEvent.select(categoriesFilter, 'Musée')
     userEvent.click(launchSearchButton)
 
@@ -148,11 +163,13 @@ describe('app', () => {
         'offer.subcategoryId:VISITE',
       ],
       ['offer.students:Collège - 4e'],
+      ['offer.domains:1'],
     ])
 
     expect(queryTag('01 - Ain')).toBeInTheDocument()
     expect(queryTag('59 - Nord')).toBeInTheDocument()
     expect(queryTag('Collège - 4e')).toBeInTheDocument()
+    expect(queryTag('Danse')).toBeInTheDocument()
     expect(queryTag('Cinéma')).toBeInTheDocument()
     expect(queryTag('Musée')).toBeInTheDocument()
   })
