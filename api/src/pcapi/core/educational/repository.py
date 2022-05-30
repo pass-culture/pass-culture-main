@@ -10,7 +10,9 @@ from typing import Union
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
+from sqlalchemy import Date
 from sqlalchemy import and_
+from sqlalchemy import cast
 from sqlalchemy import func
 from sqlalchemy import or_
 from sqlalchemy.orm import Query
@@ -32,6 +34,7 @@ from pcapi.core.educational.exceptions import EducationalDepositNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.educational.exceptions import StockDoesNotExist
 from pcapi.core.educational.models import CollectiveBooking
+from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.educational.models import CollectiveOffer
@@ -499,6 +502,39 @@ def find_expiring_collective_bookings_query() -> BaseQuery:
 
 def find_expiring_collective_booking_ids_from_query(query: BaseQuery) -> BaseQuery:
     return query.order_by(CollectiveBooking.id).with_entities(CollectiveBooking.id)
+
+
+def find_expired_collective_bookings() -> list[educational_models.CollectiveBooking]:
+    expired_on = date.today()
+    return (
+        educational_models.CollectiveBooking.query.filter(
+            CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED
+        )
+        .filter(cast(educational_models.CollectiveBooking.cancellationDate, Date) == expired_on)
+        .filter(
+            educational_models.CollectiveBooking.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED,
+        )
+        .options(
+            joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
+            .load_only(
+                educational_models.CollectiveStock.beginningDatetime,
+                educational_models.CollectiveStock.collectiveOfferId,
+            )
+            .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
+            .load_only(educational_models.CollectiveOffer.name, educational_models.CollectiveOffer.venueId)
+            .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
+            .load_only(Venue.name)
+        )
+        .options(
+            joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True).load_only(
+                educational_models.EducationalRedactor.email,
+                educational_models.EducationalRedactor.firstName,
+                educational_models.EducationalRedactor.lastName,
+            )
+        )
+        .options(joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
+        .all()
+    )
 
 
 def get_and_lock_collective_stock(stock_id: int) -> educational_models.CollectiveStock:

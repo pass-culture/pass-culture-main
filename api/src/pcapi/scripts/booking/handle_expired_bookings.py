@@ -221,13 +221,36 @@ def notify_offerers_of_expired_educational_bookings() -> None:
     logger.info("[notify_offerers_of_expired_educational_bookings] End")
 
 
+def notify_offerers_of_expired_collective_bookings() -> None:
+    logger.info("[notify_offerers_of_expired_collective_bookings] Start")
+
+    expired_collective_bookings = educational_repository.find_expired_collective_bookings()
+
+    for collective_booking in expired_collective_bookings:
+        send_education_booking_cancellation_by_institution_email(collective_booking)
+
+    logger.info(
+        "[notify_offerers_of_expired_collective_bookings] %d Offerers have been notified",
+        len(expired_collective_bookings),
+    )
+
+    logger.info("[notify_offerers_of_expired_collective_bookings] End")
+
+
 def handle_expired_collective_bookings() -> None:
     logger.info("[handle_expired_collective_bookings] Start")
 
     try:
+        logger.info("[handle_expired_collective_bookings] STEP 1 : cancel_expired_collective_bookings")
         cancel_expired_collective_bookings()
     except Exception as e:  # pylint: disable=broad-except
         logger.exception("[handle_expired_collective_bookings] Error in STEP 1 : %s", e)
+
+    try:
+        logger.info("[handle_expired_educational_bookings] STEP 2 : notify_offerers_of_expired_individual_bookings()")
+        notify_offerers_of_expired_collective_bookings()
+    except Exception as e:  # pylint: disable=broad-except
+        logger.exception("[handle_expired_educational_bookings] Error in STEP 2 : %s", e)
 
     logger.info("[handle_expired_collective_bookings] End")
 
