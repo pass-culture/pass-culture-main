@@ -24,10 +24,10 @@ class HandleInactiveApplicationTest:
     @override_settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_mark_without_continuation(self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock):
         active_application = make_parsed_graphql_application(
-            application_id=1, state="en_construction", last_modification_date="2022-04-01T00:00:00+02:00"
+            application_number=1, state="en_construction", last_modification_date="2022-04-01T00:00:00+02:00"
         )
         inactive_application = make_parsed_graphql_application(
-            application_id=2, state="en_construction", last_modification_date="2021-11-11T00:00:00+02:00"
+            application_number=2, state="en_construction", last_modification_date="2021-11-11T00:00:00+02:00"
         )
 
         active_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
@@ -64,7 +64,7 @@ class HandleInactiveApplicationTest:
         self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock
     ):
         inactive_application = make_parsed_graphql_application(
-            application_id=2,
+            application_number=2,
             state="en_construction",
             last_modification_date="2021-11-11T00:00:00+02:00",
             birth_date=datetime.datetime(2002, 1, 1),
@@ -92,7 +92,7 @@ class IsNeverEligibleTest:
     @freezegun.freeze_time("2022-04-27")
     def test_19_yo_at_generalisation_from_not_test_department(self):
         inactive_application = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 1, 1),
             postal_code="12400",
@@ -102,7 +102,7 @@ class IsNeverEligibleTest:
     @freezegun.freeze_time("2022-04-27")
     def test_19_yo_at_generalisation_from_test_department(self):
         inactive_application = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 1, 1),
             postal_code="56510",
@@ -112,7 +112,7 @@ class IsNeverEligibleTest:
     @freezegun.freeze_time("2022-04-27")
     def test_still_18_yo_after_generalisation(self):
         inactive_application = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 6, 1),
             postal_code="12400",
@@ -123,7 +123,10 @@ class IsNeverEligibleTest:
 class HasInactivityDelayExpiredTest:
     def test_has_inactivity_delay_expired_without_message(self):
         no_message_application = make_parsed_graphql_application(
-            application_id=1, state="en_construction", last_modification_date="2022-01-01T00:00:00+02:00", messages=[]
+            application_number=1,
+            state="en_construction",
+            last_modification_date="2022-01-01T00:00:00+02:00",
+            messages=[],
         )
 
         assert _has_inactivity_delay_expired(no_message_application)
@@ -131,7 +134,7 @@ class HasInactivityDelayExpiredTest:
     @freezegun.freeze_time("2022-04-27")
     def test_has_inactivity_delay_expired_with_recent_message(self):
         no_message_application = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state="en_construction",
             last_modification_date="2022-01-01T00:00:00+02:00",
             messages=[
@@ -145,7 +148,7 @@ class HasInactivityDelayExpiredTest:
     @freezegun.freeze_time("2022-04-27")
     def test_has_inactivity_delay_expired_with_old_message(self):
         no_message_application = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             state="en_construction",
             last_modification_date="2022-01-01T00:00:00+02:00",
             messages=[
@@ -161,7 +164,7 @@ class HasInactivityDelayExpiredTest:
         applicant_email = "applikant@example.com"
 
         no_message_application = make_parsed_graphql_application(
-            application_id=1,
+            application_number=1,
             email=applicant_email,
             state="en_construction",
             last_modification_date="2022-01-01T00:00:00+02:00",

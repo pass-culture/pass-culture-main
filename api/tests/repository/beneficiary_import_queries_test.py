@@ -7,8 +7,8 @@ from pcapi.core.subscription.dms import repository as dms_repository
 
 class GetAlreadyProcessedApplicationIdTest:
     @pytest.mark.usefixtures("db_session")
-    def test_already_processed_application_ids(self):
-        content = fraud_factories.DMSContentFactory(application_id=8888, procedure_id=123)
+    def test_already_processed_application_numbers(self):
+        content = fraud_factories.DMSContentFactory(application_number=8888, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=8888,
             resultContent=content,
@@ -21,7 +21,7 @@ class GetAlreadyProcessedApplicationIdTest:
         fraud_factories.OrphanDmsFraudCheckFactory(application_id=9991, process_id=321)
 
         # Different procedure
-        content = fraud_factories.DMSContentFactory(application_id=1111, procedure_id=2)
+        content = fraud_factories.DMSContentFactory(application_number=1111, procedure_id=2)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=1111,
             resultContent=content,
@@ -37,54 +37,54 @@ class GetAlreadyProcessedApplicationIdTest:
             status=fraud_models.FraudCheckStatus.ERROR,
         )
 
-        application_ids = dms_repository.get_already_processed_applications_ids(123)
-        assert application_ids == {8888, 9999, 2222}
+        application_numbers = dms_repository.get_already_processed_applications_ids(123)
+        assert application_numbers == {8888, 9999, 2222}
 
     @pytest.mark.usefixtures("db_session")
-    def test_already_processed_application_ids_with_all_fraud_checks_status(self):
-        content = fraud_factories.DMSContentFactory(application_id=1111, procedure_id=123)
+    def test_already_processed_application_numbers_with_all_fraud_checks_status(self):
+        content = fraud_factories.DMSContentFactory(application_number=1111, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=1111,
             resultContent=content,
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.KO,
         )
-        content = fraud_factories.DMSContentFactory(application_id=2222, procedure_id=123)
+        content = fraud_factories.DMSContentFactory(application_number=2222, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=2222,
             resultContent=content,
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.OK,
         )
-        content = fraud_factories.DMSContentFactory(application_id=3333, procedure_id=123)
+        content = fraud_factories.DMSContentFactory(application_number=3333, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=3333,
             resultContent=content,
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.STARTED,
         )
-        content = fraud_factories.DMSContentFactory(application_id=4444, procedure_id=123)
+        content = fraud_factories.DMSContentFactory(application_number=4444, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=4444,
             resultContent=content,
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.SUSPICIOUS,
         )
-        content = fraud_factories.DMSContentFactory(application_id=5555, procedure_id=123)
+        content = fraud_factories.DMSContentFactory(application_number=5555, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=5555,
             resultContent=content,
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.PENDING,
         )
-        content = fraud_factories.DMSContentFactory(application_id=6666, procedure_id=123)
+        content = fraud_factories.DMSContentFactory(application_number=6666, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=6666,
             resultContent=content,
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.CANCELED,
         )
-        content = fraud_factories.DMSContentFactory(application_id=7777, procedure_id=123)
+        content = fraud_factories.DMSContentFactory(application_number=7777, procedure_id=123)
         fraud_factories.BeneficiaryFraudCheckFactory(
             thirdPartyId=7777,
             resultContent=content,
@@ -98,6 +98,6 @@ class GetAlreadyProcessedApplicationIdTest:
             status=fraud_models.FraudCheckStatus.ERROR,
         )
 
-        application_ids = dms_repository.get_already_processed_applications_ids(123)
+        application_numbers = dms_repository.get_already_processed_applications_ids(123)
 
-        assert application_ids == {1111, 2222, 4444, 6666, 7777, 8888}
+        assert application_numbers == {1111, 2222, 4444, 6666, 7777, 8888}

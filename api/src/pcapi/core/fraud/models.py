@@ -186,7 +186,7 @@ def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_
 class DMSContent(common_models.IdentityCheckContent):
     activity: typing.Optional[str]
     address: typing.Optional[str]
-    application_id: int
+    application_number: int = pydantic.Field(..., alias="application_id")  # keep alias for old data
     birth_date: typing.Optional[datetime.date]
     city: typing.Optional[str]
     civility: typing.Optional[users_models.GenderEnum]
@@ -204,6 +204,9 @@ class DMSContent(common_models.IdentityCheckContent):
     state: typing.Optional[str]
 
     _parse_civility = pydantic.validator("civility", pre=True, allow_reuse=True)(_parse_dms_civility)
+
+    class Config:
+        allow_population_by_field_name = True
 
     def get_birth_date(self) -> typing.Optional[datetime.date]:
         return self.birth_date
@@ -433,7 +436,7 @@ class OrphanDmsApplication(PcObject, Model):  # type: ignore [valid-type, misc]
         sa.DateTime, nullable=True, default=datetime.datetime.utcnow
     )  # no sql default because the column was added after table creation
     email = sa.Column(sa.Text, nullable=True, index=True)
-    application_id = sa.Column(sa.BigInteger, primary_key=True)
+    application_id = sa.Column(sa.BigInteger, primary_key=True)  # refers to DMS application "number"
     process_id = sa.Column(sa.BigInteger)
 
 

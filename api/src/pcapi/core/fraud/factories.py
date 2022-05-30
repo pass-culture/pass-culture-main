@@ -100,7 +100,7 @@ class DMSContentFactory(factory.Factory):
     first_name = factory.Faker("first_name")
     civility = random.choice([civility.value for civility in dms_models.Civility])
     email = factory.Faker("ascii_safe_email")
-    application_id = factory.Faker("pyint")
+    application_number = factory.Faker("pyint")
     procedure_id = factory.Faker("pyint")
     departement = factory.Sequence("{}".format)
     birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())

@@ -6,7 +6,6 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.users import models as users_models
@@ -51,8 +50,7 @@ class ParseBeneficiaryInformationTest:
 
         assert information.id_piece_number == "0123456789"
 
-    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_new_procedure(self, get_applications_with_details):
+    def test_new_procedure(self):
         raw_data = fixture.make_new_application()
         content = dms_serializer.parse_beneficiary_information_graphql(
             dms_models.DmsApplicationResponse(**raw_data), 32
@@ -61,7 +59,7 @@ class ParseBeneficiaryInformationTest:
         assert content.first_name == "Jean"
         assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
-        assert content.application_id == 5718303
+        assert content.application_number == 5718303
         assert content.procedure_id == 32
         assert content.department == None
         assert content.birth_date == date(2004, 12, 19)
@@ -71,8 +69,7 @@ class ParseBeneficiaryInformationTest:
         assert content.address == "32 rue des sapins gris 21350 l'îsle à dent"
         assert content.id_piece_number == "F9GFAL123"
 
-    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_new_procedure_for_stranger_residents(self, get_applications_with_details):
+    def test_new_procedure_for_stranger_residents(self):
         raw_data = fixture.make_new_stranger_application()
         content = dms_serializer.parse_beneficiary_information_graphql(
             dms_models.DmsApplicationResponse(**raw_data), 32
@@ -81,7 +78,7 @@ class ParseBeneficiaryInformationTest:
         assert content.first_name == "Jean"
         assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
-        assert content.application_id == 5742994
+        assert content.application_number == 5742994
         assert content.procedure_id == 32
         assert content.department == None
         assert content.birth_date == date(2006, 5, 12)
