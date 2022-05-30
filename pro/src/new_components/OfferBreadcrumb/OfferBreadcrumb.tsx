@@ -7,10 +7,12 @@ import {
 } from 'components/hooks/useOfferEditionURL'
 
 import React from 'react'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 
 export enum OfferBreadcrumbStep {
   DETAILS = 'details',
   STOCKS = 'stocks',
+  VISIBILITY = 'visibility',
   CONFIRMATION = 'confirmation',
 }
 
@@ -29,6 +31,9 @@ const OfferBreadcrumb = ({
   isOfferEducational = false,
   className,
 }: IOfferBreadcrumb): JSX.Element => {
+  const enableEducationalInstitutionAssociation = useActiveFeature(
+    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
+  )
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
@@ -46,6 +51,15 @@ const OfferBreadcrumb = ({
         label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
         url: stockEditionUrl,
       },
+      ...(isOfferEducational && enableEducationalInstitutionAssociation
+        ? [
+            {
+              id: OfferBreadcrumbStep.VISIBILITY,
+              label: 'Visibilité',
+              url: `/offre/${offerId}/collectif/visibilite/edition`,
+            },
+          ]
+        : []),
     ]
   } else {
     steps = [
@@ -57,6 +71,14 @@ const OfferBreadcrumb = ({
         id: OfferBreadcrumbStep.STOCKS,
         label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
       },
+      ...(isOfferEducational && enableEducationalInstitutionAssociation
+        ? [
+            {
+              id: OfferBreadcrumbStep.VISIBILITY,
+              label: 'Visibilité',
+            },
+          ]
+        : []),
       {
         id: OfferBreadcrumbStep.CONFIRMATION,
         label: 'Confirmation',
