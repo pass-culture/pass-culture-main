@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 DMS_ACTIVITY_ENUM_MAPPING = {
+    "Collégien": users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
     "Lycéen": users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value,
     "Étudiant": users_models.ActivityEnum.STUDENT.value,
     "Etudiant": users_models.ActivityEnum.STUDENT.value,
@@ -24,6 +25,7 @@ DMS_ACTIVITY_ENUM_MAPPING = {
     "Inactif (ni en emploi ni au chômage), En incapacité de travailler": users_models.ActivityEnum.INACTIVE.value,
     "Apprenti": users_models.ActivityEnum.APPRENTICE.value,
     "Alternant": users_models.ActivityEnum.APPRENTICE_STUDENT.value,
+    "Apprenti, Alternant, Volontaire en service civique rémunéré": users_models.ActivityEnum.APPRENTICE.value,
     "Volontaire en service civique rémunéré": users_models.ActivityEnum.VOLUNTEER.value,
 }
 
