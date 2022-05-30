@@ -28,6 +28,7 @@ import SignupContainer from 'components/pages/Signup/SignupContainer'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import { useLocation } from 'react-router-dom'
+import CollectiveOfferVisibility from 'routes/CollectiveOfferVisibility'
 
 const RedirectToConnexionComponent = () => {
   const location = useLocation()
@@ -198,6 +199,13 @@ const routes = [
     title: 'Stock lié à une offre collective',
   },
   {
+    component: CollectiveOfferVisibility,
+    exact: true,
+    path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite',
+    title: 'Visibilité d’une offre collective',
+    featureName: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
+  },
+  {
     component: OfferEducationalConfirmation,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/confirmation',
@@ -234,6 +242,13 @@ const routes = [
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/stocks/edition',
     title: 'Edition d’un stock d’une offre collective',
     featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
+  },
+  {
+    component: CollectiveOfferVisibility,
+    exact: true,
+    path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite/edition',
+    title: 'Edition de la visibilité d’une offre collective',
+    featureName: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
   },
   {
     component: LostPassword,
