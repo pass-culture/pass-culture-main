@@ -474,7 +474,7 @@ def get_source_data(user: users_models.User) -> pydantic.BaseModel:
     return models.FRAUD_CHECK_MAPPING[fraud_check.type](**fraud_check.resultContent)
 
 
-def create_failed_phone_validation_fraud_check(
+def _create_failed_phone_validation_fraud_check(
     user: users_models.User,
     fraud_check_data: models.PhoneValidationFraudData,
     reason: str,
@@ -507,7 +507,7 @@ def handle_phone_already_exists(user: users_models.User, phone_number: str) -> m
     reason_codes = [models.FraudReasonCode.PHONE_ALREADY_EXISTS]
     fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
 
-    return create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
+    return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
@@ -515,7 +515,15 @@ def handle_blacklisted_sms_recipient(user: users_models.User, phone_number: str)
     reason_codes = [models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
     fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
 
-    return create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
+    return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
+
+
+def handle_invalid_country_code(user: users_models.User, phone_number: str) -> models.BeneficiaryFraudCheck:
+    reason = "L'indicatif téléphonique est invalide"
+    reason_codes = [models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
+    fraud_check_data = models.PhoneValidationFraudData(phone_number=phone_number)
+
+    return _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_sms_sending_limit_reached(user: users_models.User) -> None:
@@ -523,7 +531,7 @@ def handle_sms_sending_limit_reached(user: users_models.User) -> None:
     reason_codes = [models.FraudReasonCode.SMS_SENDING_LIMIT_REACHED]
     fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
-    create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
+    _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def handle_phone_validation_attempts_limit_reached(user: users_models.User, attempts_count: int) -> None:
@@ -531,7 +539,7 @@ def handle_phone_validation_attempts_limit_reached(user: users_models.User, atte
     reason_codes = [models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
     fraud_check_data = models.PhoneValidationFraudData(phone_number=user.phoneNumber)
 
-    create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
+    _create_failed_phone_validation_fraud_check(user, fraud_check_data, reason, reason_codes)
 
 
 def validate_frauds(

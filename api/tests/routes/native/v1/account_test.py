@@ -1065,8 +1065,13 @@ class SendPhoneValidationCodeTest:
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+46766123456"})
 
         assert response.status_code == 400
-        assert response.json["code"] == "INVALID_PHONE_NUMBER"
+        assert response.json["code"] == "INVALID_COUNTRY_CODE"
+        assert response.json["message"] == "L'indicatif téléphonique n'est pas accepté"
         assert not Token.query.filter_by(userId=user.id).first()
+
+        fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
+        assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
     def test_blocked_phone_number(self, client):

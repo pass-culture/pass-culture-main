@@ -217,6 +217,11 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
             {"message": "Le numéro de téléphone est déjà validé", "code": "PHONE_NUMBER_ALREADY_VALIDATED"},
             status_code=400,
         )
+    except exceptions.InvalidCountryCode:
+        raise ApiErrors(
+            {"message": "L'indicatif téléphonique n'est pas accepté", "code": "INVALID_COUNTRY_CODE"},
+            status_code=400,
+        )
     except (exceptions.InvalidPhoneNumber):
         raise ApiErrors(
             {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
