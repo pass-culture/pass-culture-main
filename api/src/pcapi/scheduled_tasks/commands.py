@@ -285,7 +285,7 @@ def notify_users_bookings_not_retrieved_command() -> None:
 @blueprint.cli.command("delete_suspended_accounts_after_withdrawal_period")
 @log_cron_with_transaction
 def delete_suspended_accounts_after_withdrawal_period() -> None:
-    if not FeatureToggle.ALLOW_ACCOUNT_REACTIVATION:
+    if not FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION:
         return
 
     query = fraud_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
