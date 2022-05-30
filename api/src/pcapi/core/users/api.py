@@ -778,6 +778,9 @@ def fraud_manager(user: User, phone_number: str) -> typing.Generator:
         user.validate_phone_failed()
         repository.save(user)
         raise
+    except exceptions.InvalidCountryCode:
+        fraud_api.handle_invalid_country_code(user, phone_number)
+        raise
 
 
 def update_last_connection_date(user):  # type: ignore [no-untyped-def]
