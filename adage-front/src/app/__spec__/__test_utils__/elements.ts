@@ -21,6 +21,9 @@ export const findStudentsFilter = (): Promise<HTMLElement> =>
 export const findCategoriesFilter = (): Promise<HTMLElement> =>
   screen.findByLabelText('Catégorie')
 
+export const findDomainsFilter = (): Promise<HTMLElement> =>
+  screen.findByLabelText('Domaine')
+
 export const findLaunchSearchButton = (): Promise<HTMLElement> =>
   screen.findByRole('button', {
     name: 'Lancer la recherche',
