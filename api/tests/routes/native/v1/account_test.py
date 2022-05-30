@@ -898,7 +898,7 @@ class SendPhoneValidationCodeTest:
         user = users_factories.UserFactory(phoneNumber="+33601020304")
         client.with_token(email=user.email)
 
-        response = client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
 
         assert response.status_code == 204
 
@@ -922,28 +922,17 @@ class SendPhoneValidationCodeTest:
         user = User.query.get(user.id)
         assert user.is_phone_validated
 
-    @pytest.mark.parametrize(
-        "age,eligibility_type",
-        [
-            (15, EligibilityType.UNDERAGE),
-            (16, EligibilityType.UNDERAGE),
-            (17, EligibilityType.UNDERAGE),
-            (18, EligibilityType.AGE18),
-            (19, None),
-        ],
-    )
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
-    def test_send_phone_validation_code_too_many_attempts(self, client, app, age, eligibility_type):
+    def test_send_phone_validation_code_too_many_attempts(self, client):
         user = users_factories.UserFactory(
-            phoneNumber="+33601020304",
-            dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5),
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
 
-        response = client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
         assert response.status_code == 204
 
-        response = client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
         assert response.status_code == 400
         assert response.json["code"] == "TOO_MANY_SMS_SENT"
 
@@ -956,7 +945,7 @@ class SendPhoneValidationCodeTest:
         ).one_or_none()
 
         assert fraud_check is not None
-        assert fraud_check.eligibilityType == eligibility_type
+        assert fraud_check.eligibilityType == EligibilityType.AGE18
 
         content = fraud_check.resultContent
         expected_reason = "Le nombre maximum de sms envoyés est atteint"
@@ -964,13 +953,11 @@ class SendPhoneValidationCodeTest:
         assert fraud_check.reason == expected_reason
         assert content["phone_number"] == "+33601020304"
 
-    def test_send_phone_validation_code_already_beneficiary(self, client, app):
-        user = users_factories.BeneficiaryGrant18Factory(
-            isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
-        )
+    def test_send_phone_validation_code_already_beneficiary(self, client):
+        user = users_factories.BeneficiaryGrant18Factory()
         client.with_token(email=user.email)
 
-        response = client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
 
         assert response.status_code == 400
 
@@ -990,7 +977,7 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
 
-    def test_send_phone_validation_code_for_new_phone_updates_phone(self, client, app):
+    def test_send_phone_validation_code_for_new_phone_updates_phone(self, client):
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
         client.with_token(email=user.email)
 
@@ -1014,19 +1001,7 @@ class SendPhoneValidationCodeTest:
         db.session.refresh(user)
         assert user.phoneNumber == "+33102030405"
 
-    @pytest.mark.parametrize(
-        "age,eligibility_type",
-        [
-            (15, EligibilityType.UNDERAGE),
-            (16, EligibilityType.UNDERAGE),
-            (17, EligibilityType.UNDERAGE),
-            (18, EligibilityType.AGE18),
-            (19, None),
-        ],
-    )
-    def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(
-        self, client, app, age, eligibility_type
-    ):
+    def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(self, client):
         orig_user = users_factories.UserFactory(
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -1035,7 +1010,7 @@ class SendPhoneValidationCodeTest:
         user = users_factories.UserFactory(
             isEmailValidated=True,
             phoneNumber="+33601020304",
-            dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5),
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
 
@@ -1060,7 +1035,7 @@ class SendPhoneValidationCodeTest:
         ).one_or_none()
 
         assert fraud_check is not None
-        assert fraud_check.eligibilityType == eligibility_type
+        assert fraud_check.eligibilityType == EligibilityType.AGE18
 
         content = fraud_check.resultContent
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS]
@@ -1072,80 +1047,42 @@ class SendPhoneValidationCodeTest:
             == subscription_models.SubscriptionItemStatus.KO
         )
 
-    @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
-    def test_update_phone_number_with_blocked_phone_number(self, client, app):
-        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
-        client.with_token(email=user.email)
-
-        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33607080900"})
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_PHONE_NUMBER"
-
-        assert not Token.query.filter_by(userId=user.id).first()
-        db.session.refresh(user)
-        assert user.phoneNumber == "+33601020304"
-
-    def test_send_phone_validation_code_with_malformed_number(self, client, app):
+    def test_send_phone_validation_code_with_malformed_number(self, client):
         # user's phone number should be in international format (E.164): +33601020304
-        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="0601020304")
+        user = users_factories.UserFactory(isEmailValidated=True)
         client.with_token(email=user.email)
 
-        response = client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "0601020304"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
         assert not Token.query.filter_by(userId=user.id).first()
 
-    def test_send_phone_validation_code_with_non_french_number(self, client, app):
-        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+46766123456")
+    def test_send_phone_validation_code_with_non_french_number(self, client):
+        user = users_factories.UserFactory(isEmailValidated=True)
         client.with_token(email=user.email)
 
-        response = client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+46766123456"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
         assert not Token.query.filter_by(userId=user.id).first()
 
-    def test_update_phone_number_with_non_french_number(self, client, app):
-        user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+46766123456")
-        client.with_token(email=user.email)
-
-        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+46766987654"})
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_PHONE_NUMBER"
-        assert not Token.query.filter_by(userId=user.id).first()
-
-        db.session.refresh(user)
-        assert user.phoneNumber == "+46766123456"
-
-    @pytest.mark.parametrize(
-        "age,eligibility_type",
-        [
-            (15, EligibilityType.UNDERAGE),
-            (16, EligibilityType.UNDERAGE),
-            (17, EligibilityType.UNDERAGE),
-            (18, EligibilityType.AGE18),
-            (19, None),
-        ],
-    )
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33601020304"})
-    def test_blocked_phone_number(self, client, app, age, eligibility_type):
+    def test_blocked_phone_number(self, client):
         user = users_factories.UserFactory(
-            phoneNumber="+33601020304",
-            dateOfBirth=datetime.utcnow() - relativedelta(years=age, days=5),
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
         )
         client.with_token(email=user.email)
 
-        response = client.post("/native/v1/send_phone_validation_code")
+        response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
         assert not Token.query.filter_by(userId=user.id).first()
         db.session.refresh(user)
-        assert user.phoneNumber == "+33601020304"
+        assert user.phoneNumber is None
 
         # check that a fraud check has been created
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
@@ -1155,8 +1092,7 @@ class SendPhoneValidationCodeTest:
             status=fraud_models.FraudCheckStatus.KO,
         ).one_or_none()
 
-        assert fraud_check is not None
-        assert fraud_check.eligibilityType == eligibility_type
+        assert fraud_check.eligibilityType == EligibilityType.AGE18
 
         content = fraud_check.resultContent
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
@@ -1189,7 +1125,7 @@ class ValidatePhoneNumberTest:
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
-    def test_validate_phone_number_and_become_beneficiary(self, client, app):
+    def test_validate_phone_number_and_become_beneficiary(self, client):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
@@ -1257,7 +1193,6 @@ class ValidatePhoneNumberTest:
     @freeze_time("2022-05-17 15:00")
     def test_phone_validation_remaining_attempts(self, client):
         user = users_factories.UserFactory(
-            phoneNumber="+33607080900",
             dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
@@ -1267,13 +1202,13 @@ class ValidatePhoneNumberTest:
         assert response.json["counterResetDatetime"] == None
         assert response.json["remainingAttempts"] == 1
 
-        client.post("/native/v1/send_phone_validation_code")
+        client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33607080900"})
 
         response = client.get("/native/v1/phone_validation/remaining_attempts")
         assert response.json["counterResetDatetime"] == "2022-05-18T03:00:00"
         assert response.json["remainingAttempts"] == 0
 
-    def test_wrong_code(self, client, app):
+    def test_wrong_code(self, client):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
@@ -1311,7 +1246,7 @@ class ValidatePhoneNumberTest:
         assert user.is_subscriptionState_phone_validation_ko
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
-    def test_expired_code(self, client, app):
+    def test_expired_code(self, client):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
@@ -1330,7 +1265,7 @@ class ValidatePhoneNumberTest:
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
     @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
-    def test_blocked_phone_number(self, client, app):
+    def test_blocked_phone_number(self, client):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
@@ -1347,7 +1282,7 @@ class ValidatePhoneNumberTest:
         assert user.is_subscriptionState_phone_validation_ko
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
-    def test_validate_phone_number_with_non_french_number(self, client, app):
+    def test_validate_phone_number_with_non_french_number(self, client):
         user = users_factories.UserFactory(
             phoneNumber="+46766123456",
             subscriptionState=users_models.SubscriptionState.email_validated,
