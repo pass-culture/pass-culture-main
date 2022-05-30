@@ -57,7 +57,7 @@ class SettingsTest:
         ENABLE_PHONE_VALIDATION=False,
         ID_CHECK_ADDRESS_AUTOCOMPLETION=False,
         PRO_DISABLE_EVENTS_QRCODE=True,
-        ALLOW_ACCOUNT_REACTIVATION=True,
+        ALLOW_ACCOUNT_UNSUSPENSION=True,
         APP_ENABLE_SEARCH_HOMEPAGE_REWORK=True,
     )
     def test_get_settings_feature_combination_2(self, app):

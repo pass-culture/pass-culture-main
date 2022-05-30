@@ -301,7 +301,7 @@ def check_can_unsuspend(user: User) -> None:
     A user can ask for unsuspension if it has been suspended upon his
     own request and if the reactivation time limit has not been exceeded
     """
-    if not FeatureToggle.ALLOW_ACCOUNT_REACTIVATION.is_active():
+    if not FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION.is_active():
         raise exceptions.ReactivationNotEnabled()
 
     reason = user.suspension_reason
