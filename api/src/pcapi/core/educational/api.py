@@ -1179,3 +1179,10 @@ def find_educational_deposit_by_institution_id_and_year(
     return educational_repository.find_educational_deposit_by_institution_id_and_year(
         educational_institution_id=educational_institution_id, educational_year_id=educational_year_id
     )
+
+
+def get_all_educational_institutions(
+    page: int, per_page_limit: int
+) -> tuple[educational_models.EducationalInstitution, int]:
+    offset = (per_page_limit * (page - 1)) if page > 0 else 0
+    return educational_repository.get_all_educational_institutions(offset=offset, limit=per_page_limit)
