@@ -6,7 +6,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings import factories as booking_factories
-from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
@@ -16,7 +15,6 @@ from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.testing import assert_num_queries
 from pcapi.scripts.booking import handle_expired_bookings
@@ -176,118 +174,6 @@ class CancelExpiredIndividualBookingsTest:
 
         with assert_num_queries(n_queries):
             handle_expired_bookings.cancel_expired_individual_bookings(batch_size=3)
-
-
-class CancelExpiredEducationalBookingsTest:
-    def test_should_cancel_pending_dated_educational_booking_when_confirmation_limit_date_has_passed(self, app) -> None:
-        # Given
-        now = datetime.utcnow()
-        yesterday = now - timedelta(days=1)
-        expired_pending_educational_booking: Booking = booking_factories.PendingEducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=yesterday
-        )
-
-        # When
-        handle_expired_bookings.cancel_expired_educational_bookings()
-
-        # Then
-        assert expired_pending_educational_booking.status == BookingStatus.CANCELLED
-        assert expired_pending_educational_booking.cancellationDate.timestamp() == pytest.approx(
-            datetime.utcnow().timestamp(), rel=1
-        )
-        assert expired_pending_educational_booking.cancellationReason == BookingCancellationReasons.EXPIRED
-
-    def test_should_not_cancel_confirmed_dated_educational_booking_when_confirmation_limit_date_has_passed(
-        self, app
-    ) -> None:
-        # Given
-        now = datetime.utcnow()
-        yesterday = now - timedelta(days=1)
-        confirmed_educational_booking: Booking = booking_factories.EducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=yesterday
-        )
-
-        # When
-        handle_expired_bookings.cancel_expired_educational_bookings()
-
-        # Then
-        assert confirmed_educational_booking.status == BookingStatus.CONFIRMED
-
-    def test_should_not_cancel_pending_dated_educational_booking_when_confirmation_limit_date_has_not_passed(
-        self, app
-    ) -> None:
-        # Given
-        now = datetime.utcnow()
-        tomorrow = now + timedelta(days=1)
-        pending_educational_booking: Booking = booking_factories.PendingEducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=tomorrow
-        )
-
-        # When
-        handle_expired_bookings.cancel_expired_educational_bookings()
-
-        # Then
-        assert pending_educational_booking.status == BookingStatus.PENDING
-
-    def test_should_not_cancel_pending_dated_educational_booking_when_confirmation_limit_date_has_not_passed_and_booking_more_than_30_days_old(
-        self, app
-    ) -> None:
-        # Given
-        now = datetime.utcnow()
-        tomorrow = now + timedelta(days=1)
-        old_date = now - timedelta(days=40)
-        pending_educational_booking: Booking = booking_factories.PendingEducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=tomorrow, dateCreated=old_date
-        )
-
-        # When
-        handle_expired_bookings.cancel_expired_educational_bookings()
-
-        # Then
-        assert pending_educational_booking.status == BookingStatus.PENDING
-
-    def test_handle_expired_bookings_should_cancel_expired_educational_bookings(self, app) -> None:
-        # Given
-        now = datetime.utcnow()
-        yesterday = now - timedelta(days=1)
-        tomorrow = now + timedelta(days=1)
-
-        expired_pending_educational_booking: Booking = booking_factories.PendingEducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=yesterday
-        )
-        non_expired_pending_educational_booking: Booking = booking_factories.PendingEducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=tomorrow
-        )
-
-        # When
-        handle_expired_bookings.handle_expired_bookings()
-
-        # Then
-        assert expired_pending_educational_booking.status == BookingStatus.CANCELLED
-        assert non_expired_pending_educational_booking.status == BookingStatus.PENDING
-
-    def test_queries_performance_educational_bookings(self, app) -> None:
-        now = datetime.utcnow()
-        yesterday = now - timedelta(days=1)
-        booking_factories.PendingEducationalBookingFactory.create_batch(
-            size=10, educationalBooking__confirmationLimitDate=yesterday
-        )
-        n_queries = (
-            +1  # select count
-            + 1  # select initial booking ids
-            + 1  # release savepoint/COMMIT
-            + 4
-            * (
-                1  # update
-                + 1  # release savepoint/COMMIT
-                + 1  # select stock
-                + 1  # recompute dnBookedQuantity
-                + 1  # select next ids
-            )
-        )
-
-        with assert_num_queries(n_queries):
-            handle_expired_bookings.cancel_expired_educational_bookings(batch_size=3)
 
 
 class CancelExpiredCollectiveBookingsTest:

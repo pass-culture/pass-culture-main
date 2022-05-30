@@ -219,15 +219,6 @@ def find_expiring_individual_bookings_query() -> BaseQuery:
     )
 
 
-def find_expiring_educational_bookings_query() -> BaseQuery:
-    today_at_midnight = datetime.combine(date.today(), time(0, 0))
-
-    return educational_models.EducationalBooking.query.join(Booking).filter(
-        Booking.status == BookingStatus.PENDING,
-        educational_models.EducationalBooking.confirmationLimitDate <= today_at_midnight,
-    )
-
-
 def find_expiring_booking_ids_from_query(query: BaseQuery) -> BaseQuery:
     return query.order_by(Booking.id).with_entities(Booking.id)
 
@@ -316,35 +307,6 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None)
         .filter(cast(Booking.cancellationDate, Date) == expired_on)
         .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
         .order_by(Booking.offererId)
-        .all()
-    )
-
-
-def find_expired_educational_bookings() -> list[educational_models.EducationalBooking]:
-    expired_on = date.today()
-    return (
-        educational_models.EducationalBooking.query.join(Booking)
-        .filter(Booking.status == BookingStatus.CANCELLED)
-        .filter(cast(Booking.cancellationDate, Date) == expired_on)
-        .filter(Booking.cancellationReason == BookingCancellationReasons.EXPIRED)
-        .options(
-            contains_eager(educational_models.EducationalBooking.booking)
-            .load_only(Booking.stockId)
-            .joinedload(Booking.stock, innerjoin=True)
-            .load_only(Stock.beginningDatetime)
-            .joinedload(Stock.offer, innerjoin=True)
-            .load_only(Offer.name)
-            .joinedload(Offer.venue, innerjoin=True)
-            .load_only(Venue.name)
-        )
-        .options(
-            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
-                educational_models.EducationalRedactor.email,
-                educational_models.EducationalRedactor.firstName,
-                educational_models.EducationalRedactor.lastName,
-            )
-        )
-        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
         .all()
     )
 
