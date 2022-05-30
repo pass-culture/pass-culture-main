@@ -313,6 +313,9 @@ class RunIntegrationTest:
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 679  # complete subscription
+
     @override_features(FORCE_PHONE_VALIDATION=True)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user_requires_userprofiling(self, get_applications_with_details):
@@ -348,6 +351,9 @@ class RunIntegrationTest:
         assert not user.is_beneficiary
         assert not user.deposit
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.USER_PROFILING
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 679  # complete subscription
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary(self, get_applications_with_details):
@@ -408,6 +414,9 @@ class RunIntegrationTest:
         )
 
         assert len(push_testing.requests) == 2
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 96  # accepted as beneficiary email
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_makes_user_beneficiary_after_19_birthday(self, get_applications_with_details):
