@@ -54,7 +54,10 @@ def get_resource(
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on GET {resource} : {e}")
+        error_message = _filter_token(str(e), token)
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Error on CDS API on GET {resource} : {error_message}"
+        ) from None
 
     return response.json()
 
@@ -72,7 +75,10 @@ def put_resource(
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on PUT {resource} : {e}")
+        error_message = _filter_token(str(e), token)
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Error on CDS API on PUT {resource} : {error_message}"
+        ) from None
 
     response_headers = response.headers.get("Content-Type")
     if response_headers and "application/json" in response_headers:
@@ -88,7 +94,10 @@ def post_resource(api_url: str, cinema_id: str, token: Optional[str], resource: 
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        raise cds_exceptions.CineDigitalServiceAPIException(f"Error on CDS API on POST {resource} : {e}")
+        error_message = _filter_token(str(e), token)
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Error on CDS API on POST {resource} : {error_message}"
+        ) from None
 
     return response.json()
 
@@ -105,3 +114,9 @@ def _build_url(
         for key, value in path_params.items():
             resource_url = resource_url.replace(":" + key, str(value))
     return f"https://{cinema_id}.{api_url}{resource_url}?api_token={token}"
+
+
+def _filter_token(error_message: str, token: Optional[str]) -> str:
+    if isinstance(token, str) and token in error_message:
+        error_message = error_message.replace(token, "")
+    return error_message
