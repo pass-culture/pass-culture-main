@@ -45,7 +45,7 @@ then
   if [[ ! ",${DISABLED_PRO_PRE_COMMIT_CHECKS}," =~ ",test," ]]
   then
     echo "Running Tests"
-    yarn test:unit -- --coverage --findRelatedTests $STAGED_FILES
+    yarn test:unit:ci -- --findRelatedTests $STAGED_FILES
     JEST_EXIT_CODE=$?
 
     # check jest exit code
@@ -53,7 +53,17 @@ then
         echo "❌ Please fix unit tests first"
         exit 1
     else
-        echo "✅ tests all good"
+        echo "✅ tests passing"
+    fi
+
+    yarn test:unit:ci -- --coverage --findRelatedTests --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}' $STAGED_FILES
+    JEST_EXIT_CODE=$?
+
+    # check jest exit code
+    if [ $JEST_EXIT_CODE -ne 0 ]; then
+        echo "🙏 Please help us fix test coverage"
+    else
+        echo "✅ coverage 100 %"
     fi
   fi
 fi
