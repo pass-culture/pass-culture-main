@@ -478,7 +478,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         )
 
     @freeze_time("2022-11-17 15:00:00")
-    def test_should_notify_of_todays_expired_educational_bookings(self, app) -> None:
+    def test_should_notify_of_todays_expired_collective_bookings(self) -> None:
         # Given
         today = datetime.today()
         yesterday = today - timedelta(days=1)
@@ -491,42 +491,37 @@ class NotifyOfferersOfExpiredBookingsTest:
         institution = educational_factories.EducationalInstitutionFactory(
             name="Collège Dupont", city="Tourcoing", postalCode=59200
         )
-        stock_one = offers_factories.EducationalEventStockFactory(
-            dnBookedQuantity=0,
-            offer__bookingEmail="test@mail.com",
+        stock_one = educational_factories.CollectiveStockFactory(
+            collectiveOffer__bookingEmail="test@mail.com",
             beginningDatetime=datetime(2022, 11, 24, 12, 53, 00),
-            offer__name="Ma première offre expirée",
+            collectiveOffer__name="Ma première offre expirée",
         )
-        booking_factories.EducationalBookingFactory(
-            status=BookingStatus.CANCELLED,
-            cancellationReason=BookingCancellationReasons.EXPIRED,
+        educational_factories.CancelledCollectiveBookingFactory(
+            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
             cancellationDate=today,
-            stock=stock_one,
-            educationalBooking__educationalRedactor=redactor,
-            educationalBooking__educationalInstitution=institution,
+            collectiveStock=stock_one,
+            educationalRedactor=redactor,
+            educationalInstitution=institution,
         )
 
-        stock_two = offers_factories.EducationalEventStockFactory(
-            dnBookedQuantity=0,
-            offer__bookingEmail="new_test@mail.com",
+        stock_two = educational_factories.CollectiveStockFactory(
+            collectiveOffer__bookingEmail="new_test@mail.com",
             beginningDatetime=datetime(2022, 12, 3, 20, 00, 00),
-            offer__name="Ma deuxième offre expirée",
+            collectiveOffer__name="Ma deuxième offre expirée",
         )
-        second_expired_booking = booking_factories.EducationalBookingFactory(
-            status=BookingStatus.CANCELLED,
-            cancellationReason=BookingCancellationReasons.EXPIRED,
+        second_expired_booking = educational_factories.CancelledCollectiveBookingFactory(
+            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
             cancellationDate=today,
-            stock=stock_two,
-            educationalBooking__educationalRedactor=redactor,
+            collectiveStock=stock_two,
+            educationalRedactor=redactor,
         )
-        booking_factories.EducationalBookingFactory(
-            status=BookingStatus.CANCELLED,
+        educational_factories.CancelledCollectiveBookingFactory(
             cancellationDate=yesterday,
-            cancellationReason=BookingCancellationReasons.EXPIRED,
+            cancellationReason=CollectiveBookingCancellationReasons.EXPIRED,
         )
 
         # Given
-        handle_expired_bookings.notify_offerers_of_expired_educational_bookings()
+        handle_expired_bookings.notify_offerers_of_expired_collective_bookings()
 
         # Then
         assert len(mails_testing.outbox) == 2
@@ -538,7 +533,7 @@ class NotifyOfferersOfExpiredBookingsTest:
         assert mails_testing.outbox[0].sent_data["params"] == {
             "OFFER_NAME": "Ma première offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": institution.name,
-            "VENUE_NAME": stock_one.offer.venue.name,
+            "VENUE_NAME": stock_one.collectiveOffer.venue.name,
             "EVENT_DATE": "24/11/2022",
             "EVENT_HOUR": "12:53",
             "REDACTOR_FIRSTNAME": redactor.firstName,
@@ -548,12 +543,12 @@ class NotifyOfferersOfExpiredBookingsTest:
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
         }
 
-        second_educational_institution = second_expired_booking.educationalBooking.educationalInstitution
+        second_educational_institution = second_expired_booking.educationalInstitution
         assert mails_testing.outbox[1].sent_data["To"] == "new_test@mail.com"
         assert mails_testing.outbox[1].sent_data["params"] == {
             "OFFER_NAME": "Ma deuxième offre expirée",
             "EDUCATIONAL_INSTITUTION_NAME": second_educational_institution.name,
-            "VENUE_NAME": stock_two.offer.venue.name,
+            "VENUE_NAME": stock_two.collectiveOffer.venue.name,
             "EVENT_DATE": "03/12/2022",
             "EVENT_HOUR": "20:00",
             "REDACTOR_FIRSTNAME": redactor.firstName,
