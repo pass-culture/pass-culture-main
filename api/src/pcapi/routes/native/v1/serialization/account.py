@@ -309,7 +309,7 @@ class ValidatePhoneNumberRequest(BaseModel):
 
 
 class SendPhoneValidationRequest(BaseModel):
-    phoneNumber: Optional[str]
+    phoneNumber: str
 
 
 class PhoneValidationRemainingAttemptsRequest(BaseModel):

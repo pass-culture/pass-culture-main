@@ -658,27 +658,19 @@ def set_pro_rgs_as_seen(user: User) -> None:
     repository.save(user)
 
 
-def change_user_phone_number(user: User, phone_number: str) -> None:
+def send_phone_validation_code(user: User, phone_number: str) -> None:
     _check_phone_number_validation_is_authorized(user)
 
     phone_data = phone_number_utils.ParsedPhoneNumber(phone_number)
     with fraud_manager(user=user, phone_number=phone_data.phone_number):
         check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
         check_phone_number_not_used(phone_data.phone_number)
-
-    user.phoneNumber = phone_data.phone_number
-    Token.query.filter(Token.user == user, Token.type == TokenType.PHONE_VALIDATION).delete()
-    repository.save(user)
-
-
-def send_phone_validation_code(user: User) -> None:
-    _check_phone_number_validation_is_authorized(user)
-
-    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)  # type: ignore [arg-type]
-    with fraud_manager(user=user, phone_number=phone_data.phone_number):
-        check_phone_number_is_legit(phone_data.phone_number, phone_data.country_code)
-        check_phone_number_not_used(phone_data.phone_number)
         check_sms_sending_is_allowed(user)
+
+    # delete previous token so that the user validates with another phone number
+    Token.query.filter(Token.user == user, Token.type == TokenType.PHONE_VALIDATION).delete()
+    user.phoneNumber = phone_data.phone_number
+    repository.save(user)
 
     phone_validation_token = create_phone_validation_token(user)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"  # type: ignore [union-attr]
