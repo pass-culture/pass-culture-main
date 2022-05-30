@@ -1,4 +1,4 @@
-def test_public_api(client, app):
+def test_public_api(client):
     response = client.get("/native/v1/openapi.json")
     assert response.status_code == 200
     assert response.json == {
@@ -1039,7 +1039,8 @@ def test_public_api(client, app):
                     "type": "object",
                 },
                 "SendPhoneValidationRequest": {
-                    "properties": {"phoneNumber": {"nullable": True, "title": "Phonenumber", "type": "string"}},
+                    "properties": {"phoneNumber": {"title": "Phonenumber", "type": "string"}},
+                    "required": ["phoneNumber"],
                     "title": "SendPhoneValidationRequest",
                     "type": "object",
                 },
