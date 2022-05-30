@@ -10,6 +10,8 @@ from pcapi.core.auth.api import generate_token
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.fraud import factories as fraud_factories
 import pcapi.core.fraud.models as fraud_models
+import pcapi.core.mails.testing as mails_testing
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.permissions.models import Permissions
 from pcapi.core.subscription import models as subscription_models
@@ -852,3 +854,106 @@ class PostManualReviewTest:
 
         # then
         assert response.status_code == 412
+
+
+class ResendValidationEmailTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_resend_validation_email(self, client):
+        # given
+        user = users_factories.UserFactory(isEmailValidated=False)
+        backoffice_user = users_factories.UserFactory()
+        auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_session_auth(backoffice_user.email).post(
+            url_for("backoffice_blueprint.resend_validation_email", user_id=user.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 204
+
+        # check that validation is unchanged
+        updated_user: users_models.User = users_models.User.query.get(user.id)
+        assert updated_user.isEmailValidated is False
+
+        # check that a new token has been generated
+        token: users_models.Token = users_models.Token.query.filter(users_models.Token.userId == user.id).one()
+        assert token.type == users_models.TokenType.EMAIL_VALIDATION
+
+        # check that email is sent
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == user.email
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.EMAIL_CONFIRMATION.value.__dict__
+        assert token.value in mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_resend_validation_email_already_validated(self, client):
+        # given
+        pro_user = users_factories.UserFactory(isEmailValidated=True)
+        backoffice_user = users_factories.UserFactory()
+        auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_session_auth(backoffice_user.email).post(
+            url_for("backoffice_blueprint.resend_validation_email", user_id=pro_user.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["user_id"] == "L'adresse email est déjà validée"
+        assert len(mails_testing.outbox) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_resend_validation_email_pro(self, client):
+        # given
+        pro_user = users_factories.ProFactory(isEmailValidated=False)
+        backoffice_user = users_factories.UserFactory()
+        auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_session_auth(backoffice_user.email).post(
+            url_for("backoffice_blueprint.resend_validation_email", user_id=pro_user.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["user_id"] == "Cette action n'est pas supportée pour les utilisateurs admin ou pro"
+        assert len(mails_testing.outbox) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_resend_validation_email_admin(self, client):
+        # given
+        admin_user = users_factories.AdminFactory(isEmailValidated=False)
+        backoffice_user = users_factories.UserFactory()
+        auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_session_auth(backoffice_user.email).post(
+            url_for("backoffice_blueprint.resend_validation_email", user_id=admin_user.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json["user_id"] == "Cette action n'est pas supportée pour les utilisateurs admin ou pro"
+        assert len(mails_testing.outbox) == 0
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_resend_validation_email_without_permission(self, client):
+        # given
+        user = users_factories.UserFactory(isEmailValidated=False)
+        backoffice_user = users_factories.UserFactory()
+        auth_token = generate_token(backoffice_user, [Permissions.READ_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_session_auth(backoffice_user.email).post(
+            url_for("backoffice_blueprint.resend_validation_email", user_id=user.id),
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 403
+        assert len(mails_testing.outbox) == 0
