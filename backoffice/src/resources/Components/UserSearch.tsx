@@ -111,7 +111,7 @@ const UserCard = (props: { record: any; }) => {
 
 const UserSearch = () => {
     const [userData, setUserData] = useState([])
-    // useAuthenticated();
+    useAuthenticated();
     return <Grid
         container
         spacing={0}
