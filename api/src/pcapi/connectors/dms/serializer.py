@@ -16,6 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 DMS_ACTIVITY_ENUM_MAPPING = {
+    "Collégien": users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
     "Lycéen": users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value,
     "Étudiant": users_models.ActivityEnum.STUDENT.value,
     "Etudiant": users_models.ActivityEnum.STUDENT.value,
