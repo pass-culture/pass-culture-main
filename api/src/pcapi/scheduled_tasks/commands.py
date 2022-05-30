@@ -47,7 +47,7 @@ from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
 from pcapi.scripts.subscription.handle_deleted_dms_applications import handle_deleted_dms_applications
 from pcapi.utils.blueprint import Blueprint
-
+from pcapi.infratest import components
 
 DMS_OLD_PROCEDURE_ID = 44623
 
@@ -55,10 +55,7 @@ DMS_OLD_PROCEDURE_ID = 44623
 blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
-
-@blueprint.cli.command("update_booking_used")
-@log_cron_with_transaction
-@cron_require_feature(FeatureToggle.UPDATE_BOOKING_USED)
+@components.cron(blueprint, "0 1 * * *", feature_toggle=FeatureToggle.UPDATE_BOOKING_USED)
 def update_booking_used() -> None:
     """Automatically mark as used bookings that correspond to events that
     have happened (with a delay).
@@ -66,17 +63,14 @@ def update_booking_used() -> None:
     bookings_api.auto_mark_as_used_after_event()
 
 
-@blueprint.cli.command("synchronize_allocine_stocks")
-@log_cron_with_transaction
-@cron_require_feature(FeatureToggle.SYNCHRONIZE_ALLOCINE)
+@components.cron(blueprint, "0 * * * *", feature_toggle=FeatureToggle.SYNCHRONIZE_ALLOCINE)
 def synchronize_allocine_stocks() -> None:
     """Launch AlloCine synchronization."""
     allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
     synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
 
 
-@blueprint.cli.command("synchronize_provider_api")
-@log_cron_with_transaction
+@components.cron(blueprint, "0 3 * * *")
 def synchronize_provider_api() -> None:
     """Launch Providers (excepts AlloCine) synchronization."""
     provider_api_stocks.synchronize_stocks()
