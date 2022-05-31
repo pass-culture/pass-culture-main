@@ -62,15 +62,15 @@ class EmailUpdateTokenExists(Exception):
     pass
 
 
-class ReactivationNotEnabled(Exception):
+class UnsuspensionNotEnabled(Exception):
     pass
 
 
-class CantAskForReactivation(Exception):
+class CantAskForUnsuspension(Exception):
     pass
 
 
-class ReactivationTimeLimitExceeded(Exception):
+class UnsuspensionTimeLimitExceeded(Exception):
     pass
 
 

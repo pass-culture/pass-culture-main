@@ -1969,7 +1969,7 @@ class UnsuspendAccountTest:
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         users_factories.SuspendedUponUserRequestFactory(user=user)
 
-        self.assert_code_and_not_active(client, user, "ACCOUNT_REACTIVATION_NOT_ENABLED")
+        self.assert_code_and_not_active(client, user, "ACCOUNT_UNSUSPENSION_NOT_ENABLED")
 
     def test_error_when_not_suspended(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=True)
@@ -1982,16 +1982,16 @@ class UnsuspendAccountTest:
         users_factories.UserSuspensionByFraudFactory(user=user)
 
         with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            self.assert_code_and_not_active(client, user, "REACTIVATION_NOT_ALLOWED")
+            self.assert_code_and_not_active(client, user, "UNSUSPENSION_NOT_ALLOWED")
 
     def test_error_when_suspension_time_limit_reached(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
 
-        suspension_date = date.today() - timedelta(days=users_constants.ACCOUNT_REACTIVATION_DELAY + 1)
+        suspension_date = date.today() - timedelta(days=users_constants.ACCOUNT_UNSUSPENSION_DELAY + 1)
         users_factories.SuspendedUponUserRequestFactory(user=user, eventDate=suspension_date)
 
         with override_features(ALLOW_ACCOUNT_UNSUSPENSION=True):
-            self.assert_code_and_not_active(client, user, "REACTIVATION_LIMIT_REACHED")
+            self.assert_code_and_not_active(client, user, "UNSUSPENSION_LIMIT_REACHED")
 
     def assert_code(self, client, user, code):
         client.with_token(email=user.email)
