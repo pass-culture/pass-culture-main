@@ -43,8 +43,8 @@ class SettingsTest:
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": False,
-            "allowAccountReactivation": False,
-            "accountReactivationLimit": 60,
+            "allowAccountUnsuspension": False,
+            "accountUnsuspensionLimit": 60,
         }
 
     @override_features(
@@ -82,6 +82,6 @@ class SettingsTest:
             "isWebappV2Enabled": True,
             "objectStorageUrl": "http://localhost/storage",
             "proDisableEventsQrcode": True,
-            "allowAccountReactivation": True,
-            "accountReactivationLimit": 60,
+            "allowAccountUnsuspension": True,
+            "accountUnsuspensionLimit": 60,
         }

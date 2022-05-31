@@ -322,14 +322,14 @@ def get_account_suspension_status(user: User) -> serializers.UserSuspensionStatu
 def unsuspend_account(user: User) -> None:
     try:
         api.check_can_unsuspend(user)
-    except exceptions.ReactivationNotEnabled:
-        raise api_errors.ForbiddenError({"code": "ACCOUNT_REACTIVATION_NOT_ENABLED"})
+    except exceptions.UnsuspensionNotEnabled:
+        raise api_errors.ForbiddenError({"code": "ACCOUNT_UNSUSPENSION_NOT_ENABLED"})
     except exceptions.NotSuspended:
         raise api_errors.ForbiddenError({"code": "ALREADY_UNSUSPENDED"})
-    except exceptions.CantAskForReactivation:
-        raise api_errors.ForbiddenError({"code": "REACTIVATION_NOT_ALLOWED"})
-    except exceptions.ReactivationTimeLimitExceeded:
-        raise api_errors.ForbiddenError({"code": "REACTIVATION_LIMIT_REACHED"})
+    except exceptions.CantAskForUnsuspension:
+        raise api_errors.ForbiddenError({"code": "UNSUSPENSION_NOT_ALLOWED"})
+    except exceptions.UnsuspensionTimeLimitExceeded:
+        raise api_errors.ForbiddenError({"code": "UNSUSPENSION_LIMIT_REACHED"})
 
     api.unsuspend_account(user, actor=user, send_email=True)
 
