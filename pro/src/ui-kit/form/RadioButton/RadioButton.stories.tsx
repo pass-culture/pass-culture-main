@@ -1,6 +1,7 @@
 import { Formik } from 'formik'
 import RadioButton from './RadioButton'
 import React from 'react'
+import { Story } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 
 export default {
@@ -8,7 +9,9 @@ export default {
   component: RadioButton,
 }
 
-const Template = () => (
+const Template: Story<{
+  withBorder?: boolean
+}> = ({ withBorder }) => (
   <Formik initialValues={{}} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
       return (
@@ -18,12 +21,14 @@ const Template = () => (
             label="Male"
             name="gender"
             value="male"
+            withBorder={withBorder}
           />
           <RadioButton
             {...getFieldProps('gender')}
             label="Female"
             name="gender"
             value="female"
+            withBorder={withBorder}
           />
         </>
       )
@@ -32,3 +37,5 @@ const Template = () => (
 )
 
 export const Default = Template.bind({})
+export const WithBorder = Template.bind({})
+WithBorder.args = { withBorder: true }

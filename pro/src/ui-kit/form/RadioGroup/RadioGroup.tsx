@@ -13,6 +13,7 @@ interface IRadioGroupProps {
     value: string
   }[]
   className?: string
+  radiosWithBorder?: boolean
 }
 
 const RadioGroup = ({
@@ -20,6 +21,7 @@ const RadioGroup = ({
   name,
   legend,
   className,
+  radiosWithBorder,
 }: IRadioGroupProps): JSX.Element => {
   const [, meta] = useField({ name })
 
@@ -34,7 +36,12 @@ const RadioGroup = ({
     >
       {group.map(item => (
         <div className={styles['radio-group-item']} key={item.label}>
-          <RadioButton label={item.label} name={name} value={item.value} />
+          <RadioButton
+            label={item.label}
+            name={name}
+            value={item.value}
+            withBorder={radiosWithBorder}
+          />
         </div>
       ))}
     </FieldSetLayout>
