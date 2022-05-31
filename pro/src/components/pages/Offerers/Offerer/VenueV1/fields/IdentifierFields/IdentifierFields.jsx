@@ -63,6 +63,7 @@ class IdentifierFields extends PureComponent {
       isCreatedEntity,
       isDirtyFieldBookingEmail,
       readOnly,
+      siren,
       venueIsVirtual,
       venueLabels,
       venueLabelId,
@@ -98,6 +99,7 @@ class IdentifierFields extends PureComponent {
             <SiretField
               label={siretLabel}
               readOnly={readOnly || initialSiret !== null}
+              siren={siren}
             />
           )}
           <TextField
@@ -248,6 +250,7 @@ IdentifierFields.defaultProps = {
   isCreatedEntity: false,
   isDirtyFieldBookingEmail: false,
   readOnly: true,
+  siren: null,
   venueIsVirtual: false,
   venueLabelId: null,
   venueTypeCode: null,
@@ -260,6 +263,7 @@ IdentifierFields.propTypes = {
   isCreatedEntity: PropTypes.bool,
   isDirtyFieldBookingEmail: PropTypes.bool,
   readOnly: PropTypes.bool,
+  siren: PropTypes.string,
   venueIsVirtual: PropTypes.bool,
   venueLabelId: PropTypes.string,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,

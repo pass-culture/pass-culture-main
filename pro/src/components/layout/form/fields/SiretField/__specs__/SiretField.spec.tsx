@@ -1,10 +1,47 @@
+import '@testing-library/jest-dom'
+
+import { render, screen } from '@testing-library/react'
+
+import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+import React from 'react'
+import SiretField from '../SiretField'
+import { configureTestStore } from 'store/testUtils'
 import fetch from 'jest-fetch-mock'
-
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
-
 import siretApiValidate from '../validators/siretApiValidate'
+import userEvent from '@testing-library/user-event'
 
 describe('components | SiretField', () => {
+  it('should display a error if siret do not include given siren', async () => {
+    const siren = '000000000'
+    fetch.mockResponseOnce('')
+    const store = configureTestStore()
+    render(
+      <Provider store={store}>
+        <Form initialValues={{}} name="venue" onSubmit={() => {}}>
+          {() => (
+            <SiretField siren={siren} readOnly={false} label="Siret field" />
+          )}
+        </Form>
+      </Provider>
+    )
+    const siretField = screen.getByLabelText('Siret field')
+    expect(siretField).toBeInTheDocument()
+
+    const wrongSiret = '11111111199999'
+    const wrongSiretMsg =
+      'Le code SIRET doit correspondre à un établissement de votre structure'
+    await userEvent.type(siretField, wrongSiret)
+    await userEvent.tab()
+    expect(screen.getByText(wrongSiretMsg)).toBeInTheDocument()
+
+    const validSiret = '00000000099999'
+    await userEvent.clear(siretField)
+    await userEvent.type(siretField, validSiret)
+    await userEvent.tab()
+    expect(screen.queryByText(wrongSiretMsg)).not.toBeInTheDocument()
+  })
   describe('getSiretData', () => {
     beforeEach(() => {
       fetch.resetMocks()
@@ -150,7 +187,7 @@ describe('components | SiretField', () => {
               etat_administratif: 'A',
               etablissement_siege: {
                 geo_l4: null,
-                geo_adresse: 'Place du 8 Mai 1945 (Parc) Saint-Savin'
+                geo_adresse: 'Place du 8 Mai 1945 (Parc) Saint-Savin',
               },
             },
           },

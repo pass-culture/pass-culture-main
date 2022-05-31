@@ -207,6 +207,7 @@ class VenueCreation extends PureComponent {
           formSiret={formSiret}
           isCreatedEntity
           readOnly={readOnly}
+          siren={offerer.siren}
           venueLabels={venueLabels}
           venueTypes={venueTypes}
         />
