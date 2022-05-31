@@ -16,10 +16,10 @@ from urllib.parse import quote
 from markupsafe import Markup
 
 from pcapi import settings
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import testing
 from pcapi.core.users import utils as users_utils
-from pcapi.core.users.exceptions import InvalidPhoneNumber
 from pcapi.core.users.external import ProAttributes
 from pcapi.core.users.external import UserAttributes
 from pcapi.core.users.external import get_pro_attributes
@@ -98,7 +98,7 @@ def _format_user_attributes(email: str, attributes: UserAttributes) -> dict:
     try:
         parsed_phone_number = phone_number_utils.parse_phone_number(attributes.phone_number, "FR")
         phone_number = phone_number_utils.get_formatted_phone_number(parsed_phone_number)
-    except InvalidPhoneNumber:
+    except phone_validation_exceptions.InvalidPhoneNumber:
         phone_number = None
 
     suspended = (

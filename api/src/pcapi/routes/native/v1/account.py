@@ -246,7 +246,7 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
 def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberRequest) -> None:
     with transaction():
         try:
-            phone_validation_api.validate_phone_number_and_activate_user(user, body.code)
+            phone_validation_api.validate_phone_number(user, body.code)
         except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
             raise ApiErrors(
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
@@ -273,6 +273,8 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
             )
         except phone_validation_exceptions.PhoneVerificationException:
             raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
+
+        subscription_api.activate_beneficiary_if_no_missing_step(user)
 
 
 @blueprint.native_v1.route("/phone_validation/remaining_attempts", methods=["GET"])
