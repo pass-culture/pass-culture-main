@@ -44,6 +44,7 @@ def create_fraud_check(
         status=fraud_models.FraudCheckStatus.STARTED,
         eligibilityType=eligibility_type,
     )
+    repository.save(fraud_check)
     return fraud_check
 
 
