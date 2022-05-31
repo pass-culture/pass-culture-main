@@ -48,10 +48,15 @@ def log_cron_with_transaction(func):  # type: ignore [no-untyped-def]
         status = None  # avoid "used-before-assignment" pylint warning in `finally`
         try:
             result = func(*args, **kwargs)
-            db.session.commit()
+            # Check if there is something to commit. This avoids idle-in-transaction timeout exception in cron tasks
+            # which takes long time and do not write anything in database (e.g. sendinblue automation tasks only read
+            # database and often take more than one hour in production).
+            if db.session.dirty:
+                db.session.commit()
             status = CronStatus.ENDED
         except Exception as exception:
-            db.session.rollback()
+            if db.session.dirty:
+                db.session.rollback()
             status = CronStatus.FAILED
             raise exception
         finally:
