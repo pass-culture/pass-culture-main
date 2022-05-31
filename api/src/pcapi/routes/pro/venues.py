@@ -21,7 +21,6 @@ from pcapi.routes.serialization.venues_serialize import VenueListQueryModel
 from pcapi.routes.serialization.venues_serialize import VenueResponseModel
 from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import image_conversion
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_404
@@ -152,17 +151,13 @@ def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
         content = {"code": "INVALID_BANNER_PARAMS", "message": locations}
         raise ApiErrors(content, status_code=400)
 
-    try:
-        offerers_api.save_venue_banner(
-            user=current_user,
-            venue=venue,
-            content=venue_banner.content,
-            image_credit=venue_banner.image_credit,  # type: ignore [arg-type]
-            crop_params=venue_banner.crop_params,
-        )
-    except image_conversion.ImageRatioError as err:
-        content = {"code": "BAD_RATIO", "message": str(err)}
-        raise ApiErrors(content, status_code=400)
+    offerers_api.save_venue_banner(
+        user=current_user,
+        venue=venue,
+        content=venue_banner.content,
+        image_credit=venue_banner.image_credit,  # type: ignore [arg-type]
+        crop_params=venue_banner.crop_params,
+    )
 
     return GetVenueResponseModel.from_orm(venue)
 

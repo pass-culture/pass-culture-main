@@ -53,7 +53,7 @@ class ImageRatioError(Exception):
     def __init__(self, expected: float, found: float):
         self.expected = expected
         self.found = found
-        super().__init__(f"expected {expected}, found {found}")
+        super().__init__(f"Bad image ratio: expected {expected}, found {found}")
 
 
 MAX_THUMB_WIDTH = 750
