@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import logging
 
 import pcapi.core.bookings.factories as bookings_factories
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 def create_industrial_invoices():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_invoices")
 
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows_created = finance_models.Cashflow.query.count()
     logger.info("Created %s Cashflows", cashflows_created)
 
@@ -89,10 +89,10 @@ def create_specific_invoice():  # type: ignore [no-untyped-def]
         bookings.append(booking)
     for booking in bookings[:3]:
         finance_api.price_booking(booking)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     for booking in bookings[3:]:
         finance_api.price_booking(booking)
-    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.datetime.utcnow())
+    finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows = (
         finance_models.Cashflow.query.join(finance_models.Cashflow.pricings)
         .filter(finance_models.Pricing.businessUnitId == business_unit.id)

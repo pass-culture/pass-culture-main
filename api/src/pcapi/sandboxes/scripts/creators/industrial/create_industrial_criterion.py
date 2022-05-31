@@ -1,12 +1,14 @@
 import logging
 
 import pcapi.core.criteria.factories as criteria_factories
+from pcapi.core.criteria.models import Criterion
+from pcapi.core.offers.models import Offer
 
 
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_criteria() -> dict:
+def create_industrial_criteria() -> dict[str, Criterion]:
     logger.info("create_industrial_criteria")
 
     criterion1 = criteria_factories.CriterionFactory(
@@ -31,7 +33,9 @@ def create_industrial_criteria() -> dict:
     return criteria_by_name
 
 
-def associate_criterion_to_one_offer_with_mediation(offers_by_name: dict, criteria_by_name: dict):  # type: ignore [no-untyped-def]
+def associate_criterion_to_one_offer_with_mediation(
+    offers_by_name: dict[str, Offer], criteria_by_name: dict[str, Criterion]
+) -> None:
     offer = list(filter(lambda o: o.mediations is not None, list(offers_by_name.values())))[0]
     criterion = criteria_by_name["Offre de médiation spécifique"]
     criteria_factories.OfferCriterionFactory(offer=offer, criterion=criterion)

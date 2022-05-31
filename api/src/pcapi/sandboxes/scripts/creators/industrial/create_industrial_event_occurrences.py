@@ -1,7 +1,10 @@
-import datetime
+from datetime import datetime
+from datetime import time
+from datetime import timedelta
 import logging
 
-from pcapi.model_creators.specific_creators import create_event_occurrence
+from pcapi.core.offers.models import Offer
+from pcapi.models.event_occurence import EventOccurrence
 from pcapi.sandboxes.scripts.utils.select import remove_every
 import pcapi.utils.date as date_utils
 
@@ -9,17 +12,17 @@ import pcapi.utils.date as date_utils
 logger = logging.getLogger(__name__)
 
 
-TODAY = datetime.datetime.combine(datetime.datetime.utcnow(), datetime.time(hour=20))
+TODAY = datetime.combine(datetime.utcnow(), time(hour=20))
 EVENT_OCCURRENCE_BEGINNING_DATETIMES = [
     TODAY,
-    TODAY + datetime.timedelta(days=2),
-    TODAY + datetime.timedelta(days=15),
+    TODAY + timedelta(days=2),
+    TODAY + timedelta(days=15),
 ]
 
 EVENT_OFFERS_WITH_OCCURRENCES_REMOVE_MODULO = 3
 
 
-def create_industrial_event_occurrences(event_offers_by_name):  # type: ignore [no-untyped-def]
+def create_industrial_event_occurrences(event_offers_by_name: dict[str, Offer]) -> dict[str, EventOccurrence]:
     logger.info("create_industrial_event_occurrences")
 
     event_occurrences_by_name = {}
@@ -35,8 +38,8 @@ def create_industrial_event_occurrences(event_offers_by_name):  # type: ignore [
                 event_offer_with_occurrences.venue.name,
                 beginning_datetime.strftime(date_utils.DATE_ISO_FORMAT),
             )
-            event_occurrences_by_name[name] = create_event_occurrence(
-                beginning_datetime=beginning_datetime.strftime(date_utils.DATE_ISO_FORMAT),
+            event_occurrences_by_name[name] = EventOccurrence(
+                beginning_datetime=beginning_datetime,
                 offer=event_offer_with_occurrences,
             )
 
