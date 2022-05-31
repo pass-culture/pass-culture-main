@@ -107,7 +107,6 @@ class IdCheckItemModel(BaseModel):
         if fraud_check.type == fraud_models.FraudCheckType.DMS and fraud_check.resultContent is not None:
             dms_content = fraud_models.DMSContent(**fraud_check.resultContent)  # type: ignore [arg-type]
             fraud_check.sourceId = str(dms_content.procedure_id)
-            fraud_check.authorEmail = dms_content.get_author_email()
 
         return super().from_orm(fraud_check)
 
@@ -119,7 +118,6 @@ class IdCheckItemModel(BaseModel):
     reasonCodes: typing.Optional[list[fraud_models.FraudReasonCode]]
     technicalDetails: typing.Optional[dict]
     sourceId: typing.Optional[str] = None  # DMS only
-    authorEmail: typing.Optional[str] = None  # DMS only
 
 
 class EligibilitySubscriptionHistoryModel(BaseModel):

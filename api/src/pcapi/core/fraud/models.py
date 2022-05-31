@@ -14,7 +14,6 @@ from pcapi.core.users import models as users_models
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
-from pcapi.repository.beneficiary_import_queries import get_beneficiary_import_for_application_id_and_source_id
 
 from .common import models as common_models
 from .ubble import models as ubble_fraud_models
@@ -241,14 +240,6 @@ class DMSContent(common_models.IdentityCheckContent):
 
     def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
         return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
-
-    def get_author_email(self) -> typing.Optional[str]:
-        beneficiary_import = get_beneficiary_import_for_application_id_and_source_id(
-            self.application_id, self.procedure_id
-        )
-        if beneficiary_import:
-            return beneficiary_import.authorEmail  # type: ignore [return-value]
-        return None
 
 
 class UserProfilingRiskRating(enum.Enum):

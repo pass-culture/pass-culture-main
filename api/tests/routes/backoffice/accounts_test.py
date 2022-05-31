@@ -532,7 +532,6 @@ class GetUserHistoryTest:
         assert data["UNDERAGE"]["idCheckHistory"][0]["status"] == "ok"
         assert data["UNDERAGE"]["idCheckHistory"][0]["reason"] is None
         assert data["UNDERAGE"]["idCheckHistory"][0]["sourceId"] == "13579"
-        assert data["UNDERAGE"]["idCheckHistory"][0]["authorEmail"] == "dms_author@exemple.com"
 
         assert data["UNDERAGE"]["idCheckHistory"][1]["type"] == "honor_statement"
         assert data["UNDERAGE"]["idCheckHistory"][1]["dateCreated"]
