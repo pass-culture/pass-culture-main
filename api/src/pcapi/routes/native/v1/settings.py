@@ -60,6 +60,6 @@ def get_settings() -> serializers.SettingsResponse:
         is_webapp_v2_enabled=True,
         object_storage_url=OBJECT_STORAGE_URL,
         pro_disable_events_qrcode=features[FeatureToggle.PRO_DISABLE_EVENTS_QRCODE],
-        allow_account_reactivation=features[FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION],
-        account_reactivation_limit=constants.ACCOUNT_REACTIVATION_DELAY,
+        allow_account_unsuspension=features[FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION],
+        account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
     )

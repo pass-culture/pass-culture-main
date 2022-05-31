@@ -280,22 +280,22 @@ def _generate_random_password(user):  # type: ignore [no-untyped-def]
 def check_can_unsuspend(user: User) -> None:
     """
     A user can ask for unsuspension if it has been suspended upon his
-    own request and if the reactivation time limit has not been exceeded
+    own request and if the unsuspension time limit has not been exceeded
     """
     if not FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION.is_active():
-        raise exceptions.ReactivationNotEnabled()
+        raise exceptions.UnsuspensionNotEnabled()
 
     reason = user.suspension_reason
     if not reason:
         raise exceptions.NotSuspended()
 
     if reason != constants.SuspensionReason.UPON_USER_REQUEST:
-        raise exceptions.CantAskForReactivation()
+        raise exceptions.CantAskForUnsuspension()
 
     suspension_date = typing.cast(datetime, user.suspension_date)
-    days_delta = timedelta(days=constants.ACCOUNT_REACTIVATION_DELAY)
+    days_delta = timedelta(days=constants.ACCOUNT_UNSUSPENSION_DELAY)
     if suspension_date.date() + days_delta < date.today():
-        raise exceptions.ReactivationTimeLimitExceeded()
+        raise exceptions.UnsuspensionTimeLimitExceeded()
 
 
 def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optional[User]) -> dict[str, int]:
