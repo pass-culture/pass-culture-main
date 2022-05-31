@@ -14,6 +14,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import Provider
+from pcapi.models.event_occurence import EventOccurrence
 from pcapi.models.product import Product
 
 
@@ -72,17 +73,6 @@ def create_offer_with_event_product(
     offer.rankingWeight = ranking_weight
 
     return offer
-
-
-def create_event_occurrence(
-    offer: Offer, beginning_datetime: datetime = datetime.utcnow() + timedelta(hours=2)
-) -> dict:
-    event_occurrence = {}
-    event_occurrence["offer"] = offer
-    event_occurrence["offerId"] = offer.id  # type: ignore [assignment]
-    event_occurrence["beginningDatetime"] = beginning_datetime  # type: ignore [assignment]
-
-    return event_occurrence
 
 
 def create_offer_with_thing_product(
@@ -243,18 +233,18 @@ def create_product_with_thing_subcategory(
 
 
 def create_stock_from_event_occurrence(
-    event_occurrence: dict,
-    price: int = 10,
+    event_occurrence: EventOccurrence,
+    price: Decimal = Decimal("10"),
     quantity: int = 10,
     soft_deleted: bool = False,
     recap_sent: bool = False,
     booking_limit_date: datetime = None,
 ) -> Stock:
     stock = Stock()
-    stock.beginningDatetime = event_occurrence["beginningDatetime"]
-    stock.offerId = event_occurrence["offerId"]
-    stock.offer = event_occurrence["offer"]
-    stock.price = price  # type: ignore [assignment]
+    stock.beginningDatetime = event_occurrence.beginningDatetime
+    stock.offerId = event_occurrence.offerId
+    stock.offer = event_occurrence.offer
+    stock.price = price
     stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
 
@@ -262,7 +252,7 @@ def create_stock_from_event_occurrence(
         stock.bookingRecapSent = datetime.utcnow()
 
     if booking_limit_date is None:
-        stock.bookingLimitDatetime = event_occurrence["beginningDatetime"]
+        stock.bookingLimitDatetime = event_occurrence.beginningDatetime
     else:
         stock.bookingLimitDatetime = booking_limit_date
 

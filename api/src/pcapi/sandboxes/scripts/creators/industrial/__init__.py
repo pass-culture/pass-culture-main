@@ -1,11 +1,9 @@
-import datetime
-
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_activation_offers import (
     create_industrial_activation_offers,
 )
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_admin_users import *
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *  # type: ignore [no-redef]
-from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *  # type: ignore [no-redef]
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_app_users import *
+from pcapi.sandboxes.scripts.creators.industrial.create_industrial_bookings import *
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_criterion import (
     associate_criterion_to_one_offer_with_mediation,
 )
@@ -85,7 +83,7 @@ def save_industrial_sandbox() -> None:
     for name, user in users_by_name.items():
         if "has-booked-some-but-deposit-expired" in name:
             if user.deposit:
-                user.deposit.expirationDate = datetime.datetime.utcnow()
+                user.deposit.expirationDate = datetime.utcnow()
             repository.save(user.deposit)
 
     create_industrial_invoices()

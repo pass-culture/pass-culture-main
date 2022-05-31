@@ -1,4 +1,8 @@
-def get_occurrence_short_name(concatened_names_with_a_date):  # type: ignore [no-untyped-def]
+from decimal import Decimal
+from typing import Optional
+
+
+def get_occurrence_short_name_or_none(concatened_names_with_a_date: str) -> Optional[str]:
     splitted_names = concatened_names_with_a_date.split(" / ")
 
     if len(splitted_names) > 0:
@@ -7,8 +11,16 @@ def get_occurrence_short_name(concatened_names_with_a_date):  # type: ignore [no
     return None
 
 
-def get_price_by_short_name(occurrence_short_name=None):  # type: ignore [no-untyped-def]
-    if occurrence_short_name is None:
-        return 0
+def get_occurrence_short_name(concatened_names_with_a_date: str) -> str:
+    short_name = get_occurrence_short_name_or_none(concatened_names_with_a_date)
+    if not short_name:
+        raise ValueError("Missing value from short name, please verify how shortname is build")
 
-    return sum(map(ord, occurrence_short_name)) % 50
+    return short_name
+
+
+def get_price_by_short_name(occurrence_short_name: str = None) -> Decimal:
+    if occurrence_short_name is None:
+        return Decimal(0)
+
+    return Decimal(str(sum(map(ord, occurrence_short_name)) % 50))
