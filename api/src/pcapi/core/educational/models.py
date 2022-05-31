@@ -500,19 +500,19 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type, misc]
 class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "educational_institution"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    institutionId: str = sa.Column(sa.String(30), nullable=False, unique=True, index=True)  # type: ignore [assignment]
+    institutionId = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
-    name: str = sa.Column(sa.Text(), nullable=True)  # type: ignore [assignment]
+    name = sa.Column(sa.Text(), nullable=True)
 
-    city: str = sa.Column(sa.Text(), nullable=True)  # type: ignore [assignment]
+    city = sa.Column(sa.Text(), nullable=True)
 
-    postalCode: str = sa.Column(sa.String(10), nullable=True)  # type: ignore [assignment]
+    postalCode = sa.Column(sa.String(10), nullable=True)
 
-    email: str = sa.Column(sa.Text(), nullable=True)  # type: ignore [assignment]
+    email = sa.Column(sa.Text(), nullable=True)
 
-    phoneNumber: str = sa.Column(sa.String(30), nullable=True)  # type: ignore [assignment]
+    phoneNumber = sa.Column(sa.String(30), nullable=True)
 
     collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
         "CollectiveOffer", back_populates="institution"

@@ -356,7 +356,7 @@ def _get_sent_pricings_for_collective_bookings(
         .with_entities(
             educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
             educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
-            educational_models.EducationalInstitution.name.label("institution_name"),  # type: ignore [attr-defined]
+            educational_models.EducationalInstitution.name.label("institution_name"),
             educational_models.CollectiveBooking.dateUsed.label("booking_used_date"),
             educational_models.CollectiveStock.price.label("booking_amount"),
             educational_models.CollectiveStock.beginningDatetime.label("event_date"),
