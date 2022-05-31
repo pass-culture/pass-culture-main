@@ -11,19 +11,34 @@ interface IRadioButtonProps {
   value: string
   className?: string
   checked?: boolean
+  withBorder?: boolean
 }
 
 const RadioButton = ({
   name,
   label,
   value,
+  withBorder,
   className,
 }: IRadioButtonProps): JSX.Element => {
   const [field, meta] = useField({ name, value, type: 'radio' })
 
   return (
-    <div className={cn(style['radio-button'], className)}>
-      <BaseRadio {...field} id={name} label={label} value={value} />
+    <div
+      className={cn(style['radio-button'], className, {
+        [style['with-border']]: withBorder,
+        [style['with-border-primary']]: withBorder && field.checked
+      })}
+    >
+      <BaseRadio
+        {...field}
+        id={name}
+        label={label}
+        value={value}
+        className={
+          cn(style['radio-input'], { [style['radio-input-checked']]: field.checked })
+        }
+      />
       {meta.touched && meta.error && (
         <FieldError name={name}>{meta.error}</FieldError>
       )}
