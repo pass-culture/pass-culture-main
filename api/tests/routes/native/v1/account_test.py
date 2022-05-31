@@ -38,14 +38,6 @@ from pcapi.core.users.api import create_phone_validation_token
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.email import update as email_update
-from pcapi.core.users.models import ActivityEnum
-from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import PhoneValidationStatusType
-from pcapi.core.users.models import Token
-from pcapi.core.users.models import TokenType
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserRole
-from pcapi.core.users.models import VOID_PUBLIC_NAME
 from pcapi.core.users.utils import ALGORITHM_HS_256
 from pcapi.models import db
 from pcapi.notifications.push import testing as push_testing
@@ -170,7 +162,7 @@ class AccountTest:
         assert not response.json["domainsCredit"]
 
     def test_get_user_profile_empty_first_name(self, client, app):
-        users_factories.UserFactory(email=self.identifier, firstName="", publicName=VOID_PUBLIC_NAME)
+        users_factories.UserFactory(email=self.identifier, firstName="", publicName=users_models.VOID_PUBLIC_NAME)
 
         client.with_token(email=self.identifier)
         response = client.get("/native/v1/me")
@@ -233,10 +225,10 @@ class AccountTest:
         to /me returns a generic maintenance message.
         """
         user = users_factories.UserFactory(
-            activity=ActivityEnum.STUDENT.value,
+            activity=users_models.ActivityEnum.STUDENT.value,
             dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
             email=self.identifier,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -272,7 +264,7 @@ class AccountTest:
             ),
             (
                 {"ENABLE_CULTURAL_SURVEY": True, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-                [UserRole.BENEFICIARY],
+                [users_models.UserRole.BENEFICIARY],
                 True,
             ),
             (
@@ -282,7 +274,7 @@ class AccountTest:
             ),
             (
                 {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": True},
-                [UserRole.BENEFICIARY],
+                [users_models.UserRole.BENEFICIARY],
                 True,
             ),
             (
@@ -292,7 +284,7 @@ class AccountTest:
             ),
             (
                 {"ENABLE_CULTURAL_SURVEY": False, "ENABLE_NATIVE_CULTURAL_SURVEY": False},
-                [UserRole.BENEFICIARY],
+                [users_models.UserRole.BENEFICIARY],
                 False,
             ),
         ],
@@ -312,7 +304,7 @@ class AccountCreationTest:
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
-        assert User.query.first() is None
+        assert users_models.User.query.first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
@@ -325,7 +317,7 @@ class AccountCreationTest:
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
 
-        user = User.query.first()
+        user = users_models.User.query.first()
         assert user is not None
         assert user.email == "john.doe@example.com"
         assert user.get_notification_subscriptions().marketing_email
@@ -338,7 +330,9 @@ class AccountCreationTest:
         assert len(push_testing.requests) == 2
         assert len(users_testing.sendinblue_requests) == 1
 
-        email_validation_token = Token.query.filter_by(user=user, type=TokenType.EMAIL_VALIDATION).one_or_none()
+        email_validation_token = users_models.Token.query.filter_by(
+            user=user, type=users_models.TokenType.EMAIL_VALIDATION
+        ).one_or_none()
         assert email_validation_token is not None
         assert "performance-tests" not in email_validation_token.value
 
@@ -392,12 +386,12 @@ class AccountCreationTest:
         assert not push_testing.requests
         subscriber.checkPassword(data["password"])
 
-        tokens = Token.query.all()
+        tokens = users_models.Token.query.all()
         assert len(tokens) == 2
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
-        assert User.query.first() is None
+        assert users_models.User.query.first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
@@ -414,7 +408,7 @@ class AccountCreationTest:
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     @override_settings(IS_PERFORMANCE_TESTS=True)
     def test_account_creation_performance_tests(self, mocked_check_recaptcha_token_is_valid, client):
-        assert User.query.first() is None
+        assert users_models.User.query.first() is None
         data = {
             "email": "John.doe@example.com",
             "password": "Aazflrifaoi6@",
@@ -429,8 +423,11 @@ class AccountCreationTest:
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
 
-        user = User.query.first()
-        assert Token.query.filter_by(user=user).first().value == f"performance-tests_email-validation_{user.id}"
+        user = users_models.User.query.first()
+        assert (
+            users_models.Token.query.filter_by(user=user).first().value
+            == f"performance-tests_email-validation_{user.id}"
+        )
 
 
 class UserProfileUpdateTest:
@@ -450,7 +447,7 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
 
-        user = User.query.filter_by(email=self.identifier).first()
+        user = users_models.User.query.filter_by(email=self.identifier).first()
 
         assert user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
@@ -466,7 +463,7 @@ class UserProfileUpdateTest:
 
         assert response.status_code == 200
 
-        user = User.query.filter_by(email=self.identifier).first()
+        user = users_models.User.query.filter_by(email=self.identifier).first()
         assert not user.get_notification_subscriptions().marketing_push
         assert not user.get_notification_subscriptions().marketing_email
 
@@ -520,7 +517,7 @@ class UpdateUserEmailTest:
 
         assert response.status_code == 204
 
-        user = User.query.filter_by(email=self.identifier).first()
+        user = users_models.User.query.filter_by(email=self.identifier).first()
         assert user.email == self.identifier  # email not updated until validation link is used
         assert len(mails_testing.outbox) == 2  # one email to the current address, another to the new
 
@@ -574,7 +571,7 @@ class UpdateUserEmailTest:
 
         assert response.status_code == 400
 
-        user = User.query.filter_by(email=self.identifier).first()
+        user = users_models.User.query.filter_by(email=self.identifier).first()
         assert user.email == self.identifier
         assert not mails_testing.outbox
 
@@ -597,7 +594,7 @@ class UpdateUserEmailTest:
 
         assert response.status_code == 204
 
-        user = User.query.filter_by(email=self.identifier).first()
+        user = users_models.User.query.filter_by(email=self.identifier).first()
         assert user.email == self.identifier
         assert not mails_testing.outbox
 
@@ -659,7 +656,7 @@ class ValidateEmailTest:
         response = self.send_request_with_token(client, user.email)
         assert response.status_code == 204
 
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.email == self.new_email
 
     def test_email_exists(self, app, client):
@@ -674,7 +671,7 @@ class ValidateEmailTest:
 
         assert response.status_code == 204
 
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.email == self.old_email
 
     def test_email_invalid(self, app, client):
@@ -692,7 +689,7 @@ class ValidateEmailTest:
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_TOKEN"
 
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.email == self.old_email
 
     def send_request_with_token(self, client, email, expiration_delta=None):
@@ -772,7 +769,7 @@ class CulturalSurveyTest:
 
         assert response.status_code == 204
 
-        user = User.query.one()
+        user = users_models.User.query.one()
         assert user.needsToFillCulturalSurvey == False
         assert user.culturalSurveyId == self.UUID
         assert user.culturalSurveyFilledDate == datetime(2018, 6, 1, 14, 44)
@@ -797,7 +794,7 @@ class CulturalSurveyTest:
 
         assert response.status_code == 204
 
-        user = User.query.one()
+        user = users_models.User.query.one()
         assert user.needsToFillCulturalSurvey == False
         assert user.culturalSurveyId == None
         assert user.culturalSurveyFilledDate == None
@@ -822,7 +819,7 @@ class CulturalSurveyTest:
 
         assert response.status_code == 204
 
-        user = User.query.one()
+        user = users_models.User.query.one()
         assert user.needsToFillCulturalSurvey == False
         assert user.culturalSurveyId == new_uuid
         assert user.culturalSurveyFilledDate > datetime(2016, 5, 1, 14, 44)
@@ -878,7 +875,7 @@ class ShowEligibleCardTest:
     def test_against_beneficiary(self, beneficiary, expected):
         date_of_birth = datetime.utcnow() - relativedelta(years=18, days=5)
         date_of_creation = datetime.utcnow() - relativedelta(years=4)
-        roles = [UserRole.BENEFICIARY] if beneficiary else []
+        roles = [users_models.UserRole.BENEFICIARY] if beneficiary else []
         user = users_factories.UserFactory(
             dateOfBirth=date_of_birth,
             dateCreated=date_of_creation,
@@ -904,7 +901,7 @@ class SendPhoneValidationCodeTest:
 
         assert int(app.redis_client.get(f"sent_SMS_counter_user_{user.id}")) == 1
 
-        token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+        token = users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
 
         assert token.expirationDate >= datetime.utcnow() + timedelta(hours=10)
         assert token.expirationDate < datetime.utcnow() + timedelta(hours=13)
@@ -920,7 +917,7 @@ class SendPhoneValidationCodeTest:
         response = client.post("/native/v1/validate_phone_number", json={"code": token.value})
 
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.is_phone_validated
 
     @override_settings(MAX_SMS_SENT_FOR_PHONE_VALIDATION=1)
@@ -946,7 +943,7 @@ class SendPhoneValidationCodeTest:
         ).one_or_none()
 
         assert fraud_check is not None
-        assert fraud_check.eligibilityType == EligibilityType.AGE18
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
         content = fraud_check.resultContent
         expected_reason = "Le nombre maximum de sms envoyés est atteint"
@@ -962,11 +959,11 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
 
-        assert not Token.query.filter_by(userId=user.id).first()
+        assert not users_models.Token.query.filter_by(userId=user.id).first()
 
     def test_send_phone_validation_code_for_new_phone_with_already_beneficiary(self, client, app):
         user = users_factories.BeneficiaryGrant18Factory(
-            isEmailValidated=True, phoneNumber="+33601020304", roles=[UserRole.BENEFICIARY]
+            isEmailValidated=True, phoneNumber="+33601020304", roles=[users_models.UserRole.BENEFICIARY]
         )
         client.with_token(email=user.email)
 
@@ -974,7 +971,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
 
-        assert not Token.query.filter_by(userId=user.id).first()
+        assert not users_models.Token.query.filter_by(userId=user.id).first()
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
 
@@ -986,7 +983,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 204
 
-        assert Token.query.filter_by(userId=user.id).first()
+        assert users_models.Token.query.filter_by(userId=user.id).first()
         db.session.refresh(user)
         assert user.phoneNumber == "+33102030405"
 
@@ -1005,9 +1002,9 @@ class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code_for_new_validated_duplicated_phone_number(self, client):
         orig_user = users_factories.UserFactory(
             isEmailValidated=True,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33102030405",
-            roles=[UserRole.BENEFICIARY],
+            roles=[users_models.UserRole.BENEFICIARY],
         )
         user = users_factories.UserFactory(
             isEmailValidated=True,
@@ -1020,7 +1017,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
 
-        assert not Token.query.filter_by(userId=user.id).first()
+        assert not users_models.Token.query.filter_by(userId=user.id).first()
         db.session.refresh(user)
         assert user.phoneNumber == "+33601020304"
         assert response.json == {
@@ -1037,7 +1034,7 @@ class SendPhoneValidationCodeTest:
         ).one_or_none()
 
         assert fraud_check is not None
-        assert fraud_check.eligibilityType == EligibilityType.AGE18
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
         content = fraud_check.resultContent
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_ALREADY_EXISTS]
@@ -1045,7 +1042,7 @@ class SendPhoneValidationCodeTest:
         assert content["phone_number"] == "+33102030405"
 
         assert (
-            subscription_api.get_phone_validation_subscription_item(user, EligibilityType.AGE18).status
+            subscription_api.get_phone_validation_subscription_item(user, users_models.EligibilityType.AGE18).status
             == subscription_models.SubscriptionItemStatus.KO
         )
 
@@ -1058,7 +1055,7 @@ class SendPhoneValidationCodeTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
-        assert not Token.query.filter_by(userId=user.id).first()
+        assert not users_models.Token.query.filter_by(userId=user.id).first()
 
     def test_send_phone_validation_code_with_non_french_number(self, client):
         user = users_factories.UserFactory(isEmailValidated=True)
@@ -1069,7 +1066,7 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_COUNTRY_CODE"
         assert response.json["message"] == "L'indicatif téléphonique n'est pas accepté"
-        assert not Token.query.filter_by(userId=user.id).first()
+        assert not users_models.Token.query.filter_by(userId=user.id).first()
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.INVALID_PHONE_COUNTRY_CODE]
@@ -1087,7 +1084,7 @@ class SendPhoneValidationCodeTest:
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
-        assert not Token.query.filter_by(userId=user.id).first()
+        assert not users_models.Token.query.filter_by(userId=user.id).first()
         db.session.refresh(user)
         assert user.phoneNumber is None
 
@@ -1099,7 +1096,7 @@ class SendPhoneValidationCodeTest:
             status=fraud_models.FraudCheckStatus.KO,
         ).one_or_none()
 
-        assert fraud_check.eligibilityType == EligibilityType.AGE18
+        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
         content = fraud_check.resultContent
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.BLACKLISTED_PHONE_NUMBER]
@@ -1121,11 +1118,11 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.is_phone_validated
         assert not user.has_beneficiary_role
 
-        token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+        token = users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
 
         assert not token
 
@@ -1145,7 +1142,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": first_token.value})
 
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.is_phone_validated
         assert user.phoneNumber == first_number
 
@@ -1171,7 +1168,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 204
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.is_phone_validated
         assert user.has_beneficiary_role
 
@@ -1204,7 +1201,7 @@ class ValidatePhoneNumberTest:
             thirdPartyId=f"PC-{user.id}",
         ).all()
         for fraud_check in fraud_checks:
-            assert fraud_check.eligibilityType == EligibilityType.AGE18
+            assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
             expected_reason = f"Le nombre maximum de tentatives de validation est atteint: {attempts_count}"
             content = fraud_check.resultContent
@@ -1266,9 +1263,9 @@ class ValidatePhoneNumberTest:
         assert fraud_check.type == fraud_models.FraudCheckType.PHONE_VALIDATION
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED]
 
-        assert not User.query.get(user.id).is_phone_validated
+        assert not users_models.User.query.get(user.id).is_phone_validated
         assert user.is_subscriptionState_phone_validation_ko
-        assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+        assert users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
 
     def test_expired_code(self, client):
         user = users_factories.UserFactory(
@@ -1284,16 +1281,16 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 400
         assert response.json["code"] == "EXPIRED_VALIDATION_CODE"
 
-        assert not User.query.get(user.id).is_phone_validated
+        assert not users_models.User.query.get(user.id).is_phone_validated
         assert user.is_subscriptionState_phone_validation_ko
-        assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
+        assert users_models.Token.query.filter_by(userId=user.id, type=users_models.TokenType.PHONE_VALIDATION).first()
 
     def test_validate_phone_number_with_already_validated_phone(self, client):
         users_factories.UserFactory(
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
-            roles=[UserRole.BENEFICIARY],
+            roles=[users_models.UserRole.BENEFICIARY],
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         client.with_token(email=user.email)
@@ -1303,7 +1300,7 @@ class ValidatePhoneNumberTest:
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
         assert response.status_code == 400
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert not user.is_phone_validated
 
 
@@ -1354,7 +1351,7 @@ class ProfilingFraudScoreTest:
     def test_profiling_fraud_score_call(self, client, requests_mock, session_id_key, session_id_value):
         user = users_factories.UserFactory(
             subscriptionState=users_models.SubscriptionState.phone_validated,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         matcher = requests_mock.register_uri(
             "POST",
@@ -1382,7 +1379,7 @@ class ProfilingFraudScoreTest:
     def test_profiling_fraud_score_call_error(self, client, requests_mock, caplog):
         user = users_factories.UserFactory(
             subscriptionState=users_models.SubscriptionState.phone_validated,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         matcher = requests_mock.register_uri(
             "POST",
@@ -1405,7 +1402,7 @@ class ProfilingFraudScoreTest:
         user = users_factories.UserFactory(
             dateOfBirth=None,
             subscriptionState=users_models.SubscriptionState.phone_validated,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         matcher = requests_mock.register_uri(
             "POST",
@@ -1459,7 +1456,7 @@ class ProfilingFraudScoreTest:
     def test_fraud_result_on_risky_user_profiling(self, client, requests_mock, risk_rating, expected_check_status):
         user = users_factories.UserFactory(
             subscriptionState=users_models.SubscriptionState.phone_validated,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         session_id = "8663ac09-db2a-46a1-9ccd-49a07d5cd7ae"
         payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
@@ -1501,7 +1498,7 @@ class ProfilingFraudScoreTest:
     def test_no_fraud_result_on_safe_user_profiling(self, client, requests_mock, risk_rating):
         user = users_factories.UserFactory(
             subscriptionState=users_models.SubscriptionState.phone_validated,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         payload = fraud_factories.UserProfilingFraudDataFactory(risk_rating=risk_rating).dict()
         payload["event_datetime"] = payload["event_datetime"].isoformat()  # because datetime is not json serializable
@@ -1530,7 +1527,7 @@ class ProfilingFraudScoreTest:
     def test_no_profiling_performed_when_disabled(self, client, requests_mock):
         user = users_factories.UserFactory(
             subscriptionState=users_models.SubscriptionState.phone_validated,
-            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         matcher = requests_mock.register_uri("POST", settings.USER_PROFILING_URL)
         client.with_token(user.email)
@@ -1632,7 +1629,7 @@ class IdentificationSessionTest:
         client.with_token(user.email)
 
         # Perform phone validation and user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -1662,7 +1659,7 @@ class IdentificationSessionTest:
         client.with_token(user.email)
 
         # Perform phone validation and user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -1711,7 +1708,7 @@ class IdentificationSessionTest:
         client.with_token(user.email)
 
         # Perform phone validation and user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -1757,7 +1754,7 @@ class IdentificationSessionTest:
         client.with_token(user.email)
 
         # Perform phone validation and user profiling
-        user.phoneValidationStatus = PhoneValidationStatusType.VALIDATED
+        user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -1816,7 +1813,7 @@ class AccountSecurityTest:
         email someone else registered earlier, before the hacked user clicks on email confirmation link. The hacker can
         change user's password this way.
         """
-        assert User.query.first() is None
+        assert users_models.User.query.first() is None
         data = {
             "appsFlyerPlatform": "web",
             "birthdate": "2004-01-01",
@@ -1830,7 +1827,7 @@ class AccountSecurityTest:
         response = client.post("/native/v1/account", json=data)
         assert response.status_code == 204, response.json
 
-        user = User.query.first()
+        user = users_models.User.query.first()
         assert user is not None
         assert user.email == data["email"]
         assert user.isEmailValidated is False
@@ -1848,8 +1845,8 @@ class AccountSecurityTest:
         hacker_response = client.post("/native/v1/account", json=hacker_data)
         assert hacker_response.status_code == 204, hacker_response.json
 
-        assert User.query.count() == 1
-        user = User.query.first()
+        assert users_models.User.query.count() == 1
+        user = users_models.User.query.first()
         assert user.password == user_password
 
 

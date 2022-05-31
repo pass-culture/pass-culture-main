@@ -114,5 +114,5 @@ def check_user_password(user: User, password: str) -> None:
 
 
 def check_email_address_does_not_exist(email: str) -> None:
-    if api.find_user_by_email(email):
+    if users_repository.find_user_by_email(email):
         raise exceptions.EmailExistsError(email)

@@ -24,27 +24,10 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
-from pcapi.core.users.api import _set_offerer_departement_code
-from pcapi.core.users.api import create_pro_user
-from pcapi.core.users.api import delete_expired_tokens
-from pcapi.core.users.api import fulfill_account_password
-from pcapi.core.users.api import fulfill_beneficiary_data
-from pcapi.core.users.api import generate_and_save_token
-from pcapi.core.users.api import get_domains_credit
-from pcapi.core.users.api import get_eligibility_at_date
-from pcapi.core.users.api import set_pro_rgs_as_seen
-from pcapi.core.users.api import set_pro_tuto_as_seen
 from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.factories import UserFactory
-from pcapi.core.users.models import Credit
-from pcapi.core.users.models import DomainsCredit
-from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import EmailHistoryEventTypeEnum
-from pcapi.core.users.models import Token
-from pcapi.core.users.models import TokenType
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserSuspension
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
@@ -60,23 +43,23 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class GenerateAndSaveTokenTest:
     def test_generate_and_save_token(self, app):
         user = users_factories.UserFactory(email="py@test.com")
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
         life_time = timedelta(hours=24)
 
-        generated_token = generate_and_save_token(user, token_type, life_time)
+        generated_token = users_api.generate_and_save_token(user, token_type, life_time)
 
-        saved_token = Token.query.filter_by(user=user).first()
+        saved_token = users_models.Token.query.filter_by(user=user).first()
 
         assert generated_token.id == saved_token.id
         assert saved_token.type == token_type
 
     def test_generate_and_save_token_without_expiration_date(self):
         user = users_factories.UserFactory(email="py@test.com")
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
 
-        generate_and_save_token(user, token_type)
+        users_api.generate_and_save_token(user, token_type)
 
-        generated_token = Token.query.filter_by(user=user).first()
+        generated_token = users_models.Token.query.filter_by(user=user).first()
 
         assert generated_token.type == token_type
         assert generated_token.expirationDate is None
@@ -86,7 +69,7 @@ class GenerateAndSaveTokenTest:
         token_type = "not-enum-type"
 
         with pytest.raises(AttributeError):
-            generate_and_save_token(user, token_type)
+            users_api.generate_and_save_token(user, token_type)
 
 
 class ValidateJwtTokenTest:
@@ -94,7 +77,7 @@ class ValidateJwtTokenTest:
 
     def test_get_user_with_valid_token(self):
         user = users_factories.UserFactory()
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
         expiration_date = datetime.utcnow() + timedelta(hours=24)
 
         saved_token = users_factories.TokenFactory(
@@ -104,11 +87,11 @@ class ValidateJwtTokenTest:
         associated_user = get_user_with_valid_token(self.token_value, [token_type, "other-allowed-type"])
 
         assert associated_user.id == user.id
-        assert Token.query.get(saved_token.id)
+        assert users_models.Token.query.get(saved_token.id)
 
     def test_get_user_and_mark_token_as_used(self):
         user = users_factories.UserFactory()
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
         expiration_date = datetime.utcnow() + timedelta(hours=24)
 
         saved_token = users_factories.TokenFactory(
@@ -119,12 +102,12 @@ class ValidateJwtTokenTest:
 
         assert associated_user.id == user.id
 
-        token = Token.query.get(saved_token.id)
+        token = users_models.Token.query.get(saved_token.id)
         assert token.isUsed
 
     def test_get_user_with_valid_token_without_expiration_date(self):
         user = users_factories.UserFactory()
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
 
         users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
 
@@ -134,7 +117,7 @@ class ValidateJwtTokenTest:
 
     def test_get_user_with_valid_token_wrong_token(self):
         user = users_factories.UserFactory()
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
 
         users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
 
@@ -144,11 +127,11 @@ class ValidateJwtTokenTest:
 
     def test_get_user_with_valid_token_wrong_type(self):
         user = users_factories.UserFactory()
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
 
         users_factories.TokenFactory(user=user, value=self.token_value, type=token_type)
 
-        assert Token.query.filter_by(value=self.token_value).first() is not None
+        assert users_models.Token.query.filter_by(value=self.token_value).first() is not None
 
         associated_user = get_user_with_valid_token(self.token_value, ["other_type"])
 
@@ -156,12 +139,12 @@ class ValidateJwtTokenTest:
 
     def test_get_user_with_valid_token_with_expired_date(self):
         user = users_factories.UserFactory()
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
 
         expiration_date = datetime.utcnow() - timedelta(hours=24)
         users_factories.TokenFactory(user=user, value=self.token_value, type=token_type, expirationDate=expiration_date)
 
-        assert Token.query.filter_by(value=self.token_value).first() is not None
+        assert users_models.Token.query.filter_by(value=self.token_value).first() is not None
 
         associated_user = get_user_with_valid_token(self.token_value, [token_type])
 
@@ -171,18 +154,18 @@ class ValidateJwtTokenTest:
 class DeleteExpiredTokensTest:
     def test_deletion(self):
         user = users_factories.UserFactory()
-        token_type = TokenType.RESET_PASSWORD
+        token_type = users_models.TokenType.RESET_PASSWORD
         life_time = timedelta(hours=24)
 
-        never_expire_token = generate_and_save_token(user, token_type)
-        not_expired_token = generate_and_save_token(user, token_type, life_time=life_time)
+        never_expire_token = users_api.generate_and_save_token(user, token_type)
+        not_expired_token = users_api.generate_and_save_token(user, token_type, life_time=life_time)
         # Generate an expired token
         with freeze_time(datetime.utcnow() - life_time):
-            generate_and_save_token(user, token_type, life_time=life_time)
+            users_api.generate_and_save_token(user, token_type, life_time=life_time)
 
-        delete_expired_tokens()
+        users_api.delete_expired_tokens()
 
-        assert set(Token.query.all()) == {never_expire_token, not_expired_token}
+        assert set(users_models.Token.query.all()) == {never_expire_token, not_expired_token}
 
 
 class DeleteUserTokenTest:
@@ -196,7 +179,7 @@ class DeleteUserTokenTest:
 
         users_api.delete_all_users_tokens(user)
 
-        assert Token.query.one_or_none() == other_token
+        assert users_models.Token.query.one_or_none() == other_token
 
 
 def _datetime_within_last_5sec(when: datetime) -> bool:
@@ -204,10 +187,10 @@ def _datetime_within_last_5sec(when: datetime) -> bool:
 
 
 def _assert_user_suspension_history(
-    user: User,
+    user: users_models.User,
     event_type: users_constants.SuspensionEventType,
     reason: Optional[users_constants.SuspensionReason],
-    actor: User,
+    actor: users_models.User,
     expected_history_length: int = 1,
 ):
     assert len(user.suspension_history) == expected_history_length
@@ -326,7 +309,7 @@ class UnsuspendAccountTest:
             assert not user.suspension_date
             assert user.isActive
 
-        user_suspensions = UserSuspension.query.order_by(UserSuspension.id.asc()).all()
+        user_suspensions = users_models.UserSuspension.query.order_by(users_models.UserSuspension.id.asc()).all()
         assert len(user_suspensions) == 6
 
         user_unsuspensions = user_suspensions[3:]
@@ -354,9 +337,9 @@ class ChangeUserEmailTest:
         users_api.change_user_email(old_email, new_email)
 
         # Then
-        reloaded_user = User.query.get(user.id)
+        reloaded_user = users_models.User.query.get(user.id)
         assert reloaded_user.email == new_email
-        assert User.query.filter_by(email=old_email).first() is None
+        assert users_models.User.query.filter_by(email=old_email).first() is None
         assert UserSession.query.filter_by(userId=reloaded_user.id).first() is None
 
         assert len(reloaded_user.email_history) == 1
@@ -364,7 +347,7 @@ class ChangeUserEmailTest:
         history = reloaded_user.email_history[0]
         assert history.oldEmail == old_email
         assert history.newEmail == new_email
-        assert history.eventType == EmailHistoryEventTypeEnum.VALIDATION
+        assert history.eventType == users_models.EmailHistoryEventTypeEnum.VALIDATION
         assert history.id is not None
 
     def test_change_user_email_new_email_already_existing(self):
@@ -377,10 +360,10 @@ class ChangeUserEmailTest:
             users_api.change_user_email(user.email, other_user.email)
 
         # Then
-        user = User.query.get(user.id)
+        user = users_models.User.query.get(user.id)
         assert user.email == "oldemail@mail.com"
 
-        other_user = User.query.get(other_user.id)
+        other_user = users_models.User.query.get(other_user.id)
         assert other_user.email == "newemail@mail.com"
 
     def test_change_email_user_not_existing(self):
@@ -389,10 +372,10 @@ class ChangeUserEmailTest:
             users_api.change_user_email("oldemail@mail.com", "newemail@mail.com")
 
         # Then
-        old_user = User.query.filter_by(email="oldemail@mail.com").first()
+        old_user = users_models.User.query.filter_by(email="oldemail@mail.com").first()
         assert old_user is None
 
-        new_user = User.query.filter_by(email="newemail@mail.com").first()
+        new_user = users_models.User.query.filter_by(email="newemail@mail.com").first()
         assert new_user is None
 
     def test_no_history_on_error(self):
@@ -407,7 +390,7 @@ class ChangeUserEmailTest:
             users_api.change_user_email(old_email + "_error", new_email)
 
         # Then
-        reloaded_user = User.query.get(user.id)
+        reloaded_user = users_models.User.query.get(user.id)
         assert not reloaded_user.email_history
 
 
@@ -429,7 +412,7 @@ class CreateBeneficiaryTest:
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
-            eligibilityType=EligibilityType.UNDERAGE,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.utcnow()),
         )
         user = subscription_api.activate_beneficiary(user)
@@ -479,10 +462,10 @@ class FulfillBeneficiaryDataTest:
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
-        user = fulfill_beneficiary_data(user, "deposit_source", EligibilityType.AGE18, None)
+        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18, None)
 
         # then
-        assert isinstance(user, User)
+        assert isinstance(user, users_models.User)
         assert user.password is not None
         assert len(user.deposits) == 1
 
@@ -491,10 +474,10 @@ class FulfillBeneficiaryDataTest:
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
-        user = fulfill_beneficiary_data(user, "deposit_source", EligibilityType.AGE18, 2)
+        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18, 2)
 
         # then
-        assert isinstance(user, User)
+        assert isinstance(user, users_models.User)
         assert user.password is not None
         assert len(user.deposits) == 1
         assert user.deposit_version == 2
@@ -503,13 +486,13 @@ class FulfillBeneficiaryDataTest:
 class FulfillAccountPasswordTest:
     def test_fill_user_with_password_token(self):
         # given
-        user = User()
+        user = users_models.User()
 
         # when
-        user = fulfill_account_password(user)
+        user = users_api.fulfill_account_password(user)
 
         # then
-        assert isinstance(user, User)
+        assert isinstance(user, users_models.User)
         assert user.password is not None
         assert len(user.deposits) == 0
 
@@ -521,7 +504,7 @@ class SetOffererDepartementCodeTest:
         offerer = create_offerer(postal_code=None)
 
         # When
-        updated_user = _set_offerer_departement_code(new_user, offerer)
+        updated_user = users_api._set_offerer_departement_code(new_user, offerer)
 
         # Then
         assert updated_user.departementCode == None
@@ -532,7 +515,7 @@ class SetOffererDepartementCodeTest:
         offerer = create_offerer(postal_code="75019")
 
         # When
-        updated_user = _set_offerer_departement_code(new_user, offerer)
+        updated_user = users_api._set_offerer_departement_code(new_user, offerer)
 
         # Then
         assert updated_user.departementCode == "75"
@@ -545,10 +528,10 @@ class SetProTutoAsSeenTest:
         user = users_factories.UserFactory(hasSeenProTutorials=False)
 
         # When
-        set_pro_tuto_as_seen(user)
+        users_api.set_pro_tuto_as_seen(user)
 
         # Then
-        assert User.query.one().hasSeenProTutorials == True
+        assert users_models.User.query.one().hasSeenProTutorials == True
 
 
 @pytest.mark.usefixtures("db_session")
@@ -558,10 +541,10 @@ class SetProRgsAsSeenTest:
         user = users_factories.UserFactory(hasSeenProRgs=False)
 
         # When
-        set_pro_rgs_as_seen(user)
+        users_api.set_pro_rgs_as_seen(user)
 
         # Then
-        assert User.query.one().hasSeenProRgs == True
+        assert users_models.User.query.one().hasSeenProRgs == True
 
 
 @pytest.mark.usefixtures("db_session")
@@ -570,12 +553,12 @@ class UpdateUserInfoTest:
         user = users_factories.UserFactory(email="initial@example.com")
 
         users_api.update_user_info(user, public_name="New Name")
-        user = User.query.one()
+        user = users_models.User.query.one()
         assert user.email == "initial@example.com"
         assert user.publicName == "New Name"
 
         users_api.update_user_info(user, email="new@example.com")
-        user = User.query.one()
+        user = users_models.User.query.one()
         assert user.email == "new@example.com"
         assert user.publicName == "New Name"
 
@@ -583,7 +566,7 @@ class UpdateUserInfoTest:
         user = users_factories.UserFactory(email="initial@example.com")
 
         users_api.update_user_info(user, email="  NEW@example.com   ")
-        user = User.query.one()
+        user = users_models.User.query.one()
         assert user.email == "new@example.com"
 
 
@@ -626,10 +609,10 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        assert get_domains_credit(user) == DomainsCredit(
-            all=Credit(initial=Decimal(500), remaining=Decimal(215)),
-            digital=Credit(initial=Decimal(200), remaining=Decimal(120)),
-            physical=Credit(initial=Decimal(200), remaining=Decimal(50)),
+        assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
+            all=users_models.Credit(initial=Decimal(500), remaining=Decimal(215)),
+            digital=users_models.Credit(initial=Decimal(200), remaining=Decimal(120)),
+            physical=users_models.Credit(initial=Decimal(200), remaining=Decimal(50)),
         )
 
     def test_get_domains_credit(self):
@@ -642,9 +625,9 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        assert get_domains_credit(user) == DomainsCredit(
-            all=Credit(initial=Decimal(300), remaining=Decimal(50)),
-            digital=Credit(initial=Decimal(100), remaining=Decimal(50)),
+        assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
+            all=users_models.Credit(initial=Decimal(300), remaining=Decimal(50)),
+            digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(50)),
             physical=None,
         )
 
@@ -657,16 +640,16 @@ class DomainsCreditTest:
         )
 
         with freeze_time(datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, days=2)):
-            assert get_domains_credit(user) == DomainsCredit(
-                all=Credit(initial=Decimal(300), remaining=Decimal(0)),
-                digital=Credit(initial=Decimal(100), remaining=Decimal(0)),
+            assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
+                all=users_models.Credit(initial=Decimal(300), remaining=Decimal(0)),
+                digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(0)),
                 physical=None,
             )
 
     def test_get_domains_credit_no_deposit(self):
         user = users_factories.UserFactory()
 
-        assert not get_domains_credit(user)
+        assert not users_api.get_domains_credit(user)
 
 
 class CreateProUserTest:
@@ -675,7 +658,7 @@ class CreateProUserTest:
             email="prouser@example.com", password="P@ssword12345", phoneNumber="0666666666"
         )
 
-        pro_user = create_pro_user(pro_user_creation_body)
+        pro_user = users_api.create_pro_user(pro_user_creation_body)
 
         assert pro_user.email == "prouser@example.com"
         assert not pro_user.has_admin_role
@@ -691,7 +674,7 @@ class CreateProUserTest:
             email="prouser@example.com", password="P@ssword12345", phoneNumber="0666666666"
         )
 
-        pro_user = create_pro_user(pro_user_creation_body)
+        pro_user = users_api.create_pro_user(pro_user_creation_body)
 
         assert pro_user.email == "prouser@example.com"
         assert not pro_user.has_admin_role
@@ -879,7 +862,7 @@ class GetEligibilityTest:
         date_of_birth = datetime(2000, 2, 1, 0, 0)
 
         specified_date = datetime(2019, 2, 1, 8, 0)
-        assert get_eligibility_at_date(date_of_birth, specified_date) == EligibilityType.AGE18
+        assert users_api.get_eligibility_at_date(date_of_birth, specified_date) == users_models.EligibilityType.AGE18
 
         specified_date = datetime(2019, 2, 1, 12, 0)
-        assert get_eligibility_at_date(date_of_birth, specified_date) is None
+        assert users_api.get_eligibility_at_date(date_of_birth, specified_date) is None

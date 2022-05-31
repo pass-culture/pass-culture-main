@@ -8,6 +8,7 @@ from pcapi.connectors import api_recaptcha
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import external as users_external
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.models import TokenType
 from pcapi.core.users.models import User
@@ -152,7 +153,7 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     user.validate_email()
     user.isEmailValidated = True
     repository.save(user)
-    users_api.update_external_user(user)
+    users_external.update_external_user(user)
 
     try:
         dms_subscription_api.try_dms_orphan_adoption(user)
