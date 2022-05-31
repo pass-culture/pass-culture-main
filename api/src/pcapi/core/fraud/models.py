@@ -379,7 +379,7 @@ class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
-    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
+    dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now(), default=datetime.datetime.utcnow)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
