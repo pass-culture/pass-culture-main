@@ -190,7 +190,6 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
     externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")  # type: ignore [attr-defined]
     extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")  # type: ignore [attr-defined]
     firstName = sa.Column(sa.String(128), nullable=True)
-    hasSeenTutorials = sa.Column(sa.Boolean, nullable=True)
     hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     hasSeenProRgs = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
@@ -383,10 +382,6 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
     @property
     def latest_birthday(self) -> date:
         return _get_latest_birthday(self.dateOfBirth.date())  # type: ignore [union-attr]
-
-    @property
-    def needsToSeeTutorials(self):  # type: ignore [no-untyped-def]
-        return self.is_beneficiary and not self.hasSeenTutorials
 
     @property
     def real_wallet_balance(self):  # type: ignore [no-untyped-def]
