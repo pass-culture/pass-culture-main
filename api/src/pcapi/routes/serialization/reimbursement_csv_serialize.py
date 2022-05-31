@@ -48,7 +48,7 @@ def _get_validation_period(cutoff: datetime.datetime) -> str:
         fortnight = "1ère quinzaine"
     else:
         fortnight = "2nde quinzaine"
-    return f"Validées et remboursées sur {month} : {fortnight}"
+    return f"Validées et remboursables sur {month} : {fortnight}"
 
 
 def _legacy_get_validation_period(transaction_label: str) -> str:
@@ -56,7 +56,7 @@ def _legacy_get_validation_period(transaction_label: str) -> str:
     validated that correspond with the requested `Payment.transactionLabel`.
 
     Turn "pass Culture Pro - remboursement 1ère quinzaine 06-2019"
-    into "Validées et remboursées sur mai : 2nde quinzaine".
+    into "Validées et remboursables sur mai : 2nde quinzaine".
 
     We don't want to show what's in `Payment.transactionLabel`,
     because it was unclear.
@@ -70,7 +70,7 @@ def _legacy_get_validation_period(transaction_label: str) -> str:
         fortnight = "1ère quinzaine"
         period_month = label_month_number
     month_name = MONTHS_IN_FRENCH[int(period_month)]
-    return f"Validées et remboursées sur {month_name} : {fortnight}"
+    return f"Validées et remboursables sur {month_name} : {fortnight}"
 
 
 class ReimbursementDetails:
