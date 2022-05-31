@@ -300,3 +300,24 @@ class VenueBannerTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_BANNER_PARAMS"
+
+    def test_upload_image_bad_ratio(self, client, tmpdir):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        # this image is too small to be resized and has a 1:1 ratio
+        # it should be rejected
+        image_content = (IMAGES_DIR / "mouette_small.jpg").read_bytes()
+        file = {"banner": (io.BytesIO(image_content), "upsert_banner.jpg")}
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        url = f"/venues/{humanize(venue.id)}/banner"
+        url += "?x_crop_percent=0.0&y_crop_percent=0.0&height_crop_percent=1.0&width_crop_percent=1.0&image_credit=none"
+
+        # Override storage url otherwise it would be, well, an URL
+        # (like http://localhost) and make some checks more difficult.
+        # Override local storage and use a temporary directory instead.
+        with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
+            response = client.post(url, files=file)
+            assert response.status_code == 400
+            assert response.json["code"] == "BAD_RATIO"
