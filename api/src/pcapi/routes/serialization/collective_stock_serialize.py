@@ -61,9 +61,6 @@ def validate_booking_limit_datetime(
 def validate_beginning_datetime(beginning_datetime: datetime, values: Dict[str, Any], field: ModelField) -> datetime:
     # we need a datetime with timezone information which is not provided by datetime.utcnow.
     if beginning_datetime < datetime.now(timezone.utc):  # pylint: disable=datetime-now
-        logger.error(
-            "L'utilisateur a essayé de créer un stock pour la date %s qui est dans le passé", str(beginning_datetime)
-        )
         raise ValueError("L'évènement ne peut commencer dans le passé.")
     return beginning_datetime
 
