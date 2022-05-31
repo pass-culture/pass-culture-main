@@ -1,14 +1,9 @@
 from dataclasses import asdict
-from datetime import date
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 import logging
 import secrets
 import typing
-from typing import Optional
-from typing import Union
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended import create_access_token
@@ -25,19 +20,9 @@ import pcapi.core.mails.transactional.users.unsuspension as suspension_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
+from pcapi.core.users import external as users_external
+from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
-from pcapi.core.users.external import update_external_pro
-from pcapi.core.users.external import update_external_user
-from pcapi.core.users.models import Credit
-from pcapi.core.users.models import DomainsCredit
-from pcapi.core.users.models import EligibilityType
-from pcapi.core.users.models import NotificationSubscriptions
-from pcapi.core.users.models import Token
-from pcapi.core.users.models import TokenType
-from pcapi.core.users.models import User
-from pcapi.core.users.models import UserEmailHistory
-from pcapi.core.users.models import VOID_PUBLIC_NAME
-from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
@@ -61,23 +46,23 @@ UNCHANGED = object()
 logger = logging.getLogger(__name__)
 
 
-def create_email_validation_token(user: User) -> Token:
+def create_email_validation_token(user: models.User) -> models.Token:
     return generate_and_save_token(
-        user, TokenType.EMAIL_VALIDATION, life_time=constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        user, models.TokenType.EMAIL_VALIDATION, life_time=constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
     )
 
 
-def create_reset_password_token(user: User, token_life_time: timedelta = None) -> Token:
+def create_reset_password_token(user: models.User, token_life_time: datetime.timedelta = None) -> models.Token:
     return generate_and_save_token(
-        user, TokenType.RESET_PASSWORD, life_time=token_life_time or constants.RESET_PASSWORD_TOKEN_LIFE_TIME
+        user, models.TokenType.RESET_PASSWORD, life_time=token_life_time or constants.RESET_PASSWORD_TOKEN_LIFE_TIME
     )
 
 
-def create_phone_validation_token(user: User, phone_number: str) -> Optional[Token]:
+def create_phone_validation_token(user: models.User, phone_number: str) -> typing.Optional[models.Token]:
     secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
     return generate_and_save_token(
         user,
-        token_type=TokenType.PHONE_VALIDATION,
+        token_type=models.TokenType.PHONE_VALIDATION,
         life_time=constants.PHONE_VALIDATION_TOKEN_LIFE_TIME,
         token_value=secret_code,
         extra_data=models.TokenExtraData(phone_number=phone_number),
@@ -85,22 +70,22 @@ def create_phone_validation_token(user: User, phone_number: str) -> Optional[Tok
 
 
 def generate_and_save_token(
-    user: User,
-    token_type: TokenType,
-    life_time: Optional[timedelta] = None,
-    token_value: Optional[str] = None,
-    extra_data: Optional[models.TokenExtraData] = None,
-) -> Token:
-    assert token_type.name in TokenType.__members__, "Only registered token types are allowed"
+    user: models.User,
+    token_type: models.TokenType,
+    life_time: typing.Optional[datetime.timedelta] = None,
+    token_value: typing.Optional[str] = None,
+    extra_data: typing.Optional[models.TokenExtraData] = None,
+) -> models.Token:
+    assert token_type.name in models.TokenType.__members__, "Only registered token types are allowed"
 
-    expiration_date = datetime.utcnow() + life_time if life_time else None
+    expiration_date = datetime.datetime.utcnow() + life_time if life_time else None
 
     if settings.IS_PERFORMANCE_TESTS:
         token_value = f"performance-tests_{token_type.value}_{user.id}"
     else:
         token_value = token_value or secrets.token_urlsafe(32)
 
-    token = Token(
+    token = models.Token(
         user=user,
         value=token_value,
         type=token_type,
@@ -113,17 +98,17 @@ def generate_and_save_token(
 
 
 def delete_expired_tokens() -> None:
-    Token.query.filter(Token.expirationDate < datetime.utcnow()).delete()
+    models.Token.query.filter(models.Token.expirationDate < datetime.datetime.utcnow()).delete()
 
 
-def delete_all_users_tokens(user: User) -> None:
-    Token.query.filter(Token.user == user).delete()
+def delete_all_users_tokens(user: models.User) -> None:
+    models.Token.query.filter(models.Token.user == user).delete()
 
 
 def create_account(
     email: str,
     password: str,
-    birthdate: date,
+    birthdate: datetime.date,
     marketing_email_subscription: bool = False,
     is_email_validated: bool = False,
     send_activation_mail: bool = True,
@@ -131,19 +116,21 @@ def create_account(
     phone_number: str = None,
     apps_flyer_user_id: str = None,
     apps_flyer_platform: str = None,
-) -> User:
+) -> models.User:
     email = users_utils.sanitize_email(email)
-    if find_user_by_email(email):
+    if users_repository.find_user_by_email(email):
         raise exceptions.UserAlreadyExistsException()
 
-    user = User(
+    user = models.User(
         email=email,
-        dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
+        dateOfBirth=datetime.datetime.combine(birthdate, datetime.datetime.min.time()),
         isEmailValidated=is_email_validated,
-        publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
-        notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
+        publicName=models.VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
+        notificationSubscriptions=asdict(
+            models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
+        ),
         phoneNumber=phone_number,
-        lastConnectionDate=datetime.utcnow(),
+        lastConnectionDate=datetime.datetime.utcnow(),
         subscriptionState=models.SubscriptionState.account_created,
     )
 
@@ -156,13 +143,13 @@ def create_account(
 
 
 def initialize_account(
-    user: User,
+    user: models.User,
     password: str,
     apps_flyer_user_id: str = None,
     apps_flyer_platform: str = None,
     send_activation_mail: bool = True,
     remote_updates: bool = True,
-) -> User:
+) -> models.User:
 
     user.setPassword(password)
     if apps_flyer_user_id and apps_flyer_platform:
@@ -175,7 +162,7 @@ def initialize_account(
     delete_all_users_tokens(user)
 
     if remote_updates:
-        update_external_user(user)
+        users_external.update_external_user(user)
 
     if not user.isEmailValidated and send_activation_mail:
         request_email_confirmation(user)
@@ -184,10 +171,10 @@ def initialize_account(
 
 
 def update_user_information(
-    user: User,
+    user: models.User,
     first_name: typing.Optional[str] = None,
     last_name: typing.Optional[str] = None,
-    birth_date: typing.Optional[datetime] = None,
+    birth_date: typing.Optional[datetime.datetime] = None,
     activity: typing.Optional[str] = None,
     address: typing.Optional[str] = None,
     city: typing.Optional[str] = None,
@@ -198,7 +185,7 @@ def update_user_information(
     phone_number: typing.Optional[str] = None,
     postal_code: typing.Optional[str] = None,
     commit: bool = False,
-) -> User:
+) -> models.User:
     if first_name is not None:
         user.firstName = first_name
     if last_name is not None:
@@ -237,10 +224,10 @@ def update_user_information(
 
 
 def update_user_information_from_external_source(
-    user: User,
+    user: models.User,
     data: common_fraud_models.IdentityCheckContent,
     commit: bool = False,
-) -> User:
+) -> models.User:
     first_name = data.get_first_name()
     last_name = data.get_last_name()
     birth_date = data.get_birth_date()
@@ -253,7 +240,7 @@ def update_user_information_from_external_source(
         user=user,
         first_name=first_name,
         last_name=last_name,
-        birth_date=datetime.combine(birth_date, time(0, 0)),
+        birth_date=datetime.datetime.combine(birth_date, datetime.time(0, 0)),
         activity=data.get_activity(),
         address=data.get_address(),
         city=data.get_city(),
@@ -267,12 +254,12 @@ def update_user_information_from_external_source(
     )
 
 
-def request_email_confirmation(user: User) -> None:
+def request_email_confirmation(user: models.User) -> None:
     token = create_email_validation_token(user)
     send_email_confirmation_email(user, token=token)
 
 
-def request_password_reset(user: User) -> None:
+def request_password_reset(user: models.User) -> None:
     if not user or not user.isActive:
         return
 
@@ -283,7 +270,7 @@ def request_password_reset(user: User) -> None:
         raise exceptions.EmailNotSent()
 
 
-def handle_create_account_with_existing_email(user: User) -> None:
+def handle_create_account_with_existing_email(user: models.User) -> None:
     if not user or not user.isActive:
         return
 
@@ -294,14 +281,14 @@ def handle_create_account_with_existing_email(user: User) -> None:
         raise exceptions.EmailNotSent()
 
 
-def fulfill_account_password(user: User) -> User:
+def fulfill_account_password(user: models.User) -> models.User:
     _generate_random_password(user)
     return user
 
 
 def fulfill_beneficiary_data(
-    user: User, deposit_source: str, eligibility: EligibilityType, deposit_version: int = None
-) -> User:
+    user: models.User, deposit_source: str, eligibility: models.EligibilityType, deposit_version: int = None
+) -> models.User:
     _generate_random_password(user)
 
     deposit = payment_api.create_deposit(user, deposit_source, eligibility=eligibility, version=deposit_version)
@@ -314,7 +301,7 @@ def _generate_random_password(user):  # type: ignore [no-untyped-def]
     user.password = random_hashed_password()
 
 
-def check_can_unsuspend(user: User) -> None:
+def check_can_unsuspend(user: models.User) -> None:
     """
     A user can ask for unsuspension if it has been suspended upon his
     own request and if the unsuspension time limit has not been exceeded
@@ -329,13 +316,15 @@ def check_can_unsuspend(user: User) -> None:
     if reason != constants.SuspensionReason.UPON_USER_REQUEST:
         raise exceptions.CantAskForUnsuspension()
 
-    suspension_date = typing.cast(datetime, user.suspension_date)
-    days_delta = timedelta(days=constants.ACCOUNT_UNSUSPENSION_DELAY)
-    if suspension_date.date() + days_delta < date.today():
+    suspension_date = typing.cast(datetime.datetime, user.suspension_date)
+    days_delta = datetime.timedelta(days=constants.ACCOUNT_UNSUSPENSION_DELAY)
+    if suspension_date.date() + days_delta < datetime.date.today():
         raise exceptions.UnsuspensionTimeLimitExceeded()
 
 
-def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optional[User]) -> dict[str, int]:
+def suspend_account(
+    user: models.User, reason: constants.SuspensionReason, actor: typing.Optional[models.User]
+) -> dict[str, int]:
     """
     Suspend a user's account:
         * mark as inactive;
@@ -401,7 +390,7 @@ def suspend_account(user: User, reason: constants.SuspensionReason, actor: Optio
     return {"cancelled_bookings": n_bookings}
 
 
-def unsuspend_account(user: User, actor: User, send_email: bool = False) -> None:
+def unsuspend_account(user: models.User, actor: models.User, send_email: bool = False) -> None:
     user.isActive = True
     user_suspension = models.UserSuspension(
         user=user,
@@ -424,8 +413,8 @@ def unsuspend_account(user: User, actor: User, send_email: bool = False) -> None
         suspension_mails.send_unsuspension_email(user)
 
 
-def bulk_unsuspend_account(user_ids: list[int], actor: User) -> None:
-    User.query.filter(User.id.in_(user_ids)).update(
+def bulk_unsuspend_account(user_ids: list[int], actor: models.User) -> None:
+    models.User.query.filter(models.User.id.in_(user_ids)).update(
         values={"isActive": True},
         synchronize_session=False,
     )
@@ -453,12 +442,12 @@ def change_user_email(
     new_email: str,
     admin: bool = False,
 ) -> None:
-    current_user = find_user_by_email(current_email)
+    current_user = users_repository.find_user_by_email(current_email)
 
     if not current_user:
         raise exceptions.UserDoesNotExist()
 
-    email_history = UserEmailHistory.build_validation(user=current_user, new_email=new_email, admin=admin)
+    email_history = models.UserEmailHistory.build_validation(user=current_user, new_email=new_email, admin=admin)
 
     try:
         current_user.email = new_email
@@ -478,7 +467,7 @@ def change_user_email(
     logger.info("User has changed their email", extra={"user": current_user.id})
 
 
-def update_user_password(user: User, new_password: str) -> None:
+def update_user_password(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
     repository.save(user)
 
@@ -487,7 +476,7 @@ def update_password_and_external_user(user, new_password):  # type: ignore [no-u
     user.setPassword(new_password)
     if not user.isEmailValidated:
         user.isEmailValidated = True
-        update_external_user(user)
+        users_external.update_external_user(user)
     repository.save(user)
 
 
@@ -525,11 +514,13 @@ def update_user_info(  # type: ignore [no-untyped-def]
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
-        update_external_pro(old_email)
-    update_external_user(user)
+        users_external.update_external_pro(old_email)
+    users_external.update_external_user(user)
 
 
-def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] = None) -> Optional[DomainsCredit]:
+def get_domains_credit(
+    user: models.User, user_bookings: list[bookings_models.Booking] = None
+) -> typing.Optional[models.DomainsCredit]:
     if not user.deposit:
         return None
 
@@ -544,8 +535,8 @@ def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] 
             and booking.status != bookings_models.BookingStatus.CANCELLED
         ]
 
-    domains_credit = DomainsCredit(
-        all=Credit(
+    domains_credit = models.DomainsCredit(
+        all=models.Credit(
             initial=user.deposit.amount,
             remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
             if user.has_active_deposit
@@ -560,7 +551,7 @@ def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] 
             for booking in deposit_bookings
             if specific_caps.digital_cap_applies(booking.stock.offer)
         )
-        domains_credit.digital = Credit(
+        domains_credit.digital = models.Credit(
             initial=specific_caps.DIGITAL_CAP,
             remaining=(
                 min(
@@ -576,7 +567,7 @@ def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] 
             for booking in deposit_bookings
             if specific_caps.physical_cap_applies(booking.stock.offer)
         )
-        domains_credit.physical = Credit(
+        domains_credit.physical = models.Credit(
             initial=specific_caps.PHYSICAL_CAP,
             remaining=(
                 min(
@@ -589,7 +580,7 @@ def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] 
     return domains_credit
 
 
-def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
+def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.User:
     objects_to_save = []
 
     new_pro_user = create_pro_user(pro_user)
@@ -617,15 +608,15 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> User:
             extra={"user": new_pro_user.id},
         )
 
-    update_external_pro(new_pro_user.email)
+    users_external.update_external_pro(new_pro_user.email)
 
     return new_pro_user
 
 
-def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
-    new_pro_user = User(from_dict=pro_user.dict(by_alias=True))
+def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
+    new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))
     new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)
-    new_pro_user.notificationSubscriptions = asdict(NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type]
+    new_pro_user.notificationSubscriptions = asdict(models.NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type]
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
     new_pro_user.needsToFillCulturalSurvey = False
@@ -636,14 +627,14 @@ def create_pro_user(pro_user: ProUserCreationBodyModel) -> User:
 
     if settings.IS_INTEGRATION:
         new_pro_user.add_beneficiary_role()
-        deposit = payment_api.create_deposit(new_pro_user, "integration_signup", EligibilityType.AGE18)
+        deposit = payment_api.create_deposit(new_pro_user, "integration_signup", models.EligibilityType.AGE18)
         new_pro_user.deposits = [deposit]
 
     return new_pro_user
 
 
 def _generate_user_offerer_when_existing_offerer(
-    new_user: User, offerer: offerers_models.Offerer
+    new_user: models.User, offerer: offerers_models.Offerer
 ) -> offerers_models.UserOfferer:
     user_offerer = offerers_api.grant_user_offerer_access(offerer, new_user)
     if not settings.IS_INTEGRATION:
@@ -660,7 +651,7 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
     return offerer
 
 
-def _set_offerer_departement_code(new_user: User, offerer: offerers_models.Offerer) -> User:
+def _set_offerer_departement_code(new_user: models.User, offerer: offerers_models.Offerer) -> models.User:
     if offerer.postalCode:  # not None, not ""
         new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
     else:
@@ -668,26 +659,26 @@ def _set_offerer_departement_code(new_user: User, offerer: offerers_models.Offer
     return new_user
 
 
-def set_pro_tuto_as_seen(user: User) -> None:
+def set_pro_tuto_as_seen(user: models.User) -> None:
     user.hasSeenProTutorials = True
     repository.save(user)
 
 
-def set_pro_rgs_as_seen(user: User) -> None:
+def set_pro_rgs_as_seen(user: models.User) -> None:
     user.hasSeenProRgs = True
     repository.save(user)
 
 
 def update_last_connection_date(user):  # type: ignore [no-untyped-def]
     previous_connection_date = user.lastConnectionDate
-    last_connection_date = datetime.utcnow()
+    last_connection_date = datetime.datetime.utcnow()
 
     should_save_last_connection_date = (
-        not previous_connection_date or last_connection_date - previous_connection_date > timedelta(minutes=15)
+        not previous_connection_date or last_connection_date - previous_connection_date > datetime.timedelta(minutes=15)
     )
     should_update_sendinblue_last_connection_date = should_save_last_connection_date and (
         not previous_connection_date
-        or last_connection_date.date() - previous_connection_date.date() >= timedelta(days=1)
+        or last_connection_date.date() - previous_connection_date.date() >= datetime.timedelta(days=1)
     )
 
     if should_save_last_connection_date:
@@ -695,15 +686,15 @@ def update_last_connection_date(user):  # type: ignore [no-untyped-def]
         repository.save(user)
 
     if should_update_sendinblue_last_connection_date:
-        update_external_user(user, skip_batch=True)
+        users_external.update_external_user(user, skip_batch=True)
 
 
-def create_user_access_token(user: User) -> str:
+def create_user_access_token(user: models.User) -> str:
     return create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
 
 
 def update_notification_subscription(
-    user: User, subscriptions: "typing.Optional[account_serialization.NotificationSubscriptions]"
+    user: models.User, subscriptions: "typing.Optional[account_serialization.NotificationSubscriptions]"
 ) -> None:
     if subscriptions is None:
         return
@@ -720,31 +711,38 @@ def update_notification_subscription(
         batch_tasks.delete_user_attributes_task.delay(payload)
 
 
-def reset_recredit_amount_to_show(user: User) -> None:
+def reset_recredit_amount_to_show(user: models.User) -> None:
     user.recreditAmountToShow = None
     repository.save(user)
 
 
-def get_eligibility_end_datetime(date_of_birth: Optional[Union[date, datetime]]) -> Optional[datetime]:
+def get_eligibility_end_datetime(
+    date_of_birth: typing.Optional[typing.Union[datetime.date, datetime.datetime]]
+) -> typing.Optional[datetime.datetime]:
     if not date_of_birth:
         return None
 
-    return datetime.combine(date_of_birth, time(0, 0)) + relativedelta(years=constants.ELIGIBILITY_AGE_18 + 1, hour=11)
+    return datetime.datetime.combine(date_of_birth, datetime.time(0, 0)) + relativedelta(
+        years=constants.ELIGIBILITY_AGE_18 + 1, hour=11
+    )
 
 
-def get_eligibility_start_datetime(date_of_birth: Optional[Union[date, datetime]]) -> Optional[datetime]:
+def get_eligibility_start_datetime(
+    date_of_birth: typing.Optional[typing.Union[datetime.date, datetime.datetime]]
+) -> typing.Optional[datetime.datetime]:
     if not date_of_birth:
         return None
 
-    date_of_birth = datetime.combine(date_of_birth, time(0, 0))
+    date_of_birth = datetime.datetime.combine(date_of_birth, datetime.time(0, 0))
     fifteenth_birthday = date_of_birth + relativedelta(years=constants.ELIGIBILITY_UNDERAGE_RANGE[0])
 
     return fifteenth_birthday
 
 
 def get_eligibility_at_date(
-    date_of_birth: Optional[Union[date, datetime]], specified_datetime: datetime
-) -> Optional[EligibilityType]:
+    date_of_birth: typing.Optional[typing.Union[datetime.date, datetime.datetime]],
+    specified_datetime: datetime.datetime,
+) -> typing.Optional[models.EligibilityType]:
     eligibility_start = get_eligibility_start_datetime(date_of_birth)
     eligibility_end = get_eligibility_end_datetime(date_of_birth)
 
@@ -756,41 +754,45 @@ def get_eligibility_at_date(
         return None
 
     if age in constants.ELIGIBILITY_UNDERAGE_RANGE:
-        return EligibilityType.UNDERAGE
+        return models.EligibilityType.UNDERAGE
     # If the user is older than 18 in UTC timezone, we consider them eligible until they reach eligibility_end
     if constants.ELIGIBILITY_AGE_18 <= age and specified_datetime < eligibility_end:  # type: ignore [operator]
-        return EligibilityType.AGE18
+        return models.EligibilityType.AGE18
 
     return None
 
 
-def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: Optional[EligibilityType]) -> bool:
-    return (eligibility == EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
-        eligibility == EligibilityType.AGE18 and not user.has_beneficiary_role
+def is_eligible_for_beneficiary_upgrade(
+    user: models.User, eligibility: typing.Optional[models.EligibilityType]
+) -> bool:
+    return (eligibility == models.EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
+        eligibility == models.EligibilityType.AGE18 and not user.has_beneficiary_role
     )
 
 
-def is_user_age_compatible_with_eligibility(user_age: Optional[int], eligibility: Optional[EligibilityType]) -> bool:
-    if eligibility == EligibilityType.UNDERAGE:
+def is_user_age_compatible_with_eligibility(
+    user_age: typing.Optional[int], eligibility: typing.Optional[models.EligibilityType]
+) -> bool:
+    if eligibility == models.EligibilityType.UNDERAGE:
         return user_age in constants.ELIGIBILITY_UNDERAGE_RANGE
-    if eligibility == EligibilityType.AGE18:
+    if eligibility == models.EligibilityType.AGE18:
         return user_age is not None and user_age >= constants.ELIGIBILITY_AGE_18
     return False
 
 
-def search_public_account(terms: typing.Iterable[str]) -> list[User]:
+def search_public_account(terms: typing.Iterable[str]) -> list[models.User]:
     filters = []
 
     for term in terms:
         if not term:
             continue
 
-        filters.append(sa.cast(User.phoneNumber, sa.Unicode) == term)
-        filters.append(sa.cast(User.firstName, sa.Unicode).ilike(f"%{term}%"))
-        filters.append(sa.cast(User.lastName, sa.Unicode).ilike(f"%{term}%"))
-        filters.append(sa.cast(User.id, sa.Unicode) == term)
-        filters.append(sa.cast(User.email, sa.Unicode).ilike(f"%{term}%"))
+        filters.append(sa.cast(models.User.phoneNumber, sa.Unicode) == term)
+        filters.append(sa.cast(models.User.firstName, sa.Unicode).ilike(f"%{term}%"))
+        filters.append(sa.cast(models.User.lastName, sa.Unicode).ilike(f"%{term}%"))
+        filters.append(sa.cast(models.User.id, sa.Unicode) == term)
+        filters.append(sa.cast(models.User.email, sa.Unicode).ilike(f"%{term}%"))
 
-    accounts = User.query.filter(sa.or_(*filters)).all()
+    accounts = models.User.query.filter(sa.or_(*filters)).all()
 
     return accounts
