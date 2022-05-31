@@ -18,13 +18,11 @@ def create_future_beneficiaries() -> None:
         email="pctest.non-beneficiary.17-going-on-18.v1@example.com",
         dateOfBirth=eighteen_on_saturday,
         needsToFillCulturalSurvey=False,
-        hasSeenTutorials=True,
     )
     users_factories.UserFactory(
         email="pctest.non-beneficiary.17-going-on-18.v2@example.com",
         dateOfBirth=eighteen_on_saturday,
         needsToFillCulturalSurvey=False,
-        hasSeenTutorials=True,
     )
 
     logger.info("created 2 future beneficiaries")
@@ -37,7 +35,6 @@ def create_expiring_beneficiary() -> None:
         deposit__expirationDate=coming_saturday,
         deposit__source="sandbox",
         needsToFillCulturalSurvey=False,
-        hasSeenTutorials=True,
     )
 
     logger.info("created 1 expiring beneficiary")
@@ -48,7 +45,6 @@ def create_beneficiary_with_empty_deposit() -> None:
         email="pctest.beneficiary.no-more-deposit@example.com",
         deposit__source="sandbox",
         needsToFillCulturalSurvey=False,
-        hasSeenTutorials=True,
     )
     bookings_factories.IndividualBookingFactory(
         amount=beneficiary_user.deposit.amount,
@@ -74,7 +70,6 @@ def create_beneficiary_with_specific_address() -> None:
         postalCode="75001",
         deposit__source="sandbox",
         needsToFillCulturalSurvey=False,
-        hasSeenTutorials=True,
     )
 
     logger.info("created 1 beneficiary with specific address")

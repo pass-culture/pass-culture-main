@@ -177,20 +177,6 @@ class SQLFunctionsTest:
         assert "the deposit was not found" in str(exc)
 
 
-class NeedsToSeeTutorialsTest:
-    def test_beneficiary_has_to_see_tutorials_when_not_already_seen(self):
-        user = users_factories.BeneficiaryGrant18Factory.build(hasSeenTutorials=False)
-        assert user.needsToSeeTutorials
-
-    def test_beneficiary_has_not_to_see_tutorials_when_already_seen(self):
-        user = users_factories.BeneficiaryGrant18Factory.build(hasSeenTutorials=True)
-        assert not user.needsToSeeTutorials
-
-    def test_pro_user_has_not_to_see_tutorials_when_already_seen(self):
-        user = users_factories.ProFactory.build()
-        assert not user.needsToSeeTutorials
-
-
 class CalculateAgeTest:
     @freeze_time("2018-06-01")
     def test_user_age(self):

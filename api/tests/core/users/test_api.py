@@ -744,7 +744,6 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.password is not None
         assert beneficiary.activity == "Lycéen"
         assert beneficiary.civility == "Mme"
-        assert beneficiary.hasSeenTutorials == False
         assert not beneficiary.deposits
 
     def test_update_user_information_from_educonnect(self):

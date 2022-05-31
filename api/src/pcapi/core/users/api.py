@@ -141,7 +141,6 @@ def create_account(
         dateOfBirth=datetime.combine(birthdate, datetime.min.time()),
         isEmailValidated=is_email_validated,
         publicName=VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
-        hasSeenTutorials=False,
         notificationSubscriptions=asdict(NotificationSubscriptions(marketing_email=marketing_email_subscription)),
         phoneNumber=phone_number,
         lastConnectionDate=datetime.utcnow(),
@@ -239,7 +238,6 @@ def update_user_information_from_external_source(
     if phone_number and not user.phoneNumber and not user.is_phone_validated:
         user.phoneNumber = phone_number
 
-    user.hasSeenTutorials = False  # TODO (viconnex): remove this deprecated field
     user.remove_admin_role()
 
     db.session.add(user)
@@ -475,7 +473,6 @@ def update_user_info(  # type: ignore [no-untyped-def]
     cultural_survey_id=UNCHANGED,
     email=UNCHANGED,
     first_name=UNCHANGED,
-    has_seen_tutorials=UNCHANGED,
     last_name=UNCHANGED,
     needs_to_fill_cultural_survey=UNCHANGED,
     phone_number=UNCHANGED,
@@ -492,8 +489,6 @@ def update_user_info(  # type: ignore [no-untyped-def]
         user.email = users_utils.sanitize_email(email)
     if first_name is not UNCHANGED:
         user.firstName = first_name
-    if has_seen_tutorials is not UNCHANGED:
-        user.hasSeenTutorials = has_seen_tutorials
     if last_name is not UNCHANGED:
         user.lastName = last_name
     if needs_to_fill_cultural_survey is not UNCHANGED:

@@ -78,17 +78,6 @@ class PartnerUserViewTest:
         # then
         assert user.needsToFillCulturalSurvey == False
 
-    def test_a_partner_should_not_need_to_see_beneficiaries_tutorial(self, app, db_session):
-        # given
-        user = User()
-        view = PartnerUserView(model=User, session=db_session)
-
-        # when
-        view.on_model_change(Form(), model=user, is_created=True)
-
-        # then
-        assert user.hasSeenTutorials == True
-
     def test_should_create_the_public_name(self, app, db_session):
         # given
         user = User()

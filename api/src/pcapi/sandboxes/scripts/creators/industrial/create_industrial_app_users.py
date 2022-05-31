@@ -65,11 +65,6 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
     for index, (departement_code, tag, deposit_version) in enumerate(variants, start=0):
         short_tag = "".join([chunk[0].upper() for chunk in tag.split("-")])
 
-        if tag == "has-filled-cultural-survey":
-            has_seen_tutorials = False
-        else:
-            has_seen_tutorials = True
-
         email = f"pctest.jeune{departement_code}.{tag}.v{deposit_version}@example.com"
         user = users_factories.BeneficiaryGrant18Factory(
             culturalSurveyId=None,
@@ -77,7 +72,6 @@ def create_industrial_app_beneficiaries() -> dict[str, User]:
             email=email,
             phoneNumber=f"+336{index:0>8}",
             firstName="PC Test Jeune",
-            hasSeenTutorials=has_seen_tutorials,
             lastName=f"{departement_code} {short_tag} {deposit_version}",
             needsToFillCulturalSurvey=False,
             postalCode="{}100".format(departement_code),
@@ -123,7 +117,6 @@ def create_industrial_app_underage_beneficiaries() -> dict[str, User]:
             email=email,
             phoneNumber=f"+336{index:0>8}",
             firstName="PC Test Mineur",
-            hasSeenTutorials=True,
             lastName=f"{departement_code} {short_tag}",
             needsToFillCulturalSurvey=False,
             postalCode="{}100".format(departement_code),
@@ -157,11 +150,9 @@ def create_industrial_app_other_users() -> dict[str, User]:
             validation_suffix += 1
             cultural_survey_id = uuid.uuid4()
             needs_to_fill_cultural_survey = True
-            has_seen_tutorials = False
         else:
             cultural_survey_id = None
             needs_to_fill_cultural_survey = False
-            has_seen_tutorials = True
             reset_password_token = None
 
         email = f"pctest.autre{departement_code}.{tag}@example.com"
@@ -172,7 +163,6 @@ def create_industrial_app_other_users() -> dict[str, User]:
             email=email,
             phoneNumber=f"+336{index:0>8}",
             firstName="PC Test Utilisateur",
-            hasSeenTutorials=has_seen_tutorials,
             lastName=f"{departement_code} {short_tag}",
             needsToFillCulturalSurvey=needs_to_fill_cultural_survey,
             postalCode="{}100".format(departement_code),
@@ -221,7 +211,6 @@ def create_industrial_app_general_public_users() -> dict[str, User]:
             phoneNumber=f"+336{index:0>8}",
             firstName="PC Test Grand Public",
             dateOfBirth=date_of_birth,
-            hasSeenTutorials=False,
             roles=[],
             lastName=f"{short_age}",
             needsToFillCulturalSurvey=True,
