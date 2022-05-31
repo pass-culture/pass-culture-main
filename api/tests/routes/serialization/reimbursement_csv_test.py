@@ -69,7 +69,7 @@ class ReimbursementDetailsTest:
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
         assert row[1] == invoice.date
         assert row[2] == invoice.reference
         assert row[3] == cashflow.batch.label
@@ -96,7 +96,7 @@ class ReimbursementDetailsTest:
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
         assert row[1] == ""  # no invoice, no date
         assert row[2] == ""  # no invoice, no label
         assert row[3] == ""  # unknown transfer label
@@ -240,11 +240,11 @@ def test_generate_reimbursement_details_csv():
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == f'''"Validées et remboursées sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
+        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
     )
     assert (  # legacy payment data
         rows[2]
-        == '''"Validées et remboursées sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
+        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
     )
 
 
@@ -322,7 +322,7 @@ class CollectiveReimbursementDetailsTest:
         collective_reimbursement_detail = reimbursement_details[2]
 
         assert collective_reimbursement_detail.as_csv_row() == [
-            "Validées et remboursées sur juin : 2nde quinzaine",
+            "Validées et remboursables sur juin : 2nde quinzaine",
             invoice.date,
             invoice.reference,
             cashflow.batch.label,
@@ -385,7 +385,7 @@ class CollectiveReimbursementDetailsTest:
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
         assert row[1] == invoice.date
         assert row[2] == invoice.reference
         assert row[3] == cashflow.batch.label
@@ -412,7 +412,7 @@ class CollectiveReimbursementDetailsTest:
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
         assert row[1] == ""  # no invoice, no date
         assert row[2] == ""  # no invoice, no label
         assert row[3] == ""  # unknown transfer label
@@ -472,7 +472,7 @@ class CollectiveReimbursementDetailsTest:
         )
 
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[0] == "Validées et remboursées sur juin : 2nde quinzaine"
+        assert row[0] == "Validées et remboursables sur juin : 2nde quinzaine"
         assert row[1] == invoice.date
         assert row[2] == invoice.reference
         assert row[3] == cashflow.batch.label
@@ -539,17 +539,19 @@ class CollectiveReimbursementDetailsTest:
 
 def test_get_validation_period():
     assert (
-        _get_validation_period(cutoff=datetime(2022, 1, 16)) == "Validées et remboursées sur janvier : 1ère quinzaine"
+        _get_validation_period(cutoff=datetime(2022, 1, 16)) == "Validées et remboursables sur janvier : 1ère quinzaine"
     )
-    assert _get_validation_period(cutoff=datetime(2022, 2, 1)) == "Validées et remboursées sur janvier : 2nde quinzaine"
+    assert (
+        _get_validation_period(cutoff=datetime(2022, 2, 1)) == "Validées et remboursables sur janvier : 2nde quinzaine"
+    )
 
 
 def test_legacy_get_validation_period():
     assert (
         _legacy_get_validation_period("pass Culture Pro - remboursement 1ère quinzaine 06-2019")
-        == "Validées et remboursées sur mai : 2nde quinzaine"
+        == "Validées et remboursables sur mai : 2nde quinzaine"
     )
     assert (
         _legacy_get_validation_period("pass Culture Pro - remboursement 2ème quinzaine 06-2019")
-        == "Validées et remboursées sur juin : 1ère quinzaine"
+        == "Validées et remboursables sur juin : 1ère quinzaine"
     )
