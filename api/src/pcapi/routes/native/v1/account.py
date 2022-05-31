@@ -14,6 +14,8 @@ from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.mails.transactional.users.delete_account import send_user_request_to_delete_account_reception_email
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.phone_validation import api as phone_validation_api
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
@@ -205,28 +207,28 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 @authenticated_and_active_user_required
 def send_phone_validation_code(user: User, body: serializers.SendPhoneValidationRequest) -> None:
     try:
-        api.send_phone_validation_code(user, body.phoneNumber)
+        phone_validation_api.send_phone_validation_code(user, body.phoneNumber)
 
-    except exceptions.SMSSendingLimitReached:
+    except phone_validation_exceptions.SMSSendingLimitReached:
         raise ApiErrors(
             {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"},
             status_code=400,
         )
-    except exceptions.UserPhoneNumberAlreadyValidated:
+    except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
         raise ApiErrors(
             {"message": "Le numéro de téléphone est déjà validé", "code": "PHONE_NUMBER_ALREADY_VALIDATED"},
             status_code=400,
         )
-    except exceptions.InvalidCountryCode:
+    except phone_validation_exceptions.InvalidCountryCode:
         raise ApiErrors(
             {"message": "L'indicatif téléphonique n'est pas accepté", "code": "INVALID_COUNTRY_CODE"},
             status_code=400,
         )
-    except (exceptions.InvalidPhoneNumber):
+    except (phone_validation_exceptions.InvalidPhoneNumber):
         raise ApiErrors(
             {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
         )
-    except (exceptions.PhoneAlreadyExists):
+    except (phone_validation_exceptions.PhoneAlreadyExists):
         raise ApiErrors(
             {
                 "message": "Un compte est déjà associé à ce numéro. Renseigne un autre numéro ou connecte-toi au compte existant.",
@@ -234,7 +236,7 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
             },
             status_code=400,
         )
-    except exceptions.PhoneVerificationException:
+    except phone_validation_exceptions.PhoneVerificationException:
         raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
 
 
@@ -244,15 +246,15 @@ def send_phone_validation_code(user: User, body: serializers.SendPhoneValidation
 def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberRequest) -> None:
     with transaction():
         try:
-            api.validate_phone_number_and_activate_user(user, body.code)
-        except exceptions.PhoneValidationAttemptsLimitReached:
+            phone_validation_api.validate_phone_number_and_activate_user(user, body.code)
+        except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
             raise ApiErrors(
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
                 status_code=400,
             )
-        except exceptions.ExpiredCode:
+        except phone_validation_exceptions.ExpiredCode:
             raise ApiErrors({"message": "Le code saisi a expiré", "code": "EXPIRED_VALIDATION_CODE"}, status_code=400)
-        except exceptions.NotValidCode as error:
+        except phone_validation_exceptions.NotValidCode as error:
             if error.remaining_attempts == 0:
                 raise ApiErrors(
                     {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
@@ -265,11 +267,11 @@ def validate_phone_number(user: User, body: serializers.ValidatePhoneNumberReque
                 },
                 status_code=400,
             )
-        except exceptions.InvalidPhoneNumber:
+        except phone_validation_exceptions.InvalidPhoneNumber:
             raise ApiErrors(
                 {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
             )
-        except exceptions.PhoneVerificationException:
+        except phone_validation_exceptions.PhoneVerificationException:
             raise ApiErrors({"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400)
 
 
