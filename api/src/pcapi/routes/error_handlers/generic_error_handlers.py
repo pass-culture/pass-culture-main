@@ -25,30 +25,33 @@ from pcapi.utils.image_conversion import ImageRatioError
 logger = logging.getLogger(__name__)
 
 
+ApiErrorResponse = tuple[Union[dict, Response], int]
+
+
 @app.errorhandler(NotFound)
-def restize_not_found_route_errors(error: NotFound) -> tuple[dict, int]:
+def restize_not_found_route_errors(error: NotFound) -> ApiErrorResponse:
     return {}, 404
 
 
 @app.errorhandler(ApiErrors)
-def restize_api_errors(error: ApiErrors) -> tuple[dict, int]:
-    return jsonify(error.errors), error.status_code or 400  # type: ignore [return-value]
+def restize_api_errors(error: ApiErrors) -> ApiErrorResponse:
+    return jsonify(error.errors), error.status_code or 400
 
 
 @app.errorhandler(offers_exceptions.TooLateToDeleteStock)
-def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> tuple[dict, int]:
-    return jsonify(error.errors), 400  # type: ignore [return-value]
+def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteStock) -> ApiErrorResponse:
+    return jsonify(error.errors), 400
 
 
 @app.errorhandler(Exception)
-def internal_error(error: Exception) -> Union[tuple[dict, int], HTTPException]:
+def internal_error(error: Exception) -> Union[ApiErrorResponse, HTTPException]:
     # pass through HTTP errors
     if isinstance(error, HTTPException):
         return error
     logger.exception("Unexpected error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return jsonify(errors.errors), 500  # type: ignore [return-value]
+    return jsonify(errors.errors), 500
 
 
 @app.errorhandler(UnauthorizedError)
@@ -62,47 +65,47 @@ def unauthorized_error(error: UnauthorizedError) -> Response:
 
 
 @app.errorhandler(MethodNotAllowed)
-def method_not_allowed(error: MethodNotAllowed) -> tuple[dict, int]:
+def method_not_allowed(error: MethodNotAllowed) -> ApiErrorResponse:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La méthode que vous utilisez n'existe pas sur notre serveur")
     logger.warning("405 %s", error)
-    return jsonify(api_errors.errors), 405  # type: ignore [return-value]
+    return jsonify(api_errors.errors), 405
 
 
 @app.errorhandler(NonDehumanizableId)
-def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> tuple[dict, int]:
+def invalid_id_for_dehumanize_error(error: NonDehumanizableId) -> ApiErrorResponse:
     api_errors = ApiErrors()
     api_errors.add_error("global", "La page que vous recherchez n'existe pas")
     logger.warning("404 %s", error)
-    return jsonify(api_errors.errors), 404  # type: ignore [return-value]
+    return jsonify(api_errors.errors), 404
 
 
 @app.errorhandler(DecimalCastError)
-def decimal_cast_error(error: DecimalCastError) -> tuple[dict, int]:
+def decimal_cast_error(error: DecimalCastError) -> ApiErrorResponse:
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Saisissez un nombre valide")
-    return jsonify(api_errors.errors), 400  # type: ignore [return-value]
+    return jsonify(api_errors.errors), 400
 
 
 @app.errorhandler(DateTimeCastError)
-def date_time_cast_error(error: DateTimeCastError) -> tuple[dict, int]:
+def date_time_cast_error(error: DateTimeCastError) -> ApiErrorResponse:
     api_errors = ApiErrors()
     logger.warning(json.dumps(error.errors))
     for field in error.errors.keys():
         api_errors.add_error(field, "Format de date invalide")
-    return jsonify(api_errors.errors), 400  # type: ignore [return-value]
+    return jsonify(api_errors.errors), 400
 
 
 @app.errorhandler(DepositTypeAlreadyGrantedException)
-def already_activated_exception(error: DepositTypeAlreadyGrantedException) -> tuple[dict, int]:
+def already_activated_exception(error: DepositTypeAlreadyGrantedException) -> ApiErrorResponse:
     logger.error(json.dumps(error.errors))
-    return jsonify(error.errors), 405  # type: ignore [return-value]
+    return jsonify(error.errors), 405
 
 
 @app.errorhandler(429)
-def ratelimit_handler(error: Exception) -> tuple[dict, int]:
+def ratelimit_handler(error: Exception) -> ApiErrorResponse:
     # `pcapi.utis.login_manager` cannot be imported at module-scope,
     # because the application context may not be available and that
     # module needs it.
@@ -128,11 +131,11 @@ def ratelimit_handler(error: Exception) -> tuple[dict, int]:
     logger.warning("Requests ratelimit exceeded on routes url=%s", request.url, extra=extra)
     api_errors = ApiErrors()
     api_errors.add_error("global", "Nombre de tentatives de connexion dépassé, veuillez réessayer dans une minute")
-    return jsonify(api_errors.errors), 429  # type: ignore [return-value]
+    return jsonify(api_errors.errors), 429
 
 
 @app.errorhandler(DatabaseError)
-def database_error_handler(error: DatabaseError) -> tuple[dict, int]:
+def database_error_handler(error: DatabaseError) -> ApiErrorResponse:
     logger.info(
         "Database error with the following query on method=%s url=%s. 🚨🚨🚨🚨🚨 BEFORE COPYING THE QUERY MAKE SURE THERE IS NO SQL INJECTION 🚨🚨🚨🚨🚨🚨",
         request.method,
@@ -146,7 +149,7 @@ def database_error_handler(error: DatabaseError) -> tuple[dict, int]:
     logger.exception("Unexpected database error on method=%s url=%s: %s", request.method, request.url, error)
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
-    return jsonify(errors.errors), 500  # type: ignore [return-value]
+    return jsonify(errors.errors), 500
 
 
 @app.errorhandler(ImageRatioError)
