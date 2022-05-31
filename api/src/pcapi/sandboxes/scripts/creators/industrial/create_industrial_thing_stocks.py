@@ -7,7 +7,7 @@ from pcapi.sandboxes.scripts.utils.select import remove_every
 
 logger = logging.getLogger(__name__)
 
-from .utils import get_occurrence_short_name
+from .utils import get_occurrence_short_name_or_none
 from .utils import get_price_by_short_name
 
 
@@ -28,7 +28,7 @@ def create_industrial_thing_stocks(thing_offers_by_name):  # type: ignore [no-un
         (thing_offer_with_stocks_name, thing_offer_with_stocks) = thing_offer_item_with_stocks
         quantity = 20
 
-        short_name = get_occurrence_short_name(thing_offer_with_stocks_name)
+        short_name = get_occurrence_short_name_or_none(thing_offer_with_stocks_name)
         price = get_price_by_short_name(short_name)
         price_counter = short_names_to_increase_price.count(short_name)
         if price_counter > 2:

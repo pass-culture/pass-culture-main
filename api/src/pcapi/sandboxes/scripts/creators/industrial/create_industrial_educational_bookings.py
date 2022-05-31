@@ -1,5 +1,5 @@
+from dataclasses import dataclass
 import datetime
-from typing import Union
 
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
@@ -8,106 +8,116 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.utils.human_ids import humanize
 
 
-FAKE_STOCK_DATA: list[dict[str, Union[str, int]]] = [
-    {
-        "name": "Visite de l'Abbaye Royale + Musée d'art moderne + Nocturne Les étoiles de Fontevraud",
-        "price": 1000,
-        "timedelta": 20,
-        "numberOfTickets": 10,
-        "addressType": "other",
-        "otherAddress": "1 rue des polissons, Paris 75017",
-    },
-    {
-        "name": "Visite de la mine Gabe Gottes",
-        "price": 800,
-        "timedelta": 18,
-        "numberOfTickets": 30,
-        "addressType": "school",
-        "otherAddress": "",
-    },
-    {
-        "name": "Clued'au Château",
-        "price": 1200,
-        "timedelta": 15,
-        "numberOfTickets": 25,
-        "addressType": "other",
-        "otherAddress": "1 rue des polissons, Paris 75017",
-    },
-    {
-        "name": "Visitez le Panthéon, Chef d'œuvre de l'architecte Soufflot",
-        "price": 1200,
-        "timedelta": 22,
-        "numberOfTickets": 20,
-        "addressType": "offererVenue",
-        "otherAddress": "",
-    },
-    {
-        "name": "Arc de Triomphe : embrassez tout Paris du haut du monument emblématique",
-        "price": 1200,
-        "timedelta": 25,
-        "numberOfTickets": 5,
-        "addressType": "other",
-        "otherAddress": "1 rue des polissons, Paris 75017",
-    },
-    {
-        "name": "Site archéologique : un des plus vieux villages d'Europe (2500 ans avant JC)",
-        "price": 1200,
-        "timedelta": 27,
-        "numberOfTickets": 40,
-        "addressType": "school",
-        "otherAddress": "",
-    },
-    {
-        "name": "Spectacle nocturne Lux Salina",
-        "price": 600,
-        "timedelta": 8,
-        "numberOfTickets": 50,
-        "addressType": "other",
-        "otherAddress": "1 rue des polissons, Paris 75017",
-    },
-    {
-        "name": "Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
-        "price": 900,
-        "timedelta": 5,
-        "numberOfTickets": 15,
-        "addressType": "offererVenue",
-        "otherAddress": "",
-    },
-    {
-        "name": "Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
-        "price": 860,
-        "timedelta": 9,
-        "numberOfTickets": 100,
-        "addressType": "school",
-        "otherAddress": "",
-    },
+@dataclass
+class StockData:
+    name: str
+    price: int
+    timedelta: int
+    numberOfTickets: int
+    addressType: str
+    otherAddress: str
+
+
+FAKE_STOCK_DATA = [
+    StockData(
+        name="Visite de l'Abbaye Royale + Musée d'art moderne + Nocturne Les étoiles de Fontevraud",
+        price=1000,
+        timedelta=20,
+        numberOfTickets=10,
+        addressType="other",
+        otherAddress="1 rue des polissons, Paris 75017",
+    ),
+    StockData(
+        name="Visite de la mine Gabe Gottes",
+        price=800,
+        timedelta=18,
+        numberOfTickets=30,
+        addressType="school",
+        otherAddress="",
+    ),
+    StockData(
+        name="Clued'au Château",
+        price=1200,
+        timedelta=15,
+        numberOfTickets=25,
+        addressType="other",
+        otherAddress="1 rue des polissons, Paris 75017",
+    ),
+    StockData(
+        name="Visitez le Panthéon, Chef d'œuvre de l'architecte Soufflot",
+        price=1200,
+        timedelta=22,
+        numberOfTickets=20,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    StockData(
+        name="Arc de Triomphe : embrassez tout Paris du haut du monument emblématique",
+        price=1200,
+        timedelta=25,
+        numberOfTickets=5,
+        addressType="other",
+        otherAddress="1 rue des polissons, Paris 75017",
+    ),
+    StockData(
+        name="Site archéologique : un des plus vieux villages d'Europe (2500 ans avant JC)",
+        price=1200,
+        timedelta=27,
+        numberOfTickets=40,
+        addressType="school",
+        otherAddress="",
+    ),
+    StockData(
+        name="Spectacle nocturne Lux Salina",
+        price=600,
+        timedelta=8,
+        numberOfTickets=50,
+        addressType="other",
+        otherAddress="1 rue des polissons, Paris 75017",
+    ),
+    StockData(
+        name="Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
+        price=900,
+        timedelta=5,
+        numberOfTickets=15,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    StockData(
+        name="Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
+        price=860,
+        timedelta=9,
+        numberOfTickets=100,
+        addressType="school",
+        otherAddress="",
+    ),
 ]
 
-PASSED_STOCK_DATA: list[dict[str, Union[str, int]]] = [
-    {
-        "name": "Passée: Spectacle nocturne Lux Salina",
-        "price": 600,
-        "timedelta": 8,
-        "numberOfTickets": 50,
-        "addressType": "other",
-        "otherAddress": "1 rue des polissons, Paris 75017",
-    },
-    {
-        "name": "Passée: Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
-        "price": 900,
-        "timedelta": 5,
-        "numberOfTickets": 15,
-        "addressType": "offererVenue",
-        "otherAddress": "",
-    },
-    {
-        "name": "Passée: Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
-        "price": 860,
-        "timedelta": 9,
-        "numberOfTickets": 100,
-        "addressType": "school",
-        "otherAddress": "",
-    },
+PASSED_STOCK_DATA: list[StockData] = [
+    StockData(
+        name="Passée: Spectacle nocturne Lux Salina",
+        price=600,
+        timedelta=8,
+        numberOfTickets=50,
+        addressType="other",
+        otherAddress="1 rue des polissons, Paris 75017",
+    ),
+    StockData(
+        name="Passée: Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
+        price=900,
+        timedelta=5,
+        numberOfTickets=15,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    StockData(
+        name="Passée: Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
+        price=860,
+        timedelta=9,
+        numberOfTickets=100,
+        addressType="school",
+        otherAddress="",
+    ),
 ]
 
 ADDRESSES = [
@@ -250,13 +260,13 @@ def create_industrial_educational_bookings() -> None:
 
 
 def _create_collective_stock(
-    stock_data: dict[str, Union[str, int]],
+    stock_data: StockData,
     now: datetime.datetime,
     venue: offerers_models.Venue,
     number_of_stocks: int = 2,
     is_passed: bool = False,
 ) -> list[educational_models.CollectiveStock]:
-    timedelta = int(stock_data["timedelta"])
+    timedelta = int(stock_data.timedelta)
 
     if is_passed:
         beginningDatetime = now - datetime.timedelta(days=timedelta)
@@ -265,12 +275,12 @@ def _create_collective_stock(
 
     return educational_factories.CollectiveStockFactory.create_batch(
         number_of_stocks,
-        price=stock_data["price"],
+        price=stock_data.price,
         beginningDatetime=beginningDatetime,
-        numberOfTickets=stock_data["numberOfTickets"],
+        numberOfTickets=stock_data.numberOfTickets,
         collectiveOffer__durationMinutes=60,
         collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
-        collectiveOffer__name=stock_data["name"],
+        collectiveOffer__name=stock_data.name,
         collectiveOffer__venue=venue,
         collectiveOffer__students=[
             educational_models.StudentLevels.CAP1,
@@ -279,8 +289,8 @@ def _create_collective_stock(
             educational_models.StudentLevels.GENERAL2,
         ],
         collectiveOffer__offerVenue={
-            "addressType": stock_data["addressType"],
-            "otherAddress": stock_data["otherAddress"],
+            "addressType": stock_data.addressType,
+            "otherAddress": stock_data.otherAddress,
             "venueId": humanize(venue.id),
         },
         collectiveOffer__contactEmail="miss.rond@point.com",
