@@ -19,6 +19,7 @@ from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validati
 from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_validation_period
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_all_offerer_reimbursement_details
 from pcapi.routes.serialization.reimbursement_csv_serialize import generate_reimbursement_details_csv
+from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 today = datetime.utcnow().date()
@@ -29,7 +30,7 @@ reimbursement_period = (today, in_two_days)
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class ReimbursementDetailsTest:
-    def test_reimbursement_details_as_csv_individual_booking(self):
+    def test_reimbursement_details_as_csv_individual_booking(self) -> None:
         business_unit = offerers_factories.VenueFactory(
             siret="siret bu",
             name="Ma petite business unit",
@@ -84,15 +85,17 @@ class ReimbursementDetailsTest:
         assert row[10] == booking.venue.siret
         # offer and booking
         assert row[11] == booking.stock.offer.name
-        assert row[12] is None  # no redactor name..."Doux"
-        assert row[13] is None  # ... for individual offer
-        assert row[14] == booking.token
-        assert row[15] == booking.dateUsed
+        assert row[12] == None  # Unused for individual offer"Doux"
+        assert row[13] == None  # Unused for individual offer
+        assert row[14] == ""  # Unused for individual offer
+        assert row[15] == ""  # Unused for individual offer
+        assert row[16] == booking.token
+        assert row[17] == booking.dateUsed
         # reimbursement
-        assert row[16] == "21,00"
-        assert row[17] == "100 %"
         assert row[18] == "21,00"
-        assert row[19] == "offre grand public"
+        assert row[19] == "100 %"
+        assert row[20] == "21,00"
+        assert row[21] == "offre grand public"
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
@@ -111,17 +114,19 @@ class ReimbursementDetailsTest:
         assert row[10] == booking.venue.siret
         # offer and booking
         assert row[11] == booking.stock.offer.name
-        assert row[12] is None  # no redactor name...
-        assert row[13] is None  # ... for individual offer
-        assert row[14] == booking.token
-        assert row[15] == booking.dateUsed
+        assert row[12] is None  # Unused for individual offer
+        assert row[13] is None  # Unused for individual offer
+        assert row[14] == ""  # Unused for individual offer
+        assert row[15] == ""  # Unused for individual offer
+        assert row[16] == booking.token
+        assert row[17] == booking.dateUsed
         # reimbursement
-        assert row[16] == "21,00"
-        assert row[17] == f"{int(payment.reimbursementRate * 100)}%"
         assert row[18] == "21,00"
-        assert row[19] == "offre grand public"
+        assert row[19] == f"{int(payment.reimbursementRate * 100)}%"
+        assert row[20] == "21,00"
+        assert row[21] == "offre grand public"
 
-    def test_reimbursement_details_as_csv_educational_booking(self):
+    def test_reimbursement_details_as_csv_educational_booking(self) -> None:
         # given
         booking = bookings_factories.UsedEducationalBookingFactory(
             dateUsed=datetime(2022, 6, 18),
@@ -148,15 +153,15 @@ class ReimbursementDetailsTest:
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
         assert row[12] == booking.educationalBooking.educationalRedactor.lastName
         assert row[13] == booking.educationalBooking.educationalRedactor.firstName
-        assert row[19] == "offre collective"
+        assert row[21] == "offre collective"
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
         assert row[12] == booking.educationalBooking.educationalRedactor.lastName
         assert row[13] == booking.educationalBooking.educationalRedactor.firstName
-        assert row[19] == "offre collective"
+        assert row[21] == "offre collective"
 
-    def test_reimbursement_details_with_custom_rule_as_csv(self):
+    def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
         custom_reimbursement_rule = payments_factories.CustomReimbursementRuleFactory(
             amount=None,
@@ -188,16 +193,16 @@ class ReimbursementDetailsTest:
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[17] == "12,34 %"
+        assert row[19] == "12,34 %"
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[17] == ""
+        assert row[19] == ""
 
 
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
-def test_generate_reimbursement_details_csv():
+def test_generate_reimbursement_details_csv() -> None:
     # given
     payment = finance_factories.PaymentFactory(
         booking__stock__offer__name='Mon titre ; un peu "spécial"',
@@ -236,21 +241,21 @@ def test_generate_reimbursement_details_csv():
     rows = csv.splitlines()
     assert (
         rows[0]
-        == '''"Réservations concernées par le remboursement";"Date du justificatif";"N° du justificatif";"N° de virement";"Point de remboursement";"Adresse du point de remboursement";"SIRET du point de remboursement";"IBAN";"Raison sociale du lieu";"Adresse du lieu";"SIRET du lieu";"Nom de l'offre";"Nom (offre collective)";"Prénom (offre collective)";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Type d'offre"'''
+        == '''"Réservations concernées par le remboursement";"Date du justificatif";"N° du justificatif";"N° de virement";"Point de remboursement";"Adresse du point de remboursement";"SIRET du point de remboursement";"IBAN";"Raison sociale du lieu";"Adresse du lieu";"SIRET du lieu";"Nom de l'offre";"Nom (offre collective)";"Prénom (offre collective)";"Nom de l'établissement (offre collective)";"Date de l'évènement (offre collective)";"Contremarque";"Date de validation de la réservation";"Montant de la réservation";"Barème";"Montant remboursé";"Type d'offre"'''
     )
     assert (  # new pricing+cashflow data
         rows[1]
-        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
+        == f'''"Validées et remboursables sur juin : 2nde quinzaine";"{invoice_date_as_str}";"F220000001";"VIR1";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100 %";"21,00";"offre grand public"'''
     )
     assert (  # legacy payment data
         rows[2]
-        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
+        == '''"Validées et remboursables sur juin : 2nde quinzaine";"";"";"";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"CF13QSDFGH456789";"Mon lieu ; un peu ""spécial""";"1 boulevard Poissonnière 75000 Paris";"siret-1234";"Mon titre ; un peu ""spécial""";"";"";"";"";"0E2722";"2022-01-18 12:00:00";"21,00";"100%";"21,00";"offre grand public"'''
     )
 
 
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
-def test_find_all_offerer_reimbursement_details():
+def test_find_all_offerer_reimbursement_details() -> None:
     offerer = offerers_factories.OffererFactory()
     venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
     venue2 = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -282,7 +287,7 @@ def test_find_all_offerer_reimbursement_details():
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class CollectiveReimbursementDetailsTest:
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    def test_find_all_offerer_reimbursement_details_on_collective(self):
+    def test_find_all_offerer_reimbursement_details_on_collective(self) -> None:
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
         venue2 = offerers_factories.VenueFactory(
@@ -336,6 +341,10 @@ class CollectiveReimbursementDetailsTest:
             booking3.collectiveStock.collectiveOffer.name,
             "Khteur",
             "Reda",
+            booking3.educationalInstitution.name,
+            utc_datetime_to_department_timezone(booking3.collectiveStock.beginningDatetime, "75").strftime(
+                "%d/%m/%Y %H:%M"
+            ),
             None,
             booking3.dateUsed,
             "100,00",
@@ -345,7 +354,7 @@ class CollectiveReimbursementDetailsTest:
         ]
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    def test_reimbursement_details_as_csv_individual_booking(self):
+    def test_reimbursement_details_as_csv_individual_booking(self) -> None:
         business_unit = offerers_factories.VenueFactory(
             siret="siret bu",
             name="Ma petite business unit",
@@ -400,15 +409,17 @@ class CollectiveReimbursementDetailsTest:
         assert row[10] == booking.venue.siret
         # offer and booking
         assert row[11] == booking.stock.offer.name
-        assert row[12] == ""  # no redactor name...
-        assert row[13] == ""  # ... for individual offer
-        assert row[14] == booking.token
-        assert row[15] == booking.dateUsed
+        assert row[12] == ""  # Unused for individual offer
+        assert row[13] == ""  # Unused for individual offer
+        assert row[14] == ""  # Unused for individual offer
+        assert row[15] == ""  # Unused for individual offer
+        assert row[16] == booking.token
+        assert row[17] == booking.dateUsed
         # reimbursement
-        assert row[16] == "21,00"
-        assert row[17] == "100 %"
         assert row[18] == "21,00"
-        assert row[19] == "offre grand public"
+        assert row[19] == "100 %"
+        assert row[20] == "21,00"
+        assert row[21] == "offre grand public"
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
@@ -427,18 +438,20 @@ class CollectiveReimbursementDetailsTest:
         assert row[10] == booking.venue.siret
         # offer and booking
         assert row[11] == booking.stock.offer.name
-        assert row[12] is None  # no redactor name...
-        assert row[13] is None  # ... for individual offer
-        assert row[14] == booking.token
-        assert row[15] == booking.dateUsed
+        assert row[12] is None  # Unused for individual offer
+        assert row[13] is None  # Unused for individual offer
+        assert row[14] == ""  # Unused for individual offer
+        assert row[15] == ""  # Unused for individual offer
+        assert row[16] == booking.token
+        assert row[17] == booking.dateUsed
         # reimbursement
-        assert row[16] == "21,00"
-        assert row[17] == f"{int(payment.reimbursementRate * 100)}%"
         assert row[18] == "21,00"
-        assert row[19] == "offre grand public"
+        assert row[19] == f"{int(payment.reimbursementRate * 100)}%"
+        assert row[20] == "21,00"
+        assert row[21] == "offre grand public"
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    def test_reimbursement_details_as_csv_collective_booking(self):
+    def test_reimbursement_details_as_csv_collective_booking(self) -> None:
         business_unit = offerers_factories.VenueFactory(
             siret="siret bu",
             name="Ma petite business unit",
@@ -489,16 +502,20 @@ class CollectiveReimbursementDetailsTest:
         assert row[11] == booking.collectiveStock.collectiveOffer.name
         assert row[12] == booking.educationalRedactor.lastName
         assert row[13] == booking.educationalRedactor.firstName
-        assert row[14] is None
-        assert row[15] == booking.dateUsed
+        assert row[14] == booking.educationalInstitution.name
+        assert row[15] == utc_datetime_to_department_timezone(booking.collectiveStock.beginningDatetime, "75").strftime(
+            "%d/%m/%Y %H:%M"
+        )
+        assert row[16] is None
+        assert row[17] == booking.dateUsed
         # reimbursement
-        assert row[16] == "21,00"
-        assert row[17] == "100 %"
         assert row[18] == "21,00"
-        assert row[19] == "offre collective"
+        assert row[19] == "100 %"
+        assert row[20] == "21,00"
+        assert row[21] == "offre collective"
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    def test_reimbursement_details_with_custom_rule_as_csv(self):
+    def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
         custom_reimbursement_rule = payments_factories.CustomReimbursementRuleFactory(
             amount=None,
@@ -530,14 +547,14 @@ class CollectiveReimbursementDetailsTest:
 
         # legacy payment data
         row = ReimbursementDetails(payments_info[1]).as_csv_row()
-        assert row[17] == ""
+        assert row[19] == ""
 
         # new pricing+cashflow data
         row = ReimbursementDetails(payments_info[0]).as_csv_row()
-        assert row[17] == "12,34 %"
+        assert row[19] == "12,34 %"
 
 
-def test_get_validation_period():
+def test_get_validation_period() -> None:
     assert (
         _get_validation_period(cutoff=datetime(2022, 1, 16)) == "Validées et remboursables sur janvier : 1ère quinzaine"
     )
@@ -546,7 +563,7 @@ def test_get_validation_period():
     )
 
 
-def test_legacy_get_validation_period():
+def test_legacy_get_validation_period() -> None:
     assert (
         _legacy_get_validation_period("pass Culture Pro - remboursement 1ère quinzaine 06-2019")
         == "Validées et remboursables sur mai : 2nde quinzaine"

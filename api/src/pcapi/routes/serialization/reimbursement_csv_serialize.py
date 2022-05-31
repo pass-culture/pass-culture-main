@@ -18,6 +18,7 @@ import pcapi.core.finance.utils as finance_utils
 from pcapi.core.offers.serialize import serialize_offer_type_educational_or_individual
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.date import MONTHS_IN_FRENCH
+from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 def format_number_as_french(num: Union[int, float]) -> str:
@@ -89,6 +90,8 @@ class ReimbursementDetails:
         "Nom de l'offre",
         "Nom (offre collective)",
         "Prénom (offre collective)",
+        "Nom de l'établissement (offre collective)",
+        "Date de l'évènement (offre collective)",
         "Contremarque",
         "Date de validation de la réservation",
         "Montant de la réservation",
@@ -151,13 +154,21 @@ class ReimbursementDetails:
 
         # Offer, redactor and booking info
         self.offer_name = payment_info.offer_name
-        self.redactor_last_name = getattr(payment_info, "redactor_lastname", "")
-        self.redactor_first_name = getattr(payment_info, "redactor_firstname", "")
         self.booking_token = getattr(payment_info, "booking_token", None)
         self.booking_used_date = payment_info.booking_used_date
         self.booking_total_amount = format_number_as_french(
             payment_info.booking_amount * getattr(payment_info, "booking_quantity", 1)
         )
+
+        # Collective offer specific fields
+        self.redactor_last_name = getattr(payment_info, "redactor_lastname", "")
+        self.redactor_first_name = getattr(payment_info, "redactor_firstname", "")
+        self.event_date = getattr(payment_info, "event_date", "")
+        self.institution_name = getattr(payment_info, "institution_name", "")
+        venue_departement_code = getattr(payment_info, "venue_departement_code", None)
+        if self.event_date and venue_departement_code:
+            timezoned_event_date = utc_datetime_to_department_timezone(self.event_date, venue_departement_code)
+            self.event_date = timezoned_event_date.strftime("%d/%m/%Y %H:%M")
 
         # Reimbursement rate and amount
         if using_legacy_models:
@@ -200,6 +211,8 @@ class ReimbursementDetails:
             self.offer_name,
             self.redactor_last_name,
             self.redactor_first_name,
+            self.institution_name,
+            self.event_date,
             self.booking_token,
             self.booking_used_date,
             self.booking_total_amount,
