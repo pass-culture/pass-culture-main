@@ -1,10 +1,13 @@
 import datetime
+import logging
 
 from flask import current_app as app
 from redis import Redis
+from sqlalchemy.orm import exc as sqla_exc
 
 from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.phone_validation import sending_limit
 from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
@@ -15,6 +18,9 @@ from pcapi.utils import phone_number as phone_number_utils
 
 from . import constants
 from . import exceptions
+
+
+logger = logging.getLogger(__name__)
 
 
 def _check_phone_number_validation_is_authorized(user: users_models.User) -> None:
@@ -41,14 +47,55 @@ def _check_sms_sending_is_allowed(user: users_models.User) -> None:
         raise exceptions.SMSSendingLimitReached()
 
 
-def _check_phone_number_not_used(user: users_models.User, phone_number: str) -> None:
-    if db.session.query(
-        users_models.User.query.filter(
+def _ensure_phone_number_unicity(
+    user_validating_phone: users_models.User, phone_number: str, change_owner: bool = False
+) -> None:
+    """
+    We allow a user to validate a number on an account A
+    and then validate the same number on another account B.
+    If the account A is already beneficiary, we raise an error.
+    Once the account B validates the same number (flag change_owner=True),
+    we remove the validated phone on account A and keep track with fraud_checks.
+    """
+    try:
+        user_with_same_validated_number = users_models.User.query.filter(
             users_models.User.phoneNumber == phone_number, users_models.User.is_phone_validated
-        ).exists()
-    ).scalar():
-        fraud_api.handle_phone_already_exists(user, phone_number)
-        raise exceptions.PhoneAlreadyExists(phone_number)
+        ).one_or_none()
+    except sqla_exc.MultipleResultsFound:
+        logger.exception("Multiple users with the same validated phone number", extra={"phone_number": phone_number})
+        raise exceptions.PhoneAlreadyExists()
+
+    if not user_with_same_validated_number:
+        return
+
+    if user_with_same_validated_number.has_beneficiary_role:
+        fraud_api.handle_phone_already_exists(user_validating_phone, phone_number)
+        raise exceptions.PhoneAlreadyExists()
+
+    if not change_owner:
+        return
+
+    user_with_same_validated_number.phoneValidationStatus = users_models.PhoneValidationStatusType.UNVALIDATED
+
+    unvalidated_by_peer_check = fraud_models.BeneficiaryFraudCheck(
+        user=user_with_same_validated_number,
+        type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER],
+        reason=f"Phone number {phone_number} was unvalidated by user {user_validating_phone.id}",
+        status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+        thirdPartyId=f"PC-{user_with_same_validated_number.id}",
+    )
+
+    unvalidated_for_peer_check = fraud_models.BeneficiaryFraudCheck(
+        user=user_validating_phone,
+        type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER],
+        reason=f"The phone number validation had the following side effect: phone number {phone_number} was unvalidated for user {user_with_same_validated_number.id}",
+        status=fraud_models.FraudCheckStatus.SUSPICIOUS,
+        thirdPartyId=f"PC-{user_validating_phone.id}",
+    )
+
+    repository.save(unvalidated_by_peer_check, unvalidated_for_peer_check)
 
 
 def _check_and_update_phone_validation_attempts(redis: Redis, user: users_models.User) -> None:
@@ -69,7 +116,7 @@ def send_phone_validation_code(user: users_models.User, phone_number: str) -> No
     _check_phone_number_validation_is_authorized(user)
     _check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
     _check_sms_sending_is_allowed(user)
-    _check_phone_number_not_used(user, phone_data.phone_number)
+    _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
     # delete previous token so that the user does not validate with another phone number
     users_models.Token.query.filter(
@@ -97,7 +144,6 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     _check_phone_number_validation_is_authorized(user)
     _check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
-    _check_phone_number_not_used(user, phone_data.phone_number)
     _check_and_update_phone_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
 
     token = users_models.Token.query.filter(
@@ -116,6 +162,8 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
         raise exceptions.ExpiredCode()
 
     db.session.delete(token)
+
+    _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=True)
 
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED  # type: ignore [assignment]
     repository.save(user)
