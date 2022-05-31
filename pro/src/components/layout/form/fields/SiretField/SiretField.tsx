@@ -12,11 +12,13 @@ import { useField } from 'react-final-form'
 interface ISiretFieldProps {
   label: string
   readOnly: boolean
+  siren?: string
 }
 
 const SiretField = ({
   label = 'SIRET : ',
   readOnly = true,
+  siren,
 }: ISiretFieldProps): JSX.Element => {
   const isEntrepriseApiDisabled: boolean = useActiveFeature(
     'DISABLE_ENTERPRISE_API'
@@ -34,7 +36,14 @@ const SiretField = ({
   let validate: ((siret: string) => Promise<string | undefined>) | null = null
 
   if (!(haveInitialValue || isEntrepriseApiDisabled)) {
-    validate = (siret: string) => siretApiValidate(siret, commentValue)
+    validate = (siret: string) => {
+      if (siren && siret && !siret.startsWith(siren)) {
+        return Promise.resolve(
+          'Le code SIRET doit correspondre à un établissement de votre structure'
+        )
+      }
+      return siretApiValidate(siret, commentValue)
+    }
   }
 
   let tooltip: JSX.Element | null
