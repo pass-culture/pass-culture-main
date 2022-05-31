@@ -357,6 +357,8 @@ class FraudReasonCode(enum.Enum):
     NOT_ELIGIBLE = "not_eligible"
     PHONE_ALREADY_EXISTS = "phone_already_exists"
     PHONE_NOT_VALIDATED = "phone_not_validated"
+    PHONE_UNVALIDATED_BY_PEER = "phone_unvalidated_by_peer"
+    PHONE_UNVALIDATION_FOR_PEER = "phone_unvalidation_for_peer"
     PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
     REFUSED_BY_OPERATOR = "refused_by_operator"
     SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"

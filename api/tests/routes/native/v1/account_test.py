@@ -1004,6 +1004,7 @@ class SendPhoneValidationCodeTest:
             isEmailValidated=True,
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33102030405",
+            roles=[UserRole.BENEFICIARY],
         )
         user = users_factories.UserFactory(
             isEmailValidated=True,
@@ -1299,11 +1300,12 @@ class ValidatePhoneNumberTest:
         assert user.is_subscriptionState_phone_validation_ko
         assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
-    def test_validate_phone_number_with_already_validated_phone(self, client, app):
+    def test_validate_phone_number_with_already_validated_phone(self, client):
         users_factories.UserFactory(
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
+            roles=[UserRole.BENEFICIARY],
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         client.with_token(email=user.email)
