@@ -109,7 +109,6 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
         if is_created:
             fulfill_account_password(model)
             model.needsToFillCulturalSurvey = False
-            model.hasSeenTutorials = True
 
         model.publicName = f"{model.firstName} {model.lastName}"
         model.remove_admin_role()
