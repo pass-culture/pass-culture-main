@@ -4,7 +4,9 @@ import pathlib
 import PIL
 import pytest
 
+from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
+from pcapi.utils.image_conversion import ImageRatioError
 from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _resize_image
 from pcapi.utils.image_conversion import _transpose_image
@@ -81,6 +83,13 @@ class ImageConversionTest:
 
         result_image = PIL.Image.open(io.BytesIO(standardized_image)).convert("RGB")
         assert (result_image.width / result_image.height) == pytest.approx(ImageRatio.LANDSCAPE.value, 0.01)
+
+    def test_crop_with_incorrect_ratio(self):
+        image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
+
+        with pytest.raises(ImageRatioError):
+            crop_params = CropParams(height_crop_percent=0.3, width_crop_percent=0.3)
+            standardize_image(image_as_bytes, crop_params=crop_params, ratio=ImageRatio.LANDSCAPE)
 
     def test_image_shrink_with_same_ratio(self):
         image_as_bytes = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
