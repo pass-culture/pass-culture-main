@@ -320,4 +320,4 @@ class VenueBannerTest:
         with override_settings(OBJECT_STORAGE_URL=tmpdir.dirname, LOCAL_STORAGE_DIR=pathlib.Path(tmpdir.dirname)):
             response = client.post(url, files=file)
             assert response.status_code == 400
-            assert response.json["code"] == "BAD_RATIO"
+            assert response.json["code"] == "BAD_IMAGE_RATIO"

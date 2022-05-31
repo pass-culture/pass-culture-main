@@ -19,6 +19,7 @@ from pcapi.models.api_errors import DecimalCastError
 from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.error_handlers.utils import format_sql_statement_params
 from pcapi.utils.human_ids import NonDehumanizableId
+from pcapi.utils.image_conversion import ImageRatioError
 
 
 logger = logging.getLogger(__name__)
@@ -146,3 +147,9 @@ def database_error_handler(error: DatabaseError) -> tuple[dict, int]:
     errors = ApiErrors()
     errors.add_error("global", "Il semble que nous ayons des problèmes techniques :(" + " On répare ça au plus vite.")
     return jsonify(errors.errors), 500  # type: ignore [return-value]
+
+
+@app.errorhandler(ImageRatioError)
+def handle_ratio_error(error: ImageRatioError) -> ApiErrorResponse:
+    logger.info("Image ratio error: %s", error)
+    return jsonify({"code": "BAD_IMAGE_RATIO", "extra": str(error)}), 400
