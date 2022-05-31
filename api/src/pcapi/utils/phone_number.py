@@ -4,7 +4,7 @@ import phonenumbers
 from phonenumbers import PhoneNumber
 from phonenumbers.phonenumberutil import NumberParseException
 
-from pcapi.core.users.exceptions import InvalidPhoneNumber
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 
 
 class ParsedPhoneNumber:
@@ -28,12 +28,12 @@ def parse_phone_number(phone_number: Optional[str], region: Optional[str] = None
         else:
             parsed_phone_number = phonenumbers.parse(phone_number)
     except NumberParseException as error:
-        raise InvalidPhoneNumber(str(phone_number)) from error
+        raise phone_validation_exceptions.InvalidPhoneNumber(str(phone_number)) from error
     except TypeError as error:
-        raise InvalidPhoneNumber(str(phone_number)) from error
+        raise phone_validation_exceptions.InvalidPhoneNumber(str(phone_number)) from error
 
     if not phonenumbers.is_valid_number(parsed_phone_number):
-        raise InvalidPhoneNumber(str(phone_number))
+        raise phone_validation_exceptions.InvalidPhoneNumber(str(phone_number))
 
     return parsed_phone_number
 
