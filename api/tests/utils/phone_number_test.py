@@ -1,6 +1,6 @@
 import pytest
 
-from pcapi.core.users.exceptions import InvalidPhoneNumber
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.utils import phone_number as phone_number_utils
 
 
@@ -38,8 +38,8 @@ def test_parse_phone_number():
 
 
 def test_parse_invalid_phone_number():
-    with pytest.raises(InvalidPhoneNumber):
+    with pytest.raises(phone_validation_exceptions.InvalidPhoneNumber):
         phone_number_utils.parse_phone_number(None, "FR")
 
-    with pytest.raises(InvalidPhoneNumber):
+    with pytest.raises(phone_validation_exceptions.InvalidPhoneNumber):
         phone_number_utils.parse_phone_number("+33123", "FR")
