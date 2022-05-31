@@ -6,6 +6,7 @@
   display: inline-flex;
   cursor: pointer;
   align-items: center;
+  width: 100%;
 
   &-label {
     line-height: 1em;
@@ -13,6 +14,10 @@
     :disabled + & {
       color: forms.$input-text-color-disabled;
       cursor: default;
+    }
+
+    &-checked {
+      color: colors.$primary;
     }
   }
 
@@ -33,6 +38,7 @@
 
     &:checked {
       box-shadow: inset 0 0 0 2px colors.$white;
+      background: radial-gradient(colors.$primary 0%, colors.$primary 40%, transparent 50%, transparent);
     }
 
     &:hover:checked,
@@ -58,6 +64,13 @@
     &:checked:disabled {
       box-shadow: inset 0 0 0 2px colors.$white;
       background-color: forms.$input-border-color-disabled;
+    }
+  }
+
+  .base-radio-input {
+    &:checked {
+      border-color: colors.$primary;
+      background: radial-gradient(colors.$primary 0%, colors.$primary 40%, transparent 50%, transparent);
     }
   }
 }
