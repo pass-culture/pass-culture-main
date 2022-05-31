@@ -339,6 +339,10 @@ def _get_sent_pricings_for_collective_bookings(
             educational_models.EducationalRedactor,
             educational_models.CollectiveBooking.educationalRedactor,
         )
+        .join(
+            educational_models.EducationalInstitution,
+            educational_models.CollectiveBooking.educationalInstitution,
+        )
         # There should be a Venue with the same SIRET as the business
         # unit... but edition has been sloppy and there are
         # inconsistencies. See also similar outer joins in `finance/api.py`.
@@ -352,8 +356,10 @@ def _get_sent_pricings_for_collective_bookings(
         .with_entities(
             educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
             educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
+            educational_models.EducationalInstitution.name.label("institution_name"),  # type: ignore [attr-defined]
             educational_models.CollectiveBooking.dateUsed.label("booking_used_date"),
             educational_models.CollectiveStock.price.label("booking_amount"),
+            educational_models.CollectiveStock.beginningDatetime.label("event_date"),
             educational_models.CollectiveOffer.name.label("offer_name"),
             sqla.true().label("offer_is_educational"),
             offerers_models.Venue.name.label("venue_name"),
@@ -370,6 +376,7 @@ def _get_sent_pricings_for_collective_bookings(
                 offerers_models.Offerer.city,
             ).label("venue_city"),
             offerers_models.Venue.siret.label("venue_siret"),
+            offerers_models.Venue.departementCode.label("venue_departement_code"),
             BusinessUnitVenue.name.label("business_unit_name"),
             sqla_func.coalesce(
                 BusinessUnitVenue.address,
