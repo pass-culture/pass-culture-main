@@ -5,11 +5,23 @@ class PhoneVerificationException(Exception):
     pass
 
 
-class PhoneVerificationCodeSendingException(PhoneVerificationException):
+class UserPhoneNumberAlreadyValidated(PhoneVerificationException):
+    pass
+
+
+class InvalidPhoneNumber(PhoneVerificationException):
+    pass
+
+
+class InvalidCountryCode(InvalidPhoneNumber):
     pass
 
 
 class SMSSendingLimitReached(PhoneVerificationException):
+    pass
+
+
+class PhoneAlreadyExists(PhoneVerificationException):
     pass
 
 
@@ -19,22 +31,6 @@ class PhoneValidationAttemptsLimitReached(PhoneVerificationException):
         super().__init__()
 
 
-class PhoneAlreadyExists(PhoneVerificationException):
-    pass
-
-
-class UnvalidatedEmail(PhoneVerificationException):
-    pass
-
-
-class UserPhoneNumberAlreadyValidated(PhoneVerificationException):
-    pass
-
-
-class UserAlreadyBeneficiary(PhoneVerificationException):
-    pass
-
-
 class NotValidCode(PhoneVerificationException):
     def __init__(self, remaining_attempts: typing.Optional[int] = None):
         self.remaining_attempts = remaining_attempts
@@ -42,16 +38,4 @@ class NotValidCode(PhoneVerificationException):
 
 
 class ExpiredCode(NotValidCode):
-    pass
-
-
-class InvalidPhoneNumber(PhoneVerificationException):
-    pass
-
-
-class BlacklistedPhoneNumber(InvalidPhoneNumber):
-    pass
-
-
-class InvalidCountryCode(InvalidPhoneNumber):
     pass

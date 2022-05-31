@@ -893,7 +893,7 @@ class ShowEligibleCardTest:
 
 class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code(self, client, app):
-        user = users_factories.UserFactory(phoneNumber="+33601020304")
+        user = users_factories.UserFactory()
         client.with_token(email=user.email)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
@@ -1119,7 +1119,6 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
-        assert user.is_subscriptionState_phone_validated()
         assert not user.has_beneficiary_role
 
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
@@ -1150,7 +1149,6 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 204
         user = User.query.get(user.id)
         assert user.is_phone_validated
-        assert user.is_subscriptionState_phone_validated()
         assert user.has_beneficiary_role
 
     @override_settings(MAX_PHONE_VALIDATION_ATTEMPTS=1)
@@ -1172,7 +1170,6 @@ class ValidatePhoneNumberTest:
 
         db.session.refresh(user)
         assert not user.is_phone_validated
-        assert user.is_subscriptionState_phone_validation_ko
 
         attempts_count = int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}"))
         assert attempts_count == 1
@@ -1318,12 +1315,6 @@ class ValidatePhoneNumberTest:
         assert response.status_code == 400
         user = User.query.get(user.id)
         assert not user.is_phone_validated
-        assert user.is_subscriptionState_phone_validation_ko
-
-        token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
-        assert not token
-
-        assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
 
 
 class SuspendAccountTest:

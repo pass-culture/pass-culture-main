@@ -108,12 +108,6 @@ def get_favorites_for_offers(offer_ids: list[int]) -> list[models.Favorite]:
     return models.Favorite.query.filter(models.Favorite.offerId.in_(offer_ids)).all()
 
 
-def does_validated_phone_exist(phone_number: str) -> bool:
-    return bool(
-        models.User.query.filter(models.User.phoneNumber == phone_number, models.User.is_phone_validated).count()
-    )
-
-
 def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offerer) -> models.User:
     return (
         models.User.query.join(offerers_models.UserOfferer)
