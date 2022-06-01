@@ -9,5 +9,6 @@ export { default as DatePicker } from './DatePicker'
 export { default as TimePicker } from './TimePicker'
 export { default as PasswordInput } from './PasswordInput'
 export { default as SirenInput } from './SirenInput'
+export { default as MultiSelectAutocomplete } from './MultiSelectAutoComplete'
 
 export * as shared from './shared'

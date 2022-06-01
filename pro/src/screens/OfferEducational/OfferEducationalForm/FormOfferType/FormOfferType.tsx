@@ -11,11 +11,10 @@ import {
   IEducationalSubCategory,
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
+import { MultiSelectAutocomplete, Select, Tag, TextArea, TextInput } from 'ui-kit'
 import React, { useEffect, useState } from 'react'
-import { Select, TextArea, TextInput } from 'ui-kit'
 
 import FormLayout from 'new_components/FormLayout'
-import MultiSelectAutocomplete from 'ui-kit/form/MultiSelectAutoComplete/MultiSelectAutocomplete'
 import { SelectOption } from 'custom_types/form'
 import { useFormikContext } from 'formik'
 
@@ -102,7 +101,7 @@ const FormOfferType = ({
         </FormLayout.Row>
       )}
       {enableEducationalDomains && (
-        <FormLayout.Row lgSpaceAfter>
+        <FormLayout.Row >
           <MultiSelectAutocomplete
             options={domainsOptions}
             label="Domaine artistique et culturel"
