@@ -245,3 +245,8 @@ export type EditEducationalOfferPayload = Omit<
 > & {
   extraData?: Partial<EducationalOfferModelPayload['extraData']>
 }
+
+export type EducationalDomain = {
+  id: number
+  name: string
+}
