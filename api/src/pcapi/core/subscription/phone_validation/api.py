@@ -55,7 +55,9 @@ def _ensure_phone_number_unicity(
     and then validate the same number on another account B.
     If the account A is already beneficiary, we raise an error.
     Once the account B validates the same number (flag change_owner=True),
-    we remove the validated phone on account A and keep track with fraud_checks.
+    we remove the validated phone on account A and we create "SUSPICIOUS" fraud_checks to keep a track of this action:
+    - a fraud_check with reasonCode PHONE_UNVALIDATED_BY_PEER on account A: the phone was unvalidated by account B
+    - a fraud_check with reasonCode PHONE_UNVALIDATED_FOR_PEER on account B: the phone was unvalidated for account A
     """
     try:
         user_with_same_validated_number = users_models.User.query.filter(
