@@ -148,7 +148,7 @@ def upsert_venue_banner(venue_id: str) -> GetVenueResponseModel:
         content = {"code": "BANNER_TOO_BIG", "message": str(err)}
         raise ApiErrors(content, status_code=400)
     except pydantic.ValidationError as err:
-        locations = ", ".join([loc for e in err.errors() for loc in e["loc"]])
+        locations = ", ".join([loc for e in err.errors() for loc in e["loc"]])  # type: ignore [misc]
         content = {"code": "INVALID_BANNER_PARAMS", "message": locations}
         raise ApiErrors(content, status_code=400)
 
