@@ -1,4 +1,5 @@
 import datetime
+from typing import Union
 
 from pcapi.core.bookings.factories import EducationalBookingFactory
 from pcapi.core.bookings.factories import UsedEducationalBookingFactory
@@ -9,54 +10,122 @@ from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import EducationalEventStockFactory
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils.human_ids import humanize
 
 
-FAKE_STOCK_DATA = [
+FAKE_STOCK_DATA: list[dict[str, Union[str, int]]] = [
     {
         "name": "Visite de l'Abbaye Royale + Musée d'art moderne + Nocturne Les étoiles de Fontevraud",
         "price": 1000,
         "timedelta": 20,
+        "numberOfTickets": 10,
+        "addressType": "other",
+        "otherAddress": "1 rue des polissons, Paris 75017",
     },
     {
         "name": "Visite de la mine Gabe Gottes",
         "price": 800,
         "timedelta": 18,
+        "numberOfTickets": 30,
+        "addressType": "school",
+        "otherAddress": "",
     },
     {
         "name": "Clued'au Château",
         "price": 1200,
         "timedelta": 15,
+        "numberOfTickets": 25,
+        "addressType": "other",
+        "otherAddress": "1 rue des polissons, Paris 75017",
     },
     {
         "name": "Visitez le Panthéon, Chef d'œuvre de l'architecte Soufflot",
         "price": 1200,
         "timedelta": 22,
+        "numberOfTickets": 20,
+        "addressType": "offererVenue",
+        "otherAddress": "",
     },
     {
         "name": "Arc de Triomphe : embrassez tout Paris du haut du monument emblématique",
         "price": 1200,
         "timedelta": 25,
+        "numberOfTickets": 5,
+        "addressType": "other",
+        "otherAddress": "1 rue des polissons, Paris 75017",
     },
     {
         "name": "Site archéologique : un des plus vieux villages d'Europe (2500 ans avant JC)",
         "price": 1200,
         "timedelta": 27,
+        "numberOfTickets": 40,
+        "addressType": "school",
+        "otherAddress": "",
     },
     {
         "name": "Spectacle nocturne Lux Salina",
         "price": 600,
         "timedelta": 8,
+        "numberOfTickets": 50,
+        "addressType": "other",
+        "otherAddress": "1 rue des polissons, Paris 75017",
     },
     {
         "name": "Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
         "price": 900,
         "timedelta": 5,
+        "numberOfTickets": 15,
+        "addressType": "offererVenue",
+        "otherAddress": "",
     },
     {
         "name": "Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
         "price": 860,
         "timedelta": 9,
+        "numberOfTickets": 100,
+        "addressType": "school",
+        "otherAddress": "",
     },
+]
+
+PASSED_STOCK_DATA: list[dict[str, Union[str, int]]] = [
+    {
+        "name": "Passée: Spectacle nocturne Lux Salina",
+        "price": 600,
+        "timedelta": 8,
+        "numberOfTickets": 50,
+        "addressType": "other",
+        "otherAddress": "1 rue des polissons, Paris 75017",
+    },
+    {
+        "name": "Passée: Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
+        "price": 900,
+        "timedelta": 5,
+        "numberOfTickets": 15,
+        "addressType": "offererVenue",
+        "otherAddress": "",
+    },
+    {
+        "name": "Passée: Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
+        "price": 860,
+        "timedelta": 9,
+        "numberOfTickets": 100,
+        "addressType": "school",
+        "otherAddress": "",
+    },
+]
+
+ADDRESSES = [
+    {"department": "04", "postalCode": "04400", "city": "Barcelonnette"},
+    {"department": "14", "postalCode": "14000", "city": "Caen"},
+    {"department": "44", "postalCode": "44119", "city": "Treillières"},
+    {"department": "52", "postalCode": "52300", "city": "Joinville"},
+    {"department": "71", "postalCode": "71400", "city": "Autun"},
+    {"department": "78", "postalCode": "78646", "city": "Versailles"},
+    {"department": "83", "postalCode": "83230", "city": "Bormes-Les-Mimosas"},
+    {"department": "85", "postalCode": "85350", "city": "L'île-d'Yeu"},
+    {"department": "971", "postalCode": "97140", "city": "Marie-Galante"},
+    {"department": "974", "postalCode": "97410", "city": "Saint-Benoît"},
 ]
 
 
@@ -70,7 +139,13 @@ def create_industrial_educational_bookings() -> None:
         educational_factories.EducationalInstitutionFactory(institutionId="0290047U"),
         educational_factories.EducationalInstitutionFactory(institutionId="0290198H"),
         educational_factories.EducationalInstitutionFactory(institutionId="0910620E"),
-        educational_factories.EducationalInstitutionFactory(institutionId="0560071Y"),
+        educational_factories.EducationalInstitutionFactory(
+            institutionId="0560071Y",
+            name=None,
+            city=None,
+            email=None,
+            phoneNumber=None,
+        ),
     ]
 
     # This venue has no adageId hence its validation go through siren validation
@@ -78,6 +153,7 @@ def create_industrial_educational_bookings() -> None:
         name="Opéra Royal de Versailles",
         siret="95046949400021",
         managingOfferer__siren="950469494",
+        managingOfferer__name="Bonne structure pour l'EAC (siren)",
         adageId=None,
     )
     offerers_factories.UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
@@ -87,9 +163,19 @@ def create_industrial_educational_bookings() -> None:
         validationToken=None, user__email="pc.test.payments.eac@example.com"
     )
     venue_reimbursements = offerers_factories.CollectiveVenueFactory(
-        name="Théâtre des potirons",
+        name="Théâtre des potirons (remboursements)",
         managingOfferer=user_offerer_reimbursements.offerer,
     )
+
+    venues = []
+    for address in ADDRESSES:
+        venues.append(
+            offerers_factories.CollectiveVenueFactory(
+                departementCode=address["department"],
+                city=address["city"],
+                postalCode=address["postalCode"],
+            )
+        )
 
     deposits = []
     for educational_institution in educational_institutions:
@@ -97,16 +183,160 @@ def create_industrial_educational_bookings() -> None:
             educational_factories.EducationalDepositFactory(
                 educationalInstitution=educational_institution,
                 educationalYear=educational_current_year,
-                amount=20000,
+                amount=40000,
             )
         )
         deposits.append(
             educational_factories.EducationalDepositFactory(
                 educationalInstitution=educational_institution,
                 educationalYear=educational_next_year,
-                amount=25000,
+                amount=50000,
                 isFinal=False,
             )
+        )
+
+    now = datetime.datetime.utcnow()
+    stocks: list[educational_models.CollectiveStock] = []
+    passed_stocks: list[educational_models.CollectiveStock] = []
+    next_year_stocks: list[educational_models.CollectiveStock] = []
+
+    for stock_data in FAKE_STOCK_DATA:
+        timedelta = int(stock_data["timedelta"])
+        stocks.append(
+            educational_factories.CollectiveStockFactory.create_batch(
+                2,
+                price=stock_data["price"],
+                beginningDatetime=now + datetime.timedelta(days=timedelta),
+                numberOfTickets=stock_data["numberOfTickets"],
+                collectiveOffer__durationMinutes=60,
+                collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
+                collectiveOffer__name=stock_data["name"],
+                collectiveOffer__venue=venue,
+                collectiveOffer__students=[
+                    educational_models.StudentLevels.CAP1,
+                    educational_models.StudentLevels.CAP2,
+                    educational_models.StudentLevels.GENERAL1,
+                    educational_models.StudentLevels.GENERAL2,
+                ],
+                collectiveOffer__offerVenue={
+                    "addressType": stock_data["addressType"],
+                    "otherAddress": stock_data["otherAddress"],
+                    "venueId": humanize(venue.id) if stock_data["addressType"] == "offererVenue" else None,
+                },
+                collectiveOffer__contactEmail="miss.rond@point.com",
+                collectiveOffer__contactPhone="01010100101",
+                collectiveOffer__motorDisabilityCompliant=True,
+                collectiveOffer__visualDisabilityCompliant=True,
+            )[0]
+        )
+
+    for stock_data in PASSED_STOCK_DATA:
+        timedelta = int(stock_data["timedelta"])
+        passed_stocks.append(
+            educational_factories.CollectiveStockFactory.create_batch(
+                2,
+                price=stock_data["price"],
+                beginningDatetime=now - datetime.timedelta(days=timedelta),
+                numberOfTickets=stock_data["numberOfTickets"],
+                collectiveOffer__durationMinutes=60,
+                collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
+                collectiveOffer__name=stock_data["name"],
+                collectiveOffer__venue=venue,
+                collectiveOffer__students=[
+                    educational_models.StudentLevels.CAP1,
+                    educational_models.StudentLevels.CAP2,
+                    educational_models.StudentLevels.GENERAL1,
+                    educational_models.StudentLevels.GENERAL2,
+                ],
+                collectiveOffer__offerVenue={
+                    "addressType": stock_data["addressType"],
+                    "otherAddress": stock_data["otherAddress"],
+                    "venueId": humanize(venue.id) if stock_data["addressType"] == "offererVenue" else None,
+                },
+                collectiveOffer__contactEmail="miss.rond@point.com",
+                collectiveOffer__contactPhone="01010100101",
+                collectiveOffer__motorDisabilityCompliant=True,
+                collectiveOffer__visualDisabilityCompliant=True,
+            )[0]
+        )
+
+    for stock_data in FAKE_STOCK_DATA:
+        timedelta = int(stock_data["timedelta"])
+        next_year_stocks.append(
+            educational_factories.CollectiveStockFactory.create_batch(
+                2,
+                price=stock_data["price"],
+                beginningDatetime=now + datetime.timedelta(days=timedelta),
+                numberOfTickets=stock_data["numberOfTickets"],
+                collectiveOffer__durationMinutes=60,
+                collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
+                collectiveOffer__name=stock_data["name"],
+                collectiveOffer__venue=venue,
+                collectiveOffer__students=[
+                    educational_models.StudentLevels.CAP1,
+                    educational_models.StudentLevels.CAP2,
+                    educational_models.StudentLevels.GENERAL1,
+                    educational_models.StudentLevels.GENERAL2,
+                ],
+                collectiveOffer__offerVenue={
+                    "addressType": stock_data["addressType"],
+                    "otherAddress": stock_data["otherAddress"],
+                    "venueId": humanize(venue.id),
+                },
+                collectiveOffer__contactEmail="miss.rond@point.com",
+                collectiveOffer__contactPhone="01010100101",
+                collectiveOffer__motorDisabilityCompliant=True,
+                collectiveOffer__visualDisabilityCompliant=True,
+            )[0]
+        )
+
+    iterable_institutions = iter(educational_institutions)
+    for stock in stocks:
+        try:
+            educational_institution = next(iterable_institutions)
+        except StopIteration:
+            iterable_institutions = iter(educational_institutions)
+            educational_institution = next(iterable_institutions)
+
+        educational_factories.PendingCollectiveBookingFactory(
+            educationalRedactor=educational_redactor,
+            educationalInstitution=educational_institution,
+            educationalYear=educational_current_year,
+            collectiveStock=stock,
+        )
+
+    for stock in passed_stocks:
+        try:
+            educational_institution = next(iterable_institutions)
+        except StopIteration:
+            iterable_institutions = iter(educational_institutions)
+            educational_institution = next(iterable_institutions)
+
+        educational_factories.UsedCollectiveBookingFactory(
+            educationalRedactor=educational_redactor,
+            educationalInstitution=educational_institution,
+            educationalYear=educational_current_year,
+            confirmationLimitDate=stock.beginningDatetime - datetime.timedelta(days=10),
+            cancellationLimitDate=stock.beginningDatetime - datetime.timedelta(days=5),
+            dateUsed=now - datetime.timedelta(8),
+            collectiveStock=stock,
+            collectiveStock__beginningDatetime=now - datetime.timedelta(8),
+        )
+
+    iterable_institutions = iter(educational_institutions)
+    for next_year_stock in next_year_stocks:
+        try:
+            educational_institution = next(iterable_institutions)
+        except StopIteration:
+            iterable_institutions = iter(educational_institutions)
+            educational_institution = next(iterable_institutions)
+
+        educational_factories.PendingCollectiveBookingFactory(
+            educationalRedactor=educational_redactor,
+            educationalInstitution=educational_institution,
+            educationalYear=educational_next_year,
+            confirmationLimitDate=now + datetime.timedelta(days=30),
+            collectiveStock=next_year_stock,
         )
 
     if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
