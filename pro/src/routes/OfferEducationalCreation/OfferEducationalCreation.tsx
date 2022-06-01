@@ -17,7 +17,6 @@ import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOffe
 import Spinner from 'components/layout/Spinner'
 import { getIsOffererEligibleAdapter } from './adapters'
 import postCollectiveOfferAdapter from './adapters/postCollectiveOfferAdapter'
-import postOfferAdapter from './adapters/postOfferAdapter'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -32,13 +31,6 @@ const OfferEducationalCreation = (): JSX.Element => {
   const history = useHistory()
   const location = useLocation()
 
-  const enableNewCollectiveModel = useActiveFeature(
-    'ENABLE_NEW_COLLECTIVE_MODEL'
-  )
-  const enableIndividualAndCollectiveSeparation = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
-
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
@@ -50,9 +42,7 @@ const OfferEducationalCreation = (): JSX.Element => {
   const notify = useNotification()
 
   const createOffer = async (offer: IOfferEducationalFormValues) => {
-    const adapter = enableNewCollectiveModel
-      ? postCollectiveOfferAdapter
-      : postOfferAdapter
+    const adapter = postCollectiveOfferAdapter
 
     const { payload, isOk, message } = await adapter(offer)
 
@@ -60,7 +50,7 @@ const OfferEducationalCreation = (): JSX.Element => {
       return notify.error(message)
     }
 
-    history.push(`/offre/${enableIndividualAndCollectiveSeparation ? payload.collectiveOfferId : payload.offerId}/collectif/stocks`)
+    history.push(`/offre/${payload.collectiveOfferId}/collectif/stocks`)
   }
 
   useEffect(() => {
