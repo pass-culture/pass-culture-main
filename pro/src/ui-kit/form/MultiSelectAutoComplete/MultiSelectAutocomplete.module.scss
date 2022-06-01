@@ -55,6 +55,10 @@
     position: relative;
     right: 0;
 
+    &--no-results {
+      padding: 0.5rem;
+    }
+
     label {
       display: flex;
       padding: 0.7rem 1rem;
@@ -64,4 +68,11 @@
       background-color: colors.$grey-light;
     }
   }
+}
+
+.multi-select-autocomplete-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
 }

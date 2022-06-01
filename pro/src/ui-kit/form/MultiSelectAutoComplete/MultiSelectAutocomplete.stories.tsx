@@ -18,9 +18,7 @@ const Template: Story<Args> = args => (
   </Formik>
 )
 
-export const Default = Template.bind({})
-
-Default.args = {
+const defaultProps: Args = {
   label: 'Département',
   fieldName: 'departement',
   options: [
@@ -45,4 +43,14 @@ Default.args = {
   ],
   initialValues: { departement: ['01', '02'] },
   pluralLabel: 'Départements',
+  hideFooter: false,
+  hideTags: false,
+  isOptional: false,
+  smallLabel: false
 }
+
+export const Default = Template.bind({})
+Default.args = defaultProps
+
+export const WithoutTags = Template.bind({})
+WithoutTags.args = {...defaultProps, hideTags: true}
