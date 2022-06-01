@@ -18,7 +18,6 @@ from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
-from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import Ministry
 from pcapi.core.finance import api
@@ -211,6 +210,7 @@ class PriceBookingTest:
             .options(sqla_orm.joinedload(bookings_models.Booking.venue))
             .one()
         )
+
         queries = 0
         queries += 1  # select for update on BusinessUnit (lock)
         queries += 1  # fetch booking again with multiple joinedload
@@ -308,23 +308,6 @@ class PriceCollectiveBookingTest:
         )
         pricing = api.price_booking(booking)
         assert pricing
-
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    def test_num_queries(self):
-        booking = UsedCollectiveBookingFactory()
-        booking = (
-            CollectiveBooking.query.filter_by(id=booking.id).options(sqla_orm.joinedload(CollectiveBooking.venue)).one()
-        )
-        queries = 0
-        queries += 1  # select for update on BusinessUnit (lock)
-        queries += 1  # fetch collective bookings
-        queries += 1  # select existing Pricing (if any)
-        queries += 1  # select latest pricing (to get revenue)
-        queries += 1  # select all CustomReimbursementRule
-        queries += 3  # insert 1 Pricing + 2 PricingLine
-        queries += 1  # commit
-        with assert_num_queries(queries):
-            api.price_booking(booking)
 
 
 class GetRevenuePeriodTest:
@@ -504,7 +487,7 @@ class PriceBookingsTest:
     @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
     def test_num_queries(self):
         bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
-        n_queries = 1
+        n_queries = 2  # 1 for bookings + 1 for collective bookings
         n_queries_get_FF = 1
         with assert_num_queries(n_queries + n_queries_get_FF):
             api.price_bookings(self.few_minutes_ago)
@@ -605,15 +588,6 @@ class PriceBookingsWithNewCollectiveModelsTest:
         assert len(booking.pricings) == 1
         assert len(educational_booking.pricings) == 0
         assert len(collective_booking.pricings) == 1
-
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
-    def test_num_queries(self):
-        bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
-        n_queries = 2  # 1 for bookings + 1 for collective bookings
-        n_queries_get_FF = 1
-        with assert_num_queries(n_queries + n_queries_get_FF):
-            api.price_bookings(self.few_minutes_ago)
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_error_on_a_booking_does_not_block_other_bookings(self):
@@ -1534,7 +1508,7 @@ class GenerateInvoiceTest:
         + 1  # update Cashflow.status
         + 1  # update Pricing.status
         + 1  # update Booking.status
-        # + 1  # FF is cached in all test due to generate_cashflows call
+        + 1  # FF is cached in all test due to generate_cashflows call
         + 1  # commit
     )
 
@@ -1782,7 +1756,7 @@ class GenerateInvoiceTest:
         api.generate_cashflows(datetime.datetime.utcnow())
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
 
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES + 1):  # update collective_booking
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
             api._generate_invoice(business_unit_id, cashflow_ids)
 
         get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
