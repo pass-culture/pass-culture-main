@@ -245,7 +245,7 @@ class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
     cancellationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
-    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=10))
+    confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() + datetime.timedelta(days=10))
     status = models.CollectiveBookingStatus.PENDING
 
 
@@ -254,7 +254,7 @@ class UsedCollectiveBookingFactory(CollectiveBookingFactory):
     dateUsed = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=20))
     confirmationLimitDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=12))
-    confirmationDate = None
+    confirmationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=6))
 
 
 class ReimbursedCollectiveBookingFactory(UsedCollectiveBookingFactory):
