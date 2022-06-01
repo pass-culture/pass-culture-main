@@ -25,7 +25,10 @@ import useNotification from 'components/hooks/useNotification'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
-  'educationalCategories' | 'educationalSubCategories' | 'userOfferers' | 'domainsOptions'
+  | 'educationalCategories'
+  | 'educationalSubCategories'
+  | 'userOfferers'
+  | 'domainsOptions'
 >
 
 const OfferEducationalCreation = (): JSX.Element => {
@@ -42,12 +45,15 @@ const OfferEducationalCreation = (): JSX.Element => {
 
   const notify = useNotification()
 
-  const enableEducationalDomains = useActiveFeature("ENABLE_EDUCATIONAL_DOMAINS")
+  const enableEducationalDomains = useActiveFeature(
+    'ENABLE_EDUCATIONAL_DOMAINS'
+  )
 
   const createOffer = async (offer: IOfferEducationalFormValues) => {
-    const adapter = postCollectiveOfferAdapter
-
-    const { payload, isOk, message } = await adapter(offer)
+    const { payload, isOk, message } = await postCollectiveOfferAdapter({
+      offer,
+      enableEducationalDomains,
+    })
 
     if (!isOk) {
       return notify.error(message)
@@ -62,7 +68,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         const results = await Promise.all([
           getCategoriesAdapter(null),
           getOfferersAdapter(offererId),
-          ...(enableEducationalDomains ? [getEducationalDomainsAdapter()] : [])
+          ...(enableEducationalDomains ? [getEducationalDomainsAdapter()] : []),
         ])
 
         if (results.some(res => !res.isOk)) {

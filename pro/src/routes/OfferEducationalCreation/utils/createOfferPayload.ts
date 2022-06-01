@@ -42,7 +42,8 @@ export const createOfferPayload = (
 })
 
 export const createCollectiveOfferPayload = (
-  offer: IOfferEducationalFormValues
+  offer: IOfferEducationalFormValues,
+  enableEducationalDomains: boolean
 ): PostCollectiveOfferBodyModel => ({
   offererId: offer.offererId,
   venueId: offer.venueId,
@@ -56,4 +57,7 @@ export const createCollectiveOfferPayload = (
   offerVenue: offer.eventAddress,
   contactEmail: offer.email,
   contactPhone: offer.phone,
+  domains: enableEducationalDomains
+    ? offer.domains.map(domainIdString => Number(domainIdString))
+    : undefined,
 })
