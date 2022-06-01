@@ -262,6 +262,7 @@ const OfferEducationalEdition = (): JSX.Element => {
           notify={notify}
           onSubmit={editOffer}
           setIsOfferActive={setIsOfferActive}
+          domainsOptions={[]}
         />
       ) : (
         <Spinner />
