@@ -1971,6 +1971,16 @@ class PrepareInvoiceContextTest:
         assert context["total_contribution_amount"] == 6626
         assert context["total_reimbursed_amount"] == -2015604
 
+    def test_get_invoice_period_second_half(self):
+        start_period, end_period = api.get_invoice_period(datetime.datetime(2020, 3, 4))
+        assert start_period == datetime.datetime(2020, 2, 16)
+        assert end_period == datetime.datetime(2020, 2, 29)
+
+    def test_get_invoice_period_first_half(self):
+        start_period, end_period = api.get_invoice_period(datetime.datetime(2020, 3, 27))
+        assert start_period == datetime.datetime(2020, 3, 1)
+        assert end_period == datetime.datetime(2020, 3, 15)
+
 
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
@@ -2019,6 +2029,11 @@ class GenerateInvoiceHtmlTest:
         expected_invoice_html = expected_invoice_html.replace(
             'content: "Relevé n°F220000001 du 30/01/2022";',
             f'content: "Relevé n°F220000001 du {invoice.date.strftime("%d/%m/%Y")}";',
+        )
+        start_period, end_period = api.get_invoice_period(invoice.date)
+        expected_invoice_html = expected_invoice_html.replace(
+            "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels",
+            f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels',
         )
         assert expected_invoice_html == invoice_html
 

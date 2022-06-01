@@ -1550,6 +1550,16 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]) -> models.
     return invoice
 
 
+def get_invoice_period(invoice_date: datetime.datetime) -> typing.Tuple[datetime.datetime, datetime.datetime]:
+    if invoice_date.day > 15:
+        start_date = invoice_date.replace(day=1)
+        end_date = start_date.replace(day=15)
+    else:
+        end_date = invoice_date.replace(day=1) - datetime.timedelta(days=1)
+        start_date = end_date.replace(day=16)
+    return start_date, end_date
+
+
 def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
     total_used_bookings_amount = 0
@@ -1579,6 +1589,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
         groups.append(invoice_group)
 
     venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
+    period_start, period_end = get_invoice_period(invoice.date)
     return dict(
         invoice=invoice,
         groups=groups,
@@ -1586,6 +1597,8 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
+        period_start=period_start,
+        period_end=period_end,
     )
 
 
