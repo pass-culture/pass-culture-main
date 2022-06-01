@@ -47,7 +47,9 @@ class PricingFactory(BaseFactory):
     status = models.PricingStatus.VALIDATED
     booking = factory.SubFactory(bookings_factories.UsedIndividualBookingFactory)
     businessUnit = factory.SelfAttribute("booking.venue.businessUnit")
-    siret = factory.SelfAttribute("booking.venue.siret")
+    siret = factory.LazyAttribute(
+        lambda pricing: pricing.booking.venue.siret or pricing.booking.venue.businessUnit.siret
+    )
     valueDate = factory.SelfAttribute("booking.dateUsed")
     amount = LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
     standardRule = "Remboursement total pour les offres physiques"
