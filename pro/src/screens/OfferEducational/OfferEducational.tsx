@@ -8,12 +8,12 @@ import {
   Mode,
 } from 'core/OfferEducational'
 import React, { useEffect } from 'react'
+import { validationSchema, validationSchemaWithDomains } from './validationSchema'
 
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import OfferEducationalForm from './OfferEducationalForm'
 import { SelectOption } from 'custom_types/form'
 import styles from './OfferEducational.module.scss'
-import { validationSchema } from './validationSchema'
 
 export interface IOfferEducationalProps {
   educationalCategories: IEducationalCategory[]
@@ -56,7 +56,7 @@ const OfferEducational = ({
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema,
+    validationSchema: enableEducationalDomains ? validationSchemaWithDomains : validationSchema,
   })
 
   const shouldShowOfferActions =
