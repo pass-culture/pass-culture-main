@@ -15,4 +15,4 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("ALTER TABLE allocine_pivot ALTER COLUMN siret NOT NULL;")
+    op.execute("ALTER TABLE allocine_pivot ALTER COLUMN siret SET NOT NULL;")
