@@ -52,7 +52,9 @@
     max-height: 18.5rem;
     overflow-y: scroll;
     padding: 0.5rem 0;
-    position: relative;
+    position: absolute;
+    background-color: colors.$white;
+    width: 100%;
     right: 0;
 
     &--no-results {

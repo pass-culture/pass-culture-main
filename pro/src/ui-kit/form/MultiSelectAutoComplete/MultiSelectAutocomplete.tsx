@@ -125,30 +125,30 @@ const MultiSelectAutocomplete = ({
           {field.value.length > 0 && (
             <div className={styles['pellet']}>{field.value.length}</div>
           )}
+          {isOpen && (
+            <div
+              className={cx(styles['multi-select-autocomplete__menu'], {
+                [styles['multi-select-autocomplete__menu--no-results']]:
+                  filteredOptions.length === 0,
+              })}
+            >
+              {filteredOptions.length === 0 && 'Aucun résultat'}
+              {filteredOptions.map(({ value, label }) => (
+                <BaseCheckbox
+                  label={label}
+                  key={`${fieldName}-${value}`}
+                  value={value}
+                  name={fieldName}
+                  onChange={e => {
+                    handleChange(e)
+                    onChange?.(e)
+                  }}
+                  checked={field.value.includes(value)}
+                />
+              ))}
+            </div>
+          )}
         </div>
-        {isOpen && (
-          <div
-            className={cx(styles['multi-select-autocomplete__menu'], {
-              [styles['multi-select-autocomplete__menu--no-results']]:
-                filteredOptions.length === 0,
-            })}
-          >
-            {filteredOptions.length === 0 && 'Aucun résultat'}
-            {filteredOptions.map(({ value, label }) => (
-              <BaseCheckbox
-                label={label}
-                key={`${fieldName}-${value}`}
-                value={value}
-                name={fieldName}
-                onChange={e => {
-                  handleChange(e)
-                  onChange?.(e)
-                }}
-                checked={field.value.includes(value)}
-              />
-            ))}
-          </div>
-        )}
       </div>
       {!hideTags && field.value.length > 0 && (
         <div className={styles['multi-select-autocomplete-tags']}>
