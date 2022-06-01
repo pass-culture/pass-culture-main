@@ -2,15 +2,14 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import BaseCheckbox from '../shared/BaseCheckbox'
 import Icon from 'components/layout/Icon'
+import { SelectOption } from 'custom_types/form'
 import TextInput from '../TextInput'
 import cx from 'classnames'
 import styles from './MultiSelectAutocomplete.module.scss'
 import { useFormikContext } from 'formik'
 
-export type Option = { value: string; label: string }
-
 export interface MultiSelectAutocompleteProps {
-  options: Option[]
+  options: SelectOption[]
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   label: string
   className?: string

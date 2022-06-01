@@ -35,6 +35,8 @@ const OfferEducationalForm = ({
   getIsOffererEligible,
   notify,
   mode,
+  domainsOptions,
+  enableEducationalDomains,
 }: IOfferEducationalFormProps): JSX.Element => {
   const [venuesOptions, setVenuesOptions] = useState<SelectOptions>([])
   const [currentOfferer, setCurrentOfferer] = useState<IUserOfferer | null>(
@@ -117,6 +119,8 @@ const OfferEducationalForm = ({
           <FormOfferType
             categories={educationalCategories}
             subCategories={educationalSubCategories}
+            enableEducationalDomains={enableEducationalDomains}
+            domainsOptions={domainsOptions}
           />
           <FormEventAddress
             currentOfferer={currentOfferer}
