@@ -35,7 +35,7 @@ const MultiSelectAutocomplete = ({
   smallLabel = false,
   hideTags = false,
 }: MultiSelectAutocompleteProps): JSX.Element => {
-  const { values, setFieldValue, handleChange } = useFormikContext<any>()
+  const { values, setFieldValue, handleChange, setFieldTouched } = useFormikContext<any>()
   const [field, meta] = useField(fieldName)
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -97,7 +97,8 @@ const MultiSelectAutocomplete = ({
           hideFooter
           label={label}
           onFocus={() => {
-            if (!isOpen) setIsOpen(true)
+            if (!isOpen) {setIsOpen(true)}
+            setFieldTouched(fieldName, true)
           }}
           name={`search-${fieldName}`}
           placeholder={field.value.length > 1 ? pluralLabel : label}
@@ -112,10 +113,12 @@ const MultiSelectAutocomplete = ({
               } else {
                 setIsOpen(true)
               }
+              setFieldTouched(fieldName, true)
             }}
             className={cx(styles['dropdown-indicator'], {
               [styles['dropdown-indicator-is-closed']]: !isOpen,
             })}
+            type="button"
           >
             <Icon
               svg="open-dropdown"
@@ -140,6 +143,7 @@ const MultiSelectAutocomplete = ({
                   value={value}
                   name={fieldName}
                   onChange={e => {
+                    setFieldTouched(`search-${fieldName}`, true)
                     handleChange(e)
                     onChange?.(e)
                   }}
