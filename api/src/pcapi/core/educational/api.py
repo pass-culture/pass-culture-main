@@ -507,7 +507,7 @@ def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:
     else:
         collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
         if collective_booking is None:
-            exceptions.EducationalBookingNotFound()
+            raise exceptions.EducationalBookingNotFound()
 
     collective_booking = cast(CollectiveBooking, collective_booking)  # we already checked it was not None
 
