@@ -235,7 +235,7 @@ def test_request_reset_password_with_mail_service_exception(mock_send_reset_pass
 
 
 def test_reset_password_with_not_valid_token(client):
-    data = {"reset_password_token": "unknwon_token", "new_password": "new_password"}
+    data = {"reset_password_token": "unknown_token", "new_password": "new_password"}
     user = users_factories.UserFactory()
     old_password = user.password
 
