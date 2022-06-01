@@ -16,6 +16,9 @@ const isPhoneValid = (phone: string | undefined): boolean => {
   return Boolean(isValid)
 }
 
+const returnFalse = (searchDomains: string): boolean => false
+const returnTrue = (searchDomains: string): boolean => true
+
 export const validationSchema = yup.object().shape({
   category: yup.string().required('Veuillez sélectionner une catégorie'),
   subCategory: yup
@@ -92,3 +95,19 @@ export const validationSchema = yup.object().shape({
       ),
   }),
 })
+
+export const validationSchemaWithDomains = validationSchema.concat(
+  yup.object().shape({
+    domains: yup.array().test({
+      message: 'Veuillez renseigner un domaine',
+      test: domains => Boolean(domains?.length && domains.length > 0),
+    }),
+    'search-domains': yup.string().when('domains', (domains, schema) =>
+      schema.test({
+        name: 'search-domains-invalid',
+        message: 'error',
+        test: domains.length === 0 ? returnFalse : returnTrue,
+      })
+    ),
+  })
+)
