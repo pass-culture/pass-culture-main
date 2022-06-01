@@ -11,7 +11,7 @@ import React, { useEffect } from 'react'
 
 import OfferEducationalActions from 'new_components/OfferEducationalActions'
 import OfferEducationalForm from './OfferEducationalForm'
-import {SelectOption} from 'custom_types/form'
+import { SelectOption } from 'custom_types/form'
 import styles from './OfferEducational.module.scss'
 import { validationSchema } from './validationSchema'
 
@@ -34,6 +34,7 @@ export interface IOfferEducationalProps {
   isOfferBooked?: boolean
   isOfferActive?: boolean
   domainsOptions: SelectOption[]
+  enableEducationalDomains: boolean
 }
 
 const OfferEducational = ({
@@ -49,6 +50,7 @@ const OfferEducational = ({
   setIsOfferActive,
   isOfferBooked = false,
   isOfferActive = false,
+  enableEducationalDomains,
   domainsOptions,
 }: IOfferEducationalProps): JSX.Element => {
   const { resetForm, ...formik } = useFormik({
@@ -88,8 +90,9 @@ const OfferEducational = ({
             mode={mode}
             notify={notify}
             userOfferers={userOfferers}
+            enableEducationalDomains={enableEducationalDomains}
             domainsOptions={domainsOptions}
-         />
+          />
         </form>
       </FormikProvider>
     </>
