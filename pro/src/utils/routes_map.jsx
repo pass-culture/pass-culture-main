@@ -1,5 +1,6 @@
 import Bookings from 'routes/Bookings'
 import CollectiveBookings from 'routes/CollectiveBookings'
+import CollectiveOfferVisibility from 'routes/CollectiveOfferVisibility'
 import CollectiveOffers from 'routes/CollectiveOffers'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
@@ -28,7 +29,6 @@ import SignupContainer from 'components/pages/Signup/SignupContainer'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import { useLocation } from 'react-router-dom'
-import CollectiveOfferVisibility from 'routes/CollectiveOfferVisibility'
 
 const RedirectToConnexionComponent = () => {
   const location = useLocation()
