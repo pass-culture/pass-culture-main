@@ -201,93 +201,14 @@ def create_industrial_educational_bookings() -> None:
     next_year_stocks: list[educational_models.CollectiveStock] = []
 
     for stock_data in FAKE_STOCK_DATA:
-        timedelta = int(stock_data["timedelta"])
-        stocks.append(
-            educational_factories.CollectiveStockFactory.create_batch(
-                2,
-                price=stock_data["price"],
-                beginningDatetime=now + datetime.timedelta(days=timedelta),
-                numberOfTickets=stock_data["numberOfTickets"],
-                collectiveOffer__durationMinutes=60,
-                collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
-                collectiveOffer__name=stock_data["name"],
-                collectiveOffer__venue=venue,
-                collectiveOffer__students=[
-                    educational_models.StudentLevels.CAP1,
-                    educational_models.StudentLevels.CAP2,
-                    educational_models.StudentLevels.GENERAL1,
-                    educational_models.StudentLevels.GENERAL2,
-                ],
-                collectiveOffer__offerVenue={
-                    "addressType": stock_data["addressType"],
-                    "otherAddress": stock_data["otherAddress"],
-                    "venueId": humanize(venue.id) if stock_data["addressType"] == "offererVenue" else None,
-                },
-                collectiveOffer__contactEmail="miss.rond@point.com",
-                collectiveOffer__contactPhone="01010100101",
-                collectiveOffer__motorDisabilityCompliant=True,
-                collectiveOffer__visualDisabilityCompliant=True,
-            )[0]
-        )
+        stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=False)[0])
 
     for stock_data in PASSED_STOCK_DATA:
-        timedelta = int(stock_data["timedelta"])
-        passed_stocks.append(
-            educational_factories.CollectiveStockFactory.create_batch(
-                2,
-                price=stock_data["price"],
-                beginningDatetime=now - datetime.timedelta(days=timedelta),
-                numberOfTickets=stock_data["numberOfTickets"],
-                collectiveOffer__durationMinutes=60,
-                collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
-                collectiveOffer__name=stock_data["name"],
-                collectiveOffer__venue=venue,
-                collectiveOffer__students=[
-                    educational_models.StudentLevels.CAP1,
-                    educational_models.StudentLevels.CAP2,
-                    educational_models.StudentLevels.GENERAL1,
-                    educational_models.StudentLevels.GENERAL2,
-                ],
-                collectiveOffer__offerVenue={
-                    "addressType": stock_data["addressType"],
-                    "otherAddress": stock_data["otherAddress"],
-                    "venueId": humanize(venue.id) if stock_data["addressType"] == "offererVenue" else None,
-                },
-                collectiveOffer__contactEmail="miss.rond@point.com",
-                collectiveOffer__contactPhone="01010100101",
-                collectiveOffer__motorDisabilityCompliant=True,
-                collectiveOffer__visualDisabilityCompliant=True,
-            )[0]
-        )
+        passed_stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=True)[0])
 
     for stock_data in FAKE_STOCK_DATA:
-        timedelta = int(stock_data["timedelta"])
         next_year_stocks.append(
-            educational_factories.CollectiveStockFactory.create_batch(
-                2,
-                price=stock_data["price"],
-                beginningDatetime=now + datetime.timedelta(days=timedelta),
-                numberOfTickets=stock_data["numberOfTickets"],
-                collectiveOffer__durationMinutes=60,
-                collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
-                collectiveOffer__name=stock_data["name"],
-                collectiveOffer__venue=venue,
-                collectiveOffer__students=[
-                    educational_models.StudentLevels.CAP1,
-                    educational_models.StudentLevels.CAP2,
-                    educational_models.StudentLevels.GENERAL1,
-                    educational_models.StudentLevels.GENERAL2,
-                ],
-                collectiveOffer__offerVenue={
-                    "addressType": stock_data["addressType"],
-                    "otherAddress": stock_data["otherAddress"],
-                    "venueId": humanize(venue.id),
-                },
-                collectiveOffer__contactEmail="miss.rond@point.com",
-                collectiveOffer__contactPhone="01010100101",
-                collectiveOffer__motorDisabilityCompliant=True,
-                collectiveOffer__visualDisabilityCompliant=True,
-            )[0]
+            _create_collective_stock(stock_data, educational_next_year.beginningDate, venue, 2, is_passed=False)[0]
         )
 
     iterable_institutions = iter(educational_institutions)
@@ -348,6 +269,47 @@ def create_industrial_educational_bookings() -> None:
             venue,
             venue_reimbursements,
         )
+
+
+def _create_collective_stock(
+    stock_data: dict[str, Union[str, int]],
+    now: datetime.datetime,
+    venue: offerers_models.Venue,
+    number_of_stocks: int = 2,
+    is_passed: bool = False,
+) -> list[educational_models.CollectiveStock]:
+    timedelta = int(stock_data["timedelta"])
+
+    if is_passed:
+        beginningDatetime = now - datetime.timedelta(days=timedelta)
+    else:
+        beginningDatetime = now + datetime.timedelta(days=timedelta)
+
+    return educational_factories.CollectiveStockFactory.create_batch(
+        number_of_stocks,
+        price=stock_data["price"],
+        beginningDatetime=beginningDatetime,
+        numberOfTickets=stock_data["numberOfTickets"],
+        collectiveOffer__durationMinutes=60,
+        collectiveOffer__description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ? mon.email@example.com",
+        collectiveOffer__name=stock_data["name"],
+        collectiveOffer__venue=venue,
+        collectiveOffer__students=[
+            educational_models.StudentLevels.CAP1,
+            educational_models.StudentLevels.CAP2,
+            educational_models.StudentLevels.GENERAL1,
+            educational_models.StudentLevels.GENERAL2,
+        ],
+        collectiveOffer__offerVenue={
+            "addressType": stock_data["addressType"],
+            "otherAddress": stock_data["otherAddress"],
+            "venueId": humanize(venue.id),
+        },
+        collectiveOffer__contactEmail="miss.rond@point.com",
+        collectiveOffer__contactPhone="01010100101",
+        collectiveOffer__motorDisabilityCompliant=True,
+        collectiveOffer__visualDisabilityCompliant=True,
+    )
 
 
 def _create_educational_bookings_data(
