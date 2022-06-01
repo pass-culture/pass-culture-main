@@ -17,8 +17,6 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Stock
 from pcapi.core.testing import override_settings
-from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.utils.human_ids import humanize
 
 
@@ -136,13 +134,6 @@ class Return200Test:
         assert edited_stock.educationalPriceDetail == "Nouvelle description du prix"
         assert edited_booking.amount == 1500
         assert edited_educational_booking.confirmationLimitDate is not None
-
-        expected_payload = EducationalBookingEdition(
-            **serialize_educational_booking(booking.educationalBooking).dict(),
-            updatedFields=["price", "numberOfTickets", "educationalPriceDetail"],
-        )
-        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
-        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/prereservation-edit"
 
     @override_settings(ADAGE_API_URL="https://adage_base_url")
     def test_edit_educational_stock_does_not_send_notification_when_no_modification(self, client):

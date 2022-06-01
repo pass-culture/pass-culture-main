@@ -37,7 +37,7 @@ class Returns200Test:
         assert response_json[0]["venueId"] == humanize(venue.id)
         assert response_json[0]["id"] == humanize(offer.id)
         assert len(response_json[0]["stocks"]) == 1
-        assert response_json[0]["stocks"][0]["id"] == humanize(stock.stockId)
+        assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[0]["isShowcase"] == False
 
     def test_one_simple_collective_offer_template(self, app):
@@ -92,7 +92,7 @@ class Returns200Test:
         assert response_json[1]["venueId"] == humanize(venue.id)
         assert response_json[1]["id"] == humanize(offer.id)
         assert len(response_json[1]["stocks"]) == 1
-        assert response_json[1]["stocks"][0]["id"] == humanize(stock.stockId)
+        assert response_json[1]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[1]["isShowcase"] == False
 
     @pytest.mark.skip(reason="Too long to be played each time")

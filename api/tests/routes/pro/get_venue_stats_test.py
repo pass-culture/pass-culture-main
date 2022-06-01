@@ -7,7 +7,6 @@ from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.educational.models import CollectiveBookingStatus
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import humanize
@@ -24,32 +23,6 @@ class Returns200Test:
         venue = booking.venue
         venue_owner = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
 
-        # data that should not be taken into account because new model is not enabled
-        CollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
-        CollectiveOfferTemplateFactory(venue=venue)
-
-        auth_request = TestClient(app.test_client()).with_session_auth(email=venue_owner.email)
-
-        # when
-        response = auth_request.get("/venues/%s/stats" % humanize(venue.id))
-
-        # then
-        assert response.status_code == 200
-        response_json = response.json
-        assert response_json["activeBookingsQuantity"] == 1
-        assert response_json["validatedBookingsQuantity"] == 1
-        assert response_json["activeOffersCount"] == 1
-        assert response_json["soldOutOffersCount"] == 0
-
-    @pytest.mark.usefixtures("db_session")
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
-    def when_pro_user_has_rights_on_managing_offerer_and_new_model_is_enabled(self, client):
-        # data that should not be taken into account because new model is not enabled
-        booking = bookings_factories.UsedEducationalBookingFactory()
-        venue = booking.venue
-        venue_owner = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer).user
-
-        # given
         # validated booking + not active not sold out offer
         CollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue,
@@ -76,7 +49,7 @@ class Returns200Test:
         # active offer
         CollectiveOfferTemplateFactory(venue=venue)
 
-        auth_request = client.with_session_auth(email=venue_owner.email)
+        auth_request = TestClient(app.test_client()).with_session_auth(email=venue_owner.email)
 
         # when
         response = auth_request.get("/venues/%s/stats" % humanize(venue.id))
@@ -84,9 +57,9 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         response_json = response.json
-        assert response_json["activeBookingsQuantity"] == 1
-        assert response_json["validatedBookingsQuantity"] == 1
-        assert response_json["activeOffersCount"] == 1
+        assert response_json["activeBookingsQuantity"] == 2
+        assert response_json["validatedBookingsQuantity"] == 2
+        assert response_json["activeOffersCount"] == 2
         assert response_json["soldOutOffersCount"] == 1
 
 

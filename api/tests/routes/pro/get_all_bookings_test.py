@@ -105,31 +105,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
 
-    def test_when_booking_is_educational(self, app):
-        admin = users_factories.AdminFactory()
-        user_offerer = offerers_factories.UserOffererFactory()
-        bookings_factories.EducationalBookingFactory(
-            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            stock__offer__venue__managingOfferer=user_offerer.offerer,
-            educationalBooking__educationalRedactor__firstName="Georges",
-            educationalBooking__educationalRedactor__lastName="Moustaki",
-            educationalBooking__educationalRedactor__email="redactor@email.com",
-        )
-
-        client = TestClient(app.test_client()).with_session_auth(admin.email)
-        response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
-
-        assert response.status_code == 200
-        assert response.json["bookingsRecap"][0]["stock"]["offer_is_educational"] is True
-        assert response.json["bookingsRecap"][0]["stock"]["stock_identifier"] is not None
-        assert response.json["bookingsRecap"][0]["beneficiary"] == {
-            "email": "redactor@email.com",
-            "firstname": "Georges",
-            "lastname": "Moustaki",
-            "phonenumber": None,
-        }
-        assert response.json["bookingsRecap"][0]["booking_token"] is None
-
     def test_when_user_is_linked_to_a_valid_offerer(self, app):
         booking = bookings_factories.UsedIndividualBookingFactory(
             dateCreated=datetime(2020, 8, 11, 12, 0, 0),
@@ -242,53 +217,6 @@ class Returns200Test:
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
-
-    @freeze_time("2020-08-11 13:00")
-    def test_should_return_booking_confirmation_date_in_status_history(self, app, client):
-        booking = bookings_factories.EducationalBookingFactory(
-            dateCreated=datetime(2020, 8, 11, 12, 0, 0),
-            educationalBooking__confirmationDate=datetime(2021, 1, 1),
-        )
-        pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
-
-        response = client.with_session_auth(pro_user.email).get(
-            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked"
-        )
-
-        expected_bookings_recap_status_history = [
-            {
-                "status": "booked",
-                "date": format_into_timezoned_date(
-                    booking.educationalBooking.confirmationDate,
-                ),
-            },
-        ]
-        assert response.status_code == 200
-        assert response.json["bookingsRecap"][0]["booking_status_history"] == expected_bookings_recap_status_history
-
-    @freeze_time("2020-08-11 13:00")
-    def test_should_return_booking_pending_status_in_history(self, app, client):
-        booking = bookings_factories.EducationalBookingFactory(
-            dateCreated=datetime(2020, 8, 11, 12, 0, 0), status=bookings_models.BookingStatus.PENDING
-        )
-        pro_user = users_factories.ProFactory(email="pro@example.com")
-        offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
-
-        response = client.with_session_auth(pro_user.email).get(
-            f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked"
-        )
-
-        expected_bookings_recap = [
-            {
-                "status": "pending",
-                "date": format_into_timezoned_date(
-                    booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),
-                ),
-            },
-        ]
-        assert response.status_code == 200
-        assert response.json["bookingsRecap"][0]["booking_status_history"] == expected_bookings_recap
 
     @freeze_time("2020-08-11 13:00")
     def test_should_not_return_booking_token_when_booking_is_external(self, app, client):
