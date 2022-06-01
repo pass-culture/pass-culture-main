@@ -11,7 +11,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     op.add_column("collective_booking", sa.Column("educationalRedactorId", sa.BigInteger(), nullable=False))
     op.create_index(
         op.f("ix_collective_booking_educationalRedactorId"),
@@ -22,7 +22,5 @@ def upgrade():
     op.create_foreign_key(None, "collective_booking", "educational_redactor", ["educationalRedactorId"], ["id"])
 
 
-def downgrade():
-    op.drop_constraint(None, "collective_booking", type_="foreignkey")
-    op.drop_index(op.f("ix_collective_booking_educationalRedactorId"), table_name="collective_booking")
+def downgrade() -> None:
     op.drop_column("collective_booking", "educationalRedactorId")
