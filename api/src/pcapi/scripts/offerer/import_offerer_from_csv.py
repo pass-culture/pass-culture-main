@@ -1,5 +1,5 @@
 import csv
-from datetime import timedelta
+import datetime
 import json
 from json import JSONDecodeError
 import logging
@@ -98,7 +98,7 @@ def import_new_offerer_from_csv(row: dict) -> None:
         pro_model = create_user_model_from_csv(row)
         pro = create_pro_user(pro_model)
         pro.validationToken = None
-        create_reset_password_token(pro, token_life_time=timedelta(days=90))
+        create_reset_password_token(pro, expiration=datetime.datetime.utcnow() + datetime.timedelta(days=90))
 
     existing_offerer = find_offerer_by_siren(row["SIREN"])
     if existing_offerer:

@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from flask.helpers import flash
@@ -117,7 +118,8 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
             resetPasswordToken = create_reset_password_token(
-                model, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+                model,
+                expiration=datetime.datetime.utcnow() + RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED,
             )
             flash(
                 f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(resetPasswordToken.value)}"

@@ -48,22 +48,32 @@ logger = logging.getLogger(__name__)
 
 def create_email_validation_token(user: models.User) -> models.Token:
     return generate_and_save_token(
-        user, models.TokenType.EMAIL_VALIDATION, life_time=constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        user,
+        models.TokenType.EMAIL_VALIDATION,
+        expiration=datetime.datetime.utcnow() + constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME,
     )
 
 
-def create_reset_password_token(user: models.User, token_life_time: datetime.timedelta = None) -> models.Token:
+def create_reset_password_token(
+    user: models.User, expiration: typing.Optional[datetime.datetime] = None
+) -> models.Token:
     return generate_and_save_token(
-        user, models.TokenType.RESET_PASSWORD, life_time=token_life_time or constants.RESET_PASSWORD_TOKEN_LIFE_TIME
+        user,
+        models.TokenType.RESET_PASSWORD,
+        expiration=expiration or datetime.datetime.utcnow() + constants.RESET_PASSWORD_TOKEN_LIFE_TIME,
     )
 
 
-def create_phone_validation_token(user: models.User, phone_number: str) -> typing.Optional[models.Token]:
+def create_phone_validation_token(
+        user: models.User,
+        phone_number: str,
+        expiration: typing.Optional[datetime.datetime] = None,
+) -> typing.Optional[models.Token]:
     secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
     return generate_and_save_token(
         user,
         token_type=models.TokenType.PHONE_VALIDATION,
-        life_time=constants.PHONE_VALIDATION_TOKEN_LIFE_TIME,
+        expiration=expiration,
         token_value=secret_code,
         extra_data=models.TokenExtraData(phone_number=phone_number),
     )
@@ -72,13 +82,11 @@ def create_phone_validation_token(user: models.User, phone_number: str) -> typin
 def generate_and_save_token(
     user: models.User,
     token_type: models.TokenType,
-    life_time: typing.Optional[datetime.timedelta] = None,
+    expiration: typing.Optional[datetime.datetime] = None,
     token_value: typing.Optional[str] = None,
     extra_data: typing.Optional[models.TokenExtraData] = None,
 ) -> models.Token:
     assert token_type.name in models.TokenType.__members__, "Only registered token types are allowed"
-
-    expiration_date = datetime.datetime.utcnow() + life_time if life_time else None
 
     if settings.IS_PERFORMANCE_TESTS:
         token_value = f"performance-tests_{token_type.value}_{user.id}"
@@ -89,7 +97,7 @@ def generate_and_save_token(
         user=user,
         value=token_value,
         type=token_type,
-        expirationDate=expiration_date,
+        expirationDate=expiration,
         extraData=asdict(extra_data) if extra_data else None,
     )
     repository.save(token)
