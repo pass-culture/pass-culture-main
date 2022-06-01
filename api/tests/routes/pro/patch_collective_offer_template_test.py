@@ -211,7 +211,7 @@ class Returns404Test:
         # then
         assert response.status_code == 404
 
-    def test_patch_offer_with_unknwon_educational_domain(self, client):
+    def test_patch_offer_with_unknown_educational_domain(self, client):
         # Given
         offer = CollectiveOfferTemplateFactory()
         offerers_factories.UserOffererFactory(
