@@ -455,8 +455,6 @@ class FindAllOffererPaymentsTest:
         payments = repository.find_all_offerer_payments(booking.offerer.id, reimbursement_period)
 
         expected_in_both = {
-            "redactor_firstname": None,
-            "redactor_lastname": None,
             "booking_token": "ABCDEF",
             "booking_used_date": booking.dateUsed,
             "booking_quantity": 1,
@@ -471,6 +469,8 @@ class FindAllOffererPaymentsTest:
             "iban": "CF13QSDFGH456789",
         }
         specific_for_payment = {
+            "redactor_firstname": None,
+            "redactor_lastname": None,
             "amount": decimal.Decimal("9.50"),
             "reimbursement_rate": decimal.Decimal("0.95"),
             "transaction_label": "pass Culture Pro - remboursement 1ère quinzaine 07-2019",

@@ -290,9 +290,6 @@ class FindByProUserTest:
         bookings_factories.UsedIndividualBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=1))
         )
-        used_booking_1 = bookings_factories.EducationalBookingFactory(
-            stock=stock, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=3))
-        )
         used_booking_2 = bookings_factories.UsedIndividualBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, dateUsed=(booking_date + timedelta(days=4))
         )
@@ -306,9 +303,8 @@ class FindByProUserTest:
             status_filter=BookingStatusFilter.VALIDATED,
         )
 
-        assert len(bookings_recap_paginated.bookings_recap) == 2
-        assert bookings_recap_paginated.bookings_recap[0]._booking_token in [used_booking_1.token, used_booking_2.token]
-        assert bookings_recap_paginated.bookings_recap[1]._booking_token in [used_booking_1.token, used_booking_2.token]
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert bookings_recap_paginated.bookings_recap[0]._booking_token == used_booking_2.token
 
     def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
@@ -325,9 +321,6 @@ class FindByProUserTest:
         reimbursed_booking_1 = bookings_factories.UsedIndividualBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=2))
         )
-        reimbursed_booking_2 = bookings_factories.EducationalBookingFactory(
-            stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=3))
-        )
         bookings_factories.UsedIndividualBookingFactory(
             stock=stock, quantity=1, dateCreated=booking_date, reimbursementDate=(booking_date + timedelta(days=4))
         )
@@ -338,15 +331,8 @@ class FindByProUserTest:
             status_filter=BookingStatusFilter.REIMBURSED,
         )
 
-        assert len(bookings_recap_paginated.bookings_recap) == 2
-        assert bookings_recap_paginated.bookings_recap[0]._booking_token in [
-            reimbursed_booking_1.token,
-            reimbursed_booking_2.token,
-        ]
-        assert bookings_recap_paginated.bookings_recap[1]._booking_token in [
-            reimbursed_booking_1.token,
-            reimbursed_booking_2.token,
-        ]
+        assert len(bookings_recap_paginated.bookings_recap) == 1
+        assert bookings_recap_paginated.bookings_recap[0]._booking_token == reimbursed_booking_1.token
 
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
@@ -899,100 +885,11 @@ class FindByProUserTest:
         assert cayenne_booking.token in bookings_tokens
         assert mayotte_booking.token in bookings_tokens
 
-    def test_should_set_educational_booking_confirmation_date_in_history(self, app: fixture) -> None:
-        # Given
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = offers_factories.ThingOfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
-        )
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.EducationalBookingFactory(
-            educationalBooking__confirmationDate=datetime(2022, 1, 1),
-            stock=stock,
-            dateCreated=yesterday,
-        )
-
-        # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
-        )
-
-        # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert isinstance(expected_booking_recap.booking_status_history, booking_recap_history.BookingRecapHistory)
-        assert expected_booking_recap.booking_status_history.confirmation_date == datetime(2022, 1, 1)
-
-    def test_should_set_booking_recap_pending_in_history(self, app: fixture) -> None:
-        # Given
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = offers_factories.ThingOfferFactory(venue=venue)
-        stock = offers_factories.ThingStockFactory(
-            offer=offer, price=0, beginningDatetime=datetime.utcnow() + timedelta(hours=98)
-        )
-        yesterday = datetime.utcnow() - timedelta(days=1)
-        bookings_factories.EducationalBookingFactory(
-            status=BookingStatus.PENDING,
-            stock=stock,
-            dateCreated=yesterday,
-        )
-
-        # When
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(one_year_before_booking, one_year_after_booking)
-        )
-
-        # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert isinstance(
-            expected_booking_recap.booking_status_history,
-            booking_recap_history.BookingRecapPendingHistory,
-        )
-        assert expected_booking_recap.booking_status_history.booking_date == yesterday.astimezone(
-            tz.gettz("Europe/Paris")
-        )
-
-    def test_should_return_token_as_none_when_educational_booking(self, app: fixture):
-        # Given
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        bookings_factories.EducationalBookingFactory(
-            stock__offer__venue=venue,
-        )
-
-        # When
-        beginning_period = datetime.fromisoformat("2021-10-15")
-        ending_period = datetime.fromisoformat("2032-02-15")
-        bookings_recap_paginated = booking_repository.find_by_pro_user(
-            user=pro, booking_period=(beginning_period, ending_period)
-        )
-
-        # Then
-        assert len(bookings_recap_paginated.bookings_recap) == 1
-        expected_booking_recap = bookings_recap_paginated.bookings_recap[0]
-        assert expected_booking_recap.booking_token == None
-
     def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         bookings_factories.IndividualBookingFactory(
             dateCreated=default_booking_date,
-            stock__offer__venue__managingOfferer=user_offerer.offerer,
-        )
-        bookings_factories.EducationalBookingFactory(
             stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
 
@@ -1001,11 +898,6 @@ class FindByProUserTest:
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             offer_type=OfferType.INDIVIDUAL_OR_DUO,
-        )
-        educational_bookings_recap_paginated = booking_repository.find_by_pro_user(
-            user=user_offerer.user,
-            booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.EDUCATIONAL,
         )
         all_bookings_recap_paginated = booking_repository.find_by_pro_user(
             user=user_offerer.user,
@@ -1016,10 +908,7 @@ class FindByProUserTest:
         assert len(individual_bookings_recap_paginated.bookings_recap) == 1
         individual_resulting_booking_recap = individual_bookings_recap_paginated.bookings_recap[0]
         assert individual_resulting_booking_recap.booking_is_educational == False
-        assert len(educational_bookings_recap_paginated.bookings_recap) == 1
-        educational_resulting_booking_recap = educational_bookings_recap_paginated.bookings_recap[0]
-        assert educational_resulting_booking_recap.booking_is_educational == True
-        assert len(all_bookings_recap_paginated.bookings_recap) == 2
+        assert len(all_bookings_recap_paginated.bookings_recap) == 1
 
 
 class GetCsvReportTest:
@@ -1165,25 +1054,19 @@ class GetCsvReportTest:
             dateUsed=(booking_date + timedelta(days=1)),
             stock__offer__name="Harry Potter Vol 1",
         )
-        bookings_factories.EducationalBookingFactory(
+        bookings_factories.UsedIndividualBookingFactory(
             stock__offer__venue=venue,
+            quantity=1,
             dateCreated=booking_date,
-            dateUsed=(booking_date + timedelta(days=3)),
+            dateUsed=(booking_date + timedelta(days=4)),
             stock__offer__name="Harry Potter Vol 2",
         )
         bookings_factories.UsedIndividualBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
-            dateUsed=(booking_date + timedelta(days=4)),
-            stock__offer__name="Harry Potter Vol 3",
-        )
-        bookings_factories.UsedIndividualBookingFactory(
-            stock__offer__venue=venue,
-            quantity=1,
-            dateCreated=booking_date,
             dateUsed=(booking_date + timedelta(days=8)),
-            stock__offer__name="Harry Potter Vol 4",
+            stock__offer__name="Harry Potter Vol 3",
         )
         bookings_csv = booking_repository.get_export(
             user=pro,
@@ -1192,10 +1075,9 @@ class GetCsvReportTest:
         )
 
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 2
+        assert len(data) == 1
         # Check bookings offer name
-        assert data[0][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
-        assert data[1][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
+        assert data[0][1] == "Harry Potter Vol 2"
 
     def test_should_return_only_reimbursed_bookings_for_requested_period(self, app: fixture):
         pro = users_factories.ProFactory()
@@ -1219,19 +1101,12 @@ class GetCsvReportTest:
             reimbursementDate=(booking_date + timedelta(days=2)),
             stock__offer__name="Harry Potter Vol 2",
         )
-        bookings_factories.EducationalBookingFactory(
-            stock__offer__venue=venue,
-            quantity=1,
-            dateCreated=booking_date,
-            reimbursementDate=(booking_date + timedelta(days=3)),
-            stock__offer__name="Harry Potter Vol 3",
-        )
         bookings_factories.UsedIndividualBookingFactory(
             stock__offer__venue=venue,
             quantity=1,
             dateCreated=booking_date,
             reimbursementDate=(booking_date + timedelta(days=4)),
-            stock__offer__name="Harry Potter Vol 4",
+            stock__offer__name="Harry Potter Vol 3",
         )
 
         bookings_csv = booking_repository.get_export(
@@ -1241,10 +1116,9 @@ class GetCsvReportTest:
         )
 
         _, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 2
+        assert len(data) == 1
         # Check bookings offer name
-        assert data[0][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
-        assert data[1][1] in ["Harry Potter Vol 2", "Harry Potter Vol 3"]
+        assert data[0][1] == "Harry Potter Vol 2"
 
     def test_should_return_booking_as_duo_when_quantity_is_two(self, app: fixture):
         # Given
@@ -1861,16 +1735,11 @@ class GetCsvReportTest:
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
-        booking_1 = bookings_factories.EducationalBookingFactory(
+        booking_1 = bookings_factories.IndividualBookingFactory(
             stock__offer__venue=venue,
         )
-        booking_2 = bookings_factories.IndividualBookingFactory(
-            stock__offer__venue=venue,
-        )
-        booking_3 = bookings_factories.RefusedEducationalBookingFactory(
-            stock__offer__venue=venue,
-        )
-        booking_4 = bookings_factories.UsedIndividualBookingFactory(
+
+        booking_2 = bookings_factories.UsedIndividualBookingFactory(
             stock__offer__venue=venue,
         )
 
@@ -1884,59 +1753,16 @@ class GetCsvReportTest:
 
         # Then
         expected_type = {
-            booking_1.stock.offer.name: "offre collective",
+            booking_1.stock.offer.name: "offre grand public",
             booking_2.stock.offer.name: "offre grand public",
-            booking_3.stock.offer.name: "offre collective",
-            booking_4.stock.offer.name: "offre grand public",
         }
 
         headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert len(data) == 4
+        assert len(data) == 2
         data_dicts = [dict(zip(headers, line)) for line in data]
         for data_dict in data_dicts:
             offer_name = data_dict["Nom de l’offre"]
             assert data_dict["Type d'offre"] == expected_type[offer_name]
-
-    def test_should_not_return_token_for_educational_bookings(self, app: fixture):
-        # Given
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-
-        bookings_factories.EducationalBookingFactory(
-            stock__offer__venue=venue,
-        )
-
-        # When
-        beginning_period = datetime.fromisoformat("2021-10-15")
-        ending_period = datetime.fromisoformat("2032-02-15")
-        bookings_csv = booking_repository.get_export(
-            user=pro,
-            booking_period=(beginning_period, ending_period),
-        )
-
-        # Then
-        headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-        assert headers == [
-            "Lieu",
-            "Nom de l’offre",
-            "Date de l'évènement",
-            "ISBN",
-            "Nom et prénom du bénéficiaire",
-            "Email du bénéficiaire",
-            "Téléphone du bénéficiaire",
-            "Date et heure de réservation",
-            "Date et heure de validation",
-            "Contremarque",
-            "Prix de la réservation",
-            "Statut de la contremarque",
-            "Date et heure de remboursement",
-            "Type d'offre",
-        ]
-        assert len(data) == 1
-        data_dict = dict(zip(headers, data[0]))
-        assert data_dict["Contremarque"] == ""
 
     def test_should_return_only_bookings_for_requested_offer_type(self, app: fixture):
         # Given
@@ -1945,20 +1771,12 @@ class GetCsvReportTest:
             dateCreated=default_booking_date,
             stock__offer__venue__managingOfferer=user_offerer.offerer,
         )
-        bookings_factories.EducationalBookingFactory(
-            stock__offer__venue__managingOfferer=user_offerer.offerer,
-        )
 
         # When
         individual_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
             booking_period=(one_year_before_booking, one_year_after_booking),
             offer_type=OfferType.INDIVIDUAL_OR_DUO,
-        )
-        educational_bookings_csv = booking_repository.get_export(
-            user=user_offerer.user,
-            booking_period=(one_year_before_booking, one_year_after_booking),
-            offer_type=OfferType.EDUCATIONAL,
         )
         all_bookings_csv = booking_repository.get_export(
             user=user_offerer.user,
@@ -1970,12 +1788,8 @@ class GetCsvReportTest:
         assert len(individual_bookings_data) == 1
         individual_bookings_data_dict = dict(zip(headers, individual_bookings_data[0]))
         assert individual_bookings_data_dict["Type d'offre"] == "offre grand public"
-        headers, *educational_bookings_data = csv.reader(StringIO(educational_bookings_csv), delimiter=";")
-        assert len(educational_bookings_data) == 1
-        educational_bookings_data_dict = dict(zip(headers, educational_bookings_data[0]))
-        assert educational_bookings_data_dict["Type d'offre"] == "offre collective"
         headers, *all_bookings_data = csv.reader(StringIO(all_bookings_csv), delimiter=";")
-        assert len(all_bookings_data) == 2
+        assert len(all_bookings_data) == 1
 
     class BookingStatusInCsvReportTest:
         @freeze_time("2021-12-15 09:00:00")
@@ -2095,164 +1909,6 @@ class GetCsvReportTest:
             assert len(data) == 4
             pos_cm = headers.index("Statut de la contremarque")
             assert sorted([line[pos_cm] for line in data]) == ["annulé", "confirmé", "remboursé", "validé"]
-
-        @freeze_time("2021-12-15 09:00:00")
-        def test_should_output_the_correct_status_for_eac_bookings_before_cancellationLimitDate(self, app):
-            # Given
-            date_created = datetime.utcnow() - timedelta(days=20)
-            cancellation_limit_date = datetime.utcnow() + timedelta(days=10)
-            event_date = datetime.utcnow() + timedelta(days=25)
-
-            pro = users_factories.ProFactory()
-            offerer = offerers_factories.OffererFactory()
-            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-            bookings_factories.RefusedEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.PendingEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.EducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-
-            # When
-            beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_export(
-                user=pro,
-                booking_period=(beginning_period, ending_period),
-            )
-
-            # Then
-            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-            assert len(data) == 3
-            pos_cm = headers.index("Statut de la contremarque")
-            assert sorted([line[pos_cm] for line in data]) == ["annulé", "préréservé", "réservé"]
-
-        @freeze_time("2021-12-15 09:00:00")
-        def test_should_output_the_correct_status_for_eac_bookings_after_cancellationLimitDate_but_before_event(
-            self, app
-        ):
-            # Given
-            date_created = datetime.utcnow() - timedelta(days=20)
-            cancellation_limit_date = datetime.utcnow() - timedelta(days=2)
-            event_date = datetime.utcnow() + timedelta(days=10)
-
-            pro = users_factories.ProFactory()
-            offerer = offerers_factories.OffererFactory()
-            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-            bookings_factories.RefusedEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.PendingEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.EducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-
-            # When
-            beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_export(
-                user=pro,
-                booking_period=(beginning_period, ending_period),
-            )
-
-            # Then
-            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-            assert len(data) == 3
-            pos_cm = headers.index("Statut de la contremarque")
-            assert sorted([line[pos_cm] for line in data]) == ["annulé", "confirmé", "préréservé"]
-
-        @freeze_time("2021-12-15 09:00:00")
-        def test_should_output_the_correct_status_for_eac_bookings_after_cancellationLimitDate_and_after_event(
-            self, app
-        ):
-            # Given
-            date_created = datetime.utcnow() - timedelta(days=20)
-            cancellation_limit_date = datetime.utcnow() - timedelta(days=7)
-            event_date = datetime.utcnow() - timedelta(days=1)
-
-            pro = users_factories.ProFactory()
-            offerer = offerers_factories.OffererFactory()
-            offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-            bookings_factories.RefusedEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.PendingEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.EducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.UsedEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-            )
-            bookings_factories.UsedEducationalBookingFactory(
-                stock__offer__venue=venue,
-                dateCreated=date_created,
-                cancellation_limit_date=cancellation_limit_date,
-                stock__beginningDatetime=event_date,
-                status=BookingStatus.REIMBURSED,
-            )
-
-            # When
-            beginning_period = datetime.fromisoformat("2021-10-15")
-            ending_period = datetime.fromisoformat("2032-02-15")
-            bookings_csv = booking_repository.get_export(
-                user=pro,
-                booking_period=(beginning_period, ending_period),
-            )
-
-            # Then
-            headers, *data = csv.reader(StringIO(bookings_csv), delimiter=";")
-            assert len(data) == 5
-            pos_cm = headers.index("Statut de la contremarque")
-            assert sorted([line[pos_cm] for line in data]) == [
-                "annulé",
-                "confirmé",
-                "préréservé",
-                "remboursé",
-                "validé",
-            ]
 
 
 class GetExcelReportTest:
