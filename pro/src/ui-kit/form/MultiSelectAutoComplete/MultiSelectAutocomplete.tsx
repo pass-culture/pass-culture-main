@@ -1,12 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useField, useFormikContext } from 'formik'
 
 import BaseCheckbox from '../shared/BaseCheckbox'
+import FieldLayout from '../shared/FieldLayout'
 import Icon from 'components/layout/Icon'
 import { SelectOption } from 'custom_types/form'
+import Tag from 'ui-kit/Tag'
 import TextInput from '../TextInput'
 import cx from 'classnames'
 import styles from './MultiSelectAutocomplete.module.scss'
-import { useFormikContext } from 'formik'
 
 export interface MultiSelectAutocompleteProps {
   options: SelectOption[]
@@ -15,6 +17,10 @@ export interface MultiSelectAutocompleteProps {
   className?: string
   fieldName: string
   pluralLabel: string
+  hideFooter?: boolean
+  isOptional?: boolean
+  smallLabel?: boolean
+  hideTags?: boolean
 }
 
 const MultiSelectAutocomplete = ({
@@ -24,14 +30,18 @@ const MultiSelectAutocomplete = ({
   fieldName,
   className,
   pluralLabel,
+  hideFooter = false,
+  isOptional = false,
+  smallLabel = false,
+  hideTags = false,
 }: MultiSelectAutocompleteProps): JSX.Element => {
-  const formik = useFormikContext<any>()
+  const { values, setFieldValue, handleChange } = useFormikContext<any>()
+  const [field, meta] = useField(fieldName)
+
   const containerRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
-  const {
-    values: { [fieldName]: data, [`search-${fieldName}`]: searched },
-  } = formik
+  const { [`search-${fieldName}`]: searched } = values
 
   useEffect(() => {
     setFilteredOptions(options)
@@ -41,7 +51,7 @@ const MultiSelectAutocomplete = ({
     const handleClickOutside = (e: MouseEvent): void => {
       if (!containerRef.current?.contains(e.target as Node)) {
         setIsOpen(false)
-        formik.setFieldValue(`search-${fieldName}`, '', false)
+        setFieldValue(`search-${fieldName}`, '', false)
       }
     }
     if (containerRef.current) {
@@ -59,63 +69,107 @@ const MultiSelectAutocomplete = ({
     )
   }, [searched])
 
+  const optionsLabelById = useMemo(
+    () =>
+      options.reduce<Record<string, string>>((optionsById, option) => {
+        optionsById[option.value] = option.label
+        return optionsById
+      }, {}),
+    [options]
+  )
+
   return (
-    <div
-      className={cx(styles['multi-select-autocomplete-container'], className)}
-      ref={containerRef}
+    <FieldLayout
+      className={className}
+      error={meta.error}
+      hideFooter={hideFooter}
+      isOptional={isOptional}
+      label="" // to avoid duplicated label, included in MultiSelectAutocomplete
+      name={fieldName}
+      showError={meta.touched && !!meta.error}
+      smallLabel={smallLabel}
     >
-      <TextInput
-        hideFooter
-        label={label}
-        onFocus={() => {
-          if (!isOpen) setIsOpen(true)
-        }}
-        name={`search-${fieldName}`}
-        placeholder={data.length > 1 ? pluralLabel : label}
-        style={{ paddingLeft: data.length > 0 ? '2.2rem' : '1rem' }}
-      />
-      <div className={styles['field-overlay']}>
-        <button
-          onClick={() => {
-            if (isOpen) {
-              setIsOpen(false)
-              formik.setFieldValue(`search-${fieldName}`, '', false)
-            } else {
-              setIsOpen(true)
-            }
+      <div
+        className={cx(styles['multi-select-autocomplete-container'], className)}
+        ref={containerRef}
+      >
+        <TextInput
+          hideFooter
+          label={label}
+          onFocus={() => {
+            if (!isOpen) setIsOpen(true)
           }}
-          className={cx(styles['dropdown-indicator'], {
-            [styles['dropdown-indicator-is-closed']]: !isOpen,
-          })}
-        >
-          <Icon
-            svg="open-dropdown"
-            alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
-          />
-        </button>
-        {data.length > 0 && (
-          <div className={styles['pellet']}>{data.length}</div>
+          name={`search-${fieldName}`}
+          placeholder={field.value.length > 1 ? pluralLabel : label}
+          style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
+        />
+        <div className={styles['field-overlay']}>
+          <button
+            onClick={() => {
+              if (isOpen) {
+                setIsOpen(false)
+                setFieldValue(`search-${fieldName}`, '', false)
+              } else {
+                setIsOpen(true)
+              }
+            }}
+            className={cx(styles['dropdown-indicator'], {
+              [styles['dropdown-indicator-is-closed']]: !isOpen,
+            })}
+          >
+            <Icon
+              svg="open-dropdown"
+              alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
+            />
+          </button>
+          {field.value.length > 0 && (
+            <div className={styles['pellet']}>{field.value.length}</div>
+          )}
+        </div>
+        {isOpen && (
+          <div
+            className={cx(styles['multi-select-autocomplete__menu'], {
+              [styles['multi-select-autocomplete__menu--no-results']]:
+                filteredOptions.length === 0,
+            })}
+          >
+            {filteredOptions.length === 0 && 'Aucun résultat'}
+            {filteredOptions.map(({ value, label }) => (
+              <BaseCheckbox
+                label={label}
+                key={`${fieldName}-${value}`}
+                value={value}
+                name={fieldName}
+                onChange={e => {
+                  handleChange(e)
+                  onChange?.(e)
+                }}
+                checked={field.value.includes(value)}
+              />
+            ))}
+          </div>
         )}
       </div>
-      {isOpen && (
-        <div className={styles['multi-select-autocomplete__menu']}>
-          {filteredOptions.length === 0 && 'Aucun résultat'}
-          {filteredOptions.map(({ value, label }) => (
-            <BaseCheckbox
-              label={label}
-              key={`${fieldName}-${value}`}
-              value={value}
-              name={fieldName}
-              onChange={e => {
-                formik.handleChange(e)
-                onChange?.(e)
+      {!hideTags && field.value.length > 0 && (
+        <div className={styles['multi-select-autocomplete-tags']}>
+          {values[fieldName].map((value: string) => (
+            <Tag
+              label={optionsLabelById[value]}
+              closeable={{
+                onClose: e => {
+                  setFieldValue(
+                    fieldName,
+                    values[fieldName].filter(
+                      (_value: string) => _value !== value
+                    )
+                  )
+                },
               }}
-              checked={data.includes(value)}
             />
           ))}
         </div>
       )}
-    </div>
+    </FieldLayout>
   )
 }
 
