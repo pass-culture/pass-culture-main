@@ -11,7 +11,7 @@ branch_labels = None
 depends_on = None
 
 
-def upgrade():
+def upgrade() -> None:
     op.create_table(
         "booking_provider",
         sa.Column("id", sa.BigInteger(), nullable=False),
@@ -43,8 +43,9 @@ def upgrade():
     )
 
 
-def downgrade():
+def downgrade() -> None:
     op.drop_constraint("unique_venue_booking_provider", "venue_booking_provider", type_="unique")
     op.drop_index(op.f("ix_venue_booking_provider_venueId"), table_name="venue_booking_provider")
     op.drop_table("venue_booking_provider")
     op.drop_table("booking_provider")
+    op.execute("DROP TYPE bookingprovidername")
