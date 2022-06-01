@@ -61,6 +61,10 @@ export const computeInitialValuesFromOffer = (
     ? offer.contactPhone
     : offer?.extraData?.contactPhone
 
+  const domains = offerIsCollectiveOffer(offer)
+    ? offer.domains.map(domainId => domainId.toString())
+    : []
+
   return {
     category,
     subCategory,
@@ -85,5 +89,6 @@ export const computeInitialValuesFromOffer = (
     notifications: !!offer.bookingEmail,
     notificationEmail:
       offer.bookingEmail ?? DEFAULT_EAC_FORM_VALUES.notificationEmail,
+    domains,
   }
 }

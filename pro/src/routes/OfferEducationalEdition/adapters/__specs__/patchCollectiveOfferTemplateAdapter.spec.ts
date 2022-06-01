@@ -43,6 +43,7 @@ describe('cancelCollectiveBookingAdapter', () => {
         email: 'collectiveofferfactory+contact@example.com',
         notifications: true,
         notificationEmail: 'collectiveofferfactory+booking@example.com',
+        domains: [],
       },
       initialValues: {
         category: 'PRATIQUE_ART',
@@ -77,6 +78,7 @@ describe('cancelCollectiveBookingAdapter', () => {
         email: 'collectiveofferfactory+contact@example.com',
         notifications: true,
         notificationEmail: 'collectiveofferfactory+booking@example.com',
+        domains: [],
       },
     }
   })
