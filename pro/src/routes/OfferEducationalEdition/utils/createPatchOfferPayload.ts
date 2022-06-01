@@ -103,6 +103,13 @@ const serializer = {
   offererId: (payload: EditEducationalOfferPayload) => payload,
   venueId: (payload: EditEducationalOfferPayload) => payload,
   category: (payload: EditEducationalOfferPayload) => payload,
+  domains: (
+    payload: EditEducationalOfferPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    domains: offer.domains,
+  }),
 }
 
 const collectiveOfferSerializer = {
@@ -134,6 +141,13 @@ const collectiveOfferSerializer = {
   ) => ({
     ...payload,
     contactEmail: offer.email,
+  }),
+  domains: (
+    payload: EditEducationalOfferPayload,
+    offer: IOfferEducationalFormValues
+  ) => ({
+    ...payload,
+    domains: offer.domains,
   }),
 }
 
