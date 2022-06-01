@@ -90,6 +90,7 @@ const editionFormValues = {
   email: 'email@email.com',
   notifications: true,
   notificationEmail: 'email.notification@email.com',
+  domains: [],
 }
 
 export const defaultEditionProps: IOfferEducationalProps = {
