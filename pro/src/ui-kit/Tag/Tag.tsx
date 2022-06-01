@@ -26,6 +26,7 @@ const Tag = ({ label, className, closeable }: ITagProps): JSX.Element => {
           className={styles['tag-close-button']}
           onClick={closeable.onClose}
           title={closeable.closeLabel}
+          type="button"
         >
           {label}
           <Icon
