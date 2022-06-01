@@ -838,6 +838,7 @@ export interface PostCollectiveOfferBodyModel {
   subcategoryId: string
   venueId: string
   visualDisabilityCompliant?: boolean
+  domains?: number[]
 }
 
 export interface PostEducationalOfferBodyModel {
