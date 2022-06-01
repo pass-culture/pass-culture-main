@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from flask.helpers import flash
@@ -182,7 +183,8 @@ class ProUserView(SuspensionMixin, BaseAdminView):
     def after_model_change(self, form: Form, model: User, is_created: bool) -> None:
         if is_created:
             resetPasswordToken = users_api.create_reset_password_token(
-                model, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+                model,
+                expiration=datetime.datetime.utcnow() + RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED,
             )
             reset_password_link = build_pc_pro_create_password_link(resetPasswordToken.value)
             flash(f"Lien de création de mot de passe : {reset_password_link}")

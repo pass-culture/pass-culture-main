@@ -1,3 +1,4 @@
+import datetime
 from typing import Optional
 
 from flask.helpers import flash
@@ -104,7 +105,8 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
     def after_model_change(self, form: Form, model, is_created: bool) -> None:  # type: ignore [no-untyped-def]
         if is_created:
             token = users_api.create_reset_password_token(
-                model, token_life_time=RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED
+                model,
+                expiration=datetime.datetime.utcnow() + RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED,
             )
             send_email_validation_to_admin_email(model, token)
             flash(f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(token.value)}")

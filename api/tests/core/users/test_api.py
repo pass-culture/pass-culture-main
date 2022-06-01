@@ -46,7 +46,7 @@ class GenerateAndSaveTokenTest:
         token_type = users_models.TokenType.RESET_PASSWORD
         life_time = timedelta(hours=24)
 
-        generated_token = users_api.generate_and_save_token(user, token_type, life_time)
+        generated_token = users_api.generate_and_save_token(user, token_type, expiration=datetime.utcnow() + life_time)
 
         saved_token = users_models.Token.query.filter_by(user=user).first()
 
@@ -158,10 +158,12 @@ class DeleteExpiredTokensTest:
         life_time = timedelta(hours=24)
 
         never_expire_token = users_api.generate_and_save_token(user, token_type)
-        not_expired_token = users_api.generate_and_save_token(user, token_type, life_time=life_time)
+        not_expired_token = users_api.generate_and_save_token(
+            user, token_type, expiration=datetime.utcnow() + life_time
+        )
         # Generate an expired token
         with freeze_time(datetime.utcnow() - life_time):
-            users_api.generate_and_save_token(user, token_type, life_time=life_time)
+            users_api.generate_and_save_token(user, token_type, expiration=datetime.utcnow() + life_time)
 
         users_api.delete_expired_tokens()
 

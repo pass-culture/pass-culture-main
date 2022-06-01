@@ -208,7 +208,7 @@ def resend_email_validation(body: serializers.ResendEmailValidationRequest) -> N
 @authenticated_and_active_user_required
 def send_phone_validation_code(user: users_models.User, body: serializers.SendPhoneValidationRequest) -> None:
     try:
-        phone_validation_api.send_phone_validation_code(user, body.phoneNumber)
+        phone_validation_api.send_phone_validation_code(user, body.phoneNumber, expiration=datetime.utcnow() + constants.PHONE_VALIDATION_TOKEN_LIFE_TIME)
 
     except phone_validation_exceptions.SMSSendingLimitReached:
         raise ApiErrors(

@@ -1111,7 +1111,9 @@ class ValidatePhoneNumberTest:
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user, "+33607080900")
+        token = create_phone_validation_token(
+            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
+        )
 
         # try one attempt with wrong code
         client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
@@ -1163,7 +1165,9 @@ class ValidatePhoneNumberTest:
         )
 
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user, "+33607080900")
+        token = create_phone_validation_token(
+            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
+        )
 
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
@@ -1180,7 +1184,9 @@ class ValidatePhoneNumberTest:
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user, "+33607080900")
+        token = create_phone_validation_token(
+            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
+        )
 
         response = client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
@@ -1235,7 +1241,9 @@ class ValidatePhoneNumberTest:
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
         client.with_token(email=user.email)
-        create_phone_validation_token(user, "+33607080900")
+        create_phone_validation_token(
+            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
+        )
 
         response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
 
@@ -1272,7 +1280,9 @@ class ValidatePhoneNumberTest:
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
-        token = create_phone_validation_token(user, "+33607080900")
+        token = create_phone_validation_token(
+            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
+        )
 
         with freeze_time(datetime.utcnow() + timedelta(minutes=20)):
             client.with_token(email=user.email)
@@ -1294,7 +1304,9 @@ class ValidatePhoneNumberTest:
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user, "+33607080900")
+        token = create_phone_validation_token(
+            user, "+33607080900", expiration=datetime.utcnow() + users_constants.PHONE_VALIDATION_TOKEN_LIFE_TIME
+        )
 
         # try one attempt with wrong code
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
