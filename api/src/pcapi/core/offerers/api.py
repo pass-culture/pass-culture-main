@@ -180,20 +180,25 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
     return venue
 
 
-def set_business_unit_to_venue_id(business_unit_id: int, venue_id: int) -> None:
-    now = datetime.utcnow()
+def set_business_unit_to_venue_id(
+    business_unit_id: int,
+    venue_id: int,
+    timestamp: Optional[datetime] = None,
+) -> None:
+    if not timestamp:
+        timestamp = datetime.utcnow()
     current_link = finance_models.BusinessUnitVenueLink.query.filter(
         finance_models.BusinessUnitVenueLink.venueId == venue_id,
-        finance_models.BusinessUnitVenueLink.timespan.contains(now),
+        finance_models.BusinessUnitVenueLink.timespan.contains(timestamp),
     ).one_or_none()
     if current_link:
         current_link.timespan = current_link._make_timespan(
             current_link.timespan.lower,
-            now,
+            timestamp,
         )
         db.session.add(current_link)
     new_link = finance_models.BusinessUnitVenueLink(
-        businessUnitId=business_unit_id, venueId=venue_id, timespan=(now, None)
+        businessUnitId=business_unit_id, venueId=venue_id, timespan=(timestamp, None)
     )
     db.session.add(new_link)
     Venue.query.filter(Venue.id == venue_id).update({"businessUnitId": business_unit_id})

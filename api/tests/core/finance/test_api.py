@@ -67,6 +67,13 @@ def create_rich_user():
     return user
 
 
+def datetime_iterator(first):
+    dt = first
+    while 1:
+        yield dt
+        dt += datetime.timedelta(days=15)
+
+
 class CleanStringTest:
     def test_remove_string_starting_with_space_if_string(self):
         name = " saut de ligne"
@@ -467,6 +474,64 @@ class DeleteDependentPricingsTest:
         api._delete_dependent_pricings(booking, "some log message")
         expected_kept = {earlier_pricing_previous_year, earlier_pricing, later_pricing_another_year}
         assert set(models.Pricing.query.all()) == expected_kept
+
+    def test_scenario1(self):
+        # 0. V2 is linked to a BU, V1 is not.
+        # 1. B1 is marked as used. It cannot be priced yet.
+        # 2. B2 is marked as used. It is priced.
+        # 3. V1 is linked to a BU, this makes B1 priceable. B1 should
+        #    be priced after B2, even though its used date predates
+        #    B2's used date).
+        datetimes = datetime_iterator(datetime.datetime(2022, 1, 1))
+        v2 = offerers_factories.VenueFactory(businessUnit=None)
+        bu = factories.BusinessUnitFactory(siret=v2.siret)
+        offerers_api.set_business_unit_to_venue_id(bu.id, v2.id, next(datetimes))
+        v1 = offerers_factories.VirtualVenueFactory(businessUnit=None)
+        b1 = bookings_factories.UsedBookingFactory(stock__offer__venue=v1, dateUsed=next(datetimes))
+        b2 = bookings_factories.UsedBookingFactory(stock__offer__venue=v2, dateUsed=next(datetimes))
+        offerers_api.set_business_unit_to_venue_id(bu.id, v1.id, next(datetimes))
+
+        # Suppose that we priced b1 first (which we should not).
+        factories.PricingFactory(booking=b1)
+        # If we were to price b2 now, that should delete b1's pricing
+        # because b2 must be priced before b1.
+        api._delete_dependent_pricings(b2, "dummy")
+        assert not b1.pricings
+
+    def test_scenario2(self):
+        # 0. Venue has 2 bookings.
+        # 1. B1 is a booking for event/stock S1.
+        # 2. B2 is a booking for event/stock S2 (which happens after S1).
+        # 3. B2 is marked as used before the event date.
+        # 4. B1 is also marked used before the event date.
+        # 5. S1 happens, B1 can then be invoiced.
+        # 6. S2 does not happen, B2 should be cancelled. This should
+        #    not have any effect on B1.
+        datetimes = datetime_iterator(datetime.datetime(2022, 1, 1))
+        venue = offerers_factories.VenueFactory(businessUnit=None)
+        bu = factories.BusinessUnitFactory(siret=venue.siret)
+        offerers_api.set_business_unit_to_venue_id(bu.id, venue.id, next(datetimes))
+        used_b2 = next(datetimes)
+        used_b1 = next(datetimes)
+        s1_date = next(datetimes)
+        s2_date = next(datetimes)
+        b1 = bookings_factories.UsedBookingFactory(
+            stock__beginningDatetime=s1_date,
+            stock__offer__venue=venue,
+            dateUsed=used_b1,
+        )
+        b2 = bookings_factories.UsedBookingFactory(
+            stock__beginningDatetime=s2_date,
+            stock__offer__venue=venue,
+            dateUsed=used_b2,
+        )
+
+        # Suppose that we priced b2 first (which we should not).
+        factories.PricingFactory(booking=b2)
+        # If we were to price b1 now, that should delete b2's pricing
+        # because b1 must be priced before b2.
+        api._delete_dependent_pricings(b1, "dummy")
+        assert not b2.pricings
 
     def test_raise_if_a_pricing_is_not_deletable(self):
         booking = create_booking_with_undeletable_dependent()

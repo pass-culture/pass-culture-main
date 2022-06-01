@@ -96,34 +96,13 @@ MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 # stable order. If you change this, you MUST update
 # `_booking_comparison_tuple()` below.
 _PRICE_BOOKINGS_ORDER_CLAUSE = (
-    # Order by business unit-venue link date first. Example where it's
-    # required:
-    # 1. Booking B1 is marked as used. Its venue V1 is _not_ linked to
-    #    any business unit yet, so B1 is not priced.
-    # 2. Booking B2 is marked as used. Its venue V2 is linked to a
-    #    business unit, thus B2 is priced.
-    # 3. The offerer links venue V1 to the same business unit as V2.
-    # 4. Now B1 can be priced.
-    # B1's used date is before B2's used date, and since B2 may
-    # already have been reimbursed, we need another order criterion:
-    # the date that the venue has been linked to the business unit.
-    sqla.func.lower(models.BusinessUnitVenueLink.timespan),
-    # In case of an event, we should order by the event date
-    # first. Otherwise, we would risk the following with a venue that
-    # has two events E1 (on 15/02) and E2 (on 20/02):
-    # 1. B1 is a booking for E1.
-    # 2. B2 is a booking for E2.
-    # 3. B2 is marked as used on 14/02 (_before_ the event date, it's
-    #    allowed).
-    # 4. B1 is also marked as used on 14/02, _after_ B2.
-    # 5. On 16/02, a cashflow is generated for B1 only, because it's
-    #    the only event that has happened yet.
-    # 6. The venue cancels E2. We should cancel B2's pricing.
-    #    However, we have priced B1 _after_ B2, i.e. we have included
-    #    the amount of B2 into the revenue when pricing B1. As such,
-    #    we cannot cancel B2's pricing.
-    # To work around that, we price in the order of the event date
-    # first.
+    sqla.func.greatest(
+        sqla.func.lower(models.BusinessUnitVenueLink.timespan),
+        sqla_func.coalesce(
+            offers_models.Stock.beginningDatetime,
+            bookings_models.Booking.dateUsed,
+        ),
+    ),
     sqla_func.coalesce(
         offers_models.Stock.beginningDatetime,
         bookings_models.Booking.dateUsed,
@@ -239,25 +218,28 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE):  # type: ig
                 )
 
 
-def _booking_comparison_tuple(booking: bookings_models.Booking) -> list:
-    """Return a list of values, for a particular booking, that can be
+def _booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
+    """Return a tuple of values, for a particular booking, that can be
     compared to `_PRICE_BOOKINGS_ORDER_CLAUSE`.
     """
     business_unit_venue_links = [
         link for link in booking.venue.businessUnit.venue_links if link.venueId == booking.venueId
     ]
     tupl = (
-        business_unit_venue_links[-1].timespan.lower,
+        max(
+            business_unit_venue_links[-1].timespan.lower,
+            booking.stock.beginningDatetime or booking.dateUsed,
+        ),
         booking.stock.beginningDatetime or booking.dateUsed,
         booking.dateUsed,
         booking.id,
     )
     if len(tupl) != len(_PRICE_BOOKINGS_ORDER_CLAUSE):
         raise RuntimeError("_booking_comparison_tuple has a wrong length.")
-    return tupl  # type: ignore [return-value]
+    return tupl
 
 
-def lock_business_unit(business_unit_id: int):  # type: ignore [no-untyped-def]
+def lock_business_unit(business_unit_id: int) -> None:
     """Lock a business unit while we are doing some work that cannot be
     done while there are other running operations on the same business
     unit.
