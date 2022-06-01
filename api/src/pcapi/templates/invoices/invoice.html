@@ -155,6 +155,10 @@
             font-weight: 800;
         }
 
+        .coloredTitle {
+            color: #870087;
+        }
+
         .coloredSection {
             background: #F1F1F4;
             font-weight: bold;
@@ -191,6 +195,9 @@
 {% endif %}
     <p><b>SIRET :</b> {{ invoice.businessUnit.siret }}</p>
 </div>
+<h3 class="coloredTitle">
+    Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels
+</h3>
 <h3>
     Détail des offres remboursées incluant la contribution offreur,
     appliquée selon le barème défini dans nos conditions générales de vente
