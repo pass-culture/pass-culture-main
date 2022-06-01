@@ -598,7 +598,11 @@ def get_collective_offers_for_filters(
         query.options(
             joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer)
         )
-        .options(joinedload(educational_models.CollectiveOffer.collectiveStock))
+        .options(
+            joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            )
+        )
         .limit(offers_limit)
         .all()
     )

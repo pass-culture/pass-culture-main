@@ -132,7 +132,7 @@ def _serialize_stock(offer_id: int, stock: Optional[CollectiveStock] = None) -> 
             "id": humanize(stockId),
             "offerId": humanize(offer_id),
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
-            "remainingQuantity": 1,
+            "remainingQuantity": 0 if stock.isSoldOut else 1,
             "beginningDatetime": stock.beginningDatetime,
         }
     return {
