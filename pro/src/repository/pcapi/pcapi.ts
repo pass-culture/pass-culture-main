@@ -13,6 +13,7 @@ import {
   CreateCollectiveStockPayload,
   EditCollectiveStockPayload,
   EditEducationalOfferPayload,
+  EducationalDomain,
   StockPayload,
 } from 'core/OfferEducational'
 import {
@@ -722,3 +723,7 @@ export const getInvoices = async params => {
   const queryParams = buildInvoicesQuery(params)
   return client.get(`/finance/invoices?${queryParams}`)
 }
+
+// Domains
+export const getEducationalDomains = async (): Promise<EducationalDomain[]> =>
+  client.get('/collective/educational-domains')

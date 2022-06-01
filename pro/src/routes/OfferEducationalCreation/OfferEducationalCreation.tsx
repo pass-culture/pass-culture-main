@@ -3,6 +3,7 @@ import {
   IOfferEducationalFormValues,
   Mode,
   getCategoriesAdapter,
+  getEducationalDomainsAdapter,
   getOfferersAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
@@ -24,7 +25,7 @@ import useNotification from 'components/hooks/useNotification'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
-  'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
+  'educationalCategories' | 'educationalSubCategories' | 'userOfferers' | 'domainsOptions'
 >
 
 const OfferEducationalCreation = (): JSX.Element => {
@@ -40,6 +41,8 @@ const OfferEducationalCreation = (): JSX.Element => {
     queryParamsFromOfferer(location)
 
   const notify = useNotification()
+
+  const enableEducationalDomains = useActiveFeature("ENABLE_EDUCATIONAL_DOMAINS")
 
   const createOffer = async (offer: IOfferEducationalFormValues) => {
     const adapter = postCollectiveOfferAdapter
@@ -59,6 +62,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         const results = await Promise.all([
           getCategoriesAdapter(null),
           getOfferersAdapter(offererId),
+          ...(enableEducationalDomains ? [getEducationalDomainsAdapter()] : [])
         ])
 
         if (results.some(res => !res.isOk)) {
@@ -66,12 +70,13 @@ const OfferEducationalCreation = (): JSX.Element => {
           console.error(results?.find(res => !res.isOk)?.message)
         }
 
-        const [categories, offerers] = results
+        const [categories, offerers, domains] = results
 
         setScreenProps({
           educationalCategories: categories.payload.educationalCategories,
           educationalSubCategories: categories.payload.educationalSubCategories,
           userOfferers: offerers.payload,
+          domainsOptions: domains?.payload ?? [],
         })
 
         setInitialValues(values =>
