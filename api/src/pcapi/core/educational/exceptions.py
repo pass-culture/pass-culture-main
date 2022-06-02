@@ -101,3 +101,11 @@ class CollectiveStockNotFound(Exception):
 
 class EducationalDomainsNotFound(Exception):
     pass
+
+
+class EducationalInstitutionNotFound(Exception):
+    pass
+
+
+class CollectiveOfferNotEditable(Exception):
+    pass

@@ -142,7 +142,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
 
-    institution: RelationshipProperty["EducationalInstitution"] = relationship(
+    institution: RelationshipProperty[Optional["EducationalInstitution"]] = relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
@@ -464,6 +464,17 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type, misc]
     @property
     def isBookable(self) -> bool:
         return not self.isExpired and self.collectiveOffer.isReleased and not self.isSoldOut
+
+    @property
+    def isEditable(self) -> bool:
+        """this rule has nothing to do with the isEditable from pcapi.core.offers.models.Booking
+        a collectiveStock is editable if there is no booking with status REIMBURSED, USED, CONFIRMED
+        """
+        bookable = (CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CANCELLED)
+        for booking in self.collectiveBookings:
+            if booking.status not in bookable:
+                return False
+        return True
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimePassed(self):

@@ -9,8 +9,6 @@ from pydantic import Field
 from pydantic import validator
 from pydantic.fields import ModelField
 
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveStock
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
@@ -158,21 +156,13 @@ class CollectiveStockResponseModel(BaseModel):
     bookingLimitDatetime: Optional[datetime]
     price: float
     numberOfTickets: Optional[int]
-    isEducationalStockEditable: Optional[bool]
     priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+    isEditable: bool = Field(alias="isEducationalStockEditable")
     # FIXME (cgaunet, 2022-04-22): Remove this field once ENABLE_NEW_EAC_MODEL is activated
     stockId: Optional[str]
 
     _humanize_id = humanize_field("id")
     _humanize_stock_id = humanize_field("stockId")
-
-    @classmethod
-    def from_orm(cls, stock: CollectiveStock):  # type: ignore
-        stock.isEducationalStockEditable = all(
-            collective_booking.status in (CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CANCELLED)
-            for collective_booking in stock.collectiveBookings
-        )
-        return super().from_orm(stock)
 
     class Config:
         allow_population_by_field_name = True
