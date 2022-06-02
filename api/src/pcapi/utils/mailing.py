@@ -22,9 +22,12 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
-def build_pc_pro_offer_link(offer: Union[CollectiveOffer, Offer]) -> str:
+def build_pc_pro_offer_link(offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer]) -> str:
     if isinstance(offer, CollectiveOffer) or (isinstance(offer, Offer) and offer.isEducational):
         return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
+
+    if isinstance(offer, CollectiveOfferTemplate):
+        return f"{settings.PRO_URL}/offre/T-{humanize(offer.id)}/collectif/edition"
 
     return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/individuel/edition"
 
