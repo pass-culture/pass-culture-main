@@ -499,3 +499,11 @@ class PatchAllCollectiveOffersActiveStatusBodyModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+
+
+class PatchCollectiveOfferEducationalInstitution(BaseModel):
+    educational_institution_id: Optional[int]
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"

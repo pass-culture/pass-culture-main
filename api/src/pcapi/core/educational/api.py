@@ -1186,3 +1186,24 @@ def get_all_educational_institutions(
 ) -> tuple[educational_models.EducationalInstitution, int]:
     offset = (per_page_limit * (page - 1)) if page > 0 else 0
     return educational_repository.get_all_educational_institutions(offset=offset, limit=per_page_limit)
+
+
+def get_educational_institution_by_id(institution_id: int) -> educational_models.EducationalInstitution:
+    return educational_repository.get_educational_institution_by_id(institution_id)
+
+
+def update_collective_offer_educational_institution(
+    offer_id: int, educational_institution_id: Optional[int]
+) -> CollectiveOffer:
+    offer = educational_repository.get_collective_offer_by_id(offer_id)
+    if educational_institution_id is not None:
+        institution = get_educational_institution_by_id(educational_institution_id)
+    else:
+        institution = None
+
+    if offer.collectiveStock and not offer.collectiveStock.isEditable:
+        raise exceptions.CollectiveOfferNotEditable()
+    offer.institution = institution
+    db.session.commit()
+
+    return offer
