@@ -14,12 +14,12 @@ from pcapi.models.product import Product
 @pytest.mark.usefixtures("db_session")
 class CDSStocksTest:
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_get_venue_movies(self, mock_get_venue_movies):
 
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         cds_provider.authToken = "fakeToken"
-        cds_provider.apiUrl = "fakeUrl"
         venue_booking_provider = VenueProviderFactory(provider=cds_provider)
 
         mocked_movies = [
@@ -37,11 +37,11 @@ class CDSStocksTest:
         assert len(cds_movies) == 2
 
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_return_providable_info_on_next(self, mock_get_venue_movies):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         cds_provider.authToken = "fakeToken"
-        cds_provider.apiUrl = "fakeUrl"
         venue_booking_provider = VenueProviderFactory(provider=cds_provider)
         mocked_movies = [
             Movie(id="123", title="Coupez !", duration=120, description="Ca tourne mal", visa="123456"),
@@ -67,11 +67,11 @@ class CDSStocksTest:
         assert offer_providable_info.new_id_at_provider == "123"
 
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_create_offers_for_each_movie(self, mock_get_venue_movies):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         cds_provider.authToken = "fakeToken"
-        cds_provider.apiUrl = "fakeUrl"
         venue_booking_provider = VenueProviderFactory(provider=cds_provider)
         mocked_movies = [
             Movie(id="123", title="Coupez !", duration=120, description="Ca tourne mal", visa="123456"),
@@ -88,11 +88,11 @@ class CDSStocksTest:
         assert Product.query.count() == 2
 
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_fill_offer_and_product_informations_for_each_movie(self, mock_get_venue_movies):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         cds_provider.authToken = "fakeToken"
-        cds_provider.apiUrl = "fakeUrl"
 
         venue_booking_provider = VenueProviderFactory(provider=cds_provider, isDuoOffers=True)
         mocked_movies = [

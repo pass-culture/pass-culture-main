@@ -4,6 +4,7 @@ from typing import Union
 
 from sqlalchemy import Sequence
 
+from pcapi import settings
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.models import Movie
 from pcapi.core.categories import subcategories
@@ -22,6 +23,7 @@ class CDSStocks(LocalProvider):
 
     def __init__(self, venue_provider: VenueProvider):
         super().__init__(venue_provider)
+        self.apiUrl = settings.CDS_API_URL
         self.venue = venue_provider.venue
         self.theater_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
@@ -91,9 +93,11 @@ class CDSStocks(LocalProvider):
         obj.extraData = {"visa": self.movie_information.visa}
 
     def _get_cds_movies(self) -> list[Movie]:
+        if not self.apiUrl:
+            raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            api_url=self.venue_provider.provider.apiUrl,
+            api_url=self.apiUrl,
             token=self.venue_provider.provider.authToken,
         )
         return client_cds.get_venue_movies()

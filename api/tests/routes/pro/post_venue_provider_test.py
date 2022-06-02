@@ -213,13 +213,13 @@ class Returns201Test:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def test_create_venue_provider_for_cds_cinema(self, mocked_get_resource, client):
         # Given
         user = user_factories.AdminFactory()
         client = client.with_session_auth(email=user.email)
         provider = Provider.query.filter(Provider.localClass == "CDSStocks").first()
         provider.authToken = "fakeToken"
-        provider.apiUrl = "fakeUrl"
 
         venue = offerers_factories.VenueFactory()
         cds_pivot = CinemaProviderPivotFactory(venue=venue, provider=provider)
