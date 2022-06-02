@@ -3,19 +3,21 @@ import '@testing-library/jest-dom'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IUseFilteredVenueListProps } from '../useFilteredVenueList'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { TOfferIndividualVenue } from 'core/Venue/types'
 import { renderHook } from '@testing-library/react-hooks'
 import { useFilteredVenueList } from '../'
 
 describe('useFilteredVenueList', () => {
   let props: IUseFilteredVenueListProps
-  const virtualVenue = {
-    id: 'CC',
-    name: 'Lieu online CC',
-    managingOffererId: 'A',
-    isVirtual: true,
-  }
+  let virtualVenue: TOfferIndividualVenue
 
   beforeEach(() => {
+    virtualVenue = {
+      id: 'CC',
+      name: 'Lieu online CC',
+      managingOffererId: 'A',
+      isVirtual: true,
+    }
     const venueList = [
       {
         id: 'AA',
@@ -77,7 +79,10 @@ describe('useFilteredVenueList', () => {
   })
 
   it('should not filter venue on isVirtual when subCatagory is not selected', async () => {
-    props.venueList.push(virtualVenue)
+    props = {
+      ...props,
+      venueList: [...props.venueList, virtualVenue],
+    }
     const { result } = renderHook(() => useFilteredVenueList(props))
     expect(result.current.length).toEqual(3)
     expect(result.current[0].id).toEqual('AA')
@@ -85,8 +90,11 @@ describe('useFilteredVenueList', () => {
     expect(result.current[2].id).toEqual('CC')
   })
   it('should not filter venue on isVirtual when subCatagory is ONLINE or OFFLINE', async () => {
-    props.subcategoryId = 'A-C'
-    props.venueList.push(virtualVenue)
+    props = {
+      ...props,
+      subcategoryId: 'A-C',
+      venueList: [...props.venueList, virtualVenue],
+    }
     const { result } = renderHook(() => useFilteredVenueList(props))
     expect(result.current.length).toEqual(3)
     expect(result.current[0].id).toEqual('AA')
@@ -94,15 +102,21 @@ describe('useFilteredVenueList', () => {
     expect(result.current[2].id).toEqual('CC')
   })
   it('should filter venue on isVirtual when subCatagory is ONLINE only', async () => {
-    props.subcategoryId = 'A-A'
-    props.venueList.push(virtualVenue)
+    props = {
+      ...props,
+      subcategoryId: 'A-A',
+      venueList: [...props.venueList, virtualVenue],
+    }
     const { result } = renderHook(() => useFilteredVenueList(props))
     expect(result.current.length).toEqual(1)
     expect(result.current[0].id).toEqual('CC')
   })
   it('should filter venue on not isVirtual when subCatagory is OFFLINE only', async () => {
-    props.subcategoryId = 'A-B'
-    props.venueList.push(virtualVenue)
+    props = {
+      ...props,
+      subcategoryId: 'A-B',
+      venueList: [...props.venueList, virtualVenue],
+    }
     const { result } = renderHook(() => useFilteredVenueList(props))
     expect(result.current.length).toEqual(2)
     expect(result.current[0].id).toEqual('AA')

@@ -5,7 +5,6 @@ import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { Select } from 'ui-kit'
 import { useFormikContext } from 'formik'
-import { usePrevious } from 'hooks'
 
 interface ISelectSubCategoryProps {
   subCategories: IOfferSubCategory[]
@@ -18,18 +17,16 @@ const SelectSubCategory = ({
     values: { categoryId, subcategoryId },
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
-  const prevSubCategoryId = usePrevious(subcategoryId)
+
   useEffect(
     function onSubCategoryChange() {
-      if (subcategoryId !== prevSubCategoryId) {
-        const subCategoryFields =
-          subCategories.find(
-            (subcategory: IOfferSubCategory) => subcategoryId === subcategory.id
-          )?.conditionalFields || []
-        setFieldValue('subCategoryFields', subCategoryFields)
-      }
+      const subCategoryFields =
+        subCategories.find(
+          (subcategory: IOfferSubCategory) => subcategoryId === subcategory.id
+        )?.conditionalFields || []
+      setFieldValue('subCategoryFields', subCategoryFields)
     },
-    [prevSubCategoryId, subcategoryId, subCategories]
+    [subcategoryId]
   )
 
   const options: SelectOptions = subCategories

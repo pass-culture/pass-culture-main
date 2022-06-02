@@ -6,16 +6,17 @@ import { TOfferIndividualVenue } from 'core/Venue/types'
 import { filterCategories } from '..'
 
 describe('filterCategories', () => {
-  const venue: TOfferIndividualVenue = {
-    id: 'A-A',
-    managingOffererId: 'A',
-    name: 'Lieu A de la structure A',
-    isVirtual: true,
-  }
+  let venue: TOfferIndividualVenue
   let categories: IOfferCategory[] = []
   let subCategories: IOfferSubCategory[] = []
 
   beforeEach(() => {
+    venue = {
+      id: 'A-A',
+      managingOffererId: 'A',
+      name: 'Lieu A de la structure A',
+      isVirtual: true,
+    }
     categories = [
       {
         id: 'A',
@@ -142,38 +143,46 @@ describe('filterCategories', () => {
   })
 
   it('should return ONLINE categories and subCategories when venue is virtual', () => {
-    venue.isVirtual = true
+    venue = {
+      ...venue,
+      isVirtual: true,
+    }
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
       venue
     )
 
-    const expectedCategoryIds = ['A', 'C']
-    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual(
-      expectedCategoryIds
-    )
-    const expectedSubCategoryIds = ['A-A', 'C-A', 'C-B']
-    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual(
-      expectedSubCategoryIds
-    )
+    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
+      'A',
+      'C',
+    ])
+    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+      'A-A',
+      'C-A',
+      'C-B',
+    ])
   })
 
   it('should return OFFLINE categories and subCategories when venue is physical', () => {
-    venue.isVirtual = false
+    venue = {
+      ...venue,
+      isVirtual: false,
+    }
     const [filteredCategories, filteredSubCategories] = filterCategories(
       categories,
       subCategories,
       venue
     )
 
-    const expectedCategoryIds = ['B', 'C']
-    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual(
-      expectedCategoryIds
-    )
-    const expectedSubCategoryIds = ['B-A', 'C-A', 'C-C']
-    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual(
-      expectedSubCategoryIds
-    )
+    expect(filteredCategories.map((c: IOfferCategory) => c.id)).toEqual([
+      'B',
+      'C',
+    ])
+    expect(filteredSubCategories.map((s: IOfferSubCategory) => s.id)).toEqual([
+      'B-A',
+      'C-A',
+      'C-C',
+    ])
   })
 })

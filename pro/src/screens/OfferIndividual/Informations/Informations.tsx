@@ -56,6 +56,7 @@ const Informations = ({
   const initialVenue: TOfferIndividualVenue | undefined = venueList.find(
     venue => venue.id === initialValues.venueId
   )
+
   const [filteredCategories, filteredSubCategories] = filterCategories(
     categories,
     subCategories,
