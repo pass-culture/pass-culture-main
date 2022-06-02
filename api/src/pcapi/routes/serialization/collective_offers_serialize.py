@@ -15,6 +15,7 @@ from pcapi.core.offerers.models import Venue
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.offers_serialize import ListOffersVenueResponseModel
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import dehumanize_list_field
@@ -76,6 +77,7 @@ class CollectiveOfferResponseModel(BaseModel):
     venueId: str
     isShowcase: Optional[bool]
     offerId: Optional[str]
+    educationalInstitution: Optional[EducationalInstitutionResponseModel]
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -100,6 +102,7 @@ def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemp
 
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
+    institution = getattr(offer, "institution", None)
 
     return CollectiveOfferResponseModel(
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
@@ -119,6 +122,7 @@ def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemp
         status=offer.status.name,  # type: ignore [attr-defined]
         isShowcase=is_offer_template,
         offerId=humanize(offer.offerId),
+        educationalInstitution=EducationalInstitutionResponseModel.from_orm(institution) if institution else None,
     )
 
 
@@ -302,6 +306,7 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
     stock: Optional[GetCollectiveOfferCollectiveStockResponseModel] = Field(alias="collectiveStock")
+    educationalInstitution: Optional[EducationalInstitutionResponseModel]
 
 
 class CollectiveOfferResponseIdModel(BaseModel):

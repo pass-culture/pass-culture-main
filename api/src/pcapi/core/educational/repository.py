@@ -603,6 +603,7 @@ def get_collective_offers_for_filters(
                 educational_models.CollectiveStock.collectiveBookings
             )
         )
+        .options(joinedload(educational_models.CollectiveOffer.institution))
         .limit(offers_limit)
         .all()
     )
