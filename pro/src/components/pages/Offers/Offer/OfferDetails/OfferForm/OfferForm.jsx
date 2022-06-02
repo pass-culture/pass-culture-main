@@ -719,6 +719,7 @@ const OfferForm = ({
   if (isLoading) {
     return <Spinner />
   }
+
   return (
     <form className="offer-form" ref={formRef}>
       {providerName !== null ? (

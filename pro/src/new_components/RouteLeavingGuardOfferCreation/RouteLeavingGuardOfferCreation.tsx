@@ -26,14 +26,17 @@ const RouteLeavingGuardOfferCreation = ({
         : '/offre/creation/individuel'
       const stocksPathRegex = isCollectiveFlow
         ? /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/stocks/g
-        : /\/offre\/([A-Z0-9]+)\/individuel\/stocks/g
+        : /\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks/g
 
       const visibilityPathRegex =
         /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/visibilite/g
 
+      const summaryPathRegex =
+        /\/offre\/([A-Z0-9]+)\/individuel\/creation\/recapitulatif/g
+
       const confirmationPathRegex = isCollectiveFlow
         ? /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/confirmation/g
-        : /\/offre\/([A-Z0-9]+)\/individuel\/confirmation/g
+        : /\/offre\/([A-Z0-9]+)\/individuel\/creation\/confirmation/g
 
       // going from stock to offer
       if (
@@ -58,6 +61,7 @@ const RouteLeavingGuardOfferCreation = ({
         nextLocation.pathname.match(stocksPathRegex) ||
         nextLocation.pathname.match(visibilityPathRegex) ||
         nextLocation.pathname.match(confirmationPathRegex) ||
+        (summaryPathRegex && nextLocation.pathname.match(summaryPathRegex)) ||
         (location.pathname.startsWith(offerCreationPath) &&
           nextLocation.pathname.startsWith(offerCreationPath))
       ) {

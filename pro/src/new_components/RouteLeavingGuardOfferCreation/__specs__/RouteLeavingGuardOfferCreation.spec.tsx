@@ -19,10 +19,14 @@ const renderRouteLeavingGuardOfferCreation = async (
   render(
     <Router history={history}>
       <Link to="/about">About</Link>
-      <Link to={`/offre/creation/individuel`}>Création</Link>
-      <Link to={`/offre/AE/individuel/stocks`}>Stocks</Link>
-      <Link to={`/offre/AE/individuel/visibilite`}>Visibilité</Link>
-      <Link to={`/offre/AE/individuel/confirmation`}>Confirmation</Link>
+      <Link to={'/offre/creation/individuel'}>Création</Link>
+      <Link to={'/offre/AE/individuel/creation/stocks'}>Stocks</Link>
+      <Link to={'/offre/AE/individuel/creation/recapitulatif'}>
+        Récapitulatif
+      </Link>
+      <Link to={'/offre/AE/individuel/creation/confirmation'}>
+        Confirmation
+      </Link>
       <RouteLeavingGuard {...props} />
     </Router>
   )
@@ -46,7 +50,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
   })
 
   it('should reditect to offers list without confirmation modal when going from confirmation to stock', async () => {
-    history.push('/offre/AE/individuel/confirmation')
+    history.push('/offre/AE/individuel/creation/confirmation')
     const spyHistory = jest.spyOn(history, 'push')
     renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Stocks'))
@@ -57,7 +61,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
   })
 
   it('should reditect to offers list with confirmation modal when going from stock to creation', async () => {
-    history.push('/offre/AE/individuel/stocks')
+    history.push('/offre/AE/individuel/creation/stocks')
     const spyHistory = jest.spyOn(history, 'push')
     renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Création'))
@@ -80,7 +84,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
   })
 
   it('should not display confirmation modal when going to stock', async () => {
-    history.push('/')
+    history.push('/offre/creation/individuel')
     renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Stocks'))
     expect(
@@ -88,8 +92,17 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
     ).not.toBeInTheDocument()
   })
 
+  it('should not display confirmation modal when going to summary', async () => {
+    history.push('/offre/AE/individuel/creation/stocks')
+    await renderRouteLeavingGuardOfferCreation(props, history)
+    await userEvent.click(screen.getByText('Récapitulatif'))
+    expect(
+      await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+    ).not.toBeInTheDocument()
+  })
+
   it('should not display confirmation modal when going to confirmation', async () => {
-    history.push('/')
+    history.push('/offre/AE/individuel/creation/recapitulatif')
     await renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Confirmation'))
     expect(

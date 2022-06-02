@@ -13,6 +13,7 @@ export enum OfferBreadcrumbStep {
   DETAILS = 'details',
   STOCKS = 'stocks',
   VISIBILITY = 'visibility',
+  SUMMARY = 'recapitulatif',
   CONFIRMATION = 'confirmation',
 }
 
@@ -34,6 +35,7 @@ const OfferBreadcrumb = ({
   const enableEducationalInstitutionAssociation = useActiveFeature(
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
@@ -60,6 +62,15 @@ const OfferBreadcrumb = ({
             },
           ]
         : []),
+      ...(!isOfferEducational && useSummaryPage
+        ? [
+            {
+              id: OfferBreadcrumbStep.SUMMARY,
+              label: 'Récapitulatif',
+              url: `/offre/${offerId}/individuel/recapitulatif`,
+            },
+          ]
+        : []),
     ]
   } else {
     steps = [
@@ -76,6 +87,14 @@ const OfferBreadcrumb = ({
             {
               id: OfferBreadcrumbStep.VISIBILITY,
               label: 'Visibilité',
+            },
+          ]
+        : []),
+      ...(!isOfferEducational && useSummaryPage
+        ? [
+            {
+              id: OfferBreadcrumbStep.SUMMARY,
+              label: 'Récapitulatif',
             },
           ]
         : []),

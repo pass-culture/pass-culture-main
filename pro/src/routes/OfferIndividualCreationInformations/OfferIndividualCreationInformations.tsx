@@ -48,20 +48,30 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
     queryParamsFromOfferer(location)
 
   if (
-    offererNamesIsLoading ||
-    venueListIsLoading ||
-    categoriesStatus ||
-    offerIsLoading
+    offererNamesIsLoading === true ||
+    venueListIsLoading === true ||
+    categoriesStatus === true ||
+    offerIsLoading === true
   ) {
     return <Spinner />
   }
 
-  if (offererNamesError || venueListError || categoriesError || offerError) {
-    notify.error(
-      offererNamesError || venueListError || categoriesError || offerError
-    )
-    history.push(homePath)
-
+  if (
+    offererNamesError ||
+    venueListError ||
+    categoriesError ||
+    (offerId && offerError)
+  ) {
+    const loadingError = [
+      offererNamesError,
+      venueListError,
+      categoriesError,
+      offerError,
+    ].find(error => error !== undefined)
+    if (loadingError !== undefined) {
+      notify.error(loadingError.message)
+      history.push(homePath)
+    }
     return null
   }
 
