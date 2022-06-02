@@ -107,6 +107,7 @@ class FeatureToggle(enum.Enum):
         "Sépare la visualisation des offres et des remboursements sur le portail PRO"
     )
     OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
+    OFFER_FORM_SUMMARY_PAGE = "Afficher la page de récapitulatif de l'offre dans le formulaire V2"
     ALLOW_ACCOUNT_UNSUSPENSION = "Activer le nouveau parcours de réactivation de compte"
     ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE = "Active l'utilisation des nouveaux indexes algolia sur adage"
     ENABLE_VENUE_STRICT_SEARCH = (
@@ -168,6 +169,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.OFFER_DRAFT_ENABLED,
     FeatureToggle.OFFER_FORM_V3,
+    FeatureToggle.OFFER_FORM_SUMMARY_PAGE,
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION,
