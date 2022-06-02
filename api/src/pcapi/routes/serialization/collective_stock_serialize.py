@@ -131,7 +131,7 @@ class CollectiveStockEditionBodyModel(BaseModel):
     ) -> Optional[datetime]:
         if (
             booking_limit_datetime
-            and "beginningDatetime" in values
+            and values.get("beginningDatetime", None) is not None
             and booking_limit_datetime > values["beginningDatetime"]
         ):
             raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
