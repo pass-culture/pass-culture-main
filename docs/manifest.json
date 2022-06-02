@@ -1,0 +1,27 @@
+{
+  "short_name": "Pass Culture",
+  "name": "Pass Culture",
+  "icons": [
+    {
+      "src": "/icon/app-icon-iphone.png",
+      "sizes": "60x60",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon/app-icon-iphone@2x.png",
+      "sizes": "120x120",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon/app-icon-iphone@3x.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#fff",
+  "background_color": "#e60039",
+  "fullscreen": "true"
+}
