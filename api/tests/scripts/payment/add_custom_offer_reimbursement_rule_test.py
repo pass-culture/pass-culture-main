@@ -1,13 +1,10 @@
 import decimal
 
-import pytest
-
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.models as payments_models
 from pcapi.utils import human_ids
 
-
-pytestmark = pytest.mark.usefixtures("db_session")
+from tests.conftest import clean_database
 
 
 def _run_command(app, *args):
@@ -16,9 +13,11 @@ def _run_command(app, *args):
     return runner.invoke(args=args)
 
 
+@clean_database
 def test_basics(app):
     stock = offers_factories.StockFactory(price=24.68)
     offer = stock.offer
+    offer_id = offer.id
     # fmt: off
     result = _run_command(
         app,
@@ -29,13 +28,15 @@ def test_basics(app):
         "--valid-from", "2030-01-01",
         "--valid-until", "2030-01-02",
     )
+
     # fmt: on
     assert "Created new rule" in result.output
     rule = payments_models.CustomReimbursementRule.query.one()
-    assert rule.offer.id == offer.id
+    assert rule.offer.id == offer_id
     assert rule.amount == decimal.Decimal("12.34")
 
 
+@clean_database
 def test_warnings(app):
     stock = offers_factories.StockFactory(price=24.68)
     offer = stock.offer
@@ -56,9 +57,12 @@ def test_warnings(app):
     assert payments_models.CustomReimbursementRule.query.count() == 0
 
 
+@clean_database
 def test_force_with_warnings(app):
     stock = offers_factories.StockFactory(price=24.68)
     offer = stock.offer
+    offer_id = offer.id
+
     # fmt: off
     result = _run_command(
         app,
@@ -73,5 +77,5 @@ def test_force_with_warnings(app):
     # fmt: on
     assert "Created new rule" in result.output
     rule = payments_models.CustomReimbursementRule.query.one()
-    assert rule.offer.id == offer.id
+    assert rule.offer.id == offer_id
     assert rule.amount == decimal.Decimal("12.34")
