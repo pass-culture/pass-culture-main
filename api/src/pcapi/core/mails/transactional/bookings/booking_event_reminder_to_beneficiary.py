@@ -53,6 +53,7 @@ def get_booking_event_reminder_to_beneficiary_email_data(
         template=TransactionalEmail.BOOKING_EVENT_REMINDER_TO_BENEFICIARY.value,
         params={
             "BOOKING_LINK": booking_app_link(individual_booking.booking),
+            "EVENT_DATETIME_ISO": event_beginning_date_in_tz.isoformat(),
             "EVENT_DATE": formatted_event_beginning_date,
             "EVENT_HOUR": formatted_event_beginning_time,
             "IS_DUO_EVENT": individual_booking.booking.quantity == 2,

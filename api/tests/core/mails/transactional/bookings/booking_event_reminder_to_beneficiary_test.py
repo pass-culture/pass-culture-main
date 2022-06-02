@@ -59,6 +59,7 @@ class GetBookingEventReminderToBeneficiaryEmailDataTest:
 
         assert email_data.params == {
             "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
+            "EVENT_DATETIME_ISO": "2021-10-20T14:48:00+02:00",
             "EVENT_DATE": "20 octobre 2021",
             "EVENT_HOUR": "14h48",
             "IS_DUO_EVENT": False,
