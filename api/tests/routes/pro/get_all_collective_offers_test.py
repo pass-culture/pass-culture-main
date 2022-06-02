@@ -22,7 +22,8 @@ class Returns200Test:
         user = users_factories.UserFactory()
         offerer = offerer_factories.OffererFactory(users=[user])
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
-        offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1)
+        institution = educational_factories.EducationalInstitutionFactory()
+        offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution)
         stock = educational_factories.CollectiveStockFactory(collectiveOffer=offer, stockId=1)
 
         # When
@@ -39,6 +40,7 @@ class Returns200Test:
         assert len(response_json[0]["stocks"]) == 1
         assert response_json[0]["stocks"][0]["id"] == humanize(stock.id)
         assert response_json[0]["isShowcase"] == False
+        assert response_json[0]["educationalInstitution"]["name"] == institution.name
 
     def test_one_simple_collective_offer_template(self, app):
         # Given
