@@ -1,0 +1,7 @@
+{
+    "name": "build-storybook",
+    "version": "0.0.0",
+    "description": "storybook is looking for a package.json at the root of the repo to build",
+    "private": true  
+  }
+  
