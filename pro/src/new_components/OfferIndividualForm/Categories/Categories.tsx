@@ -9,7 +9,6 @@ import { Select } from 'ui-kit'
 import { SelectSubCategory } from './SelectSubCategory'
 import { ShowTypes } from './ShowTypes'
 import { useFormikContext } from 'formik'
-import { usePrevious } from 'hooks'
 
 export interface ICategoriesProps {
   categories: IOfferCategory[]
@@ -22,12 +21,8 @@ const Categories = ({
 }: ICategoriesProps): JSX.Element => {
   const { values: formValues, setFieldValue } =
     useFormikContext<IOfferIndividualFormValues>()
-  const prevCategoryId = usePrevious(formValues.categoryId)
-
   useEffect(() => {
-    if (formValues.categoryId !== prevCategoryId) {
-      setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
-    }
+    setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
   }, [formValues.categoryId])
 
   const categoryOptions: SelectOptions = categories.map(

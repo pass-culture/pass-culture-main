@@ -10,26 +10,24 @@ const filterCategories = (
 ): [categories: IOfferCategory[], subCategories: IOfferSubCategory[]] => {
   const subCategories: IOfferSubCategory[] = allSubCategories.filter(
     (s: IOfferSubCategory) => {
-      const exludePlatformFilter = !venue
-        ? null
-        : venue.isVirtual
-        ? CATEGORY_STATUS.OFFLINE
-        : CATEGORY_STATUS.ONLINE
+      let excludedStatus
+      if (venue) {
+        excludedStatus = venue.isVirtual
+          ? CATEGORY_STATUS.OFFLINE
+          : CATEGORY_STATUS.ONLINE
+      }
       return (
         s.isSelectable &&
-        (exludePlatformFilter === null ||
-          s.onlineOfflinePlatform !== exludePlatformFilter)
+        (venue === undefined || s.onlineOfflinePlatform !== excludedStatus)
       )
     }
   )
 
   const categories: IOfferCategory[] = allCategories.filter(
-    (c: IOfferCategory) => {
-      const hasAvailableSubCategories =
-        subCategories.filter((s: IOfferSubCategory) => s.categoryId === c.id)
-          .length > 0
-      return c.isSelectable && hasAvailableSubCategories
-    }
+    (c: IOfferCategory) =>
+      c.isSelectable &&
+      subCategories.filter((s: IOfferSubCategory) => s.categoryId === c.id)
+        .length > 0
   )
 
   return [categories, subCategories]
