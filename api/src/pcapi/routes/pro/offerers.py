@@ -53,12 +53,11 @@ def get_offerers(query: GetOffererListQueryModel) -> GetOfferersListResponseMode
         keywords=query.keywords,
     )
 
-    # UserOfferer may or may not be already JOINed, depending
-    # on the arguments passed to `get_all_offerers_for_user()`.
-    if offerers_models.UserOfferer in {mapper.entity for mapper in offerers_query._join_entities}:  # type: ignore [attr-defined]
-        option = sqla_orm.contains_eager(offerers_models.Offerer.UserOfferers)
-    else:
+    # UserOfferer is already JOINed, by get_all_offerers_for_user, if current_user does not have the admin role
+    if current_user.has_admin_role:
         option = sqla_orm.joinedload(offerers_models.Offerer.UserOfferers)
+    else:
+        option = sqla_orm.contains_eager(offerers_models.Offerer.UserOfferers)
     offerers_query = offerers_query.options(option)
 
     offerers_query = offerers_query.options(
