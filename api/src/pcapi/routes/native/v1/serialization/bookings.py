@@ -107,7 +107,7 @@ class BookingReponse(BaseModel):
     quantity: int
     stock: BookingStockResponse
     total_amount: int
-    token: str
+    token: Optional[str]
     activationCode: Optional[BookingActivationCodeResponse]
     externalBookings: Optional[list[ExternalBookingResponse]]
 

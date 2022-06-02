@@ -267,7 +267,7 @@ class GetBookingsTest:
 
         assert response.status_code == 200
         booking_response = response.json["ongoing_bookings"][0]
-        assert booking_response["token"] == ""  # do not display CM when it is an external booking
+        assert booking_response["token"] is None  # do not display CM when it is an external booking
         assert booking_response["qrCodeData"] is not None
         assert sorted(booking_response["externalBookings"], key=lambda x: x["barcode"]) == [
             {"barcode": "111111111", "seat": "A_1"},
