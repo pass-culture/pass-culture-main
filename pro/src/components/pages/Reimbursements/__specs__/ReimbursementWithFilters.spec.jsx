@@ -222,7 +222,7 @@ describe('reimbursementsWithFilters', () => {
     expect(buttons.download).toBeEnabled()
     expect(buttons.display).toHaveAttribute(
       'href',
-      `${API_URL}/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15`
+      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15`
     )
   })
 
@@ -284,7 +284,7 @@ describe('reimbursementsWithFilters', () => {
     expect(buttons.download).toBeEnabled()
     expect(screen.getByRole('link', { name: /Afficher/ })).toHaveAttribute(
       'href',
-      `${API_URL}/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=VENUE2`
+      `/remboursements-details?reimbursementPeriodBeginningDate=2020-11-15&reimbursementPeriodEndingDate=2020-12-15&venueId=VENUE2`
     )
   })
 
@@ -344,13 +344,13 @@ describe('reimbursementsWithFilters', () => {
     // then
     expect(buttons.display).toHaveAttribute(
       'href',
-      `${API_URL}/remboursements-details?${initialFilterUrlParams}`
+      `/remboursements-details?${initialFilterUrlParams}`
     )
     const options = await within(filters.venue).findAllByRole('option')
     await userEvent.selectOptions(filters.venue, [options[1].value])
     expect(buttons.display).toHaveAttribute(
       'href',
-      `${API_URL}/remboursements-details?${withVenueFilterUrlParams}`
+      `/remboursements-details?${withVenueFilterUrlParams}`
     )
   })
 

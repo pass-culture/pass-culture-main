@@ -40,3 +40,6 @@ tests/result_output.txt
 # misc
 /.vscode/
 .dccache
+
+# storybook build
+docs-build/
