@@ -46,7 +46,7 @@ class SendIndividualBookingEventReminderEmailToBeneficiaryTest:
 
 @freeze_time("2021-10-15 12:48:00")
 class GetBookingEventReminderToBeneficiaryEmailDataTest:
-    def given_nominal_booking_event(self):
+    def test_given_nominal_booking_event(self):
         booking = IndividualBookingFactory(
             stock=offers_factories.EventStockFactory(
                 offer__venue__name="Le Petit Rintintin",
