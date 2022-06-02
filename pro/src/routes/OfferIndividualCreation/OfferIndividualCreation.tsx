@@ -10,7 +10,6 @@ import { fakeOffer } from 'screens/OfferIndividual/constants'
 
 const OfferIndividualCreation = (): JSX.Element => {
   const { currentStep, stepList } = useOfferFormSteps(fakeOffer)
-
   return (
     <OfferFormLayout>
       <OfferFormLayout.TitleBlock>
