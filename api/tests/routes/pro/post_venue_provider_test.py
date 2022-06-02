@@ -401,7 +401,7 @@ class Returns422Test:
         errors.status_code = 422
         errors.add_error(
             "provider",
-            "L’importation d’offres avec LesLibraires n’est pas disponible " "pour le SIRET 12345678912345",
+            "L’importation d’offres avec LesLibraires n’est pas disponible pour le SIRET 12345678912345",
         )
         mock_siret_can_be_synchronized.side_effect = [errors]
 

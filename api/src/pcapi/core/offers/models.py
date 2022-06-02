@@ -414,8 +414,8 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
         if self.isThing or not self.activeStocks:
             return DateTimes()
 
-        start = min([stock.beginningDatetime for stock in self.activeStocks])  # type: ignore [type-var]
-        end = max([stock.beginningDatetime for stock in self.activeStocks])  # type: ignore [type-var]
+        start = min(stock.beginningDatetime for stock in self.activeStocks)  # type: ignore [type-var]
+        end = max(stock.beginningDatetime for stock in self.activeStocks)  # type: ignore [type-var]
         return DateTimes(start, end)
 
     @sa.ext.hybrid.hybrid_property

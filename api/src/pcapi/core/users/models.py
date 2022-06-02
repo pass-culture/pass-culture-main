@@ -319,7 +319,7 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
 
     def populate_from_dict(self, data):  # type: ignore [no-untyped-def]
         super().populate_from_dict(data)
-        if data.__contains__("password") and data["password"]:
+        if data.get("password"):
             self.setPassword(data["password"])
 
     def remove_admin_role(self) -> None:

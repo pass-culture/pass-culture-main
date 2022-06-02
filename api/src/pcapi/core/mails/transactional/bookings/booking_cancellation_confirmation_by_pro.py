@@ -16,7 +16,7 @@ def get_booking_cancellation_confirmation_by_pro_email_data(
     event_date = format_booking_date_for_email(booking)
     event_hour = format_booking_hours_for_email(booking)
     offer_price = str(stock.price) if stock.price > 0 else "Gratuit"
-    quantity = sum([booking.quantity for booking in bookings])
+    quantity = sum(booking.quantity for booking in bookings)
     venue_name = offer.venue.publicName if offer.venue.publicName else offer.venue.name
 
     return SendinblueTransactionalEmailData(
