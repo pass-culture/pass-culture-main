@@ -1,9 +1,9 @@
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
 import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
 
-import { OfferIndividualCreationSummary as ConfirmationRoute } from 'routes/OfferIndividualCreationSummary'
 import { OfferIndividualCreationInformations as InformationsRoute } from 'routes/OfferIndividualCreationInformations'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
 import React from 'react'
 import { OfferIndividualCreationStocks as StockRoute } from 'routes/OfferIndividualCreationStocks'
 import { fakeOffer } from 'screens/OfferIndividual/constants'
@@ -30,7 +30,7 @@ const OfferIndividualCreation = (): JSX.Element => {
         )}
         {currentStep.id === OFFER_FORM_STEP_IDS.STOCKS && <StockRoute />}
         {currentStep.id === OFFER_FORM_STEP_IDS.SUMMARY && (
-          <ConfirmationRoute />
+          <OfferSummaryRoute />
         )}
       </OfferFormLayout.Content>
     </OfferFormLayout>

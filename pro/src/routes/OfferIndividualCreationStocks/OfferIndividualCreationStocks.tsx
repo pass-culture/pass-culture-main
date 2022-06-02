@@ -16,15 +16,15 @@ const OfferIndividualCreationStocks = (): JSX.Element | null => {
     error: offerError,
   } = useGetOffer(offerId)
 
-  if (offerError !== undefined) {
-    notify.error(offerError)
-    history.push('/offers')
-
-    return null
+  if (offerIsLoading === true) {
+    return <Spinner />
   }
 
-  if (offerIsLoading) {
-    return <Spinner />
+  if (offerError !== undefined) {
+    notify.error(offerError.message)
+    history.push('/offres')
+
+    return null
   }
 
   return (

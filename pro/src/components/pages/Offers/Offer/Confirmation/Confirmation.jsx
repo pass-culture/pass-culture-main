@@ -5,13 +5,10 @@ import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOffe
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import PropTypes from 'prop-types'
-import { Redirect } from 'react-router'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
-import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 
-const Confirmation = ({ isCreatingOffer, offer, setOffer }) => {
-  const editionUrl = useOfferEditionURL(offer.isEducational, offer.id)
+const Confirmation = ({ offer, setOffer }) => {
   const location = useLocation()
 
   const resetOffer = useCallback(() => {
@@ -19,9 +16,6 @@ const Confirmation = ({ isCreatingOffer, offer, setOffer }) => {
   }, [setOffer])
 
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
-  if (!isCreatingOffer && !isPendingOffer) {
-    return <Redirect to={editionUrl} />
-  }
 
   let queryString = ''
   const queryParams = queryParamsFromOfferer(location)
@@ -72,7 +66,6 @@ const Confirmation = ({ isCreatingOffer, offer, setOffer }) => {
 }
 
 Confirmation.propTypes = {
-  isCreatingOffer: PropTypes.bool.isRequired,
   offer: PropTypes.shape().isRequired,
   setOffer: PropTypes.func.isRequired,
 }

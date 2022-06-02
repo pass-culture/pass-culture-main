@@ -19,7 +19,7 @@ describe('confirmation page', () => {
 
     // When
     await renderOffer({
-      pathname: `/offre/${offer.id}/individuel/confirmation`,
+      pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
     // Then
@@ -48,7 +48,7 @@ describe('confirmation page', () => {
 
     // When
     await renderOffer({
-      pathname: `/offre/${offer.id}/individuel/confirmation`,
+      pathname: `/offre/${offer.id}/individuel/creation/confirmation`,
     })
 
     // Then
@@ -69,42 +69,5 @@ describe('confirmation page', () => {
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
     ).toHaveAttribute('href', '/offre/creation/individuel')
-  })
-
-  it('should redirect to offer edition when the offer is not a draft', async () => {
-    // Given
-    const offer = offerFactory({ name: 'mon offre', status: 'ACTIVE' })
-    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
-
-    // When
-    await renderOffer({
-      pathname: [
-        `/offre/${offer.id}/individuel/edition`,
-        `/offre/${offer.id}/individuel/confirmation`,
-      ],
-    })
-
-    // Then
-    expect(screen.getByText('Éditer une offre')).toBeInTheDocument()
-  })
-
-  it('should land to offer edition when you come from an offerer', async () => {
-    // Given
-    const offer = offerFactory({ name: 'mon offre', status: 'DRAFT' })
-    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
-
-    // When
-    await renderOffer({
-      pathname: [`/offre/${offer.id}/individuel/confirmation`],
-      search: '?structure=OFFERER1&lieu=VENUE1',
-    })
-
-    // Then
-    expect(
-      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute(
-      'href',
-      '/offre/creation/individuel?structure=OFFERER1&lieu=VENUE1'
-    )
   })
 })
