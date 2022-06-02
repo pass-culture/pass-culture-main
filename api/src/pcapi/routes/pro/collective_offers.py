@@ -355,3 +355,35 @@ def patch_collective_offers_template_active_status(
         current_user, body.ids
     )
     offers_api.batch_update_collective_offers_template(collective_template_query, {"isActive": body.is_active})
+
+
+@private_api.route("/collective/offers/<offer_id>/educational_institution", methods=["PATCH"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    on_error_statuses=[403, 404],
+    api=blueprint.pro_private_schema,
+    response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
+)
+def patch_collective_offers_educational_institution(
+    offer_id: str, body: collective_offers_serialize.PatchCollectiveOfferEducationalInstitution
+) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
+    dehumanized_id = dehumanize_or_raise(offer_id)
+    try:
+        offerer = offerers_api.get_offerer_by_collective_offer_id(dehumanized_id)
+    except offerers_exceptions.CannotFindOffererForOfferId:
+        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
+    else:
+        check_user_has_access_to_offerer(current_user, offerer.id)
+
+    try:
+        offer = educational_api.update_collective_offer_educational_institution(
+            offer_id=dehumanized_id, educational_institution_id=body.educational_institution_id
+        )
+    except educational_exceptions.EducationalInstitutionNotFound:
+        raise ApiErrors({"educationalInstitution": ["Aucune institution trouvée à partir de cet id"]}, status_code=404)
+
+    except educational_exceptions.CollectiveOfferNotEditable:
+        raise ApiErrors({"offer": ["L'offre n'est plus modifiable"]}, status_code=403)
+
+    return collective_offers_serialize.GetCollectiveOfferResponseModel.from_orm(offer)

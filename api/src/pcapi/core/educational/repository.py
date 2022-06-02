@@ -31,6 +31,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.exceptions import CollectiveOfferNotFound
 from pcapi.core.educational.exceptions import CollectiveOfferTemplateNotFound
 from pcapi.core.educational.exceptions import EducationalDepositNotFound
+from pcapi.core.educational.exceptions import EducationalInstitutionNotFound
 from pcapi.core.educational.exceptions import EducationalYearNotFound
 from pcapi.core.educational.exceptions import StockDoesNotExist
 from pcapi.core.educational.models import CollectiveBooking
@@ -1030,3 +1031,10 @@ def get_all_educational_institutions(
         query = query.limit(limit)
 
     return query.all(), total
+
+
+def get_educational_institution_by_id(institution_id: int) -> educational_models.EducationalInstitution:
+    try:
+        return educational_models.EducationalInstitution.query.filter_by(id=institution_id).one()
+    except NoResultFound:
+        raise EducationalInstitutionNotFound()
