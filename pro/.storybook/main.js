@@ -41,6 +41,7 @@ module.exports = {
     },
     '@storybook/addon-a11y',
   ],
+  staticDirs: ['../src/stories/assets', '../public'],
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {},
