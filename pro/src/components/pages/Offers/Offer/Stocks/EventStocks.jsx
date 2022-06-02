@@ -25,6 +25,7 @@ import { SubmitButton } from 'ui-kit'
 import { v4 as generateRandomUuid } from 'uuid'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 
 const EMPTY_STRING_VALUE = ''
@@ -46,6 +47,10 @@ const EventStocks = ({
   const editionOfferLink = useOfferEditionURL(offer.isEducational, offer.id)
   const history = useHistory()
   const location = useLocation()
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+  const summaryStepUrl = isOfferDraft
+    ? `/offre/${offer.id}/individuel/creation/recapitulatif`
+    : `/offre/${offer.id}/individuel/recapitulatif`
 
   const loadStocks = useCallback(
     (keepCreationStocks = false) => {
@@ -197,7 +202,9 @@ const EventStocks = ({
             }
 
             history.push(
-              `/offre/${offer.id}/individuel/confirmation${queryString}`
+              useSummaryPage
+                ? `${summaryStepUrl}${queryString}`
+                : `/offre/${offer.id}/individuel/creation/confirmation${queryString}`
             )
           } else {
             loadStocks()

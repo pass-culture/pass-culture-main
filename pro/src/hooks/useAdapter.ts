@@ -12,7 +12,7 @@ type TUseAdapterSuccess<T> = {
   error?: undefined
 }
 
-type TUseAdapterFailure<T> = {
+export type TUseAdapterFailure<T> = {
   data?: undefined
   isLoading: false
   error: {

@@ -103,7 +103,7 @@ test('je peux créer une offre de type événement', async t => {
     .typeText(descriptionInput, eventDescription)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 })
 
 test('je peux créer une offre avec des sous-types', async t => {
@@ -144,7 +144,7 @@ test('je peux créer une offre avec des sous-types', async t => {
     )
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 })
 
 test('une offre Event est duo par défaut', async t => {
@@ -176,7 +176,7 @@ test('une offre Event est duo par défaut', async t => {
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 })
 
 test("je peux modifier la thumbnail d'une offre", async t => {
@@ -242,13 +242,13 @@ test.skip("je suis empêché de quitter la création d'offre sans confirmation",
     .click(exitOfferCreationDialogCancelButton)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
     .click(navBrandLogoItem())
     .expect(exitOfferCreationMessage.exists)
     .ok()
     .click(exitOfferCreationDialogCancelButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 })
 
 test("je peux quitter la création d'offre avec confirmation", async t => {
@@ -297,7 +297,7 @@ test('je peux créer une offre avec médiation', async t => {
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 })
 
 test("je suis redirigé sur la page de choix du type d'offre si je clique sur retour à partir de la page de création d'offre", async t => {
@@ -345,7 +345,7 @@ test.skip("je suis redirigé sur la liste des offres si je clique sur retour à 
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 
   await goBack()
 
@@ -375,7 +375,7 @@ test("je suis redirigé sur la liste des offres si je clique sur retour à parti
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 
   const addThingStockButton = Selector('button').withText('Ajouter un stock')
   const priceInput = Selector('input[name="price"]')
@@ -388,7 +388,7 @@ test("je suis redirigé sur la liste des offres si je clique sur retour à parti
     .typeText(priceInput, '15')
     .click(validateAndCreateOffer)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/confirmation$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/confirmation$/)
 
   await goBack()
 
@@ -414,7 +414,7 @@ test.skip('je suis redirigé sur la liste des offres si je clique sur retour à 
     .click(noDisabilityCompliantCheckbox)
     .click(submitButton)
     .expect(getPathname())
-    .match(/\/offre\/([A-Z0-9]+)\/individuel\/stocks$/)
+    .match(/\/offre\/([A-Z0-9]+)\/individuel\/creation\/stocks$/)
 
   const addThingStockButton = Selector('button').withText('Ajouter un stock')
   const priceInput = Selector('input[name="price"]')

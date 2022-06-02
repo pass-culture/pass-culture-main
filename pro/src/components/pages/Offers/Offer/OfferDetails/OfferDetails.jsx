@@ -90,7 +90,7 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
       queryString += `&lieu=${formInitialValues.current.venueId}`
     }
 
-    history.push(`/offre/${offerId}/individuel/stocks${queryString}`)
+    history.push(`/offre/${offerId}/individuel/creation/stocks${queryString}`)
   }
 
   const postThumbnail = useCallback(

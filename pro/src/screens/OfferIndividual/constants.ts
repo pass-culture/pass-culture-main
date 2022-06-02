@@ -2,13 +2,14 @@ import { IOfferIndividual } from 'core/Offers/types'
 import { SubcategoryIdEnum } from 'api/v1/gen/api'
 
 export const fakeOffer: IOfferIndividual = {
-  id: 'YA',
+  id: 'Z9',
   author: '',
   bookingEmail: '',
   description: 'A passionate description of product 80',
   durationMinutes: null,
   isbn: '',
   isDuo: false,
+  name: 'Test Offer',
   isEducational: false,
   noDisabilityCompliant: true,
   audioDisabilityCompliant: false,
@@ -16,7 +17,6 @@ export const fakeOffer: IOfferIndividual = {
   motorDisabilityCompliant: false,
   visualDisabilityCompliant: false,
   isNational: false,
-  name: 'Séance ciné duo',
   musicSubType: '',
   musicType: '',
   offererId: 'CU',

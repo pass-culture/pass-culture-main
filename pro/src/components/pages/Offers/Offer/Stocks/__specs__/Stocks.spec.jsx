@@ -33,12 +33,14 @@ jest.mock('utils/date', () => ({
     .mockImplementation(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderOffers = async (props, store) => {
-  render(
+const renderOffers = async (
+  props,
+  store,
+  pathname = '/offre/AG3A/individuel/stocks'
+) => {
+  return render(
     <Provider store={store}>
-      <MemoryRouter
-        initialEntries={[{ pathname: '/offre/AG3A/individuel/stocks' }]}
-      >
+      <MemoryRouter initialEntries={[{ pathname: pathname }]}>
         <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
           <>
             <OfferLayout {...props} />
@@ -2654,7 +2656,11 @@ describe('stocks page', () => {
           .mockResolvedValueOnce(offerApprovedStatus)
         loadFakeApiStocks([])
         bulkFakeApiCreateOrEditStock({ id: 'createdStock' })
-        await renderOffers(props, store)
+        await renderOffers(
+          props,
+          store,
+          '/offre/AG3A/individuel/creation/stocks'
+        )
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         await userEvent.click(screen.getByLabelText('Date de l’événement'))
@@ -2673,7 +2679,7 @@ describe('stocks page', () => {
         )
 
         // Then
-        const successMessage = await screen.findByText(
+        const successMessage = await screen.queryByText(
           'Votre offre a bien été créée et vos stocks sauvegardés.'
         )
         expect(successMessage).toBeInTheDocument()

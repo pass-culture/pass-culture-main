@@ -9,9 +9,9 @@ import {
 } from 'react-router-dom'
 
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
-import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import OfferDetails from './OfferDetails'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
+import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import Titles from 'components/layout/Titles/Titles'
@@ -21,6 +21,7 @@ const mapPathToStep = {
   creation: OfferBreadcrumbStep.DETAILS,
   edition: OfferBreadcrumbStep.DETAILS,
   stocks: OfferBreadcrumbStep.STOCKS,
+  recapitulatif: OfferBreadcrumbStep.SUMMARY,
   confirmation: OfferBreadcrumbStep.CONFIRMATION,
 }
 
@@ -40,30 +41,22 @@ const OfferLayout = () => {
   const history = useHistory()
   const location = useLocation()
   const match = useRouteMatch()
-
+  const isCreatingOffer = location.pathname.includes('creation')
   const [offer, setOffer] = useState(null)
-  const [isCreatingOffer, setIsCreatingOffer] = useState(true)
 
-  const loadOffer = useCallback(
-    async (offerId, creationMode = false) => {
-      try {
-        const existingOffer = await apiV1.getOffersGetOffer(offerId)
-        setOffer(existingOffer)
-        setIsCreatingOffer(
-          creationMode || existingOffer.status === OFFER_STATUS_DRAFT
-        )
-      } catch {
-        history.push('/404')
-      }
-    },
-    [history, setOffer]
-  )
+  const loadOffer = async offerId => {
+    try {
+      const existingOffer = await apiV1.getOffersGetOffer(offerId)
+      setOffer(existingOffer)
+    } catch {
+      history.push('/404')
+    }
+  }
   const activeStep = getActiveStepFromLocation(location)
 
   const reloadOffer = useCallback(
-    async (creationMode = false) =>
-      offer.id ? await loadOffer(offer.id, creationMode) : false,
-    [loadOffer, offer?.id]
+    async () => (offer.id ? await loadOffer(offer.id) : false),
+    [offer?.id]
   )
 
   useEffect(() => {
@@ -71,7 +64,7 @@ const OfferLayout = () => {
       await loadOffer(match.params.offerId)
     }
     match.params.offerId && loadOfferFromQueryParam()
-  }, [loadOffer, match.params.offerId])
+  }, [match.params.offerId])
 
   let pageTitle = 'Nouvelle offre'
 
@@ -118,19 +111,27 @@ const OfferLayout = () => {
           <Route exact path={`${match.url}/edition`}>
             <OfferDetails offer={offer} reloadOffer={reloadOffer} />
           </Route>
-          <Route exact path={`${match.url}/stocks`}>
+          <Route
+            exact
+            path={[`${match.url}/stocks`, `${match.url}/creation/stocks`]}
+          >
             <StocksContainer
               location={location}
               offer={offer}
               reloadOffer={reloadOffer}
             />
           </Route>
-          <Route exact path={`${match.url}/confirmation`}>
-            <Confirmation
-              isCreatingOffer={isCreatingOffer}
-              offer={offer}
-              setOffer={setOffer}
-            />
+          <Route
+            exact
+            path={[
+              `${match.path}/recapitulatif`,
+              `${match.path}/creation/recapitulatif`,
+            ]}
+          >
+            <OfferSummaryRoute formOfferV2={true} />
+          </Route>
+          <Route exact path={`${match.url}/creation/confirmation`}>
+            {() => <Confirmation offer={offer} setOffer={setOffer} />}
           </Route>
         </Switch>
       </div>
