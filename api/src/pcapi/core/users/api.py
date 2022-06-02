@@ -530,11 +530,9 @@ def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] 
 
     if specific_caps.DIGITAL_CAP:
         digital_bookings_total = sum(
-            [
-                booking.total_amount
-                for booking in deposit_bookings
-                if specific_caps.digital_cap_applies(booking.stock.offer)
-            ]
+            booking.total_amount
+            for booking in deposit_bookings
+            if specific_caps.digital_cap_applies(booking.stock.offer)
         )
         domains_credit.digital = Credit(
             initial=specific_caps.DIGITAL_CAP,
@@ -548,11 +546,9 @@ def get_domains_credit(user: User, user_bookings: list[bookings_models.Booking] 
 
     if specific_caps.PHYSICAL_CAP:
         physical_bookings_total = sum(
-            [
-                booking.total_amount
-                for booking in deposit_bookings
-                if specific_caps.physical_cap_applies(booking.stock.offer)
-            ]
+            booking.total_amount
+            for booking in deposit_bookings
+            if specific_caps.physical_cap_applies(booking.stock.offer)
         )
         domains_credit.physical = Credit(
             initial=specific_caps.PHYSICAL_CAP,

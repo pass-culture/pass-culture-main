@@ -133,7 +133,7 @@ def get_confirmed_educational_bookings_amount(
         .options(joinedload(educational_models.EducationalBooking.booking).load_only(Booking.amount, Booking.quantity))
         .all()
     )
-    return Decimal(sum([educational_booking.booking.total_amount for educational_booking in educational_bookings]))
+    return Decimal(sum(educational_booking.booking.total_amount for educational_booking in educational_bookings))
 
 
 def get_confirmed_collective_bookings_amount(

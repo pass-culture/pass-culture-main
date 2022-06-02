@@ -45,7 +45,7 @@ phonenumberslite==8.12.23
 Pillow>=8.1.1
 pydantic[email]==1.9.1
 PyJWT[crypto]==2.1.0
-pylint==2.13.9
+pylint
 pylint-strict-informational
 pysaml2
 pytest==6.2.5

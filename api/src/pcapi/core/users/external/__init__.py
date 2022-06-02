@@ -107,7 +107,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
             user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
             all_venues += find_venues_by_offerers(*offerers)
             for offerer_id in offerer_ids:
-                if min([(uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id])[1] == user.id:
+                if min((uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id)[1] == user.id:
                     user_is_creator = True
                 else:
                     user_is_attached = True
@@ -234,7 +234,7 @@ def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> 
         bookings_by_subcategories.items(),
         key=lambda key_value: (
             len(key_value[1]),
-            sum([booking.stock.price for booking in key_value[1]]),
+            sum(booking.stock.price for booking in key_value[1]),
         ),
         reverse=True,
     )
