@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Build and Deploy Storybook
 on:
   push:
     branches:
@@ -14,11 +14,13 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - name: Install and Build 🔧
+      - name: Install and Build Storybook 🔧
         run: | # Install npm packages and build the Storybook files
           cd pro
           yarn install
           yarn build-storybook
+        env:
+          STORYBOOK_ROOT_PATH: 'https://pass-culture.github.io/pass-culture-main/'
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
