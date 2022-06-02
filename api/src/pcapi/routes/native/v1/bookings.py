@@ -140,7 +140,7 @@ def get_bookings(user: User) -> BookingsResponse:
         else:
             ongoing_bookings.append(booking)
             booking.qrCodeData = bookings_api.get_qr_code_data(booking.token)
-            booking.token = "" if booking.isExternal else booking.token
+            booking.token = None if booking.isExternal else booking.token
 
     result = BookingsResponse(
         ended_bookings=[
