@@ -1,4 +1,3 @@
-import { API_URL, ROOT_PATH } from 'utils/config'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
@@ -6,6 +5,7 @@ import {
 } from 'utils/date'
 import React, { useEffect, useState } from 'react'
 
+import { API_URL } from 'utils/config'
 import ButtonDownloadCSV from 'new_components/ButtonDownloadCSV'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -92,7 +92,7 @@ const ReimbursementsDetails = ({
         </ButtonDownloadCSV>
         <ButtonLink
           isDisabled={shouldDisableButtons}
-          to={`${ROOT_PATH}/remboursements-details?${csvQueryParams}`}
+          to={`/remboursements-details?${csvQueryParams}`}
           variant={ButtonVariant.SECONDARY}
         >
           Afficher

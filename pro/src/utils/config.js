@@ -38,4 +38,5 @@ if (typeof window !== 'undefined') {
   CALC_ROOT_PATH = window.location.protocol + '//' + document.location.host
 }
 
-export const ROOT_PATH = CALC_ROOT_PATH || 'http://localhost:3001/'
+export const ROOT_PATH =
+  process.env.STORYBOOK_ROOT_PATH || CALC_ROOT_PATH || 'http://localhost:3001/'
