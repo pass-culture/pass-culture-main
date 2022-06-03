@@ -152,7 +152,7 @@ class RunTest:
                 activity="Étudiant",
                 address="3 La Bigotais 22800 Saint-Donan",
                 postal_code="67200",
-                processed_datetime=datetime(2020, 5, 13, 10, 41, 21, tzinfo=timezone(timedelta(seconds=7200))),
+                processed_datetime=datetime(2020, 5, 13, 8, 41, 21),
                 registration_datetime=datetime(2020, 5, 13, 9, 9, 46, tzinfo=timezone(timedelta(seconds=7200))),
                 id_piece_number="123123121",
                 state="accepte",

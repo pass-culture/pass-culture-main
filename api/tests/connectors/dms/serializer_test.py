@@ -1,7 +1,5 @@
 from datetime import date
 from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
 from unittest.mock import patch
 
 import pytest
@@ -103,7 +101,7 @@ class ParseBeneficiaryInformationTest:
         content = dms_serializer.parse_beneficiary_information_graphql(
             dms_models.DmsApplicationResponse(**raw_data), 32
         )
-        assert content.processed_datetime == datetime(2020, 5, 13, 10, 41, 21, tzinfo=timezone(timedelta(seconds=7200)))
+        assert content.processed_datetime == datetime(2020, 5, 13, 8, 41, 21)
 
     @pytest.mark.parametrize(
         "dms_activity, expected_activity",
