@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 
+import { VenueResponse } from 'api/gen'
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Option } from 'app/types'
-import { VenueFilterType } from 'app/types/offers'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ResetIcon } from 'assets/reset.svg'
 
@@ -14,7 +14,7 @@ export const OfferFiltersTags = ({
   removeVenueFilter,
   handleResetFilters,
 }: {
-  venueFilter: VenueFilterType | null
+  venueFilter: VenueResponse | null
   removeVenueFilter: () => void
   handleResetFilters: () => void
 }): JSX.Element => {

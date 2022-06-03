@@ -52,12 +52,6 @@ export interface OfferType {
   domains?: EducationalDomain[]
 }
 
-export interface VenueFilterType {
-  id: number
-  name: string
-  publicName?: string
-}
-
 export interface StockType {
   id: number
   beginningDatetime: Date

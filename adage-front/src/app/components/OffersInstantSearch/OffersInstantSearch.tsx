@@ -2,10 +2,9 @@ import algoliasearch from 'algoliasearch/lite'
 import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
-import { AdageFrontRoles } from 'api/gen'
+import { AdageFrontRoles, VenueResponse } from 'api/gen'
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext } from 'app/providers'
-import { VenueFilterType } from 'app/types/offers'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
@@ -33,7 +32,7 @@ export const OffersInstantSearch = ({
 }: {
   userRole: AdageFrontRoles
   removeVenueFilter: () => void
-  venueFilter: VenueFilterType | null
+  venueFilter: VenueResponse | null
 }): JSX.Element => {
   const { facetFilters } = useContext(FacetFiltersContext)
   const useNewAlgoliaIndex = useActiveFeature(

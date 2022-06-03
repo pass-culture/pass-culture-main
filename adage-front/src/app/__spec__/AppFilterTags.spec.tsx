@@ -5,15 +5,13 @@ import { Configure } from 'react-instantsearch-dom'
 import selectEvent from 'react-select-event'
 
 import { api } from 'api/api'
-import { AdageFrontRoles } from 'api/gen'
+import { AdageFrontRoles, VenueResponse } from 'api/gen'
 import {
   FiltersContextProvider,
   FacetFiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
 import { FeaturesContextProvider } from 'app/providers/FeaturesContextProvider'
-import { VenueFilterType } from 'app/types/offers'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { App } from '../App'
 
@@ -42,8 +40,6 @@ jest.mock('react-instantsearch-dom', () => {
 })
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenueBySiret: jest.fn(),
-  getVenueById: jest.fn(),
   getEducationalCategories: jest.fn().mockResolvedValue({
     categories: [
       { id: 'CINEMA', proLabel: 'Cinéma' },
@@ -82,10 +78,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
       { name: 'ENABLE_EDUCATIONAL_DOMAINS', isActive: true },
     ]),
 }))
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
 jest.mock('api/api', () => ({
-  api: { getAdageIframeAuthenticate: jest.fn() },
+  api: {
+    getAdageIframeAuthenticate: jest.fn(),
+    getAdageIframeGetVenueById: jest.fn(),
+    getAdageIframeGetVenueBySiret: jest.fn(),
+  },
 }))
 const mockedApi = api as jest.Mocked<typeof api>
 
@@ -104,7 +103,7 @@ const renderApp = () => {
 }
 
 describe('app', () => {
-  let venue: VenueFilterType
+  let venue: VenueResponse
 
   beforeEach(() => {
     global.window = Object.create(window)
@@ -125,8 +124,8 @@ describe('app', () => {
     mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
       role: AdageFrontRoles.Redactor,
     })
-    mockedPcapi.getVenueBySiret.mockResolvedValue(venue)
-    mockedPcapi.getVenueById.mockResolvedValue(venue)
+    mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
+    mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
   })
 
   it('should display filter tags and send selected filters to Algolia', async () => {
