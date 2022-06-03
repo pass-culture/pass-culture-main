@@ -31,17 +31,18 @@ MAX_LATITUDE = 90
 
 
 class PostVenueBodyModel(BaseModel):
-    address: str
-    bookingEmail: str
-    city: str
+    # pydantic constrained types do not work well with Mypy, see https://github.com/samuelcolvin/pydantic/issues/156
+    address: pydantic.constr(max_length=200)  # type: ignore
+    bookingEmail: pydantic.constr(max_length=120)  # type: ignore
+    city: pydantic.constr(max_length=50)  # type: ignore
     comment: Optional[str]
     latitude: float
     longitude: float
     managingOffererId: str
-    name: str
-    publicName: Optional[str]
-    postalCode: str
-    siret: Optional[str]
+    name: pydantic.constr(max_length=140)  # type: ignore
+    publicName: Optional[pydantic.constr(max_length=255)]  # type: ignore
+    postalCode: pydantic.constr(min_length=4, max_length=6)  # type: ignore
+    siret: Optional[pydantic.constr(min_length=14, max_length=14)]  # type: ignore
     venueLabelId: Optional[str]
     venueTypeCode: str
     withdrawalDetails: Optional[str]
@@ -202,15 +203,15 @@ class GetVenueResponseModel(base.BaseVenueResponse):
 
 
 class EditVenueBodyModel(BaseModel):
-    name: Optional[str]
-    address: Optional[str]
-    siret: Optional[str]
+    name: Optional[pydantic.constr(max_length=140)]  # type: ignore
+    address: Optional[pydantic.constr(max_length=200)]  # type: ignore
+    siret: Optional[pydantic.constr(min_length=14, max_length=14)]  # type: ignore
     latitude: Optional[Union[float, str]]
     longitude: Optional[Union[float, str]]
-    bookingEmail: Optional[str]
-    postalCode: Optional[str]
-    city: Optional[str]
-    publicName: Optional[str]
+    bookingEmail: Optional[pydantic.constr(max_length=120)]  # type: ignore
+    postalCode: Optional[pydantic.constr(min_length=4, max_length=6)]  # type: ignore
+    city: Optional[pydantic.constr(max_length=50)]  # type: ignore
+    publicName: Optional[pydantic.constr(max_length=255)]  # type: ignore
     comment: Optional[str]
     venueTypeCode: Optional[str]
     venueLabelId: Optional[int]
