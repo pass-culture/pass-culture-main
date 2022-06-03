@@ -163,7 +163,7 @@ def test_serialize_venue():
         "tags": [],
         "banner_url": venue.bannerUrl,
         "_geoloc": {"lng": float(venue.longitude), "lat": float(venue.latitude)},
-        "is_eligible_for_strict_search": True,
+        "is_eligible_for_strict_search": False,
     }
 
 
