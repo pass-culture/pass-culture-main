@@ -1,7 +1,7 @@
-import React from 'react'
+import Icon from 'components/layout/Icon'
 import { ReactComponent as NewsletterImg } from './assets/newsletter.svg'
+import React from 'react'
 import styles from './Newsletter.module.scss'
-import Icon from '../../components/layout/Icon'
 
 const Newsletter = () => {
   return (
