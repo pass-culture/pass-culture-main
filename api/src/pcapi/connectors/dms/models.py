@@ -6,7 +6,9 @@ import pydantic
 import pytz
 
 
-def parse_dms_datetime(value: datetime.datetime) -> datetime.datetime:
+def parse_dms_datetime(value: typing.Optional[datetime.datetime]) -> typing.Optional[datetime.datetime]:
+    if value is None:
+        return None
     return value.astimezone(pytz.utc).replace(tzinfo=None)
 
 
@@ -118,7 +120,12 @@ class DmsApplicationResponse(pydantic.BaseModel):
     profile: Profile = pydantic.Field(alias="usager")
     state: GraphQLApplicationStates
 
-    _format_modification_date = pydantic.validator("latest_modification_date", allow_reuse=True)(parse_dms_datetime)
+    _format_processed_datetime = pydantic.validator("processed_datetime", allow_reuse=True)(parse_dms_datetime)
+    _format_filing_date = pydantic.validator("filing_date", allow_reuse=True)(parse_dms_datetime)
+    _format_latest_modification_date = pydantic.validator("latest_modification_date", allow_reuse=True)(
+        parse_dms_datetime
+    )
+    _format_on_going_date = pydantic.validator("on_going_date", allow_reuse=True)(parse_dms_datetime)
 
 
 class DmsPaginatedResponse(pydantic.BaseModel):
