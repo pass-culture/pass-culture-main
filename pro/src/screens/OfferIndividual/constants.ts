@@ -1,6 +1,5 @@
-import { OfferStatus, SubcategoryIdEnum } from 'api/v1/gen/api'
-
 import { IOfferIndividual } from 'core/Offers/types'
+import { SubcategoryIdEnum } from 'api/v1/gen/api'
 
 export const fakeOffer: IOfferIndividual = {
   id: 'YA',
