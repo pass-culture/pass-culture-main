@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 @blueprint.adage_iframe.route("/offer/<int:offer_id>", methods=["GET"])
 @adage_jwt_required
-@spectree_serialize(response_model=serializers.OfferResponse, api=blueprint.api, on_error_statuses=[404])
+@spectree_serialize(response_model=serializers.OfferResponse, on_error_statuses=[404])
 def get_offer(authenticated_information: AuthenticatedInformation, offer_id: int) -> serializers.OfferResponse:
     offer = (
         offers_models.Offer.query.filter(offers_models.Offer.id == offer_id)
