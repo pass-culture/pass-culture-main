@@ -15,6 +15,7 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models.product import BookFormat
 from pcapi.models.product import Product
+from pcapi.models.product import UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
 from pcapi.repository.product_queries import ProductWithBookingsException
@@ -29,7 +30,6 @@ THINGS_FOLDER_NAME_TITELIVE = "livre3_11"
 NUMBER_OF_ELEMENTS_PER_LINE = 46  # (45 elements from line + \n)
 PAPER_PRESS_TVA = "2,10"
 PAPER_PRESS_SUPPORT_CODE = "R"
-UNRELEASED_BOOK_MARKER = "xxx"
 SCHOOL_RELATED_CSR_CODE = [
     "2700",
     "2701",
@@ -346,4 +346,4 @@ def get_extra_data_from_infos(infos: dict) -> dict:
 def is_unreleased_book(product_info: dict) -> bool:
     title = product_info.get("titre", "").lower()
     authors = product_info.get("auteurs", "").lower()
-    return title == authors == UNRELEASED_BOOK_MARKER
+    return title == authors == UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
