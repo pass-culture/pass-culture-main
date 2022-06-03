@@ -214,6 +214,7 @@ const Offers = ({
           refreshOffers={refreshOffers}
           selectedOfferIds={selectedOfferIds}
           toggleSelectAllCheckboxes={toggleSelectAllCheckboxes}
+          audience={audience}
         />
       </ActionsBarPortal>
       <SearchFilters
