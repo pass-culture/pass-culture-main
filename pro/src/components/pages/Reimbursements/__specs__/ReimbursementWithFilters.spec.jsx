@@ -11,7 +11,6 @@ import {
   within,
 } from '@testing-library/react'
 
-import { API_URL } from 'utils/config'
 import { Provider } from 'react-redux'
 import React from 'react'
 import Reimbursements from '../ReimbursementsWithFilters'
