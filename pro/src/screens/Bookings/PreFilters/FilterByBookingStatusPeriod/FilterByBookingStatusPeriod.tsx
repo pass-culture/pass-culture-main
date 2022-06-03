@@ -49,7 +49,6 @@ const FilterByBookingStatusPeriod = ({
         selectedStatusId={selectedBookingFilter}
         updateFilters={updateFilters}
       />
-      <div className="vertical-bar" />
       <PeriodSelector
         changePeriodBeginningDateValue={handleBookingBeginningDateChange}
         changePeriodEndingDateValue={handleBookingEndingDateChange}
