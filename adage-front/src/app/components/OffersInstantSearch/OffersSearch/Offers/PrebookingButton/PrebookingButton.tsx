@@ -1,6 +1,7 @@
 import { format } from 'date-fns-tz'
 import React, { useCallback, useState } from 'react'
 
+import { api } from 'api/api'
 import { OfferStockResponse } from 'api/gen'
 import {
   Notification,
@@ -10,7 +11,7 @@ import {
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
-import { preBookCollectiveStock, preBookStock } from 'repository/pcapi/pcapi'
+import { preBookStock } from 'repository/pcapi/pcapi'
 
 import './PrebookingButton.scss'
 import PrebookingModal from './PrebookingModal'
@@ -40,7 +41,7 @@ const PrebookingButton = ({
 
   const preBookCurrentStock = useCallback(async () => {
     const preBookRoute = newCollectiveModel
-      ? preBookCollectiveStock
+      ? (stockId: number) => api.postAdageIframeBookCollectiveOffer({ stockId })
       : preBookStock
     return preBookRoute(stock.id)
       .then(() => {

@@ -12,12 +12,6 @@ export const preBookStock = async (stockId: number): Promise<number> => {
   return client.post('/adage-iframe/bookings', { stockId })
 }
 
-export const preBookCollectiveStock = async (
-  stockId: number
-): Promise<number> => {
-  return client.post('/adage-iframe/collective/bookings', { stockId })
-}
-
 export const getFeatures = async (): Promise<Feature[]> =>
   client.get('/adage-iframe/features')
 
