@@ -34,6 +34,7 @@ class Returns200Test:
     @classmethod
     def test_get_collective_offer(cls, client):
         # Given
+        institution = educational_factories.EducationalInstitutionFactory()
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
             collectiveOffer__name="offer name",
@@ -41,6 +42,7 @@ class Returns200Test:
             price=10,
             collectiveOffer__students=[StudentLevels.GENERAL2],
             collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
+            collectiveOffer__institution=institution,
         )
 
         adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
@@ -91,6 +93,12 @@ class Returns200Test:
             "offerId": None,
             "educationalPriceDetail": stock.priceDetail,
             "domains": [{"id": stock.collectiveOffer.domains[0].id, "name": stock.collectiveOffer.domains[0].name}],
+            "educationalInstitution": {
+                "id": institution.id,
+                "name": institution.name,
+                "city": institution.city,
+                "postalCode": institution.postalCode,
+            },
         }
 
 

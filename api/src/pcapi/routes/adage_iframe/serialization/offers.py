@@ -151,6 +151,17 @@ class OfferDomain(BaseModel):
         orm_mode = True
 
 
+class EducationalInstitutionResponseModel(BaseModel):
+    id: int
+    name: str
+    postalCode: str
+    city: str
+
+    class Config:
+        orm_mode = True
+        extra = "forbid"
+
+
 class CollectiveOfferResponseModel(BaseModel):
     id: int
     subcategoryLabel: str
@@ -172,6 +183,7 @@ class CollectiveOfferResponseModel(BaseModel):
     offerId: Optional[str]
     educationalPriceDetail: Optional[str]
     domains: list[OfferDomain]
+    institution: Optional[EducationalInstitutionResponseModel] = Field(alias="educationalInstitution")
 
     @classmethod
     def from_orm(cls: Any, offer: CollectiveOffer):  # type: ignore
@@ -191,6 +203,7 @@ class CollectiveOfferResponseModel(BaseModel):
         allow_population_by_field_name = True
         json_encoders = {datetime: format_into_utc_date}
         use_enum_values = True
+        extra = "forbid"
 
 
 class CollectiveOfferTemplateResponseModel(BaseModel):
