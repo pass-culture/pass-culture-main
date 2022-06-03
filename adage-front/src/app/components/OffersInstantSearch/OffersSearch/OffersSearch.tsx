@@ -4,12 +4,11 @@ import { useEffect, useContext, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
-import { AdageFrontRoles } from 'api/gen'
+import { AdageFrontRoles, VenueResponse } from 'api/gen'
 import { LEGACY_INITIAL_FACET_FILTERS, INITIAL_QUERY } from 'app/constants'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters } from 'app/types'
-import { VenueFilterType } from 'app/types/offers'
 
 import { populateFacetFilters } from '../utils'
 
@@ -21,7 +20,7 @@ import { SearchBox } from './SearchBox/SearchBox'
 export interface SearchProps extends SearchBoxProvided {
   userRole: AdageFrontRoles
   removeVenueFilter: () => void
-  venueFilter: VenueFilterType | null
+  venueFilter: VenueResponse | null
   useNewAlgoliaIndex: boolean
 }
 

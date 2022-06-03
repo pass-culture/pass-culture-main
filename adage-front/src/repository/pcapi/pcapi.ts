@@ -4,7 +4,6 @@ import {
   CollectiveOfferTemplate,
   EducationalDomain,
   OfferType,
-  VenueFilterType,
 } from 'app/types/offers'
 import { client } from 'repository/pcapi/pcapiClient'
 
@@ -23,18 +22,6 @@ export const getCollectiveOfferTemplate = async (
   offerId: number | string
 ): Promise<CollectiveOfferTemplate> =>
   client.get(`/adage-iframe/collective/offers-template/${offerId}`)
-
-export const getVenueBySiret = async (
-  siret: string
-): Promise<VenueFilterType> => {
-  return client.get(`/adage-iframe/venues/siret/${siret}`)
-}
-
-export const getVenueById = async (
-  venueId: string
-): Promise<VenueFilterType> => {
-  return client.get(`/adage-iframe/venues/${venueId}`)
-}
 
 export const preBookStock = async (stockId: number): Promise<number> => {
   return client.post('/adage-iframe/bookings', { stockId })
