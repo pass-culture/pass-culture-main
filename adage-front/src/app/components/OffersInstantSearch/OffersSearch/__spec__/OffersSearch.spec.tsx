@@ -2,12 +2,12 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+import { AdageFrontRoles } from 'api/gen'
 import { findLaunchSearchButton } from 'app/__spec__/__test_utils__/elements'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
 } from 'app/providers'
-import { Role } from 'utils/types'
 
 import { OffersSearchComponent, SearchProps } from '../OffersSearch'
 import { placeholder } from '../SearchBox'
@@ -39,7 +39,7 @@ describe('offersSearch component', () => {
 
   beforeEach(() => {
     props = {
-      userRole: Role.redactor,
+      userRole: AdageFrontRoles.Redactor,
       removeVenueFilter: jest.fn(),
       venueFilter: null,
       refine: jest.fn(),

@@ -6,12 +6,13 @@ import { connectHits } from 'react-instantsearch-core'
 import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
+import { AdageFrontRoles } from 'api/gen'
 import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
 import { OfferType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { ResultType, Role } from 'utils/types'
+import { ResultType } from 'utils/types'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import { Offer } from './Offer'
@@ -30,7 +31,7 @@ const extractOfferIdFromObjectId = (offerId: string): string => {
 }
 
 export interface OffersComponentProps extends HitsProvided<ResultType> {
-  userRole: Role
+  userRole: AdageFrontRoles
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
   useNewAlgoliaIndex: boolean
@@ -118,7 +119,7 @@ export const OffersComponent = ({
         {offers.map(offer => (
           <div key={offer.id}>
             <Offer
-              canPrebookOffers={userRole == Role.redactor}
+              canPrebookOffers={userRole == AdageFrontRoles.Redactor}
               key={offer.id}
               offer={offer}
             />
