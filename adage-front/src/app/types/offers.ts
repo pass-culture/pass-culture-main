@@ -1,23 +1,8 @@
-export interface VenueType {
-  address: string
-  city: string
-  coordinates: {
-    latitude: number
-    longitude: number
-  }
-  name: string
-  postalCode: string
-  publicName?: string
-  managingOfferer: {
-    name: string
-  }
-}
-
-export enum ADRESS_TYPE {
-  OFFERER_VENUE = 'offererVenue',
-  SCHOOL = 'school',
-  OTHER = 'other',
-}
+import {
+  OfferAddressType,
+  OfferStockResponse,
+  OfferVenueResponse,
+} from 'api/gen'
 
 export type EducationalDomain = {
   id: number
@@ -28,12 +13,12 @@ export interface OfferType {
   id: number
   name: string
   subcategoryLabel: string
-  description?: string
-  venue: VenueType
-  stocks: StockType[]
+  description?: string | null
+  venue: OfferVenueResponse
+  stocks: OfferStockResponse[]
   isSoldOut: boolean
   isExpired: boolean
-  durationMinutes?: number
+  durationMinutes?: number | null
   mentalDisabilityCompliant: boolean
   visualDisabilityCompliant: boolean
   audioDisabilityCompliant: boolean
@@ -41,8 +26,8 @@ export interface OfferType {
   extraData?: {
     contactEmail?: string
     contactPhone?: string
-    offerVenue?: {
-      addressType: ADRESS_TYPE
+    offerVenue: {
+      addressType: OfferAddressType
       otherAddress: string
       venueId: string
     }
@@ -51,45 +36,3 @@ export interface OfferType {
   }
   domains?: EducationalDomain[]
 }
-
-export interface StockType {
-  id: number
-  beginningDatetime: Date
-  bookingLimitDatetime: Date
-  isBookable: boolean
-  price: number
-  numberOfTickets?: number
-  educationalPriceDetail?: string
-}
-
-export type CollectiveOfferBaseModel = {
-  id: number
-  subcategoryLabel: string
-  description?: string
-  isExpired: boolean
-  isSoldOut: boolean
-  name: string
-  venue: VenueType
-  students: string[]
-  offerVenue: {
-    addressType: ADRESS_TYPE
-    otherAddress: string
-    venueId: string
-  }
-  contactEmail: string
-  contactPhone: string
-  durationMinutes?: number
-  motorDisabilityCompliant: boolean
-  visualDisabilityCompliant: boolean
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  offerId?: string
-  educationalPriceDetail?: string
-  domains?: EducationalDomain[]
-}
-
-export type CollectiveOffer = CollectiveOfferBaseModel & {
-  stock: StockType
-}
-
-export type CollectiveOfferTemplate = CollectiveOfferBaseModel

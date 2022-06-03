@@ -1,13 +1,13 @@
 import { format } from 'date-fns-tz'
 import React, { useCallback, useState } from 'react'
 
+import { OfferStockResponse } from 'api/gen'
 import {
   Notification,
   NotificationComponent,
   NotificationType,
 } from 'app/components/Layout/Notification/Notification'
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
-import { StockType } from 'app/types/offers'
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 import { preBookCollectiveStock, preBookStock } from 'repository/pcapi/pcapi'
@@ -22,7 +22,7 @@ const PrebookingButton = ({
   canPrebookOffers,
 }: {
   className?: string
-  stock: StockType
+  stock: OfferStockResponse
   canPrebookOffers: boolean
 }): JSX.Element | null => {
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)

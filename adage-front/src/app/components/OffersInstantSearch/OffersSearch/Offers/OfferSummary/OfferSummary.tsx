@@ -1,6 +1,9 @@
+import './OfferSummary.scss'
+
 import React from 'react'
 
-import { ADRESS_TYPE, OfferType } from 'app/types/offers'
+import { OfferAddressType } from 'api/gen'
+import { OfferType } from 'app/types/offers'
 import { ReactComponent as BuildingIcon } from 'assets/building.svg'
 import { ReactComponent as DateIcon } from 'assets/date.svg'
 import { ReactComponent as EuroIcon } from 'assets/euro.svg'
@@ -9,8 +12,6 @@ import { ReactComponent as SubcategoryIcon } from 'assets/subcategory.svg'
 import { ReactComponent as UserIcon } from 'assets/user.svg'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
-
-import './OfferSummary.scss'
 
 const extractDepartmentCode = (venuePostalCode: string): string => {
   const departmentNumberBase: number = parseInt(venuePostalCode.slice(0, 2))
@@ -22,9 +23,11 @@ const extractDepartmentCode = (venuePostalCode: string): string => {
 }
 
 const getLocalBeginningDatetime = (
-  beginningDatetime: Date,
-  venuePostalCode: string
+  beginningDatetime: string,
+  venuePostalCode: string | null | undefined
 ): string => {
+  if (!venuePostalCode) return ''
+
   const departmentCode = extractDepartmentCode(venuePostalCode)
   const stockBeginningDate = new Date(beginningDatetime)
   const stockBeginningDateISOString =
@@ -51,9 +54,9 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
   let offerVenue = `${venue.postalCode}, ${venue.city}`
 
   if (extraData?.offerVenue) {
-    if (extraData?.offerVenue.addressType === ADRESS_TYPE.OTHER) {
+    if (extraData?.offerVenue.addressType === OfferAddressType.Other) {
       offerVenue = extraData.offerVenue.otherAddress
-    } else if (extraData?.offerVenue.addressType === ADRESS_TYPE.SCHOOL) {
+    } else if (extraData?.offerVenue.addressType === OfferAddressType.School) {
       offerVenue = "Dans l'établissement scolaire"
     }
   }

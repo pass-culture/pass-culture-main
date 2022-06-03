@@ -1,10 +1,5 @@
 import { Category, Feature, SubCategory } from 'app/types'
-import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
-  EducationalDomain,
-  OfferType,
-} from 'app/types/offers'
+import { EducationalDomain, OfferType } from 'app/types/offers'
 import { client } from 'repository/pcapi/pcapiClient'
 
 export const getOffer = async (
@@ -12,16 +7,6 @@ export const getOffer = async (
 ): Promise<OfferType> => {
   return client.get(`/adage-iframe/offer/${offerId}`)
 }
-
-export const getCollectiveOffer = async (
-  offerId: number | string
-): Promise<CollectiveOffer> =>
-  client.get(`/adage-iframe/collective/offers/${offerId}`)
-
-export const getCollectiveOfferTemplate = async (
-  offerId: number | string
-): Promise<CollectiveOfferTemplate> =>
-  client.get(`/adage-iframe/collective/offers-template/${offerId}`)
 
 export const preBookStock = async (stockId: number): Promise<number> => {
   return client.post('/adage-iframe/bookings', { stockId })

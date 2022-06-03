@@ -20,14 +20,14 @@ import { Offer } from './Offer'
 const offerIsBookable = (offer: OfferType): boolean =>
   !offer.isSoldOut && !offer.isExpired
 
-const extractOfferIdFromObjectId = (offerId: string): string => {
+const extractOfferIdFromObjectId = (offerId: string): number => {
   const splitResult = offerId.split('T-')
 
   if (splitResult.length === 2) {
-    return splitResult[1]
+    return Number(splitResult[1])
   }
 
-  return offerId
+  return Number(offerId)
 }
 
 export interface OffersComponentProps extends HitsProvided<ResultType> {
