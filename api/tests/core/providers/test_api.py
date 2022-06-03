@@ -20,6 +20,7 @@ from pcapi.core.providers.models import StockDetail
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
 from pcapi.models.product import Product
+from pcapi.models.product import UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
 
 
 class CreateVenueProviderTest:
@@ -130,6 +131,7 @@ class SynchronizeStocksTest:
             {"ref": "3010000108124", "available": 17},
             {"ref": "3010000108125", "available": 17},
             {"ref": "3010000102735", "available": 1},
+            {"ref": "3010000105566", "available": 3},
         ]
         providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = offerers_factories.VenueFactory()
@@ -148,6 +150,7 @@ class SynchronizeStocksTest:
         create_product(spec[4]["ref"])
         create_product(spec[6]["ref"], isGcuCompatible=False)
         create_product(spec[7]["ref"], isSynchronizationCompatible=False)
+        create_product(spec[8]["ref"], name=UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
         stock_with_booking = create_stock(spec[5]["ref"], siret, venue, quantity=20)
         BookingFactory(stock=stock_with_booking)
@@ -170,6 +173,10 @@ class SynchronizeStocksTest:
         # Test creates offer if does not exist
         created_offer = Offer.query.filter_by(idAtProvider=spec[2]["ref"]).one()
         assert created_offer.stocks[0].quantity == 18
+
+        # Test doesn't creates offer if product is unrealsed or unavailable
+        offer_not_created = Offer.query.filter_by(idAtProvider=spec[8]["ref"]).one_or_none()
+        assert offer_not_created is None
 
         # Test doesn't create offer if product does not exist or not gcu compatible or not synchronization compatible
         assert Offer.query.filter_by(idAtProvider=spec[3]["ref"]).count() == 0
