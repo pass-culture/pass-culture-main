@@ -1,5 +1,6 @@
-import { SubCategory, Category, Adapter, Option } from 'app/types'
-import * as pcapi from 'repository/pcapi/pcapi'
+import { api } from 'api/api'
+import { CategoriesResponseModel } from 'api/gen'
+import { Adapter, Option } from 'app/types'
 
 type Params = null
 
@@ -16,10 +17,7 @@ type GetEducationalCategoriesOptionsAdapter = Adapter<
 const filterEducationalSubCategories = ({
   categories,
   subcategories,
-}: {
-  categories?: Category[]
-  subcategories?: SubCategory[]
-}): IPayload => {
+}: CategoriesResponseModel): IPayload => {
   if (!subcategories || !categories) {
     return { educationalCategories: [] }
   }
@@ -45,7 +43,7 @@ const FAILING_RESPONSE = {
 export const getEducationalCategoriesOptionsAdapter: GetEducationalCategoriesOptionsAdapter =
   async () => {
     try {
-      const result = await pcapi.getEducationalCategories()
+      const result = await api.getAdageIframeGetEducationalOffersCategories()
 
       return {
         isOk: true,
