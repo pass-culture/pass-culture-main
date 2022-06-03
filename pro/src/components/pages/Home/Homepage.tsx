@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react'
 
 import { BannerOneYear } from 'new_components/BannerOneYear'
 import { BannerRGS } from 'new_components/Banner'
+import { Newsletter } from 'new_components/Newsletter'
 import Offerers from './Offerers/Offerers'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import { ProfileAndSupport } from './ProfileAndSupport'
@@ -44,6 +45,9 @@ const Homepage = (): JSX.Element => {
 
       <section className="h-section" ref={profileRef}>
         <ProfileAndSupport />
+        <div className="newsletter">
+          <Newsletter/>
+        </div>
       </section>
     </div>
   )
