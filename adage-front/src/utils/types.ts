@@ -12,9 +12,3 @@ export interface ResultType {
   }
   isTemplate: boolean
 }
-
-export enum Role {
-  redactor = 'redactor',
-  readonly = 'readonly',
-  unauthenticated = 'unauthenticated',
-}

@@ -7,13 +7,6 @@ import {
   VenueFilterType,
 } from 'app/types/offers'
 import { client } from 'repository/pcapi/pcapiClient'
-import { Role } from 'utils/types'
-
-export const authenticate = async (): Promise<Role> => {
-  return client
-    .get('/adage-iframe/authenticate')
-    .then(({ role }: { role: string }) => Role[role])
-}
 
 export const getOffer = async (
   offerId: number | string
