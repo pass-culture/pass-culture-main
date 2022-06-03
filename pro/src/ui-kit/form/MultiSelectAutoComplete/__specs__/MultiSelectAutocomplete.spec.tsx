@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom'
 
+import * as yup from 'yup'
+
 import MultiSelectAutocomplete, {
   MultiSelectAutocompleteProps,
 } from '../MultiSelectAutocomplete'
@@ -9,7 +11,7 @@ import { Formik } from 'formik'
 import React from 'react'
 import userEvent from '@testing-library/user-event'
 
-describe('src | components | layout | Banner', () => {
+describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
   describe('render', () => {
     const props: MultiSelectAutocompleteProps = {
       label: 'Département',
@@ -81,7 +83,7 @@ describe('src | components | layout | Banner', () => {
         screen.getByRole('textbox', { name: 'Département' })
       )
       // and then closes it
-      await userEvent.click(screen.getByRole('button'))
+      await userEvent.click(screen.getByAltText('Masquer les options'))
 
       // then
       expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
@@ -148,16 +150,16 @@ describe('src | components | layout | Banner', () => {
         expect(screen.getAllByRole('checkbox')).toHaveLength(6) // Allier, Alpes, Hautes-Alpes, Alpes-Maritimes, Calvados, Cantal
       })
       // when the user closes the field
-      await userEvent.click(screen.getByRole('button'))
+      await userEvent.click(screen.getByAltText('Masquer les options'))
       // and reopens it
-      await userEvent.click(screen.getByRole('button'))
+      await userEvent.click(screen.getByAltText('Afficher les options'))
       // then
       await waitFor(() => {
         expect(screen.getAllByRole('checkbox')).toHaveLength(15)
       })
     })
 
-    it('should add options when the user selects them', async () => {
+    it('should add options when the user selects them and display associated tags', async () => {
       // given
       render(
         <Formik initialValues={initialValues} onSubmit={() => {}}>
@@ -179,7 +181,44 @@ describe('src | components | layout | Banner', () => {
           4
         ) // Ain, Aisne (default) + Aveyron, Calvados
       })
+      expect(
+        screen.queryByRole('button', { name: 'Aveyron' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Calvados' })
+      ).toBeInTheDocument()
     })
+
+    it('should add options when the user selects them but not display associated tags', async () => {
+      // given
+      render(
+        <Formik initialValues={initialValues} onSubmit={() => {}}>
+          <MultiSelectAutocomplete {...props} hideTags={true} />
+        </Formik>
+      )
+
+      // when the user opens the field
+      await userEvent.click(
+        screen.getByRole('textbox', { name: 'Département' })
+      )
+      // and selects options
+      await userEvent.click(await screen.findByLabelText('Aveyron'))
+      await userEvent.click(await screen.findByLabelText('Calvados'))
+
+      // then
+      await waitFor(() => {
+        expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
+          4
+        ) // Ain, Aisne (default) + Aveyron, Calvados
+      })
+      expect(
+        screen.queryByRole('button', { name: 'Aveyron' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Calvados' })
+      ).not.toBeInTheDocument()
+    })
+
     it('should remove options when the user unselects them', async () => {
       // given
       render(
@@ -201,6 +240,55 @@ describe('src | components | layout | Banner', () => {
         expect(
           screen.queryAllByRole('checkbox', { checked: true })
         ).toHaveLength(0)
+      })
+      expect(
+        screen.queryByRole('button', { name: 'Aveyron' })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Calvados' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display an error when input value is not valid for Formik', async () => {
+      // given
+      const validationSchema = yup.object().shape({
+        departement: yup.array().test({
+          message: 'Veuillez renseigner un département',
+          test: domains => Boolean(domains?.length && domains.length > 0),
+        }),
+        'search-departement': yup
+          .string()
+          .when('departement', (departements, schema) =>
+            schema.test({
+              name: 'search-departement-invalid',
+              message: 'error',
+              test: departements.length === 0 ? () => false : () => true,
+            })
+          ),
+      })
+      render(
+        <Formik
+          initialValues={initialValues}
+          onSubmit={() => {}}
+          validationSchema={validationSchema}
+        >
+          <MultiSelectAutocomplete {...props} />
+        </Formik>
+      )
+
+      expect(screen.queryByTestId('error-departement')).not.toBeInTheDocument()
+
+      // when the user opens the field
+      await userEvent.click(
+        screen.getByRole('textbox', { name: 'Département' })
+      )
+      // and unselects default options
+      await userEvent.click(await screen.findByLabelText('Ain'))
+      await userEvent.click(await screen.findByLabelText('Aisne'))
+
+      // then
+      await waitFor(() => {
+        expect(screen.queryByTestId('error-departement')).toBeInTheDocument()
       })
     })
   })
