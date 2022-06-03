@@ -1,9 +1,9 @@
 from flask import Blueprint
 from flask_cors.extension import CORS
 from spectree import SecurityScheme
-from spectree import SpecTree
 
 from pcapi import settings
+from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
 
@@ -20,12 +20,13 @@ SECURITY_SCHEMES = [
 ]
 
 
-api = SpecTree(
+api = ExtendedSpecTree(
     "flask",
     title="Pass Culture API accessed through iframe from adage clients",
     MODE="strict",
     before=before_handler,
     PATH="/",
     security_schemes=SECURITY_SCHEMES,
+    humanize_operation_id=True,
 )
 api.register(adage_iframe)
