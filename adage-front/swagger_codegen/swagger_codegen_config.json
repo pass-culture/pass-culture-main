@@ -1,0 +1,8 @@
+{
+  "typeMappings": {
+    "DateTime": "string"
+  },
+    "modelPropertyNaming": "camelCase",
+    "paramNaming": "camelCase",
+    "withInterfaces": true
+}
