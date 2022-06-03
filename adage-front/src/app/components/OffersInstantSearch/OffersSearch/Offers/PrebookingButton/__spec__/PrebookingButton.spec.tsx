@@ -4,8 +4,11 @@ import React from 'react'
 import PrebookingButton from '../PrebookingButton'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  preBookCollectiveStock: jest.fn(),
   preBookStock: jest.fn(),
+}))
+
+jest.mock('api/api', () => ({
+  postAdageIframeBookCollectiveOffer: jest.fn(),
 }))
 
 describe('offer', () => {
