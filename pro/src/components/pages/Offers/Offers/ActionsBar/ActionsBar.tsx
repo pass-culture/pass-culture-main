@@ -162,7 +162,7 @@ const ActionsBar = ({
             `êtes-vous sûr de vouloir la désactiver${NBSP}?`
             : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`}
         >
-          {nbSelectedOffers === 1 ? "Dans ce cas, elle ne sera plus visible sur l’application pass Culture par les jeunes." : "Dans ce cas, elles ne seront plus visibles sur l’application pass Culture par les jeunes."}
+          {nbSelectedOffers === 1 ? "Dans ce cas, elle ne sera plus visible sur l’application pass Culture." : "Dans ce cas, elles ne seront plus visibles sur l’application pass Culture."}
         </ConfirmDialog>
       }
       <div className="actions-container">
