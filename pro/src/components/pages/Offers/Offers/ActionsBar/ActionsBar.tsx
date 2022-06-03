@@ -3,6 +3,7 @@ import React, {
   useState,
 } from 'react'
 
+import { Audience } from 'core/shared'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
@@ -16,7 +17,6 @@ import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateA
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useLocation } from 'react-router-dom'
 import useNotification from 'components/hooks/useNotification'
 import { useSelector } from 'react-redux'
@@ -28,6 +28,7 @@ interface IActionBarProps {
   refreshOffers: () => void
   selectedOfferIds: string[]
   toggleSelectAllCheckboxes: () => void
+  audience: Audience
 }
 
 const getUpdateActiveStatusAdapter = (
@@ -35,11 +36,11 @@ const getUpdateActiveStatusAdapter = (
   searchFilters: Partial<TSearchFilters>,
   isActive: boolean,
   nbSelectedOffers: number,
-  isNewModelEnabled: boolean,
-  selectedOfferIds: string[]
+  selectedOfferIds: string[],
+  audience: Audience,
 ) => {
   if (areAllOffersSelected) {
-    if (isNewModelEnabled) {
+    if (audience === Audience.COLLECTIVE) {
       return () =>
         updateAllCollectiveOffersActiveStatusAdapter({
           searchFilters: { ...searchFilters, isActive },
@@ -54,7 +55,7 @@ const getUpdateActiveStatusAdapter = (
       })
   }
 
-  if (isNewModelEnabled) {
+  if (audience === Audience.COLLECTIVE) {
     return () => updateCollectiveOffersActiveStatusAdapter({ids: selectedOfferIds, isActive})
   }
 
@@ -68,12 +69,12 @@ const ActionsBar = ({
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
   nbSelectedOffers,
+  audience
 }: IActionBarProps): JSX.Element => {
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const searchFilters = useSelector(searchFiltersSelector)
   const notify = useNotification()
   const location = useLocation()
-  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const handleClose = useCallback(() => {
     clearSelectedOfferIds()
@@ -87,8 +88,8 @@ const ActionsBar = ({
         searchFilters,
         isActivating,
         nbSelectedOffers,
-        isNewModelEnabled,
-        selectedOfferIds
+        selectedOfferIds,
+        audience
       )
 
       const {isOk, message} = await adapter()
