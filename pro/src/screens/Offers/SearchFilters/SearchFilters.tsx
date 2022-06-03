@@ -130,7 +130,7 @@ const SearchFilters = ({
       ? 'Rechercher par nom d’offre ou par ISBN'
       : 'Rechercher par nom d’offre'
   const resetFilterButtonProps = !hasSearchFilters(selectedFilters)
-    ? { ariaCurrent: 'page', isDisabled: true }
+    ? { 'aria-current': 'page', isDisabled: true }
     : {}
   return (
     <>
