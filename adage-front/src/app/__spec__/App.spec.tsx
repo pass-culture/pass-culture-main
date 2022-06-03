@@ -4,14 +4,12 @@ import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 
 import { api } from 'api/api'
-import { AdageFrontRoles } from 'api/gen'
+import { AdageFrontRoles, VenueResponse } from 'api/gen'
 import {
   FiltersContextProvider,
   FacetFiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
-import { VenueFilterType } from 'app/types/offers'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { App } from '../App'
 
@@ -35,8 +33,6 @@ jest.mock('react-instantsearch-dom', () => {
 })
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getVenueBySiret: jest.fn(),
-  getVenueById: jest.fn(),
   getEducationalCategories: jest.fn().mockResolvedValue({
     categories: [
       { id: 'CINEMA', proLabel: 'Cinéma' },
@@ -66,11 +62,12 @@ jest.mock('repository/pcapi/pcapi', () => ({
     ],
   }),
 }))
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
 jest.mock('api/api', () => ({
   api: {
     getAdageIframeAuthenticate: jest.fn(),
+    getAdageIframeGetVenueById: jest.fn(),
+    getAdageIframeGetVenueBySiret: jest.fn(),
   },
 }))
 const mockedApi = api as jest.Mocked<typeof api>
@@ -89,7 +86,7 @@ const renderApp = () => {
 
 describe('app', () => {
   describe('when is authenticated', () => {
-    let venue: VenueFilterType
+    let venue: VenueResponse
 
     beforeEach(() => {
       global.window = Object.create(window)
@@ -110,8 +107,8 @@ describe('app', () => {
       mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
         role: AdageFrontRoles.Redactor,
       })
-      mockedPcapi.getVenueBySiret.mockResolvedValue(venue)
-      mockedPcapi.getVenueById.mockResolvedValue(venue)
+      mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
+      mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
     })
 
     it('should show search offers input with no filter on venue when no siret or venueId is provided', async () => {
@@ -134,7 +131,7 @@ describe('app', () => {
         screen.queryByText('Lieu :', { exact: false })
       ).not.toBeInTheDocument()
 
-      expect(mockedPcapi.getVenueBySiret).not.toHaveBeenCalled()
+      expect(mockedApi.getAdageIframeGetVenueBySiret).not.toHaveBeenCalled()
     })
 
     it('should show search offers input with filter on venue public name when siret is provided and public name exists', async () => {
@@ -160,7 +157,9 @@ describe('app', () => {
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
 
-      expect(mockedPcapi.getVenueBySiret).toHaveBeenCalledWith(siret)
+      expect(mockedApi.getAdageIframeGetVenueBySiret).toHaveBeenCalledWith(
+        siret
+      )
     })
 
     it('should show venue filter on venue name when siret is provided and public name does not exist', async () => {
@@ -180,7 +179,7 @@ describe('app', () => {
 
     it('should show search offers input with filter on venue public name when venueId is provided and public name exists', async () => {
       // Given
-      const venueId = '123456789'
+      const venueId = 123456789
       window.location.search = `?venue=${venueId}`
 
       // When
@@ -201,7 +200,7 @@ describe('app', () => {
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
       expect(queryResetFiltersButton()).toBeInTheDocument()
 
-      expect(mockedPcapi.getVenueById).toHaveBeenCalledWith(venueId)
+      expect(mockedApi.getAdageIframeGetVenueById).toHaveBeenCalledWith(venueId)
     })
 
     it('should show venue filter on venue name when venueId is provided and public name does not exist', async () => {
@@ -223,7 +222,9 @@ describe('app', () => {
       // Given
       const siret = '123456789'
       window.location.search = `?siret=${siret}`
-      mockedPcapi.getVenueBySiret.mockRejectedValue('Unrecognized SIRET')
+      mockedApi.getAdageIframeGetVenueBySiret.mockRejectedValue(
+        'Unrecognized SIRET'
+      )
 
       // When
       renderApp()

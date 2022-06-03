@@ -7,9 +7,8 @@ import '@fontsource/barlow/600.css'
 import '@fontsource/barlow/700.css'
 import '@fontsource/barlow/300.css'
 import { api } from 'api/api'
-import { AdageFrontRoles } from 'api/gen'
+import { AdageFrontRoles, VenueResponse } from 'api/gen'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { AppLayout } from './AppLayout'
 import {
@@ -18,7 +17,6 @@ import {
   NotificationType,
 } from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
-import { VenueFilterType } from './types/offers'
 
 export const queryCache = new QueryCache()
 export const queryClient = new QueryClient({
@@ -33,7 +31,7 @@ export const queryClient = new QueryClient({
 export const App = (): JSX.Element => {
   const [userRole, setUserRole] = useState<AdageFrontRoles | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [venueFilter, setVenueFilter] = useState<VenueFilterType | null>(null)
+  const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
   const [notification, setNotification] = useState<Notification | null>(null)
 
   useEffect(() => {
@@ -43,10 +41,10 @@ export const App = (): JSX.Element => {
       .then(() => {
         const params = new URLSearchParams(window.location.search)
         const siret = params.get('siret')
-        const venueId = params.get('venue')
+        const venueId = Number(params.get('venue'))
         if (siret) {
-          return pcapi
-            .getVenueBySiret(siret)
+          return api
+            .getAdageIframeGetVenueBySiret(siret)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(
@@ -58,9 +56,9 @@ export const App = (): JSX.Element => {
             )
         }
 
-        if (venueId) {
-          return pcapi
-            .getVenueById(venueId)
+        if (venueId && !Number.isNaN(venueId)) {
+          return api
+            .getAdageIframeGetVenueById(venueId)
             .then(venueFilter => setVenueFilter(venueFilter))
             .catch(() =>
               setNotification(

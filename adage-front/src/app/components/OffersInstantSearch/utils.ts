@@ -1,8 +1,8 @@
 import flatMap from 'lodash/flatMap'
 
+import { VenueResponse } from 'api/gen'
 import { LEGACY_INITIAL_FACET_FILTERS } from 'app/constants'
 import { Facets, Option } from 'app/types'
-import { VenueFilterType } from 'app/types/offers'
 
 export const populateFacetFilters = ({
   departments,
@@ -16,7 +16,7 @@ export const populateFacetFilters = ({
   categories: Option<string[]>[]
   students: Option[]
   domains: Option<number>[]
-  venueFilter: VenueFilterType | null
+  venueFilter: VenueResponse | null
   useNewAlgoliaIndex: boolean
 }): Facets => {
   const updatedFilters: Facets = useNewAlgoliaIndex

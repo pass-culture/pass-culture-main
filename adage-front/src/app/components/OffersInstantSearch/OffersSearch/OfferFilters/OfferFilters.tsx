@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 
+import { VenueResponse } from 'api/gen'
 import { getEducationalCategoriesOptionsAdapter } from 'app/adapters/getEducationalCategoriesOptionsAdapter'
 import { getEducationalDomainsOptionsAdapter } from 'app/adapters/getEducationalDomainsOptionsAdapter'
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
 import { Filters, Option } from 'app/types'
-import { VenueFilterType } from 'app/types/offers'
 import { Button, MultiSelectAutocomplete } from 'app/ui-kit'
 
 import { departmentOptions } from './departmentOptions'
@@ -17,7 +17,7 @@ import { studentsOptions } from './studentsOptions'
 export interface OfferFiltersProps {
   className?: string
   handleLaunchSearchButton: (filters: Filters) => void
-  venueFilter: VenueFilterType | null
+  venueFilter: VenueResponse | null
   removeVenueFilter: () => void
   isLoading: boolean
 }
