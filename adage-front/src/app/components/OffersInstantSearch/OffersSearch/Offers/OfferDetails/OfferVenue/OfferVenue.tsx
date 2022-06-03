@@ -1,10 +1,11 @@
 import React from 'react'
 
-import { ADRESS_TYPE, OfferType } from 'app/types/offers'
+import { OfferAddressType } from 'api/gen'
+import { OfferType } from 'app/types/offers'
 
 interface IOfferVenue {
   offerVenue?: {
-    addressType: ADRESS_TYPE
+    addressType: OfferAddressType
     otherAddress: string
     venueId: string
   }
@@ -13,9 +14,9 @@ interface IOfferVenue {
 
 const OfferVenue = ({ offerVenue, venue }: IOfferVenue): JSX.Element => {
   if (offerVenue) {
-    if (offerVenue.addressType === ADRESS_TYPE.OTHER) {
+    if (offerVenue.addressType === OfferAddressType.Other) {
       return <div>{offerVenue.otherAddress}</div>
-    } else if (offerVenue.addressType === ADRESS_TYPE.SCHOOL) {
+    } else if (offerVenue.addressType === OfferAddressType.School) {
       return <div>Dans l’établissement scolaire</div>
     }
   }

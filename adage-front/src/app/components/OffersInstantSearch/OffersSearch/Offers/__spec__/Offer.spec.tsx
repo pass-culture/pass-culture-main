@@ -4,7 +4,7 @@ import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
-import { AdageFrontRoles } from 'api/gen'
+import { AdageFrontRoles, OfferAddressType } from 'api/gen'
 import {
   OffersComponent as Offers,
   OffersComponentProps,
@@ -13,7 +13,7 @@ import {
   FiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
-import { ADRESS_TYPE, OfferType } from 'app/types/offers'
+import { OfferType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { ResultType } from 'utils/types'
 
@@ -76,8 +76,8 @@ describe('offer', () => {
       stocks: [
         {
           id: 825,
-          beginningDatetime: new Date('2022-09-16T00:00:00Z'),
-          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z'),
+          beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
           isBookable: true,
           price: 140000,
           numberOfTickets: 10,
@@ -101,7 +101,7 @@ describe('offer', () => {
         offerVenue: {
           venueId: 'VENUE_ID',
           otherAddress: '',
-          addressType: ADRESS_TYPE.OFFERER_VENUE,
+          addressType: OfferAddressType.OffererVenue,
         },
         students: ['Collège - 4e', 'Collège - 3e'],
       },
@@ -121,8 +121,8 @@ describe('offer', () => {
       stocks: [
         {
           id: 825,
-          beginningDatetime: new Date('2021-09-25T22:00:00Z'),
-          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z'),
+          beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
           isBookable: true,
           price: 0,
           educationalPriceDetail: 'Le détail de mon prix',
@@ -146,7 +146,7 @@ describe('offer', () => {
         offerVenue: {
           venueId: '',
           otherAddress: 'A la mairie',
-          addressType: ADRESS_TYPE.OTHER,
+          addressType: OfferAddressType.Other,
         },
         students: ['Collège - 4e'],
       },

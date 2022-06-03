@@ -7,7 +7,7 @@ import { OfferType } from 'app/types/offers'
 import OfferSection from './OfferSection'
 import OfferVenue from './OfferVenue'
 
-const computeDurationString = (durationMinutes: number | undefined) => {
+const computeDurationString = (durationMinutes?: number | null) => {
   if (!durationMinutes) return ''
   const hours = Math.floor(durationMinutes / 60)
   const minutes = durationMinutes % 60

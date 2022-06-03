@@ -1,8 +1,8 @@
+import { api } from 'api/api'
 import { Adapter, AdapterFailure } from 'app/types'
 import { OfferType } from 'app/types/offers'
-import * as pcapi from 'repository/pcapi/pcapi'
 
-type GetCollectiveOfferAdapter = Adapter<number | string, OfferType, null>
+type GetCollectiveOfferAdapter = Adapter<number, OfferType, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -13,7 +13,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 export const getCollectiveOfferAdapter: GetCollectiveOfferAdapter =
   async offerId => {
     try {
-      const result = await pcapi.getCollectiveOffer(offerId)
+      const result = await api.getAdageIframeGetCollectiveOffer(offerId)
 
       return {
         isOk: true,

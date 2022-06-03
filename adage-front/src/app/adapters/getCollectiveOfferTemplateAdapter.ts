@@ -1,12 +1,8 @@
+import { api } from 'api/api'
 import { Adapter, AdapterFailure } from 'app/types'
 import { OfferType } from 'app/types/offers'
-import * as pcapi from 'repository/pcapi/pcapi'
 
-type GetCollectiveOfferTemplateAdapter = Adapter<
-  number | string,
-  OfferType,
-  null
->
+type GetCollectiveOfferTemplateAdapter = Adapter<number, OfferType, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -17,7 +13,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
   async offerId => {
     try {
-      const result = await pcapi.getCollectiveOfferTemplate(offerId)
+      const result = await api.getAdageIframeGetCollectiveOffer(offerId)
 
       return {
         isOk: true,
@@ -28,12 +24,12 @@ export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapte
             // False stock to satisfy ts
             {
               educationalPriceDetail: result.educationalPriceDetail,
-              beginningDatetime: new Date('2030-01-01'),
+              beginningDatetime: new Date('2030-01-01').toISOString(),
               numberOfTickets: undefined,
               price: 0,
               id: 0,
               isBookable: false,
-              bookingLimitDatetime: new Date('2030-01-01'),
+              bookingLimitDatetime: new Date('2030-01-01').toISOString(),
             },
           ],
           extraData: {
