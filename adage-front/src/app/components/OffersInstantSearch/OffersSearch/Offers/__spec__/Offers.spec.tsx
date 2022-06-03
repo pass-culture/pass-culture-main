@@ -4,6 +4,7 @@ import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import {} from 'app/__spec__/__test_utils__/elements'
+import { AdageFrontRoles } from 'api/gen'
 import {
   OffersComponent as Offers,
   OffersComponentProps,
@@ -14,7 +15,7 @@ import {
 } from 'app/providers'
 import { OfferType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { ResultType, Role } from 'utils/types'
+import { ResultType } from 'utils/types'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOffer: jest.fn(),
@@ -199,7 +200,7 @@ describe('offers', () => {
       handleResetFiltersAndLaunchSearch: jest.fn(),
       hits: searchFakeResults,
       setIsLoading: jest.fn(),
-      userRole: Role.redactor,
+      userRole: AdageFrontRoles.Redactor,
       useNewAlgoliaIndex: false,
     }
   })

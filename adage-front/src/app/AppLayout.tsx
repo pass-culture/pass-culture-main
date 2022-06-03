@@ -1,10 +1,10 @@
 import './AppLayout.scss'
 import * as React from 'react'
 
+import { AdageFrontRoles } from 'api/gen'
 import { OffersInstantSearch } from 'app/components/OffersInstantSearch/OffersInstantSearch'
 import { ReactComponent as Download } from 'assets/download.svg'
 import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
-import { Role } from 'utils/types'
 
 import { VenueFilterType } from './types/offers'
 
@@ -13,7 +13,7 @@ export const AppLayout = ({
   removeVenueFilter,
   venueFilter,
 }: {
-  userRole: Role
+  userRole: AdageFrontRoles
   removeVenueFilter: () => void
   venueFilter: VenueFilterType | null
 }): JSX.Element => {

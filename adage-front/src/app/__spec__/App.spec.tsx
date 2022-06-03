@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import React from 'react'
 import { Configure } from 'react-instantsearch-dom'
 
+import { api } from 'api/api'
+import { AdageFrontRoles } from 'api/gen'
 import {
   FiltersContextProvider,
   FacetFiltersContextProvider,
@@ -10,7 +12,6 @@ import {
 } from 'app/providers'
 import { VenueFilterType } from 'app/types/offers'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { Role } from 'utils/types'
 
 import { App } from '../App'
 
@@ -34,7 +35,6 @@ jest.mock('react-instantsearch-dom', () => {
 })
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  authenticate: jest.fn(),
   getVenueBySiret: jest.fn(),
   getVenueById: jest.fn(),
   getEducationalCategories: jest.fn().mockResolvedValue({
@@ -68,6 +68,13 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
+jest.mock('api/api', () => ({
+  api: {
+    getAdageIframeAuthenticate: jest.fn(),
+  },
+}))
+const mockedApi = api as jest.Mocked<typeof api>
+
 const renderApp = () => {
   render(
     <FiltersContextProvider>
@@ -100,7 +107,9 @@ describe('app', () => {
         publicName: "Lib de Par's",
       }
 
-      mockedPcapi.authenticate.mockResolvedValue(Role.redactor)
+      mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
+        role: AdageFrontRoles.Redactor,
+      })
       mockedPcapi.getVenueBySiret.mockResolvedValue(venue)
       mockedPcapi.getVenueById.mockResolvedValue(venue)
     })
@@ -272,7 +281,9 @@ describe('app', () => {
 
   describe('when is not authenticated', () => {
     beforeEach(() => {
-      mockedPcapi.authenticate.mockRejectedValue('Authentication failed')
+      mockedApi.getAdageIframeAuthenticate.mockRejectedValue(
+        'Authentication failed'
+      )
     })
 
     it('should show error page', async () => {
