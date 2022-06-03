@@ -66,7 +66,7 @@ def get_educational_offers_categories(
 @spectree_serialize(response_model=serializers.CollectiveOfferResponseModel, api=blueprint.api, on_error_statuses=[404])
 def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
-) -> serializers.OfferResponse:
+) -> serializers.CollectiveOfferResponseModel:
     try:
         offer = educational_api.get_collective_offer_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:

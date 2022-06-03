@@ -872,6 +872,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:
                 educational_models.CollectiveStock.collectiveBookings
             )
         )
+        .options(joinedload(educational_models.CollectiveOffer.institution))
         .options(
             joinedload(educational_models.CollectiveOffer.venue)
             .joinedload(offerers_models.Venue.managingOfferer)
