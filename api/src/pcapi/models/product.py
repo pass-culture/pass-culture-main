@@ -32,6 +32,9 @@ class BookFormat(enum.Enum):
     MOYEN_FORMAT = "MOYEN FORMAT"
 
 
+UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
+
+
 class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):  # type: ignore [valid-type, misc]
 
     name = Column(String(140), nullable=False)
@@ -72,17 +75,21 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin): 
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
 
     @property
-    def isDigital(self):  # type: ignore [no-untyped-def]
+    def isDigital(self) -> bool:
         return self.url is not None and self.url != ""
 
     @property
-    def is_offline_only(self):  # type: ignore [no-untyped-def]
+    def is_offline_only(self) -> bool:
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
 
     @property
-    def is_online_only(self):  # type: ignore [no-untyped-def]
+    def is_online_only(self) -> bool:
         return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.ONLINE.value
 
     @hybrid_property
-    def can_be_synchronized(self):  # type: ignore [no-untyped-def]
-        return self.isGcuCompatible & self.isSynchronizationCompatible
+    def can_be_synchronized(self) -> bool:
+        return (
+            self.isGcuCompatible
+            & self.isSynchronizationCompatible
+            & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
+        )
