@@ -1,4 +1,4 @@
-import { Category, Feature, SubCategory } from 'app/types'
+import { Feature } from 'app/types'
 import { EducationalDomain, OfferType } from 'app/types/offers'
 import { client } from 'repository/pcapi/pcapiClient'
 
@@ -16,13 +16,6 @@ export const preBookCollectiveStock = async (
   stockId: number
 ): Promise<number> => {
   return client.post('/adage-iframe/collective/bookings', { stockId })
-}
-
-export const getEducationalCategories = async (): Promise<{
-  subcategories: SubCategory[]
-  categories: Category[]
-}> => {
-  return client.get('/adage-iframe/offers/categories')
 }
 
 export const getFeatures = async (): Promise<Feature[]> =>

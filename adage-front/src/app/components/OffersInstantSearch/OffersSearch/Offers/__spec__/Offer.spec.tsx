@@ -84,6 +84,7 @@ describe('offer', () => {
         },
       ],
       venue: {
+        id: 1,
         address: '1 boulevard Poissonnière',
         city: 'Paris',
         name: 'Le Petit Rintintin 33',
@@ -129,6 +130,7 @@ describe('offer', () => {
         },
       ],
       venue: {
+        id: 1,
         address: '1 boulevard Poissonnière',
         city: 'Paris',
         name: 'Le Petit Rintintin 33',

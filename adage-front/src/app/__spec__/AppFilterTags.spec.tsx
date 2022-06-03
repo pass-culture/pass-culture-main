@@ -40,34 +40,6 @@ jest.mock('react-instantsearch-dom', () => {
 })
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getEducationalCategories: jest.fn().mockResolvedValue({
-    categories: [
-      { id: 'CINEMA', proLabel: 'Cinéma' },
-      { id: 'MUSEE', proLabel: 'Musée' },
-    ],
-    subcategories: [
-      {
-        id: 'CINE_PLEIN_AIR',
-        proLabel: 'Cinéma plein air',
-        categoryId: 'CINEMA',
-      },
-      {
-        id: 'EVENEMENT_CINE',
-        proLabel: 'Événement cinéma',
-        categoryId: 'CINEMA',
-      },
-      {
-        id: 'VISITE_GUIDEE',
-        proLabel: 'Visite guidée',
-        categoryId: 'MUSEE',
-      },
-      {
-        id: 'VISITE',
-        proLabel: 'Visite',
-        categoryId: 'MUSEE',
-      },
-    ],
-  }),
   getEducationalDomains: jest.fn().mockResolvedValue([
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
@@ -84,8 +56,37 @@ jest.mock('api/api', () => ({
     getAdageIframeAuthenticate: jest.fn(),
     getAdageIframeGetVenueById: jest.fn(),
     getAdageIframeGetVenueBySiret: jest.fn(),
+    getAdageIframeGetEducationalOffersCategories: jest.fn().mockResolvedValue({
+      categories: [
+        { id: 'CINEMA', proLabel: 'Cinéma' },
+        { id: 'MUSEE', proLabel: 'Musée' },
+      ],
+      subcategories: [
+        {
+          id: 'CINE_PLEIN_AIR',
+          proLabel: 'Cinéma plein air',
+          categoryId: 'CINEMA',
+        },
+        {
+          id: 'EVENEMENT_CINE',
+          proLabel: 'Événement cinéma',
+          categoryId: 'CINEMA',
+        },
+        {
+          id: 'VISITE_GUIDEE',
+          proLabel: 'Visite guidée',
+          categoryId: 'MUSEE',
+        },
+        {
+          id: 'VISITE',
+          proLabel: 'Visite',
+          categoryId: 'MUSEE',
+        },
+      ],
+    }),
   },
 }))
+
 const mockedApi = api as jest.Mocked<typeof api>
 
 const renderApp = () => {

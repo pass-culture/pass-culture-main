@@ -96,13 +96,14 @@ describe('offers', () => {
       stocks: [
         {
           id: 825,
-          beginningDatetime: new Date('2022-09-16T00:00:00Z'),
-          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z'),
+          beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
           isBookable: true,
           price: 140000,
         },
       ],
       venue: {
+        id: 1,
         address: '1 boulevard Poissonnière',
         city: 'Paris',
         name: 'Le Petit Rintintin 33',
@@ -132,13 +133,14 @@ describe('offers', () => {
       stocks: [
         {
           id: 826,
-          beginningDatetime: new Date('2021-09-25T22:00:00Z'),
-          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z'),
+          beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
           isBookable: true,
           price: 80000,
         },
       ],
       venue: {
+        id: 1,
         address: '1 boulevard Poissonnière',
         city: 'Paris',
         name: 'Le Petit Rintintin 33',
@@ -168,13 +170,14 @@ describe('offers', () => {
       stocks: [
         {
           id: 827,
-          beginningDatetime: new Date('2021-09-25T22:00:00Z'),
-          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z'),
+          beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
           isBookable: true,
           price: 3000,
         },
       ],
       venue: {
+        id: 1,
         address: '1 boulevard Poissonnière',
         city: 'Paris',
         name: 'Un autre lieu',
