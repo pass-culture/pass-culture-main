@@ -14,7 +14,9 @@
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
     "test:unit": "jest",
-    "test:eslint": "jest eslint-plugin-pass-culture/tests"
+    "test:eslint": "jest eslint-plugin-pass-culture/tests",
+    "generate:api:client": "./scripts/generate_api_client.sh && eslint 'src/api/**/*.ts' --fix",
+    "generate:api:client:local": "./scripts/generate_api_client_local.sh && eslint 'src/api/**/*.ts' --fix"
   },
   "lint-staged": {
     "./public/**/*.svg": "svgo",
