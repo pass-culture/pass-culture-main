@@ -5,7 +5,6 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
-import AppLayout from 'app/AppLayout'
 import { Banner } from 'ui-kit'
 import Breadcrumb from '../../../new_components/Breadcrumb'
 import Icon from 'components/layout/Icon'
@@ -16,7 +15,6 @@ import ReimbursementsInvoices from './ReimbursementsInvoices/ReimbursementsInvoi
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import { sortByDisplayName } from 'utils/strings'
-import useActiveFeature from '../../hooks/useActiveFeature'
 
 export const STEP_ID_INVOICES = 'justificatifs'
 export const STEP_ID_DETAILS = 'details'
@@ -36,7 +34,6 @@ const buildAndSortVenueFilterOptions = venues =>
   )
 
 const Reimbursements = ({ currentUser }) => {
-  const areInvoicesEnabled = useActiveFeature('SHOW_INVOICES_ON_PRO_PORTAL')
   const [isLoading, setIsLoading] = useState(true)
   const [venuesOptions, setVenuesOptions] = useState([])
   const [businessUnitsOptions, setBusinessUnitsOptions] = useState([])
@@ -96,11 +93,7 @@ const Reimbursements = ({ currentUser }) => {
   }, [loadVenues, loadBusinessUnits])
 
   return (
-    <AppLayout
-      layoutConfig={{
-        pageName: 'reimbursements',
-      }}
-    >
+    <>
       <PageTitle title="Vos remboursements" />
       <Titles title="Remboursements" />
       {isLoading && <Spinner />}
@@ -139,39 +132,25 @@ const Reimbursements = ({ currentUser }) => {
               Les modalités de remboursement
             </a>
           </Banner>
-          {areInvoicesEnabled ? (
-            <>
-              <Breadcrumb
-                activeStep={activeStep}
-                steps={steps}
-                styleType="tab"
+          <Breadcrumb activeStep={activeStep} steps={steps} styleType="tab" />
+          <Switch>
+            <Route exact path={`${match.path}/justificatifs`}>
+              <ReimbursementsInvoices
+                businessUnitsOptions={businessUnitsOptions}
+                isCurrentUserAdmin={currentUser.isAdmin}
               />
-              <Switch>
-                <Route exact path={`${match.path}/justificatifs`}>
-                  <ReimbursementsInvoices
-                    businessUnitsOptions={businessUnitsOptions}
-                    isCurrentUserAdmin={currentUser.isAdmin}
-                  />
-                </Route>
-                <Route exact path={`${match.path}/details`}>
-                  <ReimbursementsDetails
-                    isCurrentUserAdmin={currentUser.isAdmin}
-                    loadVenues={loadVenues}
-                    venuesOptions={venuesOptions}
-                  />
-                </Route>
-              </Switch>
-            </>
-          ) : (
-            <ReimbursementsDetails
-              isCurrentUserAdmin={currentUser.isAdmin}
-              loadVenues={loadVenues}
-              venuesOptions={venuesOptions}
-            />
-          )}
+            </Route>
+            <Route exact path={`${match.path}/details`}>
+              <ReimbursementsDetails
+                isCurrentUserAdmin={currentUser.isAdmin}
+                loadVenues={loadVenues}
+                venuesOptions={venuesOptions}
+              />
+            </Route>
+          </Switch>
         </>
       )}
-    </AppLayout>
+    </>
   )
 }
 
