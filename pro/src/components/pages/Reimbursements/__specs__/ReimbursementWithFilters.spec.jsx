@@ -2,6 +2,7 @@ import '@testing-library/jest-dom'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { MemoryRouter, Route } from 'react-router'
 import {
   fireEvent,
   render,
@@ -14,9 +15,7 @@ import {
 import { Provider } from 'react-redux'
 import React from 'react'
 import Reimbursements from '../ReimbursementsWithFilters'
-import { Router } from 'react-router'
 import { configureTestStore } from 'store/testUtils'
-import { createMemoryHistory } from 'history'
 import userEvent from '@testing-library/user-event'
 
 jest.mock('utils/date', () => ({
@@ -29,6 +28,7 @@ jest.mock('utils/date', () => ({
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getInvoices: jest.fn(),
+  getBusinessUnits: jest.fn(),
 }))
 
 const initialStore = {
@@ -44,16 +44,13 @@ const initialStore = {
 }
 
 const renderReimbursements = (store, props) => {
-  const history = createMemoryHistory()
-
-  const mockedHistoryPush = jest.fn()
-  history.push = mockedHistoryPush
-
   const utils = render(
     <Provider store={store}>
-      <Router history={history}>
-        <Reimbursements {...props} />
-      </Router>
+      <MemoryRouter initialEntries={['/remboursements/details']}>
+        <Route path="/remboursements" exact={false}>
+          <Reimbursements {...props} />
+        </Route>
+      </MemoryRouter>
     </Provider>
   )
 
@@ -115,7 +112,6 @@ const renderReimbursements = (store, props) => {
   return {
     ...utils,
     getElementsOnLoadingComplete,
-    mockedHistoryPush,
   }
 }
 
@@ -174,15 +170,13 @@ describe('reimbursementsWithFilters', () => {
     invoices = BASE_INVOICES
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
     pcapi.getInvoices.mockResolvedValue(invoices)
+    pcapi.getBusinessUnits.mockResolvedValue([])
   })
 
-  it('should display a new refund invoices section when feature flag is up', async () => {
+  it('should display a refund invoices section', async () => {
     store = configureTestStore({
       data: {
         users: [{ publicName: 'Damien', isAdmin: false }],
-      },
-      features: {
-        list: [{ isActive: true, nameKey: 'SHOW_INVOICES_ON_PRO_PORTAL' }],
       },
     })
 
