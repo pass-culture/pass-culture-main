@@ -60,11 +60,6 @@ export const routesWithoutLayout = [
     },
   },
   {
-    component: ReimbursementsContainer,
-    path: '/remboursements',
-    title: 'Remboursements',
-  },
-  {
     component: CsvDetailViewContainer,
     exact: true,
     path: '/reservations/detail',
@@ -280,6 +275,16 @@ const routes = [
     ],
     title: 'Résumé de votre offre',
     featureName: 'OFFER_FORM_V3',
+  },
+  {
+    component: ReimbursementsContainer,
+    path: '/remboursements',
+    title: 'Remboursements',
+    meta: {
+      layoutConfig: {
+        pageName: 'reimbursements',
+      },
+    },
   },
 ]
 
