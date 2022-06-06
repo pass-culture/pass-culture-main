@@ -1,0 +1,30 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import { getEducationalDomainsAdapter } from '../getEducationalDomainsAdapter'
+
+describe('getEducationalDomainsAdapter', () => {
+  it('should return an error when API returns an error', async () => {
+    jest.spyOn(pcapi, 'getEducationalDomains').mockRejectedValue(null)
+    const response = await getEducationalDomainsAdapter()
+
+    expect(response.isOk).toBeFalsy()
+    expect(response.message).toBe(
+      'Nous avons rencontré un problème lors du chargemement des données'
+    )
+  })
+
+  it('should return a list of domains', async () => {
+    jest.spyOn(pcapi, 'getEducationalDomains').mockResolvedValueOnce([
+      { id: 1, name: 'Cinéma' },
+      { id: 2, name: 'Musique' },
+    ])
+
+    const response = await getEducationalDomainsAdapter()
+
+    expect(response.isOk).toBeTruthy()
+    expect(response.payload).toEqual([
+      { value: '1', label: 'Cinéma' },
+      { value: '2', label: 'Musique' },
+    ])
+  })
+})
