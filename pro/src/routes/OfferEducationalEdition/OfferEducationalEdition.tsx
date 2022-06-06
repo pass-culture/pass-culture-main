@@ -8,6 +8,7 @@ import {
   cancelCollectiveBookingAdapter,
   extractOfferIdAndOfferTypeFromRouteParams,
   getCategoriesAdapter,
+  getEducationalDomainsAdapter,
   getOfferersAdapter,
   patchIsCollectiveOfferActiveAdapter,
   patchIsOfferActiveAdapter,
@@ -22,6 +23,7 @@ import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
+import { SelectOption } from 'custom_types/form'
 import Spinner from 'components/layout/Spinner'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 import getCollectiveOfferAdapter from './adapters/getCollectiveOfferAdapter'
@@ -55,7 +57,7 @@ const OfferEducationalEdition = (): JSX.Element => {
   const [offer, setOffer] = useState<
     Offer | CollectiveOffer | CollectiveOfferTemplate
   >()
-
+  const [domainsOptions, setDomainsOptions] = useState<SelectOption[]>([])
   const notify = useNotification()
 
   const editOffer = useCallback(
@@ -91,7 +93,11 @@ const OfferEducationalEdition = (): JSX.Element => {
     },
     [offer]
   )
-
+  useEffect(() => {
+    getEducationalDomainsAdapter().then(result =>
+      setDomainsOptions(result.payload)
+    )
+  }, [])
   const setIsOfferActive = async (isActive: boolean) => {
     const patchOfferId =
       enableIndividualAndCollectiveSeparation && !isNewModelEnabled
@@ -262,7 +268,7 @@ const OfferEducationalEdition = (): JSX.Element => {
           notify={notify}
           onSubmit={editOffer}
           setIsOfferActive={setIsOfferActive}
-          domainsOptions={[]}
+          domainsOptions={domainsOptions}
         />
       ) : (
         <Spinner />
