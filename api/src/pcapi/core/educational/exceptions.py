@@ -53,10 +53,6 @@ class EducationalBookingAlreadyCancelled(Exception):
     pass
 
 
-class EducationalBookingIsRefused(Exception):
-    pass
-
-
 class BookingIsCancelled(Exception):
     pass
 
