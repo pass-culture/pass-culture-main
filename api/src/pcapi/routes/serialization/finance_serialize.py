@@ -62,10 +62,12 @@ class InvoiceResponseModel(BaseModel):
     amount: float
     url: str
     businessUnitName: str
+    cashflowLabels: list[str]
 
     @classmethod
     def from_orm(cls, invoice: finance_models.Invoice):  # type: ignore [no-untyped-def]
         invoice.businessUnitName = invoice.businessUnit.name
+        invoice.cashflowLabels = [cashflow.batch.label for cashflow in invoice.cashflows]
         res = super().from_orm(invoice)
         res.amount = -finance_utils.to_euros(res.amount)  # type: ignore [assignment, arg-type]
         return res

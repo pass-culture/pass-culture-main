@@ -34,6 +34,9 @@ def get_invoices(
         date_until=query.periodEndingDate,
     )
     invoices = invoices.options(sqla_orm.joinedload(finance_models.Invoice.businessUnit))
+    invoices = invoices.options(
+        sqla_orm.joinedload(finance_models.Invoice.cashflows).joinedload(finance_models.Cashflow.batch)
+    )
     invoices = invoices.order_by(finance_models.Invoice.date.desc())
 
     return finance_serialize.InvoiceListResponseModel(

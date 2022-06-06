@@ -17,6 +17,12 @@ def test_get_invoices(client):
     business_unit2 = finance_factories.BusinessUnitFactory()
     dt2 = dt1 + datetime.timedelta(days=15)
     invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, date=dt2, amount=-1234)
+    finance_factories.CashflowFactory(
+        invoices=[invoice1, invoice2],
+        businessUnit=business_unit1,
+        amount=-1234,
+        batch=finance_factories.CashflowBatchFactory(label="VIR1"),
+    )
     venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
     offerer = venue1.managingOfferer
     _venue2 = offerers_factories.VenueFactory(
@@ -37,6 +43,7 @@ def test_get_invoices(client):
     assert invoices[0] == {
         "reference": invoice2.reference,
         "date": invoice2.date.date().isoformat(),
+        "cashflowLabels": ["VIR1"],
         "amount": 12.34,
         "url": invoice2.url,
         "businessUnitName": business_unit2.name,
@@ -45,12 +52,17 @@ def test_get_invoices(client):
 
 
 def test_get_invoices_only_return_visible_invoices(client):
+    batch1 = finance_factories.CashflowBatchFactory(label="firstBatch")
+    batch2 = finance_factories.CashflowBatchFactory(label="secondBatch")
     business_unit1 = finance_factories.BusinessUnitFactory()
     dt1 = datetime.datetime(2021, 1, 1)
-    invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1, date=dt1)
+    invoice1 = finance_factories.InvoiceFactory(businessUnit=business_unit1, amount=-4321, date=dt1)
     business_unit2 = finance_factories.BusinessUnitFactory()
     dt2 = dt1 + datetime.timedelta(days=15)
     invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2, amount=-1234, date=dt2)
+    finance_factories.CashflowFactory(invoices=[invoice1], businessUnit=business_unit1, amount=-1234, batch=batch1)
+    finance_factories.CashflowFactory(invoices=[invoice1], businessUnit=business_unit1, amount=-4321, batch=batch2)
+    finance_factories.CashflowFactory(invoices=[invoice2], businessUnit=business_unit1, amount=-4321, batch=batch2)
     venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1)
     offerer = venue1.managingOfferer
     _venue2 = offerers_factories.VenueFactory(
@@ -76,11 +88,19 @@ def test_get_invoices_only_return_visible_invoices(client):
     assert invoices[0] == {
         "reference": invoice2.reference,
         "date": invoice2.date.date().isoformat(),
+        "cashflowLabels": ["secondBatch"],
         "amount": 12.34,
         "url": invoice2.url,
         "businessUnitName": business_unit2.name,
     }
-    assert invoices[1]["reference"] == invoice1.reference
+    assert invoices[1] == {
+        "reference": invoice1.reference,
+        "date": invoice1.date.date().isoformat(),
+        "amount": 43.21,
+        "cashflowLabels": ["firstBatch", "secondBatch"],
+        "url": invoice1.url,
+        "businessUnitName": business_unit1.name,
+    }
 
 
 def test_get_invoices_specify_business_unit(client):
