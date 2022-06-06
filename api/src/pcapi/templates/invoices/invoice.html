@@ -163,6 +163,9 @@
             background: #F1F1F4;
             font-weight: bold;
         }
+        .minimizedHead {
+            font-weight: 500;
+        }
     </style>
 
     <meta name="description" content="Etat justifiant du montant du remboursement">
@@ -282,5 +285,30 @@
     </tr>
     </tbody>
 </table>
+<h3>Montant des remboursements par lieu et détail de la part individuelle et collective</h3>
+<table class="reimbursmentByVenueTable">
+    <thead>
+        <tr>
+            <th>Lieux</th>
+            <th>Montant des réservations validées (TTC)</th>
+            <th>Montant de la contribution offreur (TTC)</th>
+            <th class="coloredSection">Montant remboursé (TTC)</th>
+            <th class="minimizedCell">Dont offres individuelles (TTC)</th>
+            <th class="minimizedCell">Dont offres collectives (TTC)</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for venue in reimbursements_by_venue %}
+        <tr>
+            <td>{{ venue.venue_name }}</td>
+            <td>{{ venue.validated_booking_amount }} €</td>
+            <td>{{ venue.validated_booking_amount - venue.reimbursed_amount }} €</td>
+            <td class="coloredSection">{{ venue.reimbursed_amount }} €</td>
+            <td>{{ venue.individual_amount }} €</td>
+            <td>{{ venue.reimbursed_amount - venue.individual_amount }} €</td>
+        </tr>
+{% endfor %}
+    </tbody>
+  </table>
 </body>
 </html>

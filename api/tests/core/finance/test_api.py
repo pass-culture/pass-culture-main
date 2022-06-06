@@ -13,6 +13,7 @@ import sqlalchemy.orm as sqla_orm
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
+import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
@@ -1587,6 +1588,7 @@ class EditBusinessUnitTest:
 @pytest.fixture(name="invoice_data")
 def invoice_test_data():
     venue = offerers_factories.VenueFactory(
+        name="Coiffeur justificaTIF",
         siret="85331845900023",
         bookingEmail="pro@example.com",
         businessUnit__name="SARL LIBRAIRIE BOOKING",
@@ -1616,7 +1618,8 @@ def invoice_test_data():
         offers_factories.StockFactory(offer=custom_rule_offer1, price=20),
         offers_factories.StockFactory(offer=custom_rule_offer2, price=23),
     ]
-    return business_unit, stocks
+
+    return business_unit, stocks, venue
 
 
 class GenerateInvoicesTest:
@@ -1784,7 +1787,7 @@ class GenerateInvoiceTest:
         assert line.label == "Montant remboursé"
 
     def test_many_rules_and_rates_two_cashflows(self, invoice_data):
-        business_unit, stocks = invoice_data
+        business_unit, stocks, _venue = invoice_data
         bookings = []
         user = create_rich_user()
         for stock in stocks:
@@ -1926,7 +1929,7 @@ class GenerateInvoiceTest:
 
 class PrepareInvoiceContextTest:
     def test_context(self, invoice_data):
-        business_unit, stocks = invoice_data
+        business_unit, stocks, _venue = invoice_data
         bookings = []
         user = create_rich_user()
         for stock in stocks:
@@ -1985,8 +1988,7 @@ class PrepareInvoiceContextTest:
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def test_basics(self, invoice_data):
-        business_unit, stocks = invoice_data
+    def generate_and_compare_invoice(self, stocks, business_unit):
         bookings = []
         user = create_rich_user()
         for stock in stocks:
@@ -2037,6 +2039,41 @@ class GenerateInvoiceHtmlTest:
         )
         assert expected_invoice_html == invoice_html
 
+    def test_basics(self, invoice_data):
+        business_unit, stocks, venue = invoice_data
+        educational_booking1 = bookings_factories.UsedEducationalBookingFactory(
+            stock__price=5000,
+            stock__offer__venue=venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        educational_booking2 = bookings_factories.UsedEducationalBookingFactory(
+            stock__price=250,
+            stock__offer__venue=venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
+        api.price_booking(educational_booking1)
+        api.price_booking(educational_booking2)
+
+        self.generate_and_compare_invoice(stocks, business_unit)
+
+    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
+    def test_basics_with_new_collective_model(self, invoice_data):
+        business_unit, stocks, venue = invoice_data
+        collective_booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__price=5000,
+        )
+        collective_booking2 = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__price=250,
+        )
+        api.price_booking(collective_booking)
+        api.price_booking(collective_booking2)
+
+        self.generate_and_compare_invoice(stocks, business_unit)
+
 
 class StoreInvoicePdfTest:
     BASE_THUMBS_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
@@ -2045,7 +2082,7 @@ class StoreInvoicePdfTest:
     @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
     def test_basics(self, clear_tests_invoices_bucket, invoice_data):
         existing_number_of_files = len(recursive_listdir(self.INVOICES_DIR))
-        business_unit, stocks = invoice_data
+        business_unit, stocks, _venue = invoice_data
         bookings = []
         for stock in stocks:
             booking = bookings_factories.UsedBookingFactory(stock=stock)
@@ -2078,7 +2115,7 @@ class GenerateAndStoreInvoiceTest:
 
     @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
     def test_basics(self, clear_tests_invoices_bucket, invoice_data):
-        business_unit, stocks = invoice_data
+        business_unit, stocks, _venue = invoice_data
         bookings = []
         for stock in stocks:
             booking = bookings_factories.UsedBookingFactory(stock=stock)
