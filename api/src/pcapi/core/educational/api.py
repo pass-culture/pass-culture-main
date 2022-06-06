@@ -66,7 +66,6 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_csv_report
 from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_excel_report
@@ -85,7 +84,7 @@ logger = logging.getLogger(__name__)
 OFFERS_RECAP_LIMIT = 501
 
 
-def _create_redactor(redactor_informations: AuthenticatedInformation) -> educational_models.EducationalRedactor:
+def _create_redactor(redactor_informations: RedactorInformation) -> educational_models.EducationalRedactor:
     redactor = educational_models.EducationalRedactor(
         email=redactor_informations.email,
         firstName=redactor_informations.firstname,
