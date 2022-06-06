@@ -6,12 +6,17 @@ _Ajout de fonctionnalités, Problèmes résolus, etc_
 
 ## Implémentation
 
-- _Exemples: Ajouts de modèles, Changements significatifs_
+- _Exemples: Ajouts de modèles, de routes, Changements significatifs_
 
 ## Informations supplémentaires
 
 - _Exemples: nettoyage de code, utilisation de factories, Boy Scout Rule_
 - _Explications sur l'utilisation d'outils peu communs (ex.: psql window function, metaclasses, yield from)_
+
+## Modifications du schéma de la base de données
+
+- _Exemples: suppressions de telles colonnes, migration d'une information dans une nouvelle table_
+- _A destination des Data Analysts, exposer le résultat final (tables et colonnes), sans détailler l'implémentation technique_
 
 ## Checklist :
 
