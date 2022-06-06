@@ -28,7 +28,7 @@ class Returns200Test:
 
         client = client.with_eac_token()
 
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = client.get(
                 f"/adage/v1/years/{educational_year.adageId}/educational_institution/{educational_institution.institutionId}/prebookings"
             )
