@@ -10,6 +10,7 @@ type Invoice = {
   reference: string
   amount: string
   url: string
+  cashflowLabels: string[]
 }
 
 type Column = {

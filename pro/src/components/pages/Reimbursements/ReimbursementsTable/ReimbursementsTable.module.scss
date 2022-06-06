@@ -24,6 +24,8 @@ table.reimbursement-table {
         border: none;
         display: flex;
         padding: 0;
+        align-items: center;
+        text-align: left;
 
         img {
           height: rem.torem(20px);
@@ -34,18 +36,26 @@ table.reimbursement-table {
 
     td,
     th {
-      padding: rem.torem(20px) rem.torem(16px);
+      padding: rem.torem(20px) rem.torem(8px);
       width: rem.torem(120px);
+    }
+    th:nth-child(1) {
+        width: rem.torem(120px);
     }
 
     th:nth-child(2) {
-      width: rem.torem(220px);
+      width: rem.torem(240px);
+    }
+    th:nth-child(3) {
+      width: rem.torem(140px);
     }
 
     th:nth-child(4) {
+        width: rem.torem(70px);
+    }
+    th:nth-child(5) {
       cursor: default;
-      margin-left: rem.torem(20px);
-      text-align: right;
+      text-align: right
     }
   }
 
