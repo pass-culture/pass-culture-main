@@ -66,7 +66,9 @@ const MultiSelectAutocomplete = ({
   useEffect(() => {
     const regExp = new RegExp(searchField.value, 'i')
     setFilteredOptions(
-      options.filter(option => searchField.value === '' || option.label.match(regExp))
+      options.filter(
+        option => searchField.value === '' || option.label.match(regExp)
+      )
     )
   }, [searchField.value])
 
@@ -104,7 +106,7 @@ const MultiSelectAutocomplete = ({
           placeholder={field.value.length > 1 ? pluralLabel : label}
           style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
           hasError={searchMeta.touched && !!searchMeta.error}
-          type='text'
+          type="text"
           {...searchField}
         />
         <div className={styles['field-overlay']}>
@@ -170,9 +172,7 @@ const MultiSelectAutocomplete = ({
                 onClose: () => {
                   setFieldValue(
                     fieldName,
-                    field.value.filter(
-                      (_value: string) => _value !== value
-                    )
+                    field.value.filter((_value: string) => _value !== value)
                   )
                 },
               }}
