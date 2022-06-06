@@ -147,7 +147,7 @@ const collectiveOfferSerializer = {
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
-    domains: offer.domains,
+    domains: offer.domains.map(domainIdString => Number(domainIdString)),
   }),
 }
 
@@ -161,7 +161,7 @@ export const createPatchOfferPayload = (
   const offerKeys = Object.keys(offer) as (keyof IOfferEducationalFormValues)[]
 
   offerKeys.forEach(key => {
-    if (!isEqual(offer[key], initialValues[key])) {
+    if (!isEqual(offer[key], initialValues[key]) && key !== 'search-domains') {
       changedValues = (
         useCollectiveSerializer ? collectiveOfferSerializer : serializer
       )[key](changedValues, offer)

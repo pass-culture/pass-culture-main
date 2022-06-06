@@ -62,7 +62,7 @@ export const computeInitialValuesFromOffer = (
     : offer?.extraData?.contactPhone
 
   const domains = offerIsCollectiveOffer(offer)
-    ? offer.domains.map(domainId => domainId.toString())
+    ? offer.domains.map(({ id }) => id.toString())
     : []
 
   return {
