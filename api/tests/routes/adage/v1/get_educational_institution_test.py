@@ -153,7 +153,6 @@ class Returns200Test:
         institution_id = educational_institution.institutionId
 
         n_queries = 0
-        n_queries += 1  # feature flag
         n_queries += 1  # Check for educational institution
         n_queries += 1  # Get needed data
         n_queries += 1  # Get deposit

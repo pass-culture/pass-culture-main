@@ -1,20 +1,13 @@
 from dataclasses import asdict
 import datetime
-from decimal import Decimal
 from unittest import mock
 
 import dateutil
 from freezegun.api import freeze_time
 import pytest
-from sqlalchemy import create_engine
-import sqlalchemy.exc
-from sqlalchemy.sql import text
 
 from pcapi.core import search
-from pcapi.core.bookings import exceptions as bookings_exceptions
-from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
@@ -23,7 +16,6 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalRedactor
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.mails.testing as mails_testing
@@ -41,8 +33,6 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization import stock_serialize
-
-from tests.conftest import clean_database
 
 
 SIMPLE_OFFER_VALIDATION_CONFIG = """
@@ -76,204 +66,6 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
                     comparated:
                       - "suspicious"
         """
-
-
-@freeze_time("2020-11-17 15:00:00")
-class ConfirmEducationalBookingTest:
-    @clean_database
-    def test_confirm_educational_booking_lock(self, app):
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_year = educational_factories.EducationalYearFactory(adageId="1")
-        deposit = educational_factories.EducationalDepositFactory(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            amount=Decimal(1400.00),
-            isFinal=True,
-        )
-        bookings_factories.EducationalBookingFactory(
-            amount=Decimal(20.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.CONFIRMED,
-        )
-
-        booking = bookings_factories.EducationalBookingFactory(
-            amount=Decimal(20.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.PENDING,
-        )
-
-        # open a second connection on purpose and lock the deposit
-        engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
-        with engine.connect() as connection:
-            connection.execute(
-                text("""SELECT * FROM educational_deposit WHERE id = :educational_deposit_id FOR UPDATE"""),
-                educational_deposit_id=deposit.id,
-            )
-
-            with pytest.raises(sqlalchemy.exc.OperationalError):
-                educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-        refreshed_booking = Booking.query.filter(Booking.id == booking.id).one()
-        assert refreshed_booking.status == BookingStatus.PENDING
-
-    def test_confirm_educational_booking(self, db_session):
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_year = educational_factories.EducationalYearFactory(adageId="1")
-        educational_factories.EducationalDepositFactory(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            amount=Decimal(1400.00),
-            isFinal=True,
-        )
-        booking = bookings_factories.EducationalBookingFactory(
-            amount=Decimal(20.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.PENDING,
-        )
-        educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-        assert booking.status == BookingStatus.CONFIRMED
-
-    def test_confirm_educational_booking_sends_email(self, db_session):
-        # Given
-        educational_redactor = educational_factories.EducationalRedactorFactory(
-            email="professeur@example.com", firstName="Georges", lastName="Moustaki"
-        )
-        educational_institution = educational_factories.EducationalInstitutionFactory(
-            name="Lycée du pass", city="Paris", postalCode="75018"
-        )
-        educational_year = educational_factories.EducationalYearFactory(adageId="1")
-        educational_factories.EducationalDepositFactory(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            amount=Decimal(1400.00),
-            isFinal=True,
-        )
-        booking = bookings_factories.EducationalBookingFactory(
-            amount=Decimal(20.00),
-            quantity=1,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            educationalBooking__educationalRedactor=educational_redactor,
-            status=BookingStatus.PENDING,
-            stock__offer__bookingEmail="test@email.com",
-            stock__beginningDatetime=datetime.datetime(2021, 5, 15),
-        )
-
-        # When
-        educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-        # Then
-        assert len(mails_testing.outbox) == 1
-        sent_data = mails_testing.outbox[0].sent_data
-        offer = booking.stock.offer
-        assert sent_data["To"] == "test@email.com"
-        assert sent_data["template"] == asdict(TransactionalEmail.EAC_NEW_BOOKING_TO_PRO.value)
-        assert sent_data["params"] == {
-            "OFFER_NAME": offer.name,
-            "VENUE_NAME": offer.venue.name,
-            "EVENT_DATE": "15-May-2021",
-            "EVENT_HOUR": "2h",
-            "QUANTITY": 1,
-            "PRICE": "20.00 €",
-            "REDACTOR_FIRSTNAME": "Georges",
-            "REDACTOR_LASTNAME": "Moustaki",
-            "REDACTOR_EMAIL": "professeur@example.com",
-            "EDUCATIONAL_INSTITUTION_NAME": "Lycée du pass",
-            "EDUCATIONAL_INSTITUTION_CITY": "Paris",
-            "EDUCATIONAL_INSTITUTION_POSTAL_CODE": "75018",
-            "IS_EVENT": True,
-        }
-
-    def test_raises_if_no_educational_booking(self):
-        with pytest.raises(exceptions.EducationalBookingNotFound):
-            educational_api.confirm_educational_booking(100)
-
-    def test_raises_if_no_educational_deposit(self, db_session):
-        booking = bookings_factories.EducationalBookingFactory(status=BookingStatus.PENDING)
-        with pytest.raises(exceptions.EducationalDepositNotFound):
-            educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-    def test_raises_insufficient_fund(self, db_session) -> None:
-        # When
-        educational_year = educational_factories.EducationalYearFactory(adageId="1")
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.EducationalDepositFactory(
-            educationalYear=educational_year,
-            educationalInstitution=educational_institution,
-            amount=Decimal(400.00),
-            isFinal=True,
-        )
-        booking = bookings_factories.EducationalBookingFactory(
-            educationalBooking__educationalYear=educational_year,
-            educationalBooking__educationalInstitution=educational_institution,
-            amount=Decimal(500.00),
-            quantity=1,
-            status=BookingStatus.PENDING,
-        )
-
-        # Then
-        with pytest.raises(exceptions.InsufficientFund):
-            educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-    def test_raises_insufficient_temporary_fund(self, db_session) -> None:
-        # When
-        educational_year = educational_factories.EducationalYearFactory(adageId="1")
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_factories.EducationalDepositFactory(
-            educationalYear=educational_year,
-            educationalInstitution=educational_institution,
-            amount=Decimal(1000.00),
-            isFinal=False,
-        )
-        booking = bookings_factories.EducationalBookingFactory(
-            educationalBooking__educationalYear=educational_year,
-            educationalBooking__educationalInstitution=educational_institution,
-            amount=Decimal(900.00),
-            quantity=1,
-            status=BookingStatus.PENDING,
-        )
-
-        # Then
-        with pytest.raises(exceptions.InsufficientTemporaryFund):
-            educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-    def test_raises_educational_booking_is_refused(self, db_session) -> None:
-        # Given
-        booking = bookings_factories.EducationalBookingFactory(
-            educationalBooking__status=EducationalBookingStatus.REFUSED,
-            status=BookingStatus.CANCELLED,
-        )
-
-        # Then
-        with pytest.raises(exceptions.EducationalBookingIsRefused):
-            educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-    def test_raises_booking_is_cancelled(self, db_session) -> None:
-        # Given
-        booking = bookings_factories.EducationalBookingFactory(status=BookingStatus.CANCELLED)
-
-        # Then
-        with pytest.raises(exceptions.BookingIsCancelled):
-            educational_api.confirm_educational_booking(booking.educationalBookingId)
-
-    @freeze_time("2021-08-05 15:00:00")
-    def test_raises_confirmation_limit_date_has_passed(self, db_session) -> None:
-        # Given
-        booking: Booking = bookings_factories.EducationalBookingFactory(
-            educationalBooking__confirmationLimitDate=datetime.datetime(2021, 8, 5, 14),
-            status=BookingStatus.PENDING,
-        )
-
-        # Then
-        with pytest.raises(bookings_exceptions.ConfirmationLimitDateHasPassed):
-            educational_api.confirm_educational_booking(booking.educationalBookingId)
 
 
 @freeze_time("2020-11-17 15:00:00")
@@ -690,59 +482,6 @@ class BookEducationalOfferTest:
 
         assert saved_educational_booking.booking.id == returned_booking.id
         assert saved_educational_booking.booking.cancellationLimitDate == returned_booking.dateCreated
-
-
-class RefuseEducationalBookingTest:
-    @clean_database
-    def test_refuse_educational_booking_stock_lock(self, app):
-        booking = bookings_factories.EducationalBookingFactory(
-            status=BookingStatus.CONFIRMED,
-        )
-        educational_booking = booking.educationalBooking
-
-        # open a second connection on purpose and lock the deposit
-        engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"])
-        with engine.connect() as connection:
-            connection.execute(
-                text("""SELECT * FROM stock WHERE id = :stock_id FOR UPDATE"""),
-                stock_id=booking.stock.id,
-            )
-
-            with pytest.raises(sqlalchemy.exc.OperationalError):
-                educational_api.refuse_educational_booking(educational_booking.id)
-
-        refreshed_booking = Booking.query.filter(Booking.id == booking.id).one()
-        assert refreshed_booking.status == BookingStatus.CONFIRMED
-
-    def test_refuse_educational_booking(self, db_session):
-        stock = offers_factories.EducationalEventStockFactory(quantity=200, dnBookedQuantity=0)
-        booking = bookings_factories.EducationalBookingFactory(
-            status=BookingStatus.CONFIRMED,
-            stock=stock,
-            quantity=20,
-        )
-
-        educational_api.refuse_educational_booking(booking.educationalBookingId)
-
-        assert stock.dnBookedQuantity == 0
-        assert booking.status == BookingStatus.CANCELLED
-        assert booking.cancellationReason == BookingCancellationReasons.REFUSED_BY_INSTITUTE
-
-    def test_raises_when_no_educational_booking_found(self):
-        with pytest.raises(exceptions.EducationalBookingNotFound):
-            educational_api.refuse_educational_booking(123)
-
-    def test_no_op_when_educational_booking_already_refused(self, db_session):
-        stock = offers_factories.EducationalEventStockFactory(dnBookedQuantity=20)
-        booking = bookings_factories.EducationalBookingFactory(
-            educationalBooking__status=EducationalBookingStatus.REFUSED,
-            quantity=1,
-            stock=stock,
-        )
-
-        educational_api.refuse_educational_booking(booking.educationalBookingId)
-
-        assert stock.dnBookedQuantity == 21
 
 
 # @freeze_time("2020-11-17 15:00:00")

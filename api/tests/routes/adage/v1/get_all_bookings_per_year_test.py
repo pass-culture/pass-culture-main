@@ -29,7 +29,7 @@ class Returns200Test:
         client = client.with_eac_token()
         adage_id = booking1.educationalYear.adageId
 
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = client.get(f"/adage/v1/years/{adage_id}/prebookings")
 
         assert response.status_code == 200
