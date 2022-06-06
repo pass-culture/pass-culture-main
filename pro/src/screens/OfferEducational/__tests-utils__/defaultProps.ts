@@ -55,7 +55,6 @@ export const defaultCreationProps: IOfferEducationalProps = {
   },
   mode: Mode.CREATION,
   domainsOptions: [],
-  enableEducationalDomains: false,
 }
 
 const editionFormValues = {
@@ -108,5 +107,4 @@ export const defaultEditionProps: IOfferEducationalProps = {
   },
   mode: Mode.EDITION,
   domainsOptions: [],
-  enableEducationalDomains: false,
 }
