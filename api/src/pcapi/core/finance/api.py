@@ -894,12 +894,10 @@ def _upload_files_to_google_drive(folder_name: str, paths: typing.Iterable[pathl
 def _write_csv(
     filename: str,
     header: typing.Iterable,
-    rows: typing.Iterable = None,
-    batched_rows: typing.Iterable = None,
+    rows: typing.Iterable,
     row_formatter: typing.Callable[[typing.Iterable], typing.Iterable] = lambda row: row,
     compress: bool = False,
 ) -> pathlib.Path:
-    assert (rows is not None) ^ (batched_rows is not None)
 
     # Store file in a dedicated directory within "/tmp". It's easier
     # to clean files in tests that way.
@@ -909,9 +907,6 @@ def _write_csv(
         writer.writerow(header)
         if rows is not None:
             writer.writerows(row_formatter(row) for row in rows)
-        if batched_rows is not None:
-            for rows_ in batched_rows:
-                writer.writerows(row_formatter(row) for row in rows_)
     if compress:
         compressed_path = pathlib.Path(str(path) + ".zip")
         with zipfile.ZipFile(
