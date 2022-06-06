@@ -74,6 +74,7 @@ export type IOfferEducationalFormValues = {
   notifications: boolean
   notificationEmail: string
   domains: string[]
+  'search-domains'?: string
 }
 
 export type GetIsOffererEligible = Adapter<
@@ -206,7 +207,7 @@ type CollectiveOfferBaseResponseModel = {
   venueId: string
   status: OfferStatus
   offerId?: string | null
-  domains: number[]
+  domains: EducationalDomain[]
 }
 
 export type CollectiveOfferResponseModel = CollectiveOfferBaseResponseModel & {

@@ -46,11 +46,11 @@ const defaultProps: Args = {
   hideFooter: false,
   hideTags: false,
   isOptional: false,
-  smallLabel: false
+  smallLabel: false,
 }
 
 export const Default = Template.bind({})
 Default.args = defaultProps
 
 export const WithoutTags = Template.bind({})
-WithoutTags.args = {...defaultProps, hideTags: true}
+WithoutTags.args = { ...defaultProps, hideTags: true }
