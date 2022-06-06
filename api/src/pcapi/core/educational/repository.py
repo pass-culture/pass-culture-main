@@ -257,51 +257,6 @@ def get_educational_year_beginning_at_given_year(year: int) -> educational_model
     return educational_year
 
 
-def find_educational_bookings_for_adage(
-    uai_code: str,
-    year_id: str,
-    redactor_email: Optional[str] = None,
-    status: Optional[
-        Union[BookingStatus, educational_models.CollectiveBookingStatus, educational_models.EducationalBookingStatus]
-    ] = None,
-) -> list[educational_models.EducationalBooking]:
-
-    educational_bookings_base_query = (
-        educational_models.EducationalBooking.query.join(educational_models.EducationalBooking.booking)
-        .options(
-            contains_eager(educational_models.EducationalBooking.booking)
-            .joinedload(Booking.stock, innerjoin=True)
-            .joinedload(Stock.offer, innerjoin=True)
-            .options(
-                joinedload(Offer.venue, innerjoin=True),
-            )
-        )
-        .join(educational_models.EducationalInstitution)
-        .join(educational_models.EducationalRedactor)
-        .join(educational_models.EducationalYear)
-        .options(contains_eager(educational_models.EducationalBooking.educationalInstitution))
-        .options(contains_eager(educational_models.EducationalBooking.educationalRedactor))
-        .filter(educational_models.EducationalInstitution.institutionId == uai_code)
-        .filter(educational_models.EducationalYear.adageId == year_id)
-    )
-
-    if redactor_email is not None:
-        educational_bookings_base_query = educational_bookings_base_query.filter(
-            educational_models.EducationalRedactor.email == redactor_email
-        )
-
-    if status is not None:
-        if status in BookingStatus:
-            educational_bookings_base_query = educational_bookings_base_query.filter(Booking.status == status)
-
-        if status in educational_models.EducationalBookingStatus:
-            educational_bookings_base_query = educational_bookings_base_query.filter(
-                educational_models.EducationalBooking.status == status
-            )
-
-    return educational_bookings_base_query.all()
-
-
 def find_collective_bookings_for_adage(
     uai_code: str,
     year_id: str,
@@ -386,43 +341,6 @@ def find_active_collective_booking_by_offer_id(
         .options(joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
         .options(joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True))
         .one_or_none()
-    )
-
-
-def get_paginated_bookings_for_educational_year(
-    educational_year_id: str,
-    page: Optional[int],
-    per_page: Optional[int],
-) -> list[educational_models.EducationalBooking]:
-    page = 1 if page is None else page
-    per_page = 1000 if per_page is None else per_page
-
-    return (
-        educational_models.EducationalBooking.query.filter(
-            educational_models.EducationalBooking.educationalYearId == educational_year_id
-        )
-        .options(
-            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
-                educational_models.EducationalRedactor.email
-            )
-        )
-        .options(
-            joinedload(educational_models.EducationalBooking.booking, innerjoin=True)
-            .load_only(Booking.amount, Booking.stockId, Booking.status, Booking.quantity)
-            .joinedload(Booking.stock, innerjoin=True)
-            .load_only(Stock.beginningDatetime, Stock.offerId)
-            .joinedload(Stock.offer, innerjoin=True)
-            .load_only(Offer.name)
-            .joinedload(Offer.venue, innerjoin=True)
-            .load_only(offerers_models.Venue.managingOffererId, offerers_models.Venue.departementCode)
-            .joinedload(offerers_models.Venue.managingOfferer, innerjoin=True)
-            .load_only(offerers_models.Offerer.postalCode)
-        )
-        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
-        .order_by(educational_models.EducationalBooking.id)
-        .offset((page - 1) * per_page)
-        .limit(per_page)
-        .all()
     )
 
 
