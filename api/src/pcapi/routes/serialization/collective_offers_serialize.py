@@ -12,7 +12,6 @@ from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import StudentLevels
 from pcapi.core.offerers.models import Venue
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
@@ -94,11 +93,7 @@ def serialize_collective_offers_capped(
 
 
 def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemplate]) -> CollectiveOfferResponseModel:
-    serialized_stock = None
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
-    else:
-        serialized_stock = _serialize_stock(offer.offerId, getattr(offer, "collectiveStock", None))  # type: ignore [arg-type]
+    serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
 
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
@@ -128,12 +123,8 @@ def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemp
 
 def _serialize_stock(offer_id: int, stock: Optional[CollectiveStock] = None) -> dict:
     if stock:
-        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-            stockId = stock.id
-        else:
-            stockId = stock.stockId  # type: ignore [assignment]
         return {
-            "id": humanize(stockId),
+            "id": humanize(stock.id),
             "offerId": humanize(offer_id),
             "hasBookingLimitDatetimePassed": stock.hasBookingLimitDatetimePassed,
             "remainingQuantity": 0 if stock.isSoldOut else 1,
