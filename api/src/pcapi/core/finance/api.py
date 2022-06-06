@@ -58,6 +58,7 @@ import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.finance import utils as finance_utils
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
@@ -1587,6 +1588,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
             lines=lines,  # type: ignore [arg-type]
         )
         groups.append(invoice_group)
+    reimbursements_by_venue = get_reimbursements_by_venue(invoice)
 
     venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
     period_start, period_end = get_invoice_period(invoice.date)
@@ -1599,7 +1601,79 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
         total_reimbursed_amount=total_reimbursed_amount,
         period_start=period_start,
         period_end=period_end,
+        reimbursements_by_venue=reimbursements_by_venue,
     )
+
+
+def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.List[typing.Dict[str, str]]:
+    reimbursements_by_venue = []
+    common_columns = (
+        offerers_models.Venue.id.label("venue_id"),
+        sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name).label("venue_name"),
+    )
+
+    pricing_query = (
+        models.Invoice.query.join(models.Invoice.cashflows)
+        .join(models.Cashflow.pricings)
+        .filter(models.Invoice.id == invoice.id)
+    )
+
+    query = (
+        pricing_query.with_entities(
+            *common_columns,
+            models.Pricing.amount.label("pricing_amount"),
+            bookings_models.Booking.amount.label("booking_amount"),
+            bookings_models.Booking.individualBookingId,
+        )
+        .join(models.Pricing.booking)
+        .join(bookings_models.Booking.venue)
+        .order_by(
+            offerers_models.Venue.id,
+            sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
+        )
+    )
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        collective_query = (
+            pricing_query.with_entities(
+                *common_columns,
+                sqla_func.sum(models.Pricing.amount).label("amount_total"),
+            )
+            .join(models.Pricing.collectiveBooking)
+            .join(CollectiveBooking.venue)
+            .group_by(
+                offerers_models.Venue.id,
+                sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
+            )
+            .order_by(
+                offerers_models.Venue.id,
+                sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
+            )
+        )
+
+        collective_reimbursement_by_venue = {pricing.venue_id: pricing.amount_total for pricing in collective_query}
+
+    for (venue_id, venue_name), bookings in itertools.groupby(query, lambda x: (x.venue_id, x.venue_name)):
+        validated_booking_amount = decimal.Decimal(0)
+        reimbursed_amount = 0
+        individual_amount = 0
+        for booking in bookings:
+            reimbursed_amount += booking.pricing_amount
+            validated_booking_amount += decimal.Decimal(booking.booking_amount)
+            if booking.individualBookingId:
+                individual_amount += booking.pricing_amount
+        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() and venue_id in collective_reimbursement_by_venue:
+            reimbursed_amount += collective_reimbursement_by_venue[venue_id]
+            validated_booking_amount += -finance_utils.to_euros(collective_reimbursement_by_venue[venue_id])
+
+        reimbursements_by_venue.append(
+            {
+                "venue_name": venue_name,
+                "reimbursed_amount": -finance_utils.to_euros(reimbursed_amount),
+                "validated_booking_amount": validated_booking_amount,
+                "individual_amount": -finance_utils.to_euros(individual_amount),
+            }
+        )
+    return reimbursements_by_venue
 
 
 def _generate_invoice_html(invoice: models.Invoice) -> str:
