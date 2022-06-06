@@ -98,15 +98,17 @@ MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 _PRICE_BOOKINGS_ORDER_CLAUSE = (
     sqla.func.greatest(
         sqla.func.lower(models.BusinessUnitVenueLink.timespan),
-        sqla_func.coalesce(
+        sqla.func.greatest(
             offers_models.Stock.beginningDatetime,
             bookings_models.Booking.dateUsed,
         ),
     ),
-    sqla_func.coalesce(
+    sqla.func.greatest(
         offers_models.Stock.beginningDatetime,
         bookings_models.Booking.dateUsed,
     ),
+    # If an event (or multiple events) have the same date _after_ the
+    # used date, fallback on the used date.
     bookings_models.Booking.dateUsed,
     # Some bookings are marked as used in a batch, hence with the same
     # datetime value. In that case, we order by their id.
@@ -222,15 +224,16 @@ def _booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
     """Return a tuple of values, for a particular booking, that can be
     compared to `_PRICE_BOOKINGS_ORDER_CLAUSE`.
     """
+    assert booking.dateUsed is not None  # helps mypy for `max()` below
     business_unit_venue_links = [
         link for link in booking.venue.businessUnit.venue_links if link.venueId == booking.venueId
     ]
     tupl = (
         max(
             business_unit_venue_links[-1].timespan.lower,
-            booking.stock.beginningDatetime or booking.dateUsed,
+            max((booking.stock.beginningDatetime or booking.dateUsed, booking.dateUsed)),
         ),
-        booking.stock.beginningDatetime or booking.dateUsed,
+        max((booking.stock.beginningDatetime or booking.dateUsed, booking.dateUsed)),
         booking.dateUsed,
         booking.id,
     )
