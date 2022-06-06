@@ -33,7 +33,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.repository import find_collective_booking_by_booking_id
 from pcapi.core.educational.repository import get_and_lock_collective_stock
 from pcapi.core.educational.repository import get_collective_offers_for_filters
@@ -41,9 +40,6 @@ from pcapi.core.educational.repository import get_collective_offers_template_for
 from pcapi.core.educational.repository import get_filtered_collective_booking_report
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
-from pcapi.core.mails.transactional.bookings.booking_cancellation_by_institution import (
-    send_education_booking_cancellation_by_institution_email,
-)
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import (
     send_eac_new_collective_prebooking_email_to_pro,
@@ -66,7 +62,6 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
-from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
 from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_csv_report
 from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_excel_report
@@ -85,7 +80,7 @@ logger = logging.getLogger(__name__)
 OFFERS_RECAP_LIMIT = 501
 
 
-def _create_redactor(redactor_informations: AuthenticatedInformation) -> educational_models.EducationalRedactor:
+def _create_redactor(redactor_informations: RedactorInformation) -> educational_models.EducationalRedactor:
     redactor = educational_models.EducationalRedactor(
         email=redactor_informations.email,
         firstName=redactor_informations.firstname,
@@ -294,51 +289,6 @@ def create_collective_booking_with_collective_stock(
         return collective_booking
 
 
-def confirm_educational_booking(educational_booking_id: int) -> EducationalBooking:
-    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
-    if educational_booking is None:
-        raise exceptions.EducationalBookingNotFound()
-
-    booking: bookings_models.Booking = educational_booking.booking
-    if booking.status == bookings_models.BookingStatus.CONFIRMED:
-        return educational_booking
-
-    validation.check_educational_booking_status(educational_booking)
-    validation.check_confirmation_limit_date_has_not_passed(educational_booking)
-
-    educational_institution_id = educational_booking.educationalInstitutionId
-    educational_year_id = educational_booking.educationalYearId
-    with transaction():
-        deposit = educational_repository.get_and_lock_educational_deposit(
-            educational_institution_id, educational_year_id
-        )
-        validation.check_institution_fund(
-            educational_institution_id,
-            educational_year_id,
-            booking.total_amount,
-            deposit,
-        )
-        booking.mark_as_confirmed()
-        db.session.add(booking)
-
-        db.session.commit()
-
-    logger.info(
-        "Head of institution confirmed an educational offer",
-        extra={
-            "bookingId": booking.id,
-        },
-    )
-
-    if not send_eac_new_booking_email_to_pro(booking):
-        logger.warning(
-            "Could not send new booking confirmation email to offerer",
-            extra={"booking": booking.id},
-        )
-
-    return educational_booking
-
-
 def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking:
     collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
 
@@ -384,56 +334,6 @@ def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking
         )
 
     return collective_booking
-
-
-def refuse_educational_booking(educational_booking_id: int) -> EducationalBooking:
-    educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
-
-    if educational_booking is None:
-        raise exceptions.EducationalBookingNotFound()
-
-    if educational_booking.status == EducationalBookingStatus.REFUSED:
-        return educational_booking
-
-    with transaction():
-        stock = offers_repository.get_and_lock_stock(stock_id=educational_booking.booking.stockId)
-        booking = educational_booking.booking
-        db.session.refresh(educational_booking.booking)
-
-        try:
-            educational_booking.mark_as_refused()
-        except (
-            exceptions.EducationalBookingNotRefusable,
-            exceptions.EducationalBookingAlreadyCancelled,
-        ) as exception:
-            logger.error(
-                "User from adage trying to refuse educational booking that cannot be refused",
-                extra={
-                    "educational_booking_id": educational_booking_id,
-                    "exception_type": exception.__class__.__name__,
-                },
-            )
-            raise exception
-
-        stock.dnBookedQuantity -= booking.quantity
-
-        repository.save(booking, educational_booking)
-
-    logger.info(
-        "Booking has been cancelled",
-        extra={
-            "booking": booking.id,
-            "reason": str(booking.cancellationReason),
-        },
-    )
-
-    booking_email = booking.stock.offer.bookingEmail
-    if booking_email and not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        send_education_booking_cancellation_by_institution_email(educational_booking)
-
-    search.async_index_offer_ids([stock.offerId])
-
-    return educational_booking
 
 
 def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:

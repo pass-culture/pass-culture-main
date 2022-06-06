@@ -1,21 +1,14 @@
-from typing import Union
-
 from pcapi.core import mails
 from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 
 def get_education_booking_cancellation_by_institution_email_data(
-    booking: Union[CollectiveBooking, EducationalBooking],
+    booking: CollectiveBooking,
 ) -> SendinblueTransactionalEmailData:
-    if isinstance(booking, CollectiveBooking):
-        stock = booking.collectiveStock
-        offer = stock.collectiveOffer
-    else:
-        stock = booking.booking.stock
-        offer = stock.offer
+    stock = booking.collectiveStock
+    offer = stock.collectiveOffer
     institution = booking.educationalInstitution
     redactor = booking.educationalRedactor
     return SendinblueTransactionalEmailData(
@@ -35,13 +28,8 @@ def get_education_booking_cancellation_by_institution_email_data(
     )
 
 
-def send_education_booking_cancellation_by_institution_email(
-    booking: Union[CollectiveBooking, EducationalBooking]
-) -> bool:
-    if isinstance(booking, CollectiveBooking):
-        booking_email = booking.collectiveStock.collectiveOffer.bookingEmail
-    else:
-        booking_email = booking.booking.stock.offer.bookingEmail
+def send_education_booking_cancellation_by_institution_email(booking: CollectiveBooking) -> bool:
+    booking_email = booking.collectiveStock.collectiveOffer.bookingEmail
     if booking_email:
         data = get_education_booking_cancellation_by_institution_email_data(booking)
         return mails.send(recipients=[booking_email], data=data)

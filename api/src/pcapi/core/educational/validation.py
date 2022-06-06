@@ -3,7 +3,6 @@ from typing import Optional
 from typing import Union
 
 from pcapi.core.bookings import exceptions as booking_exceptions
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.exceptions import CollectiveStockAlreadyExists
 from pcapi.core.educational.models import CollectiveBooking
@@ -11,7 +10,6 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalYear
@@ -59,14 +57,6 @@ def check_stock_is_bookable(stock: Stock) -> None:
 def check_collective_stock_is_bookable(stock: Stock) -> None:
     if not stock.isBookable:
         raise exceptions.StockNotBookable(stock.id)
-
-
-def check_educational_booking_status(educational_booking: EducationalBooking) -> None:
-    if educational_booking.status == EducationalBookingStatus.REFUSED:
-        raise exceptions.EducationalBookingIsRefused()
-
-    if educational_booking.booking.status == BookingStatus.CANCELLED:
-        raise exceptions.BookingIsCancelled()
 
 
 def check_collective_booking_status(collective_booking: CollectiveBooking) -> None:
