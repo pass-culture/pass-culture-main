@@ -29,7 +29,7 @@ const ReimbursementsInvoices = ({
 }: IReimbursementsInvoicesProps): JSX.Element => {
   const columns = [
     {
-      title: 'Date',
+      title: 'Date du justificatif',
       sortBy: 'date',
       selfDirection: 'default',
     },
@@ -39,8 +39,13 @@ const ReimbursementsInvoices = ({
       selfDirection: 'default',
     },
     {
-      title: 'Référence',
+      title: 'N° du justificatif',
       sortBy: 'reference',
+      selfDirection: 'default',
+    },
+    {
+      title: 'N° de virement',
+      sortBy: 'cashflowLabels',
       selfDirection: 'default',
     },
     {

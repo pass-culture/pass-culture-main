@@ -8,6 +8,7 @@ type ColumnData = {
   reference: string
   amount: string
   url: string
+  cashflowLabels: string[]
 }
 
 interface ITableBody {
@@ -24,8 +25,10 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
             <td className={styles['business-unit']}>
               {invoice.businessUnitName}
             </td>
-            <td>{invoice.reference}</td>
-            <td className={styles['amount']}>{invoice.amount}€</td>
+            <td className={styles['reference']}>{invoice.reference}</td>
+            {/* For now only one label is possible by invoice. */}
+            <td className={styles['label']}>{invoice.cashflowLabels[0]}</td>
+            <td className={styles['amount']}>{invoice.amount}&nbsp;€</td>
             <td className={styles['invoice']}>
               <a
                 className="bi-link tertiary-link"
@@ -33,9 +36,10 @@ const ReimbursementsTableBody = ({ invoices }: ITableBody): JSX.Element => {
                 href={invoice.url}
                 rel="noopener noreferrer"
                 target="_blank"
+                aria-label="Télécharger le PDF"
               >
                 <DownloadSvg />
-                Télécharger le PDF
+                PDF
               </a>
             </td>
           </tr>
