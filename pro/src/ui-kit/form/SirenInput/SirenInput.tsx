@@ -4,13 +4,14 @@ import TextInput from '../TextInput'
 import { humanizeSiren } from 'core/Offerers/utils'
 import { useField } from 'formik'
 
-const formatSiren = (value: string) => {
-  // remove character when when it's not a number
+const formatSiren = (siren: string) => {
+  const lastChar = siren.charAt(siren.length - 1)
+  // remove character when it's not a number
   // this way we're sure that this field only accept number
-  if (value && isNaN(Number(value))) {
-    return value.slice(0, -1)
+  if (lastChar && isNaN(Number(lastChar))) {
+    return siren.slice(0, -1)
   }
-  return humanizeSiren(value)
+  return humanizeSiren(siren)
 }
 
 interface ISirenInputProps {
@@ -29,12 +30,11 @@ const SirenInput = ({
   const [field, meta, helpers] = useField({ name })
   const { setValue } = helpers
   useEffect(() => {
-    if (!meta.touched) return
-    if (!meta.error) {
-      setValue(formatSiren(field.value))
+    setValue(formatSiren(field.value))
+    if (!meta.error && meta.touched) {
       onValidSiren(field.value)
     }
-  }, [meta.touched, meta.error])
+  }, [meta.touched, meta.error, field.value])
 
   return (
     <TextInput
