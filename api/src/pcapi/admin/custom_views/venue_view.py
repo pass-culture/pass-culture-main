@@ -1,3 +1,4 @@
+import logging
 from typing import Optional
 
 from flask import flash
@@ -11,6 +12,7 @@ from flask_admin.contrib.sqla import filters as fa_filters
 from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.fields import QuerySelectMultipleField
 from flask_admin.helpers import get_redirect_target
+from flask_login import current_user
 from flask_sqlalchemy import BaseQuery
 from jinja2.runtime import Context
 from markupsafe import Markup
@@ -21,6 +23,7 @@ from werkzeug.exceptions import abort
 from wtforms import Form
 from wtforms.fields import BooleanField
 from wtforms.fields import HiddenField
+from wtforms.fields import IntegerField
 
 from pcapi.admin.base_configuration import BaseAdminView
 from pcapi.core import search
@@ -38,6 +41,9 @@ from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 from pcapi.utils.mailing import build_pc_pro_offerer_link
 from pcapi.utils.mailing import build_pc_pro_venue_link
+
+
+logger = logging.getLogger(__name__)
 
 
 def _format_offers_link(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
@@ -180,6 +186,7 @@ class VenueView(BaseAdminView):
         "isPermanent",
         "criteria",
     ]
+    form_overrides = {"adageId": IntegerField}
 
     def get_query(self) -> BaseQuery:
         return (
@@ -248,6 +255,13 @@ class VenueView(BaseAdminView):
                 )
                 return False
 
+        # adageId validation and cleanning
+        if new_venue_form.adageId.data == "":
+            new_venue_form.adageId.data = None
+        if new_venue_form.adageId.data is not None and new_venue_form.adageId.data < 1:
+            flash("L'adageId doit être un nombre entier supérieur ou égal à 1")
+            return False
+
         old_siret = venue.siret
 
         changed_attributes = {
@@ -255,6 +269,18 @@ class VenueView(BaseAdminView):
             for field in VENUE_ALGOLIA_INDEXED_FIELDS
             if hasattr(new_venue_form, field) and getattr(new_venue_form, field).data != getattr(venue, field)
         }
+
+        if str(new_venue_form.adageId.data) != venue.adageId:
+            old_adage_id = venue.adageId or ""
+            new_adage_id = new_venue_form.adageId.data or ""
+            logger.info(
+                '[ADMIN] User with email "%s" changed the adageId for venue "%s" (id: %s) from "%s" to "%s"',
+                current_user.email,
+                venue.name,
+                venue.id,
+                old_adage_id,
+                new_adage_id,
+            )
 
         super().update_model(new_venue_form, venue)
 
