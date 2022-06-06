@@ -21,14 +21,12 @@ import { useFormikContext } from 'formik'
 interface IFormTypeProps {
   categories: IEducationalCategory[]
   subCategories: IEducationalSubCategory[]
-  enableEducationalDomains: boolean
   domainsOptions: SelectOption[]
 }
 
 const FormOfferType = ({
   categories,
   subCategories,
-  enableEducationalDomains,
   domainsOptions,
 }: IFormTypeProps): JSX.Element => {
   const { values, setFieldValue } =
@@ -100,8 +98,8 @@ const FormOfferType = ({
           />
         </FormLayout.Row>
       )}
-      {enableEducationalDomains && (
-        <FormLayout.Row >
+      {domainsOptions.length > 0 && (
+        <FormLayout.Row>
           <MultiSelectAutocomplete
             options={domainsOptions}
             label="Domaine artistique et culturel"
