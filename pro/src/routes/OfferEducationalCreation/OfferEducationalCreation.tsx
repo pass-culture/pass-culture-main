@@ -111,7 +111,6 @@ const OfferEducationalCreation = (): JSX.Element => {
             mode={Mode.CREATION}
             notify={notify}
             onSubmit={createOffer}
-            enableEducationalDomains={enableEducationalDomains}
           />
           <RouteLeavingGuardOfferCreation isCollectiveFlow />
         </>
