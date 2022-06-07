@@ -2,7 +2,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { SelectOption } from 'custom_types/form'
 
-type GetEducationalDomainsAdapter = Adapter<
+export type GetEducationalDomainsAdapter = Adapter<
   void,
   SelectOption[],
   SelectOption[]

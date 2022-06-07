@@ -9,22 +9,17 @@ import {
 import { screen, waitFor } from '@testing-library/react'
 
 import { IOfferEducationalProps } from '../OfferEducational'
-import merge from 'lodash/merge'
 import userEvent from '@testing-library/user-event'
 
 const eligibilityResponse = (
   eligible: boolean,
   override: Record<string, unknown> = {}
-) =>
-  merge(
-    {},
-    {
-      isOk: true,
-      message: null,
-      payload: { isOffererEligibleToEducationalOffer: eligible },
-    },
-    override
-  )
+) => ({
+  isOk: true,
+  message: null,
+  payload: { isOffererEligibleToEducationalOffer: eligible },
+  ...override,
+})
 
 describe('screens | OfferEducational : creation offerer step', () => {
   let props: IOfferEducationalProps
