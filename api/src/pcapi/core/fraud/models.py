@@ -20,14 +20,14 @@ from .ubble import models as ubble_fraud_models
 
 
 class FraudCheckType(enum.Enum):
-    JOUVE = "jouve"
-    USER_PROFILING = "user_profiling"
     DMS = "dms"
-    INTERNAL_REVIEW = "internal_review"
-    PHONE_VALIDATION = "phone_validation"
     EDUCONNECT = "educonnect"
-    UBBLE = "ubble"
     HONOR_STATEMENT = "honor_statement"
+    INTERNAL_REVIEW = "internal_review"
+    JOUVE = "jouve"
+    PHONE_VALIDATION = "phone_validation"
+    UBBLE = "ubble"
+    USER_PROFILING = "user_profiling"
 
 
 IDENTITY_CHECK_TYPES = [FraudCheckType.JOUVE, FraudCheckType.DMS, FraudCheckType.UBBLE, FraudCheckType.EDUCONNECT]
@@ -312,12 +312,12 @@ class PhoneValidationFraudData(pydantic.BaseModel):
 
 FRAUD_CHECK_MAPPING = {
     FraudCheckType.DMS: DMSContent,
-    FraudCheckType.USER_PROFILING: UserProfilingFraudData,
-    FraudCheckType.JOUVE: JouveContent,
-    FraudCheckType.INTERNAL_REVIEW: PhoneValidationFraudData,
-    FraudCheckType.PHONE_VALIDATION: PhoneValidationFraudData,
     FraudCheckType.EDUCONNECT: EduconnectContent,
+    FraudCheckType.INTERNAL_REVIEW: PhoneValidationFraudData,
+    FraudCheckType.JOUVE: JouveContent,
+    FraudCheckType.PHONE_VALIDATION: PhoneValidationFraudData,
     FraudCheckType.UBBLE: ubble_fraud_models.UbbleContent,
+    FraudCheckType.USER_PROFILING: UserProfilingFraudData,
 }
 
 FRAUD_CONTENT_MAPPING = {type: cls for cls, type in FRAUD_CHECK_MAPPING.items()}
