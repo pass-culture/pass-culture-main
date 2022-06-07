@@ -357,8 +357,6 @@ def complete_profile(
             school_type=school_type,
         ),
     )
-    activate_beneficiary_if_no_missing_step(user)
-
     logger.info("User completed profile step", extra={"user": user.id})
 
 
