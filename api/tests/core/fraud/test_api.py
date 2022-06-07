@@ -89,6 +89,23 @@ class CommonTest:
         with override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=True):
             assert fraud_api.is_subscription_name_valid(name) is True
 
+    def test_create_profile_completion_fraud_check(self, caplog):
+        user = users_factories.UserFactory()
+        content = fraud_factories.ProfileCompletionContentFactory(origin="Origine orignale")
+        fraud_api.create_profile_completion_fraud_check(user, user.eligibility, content)
+        profile_completion_fraud_check = user.beneficiaryFraudChecks[0]
+
+        assert profile_completion_fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+        assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
+
+        # try to create duplicate
+        fraud_api.create_profile_completion_fraud_check(user, user.eligibility, content)
+        assert caplog.records[0].message == "Profile completion fraud check for user already exists."
+        assert caplog.records[0].extra == {
+            "user_id": user.id,
+            "existing_profile_completion_fraud_check": profile_completion_fraud_check.id,
+        }
+
 
 def filter_invalid_fraud_items_to_reason_code(
     fraud_items: list[fraud_models.FraudItem],
