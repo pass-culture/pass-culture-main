@@ -831,3 +831,34 @@ def _check_ine_hash_unicity(user: users_models.User, ine_hash: typing.Optional[s
 
     if duplicate_user:
         raise DuplicateIneHash(ine_hash, duplicate_user.id)
+
+
+def create_profile_completion_fraud_check(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    fraud_check_content: models.ProfileCompletionContent,
+) -> None:
+    existing_profile_completion_fraud_check = models.BeneficiaryFraudCheck.query.filter(
+        models.BeneficiaryFraudCheck.user == user,
+        models.BeneficiaryFraudCheck.type == models.FraudCheckType.PROFILE_COMPLETION,
+        models.BeneficiaryFraudCheck.eligibilityType == eligibility,
+    ).first()
+    if existing_profile_completion_fraud_check:
+        logger.error(
+            "Profile completion fraud check for user already exists.",
+            extra={
+                "user_id": user.id,
+                "existing_profile_completion_fraud_check": existing_profile_completion_fraud_check.id,
+            },
+        )
+        return
+    fraud_check = models.BeneficiaryFraudCheck(
+        user=user,
+        type=models.FraudCheckType.PROFILE_COMPLETION,
+        resultContent=fraud_check_content,
+        status=models.FraudCheckStatus.OK,
+        thirdPartyId=f"profile-completion-{user.id}",
+        eligibilityType=eligibility,
+        reason=fraud_check_content.origin,
+    )
+    repository.save(fraud_check)
