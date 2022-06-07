@@ -25,10 +25,7 @@ import useNotification from 'components/hooks/useNotification'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,
-  | 'educationalCategories'
-  | 'educationalSubCategories'
-  | 'userOfferers'
-  | 'domainsOptions'
+  'educationalCategories' | 'educationalSubCategories' | 'userOfferers'
 >
 
 const OfferEducationalCreation = (): JSX.Element => {
@@ -82,7 +79,6 @@ const OfferEducationalCreation = (): JSX.Element => {
           educationalCategories: categories.payload.educationalCategories,
           educationalSubCategories: categories.payload.educationalSubCategories,
           userOfferers: offerers.payload,
-          domainsOptions: domains?.payload ?? [],
         })
 
         setInitialValues(values =>
@@ -111,6 +107,9 @@ const OfferEducationalCreation = (): JSX.Element => {
             mode={Mode.CREATION}
             notify={notify}
             onSubmit={createOffer}
+            getEducationalDomainsAdapter={
+              enableEducationalDomains && getEducationalDomainsAdapter
+            }
           />
           <RouteLeavingGuardOfferCreation isCollectiveFlow />
         </>

@@ -16,6 +16,7 @@ import FormParticipants from './FormParticipants'
 import FormVenue from './FormVenue'
 import { IOfferEducationalProps } from '../OfferEducational'
 import { Link } from 'react-router-dom'
+import { SelectOption } from 'custom_types/form'
 import { computeOffersUrl } from 'core/Offers/utils'
 import styles from './OfferEducationalForm.module.scss'
 import { useFormikContext } from 'formik'
@@ -26,6 +27,7 @@ type IOfferEducationalFormProps = Omit<
   'onSubmit' | 'initialValues' | 'isEdition'
 > & {
   mode: Mode
+  domainsOptions: SelectOption[]
 }
 
 const OfferEducationalForm = ({
