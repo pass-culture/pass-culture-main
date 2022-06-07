@@ -194,7 +194,9 @@ class RunIntegrationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
+            fixture.make_parsed_graphql_application(
+                application_number=123, state="accepte", email=user.email, city="Strasbourg"
+            )
         ]
         import_dms_accepted_applications(procedure_id=6712558)
 
@@ -212,6 +214,17 @@ class RunIntegrationTest:
         assert fraud_check.thirdPartyId == "123"
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert len(push_testing.requests) == 2
+
+        # Check that a PROFILE_COMPLETION fraud check is created
+        profile_completion_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+        ]
+        assert len(profile_completion_fraud_checks) == 1
+        profile_completion_fraud_check = profile_completion_fraud_checks[0]
+        assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert profile_completion_fraud_check.reason == "Completed in DMS application 123"
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_exunderage_beneficiary(self, get_applications_with_details):
@@ -712,7 +725,7 @@ class GraphQLSourceProcessApplicationTest:
         application_number = 123123
         application_details = fixture.make_parsed_graphql_application(application_number, "accepte", email=user.email)
         information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
-        # fixture
+
         dms_api._process_accepted_application(user, information)
 
         assert len(user.beneficiaryFraudChecks) == 2
