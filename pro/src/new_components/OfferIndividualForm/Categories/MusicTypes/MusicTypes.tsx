@@ -63,7 +63,7 @@ const MusicTypes = (): JSX.Element => {
         />
       </FormLayout.Row>
 
-      {musicType && (
+      {musicTypesOptions.musicSubType.length > 0 && (
         <FormLayout.Row smSpaceAfter={true}>
           <Select
             label="Choisir un sous-genre"

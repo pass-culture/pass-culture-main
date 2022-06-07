@@ -24,7 +24,7 @@ const validationSchema = {
   }),
   showType: yup.string().when('subCategoryFields', {
     is: (subCategoryFields: string[]) => subCategoryFields.includes('showType'),
-    then: yup.string().required('Veuillez séléctionner un type de spéctacle'),
+    then: yup.string().required('Veuillez séléctionner un type de spectacle'),
     otherwise: yup.string(),
   }),
   showSubType: yup.string().when(['subCategoryFields', 'showType'], {
@@ -33,7 +33,7 @@ const validationSchema = {
       showType !== CATEGORIES_DEFAULT_VALUES.showType,
     then: yup
       .string()
-      .required('Veuillez séléctionner un sous-type de spéctacle'),
+      .required('Veuillez séléctionner un sous-type de spectacle'),
     otherwise: yup.string(),
   }),
 }
