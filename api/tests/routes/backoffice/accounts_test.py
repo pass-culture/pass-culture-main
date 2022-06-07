@@ -2,6 +2,7 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 import re
+from unittest import mock
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
@@ -1023,10 +1024,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": "AGE18"},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -1140,3 +1140,133 @@ class ResendValidationEmailTest:
         # then
         assert response.status_code == 403
         assert len(mails_testing.outbox) == 0
+
+
+class SendPhoneValidationCodeTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_send_phone_validation_code(self, client):
+        # given
+        user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 204
+        phone_validation_codes = users_models.Token.query.filter(
+            users_models.Token.user == user,
+            users_models.Token.type == users_models.TokenType.PHONE_VALIDATION,
+        ).all()
+        assert len(phone_validation_codes) == 1
+        assert phone_validation_codes[0].expirationDate is None
+        assert phone_validation_codes[0].isUsed is False
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_phone_validation_code_sending_ignores_limit(self, client):
+        # given
+        user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        with mock.patch("pcapi.core.fraud.phone_validation.sending_limit.is_SMS_sending_allowed") as limit_mock:
+            limit_mock.return_value = False
+            response = client.with_explicit_token(auth_token).post(
+                url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
+            )
+
+        # then
+        assert limit_mock.call_count == 0
+        assert response.status_code == 204
+        phone_validation_codes = users_models.Token.query.filter(
+            users_models.Token.user == user,
+            users_models.Token.type == users_models.TokenType.PHONE_VALIDATION,
+        ).all()
+        assert len(phone_validation_codes) == 1
+        assert phone_validation_codes[0].expirationDate is None
+        assert phone_validation_codes[0].isUsed is False
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_send_phone_validation_code_when_already_validated(self, client):
+        # given
+        user = users_factories.UserFactory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            phoneNumber="+33612345678",
+        )
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json.get("user_id") == "Le numéro de téléphone est déjà validé"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_send_phone_validation_code_with_invalid_number(self, client):
+        # given
+        user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="1664")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json.get("user_id") == "Le numéro de téléphone est invalide"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_send_phone_validation_code_to_duplicated_number(self, client):
+        # given
+        user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="+33612345678")
+        users_factories.UserFactory(
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            phoneNumber=user.phoneNumber,
+            roles=[users_models.UserRole.BENEFICIARY],
+        )
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json.get("user_id") == "Un compte est déjà associé à ce numéro"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_send_phone_validation_code_to_beneficiary(self, client):
+        # given
+        user = users_factories.BeneficiaryGrant18Factory(isEmailValidated=True, phoneNumber="+33612345678")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json.get("user_id") == "L'utilisateur est déjà bénéficiaire"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_send_phone_validation_code_without_validated_email(self, client):
+        # given
+        user = users_factories.UserFactory(isEmailValidated=False, phoneNumber="+33612345678")
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json.get("user_id") == "L'email de l'utilisateur n'est pas encore validé"

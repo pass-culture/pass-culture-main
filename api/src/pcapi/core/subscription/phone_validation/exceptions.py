@@ -31,6 +31,14 @@ class PhoneValidationAttemptsLimitReached(PhoneVerificationException):
         super().__init__()
 
 
+class UnvalidatedEmail(PhoneVerificationException):
+    pass
+
+
+class UserAlreadyBeneficiary(PhoneVerificationException):
+    pass
+
+
 class NotValidCode(PhoneVerificationException):
     def __init__(self, remaining_attempts: typing.Optional[int] = None):
         self.remaining_attempts = remaining_attempts

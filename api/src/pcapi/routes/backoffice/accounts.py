@@ -4,6 +4,8 @@ from pcapi.core.fraud import models as fraud_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.phone_validation import api as phone_validation_api
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import external as users_external
@@ -16,6 +18,7 @@ from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
 from . import serialization as s11n
+from .utils import get_user_or_error
 
 
 # Same methods as called from legacy backoffice with Flask-Admin
@@ -42,7 +45,7 @@ def search_public_account(query: s11n.PublicAccountSearchQuery) -> s11n.ListPubl
     return s11n.ListPublicAccountsResponseModel(accounts=[s11n.PublicAccount.from_orm(account) for account in accounts])
 
 
-@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>", methods=["GET"])
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=s11n.PublicAccount,
@@ -50,12 +53,12 @@ def search_public_account(query: s11n.PublicAccountSearchQuery) -> s11n.ListPubl
     api=blueprint.api,
 )
 def get_public_account(user_id: int) -> s11n.PublicAccount:
-    user = users_repository.get_user_by_id(user_id)
+    user = get_user_or_error(user_id)
 
     return s11n.PublicAccount.from_orm(user)
 
 
-@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>", methods=["POST"])
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["POST"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=s11n.PublicAccount,
@@ -94,7 +97,7 @@ def update_public_account(user_id: int, body: s11n.PublicAccountUpdateRequest) -
     return s11n.PublicAccount.from_orm(user)
 
 
-@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>/credit", methods=["GET"])
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/credit", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=s11n.GetBeneficiaryCreditResponseModel,
@@ -102,9 +105,7 @@ def update_public_account(user_id: int, body: s11n.PublicAccountUpdateRequest) -
     api=blueprint.api,
 )
 def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseModel:
-    user = users_repository.get_user_by_id(user_id)
-    if not user:
-        raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
+    user = get_user_or_error(user_id)
 
     domains_credit = users_api.get_domains_credit(user) if user.is_beneficiary else None
 
@@ -117,7 +118,7 @@ def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseMod
     )
 
 
-@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>/history", methods=["GET"])
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/history", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=s11n.GetUserSubscriptionHistoryResponseModel,
@@ -125,9 +126,7 @@ def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseMod
     api=blueprint.api,
 )
 def get_user_subscription_history(user_id: int) -> s11n.GetUserSubscriptionHistoryResponseModel:
-    user = users_repository.get_user_by_id(user_id)
-    if not user:
-        raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
+    user = get_user_or_error(user_id)
 
     subscriptions = {}
 
@@ -146,7 +145,7 @@ def get_user_subscription_history(user_id: int) -> s11n.GetUserSubscriptionHisto
     return s11n.GetUserSubscriptionHistoryResponseModel(subscriptions=subscriptions)
 
 
-@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>/review", methods=["POST"])
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/review", methods=["POST"])
 @perm_utils.permission_required(perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=s11n.BeneficiaryReviewResponseModel,
@@ -156,9 +155,7 @@ def get_user_subscription_history(user_id: int) -> s11n.GetUserSubscriptionHisto
 def review_public_account(
     user_id: int, body: s11n.BeneficiaryReviewRequestModel
 ) -> s11n.BeneficiaryReviewResponseModel:
-    user = users_repository.get_user_by_id(user_id)
-    if not user:
-        raise ApiErrors(errors={"user_id": "User does not exist"}, status_code=412)
+    user = get_user_or_error(user_id, error_code=412)
 
     eligibility = None if body.eligibility is None else users_models.EligibilityType[body.eligibility]
 
@@ -182,13 +179,11 @@ def review_public_account(
     )
 
 
-@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>/resend-validation-email", methods=["POST"])
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/resend-validation-email", methods=["POST"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def resend_validation_email(user_id: int) -> None:
-    user = users_repository.get_user_by_id(user_id)
-    if not user:
-        raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
+    user = get_user_or_error(user_id)
 
     if user.has_admin_role or user.has_pro_role:
         raise ApiErrors(errors={"user_id": "Cette action n'est pas supportée pour les utilisateurs admin ou pro"})
@@ -197,3 +192,42 @@ def resend_validation_email(user_id: int) -> None:
         raise ApiErrors(errors={"user_id": "L'adresse email est déjà validée"})
 
     users_api.request_email_confirmation(user)
+
+
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/send-phone-validation-code", methods=["POST"])
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def send_phone_validation_code(user_id: int) -> None:
+    user = get_user_or_error(user_id)
+
+    try:
+        phone_validation_api.send_phone_validation_code(user, user.phoneNumber, ignore_limit=True)
+
+    except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
+        raise ApiErrors({"user_id": "Le numéro de téléphone est déjà validé"})
+
+    except phone_validation_exceptions.InvalidPhoneNumber:
+        raise ApiErrors({"user_id": "Le numéro de téléphone est invalide"})
+
+    except phone_validation_exceptions.UserAlreadyBeneficiary:
+        raise ApiErrors({"user_id": "L'utilisateur est déjà bénéficiaire"})
+
+    except phone_validation_exceptions.UnvalidatedEmail:
+        raise ApiErrors({"user_id": "L'email de l'utilisateur n'est pas encore validé"})
+
+    except phone_validation_exceptions.PhoneAlreadyExists:
+        raise ApiErrors({"user_id": "Un compte est déjà associé à ce numéro"})
+
+    except phone_validation_exceptions.PhoneVerificationException:
+        raise ApiErrors({"user_id": "L'envoi du code a échoué"})
+
+
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/skip-phone-validation", methods=["POST"])
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+def skip_phone_validation(user_id: int) -> None:
+    user = get_user_or_error(user_id)
+    try:
+        users_api.skip_phone_validation_step(user)
+    except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
+        raise ApiErrors({"user_id": "Le numéro de téléphone est déjà validé"})

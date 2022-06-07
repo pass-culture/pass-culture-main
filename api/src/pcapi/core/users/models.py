@@ -49,6 +49,7 @@ class TokenType(enum.Enum):
 class PhoneValidationStatusType(enum.Enum):
     BLOCKED_TOO_MANY_CODE_SENDINGS = "blocked-too-many-code-sendings"
     BLOCKED_TOO_MANY_CODE_VERIFICATION_TRIES = "blocked-too-many-code-verification-tries"
+    SKIPPED_BY_SUPPORT = "skipped-by-support"
     UNVALIDATED = "unvalidated"
     VALIDATED = "validated"
 
@@ -475,6 +476,14 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
     @is_phone_validated.expression  # type: ignore [no-redef]
     def is_phone_validated(cls):  # pylint: disable=no-self-argument
         return cls.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
+
+    @hybrid_property
+    def is_phone_validation_skipped(self):
+        return self.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
+
+    @is_phone_validation_skipped.expression  # type: ignore [no-redef]
+    def is_phone_validation_skipped(cls):  # pylint: disable=no-self-argument
+        return cls.phoneValidationStatus == PhoneValidationStatusType.SKIPPED_BY_SUPPORT
 
     @hybrid_property
     def has_admin_role(self) -> bool:
