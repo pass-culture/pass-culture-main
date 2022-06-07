@@ -26,8 +26,7 @@ const OfferAppPreview = ({
   offerData,
   venueData,
 }: IOfferAppPreview): JSX.Element => {
-  const cropPreviewText = (text: string): string => {
-    const maxLength = 300
+  const cropPreviewText = (text: string, maxLength = 300): string => {
     if (text.trim().length > maxLength) {
       return `${text.slice(0, maxLength)}...`
     }
@@ -50,7 +49,9 @@ const OfferAppPreview = ({
 
       <div className={style['offer-data-container']}>
         {offerData.name && (
-          <h2 className={style['offer-title']}>{offerData.name}</h2>
+          <h2 className={style['offer-title']}>
+            {cropPreviewText(offerData.name, 90)}
+          </h2>
         )}
 
         <OptionsIcons
