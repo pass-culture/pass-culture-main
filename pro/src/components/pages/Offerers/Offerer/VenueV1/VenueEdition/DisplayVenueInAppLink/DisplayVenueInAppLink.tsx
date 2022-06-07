@@ -29,7 +29,7 @@ export const DisplayVenueInAppLink: FunctionComponent<Props> = ({
     >
       <Icon
         className={styles['display-venue-link-icon']}
-        svg="ico-eye-open-filled"
+        svg="ico-external-site-red-filled"
       />
       Visualiser dans l’app
     </DisplayInAppLink>
