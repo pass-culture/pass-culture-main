@@ -1,0 +1,46 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
+.venue-details {
+  background-color: colors.$grey-very-light;
+  padding-top: rem.torem(13px);
+}
+
+.section {
+  background-color: colors.$white;
+  margin-top: rem.torem(6px);
+  padding: rem.torem(12px) rem.torem(15px) rem.torem(16px) rem.torem(15px);
+  &:first-child {
+    margin-top: 0;
+  }
+  &:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.title {
+  @include fonts.button();
+
+  margin-bottom: rem.torem(16px);
+}
+
+.sub-title {
+  @include fonts.highlight();
+
+  line-height: rem.torem(16px);
+}
+
+.venue-address {
+  line-height: rem.torem(20px);
+}
+
+.text {
+  @include fonts.preview-text();
+
+  margin-bottom: rem.torem(16px);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
