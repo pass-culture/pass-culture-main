@@ -914,6 +914,7 @@ class SendPhoneValidationCodeTest:
         ]
         assert len(token.value) == 6
         assert 0 <= int(token.value) < 1000000
+        assert token.extraData["phone_number"] == "+33601020304"
 
         # validate phone number with generated code
         response = client.post("/native/v1/validate_phone_number", json={"code": token.value})
@@ -1113,7 +1114,7 @@ class ValidatePhoneNumberTest:
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user)
+        token = create_phone_validation_token(user, "+33607080900")
 
         # try one attempt with wrong code
         client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
@@ -1130,6 +1131,26 @@ class ValidatePhoneNumberTest:
 
         assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 2
 
+    def test_validate_phone_number_with_first_sent_code(self, client, app):
+        first_number = "+33611111111"
+        second_number = "+33622222222"
+        user = users_factories.UserFactory(
+            phoneNumber=second_number,
+            subscriptionState=users_models.SubscriptionState.email_validated,
+        )
+        client.with_token(email=user.email)
+        first_token = create_phone_validation_token(user, first_number)
+        create_phone_validation_token(user, second_number)
+
+        response = client.post("/native/v1/validate_phone_number", {"code": first_token.value})
+
+        assert response.status_code == 204
+        user = User.query.get(user.id)
+        assert user.is_phone_validated
+        assert user.phoneNumber == first_number
+
+        assert int(app.redis_client.get(f"phone_validation_attempts_user_{user.id}")) == 1
+
     def test_validate_phone_number_and_become_beneficiary(self, client):
         user = users_factories.UserFactory(
             phoneNumber="+33607080900",
@@ -1145,7 +1166,7 @@ class ValidatePhoneNumberTest:
         )
 
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user)
+        token = create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
@@ -1162,7 +1183,7 @@ class ValidatePhoneNumberTest:
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user)
+        token = create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
@@ -1217,7 +1238,7 @@ class ValidatePhoneNumberTest:
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
         client.with_token(email=user.email)
-        create_phone_validation_token(user)
+        create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
 
@@ -1254,7 +1275,7 @@ class ValidatePhoneNumberTest:
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
         )
-        token = create_phone_validation_token(user)
+        token = create_phone_validation_token(user, "+33607080900")
 
         with freeze_time(datetime.utcnow() + timedelta(minutes=20)):
             client.with_token(email=user.email)
@@ -1262,41 +1283,6 @@ class ValidatePhoneNumberTest:
 
         assert response.status_code == 400
         assert response.json["code"] == "EXPIRED_VALIDATION_CODE"
-
-        assert not User.query.get(user.id).is_phone_validated
-        assert user.is_subscriptionState_phone_validation_ko
-        assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
-
-    @override_settings(BLACKLISTED_SMS_RECIPIENTS={"+33607080900"})
-    def test_blocked_phone_number(self, client):
-        user = users_factories.UserFactory(
-            phoneNumber="+33607080900",
-            subscriptionState=users_models.SubscriptionState.email_validated,
-        )
-        token = create_phone_validation_token(user)
-
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_PHONE_NUMBER"
-
-        assert not User.query.get(user.id).is_phone_validated
-        assert user.is_subscriptionState_phone_validation_ko
-        assert Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
-
-    def test_validate_phone_number_with_non_french_number(self, client):
-        user = users_factories.UserFactory(
-            phoneNumber="+46766123456",
-            subscriptionState=users_models.SubscriptionState.email_validated,
-        )
-        token = create_phone_validation_token(user)
-
-        client.with_token(email=user.email)
-        response = client.post("/native/v1/validate_phone_number", {"code": token.value})
-
-        assert response.status_code == 400
-        assert response.json["code"] == "INVALID_PHONE_NUMBER"
 
         assert not User.query.get(user.id).is_phone_validated
         assert user.is_subscriptionState_phone_validation_ko
@@ -1311,7 +1297,7 @@ class ValidatePhoneNumberTest:
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
         client.with_token(email=user.email)
-        token = create_phone_validation_token(user)
+        token = create_phone_validation_token(user, "+33607080900")
 
         # try one attempt with wrong code
         response = client.post("/native/v1/validate_phone_number", {"code": token.value})
