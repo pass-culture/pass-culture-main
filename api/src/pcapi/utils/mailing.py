@@ -42,6 +42,10 @@ def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
     return f"{settings.PRO_URL}/structures/{humanize(venue.managingOffererId)}/lieux/{humanize(venue.id)}"
 
 
+def build_pc_pro_venue_bookings_link(venue: offerers_models.Venue) -> str:
+    return f"{settings.PRO_URL}/reservations?offerVenueId={humanize(venue.id)}"
+
+
 def build_pc_pro_create_password_link(token_value: str) -> str:
     return f"{settings.PRO_URL}/creation-de-mot-de-passe/{token_value}"
 
