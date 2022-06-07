@@ -37,12 +37,18 @@ from pcapi.core.users.external import update_external_pro
 from pcapi.models import db
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 from pcapi.utils.mailing import build_pc_pro_offerer_link
+from pcapi.utils.mailing import build_pc_pro_venue_bookings_link
 from pcapi.utils.mailing import build_pc_pro_venue_link
 
 
 def _format_offers_link(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
     url = url_for("offer_for_venue.index", id=model.id)
     return Markup('<a href="{}">Offres associées</a>').format(escape(url))
+
+
+def _format_bookings_link(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
+    url = build_pc_pro_venue_bookings_link(model)
+    return Markup('<a href="{}">Réservations</a>').format(escape(url))
 
 
 def _format_venue_provider(view: BaseAdminView, context: Context, model: Venue, name: str) -> Optional[Markup]:
@@ -127,6 +133,7 @@ class VenueView(BaseAdminView):
         "venueLabel.label",
         "criteria",
         "offres",
+        "bookings",
         "publicName",
         "latitude",
         "longitude",
@@ -146,6 +153,7 @@ class VenueView(BaseAdminView):
         "venueTypeCode": "Type de lieu",
         "venueLabel.label": "Label du lieu",
         "criteria": "Tag",
+        "bookings": "Réservations du lieu",
         "publicName": "Nom d'usage",
         "latitude": "Latitude",
         "longitude": "Longitude",
@@ -211,6 +219,7 @@ class VenueView(BaseAdminView):
                 "venueTypeCode": _format_venue_type_code,
                 "provider_name": _format_venue_provider,
                 "offres": _format_offers_link,
+                "bookings": _format_bookings_link,
                 "managingOfferer.name": _format_offerer_name,
             }
         )
