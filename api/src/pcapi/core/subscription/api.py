@@ -318,12 +318,12 @@ def _needs_to_perform_identity_check(user) -> bool:  # type: ignore [no-untyped-
 
 def complete_profile(
     user: users_models.User,
-    address: typing.Optional[str],
+    address: str,
     city: str,
     postal_code: str,
     activity: str,
-    first_name: typing.Optional[str] = None,
-    last_name: typing.Optional[str] = None,
+    first_name: str,
+    last_name: str,
     school_type: typing.Optional[users_models.SchoolTypeEnum] = None,
 ) -> None:
     update_payload = {
@@ -335,15 +335,28 @@ def complete_profile(
         "schoolType": school_type,
     }
 
-    if first_name and not user.firstName:
+    if not user.firstName:
         update_payload["firstName"] = first_name
 
-    if last_name and not user.lastName:
+    if not user.lastName:
         update_payload["lastName"] = last_name
 
     with pcapi_repository.transaction():
         users_models.User.query.filter(users_models.User.id == user.id).update(update_payload)
 
+    fraud_api.create_profile_completion_fraud_check(
+        user,
+        user.eligibility,
+        fraud_models.ProfileCompletionContent(
+            activity=activity,
+            city=city,
+            first_name=first_name,
+            last_name=last_name,
+            origin="Completed in application step",
+            postalCode=postal_code,
+            school_type=school_type,
+        ),
+    )
     activate_beneficiary_if_no_missing_step(user)
 
     logger.info("User completed profile step", extra={"user": user.id})
