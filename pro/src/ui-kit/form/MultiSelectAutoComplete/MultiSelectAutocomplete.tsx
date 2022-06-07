@@ -88,7 +88,7 @@ const MultiSelectAutocomplete = ({
       hideFooter={meta.touched && !meta.error ? true : hideFooter}
       isOptional={isOptional}
       label={label}
-      name={fieldName}
+      name={`search-${fieldName}`}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
     >
