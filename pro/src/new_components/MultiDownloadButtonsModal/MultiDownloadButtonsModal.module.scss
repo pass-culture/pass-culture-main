@@ -20,12 +20,13 @@
 .downloadModalOption {
   background: white;
   border-radius: rem.torem(6px);
-  box-shadow: 0 2px 16px rgba(37, 2, 108, 0.15);
+  border: rem.torem(1px) solid #F1F1F4;
+  box-shadow: rem.torem(0px) rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
   display: inline-block;
   overflow: hidden;
   padding: rem.torem(12px) 0;
   position: absolute;
-  right: rem.torem(382px);
+  right: rem.torem(371px);
   top: rem.torem(45px);
 
   .insideModalButton {
