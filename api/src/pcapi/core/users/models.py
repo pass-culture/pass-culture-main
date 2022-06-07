@@ -53,6 +53,11 @@ class PhoneValidationStatusType(enum.Enum):
     VALIDATED = "validated"
 
 
+@dataclass
+class TokenExtraData:
+    phone_number: Optional[str]
+
+
 class Token(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "token"
 
@@ -71,6 +76,11 @@ class Token(PcObject, Model):  # type: ignore [valid-type, misc]
     expirationDate = sa.Column(sa.DateTime, nullable=True)
 
     isUsed = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
+
+    extraData = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)
+
+    def get_extra_data(self) -> Optional[TokenExtraData]:
+        return TokenExtraData(**self.extraData) if self.extraData else None
 
 
 class UserRole(enum.Enum):
