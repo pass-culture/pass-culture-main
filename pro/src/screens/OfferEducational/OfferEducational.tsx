@@ -77,7 +77,6 @@ const OfferEducational = ({
   }, [initialValues, resetForm])
 
   useEffect(() => {
-    console.log(getEducationalDomainsAdapter)
     if (getEducationalDomainsAdapter)
       getEducationalDomainsAdapter().then(result => {
         setDomainsOptions(result.payload)
