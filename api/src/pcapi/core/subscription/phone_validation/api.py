@@ -120,14 +120,10 @@ def send_phone_validation_code(user: users_models.User, phone_number: str) -> No
     _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
-    # delete previous token so that the user does not validate with another phone number
-    users_models.Token.query.filter(
-        users_models.Token.user == user, users_models.Token.type == users_models.TokenType.PHONE_VALIDATION
-    ).delete()
     user.phoneNumber = phone_number
     repository.save(user)
 
-    phone_validation_token = users_api.create_phone_validation_token(user)
+    phone_validation_token = users_api.create_phone_validation_token(user, phone_number)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"  # type: ignore [union-attr]
 
     is_sms_sent = sms_notifications.send_transactional_sms(phone_data.phone_number, content)
@@ -139,13 +135,7 @@ def send_phone_validation_code(user: users_models.User, phone_number: str) -> No
 
 
 def validate_phone_number(user: users_models.User, code: str) -> None:
-    if not user.phoneNumber:
-        raise exceptions.InvalidPhoneNumber()
-
-    phone_data = phone_number_utils.ParsedPhoneNumber(user.phoneNumber)
-
     _check_phone_number_validation_is_authorized(user)
-    _check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
     _check_and_update_phone_validation_attempts(app.redis_client, user)  # type: ignore [attr-defined]
 
     token = users_models.Token.query.filter(
@@ -163,9 +153,16 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
     if token.expirationDate and token.expirationDate < datetime.datetime.utcnow():
         raise exceptions.ExpiredCode()
 
+    if token.get_extra_data():
+        phone_number = token.get_extra_data().phone_number
+    else:
+        # TODO(viconnex): raise here in next release
+        phone_number = user.phoneNumber
+
     db.session.delete(token)
 
-    _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=True)
+    _ensure_phone_number_unicity(user, phone_number, change_owner=True)
 
+    user.phoneNumber = phone_number
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED  # type: ignore [assignment]
     repository.save(user)

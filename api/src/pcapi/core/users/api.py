@@ -73,18 +73,23 @@ def create_reset_password_token(user: User, token_life_time: timedelta = None) -
     )
 
 
-def create_phone_validation_token(user: User) -> Optional[Token]:
+def create_phone_validation_token(user: User, phone_number: str) -> Optional[Token]:
     secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
     return generate_and_save_token(
         user,
         token_type=TokenType.PHONE_VALIDATION,
         life_time=constants.PHONE_VALIDATION_TOKEN_LIFE_TIME,
         token_value=secret_code,
+        extra_data=models.TokenExtraData(phone_number=phone_number),
     )
 
 
 def generate_and_save_token(
-    user: User, token_type: TokenType, life_time: Optional[timedelta] = None, token_value: Optional[str] = None
+    user: User,
+    token_type: TokenType,
+    life_time: Optional[timedelta] = None,
+    token_value: Optional[str] = None,
+    extra_data: Optional[models.TokenExtraData] = None,
 ) -> Token:
     assert token_type.name in TokenType.__members__, "Only registered token types are allowed"
 
@@ -95,7 +100,13 @@ def generate_and_save_token(
     else:
         token_value = token_value or secrets.token_urlsafe(32)
 
-    token = Token(user=user, value=token_value, type=token_type, expirationDate=expiration_date)
+    token = Token(
+        user=user,
+        value=token_value,
+        type=token_type,
+        expirationDate=expiration_date,
+        extraData=asdict(extra_data) if extra_data else None,
+    )
     repository.save(token)
 
     return token
