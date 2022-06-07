@@ -48,7 +48,7 @@ executors:
 
   helm:
     docker:
-      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.4.1
+      - image: ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/helm-gcp:3.8.2
         auth:
           username: _json_key # default username when using a JSON key file to authenticate
           password: $GCP_INFRA_KEY
@@ -855,9 +855,6 @@ jobs:
 
   deploy-pcapi:
     executor: helm
-    environment:
-      HELM_EXPERIMENTAL_OCI: 1
-      CHART_NAME: pcapi-chart
     parameters:
       helm_environment:
         type: string
@@ -871,31 +868,15 @@ jobs:
       - authenticate-gcp:
           gcp-key-name: GCP_METIER_KEY
       - export_app_version
-      - export_chart_version:
-          version_file: ~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml
       - run:
           name: Get GKE cluster credentials
           command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
       - run:
-          name: Login to GCP Artifact Registry with helm
-          command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
-      - run:
-          name: Pull chart from registry
+          name: Deploy pcapi
           command: |
-            source ${BASH_ENV}
-            helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION}
-      - run:
-          name: Export chart in local filesystem
-          command: |
-            source ${BASH_ENV}
-            helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION} -d tmp/
-      - deploy-helm-chart:
-          helm_chart_name: pcapi
-          helm_release_name: <<parameters.helm_environment>>
-          kubernetes_namespace: <<parameters.helm_environment>>
-          helm_values_file: ./api/helm/pcapi/values.<<parameters.helm_environment>>.yaml
-          helm_private_values_file: ~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml
-          app_version: <<parameters.app_version>>
+            PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
+            PCAPI_VALUES_FILE=~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml \
+            helmfile -e <<parameters.helm_environment>> apply --set image.tag=<<parameters.app_version>>
       - run:
           name: Send failure notification
           command: |

@@ -1,0 +1,36 @@
+repositories:
+  - name: passCulture
+    url: europe-west1-docker.pkg.dev/passculture-infra-prod
+    oci: true
+    username: _json_key
+
+releases:
+  - name: {{ .Environment.Name }}
+    namespace: {{ .Environment.Name }}
+    chart: passCulture/pass-culture-artifact-registry/pcapi-chart
+    version: {{ .Values.chartVersion }}
+    values:
+      - {{ requiredEnv "PCAPI_VALUES_FILE" }}
+      - api/helm/pcapi/values.{{ .Environment.Name }}.yaml
+
+environments:
+  testing:
+    values:
+      - chartVersion: 0.11.8
+  staging:
+    values:
+      - chartVersion: 0.11.8
+  integration:
+    values:
+      - chartVersion: 0.11.8
+  production:
+    values:
+      - chartVersion: 0.11.8
+  ops:
+    values:
+      - chartVersion: 0.9.0
+  perf:
+    values:
+      - chartVersion: 0.8.3
+
+
