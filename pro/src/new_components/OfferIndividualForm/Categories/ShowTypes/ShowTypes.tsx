@@ -28,12 +28,12 @@ const ShowTypes = (): JSX.Element => {
     setFieldValue('showSubType', FORM_DEFAULT_VALUES.showSubType)
     let newShowSubTypeOptions: SelectOptions = []
     if (showType !== FORM_DEFAULT_VALUES.showType) {
-      const selectedMusicTypeChildren = showOptionsTree.find(
-        musicTypeOption => musicTypeOption.code === parseInt(showType)
+      const selectedShowTypeChildren = showOptionsTree.find(
+        showTypeOption => showTypeOption.code === parseInt(showType)
       )?.children
 
-      if (selectedMusicTypeChildren) {
-        newShowSubTypeOptions = selectedMusicTypeChildren.map(data => ({
+      if (selectedShowTypeChildren) {
+        newShowSubTypeOptions = selectedShowTypeChildren.map(data => ({
           value: data.code.toString(),
           label: data.label,
         }))
@@ -43,7 +43,7 @@ const ShowTypes = (): JSX.Element => {
     setShowTypesOptions(prevOptions => {
       return {
         ...prevOptions,
-        musicSubType: newShowSubTypeOptions,
+        showSubType: newShowSubTypeOptions,
       }
     })
   }, [showType])
@@ -59,7 +59,7 @@ const ShowTypes = (): JSX.Element => {
           value: FORM_DEFAULT_VALUES.showType,
         }}
       />
-      {showType && (
+      {showTypesOptions.showSubType.length > 0 && (
         <Select
           label="Choisir un sous type"
           name="showSubType"
