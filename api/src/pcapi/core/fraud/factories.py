@@ -149,6 +149,19 @@ class EduconnectContentFactory(factory.Factory):
     registration_datetime = factory.LazyFunction(datetime.utcnow)
 
 
+class ProfileCompletionContentFactory(factory.Factory):
+    class Meta:
+        model = models.ProfileCompletionContent
+
+    activity = "Étudiant"
+    city = factory.Faker("city")
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    origin = "In app"
+    postalCode = factory.Faker("postcode")
+    school_type = None
+
+
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
     models.FraudCheckType.DMS: DMSContentFactory,
     models.FraudCheckType.JOUVE: JouveContentFactory,
