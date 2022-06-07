@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 
 from flask import current_app as app
 from redis import Redis
@@ -25,10 +26,13 @@ logger = logging.getLogger(__name__)
 
 def _check_phone_number_validation_is_authorized(user: users_models.User) -> None:
     if user.is_phone_validated:
-        raise exceptions.UserPhoneNumberAlreadyValidated()
+        raise exceptions.UserPhoneNumberAlreadyValidated
 
-    if not user.isEmailValidated or user.has_beneficiary_role:
-        raise exceptions.PhoneVerificationException()
+    if not user.isEmailValidated:
+        raise exceptions.UnvalidatedEmail
+
+    if user.has_beneficiary_role:
+        raise exceptions.UserAlreadyBeneficiary
 
 
 def _check_phone_number_is_legit(user: users_models.User, phone_number: str, country_code: str) -> None:
@@ -112,18 +116,27 @@ def _check_and_update_phone_validation_attempts(redis: Redis, user: users_models
         redis.expire(phone_validation_attempts_key, settings.PHONE_VALIDATION_ATTEMPTS_TTL)
 
 
-def send_phone_validation_code(user: users_models.User, phone_number: str) -> None:
+def send_phone_validation_code(
+    user: users_models.User,
+    phone_number: typing.Optional[str],
+    expiration: typing.Optional[datetime.datetime] = None,
+    ignore_limit: bool = False,
+) -> None:
+    if not phone_number:
+        raise ValueError("phone number is empty")
+
     phone_data = phone_number_utils.ParsedPhoneNumber(phone_number)
 
     _check_phone_number_validation_is_authorized(user)
     _check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
-    _check_sms_sending_is_allowed(user)
+    if not ignore_limit:
+        _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
     user.phoneNumber = phone_number
     repository.save(user)
 
-    phone_validation_token = users_api.create_phone_validation_token(user, phone_number)
+    phone_validation_token = users_api.create_phone_validation_token(user, phone_number, expiration=expiration)
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"  # type: ignore [union-attr]
 
     is_sms_sent = sms_notifications.send_transactional_sms(phone_data.phone_number, content)

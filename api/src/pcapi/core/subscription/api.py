@@ -163,15 +163,16 @@ def get_phone_validation_subscription_item(
     else:
         if user.is_phone_validated:
             status = models.SubscriptionItemStatus.OK
+        elif user.is_phone_validation_skipped:
+            status = models.SubscriptionItemStatus.SKIPPED
+        elif fraud_repository.has_failed_phone_validation(user):
+            status = models.SubscriptionItemStatus.KO
+        elif not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+            status = models.SubscriptionItemStatus.NOT_ENABLED
+        elif is_eligibility_activable(user, eligibility):
+            status = models.SubscriptionItemStatus.TODO
         else:
-            if fraud_repository.has_failed_phone_validation(user):
-                status = models.SubscriptionItemStatus.KO
-            elif not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
-                status = models.SubscriptionItemStatus.NOT_ENABLED
-            elif is_eligibility_activable(user, eligibility):
-                status = models.SubscriptionItemStatus.TODO
-            else:
-                status = models.SubscriptionItemStatus.VOID
+            status = models.SubscriptionItemStatus.VOID
 
     return models.SubscriptionItem(type=models.SubscriptionStep.PHONE_VALIDATION, status=status)
 
@@ -288,7 +289,10 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
         return None
 
     if user.eligibility == users_models.EligibilityType.AGE18:
-        if not user.is_phone_validated and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
+        if (
+            not (user.is_phone_validated or user.is_phone_validation_skipped)
+            and FeatureToggle.ENABLE_PHONE_VALIDATION.is_active()
+        ):
             return models.SubscriptionStep.PHONE_VALIDATION
 
     user_profiling_item = get_user_profiling_subscription_item(user, user.eligibility)

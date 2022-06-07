@@ -22,6 +22,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
+from pcapi.core.users.models import PhoneValidationStatusType
 from pcapi.models import api_errors
 import pcapi.notifications.push.testing as push_testing
 
@@ -117,12 +118,23 @@ class NextSubscriptionStepTest:
 
     def test_next_subscription_step_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
-        assert subscription_api.get_next_subscription_step(user) == None
+        assert subscription_api.get_next_subscription_step(user) is None
 
     def test_next_subscription_step_phone_validation(self):
         user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
         assert (
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PHONE_VALIDATION
+        )
+
+    def test_next_subscription_step_phone_validation_skipped(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=self.eighteen_years_ago, phoneValidationStatus=PhoneValidationStatusType.SKIPPED_BY_SUPPORT
+        )
+        assert subscription_api.get_next_subscription_step(user) in (
+            subscription_models.SubscriptionStep.USER_PROFILING,
+            subscription_models.SubscriptionStep.PROFILE_COMPLETION,
+            subscription_models.SubscriptionStep.IDENTITY_CHECK,
+            subscription_models.SubscriptionStep.HONOR_STATEMENT,
         )
 
     @override_features(ENABLE_EDUCONNECT_AUTHENTICATION=True)
