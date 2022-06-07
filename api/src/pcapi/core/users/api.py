@@ -20,6 +20,7 @@ import pcapi.core.mails.transactional.users.unsuspension as suspension_mails
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.payments.api as payment_api
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import external as users_external
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
@@ -65,9 +66,9 @@ def create_reset_password_token(
 
 
 def create_phone_validation_token(
-        user: models.User,
-        phone_number: str,
-        expiration: typing.Optional[datetime.datetime] = None,
+    user: models.User,
+    phone_number: str,
+    expiration: typing.Optional[datetime.datetime] = None,
 ) -> typing.Optional[models.Token]:
     secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
     return generate_and_save_token(
@@ -804,3 +805,11 @@ def search_public_account(terms: typing.Iterable[str]) -> list[models.User]:
     accounts = models.User.query.filter(sa.or_(*filters)).all()
 
     return accounts
+
+
+def skip_phone_validation_step(user: models.User) -> None:
+    if user.phoneValidationStatus == models.PhoneValidationStatusType.VALIDATED:
+        raise phone_validation_exceptions.UserPhoneNumberAlreadyValidated()
+
+    user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name
+    repository.save(user)

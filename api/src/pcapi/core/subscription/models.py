@@ -23,6 +23,7 @@ class SubscriptionItemStatus(enum.Enum):
     NOT_ENABLED = "not-enabled"
     OK = "ok"
     PENDING = "pending"
+    SKIPPED = "skipped"
     SUSPICIOUS = "suspicious"
     TODO = "todo"
     VOID = "void"

@@ -34,9 +34,8 @@ class RoleListTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.list_roles"),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -86,9 +85,8 @@ class PermissionListTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.list_permissions"),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -142,10 +140,9 @@ class NewRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.create_role"),
             json=new_role_data,
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -166,10 +163,9 @@ class NewRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.create_role"),
             json=new_role_data,
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -190,10 +186,9 @@ class NewRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.create_role"),
             json=new_role_data,
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -242,10 +237,9 @@ class UpdateRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.put(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_role", id_=existing_role.id),
             json=new_role_data,
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -267,10 +261,9 @@ class UpdateRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.put(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_role", id_=existing_role.id),
             json=new_role_data,
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -292,10 +285,9 @@ class UpdateRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.put(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_role", id_=existing_role.id),
             json=new_role_data,
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -345,9 +337,8 @@ class DeleteRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.delete(
+        response = client.with_explicit_token(auth_token).delete(
             url_for("backoffice_blueprint.delete_role", id_=role.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -362,9 +353,8 @@ class DeleteRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.delete(
+        response = client.with_explicit_token(auth_token).delete(
             url_for("backoffice_blueprint.delete_role", id_=role.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -379,9 +369,8 @@ class DeleteRoleTest:
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
         # when
-        response = client.delete(
+        response = client.with_explicit_token(auth_token).delete(
             url_for("backoffice_blueprint.delete_role", id_=admin_role.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then

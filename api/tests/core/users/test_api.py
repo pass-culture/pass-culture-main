@@ -18,6 +18,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.payments.conf import GRANT_18_VALIDITY_IN_YEARS
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.core.users import api as users_api
@@ -868,3 +869,31 @@ class GetEligibilityTest:
 
         specified_date = datetime(2019, 2, 1, 12, 0)
         assert users_api.get_eligibility_at_date(date_of_birth, specified_date) is None
+
+
+class SkipPhoneValidationTest:
+    def test_can_skip_phone_validation(self):
+        # given
+        user = users_factories.UserFactory(phoneNumber="+33612345678")
+
+        # when
+        users_api.skip_phone_validation_step(user)
+
+        # then
+        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT
+
+    def test_cannot_skip_phone_validation_when_already_validated(self):
+        # given
+        user = users_factories.UserFactory(
+            phoneNumber="+33612345678", phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
+        )
+
+        # then
+        with pytest.raises(phone_validation_exceptions.UserPhoneNumberAlreadyValidated):
+
+            # when
+            users_api.skip_phone_validation_step(user)
+
+        # then
+        assert user.phoneNumber == "+33612345678"
+        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
