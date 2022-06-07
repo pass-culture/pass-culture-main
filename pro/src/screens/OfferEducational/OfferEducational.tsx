@@ -1,5 +1,6 @@
 import { FormikProvider, useFormik } from 'formik'
 import {
+  GetEducationalDomainsAdapter,
   GetIsOffererEligible,
   IEducationalCategory,
   IEducationalSubCategory,
@@ -7,7 +8,7 @@ import {
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   validationSchema,
   validationSchemaWithDomains,
@@ -36,7 +37,7 @@ export interface IOfferEducationalProps {
   setIsOfferActive?: (isActive: boolean) => void
   isOfferBooked?: boolean
   isOfferActive?: boolean
-  domainsOptions: SelectOption[]
+  getEducationalDomainsAdapter?: GetEducationalDomainsAdapter
 }
 
 const OfferEducational = ({
@@ -52,15 +53,15 @@ const OfferEducational = ({
   setIsOfferActive,
   isOfferBooked = false,
   isOfferActive = false,
-  domainsOptions,
+  getEducationalDomainsAdapter,
 }: IOfferEducationalProps): JSX.Element => {
+  const [domainsOptions, setDomainsOptions] = useState<SelectOption[]>([])
   const { resetForm, ...formik } = useFormik({
     initialValues,
     onSubmit,
-    validationSchema:
-      domainsOptions.length > 0
-        ? validationSchemaWithDomains
-        : validationSchema,
+    validationSchema: getEducationalDomainsAdapter
+      ? validationSchemaWithDomains
+      : validationSchema,
   })
 
   const shouldShowOfferActions =
@@ -68,11 +69,20 @@ const OfferEducational = ({
     setIsOfferActive &&
     cancelActiveBookings
 
+  // FIX ME
   useEffect(() => {
     // update formik values with initial values when initial values
     // are updated after offer update
     resetForm({ values: initialValues })
   }, [initialValues, resetForm])
+
+  useEffect(() => {
+    console.log(getEducationalDomainsAdapter)
+    if (getEducationalDomainsAdapter)
+      getEducationalDomainsAdapter().then(result => {
+        setDomainsOptions(result.payload)
+      })
+  }, [])
 
   return (
     <>
