@@ -13,6 +13,7 @@ import userEvent from '@testing-library/user-event'
 
 describe('screens | OfferEducational : creation offer type step', () => {
   let props: IOfferEducationalProps
+  let store: any
 
   beforeEach(() => {
     props = defaultCreationProps
@@ -123,29 +124,60 @@ describe('screens | OfferEducational : creation offer type step', () => {
       ).not.toBeInTheDocument()
     })
   })
-  describe('catégories and sub catégories / when there is only one item', () => {
+  describe('domains', () => {
     beforeEach(() => {
       props = {
         ...props,
-        educationalCategories: categoriesFactory([
-          { id: 'CAT_1', label: 'cat 1' },
-        ]),
-        educationalSubCategories: subCategoriesFactory([
-          { categoryId: 'CAT_1', id: 'SUBCAT_1', label: 'subcat 1' },
-        ]),
+        getEducationalDomainsAdapter: jest.fn().mockResolvedValue({
+          payload: [
+            { label: 'Domain 1', value: '1' },
+            { label: 'Domain 2', value: '2' },
+            { label: 'Domain 3', value: '3' },
+          ],
+        }),
+      }
+      store = {
+        features: {
+          initialized: true,
+          list: [
+            {
+              isActive: true,
+              name: 'ENABLE_EDUCATIONAL_DOMAINS',
+              nameKey: 'ENABLE_EDUCATIONAL_DOMAINS',
+            },
+          ],
+        },
       }
     })
-    it('should pre-select both categories and subcategories', async () => {
-      renderEACOfferForm(props)
 
-      const categorySelect = await screen.findByLabelText('Catégorie')
-      const subCategorySelect = await screen.findByLabelText('Sous-catégorie')
+    it('should require user to select a domain', async () => {
+      renderEACOfferForm(props, store)
 
-      expect(categorySelect).toHaveLength(1)
-      expect(subCategorySelect).toHaveLength(1)
+      await userEvent.click(
+        await screen.findByLabelText(/Domaine artistique et culturel/)
+      )
 
-      expect(categorySelect).toHaveValue('CAT_1')
-      expect(subCategorySelect).toHaveValue('SUBCAT_1')
+      await userEvent.click(screen.getByLabelText(/Catégorie/))
+
+      expect(
+        screen.getByText('Veuillez renseigner un domaine')
+      ).toBeInTheDocument()
+    })
+
+    it('should enable user to select domains', async () => {
+      renderEACOfferForm(props, store)
+
+      await userEvent.click(
+        await screen.findByLabelText(/Domaine artistique et culturel/)
+      )
+
+      await userEvent.click(await screen.findByLabelText(/Domain 2/))
+
+      await userEvent.click(screen.getByLabelText(/Catégorie/))
+
+      expect(
+        screen.queryByText('Veuillez renseigner un domaine')
+      ).not.toBeInTheDocument()
     })
   })
 
