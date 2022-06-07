@@ -535,6 +535,17 @@ class UpdateProfileTest:
         assert not notification["attribute_values"]["u.is_beneficiary"]
         assert notification["attribute_values"]["u.postal_code"] == "77000"
 
+        # Check that a PROFILE_COMPLETION fraud check is created
+        profile_completion_fraud_checks = [
+            fraud_check
+            for fraud_check in user.beneficiaryFraudChecks
+            if fraud_check.type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+        ]
+        assert len(profile_completion_fraud_checks) == 1
+        profile_completion_fraud_check = profile_completion_fraud_checks[0]
+        assert profile_completion_fraud_check.status == fraud_models.FraudCheckStatus.OK
+        assert profile_completion_fraud_check.reason == "Completed in application step"
+
     @override_features(ENABLE_UBBLE=True)
     def test_fulfill_profile_invalid_character(self, client):
         user = users_factories.UserFactory(
