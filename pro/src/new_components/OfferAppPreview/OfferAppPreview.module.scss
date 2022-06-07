@@ -1,0 +1,56 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
+.offer-preview-container {
+  border: rem.torem(1px) solid colors.$grey-medium;
+  border-radius: 4px;
+  box-shadow: 0 0 rem.torem(20px) 0 colors.$black-shadow;
+  height: fit-content;
+  width: rem.torem(256px);
+}
+
+.offer-img-container {
+  align-items: center;
+  background-color: colors.$grey-very-light;
+  border: none;
+  border-radius: rem.torem(4px);
+  box-shadow: 0 0 rem.torem(20px) 0 colors.$black-shadow;
+  display: flex;
+  flex-direction: column;
+  height: rem.torem(385px);
+  justify-content: center;
+  margin-bottom: rem.torem(18px);
+
+  .offer-img {
+    border-radius: rem.torem(4px);
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+}
+
+.offer-data-container {
+  background-color: colors.$white;
+  border-radius: 3px;
+  margin-bottom: rem.torem(16px);
+
+  .offer-title {
+    @include fonts.button();
+    max-width: rem.torem(224px);
+    overflow-wrap: break-word;
+    text-align: center;
+    padding: rem.torem(0) rem.torem(15px);
+    margin-bottom: rem.torem(22px);
+  }
+
+  .offer-options {
+    margin-bottom: rem.torem(27px);
+  }
+
+  .offer-description {
+    @include fonts.preview-text();
+    padding: rem.torem(0) rem.torem(15px) rem.torem(15px);
+    word-break: break-word;
+  }
+}
