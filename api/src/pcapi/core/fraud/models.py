@@ -26,6 +26,7 @@ class FraudCheckType(enum.Enum):
     INTERNAL_REVIEW = "internal_review"
     JOUVE = "jouve"
     PHONE_VALIDATION = "phone_validation"
+    PROFILE_COMPLETION = "profile_completion"
     UBBLE = "ubble"
     USER_PROFILING = "user_profiling"
 
@@ -310,12 +311,23 @@ class PhoneValidationFraudData(pydantic.BaseModel):
     phone_number: typing.Optional[str]
 
 
+class ProfileCompletionContent(pydantic.BaseModel):
+    activity: str
+    city: str
+    first_name: str
+    last_name: str
+    origin: str  # Where the profile was completed by the user. Can be the APP or DMS
+    postalCode: typing.Optional[str]
+    school_type: typing.Optional[users_models.SchoolTypeEnum]
+
+
 FRAUD_CHECK_MAPPING = {
     FraudCheckType.DMS: DMSContent,
     FraudCheckType.EDUCONNECT: EduconnectContent,
     FraudCheckType.INTERNAL_REVIEW: PhoneValidationFraudData,
     FraudCheckType.JOUVE: JouveContent,
     FraudCheckType.PHONE_VALIDATION: PhoneValidationFraudData,
+    FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
     FraudCheckType.UBBLE: ubble_fraud_models.UbbleContent,
     FraudCheckType.USER_PROFILING: UserProfilingFraudData,
 }
