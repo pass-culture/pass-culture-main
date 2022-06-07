@@ -49,7 +49,9 @@ const OfferEducationalEdition = (): JSX.Element => {
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
   const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
-
+  const enableEducationalDomains = useActiveFeature(
+    'ENABLE_EDUCATIONAL_DOMAINS'
+  )
   const [isReady, setIsReady] = useState<boolean>(false)
   const [screenProps, setScreenProps] = useState<AsyncScreenProps | null>(null)
   const [initialValues, setInitialValues] =
@@ -57,7 +59,6 @@ const OfferEducationalEdition = (): JSX.Element => {
   const [offer, setOffer] = useState<
     Offer | CollectiveOffer | CollectiveOfferTemplate
   >()
-  const [domainsOptions, setDomainsOptions] = useState<SelectOption[]>([])
   const notify = useNotification()
 
   const editOffer = useCallback(
@@ -93,11 +94,6 @@ const OfferEducationalEdition = (): JSX.Element => {
     },
     [offer]
   )
-  useEffect(() => {
-    getEducationalDomainsAdapter().then(result =>
-      setDomainsOptions(result.payload)
-    )
-  }, [])
   const setIsOfferActive = async (isActive: boolean) => {
     const patchOfferId =
       enableIndividualAndCollectiveSeparation && !isNewModelEnabled
@@ -268,7 +264,9 @@ const OfferEducationalEdition = (): JSX.Element => {
           notify={notify}
           onSubmit={editOffer}
           setIsOfferActive={setIsOfferActive}
-          domainsOptions={domainsOptions}
+          getEducationalDomainsAdapter={
+            enableEducationalDomains && getEducationalDomainsAdapter
+          }
         />
       ) : (
         <Spinner />
