@@ -94,6 +94,7 @@ const OfferEducationalEdition = (): JSX.Element => {
     },
     [offer]
   )
+
   const setIsOfferActive = async (isActive: boolean) => {
     const patchOfferId =
       enableIndividualAndCollectiveSeparation && !isNewModelEnabled
