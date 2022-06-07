@@ -54,6 +54,7 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
         activity=users_models.ActivityEnum[body.activity_id.value].value,
         school_type=users_models.SchoolTypeEnum[body.school_type_id.value] if body.school_type_id is not None else None,
     )
+    subscription_api.activate_beneficiary_if_no_missing_step(user)
 
 
 @blueprint.native_v1.route("/subscription/profile_options", methods=["GET"])
