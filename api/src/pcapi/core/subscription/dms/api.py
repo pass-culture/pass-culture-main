@@ -219,6 +219,32 @@ def _create_parsing_error_fraud_check(
     return fraud_check
 
 
+def _create_profile_completion_fraud_check_from_dms(
+    user: users_models.User,
+    eligibility: typing.Optional[users_models.EligibilityType],
+    content: fraud_models.DMSContent,
+    application_id: str,
+) -> None:
+    """Creates a PROFILE_COMPLETION fraud check from a DMS content, provided that all necessary fields are filled."""
+    activity = content.get_activity()
+    city = content.get_city()
+    first_name = content.get_first_name()
+    last_name = content.get_last_name()
+    if all(elem is not None for elem in [activity, city, first_name, last_name]):
+        fraud_api.create_profile_completion_fraud_check(
+            user,
+            eligibility,
+            fraud_models.ProfileCompletionContent(
+                activity=activity,
+                city=city,
+                first_name=first_name,
+                last_name=last_name,
+                origin=f"Completed in DMS application {application_id}",
+                postalCode=content.get_postal_code(),
+            ),
+        )
+
+
 def _process_user_not_found_error(
     email: str,
     application_number: int,
@@ -254,6 +280,10 @@ def _process_accepted_application(user: users_models.User, result_content: fraud
     fraud_api.create_honor_statement_fraud_check(
         user, "honor statement contained in DMS application", fraud_check.eligibilityType  # type: ignore [arg-type]
     )
+    _create_profile_completion_fraud_check_from_dms(
+        user, fraud_check.eligibilityType, result_content, application_id=fraud_check.thirdPartyId  # type: ignore [arg-type]
+    )
+
     try:
         has_completed_all_steps = subscription_api.on_successful_application(user=user, source_data=result_content)
     except Exception:  # pylint: disable=broad-except
