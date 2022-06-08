@@ -216,7 +216,7 @@ class BeneficiaryView(base_configuration.BaseAdminView):
             return flask.redirect(flask.url_for(".details_view", id=user_id))
 
         eligibility = (
-            None if form.data["eligibility"] == "Par défaut" else users_models.EligibilityType(form.data["eligibility"])
+            None if form.data["eligibility"] == "Par défaut" else users_models.EligibilityType[form.data["eligibility"]]
         )
 
         try:

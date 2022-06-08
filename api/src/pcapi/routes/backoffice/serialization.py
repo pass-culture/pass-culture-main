@@ -135,7 +135,7 @@ class BeneficiaryReviewRequestModel(BaseModel):
 
     reason: str
     review: fraud_models.FraudReviewStatus
-    eligibility: typing.Optional[users_models.EligibilityType]
+    eligibility: typing.Optional[str]
 
 
 class BeneficiaryReviewResponseModel(BeneficiaryReviewRequestModel):
