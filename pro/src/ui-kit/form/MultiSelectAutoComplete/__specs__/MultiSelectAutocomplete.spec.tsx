@@ -63,7 +63,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // when the user opens the field
       await userEvent.click(
-        screen.getByRole('textbox', { name: 'Département' })
+        screen.getByRole('textbox')
       )
 
       // then
@@ -80,7 +80,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // when the user opens the field
       await userEvent.click(
-        screen.getByRole('textbox', { name: 'Département' })
+        screen.getByRole('textbox')
       )
       // and then closes it
       await userEvent.click(screen.getByAltText('Masquer les options'))
@@ -102,7 +102,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // when the user opens the field
       await userEvent.click(
-        screen.getByRole('textbox', { name: 'Département' })
+        screen.getByRole('textbox')
       )
       // and clicks outside of the field
       await userEvent.click(
@@ -125,7 +125,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // when the user types in the field
       await userEvent.type(
-        screen.getByRole('textbox', { name: 'Département' }),
+        screen.getByRole('textbox'),
         'al'
       )
 
@@ -143,7 +143,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
         </Formik>
       )
       await userEvent.type(
-        screen.getByRole('textbox', { name: 'Département' }),
+        screen.getByRole('textbox'),
         'al'
       )
       await waitFor(() => {
@@ -169,7 +169,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // when the user opens the field
       await userEvent.click(
-        screen.getByRole('textbox', { name: 'Département' })
+        screen.getByRole('textbox')
       )
       // and selects options
       await userEvent.click(await screen.findByLabelText('Aveyron'))
@@ -199,7 +199,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // when the user opens the field
       await userEvent.click(
-        screen.getByRole('textbox', { name: 'Département' })
+        screen.getByRole('textbox')
       )
       // and selects options
       await userEvent.click(await screen.findByLabelText('Aveyron'))
@@ -229,7 +229,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // when the user opens the field
       await userEvent.click(
-        screen.getByRole('textbox', { name: 'Département' })
+        screen.getByRole('textbox')
       )
       // and unselects default options
       await userEvent.click(await screen.findByLabelText('Ain'))
@@ -276,11 +276,11 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
         </Formik>
       )
 
-      expect(screen.queryByTestId('error-departement')).not.toBeInTheDocument()
+      expect(screen.queryByText('Veuillez renseigner un Département')).not.toBeInTheDocument()
 
       // when the user opens the field
       await userEvent.click(
-        screen.getByRole('textbox', { name: 'Département' })
+        screen.getByRole('textbox')
       )
       // and unselects default options
       await userEvent.click(await screen.findByLabelText('Ain'))
@@ -288,7 +288,7 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
 
       // then
       await waitFor(() => {
-        expect(screen.queryByTestId('error-departement')).toBeInTheDocument()
+        expect(screen.queryByText('Veuillez renseigner un département')).toBeInTheDocument()
       })
     })
   })
