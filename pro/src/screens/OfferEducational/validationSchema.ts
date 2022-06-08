@@ -16,8 +16,8 @@ const isPhoneValid = (phone: string | undefined): boolean => {
   return Boolean(isValid)
 }
 
-const returnFalse = (searchDomains: string): boolean => false
-const returnTrue = (searchDomains: string): boolean => true
+const returnFalse = (): boolean => false
+const returnTrue = (): boolean => true
 
 export const validationSchema = yup.object().shape({
   category: yup.string().required('Veuillez sélectionner une catégorie'),
