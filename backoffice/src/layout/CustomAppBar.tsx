@@ -10,9 +10,9 @@ import {
     AppBar,
     UserMenu,
 } from 'react-admin';
-import { Fragment } from 'react';
-import { forwardRef } from 'react';
-import { useLogout } from 'react-admin';
+import {Fragment} from 'react';
+import {forwardRef} from 'react';
+import {useLogout} from 'react-admin';
 import ExitIcon from '@mui/icons-material/PowerSettingsNew';
 import MenuItem from '@mui/material/MenuItem';
 
@@ -23,17 +23,17 @@ const MyLogoutButton = forwardRef((props, ref) => {
         <MenuItem
             onClick={handleClick}
         >
-            <ExitIcon />&nbsp;Se&nbsp;Déconnecter
+            <ExitIcon/>&nbsp;Se&nbsp;Déconnecter
         </MenuItem>
     );
 });
 
 
-const CustomUserMenu = () => (
-    <UserMenu >
-        <MyLogoutButton />
-    </UserMenu>
-);
+function CustomUserMenu() {
+    return (<UserMenu>
+        <MyLogoutButton/>
+    </UserMenu>)
+};
 
 const CustomAppBar = (props: any) => {
 
