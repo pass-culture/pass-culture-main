@@ -66,7 +66,7 @@ class VenueProviderView(BaseAdminView):
     }
 
     column_default_sort = ("id", True)
-    column_searchable_list = ["venue.name", "venue.siret", "provider.name"]
+    column_searchable_list = ["venue.name", "venue.siret", "provider.name", "venueIdAtOfferProvider"]
     column_filters = ["venue.id", "venue.name", "venue.siret", "provider.name"]
     form_columns = ["venue", "provider", "venueIdAtOfferProvider", "isActive"]
     form_extra_fields = ["allocine_is_duo", "allocine_quantity", "allocine_price"]
