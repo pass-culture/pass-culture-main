@@ -607,6 +607,7 @@ class EmailHistoryEventTypeEnum(enum.Enum):
     UPDATE_REQUEST = "UPDATE_REQUEST"
     VALIDATION = "VALIDATION"
     ADMIN_VALIDATION = "ADMIN_VALIDATION"
+    ADMIN_UPDATE_REQUEST = "ADMIN_UPDATE_REQUEST"
 
 
 class UserEmailHistory(PcObject, Model):  # type: ignore [valid-type, misc]
@@ -646,7 +647,9 @@ class UserEmailHistory(PcObject, Model):  # type: ignore [valid-type, misc]
         )
 
     @classmethod
-    def build_update_request(cls, user: User, new_email: str) -> "UserEmailHistory":
+    def build_update_request(cls, user: User, new_email: str, admin: bool = False) -> "UserEmailHistory":
+        if admin:
+            return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST)
         return cls._build(user, new_email, event_type=EmailHistoryEventTypeEnum.UPDATE_REQUEST)
 
     @classmethod

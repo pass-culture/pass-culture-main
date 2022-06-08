@@ -5,8 +5,12 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.permissions import utils as perm_utils
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.users import api as users_api
+from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import external as users_external
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
+from pcapi.core.users.email.update import request_email_update_from_admin
+from pcapi.core.users.utils import sanitize_email
 from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
 
@@ -47,6 +51,45 @@ def search_public_account(query: s11n.PublicAccountSearchQuery) -> s11n.ListPubl
 )
 def get_public_account(user_id: int) -> s11n.PublicAccount:
     user = users_repository.get_user_by_id(user_id)
+
+    return s11n.PublicAccount.from_orm(user)
+
+
+@blueprint.backoffice_blueprint.route("public_accounts/user/<int:user_id>", methods=["POST"])
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
+@spectree_serialize(
+    response_model=s11n.PublicAccount,
+    on_success_status=200,
+    api=blueprint.api,
+)
+def update_public_account(user_id: int, body: s11n.PublicAccountUpdateRequest) -> s11n.PublicAccount:
+    user = users_repository.get_user_by_id(user_id)
+    if not user:
+        raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
+
+    if body.phoneNumber:
+        # Waiting for clarification about phone number changes allowed or not
+        raise ApiErrors(errors={"phoneNumber": "La modification du numéro de téléphone n'est pas autorisée"})
+
+    users_api.update_user_information(
+        user,
+        first_name=body.firstName,
+        last_name=body.lastName,
+        birth_date=body.dateOfBirth,
+        id_piece_number=body.idPieceNumber,
+        address=body.address,
+        postal_code=body.postalCode,
+        city=body.city,
+        commit=True,
+    )
+
+    if body.email and body.email != sanitize_email(user.email):
+        try:
+            request_email_update_from_admin(user, body.email)
+        except users_exceptions.EmailExistsError:
+            raise ApiErrors(errors={"email": "L'email est déjà associé à un autre utilisateur"})
+
+    users_external.update_external_user(user)
 
     return s11n.PublicAccount.from_orm(user)
 

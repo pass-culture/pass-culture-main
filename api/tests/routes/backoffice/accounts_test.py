@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
+import re
 
 from dateutil.relativedelta import relativedelta
 from flask import url_for
@@ -19,6 +20,7 @@ from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.factories import DepositGrantFactory
+from pcapi.models import db
 from pcapi.models.beneficiary_import_status import ImportStatus
 
 
@@ -27,10 +29,18 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 def create_bunch_of_accounts():
     underage = users_factories.UnderageBeneficiaryFactory(
-        firstName="Gédéon", lastName="Groidanlabénoir", email="gg@example.com", phoneNumber="0123456789"
+        firstName="Gédéon",
+        lastName="Groidanlabénoir",
+        email="gg@example.com",
+        phoneNumber="+33123456789",
+        phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     grant_18 = users_factories.BeneficiaryGrant18Factory(
-        firstName="Abdel Yves Akhim", lastName="Flaille", email="ayaf@example.com", phoneNumber="0516273849"
+        firstName="Abdel Yves Akhim",
+        lastName="Flaille",
+        email="ayaf@example.com",
+        phoneNumber="+33516273849",
+        phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
     )
     pro = users_factories.ProFactory(
         firstName="Gérard", lastName="Mentor", email="gm@example.com", phoneNumber="0246813579"
@@ -51,9 +61,8 @@ class PublicAccountSearchTest:
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.search_public_account", q=underage.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -77,9 +86,8 @@ class PublicAccountSearchTest:
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.search_public_account", q=grant_18.firstName),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -103,9 +111,8 @@ class PublicAccountSearchTest:
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.search_public_account", q=random.email),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -129,9 +136,8 @@ class PublicAccountSearchTest:
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.search_public_account", q=random.phoneNumber),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -154,9 +160,8 @@ class PublicAccountSearchTest:
         auth_token = generate_token(user, [])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.search_public_account", q="anything"),
-            headers={"Authorization": auth_token},
         )
 
         # then
@@ -168,9 +173,8 @@ class PublicAccountSearchTest:
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.search_public_account", q="anything"),
-            headers={"Authorization": auth_token},
         )
 
         # then
@@ -192,9 +196,8 @@ class GetPublicAccountTest:
         user = users[index]
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_public_account", user_id=user.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -217,9 +220,8 @@ class GetPublicAccountTest:
         auth_token = generate_token(user, [])
 
         # when
-        response = client.with_session_auth(user.email).get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_public_account", user_id=user.id),
-            headers={"Authorization": auth_token},
         )
 
         # then
@@ -231,9 +233,186 @@ class GetPublicAccountTest:
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_public_account", user_id=1),
-            headers={"Authorization": auth_token},
+        )
+
+        # then
+        assert response.status_code == 403
+
+
+class UpdatePublicAccountTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_update_public_account(self, client):
+        # given
+        _, user, _, _ = create_bunch_of_accounts()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.update_public_account", user_id=user.id),
+            json={
+                "firstName": "Upda",
+                "lastName": "Ted",
+                "address": "Quai Branly",
+                "postalCode": "75007",
+                "city": "Paris",
+                "idPieceNumber": "ABCDE",
+            },
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json == {
+            "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
+            "email": user.email,
+            "firstName": "Upda",
+            "id": user.id,
+            "isActive": True,
+            "lastName": "Ted",
+            "phoneNumber": user.phoneNumber,
+            "roles": ["BENEFICIARY"],
+        }
+
+        db.session.refresh(user)
+        assert user.firstName == "Upda"
+        assert user.lastName == "Ted"
+        assert user.address == "Quai Branly"
+        assert user.postalCode == "75007"
+        assert user.city == "Paris"
+        assert user.email == "ayaf@example.com"
+        assert user.isEmailValidated
+        assert user.idPieceNumber == "ABCDE"
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_update_public_account_email(self, client):
+        # given
+        user, _, _, _ = create_bunch_of_accounts()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.update_public_account", user_id=user.id),
+            json={"email": "Updated@example.com"},
+        )
+
+        # then
+        assert response.status_code == 200
+        assert response.json == {
+            "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
+            "email": "updated@example.com",
+            "firstName": "Gédéon",
+            "id": user.id,
+            "isActive": True,
+            "lastName": "Groidanlabénoir",
+            "phoneNumber": "+33123456789",
+            "roles": ["UNDERAGE_BENEFICIARY"],
+        }
+
+        # check that email has been changed immediately after admin request
+        db.session.refresh(user)
+        assert user.email == "updated@example.com"
+        assert not user.isEmailValidated
+
+        # check that a line has been added in email history
+        email_history: list[users_models.UserEmailHistory] = users_models.UserEmailHistory.query.filter(
+            users_models.UserEmailHistory.userId == user.id
+        ).all()
+        assert len(email_history) == 1
+        assert email_history[0].eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE_REQUEST
+        assert email_history[0].oldEmail == "gg@example.com"
+        assert email_history[0].newEmail == "updated@example.com"
+
+        # check that a new token has been generated
+        token: users_models.Token = users_models.Token.query.filter(users_models.Token.userId == user.id).one()
+        assert token.type == users_models.TokenType.EMAIL_VALIDATION
+
+        # check that email is sent
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["To"] == "updated@example.com"
+        assert mails_testing.outbox[0].sent_data["template"] == TransactionalEmail.EMAIL_CONFIRMATION.value.__dict__
+        assert token.value in mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
+
+        # click on confirmation link to validate new email
+        # when
+        token_from_link = re.search(
+            r"token%3D([^%]*)%", mails_testing.outbox[0].sent_data["params"]["CONFIRMATION_LINK"]
+        ).group(1)
+        response = client.post(url_for("native_v1.validate_email"), json={"email_validation_token": token_from_link})
+
+        # then
+        assert response.status_code == 200
+        db.session.refresh(user)
+        assert user.email == "updated@example.com"
+        assert user.isEmailValidated
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_update_public_account_invalid_email(self, client):
+        # given
+        user, _, _, _ = create_bunch_of_accounts()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.update_public_account", user_id=user.id),
+            json={"email": "updated.example.com"},
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {"email": ["Le format d'email est incorrect."]}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_update_public_account_used_email(self, client):
+        # given
+        user1, user2, _, _ = create_bunch_of_accounts()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.update_public_account", user_id=user1.id),
+            json={"email": user2.email},
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {"email": "L'email est déjà associé à un autre utilisateur"}
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_update_public_account_phone_number(self, client):
+        # given
+        _, user, _, _ = create_bunch_of_accounts()
+        admin = users_factories.UserFactory()
+        auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.update_public_account", user_id=user.id),
+            json={"phoneNumber": "0987654321"},
+        )
+
+        # then
+        assert response.status_code == 400
+        assert response.json == {"phoneNumber": "La modification du numéro de téléphone n'est pas autorisée"}
+
+        db.session.refresh(user)
+        assert user.phoneNumber == "+33516273849"  # unchanged
+        assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_update_public_account_without_permission(self, client):
+        # given
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [])
+
+        # when
+        response = client.with_explicit_token(auth_token).post(
+            url_for("backoffice_blueprint.update_public_account", user_id=user.id),
+            json={"email": "updated@example.com"},
         )
 
         # then
@@ -255,9 +434,8 @@ class GetBeneficiaryCreditTest:
         )
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_beneficiary_credit", user_id=grant_18.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -277,9 +455,8 @@ class GetBeneficiaryCreditTest:
 
         # when
         responses = [
-            client.get(
+            client.with_explicit_token(auth_token).get(
                 url_for("backoffice_blueprint.get_beneficiary_credit", user_id=user.id),
-                headers={"Authorization": f"Bearer {auth_token}"},
             )
             for user in (pro, random)
         ]
@@ -300,9 +477,8 @@ class GetBeneficiaryCreditTest:
         auth_token = generate_token(user, [])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1),
-            headers={"Authorization": auth_token},
         )
 
         # then
@@ -314,9 +490,8 @@ class GetBeneficiaryCreditTest:
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_beneficiary_credit", user_id=1),
-            headers={"Authorization": auth_token},
         )
 
         # then
@@ -330,9 +505,8 @@ class GetUserHistoryTest:
         auth_token = generate_token(admin, [Permissions.READ_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_session_auth(admin.email).get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_user_subscription_history", user_id=user.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -547,9 +721,8 @@ class GetUserHistoryTest:
         auth_token = generate_token(user, [])
 
         # when
-        response = client.with_session_auth(user.email).get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_user_subscription_history", user_id=1),
-            headers={"Authorization": auth_token},
         )
 
         # then
@@ -561,9 +734,8 @@ class GetUserHistoryTest:
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
-        response = client.get(
+        response = client.with_explicit_token(auth_token).get(
             url_for("backoffice_blueprint.get_user_subscription_history", user_id=1),
-            headers={"Authorization": auth_token},
         )
 
         # then
@@ -582,10 +754,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -613,10 +784,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -646,10 +816,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -675,10 +844,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -704,10 +872,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "KO", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -732,10 +899,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None, "pouet": "coin coin"},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -750,10 +916,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -768,10 +933,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -785,10 +949,9 @@ class PostManualReviewTest:
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -809,10 +972,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -825,11 +987,10 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             # a user with this id should not exist
             url_for("backoffice_blueprint.review_public_account", user_id=15041980),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -845,10 +1006,9 @@ class PostManualReviewTest:
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.review_public_account", user_id=user.id),
             json={"reason": "User is granted", "review": "OK", "eligibility": None},
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -864,9 +1024,8 @@ class ResendValidationEmailTest:
         auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_session_auth(backoffice_user.email).post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.resend_validation_email", user_id=user.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -894,9 +1053,8 @@ class ResendValidationEmailTest:
         auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_session_auth(backoffice_user.email).post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.resend_validation_email", user_id=pro_user.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -912,9 +1070,8 @@ class ResendValidationEmailTest:
         auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_session_auth(backoffice_user.email).post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.resend_validation_email", user_id=pro_user.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -930,9 +1087,8 @@ class ResendValidationEmailTest:
         auth_token = generate_token(backoffice_user, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_session_auth(backoffice_user.email).post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.resend_validation_email", user_id=admin_user.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then
@@ -948,9 +1104,8 @@ class ResendValidationEmailTest:
         auth_token = generate_token(backoffice_user, [Permissions.READ_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_session_auth(backoffice_user.email).post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.resend_validation_email", user_id=user.id),
-            headers={"Authorization": f"Bearer {auth_token}"},
         )
 
         # then

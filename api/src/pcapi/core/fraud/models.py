@@ -11,7 +11,6 @@ import sqlalchemy as sa
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import models as users_models
-from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -228,9 +227,6 @@ class DMSContent(common_models.IdentityCheckContent):
 
     def get_city(self) -> typing.Optional[str]:
         return self.city
-
-    def get_department_code(self) -> typing.Optional[str]:
-        return PostalCode(self.postal_code).get_departement_code() if self.postal_code else None
 
     def get_id_piece_number(self) -> typing.Optional[str]:
         return self.id_piece_number
