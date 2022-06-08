@@ -40,7 +40,7 @@ MOCKS: dict[ResourceCDS, Union[dict, list[dict], list]] = {
 def get_resource(
     api_url: str,
     cinema_id: str,
-    token: Optional[str],
+    cinema_api_token: Optional[str],
     resource: ResourceCDS,
     path_params: Optional[dict[str, Any]] = None,
 ) -> Union[dict, list[dict], list]:
@@ -49,12 +49,12 @@ def get_resource(
         return MOCKS[resource]
 
     try:
-        url = _build_url(api_url, cinema_id, token, resource, path_params)
+        url = _build_url(api_url, cinema_id, cinema_api_token, resource, path_params)
         response = requests.get(url)
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        error_message = _filter_token(str(e), token)
+        error_message = _filter_token(str(e), cinema_api_token)
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Error on CDS API on GET {resource} : {error_message}"
         ) from None
@@ -63,19 +63,19 @@ def get_resource(
 
 
 def put_resource(
-    api_url: str, cinema_id: str, token: Optional[str], resource: ResourceCDS, body: BaseModel
+    api_url: str, cinema_id: str, cinema_api_token: Optional[str], resource: ResourceCDS, body: BaseModel
 ) -> Optional[Union[dict, list[dict], list]]:
     if settings.IS_DEV:
         return MOCKS[resource]
 
     try:
-        url = _build_url(api_url, cinema_id, token, resource)
+        url = _build_url(api_url, cinema_id, cinema_api_token, resource)
         headers = {"Content-Type": "application/json"}
         response = requests.put(url, headers=headers, data=body.json(by_alias=True))
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        error_message = _filter_token(str(e), token)
+        error_message = _filter_token(str(e), cinema_api_token)
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Error on CDS API on PUT {resource} : {error_message}"
         ) from None
@@ -86,15 +86,17 @@ def put_resource(
     return None
 
 
-def post_resource(api_url: str, cinema_id: str, token: Optional[str], resource: ResourceCDS, body: BaseModel) -> dict:
+def post_resource(
+    api_url: str, cinema_id: str, cinema_api_token: Optional[str], resource: ResourceCDS, body: BaseModel
+) -> dict:
     try:
-        url = _build_url(api_url, cinema_id, token, resource)
+        url = _build_url(api_url, cinema_id, cinema_api_token, resource)
         headers = {"Content-Type": "application/json"}
         response = requests.post(url, headers=headers, data=body.json(by_alias=True))
         response.raise_for_status()
 
     except requests.exceptions.RequestException as e:
-        error_message = _filter_token(str(e), token)
+        error_message = _filter_token(str(e), cinema_api_token)
         raise cds_exceptions.CineDigitalServiceAPIException(
             f"Error on CDS API on POST {resource} : {error_message}"
         ) from None
@@ -105,7 +107,7 @@ def post_resource(api_url: str, cinema_id: str, token: Optional[str], resource: 
 def _build_url(
     api_url: str,
     cinema_id: str,
-    token: Optional[str],
+    cinema_api_token: Optional[str],
     resource: ResourceCDS,
     path_params: Optional[dict[str, Any]] = None,
 ) -> str:
@@ -113,7 +115,7 @@ def _build_url(
     if path_params:
         for key, value in path_params.items():
             resource_url = resource_url.replace(":" + key, str(value))
-    return f"https://{cinema_id}.{api_url}{resource_url}?api_token={token}"
+    return f"https://{cinema_id}.{api_url}{resource_url}?api_token={cinema_api_token}"
 
 
 def _filter_token(error_message: str, token: Optional[str]) -> str:

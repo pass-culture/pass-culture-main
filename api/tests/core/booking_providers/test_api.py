@@ -14,6 +14,8 @@ from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.factories import BookingProviderFactory
 from pcapi.core.booking_providers.factories import VenueBookingProviderFactory
 from pcapi.core.booking_providers.models import BookingProviderName
+from pcapi.core.providers.factories import CDSCinemaDetailsFactory
+from pcapi.core.providers.factories import CinemaProviderPivotFactory
 
 
 @pytest.mark.usefixtures("db_session")
@@ -46,12 +48,14 @@ class GetBookingProviderClientApiTest:
     def test_should_return_client_api_according_to_name(self) -> None:
         # Given
         booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="test_api_url")
-        venue_booking_provider = VenueBookingProviderFactory(
-            token="test_token", idAtProvider="test_id", bookingProvider=booking_provider
+        venue_booking_provider = VenueBookingProviderFactory(idAtProvider="test_id", bookingProvider=booking_provider)
+        cinema_provider_pivot = CinemaProviderPivotFactory(
+            venue=venue_booking_provider.venue, idAtProvider=venue_booking_provider.idAtProvider
         )
-        venue_id = venue_booking_provider.venueId
+        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaApiToken="test_token")
 
         # When
+        venue_id = venue_booking_provider.venueId
         client_api = _get_booking_provider_client_api(venue_id)
 
         # Then
@@ -81,8 +85,12 @@ class GetShowStockTest:
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_show")
     def test_should_return_avaible_places_for_show_id(self, mocked_show: Any) -> None:
         # Given
-        booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="api_url_test")
-        venue_booking_provider = VenueBookingProviderFactory(bookingProvider=booking_provider)
+        booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="test_api_url")
+        venue_booking_provider = VenueBookingProviderFactory(idAtProvider="test_id", bookingProvider=booking_provider)
+        cinema_provider_pivot = CinemaProviderPivotFactory(
+            venue=venue_booking_provider.venue, idAtProvider=venue_booking_provider.idAtProvider
+        )
+        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaApiToken="test_token")
         venue_id = venue_booking_provider.venueId
         mocked_show.return_value = ShowCDS(
             id=1,

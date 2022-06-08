@@ -81,6 +81,8 @@ class Provider(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, 
 
 
 class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
+    """Stores specific sync settings for a Venue, and whether it is active"""
+
     venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
 
     venue = relationship("Venue", foreign_keys=[venueId])
@@ -138,6 +140,8 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type
 
 
 class CinemaProviderPivot(PcObject, Model):  # type: ignore [valid-type, misc]
+    """Stores whether a Venue has requested to be synced with a Provider"""
+
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
 
     venue = relationship(Venue, foreign_keys=[venueId])
@@ -155,6 +159,18 @@ class CinemaProviderPivot(PcObject, Model):  # type: ignore [valid-type, misc]
             name="unique_pivot_venue_provider",
         ),
     )
+
+
+class CDSCinemaDetails(PcObject, Model):  # type: ignore [valid-type, misc]
+    """Stores info on the specific login details of a cinema synced with CDS"""
+
+    cinemaProviderPivotId = Column(
+        BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
+    )
+
+    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])
+
+    cinemaApiToken = Column(Text, nullable=False)
 
 
 class AllocineVenueProvider(VenueProvider):

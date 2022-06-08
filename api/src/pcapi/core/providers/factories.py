@@ -1,5 +1,6 @@
 import base64
 import random
+import secrets
 
 import factory
 
@@ -70,6 +71,14 @@ class CinemaProviderPivotFactory(BaseFactory):
     venue = factory.SubFactory(VenueFactory)
     provider = factory.SubFactory(ProviderFactory)
     idAtProvider = factory.Sequence("idProvider{}".format)
+
+
+class CDSCinemaDetailsFactory(BaseFactory):
+    class Meta:
+        model = models.CDSCinemaDetails
+
+    cinemaProviderPivot = factory.SubFactory(CinemaProviderPivotFactory)
+    cinemaApiToken = factory.LazyFunction(secrets.token_urlsafe)
 
 
 class AllocineProviderFactory(BaseFactory):

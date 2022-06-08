@@ -103,7 +103,7 @@ class CineDigitalServiceGetShowTest:
 
         # when
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test/"
+            cinema_id="cinemaid_test", cinema_api_token="token_test", api_url="apiUrl_test/"
         )
         show = cine_digital_service.get_show(2)
 
@@ -127,7 +127,9 @@ class CineDigitalServiceGetShowTest:
             },
         ]
         mocked_get_resource.return_value = json_shows
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_show(4)
         assert (
@@ -187,7 +189,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
 
         # when
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test/"
+            cinema_id="cinemaid_test", cinema_api_token="token_test", api_url="apiUrl_test/"
         )
         shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
 
@@ -215,7 +217,7 @@ class CineDigitalServiceGetPaymentTypeTest:
 
         mocked_get_resource.return_value = json_payment_types
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test"
+            cinema_id="cinemaid_test", cinema_api_token="token_test", api_url="apiUrl_test"
         )
 
         payment_type = cine_digital_service.get_voucher_payment_type()
@@ -238,7 +240,9 @@ class CineDigitalServiceGetPaymentTypeTest:
             },
         ]
         mocked_get_resource.return_value = json_payment_types
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_voucher_payment_type()
         assert (
@@ -259,7 +263,7 @@ class CineDigitalServiceGetPCVoucherTypesTest:
 
         mocked_get_resource.return_value = json_voucher_types
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinema_id_test", token="token_test", api_url="apiUrl_test"
+            cinema_id="cinema_id_test", cinema_api_token="token_test", api_url="apiUrl_test"
         )
         pc_voucher_types = cine_digital_service.get_pc_voucher_types()
 
@@ -291,7 +295,7 @@ class CineDigitalServiceGetTariffTest:
         ]
         mocked_get_resource.return_value = json_tariffs
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinema_id_test", token="token_test", api_url="apiUrl_test"
+            cinema_id="cinema_id_test", cinema_api_token="token_test", api_url="apiUrl_test"
         )
         tariff = cine_digital_service.get_tariff()
 
@@ -314,7 +318,9 @@ class CineDigitalServiceGetTariffTest:
             },
         ]
         mocked_get_resource.return_value = json_tariffs
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_tariff()
         assert (
@@ -347,7 +353,9 @@ class CineDigitalServiceGetScreenTest:
             },
         ]
         mocked_get_resource.return_value = json_screens
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         show = cine_digital_service.get_screen(2)
 
         assert show.id == 2
@@ -375,7 +383,9 @@ class CineDigitalServiceGetScreenTest:
             },
         ]
         mocked_get_resource.return_value = json_screens
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as cds_exception:
             cine_digital_service.get_screen(4)
         assert (
@@ -407,7 +417,9 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         )
 
         mocked_get_resource.return_value = seatmap_json
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         best_seat = cine_digital_service.get_available_seat(1, screen)
         assert len(best_seat) == 1
         assert best_seat[0].seatRow == 5
@@ -432,7 +444,9 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         )
 
         mocked_get_resource.return_value = seatmap_json
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         best_seat = cine_digital_service.get_available_seat(1, screen)
         assert len(best_seat) == 1
         assert best_seat[0].seatRow == 2
@@ -457,7 +471,9 @@ class CineDigitalServiceGetAvailableSingleSeatTest:
         )
 
         mocked_get_resource.return_value = seatmap_json
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         best_seat = cine_digital_service.get_available_seat(1, screen)
         assert not best_seat
 
@@ -481,7 +497,9 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         )
 
         mocked_get_resource.return_value = seatmap_json
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
         assert len(duo_seats) == 2
         assert duo_seats[0].seatNumber == "B_2"
@@ -505,7 +523,9 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         )
 
         mocked_get_resource.return_value = seatmap_json
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
         assert len(duo_seats) == 0
 
@@ -527,7 +547,9 @@ class CineDigitalServiceGetAvailableDuoSeatTest:
         )
 
         mocked_get_resource.return_value = seatmap_json
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
         duo_seats = cine_digital_service.get_available_duo_seat(1, screen)
         assert len(duo_seats) == 2
         assert duo_seats[0].seatNumber == "C_3"
@@ -540,7 +562,9 @@ class CineDigitalServiceCancelBookingTest:
         # Given
         json_response = {}
         mocked_put_resource.return_value = json_response
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
 
         # When
         try:
@@ -559,7 +583,9 @@ class CineDigitalServiceCancelBookingTest:
             "555555555555": "DAY_CLOSED",
         }
         mocked_put_resource.return_value = json_response
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
 
         # When
         with pytest.raises(cds_exceptions.CineDigitalServiceAPIException) as exception:
@@ -593,7 +619,9 @@ class CineDigitalServiceGetVoucherForShowTest:
 
         mocked_get_resource.return_value = json_voucher_types
 
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
 
         voucher_type = cine_digital_service.get_voucher_type_for_show(show)
 
@@ -621,7 +649,9 @@ class CineDigitalServiceGetVoucherForShowTest:
 
         mocked_get_resource.return_value = json_voucher_types
 
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
 
         voucher_type = cine_digital_service.get_voucher_type_for_show(show)
         assert voucher_type.id == 1
@@ -684,7 +714,9 @@ class CineDigitalServiceBookTicketTest:
 
         mocked_post_resource.return_value = json_create_transaction
 
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
 
         tickets = cine_digital_service.book_ticket(show_id=14, quantity=1)
 
@@ -767,7 +799,9 @@ class CineDigitalServiceBookTicketTest:
 
         mocked_post_resource.return_value = json_create_transaction
 
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
 
         tickets = cine_digital_service.book_ticket(show_id=14, quantity=2)
 
@@ -837,7 +871,9 @@ class CineDigitalServiceBookTicketTest:
 
         mocked_post_resource.return_value = json_create_transaction
 
-        cine_digital_service = CineDigitalServiceAPI(cinema_id="test_id", token="token_test", api_url="test_url")
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="test_id", cinema_api_token="token_test", api_url="test_url"
+        )
 
         tickets = cine_digital_service.book_ticket(show_id=14, quantity=1)
 
@@ -886,7 +922,7 @@ class CineDigitalServiceGetMoviesTest:
 
         # when
         cine_digital_service = CineDigitalServiceAPI(
-            cinema_id="cinemaid_test", token="token_test", api_url="apiUrl_test/"
+            cinema_id="cinemaid_test", cinema_api_token="token_test", api_url="apiUrl_test/"
         )
         movies = cine_digital_service.get_venue_movies()
 
