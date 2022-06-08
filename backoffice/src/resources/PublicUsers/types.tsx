@@ -15,8 +15,9 @@ export enum SubscriptionItemStatus {
     VOID = "void"
 }
 
-export interface CheckHistory extends RaRecord {
+export interface CheckHistory {
     type: string,
+    thirdPartyId: string,
     dateCreated: Date,
     status: "ok" | "void" | "not-applicable" | "ko",
     reason?: string,
