@@ -1,7 +1,8 @@
-import {DataProvider} from 'react-admin'
+import {DataProvider, useNotify} from 'react-admin'
 import {UserSearchInterface, UserApiInterface} from "../resources/Interfaces/UserSearchInterface";
 import {API_URL} from "../config/utils";
 import {UserManualReview} from "../resources/PublicUsers/types";
+
 
 let assets: UserApiInterface[] = []
 const urlBase = API_URL
@@ -115,7 +116,6 @@ export const dataProvider: DataProvider = {
                     const userHistory = await (await historyInfo()).json()
 
                     const dataUser = {...user, userCredit, userHistory}
-
                     console.log(dataUser)
                     return {data: dataUser}
                 } catch (e) {
@@ -148,9 +148,7 @@ export const dataProvider: DataProvider = {
     // @ts-ignore
     async update(resource, params) {
         return {
-            data: {
-                id: 1,
-            },
+            data: {},
         }
     }
     ,
@@ -177,6 +175,7 @@ export const dataProvider: DataProvider = {
     ,
     async postUserManualReview(resource: string, params: UserManualReview) {
         const token = localStorage.getItem('tokenApi')
+
         if (!token) {
             return Promise.reject()
         }
@@ -191,18 +190,37 @@ export const dataProvider: DataProvider = {
                 body: bodyString,
                 headers: {
                     'Authorization': 'Bearer ' + token,
-                    'Content-Type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 }
             }
 
             console.log(requestParams)
 
             const response = await fetch(`${API_URL}/${resource}/${params.id}/review`, requestParams)
-            const json = await response.json()
-            console.log(json)
 
+            return response
         } catch (e) {
-            alert(e)
+            Promise.reject(e)
         }
-    }
+    },
+
+    async postResendValidationEmail(resource: string, params: UserApiInterface) {
+        const token = localStorage.getItem('tokenApi')
+        if (!token) {
+            return Promise.reject()
+        }
+        try {
+            const requestParams: object = {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            }
+            const response = await fetch(`${API_URL}/${resource}/${params.id}/resend-validation-email`, requestParams)
+            return response
+        } catch (e) {
+            Promise.reject(e)
+        }
+    },
 }
