@@ -177,6 +177,7 @@ class OfferResponse(BaseModel):
         }
         offer.expense_domains = get_expense_domains(offer)
         offer.isExpired = offer.hasBookingLimitDatetimesPassed
+        offer.stocks = [stock for stock in offer.stocks if not stock.isSoftDeleted]
 
         result = super().from_orm(offer)
 
