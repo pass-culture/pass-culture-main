@@ -219,10 +219,11 @@ class Returns201Test:
         user = user_factories.AdminFactory()
         client = client.with_session_auth(email=user.email)
         provider = Provider.query.filter(Provider.localClass == "CDSStocks").first()
-        provider.authToken = "fakeToken"
 
         venue = offerers_factories.VenueFactory()
         cds_pivot = CinemaProviderPivotFactory(venue=venue, provider=provider)
+        providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cds_pivot, cinemaApiToken="test_token")
+
         venue_provider_data = {
             "providerId": humanize(provider.id),
             "venueId": humanize(venue.id),

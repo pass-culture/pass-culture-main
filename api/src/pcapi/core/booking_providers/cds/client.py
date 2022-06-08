@@ -19,10 +19,10 @@ CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
 class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
-    def __init__(self, cinema_id: str, api_url: str, token: Optional[str]):
-        if not token:
+    def __init__(self, cinema_id: str, api_url: str, cinema_api_token: Optional[str]):
+        if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
-        super().__init__(cinema_id, api_url, token)
+        super().__init__(cinema_id, api_url, cinema_api_token)
 
     def get_show_remaining_places(self, show_id: int) -> int:
         show = self.get_show(show_id)
