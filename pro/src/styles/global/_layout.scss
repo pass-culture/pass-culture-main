@@ -25,6 +25,8 @@ textarea {
 }
 
 body {
+  @include fonts.body();
+
   height: 100%;
 }
 
