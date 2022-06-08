@@ -88,11 +88,11 @@
   }
 
   .op-address {
-    line-height: rem.torem(20px);
+    line-height: rem.torem(16px);
   }
 
   .title-preview {
-    @include fonts.body-important();
+    @include fonts.button();
 
     max-width: rem.torem(224px);
     overflow-wrap: break-word;
