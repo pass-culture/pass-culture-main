@@ -117,7 +117,7 @@ def review_public_account(
     if not user:
         raise ApiErrors(errors={"user_id": "User does not exist"}, status_code=412)
 
-    eligibility = None if body.eligibility is None else users_models.EligibilityType(body.eligibility)
+    eligibility = None if body.eligibility is None else users_models.EligibilityType[body.eligibility]
 
     try:
         review = fraud_api.validate_beneficiary(

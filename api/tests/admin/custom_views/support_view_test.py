@@ -345,6 +345,30 @@ class BeneficiaryValidationViewTest:
         assert message.popOverIcon == subscription_models.PopOverIcon.ERROR
         assert message.userMessage == "Ton dossier a été rejeté. Tu n'es malheureusement pas éligible au pass culture."
 
+    @override_features(BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS=True)
+    def test_validation_view_validate_user_with_non_default_eligibility(self, client):
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        admin = users_factories.AdminFactory()
+        client.with_session_auth(admin.email)
+
+        response = client.post(
+            f"/pc/back-office/support_beneficiary/validate/beneficiary/{user.id}",
+            form={"user_id": user.id, "reason": "User is granted", "review": "OK", "eligibility": "AGE18"},
+        )
+        assert response.status_code == 302
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=admin).first()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_beneficiary_role is True
+        assert len(user.deposits) == 1
+
+        dms_content = fraud_models.DMSContent(**check.resultContent)
+        assert user.firstName == dms_content.first_name
+        assert user.lastName == dms_content.last_name
+        assert user.idPieceNumber == dms_content.id_piece_number
+
 
 @pytest.mark.usefixtures("db_session")
 class ValidatePhoneNumberTest:

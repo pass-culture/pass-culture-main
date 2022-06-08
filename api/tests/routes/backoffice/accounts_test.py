@@ -854,6 +854,35 @@ class PostManualReviewTest:
         # then
         assert response.status_code == 412
 
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_review_with_non_default_eligibility(self, client):
+        # given
+        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
+        reviewer = users_factories.UserFactory()
+        auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.post(
+            url_for("backoffice_blueprint.review_public_account", user_id=user.id),
+            json={"reason": "User is granted", "review": "OK", "eligibility": "AGE18"},
+            headers={"Authorization": f"Bearer {auth_token}"},
+        )
+
+        # then
+        assert response.status_code == 200
+        review = fraud_models.BeneficiaryFraudReview.query.filter_by(user=user, author=reviewer).first()
+        assert review.review == fraud_models.FraudReviewStatus.OK
+        assert review.reason == "User is granted"
+        user = users_models.User.query.get(user.id)
+        assert user.has_beneficiary_role is True
+        assert len(user.deposits) == 1
+
+        dms_content = fraud_models.DMSContent(**check.resultContent)
+        assert user.firstName == dms_content.first_name
+        assert user.lastName == dms_content.last_name
+        assert user.idPieceNumber == dms_content.id_piece_number
+
 
 class ResendValidationEmailTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
