@@ -57,6 +57,7 @@ const OfferIndividualForm = ({
           <UsefulInformations
             isUserAdmin={isAdmin}
             offererNames={offererNames}
+            subCategories={subCategories}
             venueList={filteredVenueList}
           />
           <Accessibility />
