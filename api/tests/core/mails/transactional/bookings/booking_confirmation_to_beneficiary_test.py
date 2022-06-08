@@ -18,6 +18,7 @@ from pcapi.core.mails.transactional.bookings.booking_confirmation_to_beneficiary
 )
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.utils.human_ids import humanize
 
 
@@ -70,6 +71,8 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "OFFER_WITHDRAWAL_DETAILS": None,
             "EXPIRATION_DELAY": None,
             "BOOKING_LINK": f"https://webapp-v2.example.com/reservation/{booking.id}/details",
+            "OFFER_WITHDRAWAL_TYPE": None,
+            "OFFER_WITHDRAWAL_DELAY": None,
         },
     )
     email_data.params.update(overrides)
@@ -375,3 +378,34 @@ class BooksBookingExpirationDateTestSendinblue:
             EXPIRATION_DELAY=10,
         )
         assert email_data == expected
+
+
+class BookingWithWithdrawalTypeTest:
+    def should_use_withdrawal_type_when_available(self):
+        withdrawal_type = WithdrawalTypeEnum.ON_SITE
+        booking = IndividualBookingFactory(
+            stock__offer__withdrawalType=withdrawal_type,
+            dateCreated=datetime.utcnow(),
+        )
+
+        mediation = offers_factories.MediationFactory(offer=booking.stock.offer)
+
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+
+        expected = get_expected_base_sendinblue_email_data(
+            booking,
+            mediation,
+            OFFER_WITHDRAWAL_TYPE=withdrawal_type,
+            **{key: value for key, value in email_data.params.items() if key != "OFFER_WITHDRAWAL_TYPE"},
+        )
+
+        assert email_data == expected
+
+    def should_use_and_format_withdrawal_delay_when_a_delay_is_set(self):
+        booking = IndividualBookingFactory(
+            stock=offers_factories.EventStockFactory(offer__withdrawalDelay=60 * 60 * 24 * 2),
+        )
+
+        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
+
+        assert email_data.params["OFFER_WITHDRAWAL_DELAY"] == "2 jours"
