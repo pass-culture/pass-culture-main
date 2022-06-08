@@ -83,7 +83,7 @@
   }
 
   &-ternary {
-    @include fonts.caption();
+    @include fonts.button();
     color: colors.$black;
     background-color: transparent;
     border-color: transparent;

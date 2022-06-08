@@ -14,16 +14,17 @@
 }
 
 @mixin title1() {
-  font-size: rem.torem(28px);
+  font-size: rem.torem(26px);
   font-style: normal;
   font-weight: 800;
+  line-height: rem.torem(34px);
 }
 
 @mixin title2() {
-  font-size: rem.torem(24px);
+  font-size: rem.torem(22px);
   font-style: normal;
   font-weight: 500;
-  line-height: rem.torem(28px);
+  line-height: rem.torem(26px);
 }
 
 @mixin title3() {
@@ -68,8 +69,8 @@
 
 @mixin preview-text() {
   font-size: rem.torem(12px);
-  font-weight: 600;
-  color: colors.$grey-dark;
+  font-weight: 400;
+  line-height: rem.torem(16px);
 }
 
 @mixin highlight() {

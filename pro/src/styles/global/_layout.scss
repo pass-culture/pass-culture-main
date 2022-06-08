@@ -10,7 +10,7 @@
 }
 
 html {
-  @include fonts.body();
+  font-size: rem.torem(16px);
 
   color: colors.$black;
   height: 100%;
@@ -53,6 +53,10 @@ hr {
 a {
   color: colors.$black;
   text-decoration: none;
+}
+
+p {
+  @include fonts.body();
 }
 
 address {
