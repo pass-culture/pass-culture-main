@@ -10,6 +10,7 @@ from pcapi.core.booking_providers.models import Movie
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers.models import VenueProvider
+from pcapi.core.providers.repository import get_cds_cinema_api_token
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
@@ -25,7 +26,7 @@ class CDSStocks(LocalProvider):
         super().__init__(venue_provider)
         self.apiUrl = settings.CDS_API_URL
         self.venue = venue_provider.venue
-        self.theater_id = venue_provider.venueIdAtOfferProvider
+        self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.movies: Iterator[Movie] = iter(self._get_cds_movies())
 
@@ -98,7 +99,7 @@ class CDSStocks(LocalProvider):
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
             api_url=self.apiUrl,
-            token=self.venue_provider.provider.authToken,
+            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
         )
         return client_cds.get_venue_movies()
 

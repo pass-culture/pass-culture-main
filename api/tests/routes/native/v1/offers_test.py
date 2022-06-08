@@ -1,17 +1,13 @@
 from datetime import datetime
 from datetime import timedelta
-from typing import Any
-from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
-from pcapi.core.booking_providers.factories import VenueBookingProviderFactory
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.mails.testing as mails_testing
-from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import OfferFactory
@@ -20,7 +16,6 @@ from pcapi.core.offers.factories import ProductFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
-from pcapi.core.offers.models import Stock
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -245,24 +240,6 @@ class OffersTest:
         # then
         assert response.status_code == 200
         assert response.json["stocks"][0]["activationCode"] is None
-
-    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_shows_remaining_places")
-    @override_features(ENABLE_CDS_IMPLEMENTATION=True)
-    def test_get_offer_from_cds_with_no_remaining_places(self, mocked_get_shows_remaining_places: Any, app) -> None:
-        venue = VenueFactory()
-        VenueBookingProviderFactory(venue=venue)
-        offer = OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, name="test_offre", venue=venue)
-        stock = EventStockFactory(offer=offer, price=5, quantity=10, idAtProviders="1")
-
-        mocked_get_shows_remaining_places.return_value = {1: 0}
-
-        response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer.id}")
-
-        mocked_get_shows_remaining_places.assert_called_once()
-        offer_stock = Stock.query.filter(Stock.id == stock.id).first()
-
-        assert offer_stock.remainingQuantity == 0
-        assert response.json["stocks"][0]["isSoldOut"]
 
     @freeze_time("2020-01-01")
     def test_get_expired_offer(self, app):
