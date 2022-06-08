@@ -6,7 +6,7 @@
   @include fonts.button();
 
   color: colors.$black;
-  line-height: rem.torem(22px);
+  line-height: rem.torem(20px);
 
   &:hover,
   &:focus {

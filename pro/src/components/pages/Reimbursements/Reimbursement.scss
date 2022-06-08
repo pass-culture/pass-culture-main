@@ -15,7 +15,7 @@
   }
 
   .reset-filters {
-    @include fonts.body-important();
+    @include fonts.button();
 
     color: colors.$primary;
     line-height: rem.torem(22px);
