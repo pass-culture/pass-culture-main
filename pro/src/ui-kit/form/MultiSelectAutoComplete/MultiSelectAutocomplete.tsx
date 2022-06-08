@@ -167,7 +167,7 @@ const MultiSelectAutocomplete = ({
             <Tag
               label={optionsLabelById[value]}
               closeable={{
-                onClose: e => {
+                onClose: () => {
                   setFieldValue(
                     fieldName,
                     field.value.filter(

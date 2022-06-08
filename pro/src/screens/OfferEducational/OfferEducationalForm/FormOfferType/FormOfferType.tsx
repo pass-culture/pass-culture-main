@@ -11,7 +11,7 @@ import {
   IEducationalSubCategory,
   IOfferEducationalFormValues,
 } from 'core/OfferEducational'
-import { MultiSelectAutocomplete, Select, Tag, TextArea, TextInput } from 'ui-kit'
+import { MultiSelectAutocomplete, Select, TextArea, TextInput } from 'ui-kit'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
