@@ -66,6 +66,12 @@ export const getProviderInfo = providerName => {
       name: 'Pass Culture API Stocks',
       synchronizedOfferMessage: 'Offre importée automatiquement',
     },
+    {
+      id: 'cds',
+      icon: 'logo-cine-digital-service',
+      name: 'Ciné Digital Service',
+      synchronizedOfferMessage: 'Offre synchronisée avec Ciné Digital Service',
+    }
   ]
 
   return providers.find(providerInfo =>
