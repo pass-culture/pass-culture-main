@@ -725,9 +725,7 @@ def handle_ok_manual_review(
     if eligibility is None:
         eligibility = decide_eligibility(user, source_data.get_birth_date(), source_data.get_registration_datetime())
         if not eligibility:
-            raise EligibilityError(
-                "Aucune éligibilité trouvée. Veuillez choisir une autre Eligibilité que 'Par défaut'"
-            )
+            raise EligibilityError("Aucune éligibilité trouvée. Veuillez renseigner une éligibilité.")
 
     try:
         subscription_api.activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)
