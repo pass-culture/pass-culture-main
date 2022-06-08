@@ -809,6 +809,14 @@ class CommonSubscritpionTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=fraud_factories.UbbleContentFactory(),  # default age is 18
         )
+        # Profile completion fraud check
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+            resultContent=fraud_factories.ProfileCompletionContentFactory(),
+        )
         assert (
             subscription_api.handle_eligibility_difference_between_declaration_and_identity_provider(user, fraud_check)
             != fraud_check
@@ -817,13 +825,24 @@ class CommonSubscritpionTest:
         user_fraud_checks = sorted(
             fraud_models.BeneficiaryFraudCheck.query.filter_by(user=user).all(), key=lambda x: x.id
         )
-        assert len(user_fraud_checks) == 2
+        assert len(user_fraud_checks) == 4
         assert user_fraud_checks[0].eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert user_fraud_checks[0].type == fraud_models.FraudCheckType.UBBLE
         assert user_fraud_checks[0].reason == "Eligibility type changed by the identity provider"
         assert user_fraud_checks[0].status == fraud_models.FraudCheckStatus.CANCELED
 
-        assert user_fraud_checks[1].eligibilityType == users_models.EligibilityType.AGE18
-        assert user_fraud_checks[1].status == fraud_models.FraudCheckStatus.PENDING
+        assert user_fraud_checks[1].eligibilityType == users_models.EligibilityType.UNDERAGE
+        assert user_fraud_checks[1].type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+        assert user_fraud_checks[1].reason == "Eligibility type changed by the identity provider"
+        assert user_fraud_checks[1].status == fraud_models.FraudCheckStatus.CANCELED
+
+        assert user_fraud_checks[2].eligibilityType == users_models.EligibilityType.AGE18
+        assert user_fraud_checks[2].type == fraud_models.FraudCheckType.UBBLE
+        assert user_fraud_checks[2].status == fraud_models.FraudCheckStatus.PENDING
+
+        assert user_fraud_checks[3].eligibilityType == users_models.EligibilityType.AGE18
+        assert user_fraud_checks[3].type == fraud_models.FraudCheckType.PROFILE_COMPLETION
+        assert user_fraud_checks[3].status == fraud_models.FraudCheckStatus.OK
 
     def test_handle_eligibility_difference_between_declaration_and_identity_provider_unreadable_document(self):
         user = users_factories.UserFactory()
