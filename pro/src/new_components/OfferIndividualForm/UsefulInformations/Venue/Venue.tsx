@@ -17,6 +17,7 @@ const Venue = ({ offererNames, venueList }: IVenueProps): JSX.Element => {
   const { values } = useFormikContext<IOfferIndividualFormValues>()
   const { isDisabled: isOffererDisabled, offererOptions } =
     buildOffererOptions(offererNames)
+
   const { isDisabled: isVenueDisabled, venueOptions } = buildVenueOptions(
     values.offererId,
     venueList
