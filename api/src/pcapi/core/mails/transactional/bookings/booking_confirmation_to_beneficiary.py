@@ -5,6 +5,7 @@ from pcapi.core.bookings.models import IndividualBooking
 from pcapi.core.categories import subcategories
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -76,6 +77,12 @@ def get_booking_confirmation_to_beneficiary_email_data(
         else individual_booking.booking.token
     )
 
+    offer_withdrawal_delay_in_days = (
+        format_time_in_second_to_human_readable(individual_booking.booking.stock.offer.withdrawalDelay)
+        if individual_booking.booking.stock.offer.withdrawalDelay
+        else None
+    )
+
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.BOOKING_CONFIRMATION_BY_BENEFICIARY.value,
         params={
@@ -109,5 +116,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "DIGITAL_OFFER_URL": individual_booking.booking.completedUrl or None,
             "OFFER_WITHDRAWAL_DETAILS": offer.withdrawalDetails or None,
             "BOOKING_LINK": booking_app_link(individual_booking.booking),
+            "OFFER_WITHDRAWAL_DELAY": offer_withdrawal_delay_in_days,
+            "OFFER_WITHDRAWAL_TYPE": individual_booking.booking.stock.offer.withdrawalType,
         },
     )
