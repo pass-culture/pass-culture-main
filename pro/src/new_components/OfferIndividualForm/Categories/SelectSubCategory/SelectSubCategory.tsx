@@ -20,11 +20,13 @@ const SelectSubCategory = ({
 
   useEffect(
     function onSubCategoryChange() {
-      const subCategoryFields =
-        subCategories.find(
-          (subcategory: IOfferSubCategory) => subcategoryId === subcategory.id
-        )?.conditionalFields || []
+      const subCategory = subCategories.find(
+        (subcategory: IOfferSubCategory) => subcategoryId === subcategory.id
+      )
+      const subCategoryFields = subCategory?.conditionalFields || []
+      const isEvent = subCategory?.isEvent || false
       setFieldValue('subCategoryFields', subCategoryFields)
+      setFieldValue('isEvent', isEvent)
     },
     [subcategoryId]
   )
