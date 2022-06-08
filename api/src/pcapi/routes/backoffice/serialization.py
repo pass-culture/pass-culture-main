@@ -5,8 +5,11 @@ import pydantic
 
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import models as users_models
+from pcapi.core.users.utils import sanitize_email
 from pcapi.routes.serialization import BaseModel
+from pcapi.utils import phone_number as phone_number_utils
 
 
 class Permission(BaseModel):
@@ -70,6 +73,35 @@ class ListPublicAccountsResponseModel(BaseModel):
         orm_mode = True
 
     accounts: list[PublicAccount]
+
+
+class PublicAccountUpdateRequest(BaseModel):
+    firstName: typing.Optional[str]
+    lastName: typing.Optional[str]
+    dateOfBirth: typing.Optional[datetime.datetime]
+    idPieceNumber: typing.Optional[str]
+    email: typing.Optional[pydantic.EmailStr]
+    phoneNumber: typing.Optional[str]
+    address: typing.Optional[str]
+    postalCode: typing.Optional[str]
+    city: typing.Optional[str]
+
+    @pydantic.validator("email", pre=True)
+    def validate_email(cls, email: str) -> str:  # pylint: disable=no-self-argument
+        if not email:
+            return email
+        return sanitize_email(email)
+
+    @pydantic.validator("phoneNumber")
+    def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
+        if not phone_number:
+            return phone_number
+
+        try:
+            # Convert to international format
+            return phone_number_utils.ParsedPhoneNumber(phone_number, "FR").phone_number
+        except phone_validation_exceptions.InvalidPhoneNumber:
+            raise ValueError(f"Format de numéro de téléphone invalide : {phone_number}")
 
 
 class GetBeneficiaryCreditResponseModel(BaseModel):

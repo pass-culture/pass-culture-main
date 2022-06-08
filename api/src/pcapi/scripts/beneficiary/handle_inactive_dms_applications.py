@@ -12,6 +12,7 @@ from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.users import utils as users_utils
+from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.repository import repository
 
 
@@ -110,7 +111,8 @@ def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationRespo
     except subscription_exceptions.DMSParsingError:
         return True
     applicant_birth_date = application_content.get_birth_date()
-    applicant_department = application_content.get_department_code()
+    applicant_postal_code = application_content.get_postal_code()
+    applicant_department = PostalCode(applicant_postal_code).get_departement_code() if applicant_postal_code else None
     if applicant_birth_date is None or applicant_department is None:
         return True
 

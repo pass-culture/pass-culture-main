@@ -28,9 +28,6 @@ class IdentityCheckContent(pydantic.BaseModel):
     def get_city(self) -> typing.Optional[str]:
         return None
 
-    def get_department_code(self) -> typing.Optional[str]:
-        return None
-
     def get_id_piece_number(self) -> typing.Optional[str]:
         return None
 

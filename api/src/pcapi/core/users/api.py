@@ -183,54 +183,49 @@ def initialize_account(
     return user
 
 
-def update_user_information_from_external_source(
+def update_user_information(
     user: User,
-    data: common_fraud_models.IdentityCheckContent,
+    first_name: typing.Optional[str] = None,
+    last_name: typing.Optional[str] = None,
+    birth_date: typing.Optional[datetime] = None,
+    activity: typing.Optional[str] = None,
+    address: typing.Optional[str] = None,
+    city: typing.Optional[str] = None,
+    civility: typing.Optional[str] = None,
+    id_piece_number: typing.Optional[str] = None,
+    ine_hash: typing.Optional[str] = None,
+    married_name: typing.Optional[str] = None,
+    phone_number: typing.Optional[str] = None,
+    postal_code: typing.Optional[str] = None,
     commit: bool = False,
 ) -> User:
-    first_name = data.get_first_name()
-    last_name = data.get_last_name()
-    birth_date = data.get_birth_date()
-
-    activity = data.get_activity()
-    address = data.get_address()
-    civility = data.get_civility()
-    city = data.get_city()
-    departement_code = data.get_department_code()
-    id_piece_number = data.get_id_piece_number()
-    ine_hash = data.get_ine_hash()
-    married_name = data.get_married_name()
-    phone_number = data.get_phone_number()
-    postal_code = data.get_postal_code()
-
-    if not first_name or not last_name or not birth_date:
-        raise exceptions.IncompleteDataException()
-
-    user.firstName = first_name
-    user.lastName = last_name
-    user.publicName = "%s %s" % (first_name, last_name)
-    user.dateOfBirth = datetime.combine(birth_date, time(0, 0))
-
-    if address:
-        user.address = address
-    if activity:
+    if first_name is not None:
+        user.firstName = first_name
+    if last_name is not None:
+        user.lastName = last_name
+    if first_name is not None or last_name is not None:
+        user.publicName = "%s %s" % (first_name, last_name)
+    if birth_date is not None:
+        user.dateOfBirth = birth_date
+    if activity is not None:
         user.activity = activity
-    if city:
+    if address is not None:
+        user.address = address
+    if city is not None:
         user.city = city
-    if civility:
+    if civility is not None:
         user.civility = civility
-    if departement_code:
-        user.departementCode = departement_code
-    if postal_code:
-        user.postalCode = postal_code
-    if id_piece_number:
+    if id_piece_number is not None:
         user.idPieceNumber = id_piece_number
-    if ine_hash:
+    if ine_hash is not None:
         user.ineHash = ine_hash
-    if married_name:
+    if married_name is not None:
         user.married_name = married_name
-    if phone_number and not user.phoneNumber and not user.is_phone_validated:
+    if phone_number is not None:
         user.phoneNumber = phone_number
+    if postal_code is not None:
+        user.postalCode = postal_code
+        user.departementCode = PostalCode(postal_code).get_departement_code() if postal_code else None
 
     user.remove_admin_role()
 
@@ -239,6 +234,37 @@ def update_user_information_from_external_source(
     if commit:
         db.session.commit()
     return user
+
+
+def update_user_information_from_external_source(
+    user: User,
+    data: common_fraud_models.IdentityCheckContent,
+    commit: bool = False,
+) -> User:
+    first_name = data.get_first_name()
+    last_name = data.get_last_name()
+    birth_date = data.get_birth_date()
+    phone_number = data.get_phone_number()
+
+    if not first_name or not last_name or not birth_date:
+        raise exceptions.IncompleteDataException()
+
+    return update_user_information(
+        user=user,
+        first_name=first_name,
+        last_name=last_name,
+        birth_date=datetime.combine(birth_date, time(0, 0)),
+        activity=data.get_activity(),
+        address=data.get_address(),
+        city=data.get_city(),
+        civility=data.get_civility(),
+        id_piece_number=data.get_id_piece_number(),
+        ine_hash=data.get_ine_hash(),
+        married_name=data.get_married_name(),
+        phone_number=phone_number if phone_number and not user.phoneNumber and not user.is_phone_validated else None,
+        postal_code=data.get_postal_code(),
+        commit=commit,
+    )
 
 
 def request_email_confirmation(user: User) -> None:

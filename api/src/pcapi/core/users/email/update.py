@@ -6,10 +6,10 @@ import typing
 from flask import current_app as app
 
 from pcapi import settings
+from pcapi.core.users import api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import repository as users_repository
-from pcapi.core.users.api import find_user_by_email
 from pcapi.core.users.models import User
 from pcapi.core.users.models import UserEmailHistory
 from pcapi.repository import repository
@@ -44,6 +44,23 @@ def check_email_update_attempts(user: User) -> None:
 
     if count > settings.MAX_EMAIL_UPDATE_ATTEMPTS:
         raise exceptions.EmailUpdateLimitReached()
+
+
+def request_email_update_from_admin(user: User, email: str) -> None:
+    """
+    When email is changed by admin, it is immediately changed in the user profile.
+    User can no longer login with his former email, and must confirm new email.
+    """
+    check_email_address_does_not_exist(email)
+
+    email_history = UserEmailHistory.build_update_request(user=user, new_email=email, admin=True)
+
+    user.email = email
+    user.isEmailValidated = False
+
+    repository.save(email_history, user)
+
+    api.request_email_confirmation(user)
 
 
 def get_no_active_token_key(user: User) -> str:
@@ -97,5 +114,5 @@ def check_user_password(user: User, password: str) -> None:
 
 
 def check_email_address_does_not_exist(email: str) -> None:
-    if find_user_by_email(email):
+    if api.find_user_by_email(email):
         raise exceptions.EmailExistsError(email)
