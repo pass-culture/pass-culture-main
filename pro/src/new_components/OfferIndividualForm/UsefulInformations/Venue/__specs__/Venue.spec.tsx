@@ -214,10 +214,10 @@ describe('OfferIndividual section: venue', () => {
     const selectOfferer = screen.getByLabelText('Structure')
 
     expect(
-      screen.queryByText('Veuillez séléctioner une structure')
+      screen.queryByText('Veuillez sélectionner une structure')
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByText('Veuillez séléctioner un lieu')
+      screen.queryByText('Veuillez sélectionner un lieu')
     ).not.toBeInTheDocument()
 
     await userEvent.selectOptions(selectOfferer, 'Offerer CC')
@@ -227,7 +227,7 @@ describe('OfferIndividual section: venue', () => {
     await userEvent.tab()
     waitFor(() =>
       expect(
-        screen.getByText('Veuillez séléctioner un lieu')
+        screen.getByText('Veuillez sélectionner un lieu')
       ).toBeInTheDocument()
     )
 
@@ -236,10 +236,10 @@ describe('OfferIndividual section: venue', () => {
 
     waitFor(() => {
       expect(
-        screen.getByText('Veuillez séléctioner une structure')
+        screen.getByText('Veuillez sélectionner une structure')
       ).toBeInTheDocument()
       expect(
-        screen.getByText('Veuillez séléctioner un lieu')
+        screen.getByText('Veuillez sélectionner un lieu')
       ).not.toBeInTheDocument()
     })
   })
