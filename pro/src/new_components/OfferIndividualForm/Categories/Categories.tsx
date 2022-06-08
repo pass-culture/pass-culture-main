@@ -25,12 +25,12 @@ const Categories = ({
     setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
   }, [formValues.categoryId])
 
-  const categoryOptions: SelectOptions = categories.map(
-    (c: IOfferCategory) => ({
+  const categoryOptions: SelectOptions = categories
+    .map((c: IOfferCategory) => ({
       value: c.id,
       label: c.proLabel,
-    })
-  )
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 
   const hasSubCategory =
     formValues.categoryId !== FORM_DEFAULT_VALUES.categoryId
