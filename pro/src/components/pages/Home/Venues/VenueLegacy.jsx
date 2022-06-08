@@ -38,7 +38,7 @@ const Venue = ({
       count: stats.activeBookingsQuantity,
       label: 'Réservations en cours',
       link: {
-        pathname: '/reservations',
+        pathname: `/reservations?page=1&offerVenueId=${id}`,
         state: {
           venueId: id,
           statuses: [
@@ -54,7 +54,7 @@ const Venue = ({
       count: stats.validatedBookingsQuantity,
       label: 'Réservations validées',
       link: {
-        pathname: '/reservations',
+        pathname: `/reservations?page=1&bookingStatusFilter=validated&offerVenueId=${id}`,
         state: {
           venueId: id,
           statuses: [BOOKING_STATUS.BOOKED, BOOKING_STATUS.CANCELLED],

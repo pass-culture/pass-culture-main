@@ -4,20 +4,21 @@ import { Link } from 'react-router-dom'
 import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
 import React from 'react'
 
-export const VenueStat = ({ stat }) => (
-  <div className="h-card-col" data-testid="venue-stat">
-    {stat.count ? (
-      <div className="venue-stat-count">{stat.count}</div>
-    ) : (
-      <LoaderSvg className="venue-stat-spinner" title="Chargement en cours" />
-    )}
-
-    <div>{stat.label}</div>
-    <Link className="tertiary-link" to={stat.link}>
-      Voir
-    </Link>
-  </div>
-)
+export const VenueStat = ({ stat }) => {
+  return (
+    <div className="h-card-col" data-testid="venue-stat">
+      {stat.count ? (
+        <div className="venue-stat-count">{stat.count}</div>
+      ) : (
+        <LoaderSvg className="venue-stat-spinner" title="Chargement en cours"/>
+      )}
+      <div>{stat.label}</div>
+      <a className="tertiary-link" href={stat.link.pathname ? `${stat.link.pathname}` : `${stat.link}`}>
+        Voir
+      </a>
+    </div>
+  )
+}
 
 VenueStat.propTypes = {
   stat: PropTypes.shape({
