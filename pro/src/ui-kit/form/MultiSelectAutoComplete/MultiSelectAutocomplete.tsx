@@ -2,11 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 
 import BaseCheckbox from '../shared/BaseCheckbox'
+import { BaseInput } from '../shared'
 import FieldLayout from '../shared/FieldLayout'
 import Icon from 'components/layout/Icon'
 import { SelectOption } from 'custom_types/form'
 import Tag from 'ui-kit/Tag'
-import TextInput from '../TextInput'
 import cx from 'classnames'
 import styles from './MultiSelectAutocomplete.module.scss'
 
@@ -35,13 +35,14 @@ const MultiSelectAutocomplete = ({
   smallLabel = false,
   hideTags = false,
 }: MultiSelectAutocompleteProps): JSX.Element => {
-  const { values, setFieldValue, handleChange, setFieldTouched } = useFormikContext<any>()
+  const { setFieldValue, handleChange, setFieldTouched } =
+    useFormikContext<any>()
   const [field, meta] = useField(fieldName)
+  const [searchField, searchMeta] = useField(`search-${fieldName}`)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [isOpen, setIsOpen] = useState(false)
   const [filteredOptions, setFilteredOptions] = useState(options)
-  const { [`search-${fieldName}`]: searched } = values
 
   useEffect(() => {
     setFilteredOptions(options)
@@ -63,11 +64,11 @@ const MultiSelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
-    const regExp = new RegExp(searched, 'i')
+    const regExp = new RegExp(searchField.value, 'i')
     setFilteredOptions(
-      options.filter(option => searched === '' || option.label.match(regExp))
+      options.filter(option => searchField.value === '' || option.label.match(regExp))
     )
-  }, [searched])
+  }, [searchField.value])
 
   const optionsLabelById = useMemo(
     () =>
@@ -82,9 +83,9 @@ const MultiSelectAutocomplete = ({
     <FieldLayout
       className={className}
       error={meta.error}
-      hideFooter={hideFooter}
+      hideFooter={meta.touched && !meta.error ? true : hideFooter}
       isOptional={isOptional}
-      label="" // to avoid duplicated label, included in MultiSelectAutocomplete
+      label={label}
       name={fieldName}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
@@ -93,16 +94,18 @@ const MultiSelectAutocomplete = ({
         className={cx(styles['multi-select-autocomplete-container'], className)}
         ref={containerRef}
       >
-        <TextInput
-          hideFooter
-          label={label}
+        <BaseInput
           onFocus={() => {
-            if (!isOpen) {setIsOpen(true)}
+            if (!isOpen) {
+              setIsOpen(true)
+            }
             setFieldTouched(fieldName, true)
           }}
-          name={`search-${fieldName}`}
           placeholder={field.value.length > 1 ? pluralLabel : label}
           style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
+          hasError={searchMeta.touched && !!searchMeta.error}
+          type='text'
+          {...searchField}
         />
         <div className={styles['field-overlay']}>
           <button
@@ -129,13 +132,17 @@ const MultiSelectAutocomplete = ({
             <div className={styles['pellet']}>{field.value.length}</div>
           )}
           {isOpen && (
-            <div
-              className={cx(styles['multi-select-autocomplete__menu'], {
-                [styles['multi-select-autocomplete__menu--no-results']]:
-                  filteredOptions.length === 0,
-              })}
-            >
-              {filteredOptions.length === 0 && 'Aucun résultat'}
+            <div className={styles['multi-select-autocomplete__menu']}>
+              {filteredOptions.length === 0 && (
+                <span
+                  className={cx({
+                    [styles['multi-select-autocomplete__menu--no-results']]:
+                      filteredOptions.length === 0,
+                  })}
+                >
+                  Aucun résultat
+                </span>
+              )}
               {filteredOptions.map(({ value, label }) => (
                 <BaseCheckbox
                   label={label}
@@ -156,14 +163,14 @@ const MultiSelectAutocomplete = ({
       </div>
       {!hideTags && field.value.length > 0 && (
         <div className={styles['multi-select-autocomplete-tags']}>
-          {values[fieldName].map((value: string) => (
+          {field.value.map((value: string) => (
             <Tag
               label={optionsLabelById[value]}
               closeable={{
                 onClose: e => {
                   setFieldValue(
                     fieldName,
-                    values[fieldName].filter(
+                    field.value.filter(
                       (_value: string) => _value !== value
                     )
                   )
