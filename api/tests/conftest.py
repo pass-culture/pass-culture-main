@@ -303,6 +303,12 @@ class TestClient:
         }
         return self
 
+    def with_explicit_token(self, token: str) -> "TestClient":
+        self.auth_header = {
+            "Authorization": f"Bearer {token}",
+        }
+        return self
+
     def delete(self, route: str, headers: dict = None):
         headers = headers or {}
         result = self.client.delete(route, headers={**self.auth_header, **headers})
