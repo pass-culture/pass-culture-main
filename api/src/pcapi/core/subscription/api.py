@@ -457,7 +457,39 @@ def on_successful_application(
     return activate_beneficiary_if_no_missing_step(user)
 
 
-# TODO (Lixxday): use a proper BeneficiaryFraudCHeck History model to track these kind of updates
+def _update_fraud_check_eligibility_with_history(
+    fraud_check: fraud_models.BeneficiaryFraudCheck, eligibility: users_models.EligibilityType
+) -> fraud_models.BeneficiaryFraudCheck:
+    # Update fraud check by creating a new one with the correct eligibility
+    new_fraud_check = fraud_models.BeneficiaryFraudCheck(
+        user=fraud_check.user,
+        type=fraud_check.type,
+        thirdPartyId=fraud_check.thirdPartyId,
+        resultContent=fraud_check.resultContent,
+        status=fraud_check.status,
+        reason=fraud_check.reason,
+        reasonCodes=fraud_check.reasonCodes,
+        eligibilityType=eligibility,
+    )
+    # Cancel the old fraud check
+    fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
+    reason_message = "Eligibility type changed by the identity provider"
+    fraud_check.reason = (
+        f"{fraud_check.reason} {fraud_api.FRAUD_RESULT_REASON_SEPARATOR} {reason_message}"
+        if fraud_check.reason
+        else reason_message
+    )
+    if fraud_check.reasonCodes is None:
+        fraud_check.reasonCodes = []
+    fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)  # type: ignore [arg-type]
+    fraud_check.thirdPartyId = f"deprecated-{fraud_check.thirdPartyId}"
+
+    pcapi_repository.repository.save(fraud_check, new_fraud_check)
+
+    return new_fraud_check
+
+
+# TODO (Lixxday): use a proper BeneficiaryFraudCheck History model to track these kind of updates
 def handle_eligibility_difference_between_declaration_and_identity_provider(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
@@ -472,34 +504,16 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     if declared_eligibility == id_provider_detected_eligibility or id_provider_detected_eligibility is None:
         return fraud_check
 
-    # Update fraud check by creating a new one with the correct eligibility
-    new_fraud_check = fraud_models.BeneficiaryFraudCheck(
-        user=fraud_check.user,
-        type=fraud_check.type,
-        thirdPartyId=fraud_check.thirdPartyId,
-        resultContent=fraud_check.resultContent,
-        status=fraud_check.status,
-        reason=fraud_check.reason,
-        reasonCodes=fraud_check.reasonCodes,
-        eligibilityType=id_provider_detected_eligibility,
-    )
+    new_fraud_check = _update_fraud_check_eligibility_with_history(fraud_check, id_provider_detected_eligibility)
 
-    # Cancel the old fraud check
-    fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
-
-    reason_message = "Eligibility type changed by the identity provider"
-    fraud_check.reason = (
-        f"{fraud_check.reason} {fraud_api.FRAUD_RESULT_REASON_SEPARATOR} {reason_message}"
-        if fraud_check.reason
-        else reason_message
-    )
-
-    if fraud_check.reasonCodes is None:
-        fraud_check.reasonCodes = []
-    fraud_check.reasonCodes.append(fraud_models.FraudReasonCode.ELIGIBILITY_CHANGED)  # type: ignore [arg-type]
-    fraud_check.thirdPartyId = f"deprecated-{fraud_check.thirdPartyId}"
-
-    pcapi_repository.repository.save(new_fraud_check, fraud_check)
+    # Handle eligibility update for PROFILE_COMPLETION fraud check, if it exists
+    profile_completion_fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
+        fraud_models.BeneficiaryFraudCheck.user == user,
+        fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.PROFILE_COMPLETION,
+        fraud_models.BeneficiaryFraudCheck.eligibilityType == declared_eligibility,
+    ).first()
+    if profile_completion_fraud_check:
+        _update_fraud_check_eligibility_with_history(profile_completion_fraud_check, id_provider_detected_eligibility)
 
     return new_fraud_check
 
