@@ -26,3 +26,4 @@ const messages : TranslationMessages = {
 }
 
 export default messages
+
