@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from google.cloud.exceptions import NotFound
 from google.cloud.storage import Client
@@ -14,16 +15,19 @@ from .base import BaseBackend
 
 
 class GCPBackend(BaseBackend):
+    bucket_credentials = settings.GCP_BUCKET_CREDENTIALS
+    default_bucket_name = settings.GCP_BUCKET_NAME
+
     def __init__(
         self,
-        project_id: str = settings.GCP_BUCKET_CREDENTIALS.get("project_id"),
-        bucket_name: str = settings.GCP_BUCKET_NAME,
+        project_id: typing.Optional[str] = None,
+        bucket_name: typing.Optional[str] = None,
     ) -> None:
-        self.project_id = project_id
-        self.bucket_name = bucket_name
+        self.project_id = project_id or self.bucket_credentials.get("project_id")
+        self.bucket_name = bucket_name or self.default_bucket_name
 
     def get_gcp_storage_client_bucket(self) -> Bucket:
-        credentials = Credentials.from_service_account_info(settings.GCP_BUCKET_CREDENTIALS)
+        credentials = Credentials.from_service_account_info(self.bucket_credentials)
         storage_client = Client(credentials=credentials, project=self.project_id)
         return storage_client.bucket(self.bucket_name)
 
@@ -48,3 +52,23 @@ class GCPBackend(BaseBackend):
         except Exception as exc:
             logger.exception("An error has occured while trying to delete file on GCP bucket: %s", exc)
             raise exc
+
+
+class GCPAlternateBackend(GCPBackend):
+    """A backend for GCP Storage that connects to an alternate bucket.
+
+    It is used during the transition between 2 buckets (accessible
+    with the same credentials), with the following steps:
+
+    0. Use single "soon-to-be-old" GCP backend.
+
+    1. Use both GCP and GCP_ALTERNATE backends. The former uses the
+       "soon-to-be-old" bucket name, the latter uses the new.
+
+    2. Switch bucket names (in GCP secrets) and stop using GCP_ALTERNATE.
+
+    3. (optional) Delete this class and the `GCP_ALTERNATE_BUCKET_NAME`
+       secret.
+    """
+
+    default_bucket_name = settings.GCP_ALTERNATE_BUCKET_NAME

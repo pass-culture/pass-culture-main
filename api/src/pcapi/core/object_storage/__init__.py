@@ -1,16 +1,16 @@
 from pcapi import settings
-from pcapi.models import Model
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.module_loading import import_string
 
 
 OVH = "OVH"
 GCP = "GCP"
+GCP_ALTERNATE = "GCP_ALTERNATE"
 LOCAL_FILE_STORAGE = "local"
 POSSIBLE_BACKEND_ENV_VARIABLES = (OVH, GCP, LOCAL_FILE_STORAGE)
 BACKENDS_MAPPING = {
     OVH: "pcapi.core.object_storage.backends.ovh.OVHBackend",
     GCP: "pcapi.core.object_storage.backends.gcp.GCPBackend",
+    GCP_ALTERNATE: "pcapi.core.object_storage.backends.gcp.GCPAlternateBackend",
     LOCAL_FILE_STORAGE: "pcapi.core.object_storage.backends.local.LocalBackend",
 }
 
