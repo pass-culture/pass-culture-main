@@ -6,4 +6,5 @@ export const CATEGORIES_DEFAULT_VALUES = {
   musicSubType: '',
   showType: '',
   showSubType: '',
+  isEvent: false,
 }

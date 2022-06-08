@@ -11,4 +11,8 @@ export interface IOfferIndividualFormValues {
   showSubType: string
   musicType: string
   musicSubType: string
+  withdrawalDetails: string
+  ticketWithdrawal: string
+  ticketSentDate: string
+  ticketWithdrawalHour: string
 }
