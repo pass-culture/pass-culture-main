@@ -377,7 +377,7 @@ def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking
         },
     )
 
-    if not send_eac_new_collective_prebooking_email_to_pro(collective_booking):
+    if not send_eac_new_booking_email_to_pro(collective_booking):
         logger.warning(
             "Could not send new booking confirmation email to offerer",
             extra={"booking": collective_booking.id},
