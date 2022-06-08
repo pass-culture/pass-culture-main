@@ -14,10 +14,12 @@ const MusicTypes = (): JSX.Element => {
     musicType: SelectOptions
     musicSubType: SelectOptions
   }>({
-    musicType: musicOptionsTree.map(data => ({
-      value: data.code.toString(),
-      label: data.label,
-    })),
+    musicType: musicOptionsTree
+      .map(data => ({
+        value: data.code.toString(),
+        label: data.label,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'fr')),
     musicSubType: [],
   })
   const {
@@ -34,10 +36,12 @@ const MusicTypes = (): JSX.Element => {
       )?.children
 
       if (selectedMusicTypeChildren) {
-        newMusicSubTypeOptions = selectedMusicTypeChildren.map(data => ({
-          value: data.code.toString(),
-          label: data.label,
-        }))
+        newMusicSubTypeOptions = selectedMusicTypeChildren
+          .map(data => ({
+            value: data.code.toString(),
+            label: data.label,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
       }
     }
 

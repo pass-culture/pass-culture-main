@@ -17,10 +17,12 @@ const ShowTypes = (): JSX.Element => {
     showType: SelectOptions
     showSubType: SelectOptions
   }>({
-    showType: showOptionsTree.map(data => ({
-      label: data.label,
-      value: data.code.toString(),
-    })),
+    showType: showOptionsTree
+      .map(data => ({
+        label: data.label,
+        value: data.code.toString(),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'fr')),
     showSubType: [],
   })
 
@@ -33,10 +35,12 @@ const ShowTypes = (): JSX.Element => {
       )?.children
 
       if (selectedShowTypeChildren) {
-        newShowSubTypeOptions = selectedShowTypeChildren.map(data => ({
-          value: data.code.toString(),
-          label: data.label,
-        }))
+        newShowSubTypeOptions = selectedShowTypeChildren
+          .map(data => ({
+            value: data.code.toString(),
+            label: data.label,
+          }))
+          .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
       }
     }
 

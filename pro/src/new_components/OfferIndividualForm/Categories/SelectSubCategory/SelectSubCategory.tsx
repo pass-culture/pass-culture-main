@@ -35,6 +35,7 @@ const SelectSubCategory = ({
       value: s.id,
       label: s.proLabel,
     }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 
   return (
     <Select
