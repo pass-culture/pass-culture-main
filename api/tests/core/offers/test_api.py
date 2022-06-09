@@ -1951,9 +1951,38 @@ class AddCriterionToOffersTest:
 
         # Then
         assert is_successful is True
-        assert offer11.criteria == [criterion1, criterion2]
-        assert offer12.criteria == [criterion1, criterion2]
-        assert offer21.criteria == [criterion1, criterion2]
+        assert set(offer11.criteria) == {criterion1, criterion2}
+        assert set(offer12.criteria) == {criterion1, criterion2}
+        assert set(offer21.criteria) == {criterion1, criterion2}
+        assert not inactive_offer.criteria
+        assert not unmatched_offer.criteria
+        mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
+
+    @mock.patch("pcapi.core.search.async_index_offer_ids")
+    def test_add_criteria_from_isbn_when_one_has_criteria(self, mocked_async_index_offer_ids):
+        # Given
+        isbn = "2221001648"
+        product1 = factories.ProductFactory(extraData={"isbn": isbn})
+        offer11 = factories.OfferFactory(product=product1)
+        offer12 = factories.OfferFactory(product=product1)
+        product2 = factories.ProductFactory(extraData={"isbn": isbn})
+        offer21 = factories.OfferFactory(product=product2)
+        inactive_offer = factories.OfferFactory(product=product1, isActive=False)
+        unmatched_offer = factories.OfferFactory()
+        criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
+        criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
+
+        criteria_factories.OfferCriterionFactory(offer=offer11, criterion=criterion1)
+        criteria_factories.OfferCriterionFactory(offer=offer12, criterion=criterion2)
+
+        # When
+        is_successful = api.add_criteria_to_offers([criterion1, criterion2], isbn=isbn)
+
+        # Then
+        assert is_successful is True
+        assert set(offer11.criteria) == {criterion1, criterion2}
+        assert set(offer12.criteria) == {criterion1, criterion2}
+        assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
@@ -1977,9 +2006,9 @@ class AddCriterionToOffersTest:
 
         # Then
         assert is_successful is True
-        assert offer11.criteria == [criterion1, criterion2]
-        assert offer12.criteria == [criterion1, criterion2]
-        assert offer21.criteria == [criterion1, criterion2]
+        assert set(offer11.criteria) == {criterion1, criterion2}
+        assert set(offer12.criteria) == {criterion1, criterion2}
+        assert set(offer21.criteria) == {criterion1, criterion2}
         assert not inactive_offer.criteria
         assert not unmatched_offer.criteria
         mocked_async_index_offer_ids.called_once_with([offer11.id, offer12.id, offer21.id])
