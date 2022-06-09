@@ -31,7 +31,8 @@ def _create_adage_valid_token_with_email(
 
 @freeze_time("2020-11-17 15:00:00")
 class Returns200Test:
-    def test_get_collective_offer(self, client):
+    @classmethod
+    def test_get_collective_offer(cls, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime(2021, 5, 15),
@@ -39,6 +40,7 @@ class Returns200Test:
             collectiveOffer__description="offer description",
             price=10,
             collectiveOffer__students=[StudentLevels.GENERAL2],
+            collectiveOffer__educational_domains=[educational_factories.EducationalDomainFactory()],
         )
 
         adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
@@ -93,7 +95,8 @@ class Returns200Test:
 
 
 class Returns404Test:
-    def test_should_return_404_when_no_collective_offer(self, client):
+    @classmethod
+    def test_should_return_404_when_no_collective_offer(cls, client):
         # Given
         adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(email="toto@mail.com", uai="12890AI")
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
