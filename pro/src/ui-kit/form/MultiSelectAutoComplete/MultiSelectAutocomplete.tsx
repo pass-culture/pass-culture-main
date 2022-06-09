@@ -81,6 +81,16 @@ const MultiSelectAutocomplete = ({
     [options]
   )
 
+  const toggleField = () => {
+    if (isOpen) {
+      setIsOpen(false)
+      setFieldValue(`search-${fieldName}`, '', false)
+    } else {
+      setIsOpen(true)
+    }
+    setFieldTouched(fieldName, true)
+  }
+
   return (
     <FieldLayout
       className={className}
@@ -111,15 +121,7 @@ const MultiSelectAutocomplete = ({
         />
         <div className={styles['field-overlay']}>
           <button
-            onClick={() => {
-              if (isOpen) {
-                setIsOpen(false)
-                setFieldValue(`search-${fieldName}`, '', false)
-              } else {
-                setIsOpen(true)
-              }
-              setFieldTouched(fieldName, true)
-            }}
+            onClick={toggleField}
             className={cx(styles['dropdown-indicator'], {
               [styles['dropdown-indicator-is-closed']]: !isOpen,
             })}
@@ -131,7 +133,9 @@ const MultiSelectAutocomplete = ({
             />
           </button>
           {field.value.length > 0 && (
-            <div className={styles['pellet']}>{field.value.length}</div>
+            <div onClick={toggleField} className={styles['pellet']}>
+              {field.value.length}
+            </div>
           )}
           {isOpen && (
             <div className={styles['multi-select-autocomplete__menu']}>
