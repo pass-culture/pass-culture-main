@@ -473,11 +473,11 @@ class CancelByBeneficiaryTest:
         stock = offers_factories.StockFactory(offer__bookingEmail="offerer@example.com")
         booking = booking_factories.IndividualBookingFactory.create_batch(20, stock=stock)[0]
 
-        queries = 1  # select stock for update
-        queries += 1  # select booking
-        queries += 2  # update booking ; select feature_flag
+        queries = 2  # select stock ; select booking
+        queries += 1  # update booking
+        queries += 1  # select feature_flag
         queries += 3  # update stock ; update booking ;  release savepoint
-        queries += 9  # (update batch attributes): select booking ; individualBooking ; user ; user_offerer ; user.bookings ;  favorites ; deposit ; stock ; wallet balance
+        queries += 7  # (update batch attributes): select booking ; individualBooking ; user_offerer exists ; user.bookings ;  favorites ; deposit ; wallet balance
         queries += 1  # select venue by id
         queries += 2  # select user by email ; select venue by same booking email
         queries += 1  # select offerer by id

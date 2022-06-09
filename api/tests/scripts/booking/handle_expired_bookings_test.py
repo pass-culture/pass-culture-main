@@ -158,18 +158,13 @@ class CancelExpiredIndividualBookingsTest:
         booking_factories.IndividualBookingFactory.create_batch(
             size=10, stock__offer__product=book, dateCreated=two_months_ago
         )
-        n_queries = (
-            +1  # select count
-            + 1  # select initial booking ids
+        n_queries = 1  # select initial booking ids
+        n_queries += 1  # release savepoint/COMMIT
+        n_queries += 4 * (
+            1  # update booking
+            + 1  # select booking stockId
+            + 1  # update stock dnBookedQuantity
             + 1  # release savepoint/COMMIT
-            + 4
-            * (
-                1  # update
-                + 1  # release savepoint/COMMIT
-                + 1  # select stock
-                + 1  # recompute dnBookedQuantity
-                + 1  # select next ids
-            )
         )
 
         with assert_num_queries(n_queries):
@@ -252,10 +247,9 @@ class CancelExpiredCollectiveBookingsTest:
         yesterday = now - timedelta(days=1)
         educational_factories.PendingCollectiveBookingFactory.create_batch(size=10, confirmationLimitDate=yesterday)
         n_queries = (
-            +1  # select count
-            + 1  # select initial booking ids
+            +1  # select collective_booking ids
             + 1  # release savepoint/COMMIT
-            + 4 * (1 + 1 + 1)  # update  # release savepoint/COMMIT  # select stock  # select next ids
+            + 4 * (1 + 1)  # update collective_booking  # release savepoint/COMMIT
         )
 
         with assert_num_queries(n_queries):
