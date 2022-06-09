@@ -876,7 +876,7 @@ jobs:
           command: |
             PASSCULTURE_PASSWORD=${GCP_INFRA_KEY} \
             PCAPI_VALUES_FILE=~/pass-culture-deployment/helm/pcapi/values.<<parameters.helm_environment>>.yaml \
-            helmfile -e <<parameters.helm_environment>> apply --set image.tag=<<parameters.app_version>>
+            helmfile -e <<parameters.helm_environment>> sync --set image.tag=<<parameters.app_version>>
       - run:
           name: Send failure notification
           command: |
