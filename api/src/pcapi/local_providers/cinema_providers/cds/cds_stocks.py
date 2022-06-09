@@ -19,7 +19,7 @@ from pcapi.models.product import Product
 
 
 class CDSStocks(LocalProvider):
-    name = "CDS"
+    name = "Ciné Office"
     can_create = True
 
     def __init__(self, venue_provider: VenueProvider):
