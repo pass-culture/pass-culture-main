@@ -40,217 +40,169 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
     }
     const initialValues = { departement: ['01', '02'] }
 
-    it('should not display options by default', () => {
-      // given
+    it('should display field', () => {
       render(
         <Formik initialValues={initialValues} onSubmit={() => {}}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
-
-      // then
-      expect(screen.queryByLabelText('Ain')).not.toBeInTheDocument()
-      expect(screen.queryByLabelText('Cantal')).not.toBeInTheDocument()
+      expect(screen.getByLabelText('Département')).toBeInTheDocument()
     })
 
-    it('should display all options when the user opens the field', async () => {
-      // given
+    it('should display the number of selected options', async () => {
       render(
         <Formik initialValues={initialValues} onSubmit={() => {}}>
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
-
-      // when the user opens the field
-      await userEvent.click(
-        screen.getByRole('textbox')
-      )
-
-      // then
-      expect(await screen.findAllByRole('checkbox')).toHaveLength(15)
+      expect(await screen.findByText('2')).toBeInTheDocument()
     })
 
-    it('should hide all options when the user closes the field', async () => {
-      // given
-      render(
-        <Formik initialValues={initialValues} onSubmit={() => {}}>
-          <MultiSelectAutocomplete {...props} />
-        </Formik>
-      )
-
-      // when the user opens the field
-      await userEvent.click(
-        screen.getByRole('textbox')
-      )
-      // and then closes it
-      await userEvent.click(screen.getByAltText('Masquer les options'))
-
-      // then
-      expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
-    })
-
-    it('should hide options when the user clicks outside of the field', async () => {
-      // given
-      render(
-        <Formik initialValues={initialValues} onSubmit={() => {}}>
-          <>
-            <button>Outside</button>
+    describe('Options', () => {
+      it('should not display options at first display', () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
             <MultiSelectAutocomplete {...props} />
-          </>
-        </Formik>
-      )
+          </Formik>
+        )
+        expect(screen.queryByLabelText('Ain')).not.toBeInTheDocument()
+        expect(screen.queryByLabelText('Cantal')).not.toBeInTheDocument()
+      })
 
-      // when the user opens the field
-      await userEvent.click(
-        screen.getByRole('textbox')
-      )
-      // and clicks outside of the field
-      await userEvent.click(
-        await screen.findByRole('button', { name: 'Outside' })
-      )
+      it('should open and display all options when the user focuses on the field', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} />
+          </Formik>
+        )
+        await userEvent.click(screen.getByRole('textbox'))
+        expect(await screen.findAllByRole('checkbox')).toHaveLength(15)
+      })
 
-      // then
-      await waitFor(() => {
+      it('should close and hide all options when the user triggers the close arrow button', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} />
+          </Formik>
+        )
+        await userEvent.click(screen.getByRole('textbox'))
+        await userEvent.click(screen.getByAltText('Masquer les options'))
         expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
       })
-    })
 
-    it('should filter options when the user types in the field', async () => {
-      // given
-      render(
-        <Formik initialValues={initialValues} onSubmit={() => {}}>
-          <MultiSelectAutocomplete {...props} />
-        </Formik>
-      )
+      it('should close and hide options when the user focuses outside of the field', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <>
+              <button>Outside</button>
+              <MultiSelectAutocomplete {...props} />
+            </>
+          </Formik>
+        )
+        await userEvent.click(screen.getByRole('textbox'))
+        await userEvent.click(
+          await screen.findByRole('button', { name: 'Outside' })
+        )
+        expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
+      })
 
-      // when the user types in the field
-      await userEvent.type(
-        screen.getByRole('textbox'),
-        'al'
-      )
-
-      // then
-      await waitFor(() => {
-        expect(screen.getAllByRole('checkbox')).toHaveLength(6) // Allier, Alpes, Hautes-Alpes, Alpes-Maritimes, Calvados, Cantal
+      it('should display options as selected when the user selects them', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} />
+          </Formik>
+        )
+        await userEvent.click(screen.getByRole('textbox'))
+        await userEvent.click(await screen.findByLabelText('Aveyron'))
+        await userEvent.click(await screen.findByLabelText('Calvados'))
+        expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
+          4
+        ) // Ain, Aisne (default) + Aveyron, Calvados
+        await userEvent.click(await screen.findByLabelText('Calvados'))
+        expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
+          3
+        ) // Ain, Aisne (default) + Aveyron
       })
     })
 
-    it('should cancel filter when the user closes the field', async () => {
-      // given
-      render(
-        <Formik initialValues={initialValues} onSubmit={() => {}}>
-          <MultiSelectAutocomplete {...props} />
-        </Formik>
-      )
-      await userEvent.type(
-        screen.getByRole('textbox'),
-        'al'
-      )
-      await waitFor(() => {
+    describe('Filter', () => {
+      it('should filter options when the user types in the field', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} />
+          </Formik>
+        )
+        await userEvent.type(screen.getByRole('textbox'), 'al')
         expect(screen.getAllByRole('checkbox')).toHaveLength(6) // Allier, Alpes, Hautes-Alpes, Alpes-Maritimes, Calvados, Cantal
       })
-      // when the user closes the field
-      await userEvent.click(screen.getByAltText('Masquer les options'))
-      // and reopens it
-      await userEvent.click(screen.getByAltText('Afficher les options'))
-      // then
-      await waitFor(() => {
+
+      it('should reset filter when the user closes the field', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} />
+          </Formik>
+        )
+        await userEvent.type(screen.getByRole('textbox'), 'al')
+        expect(screen.getAllByRole('checkbox')).toHaveLength(6) // Allier, Alpes, Hautes-Alpes, Alpes-Maritimes, Calvados, Cantal
+        await userEvent.click(screen.getByAltText('Masquer les options'))
+        await userEvent.click(screen.getByAltText('Afficher les options'))
         expect(screen.getAllByRole('checkbox')).toHaveLength(15)
       })
     })
 
-    it('should add options when the user selects them and display associated tags', async () => {
-      // given
-      render(
-        <Formik initialValues={initialValues} onSubmit={() => {}}>
-          <MultiSelectAutocomplete {...props} />
-        </Formik>
-      )
-
-      // when the user opens the field
-      await userEvent.click(
-        screen.getByRole('textbox')
-      )
-      // and selects options
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
-
-      // then
-      await waitFor(() => {
-        expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
-          4
-        ) // Ain, Aisne (default) + Aveyron, Calvados
-      })
-      expect(
-        screen.queryByRole('button', { name: 'Aveyron' })
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Calvados' })
-      ).toBeInTheDocument()
-    })
-
-    it('should add options when the user selects them but not display associated tags', async () => {
-      // given
-      render(
-        <Formik initialValues={initialValues} onSubmit={() => {}}>
-          <MultiSelectAutocomplete {...props} hideTags={true} />
-        </Formik>
-      )
-
-      // when the user opens the field
-      await userEvent.click(
-        screen.getByRole('textbox')
-      )
-      // and selects options
-      await userEvent.click(await screen.findByLabelText('Aveyron'))
-      await userEvent.click(await screen.findByLabelText('Calvados'))
-
-      // then
-      await waitFor(() => {
-        expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
-          4
-        ) // Ain, Aisne (default) + Aveyron, Calvados
-      })
-      expect(
-        screen.queryByRole('button', { name: 'Aveyron' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Calvados' })
-      ).not.toBeInTheDocument()
-    })
-
-    it('should remove options when the user unselects them', async () => {
-      // given
-      render(
-        <Formik initialValues={initialValues} onSubmit={() => {}}>
-          <MultiSelectAutocomplete {...props} />
-        </Formik>
-      )
-
-      // when the user opens the field
-      await userEvent.click(
-        screen.getByRole('textbox')
-      )
-      // and unselects default options
-      await userEvent.click(await screen.findByLabelText('Ain'))
-      await userEvent.click(await screen.findByLabelText('Aisne'))
-
-      // then
-      await waitFor(() => {
+    describe('Tags', () => {
+      it('should display tags when the user selects options', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} />
+          </Formik>
+        )
+        await userEvent.click(screen.getByRole('textbox'))
+        await userEvent.click(await screen.findByLabelText('Aveyron'))
+        await userEvent.click(await screen.findByLabelText('Calvados'))
         expect(
-          screen.queryAllByRole('checkbox', { checked: true })
-        ).toHaveLength(0)
+          screen.getByRole('button', { name: 'Aveyron' })
+        ).toBeInTheDocument()
+        expect(
+          screen.getByRole('button', { name: 'Calvados' })
+        ).toBeInTheDocument()
       })
-      expect(
-        screen.queryByRole('button', { name: 'Aveyron' })
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Calvados' })
-      ).not.toBeInTheDocument()
+
+      it('should not display associated tags when the user selects options', async () => {
+        // given
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} hideTags />
+          </Formik>
+        )
+        await userEvent.click(screen.getByRole('textbox'))
+        await userEvent.click(await screen.findByLabelText('Aveyron'))
+        await userEvent.click(await screen.findByLabelText('Calvados'))
+        expect(
+          screen.queryByRole('button', { name: 'Aveyron' })
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', { name: 'Calvados' })
+        ).not.toBeInTheDocument()
+      })
+
+      it('should unselect option when removing a tag', async () => {
+        render(
+          <Formik initialValues={initialValues} onSubmit={() => {}}>
+            <MultiSelectAutocomplete {...props} />
+          </Formik>
+        )
+
+        await userEvent.click(screen.getByRole('button', { name: 'Aisne' }))
+        expect(
+          screen.queryByRole('button', { name: 'Aisne' })
+        ).not.toBeInTheDocument()
+        await userEvent.click(screen.getByRole('textbox'))
+        expect(screen.queryByLabelText('Aisne')).not.toBeChecked()
+      })
     })
 
     it('should display an error when input value is not valid for Formik', async () => {
-      // given
       const validationSchema = yup.object().shape({
         departement: yup.array().test({
           message: 'Veuillez renseigner un département',
@@ -275,20 +227,17 @@ describe('src | ui-kit | form | MutliSelectAutocomplete', () => {
           <MultiSelectAutocomplete {...props} />
         </Formik>
       )
-
-      expect(screen.queryByText('Veuillez renseigner un Département')).not.toBeInTheDocument()
-
-      // when the user opens the field
-      await userEvent.click(
-        screen.getByRole('textbox')
-      )
+      expect(
+        screen.queryByText('Veuillez renseigner un Département')
+      ).not.toBeInTheDocument()
+      await userEvent.click(screen.getByRole('textbox'))
       // and unselects default options
       await userEvent.click(await screen.findByLabelText('Ain'))
       await userEvent.click(await screen.findByLabelText('Aisne'))
-
-      // then
       await waitFor(() => {
-        expect(screen.queryByText('Veuillez renseigner un département')).toBeInTheDocument()
+        expect(
+          screen.queryByText('Veuillez renseigner un département')
+        ).toBeInTheDocument()
       })
     })
   })
