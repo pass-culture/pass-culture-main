@@ -1012,16 +1012,24 @@ def add_criteria_to_offers(
     if not offer_ids:
         return False
 
+    # check existing tags on selected offers to avoid duplicate association which would violate Unique constraint
+    existing_criteria_on_offers = (
+        criteria_models.OfferCriterion.query.filter(criteria_models.OfferCriterion.offerId.in_(offer_ids))
+        .with_entities(criteria_models.OfferCriterion.offerId, criteria_models.OfferCriterion.criterionId)
+        .all()
+    )
+
     offer_criteria: list[criteria_models.OfferCriterion] = []
     for criterion in criteria:
         logger.info("Adding criterion %s to %d offers", criterion, len(offer_ids))
-        offer_criteria.extend(
-            criteria_models.OfferCriterion(
-                offerId=offer_id,
-                criterionId=criterion.id,
-            )
-            for offer_id in offer_ids
-        )
+        for offer_id in offer_ids:
+            if not (offer_id, criterion.id) in existing_criteria_on_offers:
+                offer_criteria.append(
+                    criteria_models.OfferCriterion(
+                        offerId=offer_id,
+                        criterionId=criterion.id,
+                    )
+                )
 
     db.session.bulk_save_objects(offer_criteria)
     db.session.commit()
