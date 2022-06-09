@@ -10,6 +10,10 @@
   padding-top: 0;
   position: relative;
 
+  .subtitle {
+    padding-top: rem.torem(8px) ;
+  }
+
   .section-icon {
     background-image: url(/icons/ico-structure.svg);
     background-position: center;
