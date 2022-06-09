@@ -73,7 +73,7 @@ const OfferEducationalCreation = (): JSX.Element => {
           console.error(results?.find(res => !res.isOk)?.message)
         }
 
-        const [categories, offerers, domains] = results
+        const [categories, offerers] = results
 
         setScreenProps({
           educationalCategories: categories.payload.educationalCategories,
