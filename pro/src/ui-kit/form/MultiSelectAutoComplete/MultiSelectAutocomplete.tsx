@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 
+import AutocompleteList from '../shared/AutocompleteList'
 import BaseCheckbox from '../shared/BaseCheckbox'
 import { BaseInput } from '../shared'
 import FieldLayout from '../shared/FieldLayout'
-import Icon from 'components/layout/Icon'
 import { SelectOption } from 'custom_types/form'
 import Tag from 'ui-kit/Tag'
 import cx from 'classnames'
@@ -123,53 +123,27 @@ const MultiSelectAutocomplete = ({
           type="text"
           {...searchField}
         />
-        <div className={styles['field-overlay']}>
-          <button
-            onClick={toggleField}
-            className={cx(styles['dropdown-indicator'], {
-              [styles['dropdown-indicator-is-closed']]: !isOpen,
-            })}
-            type="button"
-          >
-            <Icon
-              svg="open-dropdown"
-              alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
+        <AutocompleteList
+          onButtonClick={toggleField}
+          isOpen={isOpen}
+          filteredOptions={filteredOptions}
+          displayNumberOfSelectedValues={field.value.length > 0}
+          numberOfSelectedOptions={field.value.length}
+          renderOption={({ value, label }) => (
+            <BaseCheckbox
+              label={label}
+              key={`${fieldName}-${value}`}
+              value={value}
+              name={fieldName}
+              onChange={e => {
+                setFieldTouched(`search-${fieldName}`, true)
+                handleChange(e)
+                onChange?.(e)
+              }}
+              checked={field.value.includes(value)}
             />
-          </button>
-          {field.value.length > 0 && (
-            <div onClick={toggleField} className={styles['pellet']}>
-              {field.value.length}
-            </div>
           )}
-          {isOpen && (
-            <div className={styles['multi-select-autocomplete__menu']}>
-              {filteredOptions.length === 0 && (
-                <span
-                  className={cx({
-                    [styles['multi-select-autocomplete__menu--no-results']]:
-                      filteredOptions.length === 0,
-                  })}
-                >
-                  Aucun résultat
-                </span>
-              )}
-              {filteredOptions.map(({ value, label }) => (
-                <BaseCheckbox
-                  label={label}
-                  key={`${fieldName}-${value}`}
-                  value={value}
-                  name={fieldName}
-                  onChange={e => {
-                    setFieldTouched(`search-${fieldName}`, true)
-                    handleChange(e)
-                    onChange?.(e)
-                  }}
-                  checked={field.value.includes(value)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        />
       </div>
       {!hideTags && field.value.length > 0 && (
         <div className={styles['multi-select-autocomplete-tags']}>
