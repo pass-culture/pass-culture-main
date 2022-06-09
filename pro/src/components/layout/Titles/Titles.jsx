@@ -7,7 +7,7 @@ const Titles = ({ action, subtitle, title }) => (
       <h1>{title}</h1>
       {action && <div className="title-action-links">{action}</div>}
     </div>
-    {subtitle && <h2>{subtitle.toUpperCase()}</h2>}
+    {subtitle && <h2 className="subtitle">{subtitle.toUpperCase()}</h2>}
   </div>
 )
 
