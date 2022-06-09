@@ -194,7 +194,7 @@ def test_get_user_attributes_not_beneficiary():
         last_name="Zin",
         marketing_push_subscription=True,
         phone_number=None,
-        postal_code=None,
+        postal_code=user.postalCode,
         products_use_date={},
         booking_count=0,
         booking_subcategories=[],

@@ -109,7 +109,7 @@ def activate_beneficiary(user: users_models.User) -> users_models.User:
 
 
 def _has_completed_profile(user: users_models.User) -> bool:
-    mandatory_fields = [user.city, user.activity, user.firstName, user.lastName]
+    mandatory_fields = [user.city, user.activity, user.firstName, user.lastName, user.postalCode]
     return all(elem is not None for elem in mandatory_fields)
 
 

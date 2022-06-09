@@ -230,7 +230,8 @@ def _create_profile_completion_fraud_check_from_dms(
     city = content.get_city()
     first_name = content.get_first_name()
     last_name = content.get_last_name()
-    if all(elem is not None for elem in [activity, city, first_name, last_name]):
+    postal_code = content.get_postal_code()
+    if all(elem is not None for elem in [activity, city, first_name, last_name, postal_code]):
         fraud_api.create_profile_completion_fraud_check(
             user,
             eligibility,
@@ -240,7 +241,7 @@ def _create_profile_completion_fraud_check_from_dms(
                 first_name=first_name,
                 last_name=last_name,
                 origin=f"Completed in DMS application {application_id}",
-                postalCode=content.get_postal_code(),
+                postalCode=content.postal_code,
             ),
         )
 
