@@ -1,9 +1,11 @@
 import React, { useRef, useState } from 'react'
 
-import { ReactComponent as DownloadSvg } from '../../icons/ico-download.svg'
+import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
+import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { Events } from 'core/FirebaseEvents/constants'
+import Icon from 'components/layout/Icon'
 import { RootState } from '../../store/reducers'
 import { TPreFilters } from 'core/Bookings'
 import style from './MultiDownloadButtonsModal.module.scss'
@@ -88,6 +90,16 @@ const MultiDownloadButtonsModal = ({
             <DownloadSvg />
             Fichier CSV (.csv)
           </button>
+          <Icon className={style["separator"]} svg="ico-separator" />
+          <a
+            className={style['insideModalButton']}
+            onClick={()=>setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)}
+            href={'https://passculture.qualtrics.com/jfe/form/SV_7OKMUyNBgZxmx9Q'}
+            target={'_blank'}
+          >
+            <LinkIcon />
+            Proposer un autre format
+          </a>
         </div>
       )}
     </div>
