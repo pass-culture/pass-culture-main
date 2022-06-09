@@ -456,12 +456,20 @@ def _get_initial_pricing_status(
     return models.PricingStatus.VALIDATED
 
 
-def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: str) -> None:
+def _delete_dependent_pricings(
+    booking: typing.Union[bookings_models.Booking, CollectiveBooking], log_message: str
+) -> None:
     """Delete pricings for bookings that should be priced after the
     requested ``booking``.
 
     See note in the module docstring for further details.
     """
+    # Collective bookings are always reimbursed 100%, so there is no need to price them in
+    # a specific order. In other words, there are no dependent pricings, and hence none to
+    # delete.
+    if isinstance(booking, CollectiveBooking):
+        return
+
     assert booking.dateUsed is not None  # helps mypy for `_get_revenue_period()`
     siret = booking.venue.siret or booking.venue.businessUnit.siret
     revenue_period_start, revenue_period_end = _get_revenue_period(booking.dateUsed)
@@ -581,10 +589,6 @@ def _delete_dependent_pricings(booking: bookings_models.Booking, log_message: st
 def cancel_pricing(
     booking: typing.Union[bookings_models.Booking, CollectiveBooking], reason: models.PricingLogReason
 ) -> typing.Optional[models.Pricing]:
-    # FIXME (MathildeDuboille - 2022-03-03): handle collective booking once pricing is adapted to the new model (PC-13426)
-    if isinstance(booking, CollectiveBooking):
-        return None
-
     business_unit_id = booking.venue.businessUnitId
     if not business_unit_id:
         return None
@@ -592,10 +596,17 @@ def cancel_pricing(
     with transaction():
         lock_business_unit(business_unit_id)
 
-        pricing = models.Pricing.query.filter(
-            models.Pricing.booking == booking,
-            models.Pricing.status != models.PricingStatus.CANCELLED,
-        ).one_or_none()
+        if isinstance(booking, CollectiveBooking):
+            pricing = models.Pricing.query.filter(
+                models.Pricing.collectiveBooking == booking,
+                models.Pricing.status != models.PricingStatus.CANCELLED,
+            ).one_or_none()
+        else:
+            pricing = models.Pricing.query.filter(
+                models.Pricing.booking == booking,
+                models.Pricing.status != models.PricingStatus.CANCELLED,
+            ).one_or_none()
+
         if not pricing:
             return None
         if pricing.status not in models.CANCELLABLE_PRICING_STATUSES:

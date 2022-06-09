@@ -444,6 +444,32 @@ class CancelPricingTest:
         assert models.Pricing.query.one() == pricing
 
 
+class CancelCollectivePricingTest:
+    def test_basics(self):
+        pricing = factories.CollectivePricingFactory()
+        reason = models.PricingLogReason.MARK_AS_UNUSED
+        pricing = api.cancel_pricing(pricing.collectiveBooking, reason)
+        assert pricing.status == models.PricingStatus.CANCELLED
+        assert pricing.logs[0].reason == reason
+
+    def test_cancel_when_no_pricing(self):
+        booking = CollectiveBookingFactory()
+        pricing = api.cancel_pricing(booking, models.PricingLogReason.MARK_AS_UNUSED)
+        assert pricing is None
+
+    def test_cancel_when_already_cancelled(self):
+        pricing = factories.CollectivePricingFactory(status=models.PricingStatus.CANCELLED)
+        assert api.cancel_pricing(pricing.collectiveBooking, models.PricingLogReason.MARK_AS_UNUSED) is None
+        assert pricing.status == models.PricingStatus.CANCELLED  # unchanged
+
+    def test_cancel_when_not_cancellable(self):
+        pricing = factories.CollectivePricingFactory(status=models.PricingStatus.PROCESSED)
+        with pytest.raises(exceptions.NonCancellablePricingError):
+            api.cancel_pricing(pricing.collectiveBooking, models.PricingLogReason.MARK_AS_UNUSED)
+        pricing = models.Pricing.query.one()
+        assert pricing.status == models.PricingStatus.PROCESSED  # unchanged
+
+
 class DeleteDependentPricingsTest:
     def test_basics(self):
         used_date = datetime.datetime(2022, 1, 15)
