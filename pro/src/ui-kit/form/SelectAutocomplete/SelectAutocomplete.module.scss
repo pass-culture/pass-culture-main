@@ -1,0 +1,23 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_forms.scss' as forms;
+@use 'styles/mixins/_rem.scss' as rem;
+
+.select-autocomplete-container {
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+
+  .option {
+    input {
+      opacity: 0;
+    }
+
+    span {
+      position: absolute;
+    }
+  }
+}
+
+.select-autocomplete-input {
+  padding-left: 1rem;
+}
