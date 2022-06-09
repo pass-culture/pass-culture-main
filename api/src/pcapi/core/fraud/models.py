@@ -317,7 +317,7 @@ class ProfileCompletionContent(pydantic.BaseModel):
     first_name: str
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
-    postalCode: typing.Optional[str]
+    postalCode: str
     school_type: typing.Optional[users_models.SchoolTypeEnum]
 
 

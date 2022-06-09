@@ -64,6 +64,7 @@ class UserFactory(BaseFactory):
     roles = []  # type: ignore [var-annotated]
     hasSeenProTutorials = True
     subscriptionState = models.SubscriptionState.account_created
+    postalCode = factory.Faker("postcode")
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
