@@ -49,7 +49,7 @@ def get_dms_subscription_item_status(
     return subscription_models.SubscriptionItemStatus.VOID
 
 
-def try_dms_orphan_adoption(user: users_models.User):  # type: ignore [no-untyped-def]
+def try_dms_orphan_adoption(user: users_models.User) -> None:
     dms_orphan = fraud_models.OrphanDmsApplication.query.filter_by(email=user.email).first()
     if not dms_orphan:
         return
