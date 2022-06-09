@@ -135,6 +135,7 @@ ADDRESSES = [
 
 
 def create_industrial_educational_bookings() -> None:
+    create_educational_domains()
     educational_current_year = educational_factories.EducationalYearFactory()
     educational_next_year = educational_factories.EducationalYearFactory()
 
@@ -298,3 +299,23 @@ def _create_collective_stock(
         collectiveOffer__motorDisabilityCompliant=True,
         collectiveOffer__visualDisabilityCompliant=True,
     )
+
+
+def create_educational_domains() -> None:
+    educational_factories.EducationalDomainFactory(name="Architecture")
+    educational_factories.EducationalDomainFactory(name="Arts du cirque et arts de la rue")
+    educational_factories.EducationalDomainFactory(name="Gastronomie et arts du goût")
+    educational_factories.EducationalDomainFactory(name="Arts numériques")
+    educational_factories.EducationalDomainFactory(name="Arts visuels, arts plastiques, arts appliqués")
+    educational_factories.EducationalDomainFactory(name="Cinéma, audiovisuel")
+    educational_factories.EducationalDomainFactory(name="Culture scientifique, technique et industrielle")
+    educational_factories.EducationalDomainFactory(name="Danse")
+    educational_factories.EducationalDomainFactory(name="Design")
+    educational_factories.EducationalDomainFactory(name="Développement durable")
+    educational_factories.EducationalDomainFactory(name="Univers du livre, de la lecture et des écritures")
+    educational_factories.EducationalDomainFactory(name="Musique")
+    educational_factories.EducationalDomainFactory(name="Patrimoine, mémoire, archéologie")
+    educational_factories.EducationalDomainFactory(name="Photographie")
+    educational_factories.EducationalDomainFactory(name="Théâtre, expression dramatique, marionnettes")
+    educational_factories.EducationalDomainFactory(name="Bande dessinée")
+    educational_factories.EducationalDomainFactory(name="Média et information")

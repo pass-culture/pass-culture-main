@@ -66,7 +66,7 @@ class CollectiveOfferFactory(BaseFactory):
         extracted: Optional[list[models.EducationalDomain]] = None,
     ) -> None:
         if not create or not extracted:
-            self.domains = [EducationalDomainFactory(name="Danse", collectiveOffers=[self])]
+            return
 
         if extracted:
             domains = []
