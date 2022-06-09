@@ -381,10 +381,12 @@ class BooksBookingExpirationDateTestSendinblue:
 
 
 class BookingWithWithdrawalTypeTest:
-    def should_use_withdrawal_type_when_available(self):
+    def should_use_withdrawal_type_and_delay_when_available(self):
         withdrawal_type = WithdrawalTypeEnum.ON_SITE
+        withdrawal_delay = 60 * 60 * 24 * 2
         booking = IndividualBookingFactory(
             stock__offer__withdrawalType=withdrawal_type,
+            stock__offer__withdrawalDelay=withdrawal_delay,
             dateCreated=datetime.utcnow(),
         )
 
@@ -396,16 +398,12 @@ class BookingWithWithdrawalTypeTest:
             booking,
             mediation,
             OFFER_WITHDRAWAL_TYPE=withdrawal_type,
-            **{key: value for key, value in email_data.params.items() if key != "OFFER_WITHDRAWAL_TYPE"},
+            OFFER_WITHDRAWAL_DELAY="2 jours",
+            **{
+                key: value
+                for key, value in email_data.params.items()
+                if key not in ("OFFER_WITHDRAWAL_TYPE", "OFFER_WITHDRAWAL_DELAY")
+            },
         )
 
         assert email_data == expected
-
-    def should_use_and_format_withdrawal_delay_when_a_delay_is_set(self):
-        booking = IndividualBookingFactory(
-            stock=offers_factories.EventStockFactory(offer__withdrawalDelay=60 * 60 * 24 * 2),
-        )
-
-        email_data = get_booking_confirmation_to_beneficiary_email_data(booking.individualBooking)
-
-        assert email_data.params["OFFER_WITHDRAWAL_DELAY"] == "2 jours"
