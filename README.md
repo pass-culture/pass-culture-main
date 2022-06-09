@@ -84,9 +84,9 @@ manières de lancer le backend.
 
 Le mot de passe des utilisateurs de la sandbox dans un environnement de développement est : `user@AZERTY123`
 
-L'environnement de test déployé dans le cloud (*testing*) utilise un mot de passe secret par souci de protection 
+L'environnement de test déployé dans le cloud (_testing_) utilise un mot de passe secret par souci de protection
 des données manipulées lors des tests ; en interne, le mot de passe « PRO - testing » est disponible dans le coffre-fort
-de l'équipe.   
+de l'équipe.
 
 Ces utilisateurs existent également pour le 97, en remplaçant `93` par `97`.
 
@@ -115,13 +115,15 @@ sa BDD locale via `pc restart-backend`. Sinon:
 
 ### Tagging des versions
 
-Poser un _tag_ consiste à sélectionner un ensemble de commits et de leur attribuer un numéro de version.
+_Poser le tag_ consiste à sélectionner un ensemble de commits validés par les Product Owners (POs) et de leur attribuer un numéro de version.
 
-1. Checkout `master`
+Pour les hotfixes, [voir plus bas](#Hotfixes).
 
-- `git checkout master && git pull`
+1. Les POs élisent une version "Release Candidate" à déployer à partir de [cette liste de tickets](https://passculture.atlassian.net/jira/dashboards/10113).
 
-La seule branche devant être _taggée_ de cette façon est `master`. Pour les hotfixes, [voir plus bas](#Hotfixes).
+2. Checkout le tag "Release Candidate" `RC-{version}.0.0`.
+
+Par exemple, si le RC choisi est 1879, lancer dans un terminal : `git checkout RC-1878.0.0`
 
 2. Lancer la commande
 
@@ -136,7 +138,7 @@ Par exemple
 ```
 
 Le fichier `version.txt` de l'API est mis à jours ainsi que les `package.json` de Pro et Adage-front. Le tag est
-posé sur la branche locale _checked out_ (master). Il est ensuite
+posé sur la branche locale _checked out_. Il est ensuite
 poussé sur le repository distant. La CI lance alors des pipelines de tests.
 
 3. Sur [CircleCI](https://app.circleci.com/pipelines/github/pass-culture/pass-culture-main), vérifier l'avancement du
