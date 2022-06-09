@@ -114,6 +114,7 @@ class FeatureToggle(enum.Enum):
         "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     )
     ENABLE_EDUCATIONAL_DOMAINS = "Active l'utilisation du champs domaines sur les offres collectives"
+    OFFER_DRAFT_ENABLED = "Active la fonctionnalités de création d'offre en brouillon"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -166,6 +167,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
+    FeatureToggle.OFFER_DRAFT_ENABLED,
     FeatureToggle.OFFER_FORM_V3,
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.SHOW_INVOICES_ON_PRO_PORTAL,
