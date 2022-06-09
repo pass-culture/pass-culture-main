@@ -67,10 +67,10 @@ export const getProviderInfo = providerName => {
       synchronizedOfferMessage: 'Offre importée automatiquement',
     },
     {
-      id: 'cds',
+      id: 'ciné office',
       icon: 'logo-cine-digital-service',
-      name: 'Ciné Digital Service',
-      synchronizedOfferMessage: 'Offre synchronisée avec Ciné Digital Service',
+      name: 'Ciné Office',
+      synchronizedOfferMessage: 'Offre synchronisée avec Ciné Office',
     }
   ]
 
