@@ -3,7 +3,8 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 
 .downloadModalButton > button {
-  padding-left: 45px;
+  padding-left: rem.torem(60px);
+  width: rem.torem(270px);
   &:after {
     border-right: rem.torem(1px) solid white;
     content: '';
@@ -12,7 +13,7 @@
   }
 
   .dropIcon {
-    margin-left: rem.torem(50px);
+    margin-left: rem.torem(80px);
     margin-bottom: rem.torem(2px);
   }
 }
@@ -26,7 +27,7 @@
   overflow: hidden;
   padding: rem.torem(12px) 0;
   position: absolute;
-  right: rem.torem(371px);
+  right: rem.torem(350px);
   top: rem.torem(45px);
 
   .insideModalButton {
@@ -38,7 +39,6 @@
     font-weight: 600;
     font-size: rem.torem(16px);
     padding: rem.torem(8px) rem.torem(17px);
-    width: 100%;
 
     &:hover {
       background: colors.$grey-medium;
@@ -47,5 +47,12 @@
     svg {
       margin-right: rem.torem(10px);
     }
+  }
+  .separator {
+    padding: 0 rem.torem(17px);
+    margin: rem.torem(5px) 0;
+  }
+  .iconLink {
+    margin-right: rem.torem(10px);
   }
 }
