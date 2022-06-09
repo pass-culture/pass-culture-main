@@ -13,8 +13,6 @@ to properly escape `variable`.
 
 
 class MarkupSafeChecker(pylint.checkers.BaseChecker):
-    __implements__ = pylint.interfaces.IAstroidChecker
-
     name = "markupsafe"
     priority = -1
     msgs = {
@@ -56,8 +54,6 @@ You should rather do `import BaseModel from pcapi.routes.serialization`.
 
 
 class BaseModelImportChecker(pylint.checkers.BaseChecker):
-    __implements__ = pylint.interfaces.IAstroidChecker
-
     name = "pydantic-import"
     priority = -1
     msgs = {
@@ -88,8 +84,6 @@ non-UTC datetime.
 
 
 class DatetimeNowChecker(pylint.checkers.BaseChecker):
-    __implements__ = pylint.interfaces.IAstroidChecker
-
     name = "datetime-now"
     priority = -1
     msgs = {
