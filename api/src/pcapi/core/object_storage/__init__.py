@@ -6,7 +6,6 @@ OVH = "OVH"
 GCP = "GCP"
 GCP_ALTERNATE = "GCP_ALTERNATE"
 LOCAL_FILE_STORAGE = "local"
-POSSIBLE_BACKEND_ENV_VARIABLES = (OVH, GCP, LOCAL_FILE_STORAGE)
 BACKENDS_MAPPING = {
     OVH: "pcapi.core.object_storage.backends.ovh.OVHBackend",
     GCP: "pcapi.core.object_storage.backends.gcp.GCPBackend",
@@ -28,8 +27,8 @@ def _check_backend_setting() -> None:
     """When the app starts, this checks if the env variable is correct"""
     if settings.OBJECT_STORAGE_PROVIDER:
         providers = settings.OBJECT_STORAGE_PROVIDER.split(",")
-        if any(provider not in POSSIBLE_BACKEND_ENV_VARIABLES for provider in providers):
-            available_backends = ", ".join(str(var) for var in POSSIBLE_BACKEND_ENV_VARIABLES)
+        if any(provider not in BACKENDS_MAPPING for provider in providers):
+            available_backends = ", ".join(str(var) for var in BACKENDS_MAPPING)
             raise RuntimeError(
                 "Unknown storage provider(%s). Accepted values are: %s" % (providers, available_backends)
             )
