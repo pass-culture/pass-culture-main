@@ -1,10 +1,14 @@
+from dataclasses import dataclass
 from operator import or_
 from typing import Optional
+from typing import cast
 
 from flask_sqlalchemy import BaseQuery
 
 from pcapi.core.offerers.models import Venue
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
+import pcapi.core.providers.exceptions as providers_exceptions
+from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import AllocineTheater
 from pcapi.core.providers.models import CDSCinemaDetails
 from pcapi.core.providers.models import CinemaProviderPivot
@@ -58,13 +62,12 @@ def get_providers_enabled_for_pro_excluding_specific_providers(providers_to_excl
     )
 
 
-def get_allocine_theater(venue: Venue) -> AllocineTheater:
+def get_allocine_theater(venue: Venue) -> Optional[AllocineTheater]:
     return AllocineTheater.query.filter_by(siret=venue.siret).one_or_none()
 
 
-def is_venue_known_by_allocine(venue: Venue) -> bool:
-    allocine_theater = get_allocine_theater(venue)
-    return allocine_theater is not None
+def get_allocine_pivot(venue: Venue) -> Optional[AllocinePivot]:
+    return AllocinePivot.query.filter_by(venue=venue).one_or_none()
 
 
 def get_cinema_provider_pivot_for_venue(venue: Venue) -> Optional[CinemaProviderPivot]:
@@ -80,8 +83,9 @@ def get_providers_to_exclude(venue: Venue) -> list[str]:
         provider_class for provider_class in CINEMA_PROVIDER_NAMES if provider_class != cinema_provider_class
     ]
 
-    has_allocine_pivot = is_venue_known_by_allocine(venue)
-    if not has_allocine_pivot:
+    try:
+        AllocineVenue(venue)
+    except providers_exceptions.UnknownVenueToAlloCine:
         providers_to_exclude.append(AllocineStocks.__name__)
 
     return providers_to_exclude
@@ -96,3 +100,33 @@ def get_cds_cinema_api_token(cinema_id: str) -> Optional[str]:
     if cinema_details:
         return cinema_details.cinemaApiToken
     return None
+
+
+@dataclass
+class AllocineVenue:
+    def __init__(self, venue: Venue):
+        self.allocine_pivot = get_allocine_pivot(venue)
+        if not self.has_pivot():
+            self.allocine_theater = get_allocine_theater(venue)
+
+        if not self.has_pivot() and not self.has_theater():
+            raise providers_exceptions.UnknownVenueToAlloCine()
+
+    allocine_pivot: Optional[AllocinePivot]
+    allocine_theater: Optional[AllocineTheater]
+
+    def has_pivot(self) -> bool:
+        return self.allocine_pivot is not None
+
+    def has_theater(self) -> bool:
+        return self.allocine_theater is not None
+
+    def get_pivot(self) -> AllocinePivot:
+        if not self.has_pivot():
+            raise providers_exceptions.NoAllocinePivot
+        return cast(AllocinePivot, self.allocine_pivot)
+
+    def get_theater(self) -> AllocineTheater:
+        if not self.has_theater():
+            raise providers_exceptions.NoAllocineTheater
+        return cast(AllocineTheater, self.allocine_theater)
