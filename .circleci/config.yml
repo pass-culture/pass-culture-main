@@ -836,15 +836,10 @@ jobs:
           name: Login to GCP Artifact Registry with helm
           command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
       - run:
-          name: Pull chart from registry
+          name: Pull chart from registry and export in local filesystem
           command: |
             source ${BASH_ENV}
-            helm chart pull ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION}
-      - run:
-          name: Export chart in local filesystem
-          command: |
-            source ${BASH_ENV}
-            helm chart export ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME}:${CHART_VERSION} -d tmp/
+            helm pull oci://${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME} --version ${CHART_VERSION} --untar -d tmp/
       - deploy-helm-chart:
           helm_chart_name: passculture-db-operations
           helm_release_name: ${CHART_RELEASE}
