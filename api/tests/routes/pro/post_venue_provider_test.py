@@ -108,6 +108,36 @@ class Returns201Test:
         mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
 
     @pytest.mark.usefixtures("db_session")
+    @patch("pcapi.workers.venue_provider_job.synchronize_venue_provider")
+    def test_when_add_allocine_stocks_provider_for_venue_without_siret(self, mock_synchronize_venue_provider, app):
+        # Given
+        venue = offerers_factories.VenueFactory(managingOfferer__siren="775671464", siret=None, comment="some comment")
+        user = user_factories.AdminFactory()
+        providers_factories.AllocinePivotFactory(venue=venue)
+        provider = providers_factories.AllocineProviderFactory()
+
+        venue_provider_data = {
+            "providerId": humanize(provider.id),
+            "venueId": humanize(venue.id),
+            "price": "9.99",
+            "quantity": 50,
+            "isDuo": True,
+        }
+
+        auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
+
+        # When
+        response = auth_request.post("/venueProviders", json=venue_provider_data)
+
+        # Then
+        assert response.status_code == 201
+        assert response.json["isDuo"]
+        assert response.json["price"] == 9.99
+        assert response.json["quantity"] == 50
+        venue_provider = VenueProvider.query.one()
+        mock_synchronize_venue_provider.assert_called_once_with(venue_provider)
+
+    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.workers.venue_provider_job.venue_provider_job.delay")
     @patch("pcapi.core.providers.api._siret_can_be_synchronized")
     def test_when_no_regression_on_format(self, mock_siret_can_be_synchronized, mock_synchronize_venue_provider, app):
