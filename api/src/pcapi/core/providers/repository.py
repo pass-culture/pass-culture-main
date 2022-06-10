@@ -102,9 +102,12 @@ def get_cds_cinema_api_token(cinema_id: str) -> Optional[str]:
     return None
 
 
+# Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).
+# This class is used to handle this logic when a venue wants to sync with Allocine.
 @dataclass
 class AllocineVenue:
     def __init__(self, venue: Venue):
+        self.venue = venue
         self.allocine_pivot = get_allocine_pivot(venue)
         if not self.has_pivot():
             self.allocine_theater = get_allocine_theater(venue)
@@ -127,6 +130,8 @@ class AllocineVenue:
         return cast(AllocinePivot, self.allocine_pivot)
 
     def get_theater(self) -> AllocineTheater:
+        if self.has_pivot():
+            self.allocine_theater = get_allocine_theater(self.venue)
         if not self.has_theater():
             raise providers_exceptions.NoAllocineTheater
         return cast(AllocineTheater, self.allocine_theater)
