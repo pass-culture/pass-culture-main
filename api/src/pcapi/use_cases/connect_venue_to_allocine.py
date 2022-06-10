@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 from pcapi.core.offerers.models import Venue
-from pcapi.core.providers.exceptions import NoAllocineTheater
 from pcapi.core.providers.exceptions import NoPriceSpecified
 from pcapi.core.providers.models import AllocinePivot
 from pcapi.core.providers.models import AllocineTheater
@@ -9,7 +8,7 @@ from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
-from pcapi.core.providers.repository import get_allocine_theater
+from pcapi.core.providers.repository import AllocineVenue
 from pcapi.domain.price_rule import PriceRule
 from pcapi.repository import repository
 
@@ -21,17 +20,20 @@ ERROR_CODE_SIRET_NOT_SUPPORTED = 422
 def connect_venue_to_allocine(
     venue: Venue, provider_id: int, venue_provider_payload: VenueProviderCreationPayload
 ) -> AllocineVenueProvider:
-    allocine_theater = get_allocine_theater(venue)
 
-    if not allocine_theater:
-        raise NoAllocineTheater()
+    allocine_venue = AllocineVenue(venue=venue)
+
     if not venue_provider_payload.price:
         raise NoPriceSpecified()
 
-    allocine_pivot = _create_allocine_pivot_for_venue(allocine_theater, venue)
-    repository.save(allocine_pivot)
+    if not allocine_venue.has_pivot():
+        allocine_pivot = _create_allocine_pivot_for_venue(allocine_venue.get_theater(), venue)
+        allocine_venue.allocine_pivot = allocine_pivot
+        repository.save(allocine_pivot)
 
-    venue_provider = _create_allocine_venue_provider(allocine_pivot, provider_id, venue_provider_payload, venue)
+    venue_provider = _create_allocine_venue_provider(
+        allocine_venue.get_pivot(), provider_id, venue_provider_payload, venue
+    )
     venue_provider_price_rule = _create_allocine_venue_provider_price_rule(venue_provider, venue_provider_payload.price)  # type: ignore [arg-type]
 
     repository.save(venue_provider_price_rule)
