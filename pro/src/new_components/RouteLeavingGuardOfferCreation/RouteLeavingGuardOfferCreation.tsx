@@ -7,13 +7,15 @@ import { Title } from 'ui-kit'
 import styles from './RouteLeavingGuardOfferCreation.module.scss'
 import { useLocation } from 'react-router-dom'
 
+export interface RouteLeavingGuardOfferCreationProps {
+  when?: boolean
+  isCollectiveFlow?: boolean
+}
+
 const RouteLeavingGuardOfferCreation = ({
   when = true,
   isCollectiveFlow = false,
-}: {
-  when?: boolean
-  isCollectiveFlow?: boolean
-}): JSX.Element => {
+}: RouteLeavingGuardOfferCreationProps): JSX.Element => {
   const location = useLocation()
 
   const shouldBlockNavigation = useCallback(
@@ -25,27 +27,36 @@ const RouteLeavingGuardOfferCreation = ({
       const stocksPathRegex = isCollectiveFlow
         ? /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/stocks/g
         : /\/offre\/([A-Z0-9]+)\/individuel\/stocks/g
+
+      const visibilityPathRegex =
+        /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/visibilite/g
+
       const confirmationPathRegex = isCollectiveFlow
         ? /\/offre\/((T-){0,1}[A-Z0-9]+)\/collectif\/confirmation/g
         : /\/offre\/([A-Z0-9]+)\/individuel\/confirmation/g
 
+      // going from stock to offer
       if (
-        (location.pathname.match(stocksPathRegex) &&
-          nextLocation.pathname.startsWith(offerCreationPath)) ||
-        (location.pathname.match(offerCreationPath) &&
-          nextLocation.pathname.match(confirmationPathRegex))
+        location.pathname.match(stocksPathRegex) &&
+        nextLocation.pathname.startsWith(offerCreationPath)
       ) {
         redirectPath = '/offres'
         return { redirectPath, shouldBlock: true }
       }
+      // going from confirmation to stock
       if (location.pathname.match(confirmationPathRegex)) {
         if (nextLocation.pathname.match(stocksPathRegex)) {
           redirectPath = '/offres'
         }
         return { redirectPath, shouldBlock: false }
       }
+      // going to stocks
+      // or to visibility
+      // or to confirmation
+      // or from collective to individual or reverse
       if (
         nextLocation.pathname.match(stocksPathRegex) ||
+        nextLocation.pathname.match(visibilityPathRegex) ||
         nextLocation.pathname.match(confirmationPathRegex) ||
         (location.pathname.startsWith(offerCreationPath) &&
           nextLocation.pathname.startsWith(offerCreationPath))
