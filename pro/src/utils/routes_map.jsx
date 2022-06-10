@@ -1,6 +1,7 @@
 import Bookings from 'routes/Bookings'
 import CollectiveBookings from 'routes/CollectiveBookings'
-import CollectiveOfferVisibility from 'routes/CollectiveOfferVisibility'
+import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferCreationVisibility'
+import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferEditionVisibility'
 import CollectiveOffers from 'routes/CollectiveOffers'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
@@ -195,7 +196,7 @@ const routes = [
     title: 'Stock lié à une offre collective',
   },
   {
-    component: CollectiveOfferVisibility,
+    component: CollectiveOfferCreationVisibility,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite',
     title: 'Visibilité d’une offre collective',
@@ -240,7 +241,7 @@ const routes = [
     featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
-    component: CollectiveOfferVisibility,
+    component: CollectiveOfferEditionVisibility,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/visibilite/edition',
     title: 'Edition de la visibilité d’une offre collective',
