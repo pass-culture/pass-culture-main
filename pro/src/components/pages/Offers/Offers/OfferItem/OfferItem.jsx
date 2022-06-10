@@ -182,7 +182,10 @@ OfferItem.propTypes = {
     stocks: PropTypes.arrayOf(
       PropTypes.shape({
         beginningDatetime: PropTypes.string,
-        remainingQuantity: PropTypes.number,
+        remainingQuantity: PropTypes.oneOfType([
+          PropTypes.number,
+          PropTypes.string,
+        ]),
       })
     ),
     id: PropTypes.string,
