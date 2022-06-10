@@ -906,8 +906,8 @@ class SendPhoneValidationCodeTest:
 
         token = Token.query.filter_by(userId=user.id, type=TokenType.PHONE_VALIDATION).first()
 
-        assert token.expirationDate >= datetime.utcnow() + timedelta(minutes=2)
-        assert token.expirationDate < datetime.utcnow() + timedelta(minutes=30)
+        assert token.expirationDate >= datetime.utcnow() + timedelta(hours=10)
+        assert token.expirationDate < datetime.utcnow() + timedelta(hours=13)
 
         assert sms_testing.requests == [
             {"recipient": "+33601020304", "content": f"{token.value} est ton code de confirmation pass Culture"}
@@ -1277,7 +1277,7 @@ class ValidatePhoneNumberTest:
         )
         token = create_phone_validation_token(user, "+33607080900")
 
-        with freeze_time(datetime.utcnow() + timedelta(minutes=20)):
+        with freeze_time(datetime.utcnow() + timedelta(hours=15)):
             client.with_token(email=user.email)
             response = client.post("/native/v1/validate_phone_number", {"code": token.value})
 
