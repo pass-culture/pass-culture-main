@@ -85,7 +85,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     history.push(
       `/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${
         shouldUseNewTemplateIds ? successPayload.id : offer.id
-      }/collectif/confirmation`
+      }/collectif/visibilite`
     )
   }
 
