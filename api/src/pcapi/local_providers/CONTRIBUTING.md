@@ -14,7 +14,7 @@ C'est un iterator, appelle le __next__ dans local_provider.py
 Providable n'est pas utilse lorsqu'on a récupéré toujours les informations d'un objet:
 méta données 
 - id
-- date de mofification
+- date de modification
 - type
 
 Est-ce que je connais cet objet ? Est-ce que j'ai besoin de le mettre à jour

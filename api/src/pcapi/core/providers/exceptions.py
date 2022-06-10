@@ -18,6 +18,14 @@ class NoAllocineTheater(VenueProviderException):
     pass
 
 
+class NoAllocinePivot(VenueProviderException):
+    pass
+
+
+class UnknownVenueToAlloCine(VenueProviderException):
+    pass
+
+
 class NoCinemaProviderPivot(VenueProviderException):
     pass
 
