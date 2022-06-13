@@ -217,3 +217,9 @@ class OrphanDmsApplicationFactory(testing.BaseFactory):
     email = factory.Sequence("jean.neige{}@example.com".format)
     application_id = factory.Sequence(lambda n: n)
     process_id = factory.Sequence(lambda n: n)
+
+
+class ProfileCompletionFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = models.FraudCheckType.PROFILE_COMPLETION
+    resultContent = factory.SubFactory(ProfileCompletionContentFactory)
+    status = models.FraudCheckStatus.OK
