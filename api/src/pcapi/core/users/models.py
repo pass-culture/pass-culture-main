@@ -460,7 +460,7 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
         return self.account_state == AccountState.DELETED
 
     @hybrid_property
-    def is_beneficiary(self):
+    def is_beneficiary(self) -> bool:
         return self.has_beneficiary_role or self.has_underage_beneficiary_role
 
     @is_beneficiary.expression  # type: ignore [no-redef]
@@ -470,7 +470,19 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
         )
 
     @hybrid_property
-    def is_phone_validated(self):
+    def is_ex_beneficiary(self) -> bool:
+        today = datetime.combine(date.today(), datetime.min.time())
+        return (
+            self.is_beneficiary
+            and self.deposit is not None
+            and self.deposit.expirationDate is not None
+            and (
+                self.deposit.expirationDate <= today or self.deposit.expirationDate > today and self.wallet_balance == 0
+            )
+        )
+
+    @hybrid_property
+    def is_phone_validated(self) -> bool:
         return self.phoneValidationStatus == PhoneValidationStatusType.VALIDATED
 
     @is_phone_validated.expression  # type: ignore [no-redef]

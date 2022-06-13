@@ -60,6 +60,8 @@ class SendinblueAttributes(Enum):
     IS_BENEFICIARY = "IS_BENEFICIARY"
     IS_BENEFICIARY_18 = "IS_BENEFICIARY_18"
     IS_BOOKING_EMAIL = "IS_BOOKING_EMAIL"
+    IS_CURRENT_BENEFICIARY = "IS_CURRENT_BENEFICIARY"
+    IS_FORMER_BENEFICIARY = "IS_FORMER_BENEFICIARY"
     IS_ELIGIBLE = "IS_ELIGIBLE"
     IS_EMAIL_VALIDATED = "IS_EMAIL_VALIDATED"
     IS_PERMANENT = "IS_PERMANENT"
@@ -155,6 +157,8 @@ def format_user_attributes(attributes: Union[UserAttributes, ProAttributes]) -> 
             attributes, "roles", lambda v: UserRole.BENEFICIARY.value in v
         ),
         SendinblueAttributes.IS_BOOKING_EMAIL.value: _get_attr(attributes, "is_booking_email"),
+        SendinblueAttributes.IS_CURRENT_BENEFICIARY.value: _get_attr(attributes, "is_current_beneficiary"),
+        SendinblueAttributes.IS_FORMER_BENEFICIARY.value: _get_attr(attributes, "is_former_beneficiary"),
         SendinblueAttributes.IS_ELIGIBLE.value: _get_attr(attributes, "is_eligible"),
         SendinblueAttributes.IS_EMAIL_VALIDATED.value: _get_attr(attributes, "is_email_validated"),
         SendinblueAttributes.IS_PERMANENT.value: _get_attr(attributes, "isPermanent"),

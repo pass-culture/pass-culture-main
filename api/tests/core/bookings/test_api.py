@@ -477,7 +477,7 @@ class CancelByBeneficiaryTest:
         queries += 1  # select booking
         queries += 2  # update booking ; select feature_flag
         queries += 3  # update stock ; update booking ;  release savepoint
-        queries += 8  # (update batch attributes): select booking ; individualBooking ; user ; user_offerer ; user.bookings ;  favorites ; deposit ; stock
+        queries += 9  # (update batch attributes): select booking ; individualBooking ; user ; user_offerer ; user.bookings ;  favorites ; deposit ; stock ; wallet balance
         queries += 1  # select venue by id
         queries += 2  # select user by email ; select venue by same booking email
         queries += 1  # select offerer by id
