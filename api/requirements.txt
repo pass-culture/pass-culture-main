@@ -44,7 +44,7 @@ pgcli==2.2.0
 phonenumberslite==8.12.23
 Pillow>=8.1.1
 pydantic[email]==1.9.1
-PyJWT[crypto]==2.1.0
+PyJWT[crypto]==2.4.0
 pylint
 pylint-strict-informational
 pysaml2
