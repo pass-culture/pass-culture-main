@@ -285,6 +285,14 @@ def users_one_year_with_pass_automation() -> None:
     user_automations.users_one_year_with_pass_automation()
 
 
+@blueprint.cli.command("users_whose_credit_expired_today_automation")
+@log_cron_with_transaction
+def users_whose_credit_expired_today_automation() -> None:
+    """Updates external attributes for young users whose credit just expired.
+    This command is meant to be called every day."""
+    user_automations.users_whose_credit_expired_today_automation()
+
+
 @blueprint.cli.command("notify_users_bookings_not_retrieved")
 @log_cron_with_transaction
 def notify_users_bookings_not_retrieved_command() -> None:

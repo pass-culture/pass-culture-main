@@ -11,6 +11,7 @@ from sqlalchemy.sql.expression import or_
 
 from pcapi import settings
 from pcapi.core.payments.models import Deposit
+from pcapi.core.users.external import update_external_user
 from pcapi.core.users.external.sendinblue import add_contacts_to_list
 from pcapi.core.users.models import User
 from pcapi.models import db
@@ -173,3 +174,27 @@ def users_one_year_with_pass_automation() -> bool:
         settings.SENDINBLUE_AUTOMATION_YOUNG_1_YEAR_WITH_PASS_LIST_ID,
         clear_list_first=True,
     )
+
+
+def get_users_whose_credit_expired_today() -> List[User]:
+    return (
+        db.session.query(User)
+        .join(User.deposits)
+        .filter(User.is_beneficiary.is_(True))  # type: ignore [attr-defined]
+        .filter(
+            and_(
+                Deposit.expirationDate > datetime.combine(date.today() - relativedelta(days=1), datetime.min.time()),
+                Deposit.expirationDate <= datetime.combine(date.today(), datetime.min.time()),
+            )
+        )
+        .yield_per(YIELD_COUNT_PER_DB_QUERY)
+    )
+
+
+def users_whose_credit_expired_today_automation() -> None:
+    """
+    This automation is called every day to update external contacts attributes after young users reached their credit
+    expiration, when they become former beneficiaries.
+    """
+    for user in get_users_whose_credit_expired_today():
+        update_external_user(user)
