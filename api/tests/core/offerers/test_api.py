@@ -714,14 +714,28 @@ def test_delete_business_unit():
     venue = offerers_factories.VenueFactory()
     business_unit = venue.businessUnit
     link = finance_models.BusinessUnitVenueLink.query.one()
-    start_link_date = link.timespan.lower
+    link_initial_start_date = link.timespan.lower
+    previous_link = finance_factories.BusinessUnitVenueLinkFactory(
+        businessUnit=business_unit,
+        venue=venue,
+        timespan=(datetime.datetime(2020, 1, 1), datetime.datetime(2020, 12, 1)),
+    )
+    previous_link_initial_start_date = previous_link.timespan.upper
+
+    other_venue = offerers_factories.VenueFactory()
+    other_link = finance_models.BusinessUnitVenueLink.query.filter_by(venue=other_venue).one()
+    other_link_initial_start_date = other_link.timespan.lower
 
     offerers_api.delete_business_unit(business_unit)
 
     assert business_unit.status == finance_models.BusinessUnitStatus.DELETED
     assert venue.businessUnit is None
-    assert link.timespan.lower == start_link_date  # unchanged
+    assert link.timespan.lower == link_initial_start_date
     assert link.timespan.upper.timestamp() == pytest.approx(datetime.datetime.utcnow().timestamp())
+
+    assert previous_link.timespan.upper == previous_link_initial_start_date
+    assert other_link.timespan.lower == other_link_initial_start_date
+    assert other_link.timespan.upper is None  # unchanged
 
 
 class IsVenueEligibleForStrictSearchTest:
