@@ -38,6 +38,7 @@ const RadioButton = ({
         className={cn(style['radio-input'], {
           [style['radio-input-checked']]: field.checked,
         })}
+        checked={field.checked}
       />
       {meta.touched && meta.error && (
         <FieldError name={name}>{meta.error}</FieldError>
