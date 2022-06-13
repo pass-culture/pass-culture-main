@@ -3,9 +3,9 @@ import React, { useRef, useState } from 'react'
 import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { Events } from 'core/FirebaseEvents/constants'
 import Icon from 'components/layout/Icon'
+import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
 import { RootState } from '../../store/reducers'
 import { TPreFilters } from 'core/Bookings'
 import style from './MultiDownloadButtonsModal.module.scss'
@@ -93,7 +93,12 @@ const MultiDownloadButtonsModal = ({
           <Icon className={style["separator"]} svg="ico-separator" />
           <a
             className={style['insideModalButton']}
-            onClick={()=>setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)}
+            onClick={()=> {
+              logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_OTHER_FORMAT, {
+                from: location.pathname,
+              })
+              setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
+            }}
             href={'https://passculture.qualtrics.com/jfe/form/SV_7OKMUyNBgZxmx9Q'}
             target={'_blank'}
           >
