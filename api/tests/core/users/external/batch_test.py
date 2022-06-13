@@ -28,6 +28,8 @@ class FormatUserAttributesTest:
             "u.first_name": "First name",
             "u.has_completed_id_check": True,
             "u.is_beneficiary": True,
+            "u.is_current_beneficiary": True,
+            "u.is_former_beneficiary": False,
             "u.last_name": "Last name",
             "u.most_booked_subcategory": "CINE_PLEIN_AIR",
             "ut.booking_categories": ["CINEMA", "LIVRE"],

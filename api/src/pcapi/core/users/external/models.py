@@ -25,6 +25,8 @@ class UserAttributes:
     user_id: int
     is_active: bool  # Added for Zendesk
     is_beneficiary: bool
+    is_current_beneficiary: bool  # Beneficiary with a non-expired remaining credit
+    is_former_beneficiary: bool  # Beneficiary which credit is expired or spent
     is_eligible: bool
     is_email_validated: bool
     is_phone_validated: bool  # Added for Zendesk

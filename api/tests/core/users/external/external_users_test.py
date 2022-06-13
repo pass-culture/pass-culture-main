@@ -1,7 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
 
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
+from freezegun import freeze_time
 import pytest
 
 from pcapi.core.bookings.factories import CancelledIndividualBookingFactory
@@ -48,9 +49,15 @@ def test_update_external_user():
     n_query_get_deposit = 1
     n_query_is_pro = 1
     n_query_get_last_favorite = 1
+    n_query_get_wallet_balance = 1
 
     with assert_num_queries(
-        n_query_get_user + n_query_get_bookings + n_query_get_deposit + n_query_is_pro + n_query_get_last_favorite
+        n_query_get_user
+        + n_query_get_bookings
+        + n_query_get_deposit
+        + n_query_is_pro
+        + n_query_get_last_favorite
+        + n_query_get_wallet_balance
     ):
         update_external_user(user)
 
@@ -110,6 +117,7 @@ def test_get_user_attributes_beneficiary():
     n_query += 1  # deposit
     n_query += 1  # is pro
     n_query += 1  # favorite
+    n_query += 1  # get_wallet_balance
 
     with assert_num_queries(n_query):
         attributes = get_user_attributes(user)
@@ -130,6 +138,8 @@ def test_get_user_attributes_beneficiary():
         first_name="Jeanne",
         is_active=True,
         is_beneficiary=True,
+        is_current_beneficiary=True,
+        is_former_beneficiary=False,
         is_pro=False,
         last_booking_date=last_date_created,
         last_name="Doux",
@@ -155,9 +165,134 @@ def test_get_user_attributes_beneficiary():
     )
 
 
+def test_get_user_attributes_ex_beneficiary_because_of_expiration():
+    with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
+        user = BeneficiaryGrant18Factory(
+            deposit__version=2,
+            departementCode="75",
+            phoneNumber="+33605040302",
+            phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+        )
+
+    n_query = 1  # user
+    n_query += 1  # booking
+    n_query += 1  # deposit
+    n_query += 1  # is pro
+    n_query += 1  # favorite
+    n_query += 0  # get_wallet_balance not called when expiration date is reached
+
+    with assert_num_queries(n_query):
+        attributes = get_user_attributes(user)
+
+    assert attributes == UserAttributes(
+        domains_credit=DomainsCredit(
+            all=Credit(initial=Decimal("300.00"), remaining=Decimal("0")),
+            digital=Credit(initial=Decimal("100"), remaining=Decimal("0")),
+            physical=None,
+        ),
+        booking_categories=[],
+        city=user.city,
+        date_created=user.dateCreated,
+        date_of_birth=user.dateOfBirth,
+        departement_code="75",
+        deposit_expiration_date=user.deposit_expiration_date,
+        eligibility=None,
+        first_name=user.firstName,
+        is_active=True,
+        is_beneficiary=True,
+        is_current_beneficiary=False,
+        is_former_beneficiary=True,
+        is_pro=False,
+        last_booking_date=None,
+        last_name=user.lastName,
+        marketing_push_subscription=True,
+        phone_number=user.phoneNumber,
+        postal_code=None,
+        products_use_date={},
+        booking_count=0,
+        booking_subcategories=[],
+        deposit_activation_date=user.deposit_activation_date,
+        has_completed_id_check=True,
+        user_id=user.id,
+        is_eligible=False,
+        is_email_validated=True,
+        is_phone_validated=True,
+        last_favorite_creation_date=None,
+        last_visit_date=None,
+        marketing_email_subscription=True,
+        most_booked_subcategory=None,
+        roles=[UserRole.BENEFICIARY.value],
+        suspension_date=None,
+        suspension_reason=None,
+    )
+
+
+def test_get_user_attributes_beneficiary_because_of_credit():
+    user = BeneficiaryGrant18Factory(
+        deposit__version=2,
+        departementCode="75",
+        phoneNumber="+33607080901",
+        phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
+    )
+    offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
+    booking = IndividualBookingFactory(individualBooking__user=user, amount=300, stock__offer=offer)
+
+    n_query = 1  # user
+    n_query += 1  # booking
+    n_query += 1  # deposit
+    n_query += 1  # is pro
+    n_query += 1  # favorite
+    n_query += 1  # get_wallet_balance
+
+    with assert_num_queries(n_query):
+        attributes = get_user_attributes(user)
+
+    assert attributes == UserAttributes(
+        domains_credit=DomainsCredit(
+            all=Credit(initial=Decimal("300"), remaining=Decimal("0.00")),
+            digital=Credit(initial=Decimal("100"), remaining=Decimal("0.00")),
+            physical=None,
+        ),
+        booking_categories=["FILM"],
+        city=user.city,
+        date_created=user.dateCreated,
+        date_of_birth=user.dateOfBirth,
+        departement_code="75",
+        deposit_expiration_date=user.deposit_expiration_date,
+        eligibility=EligibilityType.AGE18,
+        first_name=user.firstName,
+        is_active=True,
+        is_beneficiary=True,
+        is_current_beneficiary=False,
+        is_former_beneficiary=True,
+        is_pro=False,
+        last_booking_date=booking.dateCreated,
+        last_name=user.lastName,
+        marketing_push_subscription=True,
+        phone_number=user.phoneNumber,
+        postal_code=None,
+        products_use_date={},
+        booking_count=1,
+        booking_subcategories=["SUPPORT_PHYSIQUE_FILM"],
+        deposit_activation_date=user.deposit_activation_date,
+        has_completed_id_check=True,
+        user_id=user.id,
+        is_eligible=True,
+        is_email_validated=True,
+        is_phone_validated=True,
+        last_favorite_creation_date=None,
+        last_visit_date=None,
+        marketing_email_subscription=True,
+        most_booked_subcategory="SUPPORT_PHYSIQUE_FILM",
+        roles=[UserRole.BENEFICIARY.value],
+        suspension_date=None,
+        suspension_reason=None,
+    )
+
+
 def test_get_user_attributes_not_beneficiary():
     user = UserFactory(
-        dateOfBirth=datetime.utcnow() - relativedelta.relativedelta(years=18, months=3),
+        dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=3),
         firstName="Cou",
         lastName="Zin",
         city="Nice",
@@ -189,6 +324,8 @@ def test_get_user_attributes_not_beneficiary():
         first_name="Cou",
         is_active=True,
         is_beneficiary=False,
+        is_current_beneficiary=False,
+        is_former_beneficiary=False,
         is_pro=False,
         last_booking_date=None,
         last_name="Zin",

@@ -35,6 +35,8 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
         "u.first_name": user_attributes.first_name,
         "u.has_completed_id_check": user_attributes.has_completed_id_check,
         "u.is_beneficiary": user_attributes.is_beneficiary,
+        "u.is_current_beneficiary": user_attributes.is_current_beneficiary,
+        "u.is_former_beneficiary": user_attributes.is_former_beneficiary,
         "u.last_name": user_attributes.last_name,
         "u.marketing_push_subscription": user_attributes.marketing_push_subscription,
         "u.postal_code": user_attributes.postal_code,

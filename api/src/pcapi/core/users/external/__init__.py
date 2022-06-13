@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass
+from datetime import date
 from datetime import datetime
 from typing import List
 from typing import Optional
@@ -173,6 +174,9 @@ def get_user_attributes(user: User) -> UserAttributes:
     domains_credit = get_domains_credit(user, user_bookings) if not is_pro_user else None
     bookings_attributes = _get_bookings_categories_and_subcategories(user_bookings)
 
+    # Call only once to limit to one get_wallet_balance query
+    is_ex_beneficiary = user.is_ex_beneficiary
+
     return UserAttributes(
         booking_categories=bookings_attributes.booking_categories,
         booking_count=len(user_bookings),
@@ -190,6 +194,8 @@ def get_user_attributes(user: User) -> UserAttributes:
         user_id=user.id,
         is_active=user.isActive,  # type: ignore [arg-type]
         is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
+        is_current_beneficiary=user.is_beneficiary and not is_ex_beneficiary,
+        is_former_beneficiary=is_ex_beneficiary,
         is_eligible=user.is_eligible,
         is_email_validated=user.isEmailValidated,  # type: ignore [arg-type]
         is_phone_validated=user.is_phone_validated,  # type: ignore [arg-type]

@@ -47,6 +47,8 @@ class FormatUserAttributesTest:
             "CREDIT": 480,
             "IS_BENEFICIARY": True,
             "IS_BENEFICIARY_18": True,
+            "IS_CURRENT_BENEFICIARY": True,
+            "IS_FORMER_BENEFICIARY": False,
             "IS_ELIGIBLE": True,
             "IS_EMAIL_VALIDATED": True,
             "IS_PRO": False,
@@ -96,6 +98,8 @@ class FormatUserAttributesTest:
             "CREDIT": None,
             "IS_BENEFICIARY": None,
             "IS_BENEFICIARY_18": None,
+            "IS_CURRENT_BENEFICIARY": None,
+            "IS_FORMER_BENEFICIARY": None,
             "IS_ELIGIBLE": None,
             "IS_EMAIL_VALIDATED": None,
             "IS_PRO": True,
@@ -150,10 +154,10 @@ class BulkImportUsersDataTest:
             ),
         ]
 
-        self.expected_header = "BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;DMS_APPLICATION_APPROVED;DMS_APPLICATION_SUBMITTED;ELIGIBILITY;FIRSTNAME;HAS_BOOKINGS;HAS_COMPLETED_ID_CHECK;HAS_OFFERS;INITIAL_CREDIT;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_BOOKING_EMAIL;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_PERMANENT;IS_PRO;IS_UNDERAGE_BENEFICIARY;IS_USER_EMAIL;IS_VIRTUAL;LASTNAME;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;MOST_BOOKED_OFFER_SUBCATEGORY;OFFERER_NAME;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;USER_IS_ATTACHED;USER_IS_CREATOR;VENUE_COUNT;VENUE_LABEL;VENUE_NAME;VENUE_TYPE;EMAIL"
-        self.eren_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;;No;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;1;;;;;;;eren.yeager@shinganshina.paradis"
-        self.mikasa_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;;Yes;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;2;;;;;;;mikasa.ackerman@shinganshina.paradis"
-        self.armin_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;;No;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;3;;;;;;;armin.arlert@shinganshina.paradis"
+        self.expected_header = "BOOKED_OFFER_CATEGORIES;BOOKED_OFFER_SUBCATEGORIES;BOOKING_COUNT;CREDIT;DATE_CREATED;DATE_OF_BIRTH;DEPARTMENT_CODE;DEPOSIT_ACTIVATION_DATE;DEPOSIT_EXPIRATION_DATE;DMS_APPLICATION_APPROVED;DMS_APPLICATION_SUBMITTED;ELIGIBILITY;FIRSTNAME;HAS_BOOKINGS;HAS_COMPLETED_ID_CHECK;HAS_OFFERS;INITIAL_CREDIT;IS_BENEFICIARY;IS_BENEFICIARY_18;IS_BOOKING_EMAIL;IS_CURRENT_BENEFICIARY;IS_ELIGIBLE;IS_EMAIL_VALIDATED;IS_FORMER_BENEFICIARY;IS_PERMANENT;IS_PRO;IS_UNDERAGE_BENEFICIARY;IS_USER_EMAIL;IS_VIRTUAL;LASTNAME;LAST_BOOKING_DATE;LAST_FAVORITE_CREATION_DATE;LAST_VISIT_DATE;MARKETING_EMAIL_SUBSCRIPTION;MOST_BOOKED_OFFER_SUBCATEGORY;OFFERER_NAME;POSTAL_CODE;PRODUCT_BRUT_X_USE_DATE;USER_ID;USER_IS_ATTACHED;USER_IS_CREATOR;VENUE_COUNT;VENUE_LABEL;VENUE_NAME;VENUE_TYPE;EMAIL"
+        self.eren_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;1;;;;;;;eren.yeager@shinganshina.paradis"
+        self.mikasa_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;Yes;No;;Yes;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;2;;;;;;;mikasa.ackerman@shinganshina.paradis"
+        self.armin_expected_file_body = "CINEMA,LIVRE;ABO_LIVRE_NUMERIQUE,CARTE_CINE_ILLIMITE,CINE_PLEIN_AIR;4;480.00;06-02-2021;06-05-2003;12;;;;;age-18;First name;;Yes;;500;Yes;Yes;;Yes;Yes;Yes;No;;No;No;;;Last name;06-05-2021;;;Yes;CINE_PLEIN_AIR;;;06-05-2021;3;;;;;;;armin.arlert@shinganshina.paradis"
 
     def test_build_file_body(self):
         expected = (
@@ -164,7 +168,7 @@ class BulkImportUsersDataTest:
         )
         result = build_file_body(self.users_data)
 
-        assert expected == result
+        assert result == expected
 
     @patch("pcapi.core.users.external.sendinblue.sib_api_v3_sdk.api.contacts_api.ContactsApi.import_contacts")
     def test_import_contacts_in_sendinblue(self, mock_import_contacts):
