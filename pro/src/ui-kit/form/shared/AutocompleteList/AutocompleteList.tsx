@@ -7,8 +7,8 @@ import styles from './AutocompleteList.module.scss'
 type AutocompleteListProps = {
   isOpen: boolean
   onButtonClick: () => void
-  filteredOptions: SelectOption[]
-  renderOption: (option: SelectOption) => React.ReactNode
+  filteredOptions: (SelectOption & {disabled?: boolean})[]
+  renderOption: (option: (SelectOption & {disabled?: boolean})) => React.ReactNode
   displayNumberOfSelectedValues?: boolean
   numberOfSelectedOptions?: number
 }
@@ -41,7 +41,7 @@ const AutocompleteList = ({
         </div>
         )}
       {isOpen && (
-        <div className={styles['menu']}>
+        <div className={styles['menu']} role="listbox">
           {filteredOptions.length === 0 && (
             <span
               className={cx({

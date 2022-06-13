@@ -15,6 +15,8 @@ export type SelectAutocompleteProps = {
   options: SelectOption[]
   className?: string
   disabled?: boolean
+  filterLabel?: string
+  onSearchChange?: () => void
 }
 
 const SelectAutocomplete = ({
@@ -26,9 +28,10 @@ const SelectAutocomplete = ({
   options,
   className,
   disabled = false,
+  filterLabel,
+  onSearchChange,
 }: SelectAutocompleteProps): JSX.Element => {
-  const { setFieldValue, setFieldTouched } =
-    useFormikContext<any>()
+  const { setFieldValue, setFieldTouched } = useFormikContext<any>()
   const [field, meta, helpers] = useField(fieldName)
   const [searchField] = useField(`search-${fieldName}`)
 
@@ -56,6 +59,10 @@ const SelectAutocomplete = ({
   }, [containerRef])
 
   useEffect(() => {
+    if (onSearchChange) {
+      onSearchChange()
+      return
+    }
     const regExp = new RegExp(searchField.value, 'i')
     setFilteredOptions(
       options.filter(
@@ -106,8 +113,13 @@ const SelectAutocomplete = ({
             setFieldTouched(fieldName, true)
           }}
           isOpen={isOpen}
-          filteredOptions={filteredOptions}
-          renderOption={({ value, label }) => (
+          filteredOptions={[
+            ...filteredOptions,
+            ...(filterLabel
+              ? [{ value: filterLabel, label: filterLabel, disabled: true }]
+              : []),
+          ]}
+          renderOption={({ value, label, disabled }) => (
             <BaseCheckbox
               label={label}
               key={`${fieldName}-${value}`}
@@ -117,6 +129,7 @@ const SelectAutocomplete = ({
               name={fieldName}
               role="option"
               aria-selected={field.value === value}
+              disabled={disabled}
               checked={field.value === value}
               onClick={() => {
                   helpers.setValue(value)
