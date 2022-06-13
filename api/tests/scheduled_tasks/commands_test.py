@@ -72,15 +72,9 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
         stock = offers_factories.EventStockFactory(
             beginningDatetime=tomorrow,
         )
-        individual_bookings = bookings_factories.IndividualBookingFactory.create_batch(3, stock=stock)
+        individual_booking_with_error = bookings_factories.IndividualBookingFactory(stock=stock).individualBooking
 
-        mock_get_booking_event_reminder_to_beneficiary_email_data.side_effect = [
-            get_booking_event_reminder_to_beneficiary_email_data(individual_bookings[0].individualBooking),
-            RuntimeError("error should be caught"),
-            get_booking_event_reminder_to_beneficiary_email_data(individual_bookings[2].individualBooking),
-        ]
-
-        individual_booking_with_error = individual_bookings[1].individualBooking
+        mock_get_booking_event_reminder_to_beneficiary_email_data.side_effect = Exception("error should be caught")
 
         with caplog.at_level(logging.ERROR):
             send_email_reminder_tomorrow_event_to_beneficiaries()
