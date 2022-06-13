@@ -230,6 +230,7 @@ class AccountTest:
             email=self.identifier,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -1152,6 +1153,7 @@ class ValidatePhoneNumberTest:
 
     def test_validate_phone_number_and_become_beneficiary(self, client):
         user = users_factories.UserFactory(
+            dateOfBirth=datetime.utcnow() - relativedelta(years=18, days=5),
             phoneNumber="+33607080900",
             subscriptionState=users_models.SubscriptionState.email_validated,
             activity="Lycéen",
@@ -1161,8 +1163,12 @@ class ValidatePhoneNumberTest:
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         client.with_token(email=user.email)
         token = create_phone_validation_token(

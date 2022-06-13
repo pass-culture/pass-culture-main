@@ -237,6 +237,7 @@ class RunIntegrationTest:
                 subscription_age=15,
                 phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -384,6 +385,7 @@ class RunIntegrationTest:
             dateOfBirth=date_of_birth,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -408,7 +410,7 @@ class RunIntegrationTest:
         assert user.phoneNumber is None
         assert user.idPieceNumber == "123123123"
 
-        assert len(user.beneficiaryFraudChecks) == 3
+        assert len(user.beneficiaryFraudChecks) == 4
 
         dms_fraud_check = next(
             fraud_check
@@ -443,6 +445,7 @@ class RunIntegrationTest:
             dateOfBirth=date_of_birth,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -557,6 +560,7 @@ class RunIntegrationTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_native_app_user(self, get_applications_with_details):
         user = users_factories.UserFactory(email=self.EMAIL, dateOfBirth=self.BENEFICIARY_BIRTH_DATE, city="Quito")
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -749,6 +753,7 @@ class GraphQLSourceProcessApplicationTest:
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
@@ -758,7 +763,7 @@ class GraphQLSourceProcessApplicationTest:
         information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
-        assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
+        assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
     def test_process_accepted_application_user_registered_at_18_dms_at_19(self):
@@ -766,6 +771,7 @@ class GraphQLSourceProcessApplicationTest:
             dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -785,7 +791,7 @@ class GraphQLSourceProcessApplicationTest:
         information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
         # fixture
         dms_api._process_accepted_application(user, information)
-        assert len(user.beneficiaryFraudChecks) == 3  # user profiling, DMS, honor statement
+        assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
     def test_process_accepted_application_user_not_eligible(self):

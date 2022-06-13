@@ -79,6 +79,10 @@ class NextStepTest:
             - relativedelta(years=15, months=5),
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
+        # User completed profile
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
 
         client.with_token(user.email)
 
@@ -179,6 +183,19 @@ class NextStepTest:
 
         assert response.status_code == 200
         assert response.json == {
+            "nextSubscriptionStep": "profile-completion",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
+        }
+
+        # Perform profile completion
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
             "nextSubscriptionStep": "identity-check",
             "allowedIdentityCheckMethods": ["ubble"],
             "maintenancePageType": None,
@@ -228,8 +245,13 @@ class NextStepTest:
                 - relativedelta(years=16, days=5),
                 activity="Employé",
             )
-
             # 15-17: no phone validation, no user profiling
+
+            # Perform profile completion
+            fraud_factories.ProfileCompletionFraudCheckFactory(
+                user=user,
+                eligibilityType=users_models.EligibilityType.UNDERAGE,
+            )
 
             # Perform first id check with Ubble
             fraud_factories.BeneficiaryFraudCheckFactory(
@@ -247,7 +269,7 @@ class NextStepTest:
                 eligibilityType=users_models.EligibilityType.UNDERAGE,
             )
 
-        # Now user turned 18, phone and user profiling are requested and Ubble identification is requested again
+        # Now user turned 18, phone and user profiling, profile completion are requested and Ubble identification is requested again
         # Process should not depend on Ubble result performed when underage
         client.with_token(user.email)
 
@@ -286,6 +308,20 @@ class NextStepTest:
             eligibilityType=users_models.EligibilityType.AGE18,
             status=fraud_models.FraudCheckStatus.OK,
         )
+
+        response = client.get("/native/v1/subscription/next_step")
+
+        assert response.status_code == 200
+        assert response.json == {
+            "nextSubscriptionStep": "profile-completion",
+            "allowedIdentityCheckMethods": ["ubble"],
+            "maintenancePageType": None,
+            "hasIdentityCheckPending": False,
+            "stepperIncludesPhoneValidation": False,
+        }
+
+        # Perform profile completion
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         response = client.get("/native/v1/subscription/next_step")
 
@@ -383,7 +419,9 @@ class NextStepTest:
             activity="Lycéen",
             phoneNumber="+33609080706",
         )
-
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user_approching_birthday, eligibilityType=user_approching_birthday.eligibility
+        )
         user_profiling = fraud_factories.UserProfilingFraudDataFactory(
             risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
         )
@@ -393,8 +431,10 @@ class NextStepTest:
             status=fraud_models.FraudCheckStatus.OK,
             resultContent=user_profiling,
         )
+
         client.with_token(user_approching_birthday.email)
         response = client.get("/native/v1/subscription/next_step")
+
         assert response.status_code == 200
         assert response.json == {
             "nextSubscriptionStep": "identity-check",
@@ -421,6 +461,9 @@ class NextStepTest:
             type=fraud_models.FraudCheckType.USER_PROFILING,
             status=fraud_models.FraudCheckStatus.OK,
             resultContent=user_profiling,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user_not_eligible_for_ubble, eligibilityType=user_not_eligible_for_ubble.eligibility
         )
 
         client.with_token(user_not_eligible_for_ubble.email)
@@ -449,10 +492,11 @@ class NextStepTest:
             activity="Lycéen",
             phoneNumber="+33609080706",
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
         user_profiling = fraud_factories.UserProfilingFraudDataFactory(
             risk_rating=fraud_models.UserProfilingRiskRating.TRUSTED
         )
-
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -469,6 +513,7 @@ class NextStepTest:
             resultContent=ubble_content,
             status=fraud_models.FraudCheckStatus.STARTED,
         )
+
         client.with_token(user.email)
         response = client.get("/native/v1/subscription/next_step")
         assert response.status_code == 200

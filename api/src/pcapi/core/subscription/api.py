@@ -108,9 +108,15 @@ def activate_beneficiary(user: users_models.User) -> users_models.User:
     return activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)  # type: ignore [arg-type]
 
 
-def _has_completed_profile(user: users_models.User) -> bool:
-    mandatory_fields = [user.city, user.activity, user.firstName, user.lastName, user.postalCode]
-    return all(elem is not None for elem in mandatory_fields)
+def _has_completed_profile(user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]) -> bool:
+    return db.session.query(
+        fraud_models.BeneficiaryFraudCheck.query.filter(
+            fraud_models.BeneficiaryFraudCheck.user == user,
+            fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            fraud_models.BeneficiaryFraudCheck.eligibilityType == eligibility,
+            fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.OK,
+        ).exists()
+    ).scalar()
 
 
 def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
@@ -127,8 +133,10 @@ def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
     return bool(user_pending_dms_fraud_checks)
 
 
-def should_complete_profile(user: users_models.User) -> bool:
-    return not _has_completed_profile(user) and not _has_completed_profile_in_dms_form(user)
+def should_complete_profile(
+    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+) -> bool:
+    return not _has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user)
 
 
 def is_eligibility_activable(
@@ -209,7 +217,7 @@ def get_user_profiling_subscription_item(
 def get_profile_completion_subscription_item(
     user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
 ) -> models.SubscriptionItem:
-    if not should_complete_profile(user):
+    if not should_complete_profile(user, eligibility):
         status = models.SubscriptionItemStatus.OK
     elif is_eligibility_activable(user, eligibility):
         status = models.SubscriptionItemStatus.TODO
@@ -302,7 +310,7 @@ def get_next_subscription_step(user: users_models.User) -> typing.Optional[model
     if user_profiling_item.status == models.SubscriptionItemStatus.KO:
         return None
 
-    if should_complete_profile(user):
+    if should_complete_profile(user, user.eligibility):
         return models.SubscriptionStep.PROFILE_COMPLETION
 
     if _needs_to_perform_identity_check(user):

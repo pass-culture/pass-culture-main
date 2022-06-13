@@ -120,6 +120,7 @@ class DmsWebhookApplicationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -767,6 +768,7 @@ class UbbleWebhookTest:
             dateOfBirth=datetime.datetime.utcnow() - relativedelta.relativedelta(years=18),
             activity="Lycéen",
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -1123,6 +1125,7 @@ class UbbleWebhookTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             activity="Lycéen",
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
