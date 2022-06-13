@@ -116,7 +116,10 @@ def update_venue(
 
 
 def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
-    finance_models.BusinessUnitVenueLink.query.update(
+    finance_models.BusinessUnitVenueLink.query.filter(
+        finance_models.BusinessUnitVenueLink.businessUnit == business_unit,
+        sa.func.upper(finance_models.BusinessUnitVenueLink.timespan).is_(None),
+    ).update(
         {
             "timespan": sa.func.tsrange(
                 sa.func.lower(finance_models.BusinessUnitVenueLink.timespan),
