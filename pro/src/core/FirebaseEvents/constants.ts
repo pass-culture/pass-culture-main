@@ -11,6 +11,7 @@ export enum Events {
   CLICKED_CREATE_VENUE = 'hasClickedCreateVenue',
   CLICKED_DOWNLOAD_BOOKINGS = 'hasClickedDownloadBooking',
   CLICKED_DOWNLOAD_BOOKINGS_CSV = 'hasClickedDownloadBookingCsv',
+  CLICKED_DOWNLOAD_BOOKINGS_OTHER_FORMAT = 'hasClickedDownloadBookingOtherFormat',
   CLICKED_DOWNLOAD_BOOKINGS_XLS = 'hasClickedDownloadBookingXls',
   CLICKED_EDIT_PROFILE = 'hasClickedEditProfile',
   CLICKED_FAQ = 'hasClickedFaq',
