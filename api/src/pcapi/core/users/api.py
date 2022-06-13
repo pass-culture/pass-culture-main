@@ -550,7 +550,7 @@ def get_domains_credit(
             remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
             if user.has_active_deposit
             else Decimal("0"),
-        )
+        ),
     )
     specific_caps = user.deposit.specific_caps
 

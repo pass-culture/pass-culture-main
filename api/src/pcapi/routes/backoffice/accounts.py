@@ -115,6 +115,7 @@ def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseMod
         remainingDigitalCredit=float(domains_credit.digital.remaining)
         if domains_credit and domains_credit.digital
         else 0.0,
+        dateCreated=getattr(user.deposit, "dateCreated", None),
     )
 
 

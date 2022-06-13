@@ -204,6 +204,8 @@ class GetPublicAccountTest:
         # then
         assert response.status_code == 200
         assert response.json == {
+            "address": user.address,
+            "city": user.city,
             "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
             "email": user.email,
             "firstName": user.firstName,
@@ -211,6 +213,7 @@ class GetPublicAccountTest:
             "isActive": True,
             "lastName": user.lastName,
             "phoneNumber": user.phoneNumber,
+            "postalCode": user.postalCode,
             "roles": expected_roles,
         }
 
@@ -266,6 +269,8 @@ class UpdatePublicAccountTest:
         # then
         assert response.status_code == 200
         assert response.json == {
+            "address": user.address,
+            "city": user.city,
             "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
             "email": user.email,
             "firstName": "Upda",
@@ -273,6 +278,7 @@ class UpdatePublicAccountTest:
             "isActive": True,
             "lastName": "Ted",
             "phoneNumber": user.phoneNumber,
+            "postalCode": user.postalCode,
             "roles": ["BENEFICIARY"],
         }
 
@@ -302,6 +308,8 @@ class UpdatePublicAccountTest:
         # then
         assert response.status_code == 200
         assert response.json == {
+            "address": user.address,
+            "city": user.city,
             "dateOfBirth": user.dateOfBirth.isoformat() if user.dateOfBirth else None,
             "email": "updated@example.com",
             "firstName": "Gédéon",
@@ -309,6 +317,7 @@ class UpdatePublicAccountTest:
             "isActive": True,
             "lastName": "Groidanlabénoir",
             "phoneNumber": "+33123456789",
+            "postalCode": user.postalCode,
             "roles": ["UNDERAGE_BENEFICIARY"],
         }
 
@@ -442,6 +451,7 @@ class GetBeneficiaryCreditTest:
         # then
         assert response.status_code == 200
         assert response.json == {
+            "dateCreated": grant_18.deposit.dateCreated.isoformat(),
             "initialCredit": 300.0,
             "remainingCredit": 287.5,
             "remainingDigitalCredit": 87.5,
@@ -466,6 +476,7 @@ class GetBeneficiaryCreditTest:
         for response in responses:
             assert response.status_code == 200
             assert response.json == {
+                "dateCreated": None,
                 "initialCredit": 0.0,
                 "remainingCredit": 0.0,
                 "remainingDigitalCredit": 0.0,
