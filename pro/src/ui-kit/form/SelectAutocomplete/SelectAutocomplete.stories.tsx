@@ -60,8 +60,12 @@ const defaultProps: Args = {
   hideFooter: false,
   isOptional: false,
   smallLabel: false,
-  disabled: false
+  disabled: false,
+  filterLabel: undefined,
 }
 
 export const Default = Template.bind({})
 Default.args = defaultProps
+
+export const WithDisabledOption = Template.bind({})
+WithDisabledOption.args = {...defaultProps, filterLabel: 'Résultats limités à 20 items'}
