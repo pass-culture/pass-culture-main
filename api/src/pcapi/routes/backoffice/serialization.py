@@ -62,6 +62,9 @@ class PublicAccount(BaseModel):
     phoneNumber: typing.Optional[str]
     roles: list[users_models.UserRole]
     isActive: bool
+    address: str
+    postalCode: typing.Optional[str]
+    city: str
 
 
 class PublicAccountSearchQuery(BaseModel):
@@ -108,6 +111,7 @@ class GetBeneficiaryCreditResponseModel(BaseModel):
     initialCredit: float
     remainingCredit: float
     remainingDigitalCredit: float
+    dateCreated: typing.Optional[datetime.datetime]
 
 
 class AuthTokenQuery(BaseModel):
