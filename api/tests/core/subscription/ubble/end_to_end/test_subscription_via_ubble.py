@@ -49,6 +49,7 @@ class UbbleEndToEndTest:
             schoolType=users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
             phoneNumber="+33612345678",
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )

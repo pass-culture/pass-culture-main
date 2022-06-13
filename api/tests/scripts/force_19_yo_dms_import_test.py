@@ -19,6 +19,7 @@ class User19YearOldActivationTest:
             dateCreated=datetime.datetime.utcnow() - relativedelta(months=5),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -42,6 +43,7 @@ class User19YearOldActivationTest:
             dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=19, months=4),
             dateCreated=datetime.datetime.utcnow() - relativedelta(months=5),
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,

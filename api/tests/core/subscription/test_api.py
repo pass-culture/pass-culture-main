@@ -60,7 +60,8 @@ class EduconnectFlowTest:
 
         assert user.city == "Uneville"
         assert user.activity == "Lycéen"
-        assert not subscription_api.should_complete_profile(user)
+        assert not subscription_api.should_complete_profile(user, user.eligibility)
+        assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.IDENTITY_CHECK
 
         # Get educonnect login form with saml protocol
         response = client.get("/saml/educonnect/login")
@@ -154,6 +155,9 @@ class NextSubscriptionStepTest:
             city="Zanzibar",
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -169,6 +173,9 @@ class NextSubscriptionStepTest:
             dateOfBirth=self.fifteen_years_ago,
             city="Zanzibar",
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.HONOR_STATEMENT,
@@ -263,6 +270,7 @@ class NextSubscriptionStepTest:
             city="Zanzibar",
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -286,6 +294,7 @@ class NextSubscriptionStepTest:
             city="Zanzibar",
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -309,6 +318,7 @@ class NextSubscriptionStepTest:
             address="3 rue du quai",
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         content = fraud_factories.UserProfilingFraudDataFactory(risk_rating="trusted")
         fraud_factories.BeneficiaryFraudCheckFactory(
             type=fraud_models.FraudCheckType.USER_PROFILING,
@@ -481,21 +491,44 @@ class NextSubscriptionStepTest:
         with override_features(**feature_flags):
             assert subscription_api.is_phone_validation_in_stepper(user) == expected_result
 
-    def test_should_complete_profile_names_mandatory(self):
+    def test_should_complete_profile_not_completed(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
             address="3 rue du quai",
             activity=users_models.ActivityEnum.MIDDLE_SCHOOL_STUDENT.value,
         )
-        assert not subscription_api.should_complete_profile(user)
+        assert subscription_api.should_complete_profile(user, user.eligibility)
 
-        user = users_factories.UserFactory(
-            dateOfBirth=self.eighteen_years_ago,
-            firstName=None,
-            lastName=None,
+    def test_should_complete_profile_completed_dms(self):
+        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        assert not subscription_api.should_complete_profile(user, user.eligibility)
+
+    def test_should_complete_profile_completed(self):
+        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+        assert subscription_api.should_complete_profile(user, users_models.EligibilityType.UNDERAGE)
+        assert not subscription_api.should_complete_profile(user, user.eligibility)
+
+    def test_should_complete_profile_completed_underage(self):
+        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
-        assert subscription_api.should_complete_profile(user)
+        assert not subscription_api.should_complete_profile(user, users_models.EligibilityType.UNDERAGE)
+        assert subscription_api.should_complete_profile(user, user.eligibility)
+
+    def test_should_complete_profile_completed_both(self):
+        user = users_factories.UserFactory(dateOfBirth=self.eighteen_years_ago)
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.AGE18
+        )
+        assert not subscription_api.should_complete_profile(user, users_models.EligibilityType.UNDERAGE)
+        assert not subscription_api.should_complete_profile(user, user.eligibility)
 
     @pytest.mark.parametrize(
         "feature_flags,user_age,expected_result",
@@ -649,6 +682,7 @@ class OnSuccessfulDMSApplicationTest:
             registration_datetime=datetime.today(),
         )
         applicant = users_factories.UserFactory(email=information.email)
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=applicant)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=applicant, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
@@ -701,12 +735,12 @@ class OnSuccessfulDMSApplicationTest:
                 birth_date=eighteen_years_and_one_month_ago,
                 registration_datetime=datetime.today(),
             )
+            fraud_factories.ProfileCompletionFraudCheckFactory(user=applicant)
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=applicant,
                 type=fraud_models.FraudCheckType.USER_PROFILING,
                 status=fraud_models.FraudCheckStatus.OK,
             )
-
             fraud_factories.BeneficiaryFraudCheckFactory(
                 user=applicant,
                 type=fraud_models.FraudCheckType.DMS,
@@ -870,20 +904,6 @@ class CommonSubscritpionTest:
             == fraud_check
         )
 
-    def test_has_completed_profile_in_dms_form_without_city_field(self):
-        # This test reproduces an error that happened with old data, where 'city' was not set in the fraudCheck resultContent
-        user = users_factories.UserFactory()
-        content = fraud_factories.DMSContentFactory()
-        del content.city
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            resultContent=content,
-            type=fraud_models.FraudCheckType.DMS,
-            status=fraud_models.FraudCheckStatus.PENDING,
-        )
-
-        assert not subscription_api._has_completed_profile_in_dms_form(user)
-
 
 @pytest.mark.usefixtures("db_session")
 class HasPassedAllChecksToBecomeBeneficiaryTest:
@@ -908,13 +928,13 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
-
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is True
 
@@ -928,6 +948,7 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
+        fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is True
 
