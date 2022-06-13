@@ -39,7 +39,7 @@
     font-weight: 600;
     font-size: rem.torem(16px);
     padding: rem.torem(8px) rem.torem(17px);
-
+    width: 100%;
     &:hover {
       background: colors.$grey-medium;
     }
