@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 from sqlalchemy.exc import IntegrityError
 
+from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories
@@ -147,6 +148,19 @@ class VenueNApprovedOffersTest:
         for validation_status in offers_models.OfferValidationStatus:
             offers_factories.OfferFactory(venue=venue, validation=validation_status)
         assert venue.nApprovedOffers == 1
+
+    def test_venue_n_approved_offers_and_collective_offers(self):
+        educational_factories.CollectiveOfferFactory()
+        offers_factories.OfferFactory()
+
+        collective_offers = [
+            educational_factories.CollectiveOfferFactory(),
+            educational_factories.CollectiveOfferFactory(),
+        ]
+        venue = factories.VenueFactory(collectiveOffers=collective_offers)
+        for validation_status in offers_models.OfferValidationStatus:
+            offers_factories.OfferFactory(venue=venue, validation=validation_status)
+        assert venue.nApprovedOffers == 3
 
 
 class OffererLegalCategoryTest:
