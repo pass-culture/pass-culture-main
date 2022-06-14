@@ -1,7 +1,14 @@
 import OfferItem from '../OfferItem/OfferItem'
-import PropTypes from 'prop-types'
 import React from 'react'
 
+type OffersTableBodyProps = {
+  areAllOffersSelected: boolean
+  offers: any[]
+  selectOffer: (offerId: string) => void
+  selectedOfferIds: string[]
+  isNewModelEnabled: boolean
+  enableIndividualAndCollectiveSeparation: boolean
+}
 const OffersTableBody = ({
   areAllOffersSelected,
   offers,
@@ -9,7 +16,7 @@ const OffersTableBody = ({
   selectedOfferIds,
   isNewModelEnabled,
   enableIndividualAndCollectiveSeparation,
-}) => (
+}: OffersTableBodyProps) => (
   <tbody className="offers-list">
     {offers.map(offer => {
       let offerId = ''
@@ -32,23 +39,10 @@ const OffersTableBody = ({
           key={offerId}
           offer={offer}
           selectOffer={selectOffer}
-          isNewModelEnabled={isNewModelEnabled}
-          enableIndividualAndCollectiveSeparation={
-            enableIndividualAndCollectiveSeparation
-          }
         />
       )
     })}
   </tbody>
 )
-
-OffersTableBody.propTypes = {
-  areAllOffersSelected: PropTypes.bool.isRequired,
-  offers: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  selectOffer: PropTypes.func.isRequired,
-  selectedOfferIds: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isNewModelEnabled: PropTypes.bool.isRequired,
-  enableIndividualAndCollectiveSeparation: PropTypes.bool.isRequired,
-}
 
 export default OffersTableBody
