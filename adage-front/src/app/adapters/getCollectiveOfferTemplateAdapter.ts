@@ -13,7 +13,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
   async offerId => {
     try {
-      const result = await api.getAdageIframeGetCollectiveOffer(offerId)
+      const result = await api.getAdageIframeGetCollectiveOfferTemplate(offerId)
 
       return {
         isOk: true,
