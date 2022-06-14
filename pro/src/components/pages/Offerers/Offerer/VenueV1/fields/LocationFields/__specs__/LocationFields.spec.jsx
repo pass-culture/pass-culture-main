@@ -17,7 +17,7 @@ describe('src | components | pages | Venue | fields | LocationFields', () => {
       formLatitude: 1,
       formLongitude: 1,
       readOnly: true,
-      isAddressRequired: false
+      isAddressRequired: false,
     }
   })
 

@@ -54,7 +54,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],
       },
-      app: { logEvent: mockLogEvent }
+      app: { logEvent: mockLogEvent },
     }
     pcapi.signup.mockResolvedValue({})
   })
@@ -214,7 +214,8 @@ describe('src | components | pages | Signup | SignupForm', () => {
           await userEvent.type(
             screen.getByRole('textbox', {
               name: /Téléphone/,
-            }), '1234'
+            }),
+            '1234'
           )
           // We simulate onBlur to have email field touched
           await userEvent.tab()
@@ -222,7 +223,13 @@ describe('src | components | pages | Signup | SignupForm', () => {
           await unmount()
           expect(mockLogEvent).toHaveBeenCalledTimes(1)
           expect(mockLogEvent).toHaveBeenNthCalledWith(
-            1, Events.SIGNUP_FORM_ABORT, { "filled": ["email", "phoneNumber"], "filledWithErrors": ["phoneNumber"] })
+            1,
+            Events.SIGNUP_FORM_ABORT,
+            {
+              filled: ['email', 'phoneNumber'],
+              filledWithErrors: ['phoneNumber'],
+            }
+          )
         })
         it('should not trigger an event if no field has been touched', async () => {
           const { unmount } = renderSignUp(store)
@@ -238,10 +245,22 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
         const { unmount } = renderSignUp(store)
         // Count calls to window.addEventListener with "beforeunload" as first argument
-        expect(spyAddEvent.mock.calls.map(args => args[0] === "beforeunload").filter(Boolean).length).toEqual(1)
-        expect(spyRemoveEvent.mock.calls.map(args => args[0] === "beforeunload").filter(Boolean).length).toEqual(0)
+        expect(
+          spyAddEvent.mock.calls
+            .map(args => args[0] === 'beforeunload')
+            .filter(Boolean).length
+        ).toEqual(1)
+        expect(
+          spyRemoveEvent.mock.calls
+            .map(args => args[0] === 'beforeunload')
+            .filter(Boolean).length
+        ).toEqual(0)
         await unmount()
-        expect(spyRemoveEvent.mock.calls.map(args => args[0] === "beforeunload").filter(Boolean).length).toEqual(1)
+        expect(
+          spyRemoveEvent.mock.calls
+            .map(args => args[0] === 'beforeunload')
+            .filter(Boolean).length
+        ).toEqual(1)
       })
     })
     describe('formValidation', () => {
@@ -336,7 +355,10 @@ describe('src | components | pages | Signup | SignupForm', () => {
         await expect(
           screen.findByText("I'm the confirmation page")
         ).resolves.toBeInTheDocument()
-        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.SIGNUP_FORM_SUCCESS)
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.SIGNUP_FORM_SUCCESS
+        )
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })
       it('should show a notification on api call error', async () => {

@@ -162,9 +162,13 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
-        const getStockAdapter = () => enableIndividualAndCollectiveSeparation
-          ? getCollectiveStockAdapter({offerId, isNewCollectiveModelEnabled})
-          : getEducationalStockAdapter(offerId)
+        const getStockAdapter = () =>
+          enableIndividualAndCollectiveSeparation
+            ? getCollectiveStockAdapter({
+                offerId,
+                isNewCollectiveModelEnabled,
+              })
+            : getEducationalStockAdapter(offerId)
         const getOfferAdapter = getGetOfferAdapter(
           enableIndividualAndCollectiveSeparation
         )

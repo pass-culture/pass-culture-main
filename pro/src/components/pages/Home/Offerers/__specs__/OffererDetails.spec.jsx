@@ -308,7 +308,9 @@ describe('offererDetailsLegacy', () => {
       const editButton = screen.getAllByText('Modifier', { exact: false })[0]
       await userEvent.click(editButton)
 
-      expect(mockLogEvent).toHaveBeenCalledWith('hasClickedModifyOfferer', { offerer_id: 'GE' })
+      expect(mockLogEvent).toHaveBeenCalledWith('hasClickedModifyOfferer', {
+        offerer_id: 'GE',
+      })
       expect(mockLogEvent).toHaveBeenCalledTimes(1)
     })
   })

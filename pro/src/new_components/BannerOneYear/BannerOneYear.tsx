@@ -4,18 +4,21 @@ import { ReactComponent as CloseButton } from './assets/close.svg'
 import styles from './BannerOneYear.module.scss'
 
 const BannerOneYear = () => {
+  const [isCloseForEver, setIsCloseForEver] = useState(
+    localStorage.getItem('iscloseForEver') != null
+  )
+  const closeForEver = () => {
+    localStorage.setItem('iscloseForEver', 'true')
+    setIsCloseForEver(localStorage.getItem('iscloseForEver') != null)
+  }
 
-  const [isCloseForEver, setIsCloseForEver] = useState(localStorage.getItem('iscloseForEver') != null);
-    const closeForEver = () => {
-      localStorage.setItem('iscloseForEver', 'true');
-      setIsCloseForEver(localStorage.getItem('iscloseForEver') != null)
-    }
-
-  return (
-    isCloseForEver ? null :
+  return isCloseForEver ? null : (
     <div className={styles['bannerContainer']}>
-      <Banner className={styles['banner']}/>
-      <CloseButton className={styles['closeBanner']} onClick={()=>closeForEver()}/>
+      <Banner className={styles['banner']} />
+      <CloseButton
+        className={styles['closeBanner']}
+        onClick={() => closeForEver()}
+      />
     </div>
   )
 }

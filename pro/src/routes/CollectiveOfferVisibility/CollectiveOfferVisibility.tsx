@@ -1,7 +1,7 @@
 import React from 'react'
 
 const CollectiveOfferVisibility = () => {
-    return <div></div>
+  return <div></div>
 }
 
 export default CollectiveOfferVisibility

@@ -32,7 +32,7 @@ export interface IPreFiltersProps {
   wereBookingsRequested: boolean
   isLocalLoading: boolean
   resetPreFilters: () => void
-  urlParams?:TPreFilters
+  urlParams?: TPreFilters
   updateUrl?: (selectedPreFilters: TPreFilters) => void
   venues: { id: string; displayName: string }[]
   getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter

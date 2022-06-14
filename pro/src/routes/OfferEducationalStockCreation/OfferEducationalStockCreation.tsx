@@ -42,8 +42,9 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   ) => {
     let isOk: boolean
     let message: string | null
-    let payload: {id: string} | null
-    const isTemplate = values.educationalOfferType === EducationalOfferType.SHOWCASE
+    let payload: { id: string } | null
+    const isTemplate =
+      values.educationalOfferType === EducationalOfferType.SHOWCASE
 
     if (isTemplate) {
       const adapter = isNewCollectiveModelEnabled
@@ -74,14 +75,18 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       payload = response.payload
     }
 
-
     if (!isOk) {
       return notify.error(message)
     }
 
-    const successPayload = payload as unknown as {id: string}
-    const shouldUseNewTemplateIds = isTemplate && enableIndividualAndCollectiveSeparation
-    history.push(`/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${shouldUseNewTemplateIds ? successPayload.id : offer.id}/collectif/confirmation`)
+    const successPayload = payload as unknown as { id: string }
+    const shouldUseNewTemplateIds =
+      isTemplate && enableIndividualAndCollectiveSeparation
+    history.push(
+      `/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${
+        shouldUseNewTemplateIds ? successPayload.id : offer.id
+      }/collectif/confirmation`
+    )
   }
 
   useEffect(() => {

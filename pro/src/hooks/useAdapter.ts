@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react'
 
 type TUseAdapterLoading = {
-  data?: undefined,
-  isLoading: true,
+  data?: undefined
+  isLoading: true
   error?: undefined
 }
 
 type TUseAdapterSuccess<T> = {
-  data: T,
-  isLoading: false,
+  data: T
+  isLoading: false
   error?: undefined
 }
 
 type TUseAdapterFailure<T> = {
-  data?: undefined,
-  isLoading: false,
+  data?: undefined
+  isLoading: false
   error: {
-    message: string,
+    message: string
     payload: T
   }
 }
@@ -47,9 +47,9 @@ const useAdapter = <ISuccessPayload, IFailurePayload>(
         setHookResponse({
           error: {
             message: response.message,
-            payload: response.payload
+            payload: response.payload,
           },
-          isLoading: false
+          isLoading: false,
         })
       }
     }
