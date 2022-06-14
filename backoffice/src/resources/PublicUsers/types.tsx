@@ -1,5 +1,17 @@
-import {RaRecord} from "react-admin";
+import {Identifier, RaRecord} from "react-admin";
+import * as url from "url";
 
+export interface UserBaseInfo extends RaRecord {
+    id: Identifier,
+    lastName: string,
+    firstName: string,
+    email: string,
+    phoneNumer?: string,
+    dateOfBirth: Date,
+    address?: string,
+    postalCode?: string,
+    city?: string
+}
 
 export interface UserManualReview {
     id: string,
@@ -15,6 +27,24 @@ export enum SubscriptionItemStatus {
     VOID = "void"
 }
 
+export interface CheckHistoryTechnicalDetails {
+    score?: string,
+    gender?: string,
+    status?: string,
+    comment?: string,
+    lastName: string,
+    supported?: boolean,
+    birthDate: Date,
+    firstName: string,
+    marriedName?: string,
+    documentType?: null,
+    expiryDateScore?: Date,
+    identificationId?: string,
+    idDocumentNumber?: string,
+    identificationUrl?: string,
+    registrationDateTime: Date
+}
+
 export interface CheckHistory {
     type: string,
     thirdPartyId: string,
@@ -22,8 +52,15 @@ export interface CheckHistory {
     status: "ok" | "void" | "not-applicable" | "ko",
     reason?: string,
     reasonCodes?: string,
-    technicalDetails?: object,
+    technicalDetails?: CheckHistoryTechnicalDetails,
     sourceId?: string
+}
+
+export interface UserCredit {
+    dateCreated: Date,
+    initialCredit: number,
+    remainingCredit: number,
+    remainingDigitalCredit: number
 }
 
 export interface CheckHistories {
