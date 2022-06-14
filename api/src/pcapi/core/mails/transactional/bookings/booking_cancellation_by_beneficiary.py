@@ -36,6 +36,7 @@ def get_booking_cancellation_by_beneficiary_email_data(
             "EVENT_HOUR": event_hour,
             "IS_FREE_OFFER": is_free_offer,
             "IS_EVENT": offer.isEvent,
+            "IS_EXTERNAL": individual_booking.booking.isExternal,
             "OFFER_NAME": offer.name,
             "OFFER_PRICE": float(individual_booking.booking.total_amount),
             "USER_FIRST_NAME": beneficiary.firstName,

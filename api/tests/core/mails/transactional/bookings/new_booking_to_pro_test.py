@@ -48,6 +48,7 @@ def get_expected_base_email_data(booking, **overrides):
         "IS_DIGITAL": False,
         "IS_EVENT": True,
         "IS_THING": False,
+        "IS_EXTERNAL": False,
         "ISBN": "",
         "MUST_USE_TOKEN_FOR_PAYMENT": True,
         "OFFER_NAME": "Super événement",

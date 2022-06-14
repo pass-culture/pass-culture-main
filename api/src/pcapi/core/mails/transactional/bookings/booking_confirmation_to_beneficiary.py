@@ -106,6 +106,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "ALL_BUT_NOT_VIRTUAL_THING": offer.isEvent or (not offer.isEvent and not offer.isDigital),
             "ALL_THINGS_NOT_VIRTUAL_THING": not offer.isEvent and not offer.isDigital,
             "IS_EVENT": offer.isEvent,
+            "IS_EXTERNAL": individual_booking.booking.isExternal,
             "IS_SINGLE_EVENT": offer.isEvent and individual_booking.booking.quantity == 1,
             "IS_DUO_EVENT": individual_booking.booking.quantity == 2,
             "OFFER_ID": humanize(offer.id),
