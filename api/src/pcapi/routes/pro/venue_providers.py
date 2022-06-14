@@ -7,6 +7,7 @@ from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import repository
 from pcapi.core.providers.api import update_allocine_venue_provider
+from pcapi.core.providers.api import update_cinema_venue_provider
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_venue_provider_by_venue_and_provider_ids
@@ -119,11 +120,15 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     check_user_can_alter_venue(current_user, venue_id)
 
     venue_provider = get_venue_provider_by_venue_and_provider_ids(venue_id, provider_id)
-    if not venue_provider.isFromAllocineProvider:
-        raise ApiErrors({"provider": "Cannot update non-allocine provider"})
+    if not venue_provider.isFromAllocineProvider and not venue_provider.provider.isCinemaProvider:
+        raise ApiErrors({"provider": "Cannot update non-allocine provider or non-cinema provider"})
 
-    updated = update_allocine_venue_provider(venue_provider, body)
-    updated.price = _allocine_venue_provider_price(updated)
+    if venue_provider.isFromAllocineProvider:
+        updated = update_allocine_venue_provider(venue_provider, body)
+        updated.price = _allocine_venue_provider_price(updated)
+    else:
+        updated = update_cinema_venue_provider(venue_provider, body)
+
     return VenueProviderResponse.from_orm(updated)
 
 
