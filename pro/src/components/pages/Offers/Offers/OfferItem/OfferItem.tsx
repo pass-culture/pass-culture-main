@@ -21,8 +21,6 @@ type OfferItemProps = {
   isSelected?: boolean
   offer: Offer
   selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
-  isNewModelEnabled: boolean
-  enableIndividualAndCollectiveSeparation: boolean
 }
 
 const OfferItem = ({
@@ -30,8 +28,6 @@ const OfferItem = ({
   offer,
   isSelected = false,
   selectOffer,
-  isNewModelEnabled,
-  enableIndividualAndCollectiveSeparation,
 }: OfferItemProps) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
   const editionOfferLink = useOfferEditionURL(isEducational, id, !!isShowcase)
@@ -42,11 +38,7 @@ const OfferItem = ({
   )
 
   function handleOnChangeSelected() {
-    const id =
-      !isNewModelEnabled && enableIndividualAndCollectiveSeparation
-        ? offer.offerId
-        : offer.id
-    selectOffer(id, !isSelected, !!isShowcase)
+    selectOffer(offer.id, !isSelected, !!isShowcase)
   }
 
   const computeNumberOfSoldOutStocks = () =>
