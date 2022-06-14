@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { createElement } from 'react';
 import {Admin, CustomRoutes, Resource} from 'react-admin'
 import CssBaseline from '@mui/material/CssBaseline'
 import {dataProvider} from './providers/dataProvider'
@@ -6,14 +6,12 @@ import {authProvider} from './providers/authProvider'
 import {i18nProvider} from './providers/i18nProvider'
 import CustomLayout from "./layout/CustomLayout";
 import CustomTheme from "./layout/Theme"
-import UserSearch from "./resources/PublicUsers/UserSearch";
-import UserDetail from "./resources/PublicUsers/UserDetail";
 import LoginPage from "./resources/Login/LoginPage";
 import {Route, BrowserRouter} from "react-router-dom";
-import { env } from './libs/environment/env'
+import { resources } from './resources'
+import { routes } from './routes'
 
-console.log('env', env)
-function App() {
+export function App() {
     return (
         <>
             <BrowserRouter>
@@ -28,15 +26,12 @@ function App() {
                 >
 
                     {/* users */}
-                    <Resource name="/public_users/search" list={UserSearch}/>
+                    {resources.map((resource) => <Resource key={resource.name} name={resource.name} list={resource.list} edit={resource.edit} />)}
                     <CustomRoutes>
-                        <Route path='/public_accounts/user/:id' element={<UserDetail/>}/>
+                        {routes.map((route) => <Route key={route.path} element={createElement(route.component)}/>)}
                     </CustomRoutes>
-
                 </Admin>
             </BrowserRouter>
         </>
     )
 }
-
-export default App
