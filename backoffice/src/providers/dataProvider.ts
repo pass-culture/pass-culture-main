@@ -1,7 +1,7 @@
 import {DataProvider, useNotify} from 'react-admin'
 import {UserSearchInterface, UserApiInterface} from "../resources/Interfaces/UserSearchInterface";
 import {API_URL} from "../config/utils";
-import {UserManualReview} from "../resources/PublicUsers/types";
+import {UserCredit, UserManualReview} from "../resources/PublicUsers/types";
 
 
 let assets: UserApiInterface[] = []
@@ -79,7 +79,7 @@ export const dataProvider: DataProvider = {
         switch (resource) {
             default:
                 break;
-            case 'public_accounts/user':
+            case 'public_accounts':
                 const token = localStorage.getItem('tokenApi')
                 if (!token) {
                     return Promise.reject()
@@ -112,7 +112,7 @@ export const dataProvider: DataProvider = {
                             return Promise.reject(e)
                         }
                     }
-                    const userCredit = await (await creditInfo()).json()
+                    const userCredit: UserCredit = await (await creditInfo()).json()
                     const userHistory = await (await historyInfo()).json()
 
                     const dataUser = {...user, userCredit, userHistory}
@@ -218,6 +218,44 @@ export const dataProvider: DataProvider = {
                 }
             }
             const response = await fetch(`${API_URL}/${resource}/${params.id}/resend-validation-email`, requestParams)
+            return response
+        } catch (e) {
+            Promise.reject(e)
+        }
+    },
+    async postSkipPhoneValidation(resource: string, params: UserApiInterface) {
+        const token = localStorage.getItem('tokenApi')
+        if (!token) {
+            return Promise.reject()
+        }
+        try {
+            const requestParams: object = {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            }
+            const response = await fetch(`${API_URL}/${resource}/${params.id}/skip-phone-validation`, requestParams)
+            return response
+        } catch (e) {
+            Promise.reject(e)
+        }
+    },
+    async postPhoneValidationCode(resource: string, params: UserApiInterface) {
+        const token = localStorage.getItem('tokenApi')
+        if (!token) {
+            return Promise.reject()
+        }
+        try {
+            const requestParams: object = {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json'
+                }
+            }
+            const response = await fetch(`${API_URL}/${resource}/${params.id}/send-phone-validation-code`, requestParams)
             return response
         } catch (e) {
             Promise.reject(e)

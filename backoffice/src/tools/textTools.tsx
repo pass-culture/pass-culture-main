@@ -1,4 +1,4 @@
-export default function SnakeCaseToTitleCase(str: string) {
+export default function snakeCaseToTitleCase(str: string) {
     return str
         .split("_")
         .filter(x => x.length > 0)
