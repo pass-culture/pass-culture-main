@@ -103,6 +103,7 @@ const SelectAutocomplete = ({
           {...searchField}
         />
         <AutocompleteList
+          className={styles['menu']}
           onButtonClick={() => {
             if (isOpen) {
               setIsOpen(false)
