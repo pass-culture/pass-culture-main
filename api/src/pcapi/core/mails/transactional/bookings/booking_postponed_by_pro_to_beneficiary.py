@@ -39,6 +39,7 @@ def get_booking_postponed_by_pro_to_beneficiary_email_data(
         params={
             "OFFER_NAME": offer.name,
             "FIRSTNAME": booking.firstName,
+            "IS_EXTERNAL": booking.isExternal,
             "VENUE_NAME": offer.venue.publicName or offer.venue.name,
             "EVENT_DATE": event_date if event_date else "",
             "EVENT_HOUR": event_hour if event_hour else "",

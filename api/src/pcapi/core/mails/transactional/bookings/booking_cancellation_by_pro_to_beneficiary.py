@@ -32,6 +32,7 @@ def get_booking_cancellation_by_pro_to_beneficiary_email_data(
             "IS_FREE_OFFER": is_free_offer,
             "IS_ONLINE": offer.isDigital,
             "IS_THING": not offer.isDigital and offer.isThing,
+            "IS_EXTERNAL": booking.isExternal,
             "OFFER_NAME": offer.name,
             "OFFER_PRICE": booking.total_amount,
             "OFFERER_NAME": offer.venue.managingOfferer.name,
