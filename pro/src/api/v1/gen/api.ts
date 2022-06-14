@@ -157,6 +157,13 @@ export interface CollectiveOfferResponseIdModel {
   id: string
 }
 
+export interface EducationalInstitutionResponseModel {
+  city: string
+  id: number
+  name: string
+  postalCode: string
+}
+
 export interface CollectiveOfferResponseModel {
   hasBookingLimitDatetimesPassed: boolean
   id: string
@@ -175,6 +182,7 @@ export interface CollectiveOfferResponseModel {
   thumbUrl?: string | null
   venue: ListOffersVenueResponseModel
   venueId: string
+  educationalInstitution?: EducationalInstitutionResponseModel | null
 }
 
 export interface CollectiveOffersStockResponseModel {
