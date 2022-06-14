@@ -4,7 +4,7 @@ import Moment from "moment";
 import {Card} from "@material-ui/core";
 import React, {useState} from "react";
 import StatusAvatar from "./StatusAvatar";
-import SnakeCaseToTitleCase from "../../tools/textTools";
+import snakeCaseToTitleCase from "../../tools/textTools";
 
 export default function CheckHistoryCard(idCheckHistory: CheckHistory) {
     const cardStyle = {
@@ -21,7 +21,7 @@ export default function CheckHistoryCard(idCheckHistory: CheckHistory) {
     return (<Card style={cardStyle}>
         <Grid container spacing={1}>
             <Typography variant={"h5"}>
-                {SnakeCaseToTitleCase(idCheckHistory.type as string)}
+                {snakeCaseToTitleCase(idCheckHistory.type as string)}
             </Typography>
             <Grid spacing={1} sx={{mt: 4}}>
                 <Stack spacing={2} direction={"row"} style={{width: "100%"}}>

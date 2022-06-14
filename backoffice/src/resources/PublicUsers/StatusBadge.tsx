@@ -3,18 +3,10 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import {Chip} from "@mui/material";
 
 const StatusBadge = (isActive: Boolean) => {
-    let element;
     if (isActive === true) {
-        element = <Chip color={"success"} label={"Actif"} icon={<CheckCircleOutlineIcon/>}/>
-    } else {
-        element = <Chip color={"error"} label={"Suspendu"} icon={<HighlightOffIcon/>}/>
+        return <Chip color={"success"} label={"Actif"} icon={<CheckCircleOutlineIcon/>}/>
     }
-    return (
-        <>
-            {element}
-        </>
-    )
+    return <Chip color={"error"} label={"Suspendu"} icon={<HighlightOffIcon/>}/>
 }
-
 
 export default StatusBadge
