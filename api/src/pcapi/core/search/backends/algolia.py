@@ -361,7 +361,12 @@ class AlgoliaBackend(base.SearchBackend):
     def unindex_collective_offer_template_ids(self, collective_offer_template_ids: Iterable[int]) -> None:
         if not collective_offer_template_ids:
             return
-        self.algolia_collective_offers_templates_client.delete_objects(collective_offer_template_ids)
+        self.algolia_collective_offers_templates_client.delete_objects(
+            [
+                _transform_collective_offer_template_id(collective_offer_template_id)
+                for collective_offer_template_id in collective_offer_template_ids
+            ]
+        )
 
     def unindex_all_venues(self) -> None:
         self.algolia_venues_client.clear_objects()
@@ -498,7 +503,7 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = collective_offer_template.dateCreated.timestamp()
 
         return {
-            "objectID": f"T-{collective_offer_template.id}",
+            "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
             "offer": {
                 "dateCreated": date_created,
                 "name": collective_offer_template.name,
@@ -556,3 +561,7 @@ def position(venue):  # type: ignore [no-untyped-def]
     latitude = venue.latitude or DEFAULT_LATITUDE
     longitude = venue.longitude or DEFAULT_LONGITUDE
     return {"lat": float(latitude), "lng": float(longitude)}
+
+
+def _transform_collective_offer_template_id(collective_offer_template_id: int) -> str:
+    return f"T-{collective_offer_template_id}"
