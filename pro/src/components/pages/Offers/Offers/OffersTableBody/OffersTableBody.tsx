@@ -1,3 +1,4 @@
+import { Audience } from 'core/shared'
 import OfferItem from '../OfferItem/OfferItem'
 import React from 'react'
 
@@ -10,6 +11,7 @@ type OffersTableBodyProps = {
     isTemplate: boolean
   ) => void
   selectedOfferIds: string[]
+  audience: Audience
 }
 
 const OffersTableBody = ({
@@ -17,6 +19,7 @@ const OffersTableBody = ({
   offers,
   selectOffer,
   selectedOfferIds,
+  audience,
 }: OffersTableBodyProps) => (
   <tbody className="offers-list">
     {offers.map(offer => {
@@ -29,6 +32,7 @@ const OffersTableBody = ({
           key={offerId}
           offer={offer}
           selectOffer={selectOffer}
+          audience={audience}
         />
       )
     })}

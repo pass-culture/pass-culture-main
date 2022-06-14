@@ -159,6 +159,7 @@ const Offers = ({
               offers={currentPageOffersSubset}
               selectOffer={selectOffer}
               selectedOfferIds={selectedOfferIds}
+              audience={audience}
             />
           </table>
           {hasOffers && (
