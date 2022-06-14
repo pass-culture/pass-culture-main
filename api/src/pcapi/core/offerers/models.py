@@ -82,6 +82,8 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
 VENUE_TYPE_CODE_MAPPING = {
     "VISUAL_ARTS": "Arts visuels, arts plastiques et galeries",
     "CULTURAL_CENTRE": "Centre culturel",
+    "TRAVELING_CINEMA": "Cinéma itinérant",
+    "MOVIE": "Cinéma - Salle de projections",
     "ARTISTIC_COURSE": "Cours et pratique artistiques",
     "SCIENTIFIC_CULTURE": "Culture scientifique",
     "FESTIVAL": "Festival",
@@ -94,7 +96,6 @@ VENUE_TYPE_CODE_MAPPING = {
     "CONCERT_HALL": "Musique - Salle de concerts",
     "DIGITAL": "Offre numérique",
     "PATRIMONY_TOURISM": "Patrimoine et tourisme",
-    "MOVIE": "Cinéma - Salle de projections",
     "PERFORMING_ARTS": "Spectacle vivant",
     "CREATIVE_ARTS_STORE": "Magasin arts créatifs",
     "ADMINISTRATIVE": "Lieu administratif",

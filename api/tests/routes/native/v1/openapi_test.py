@@ -741,6 +741,8 @@ def test_public_api(client):
                     "enum": [
                         "VISUAL_ARTS",
                         "CULTURAL_CENTRE",
+                        "TRAVELING_CINEMA",
+                        "MOVIE",
                         "ARTISTIC_COURSE",
                         "SCIENTIFIC_CULTURE",
                         "FESTIVAL",
@@ -753,7 +755,6 @@ def test_public_api(client):
                         "CONCERT_HALL",
                         "DIGITAL",
                         "PATRIMONY_TOURISM",
-                        "MOVIE",
                         "PERFORMING_ARTS",
                         "CREATIVE_ARTS_STORE",
                         "ADMINISTRATIVE",
