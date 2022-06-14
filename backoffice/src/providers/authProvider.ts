@@ -2,13 +2,13 @@ import {AuthProvider} from 'react-admin';
 import {UserManager} from 'oidc-client';
 
 import getProfileFromToken from './getProfileFromToken'
-import {API_URL, AUTH_ISSUER, OIDC_CLIENT_ID, REDIRECT_URI} from "../config/utils";
+import { env } from "../libs/environment/env";
 
 
 const userManager = new UserManager({
-    authority: AUTH_ISSUER,
-    client_id: OIDC_CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    authority: env.AUTH_ISSUER,
+    client_id: env.OIDC_CLIENT_ID,
+    redirect_uri: env.REDIRECT_URI,
     response_type: 'code',
     scope: 'openid email profile', // Allow to retrieve the email and user name later api side
 });
@@ -22,7 +22,6 @@ const cleanup = () => {
     );
 }
 
-
 async function getTokenApiFromAuthToken() {
     const token = localStorage.getItem('token')
     if (!token) {
@@ -31,7 +30,7 @@ async function getTokenApiFromAuthToken() {
 
     const authToken = JSON.parse(token)
     try {
-        const response = await fetch(`${API_URL}/auth/token?token=${authToken.id_token}`)
+        const response = await fetch(`${env.API_URL}/auth/token?token=${authToken.id_token}`)
         if (!response.ok) {
             throw new Error(response.statusText);
         }
@@ -97,10 +96,7 @@ export const authProvider: AuthProvider = {
         }
     },
     // authorization
-    async getPermissions(params) {
+    getPermissions(params) {
         return Promise.reject('Unknown method')
     },
 }
-
-
-export default authProvider;

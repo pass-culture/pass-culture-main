@@ -41,11 +41,22 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:testing": "cat .env.testing > .env && yarn start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "build:testing": "cat .env.testing > .env && yarn build",
+    "build:staging": "cat .env.staging > .env && yarn build",
+    "build:integration": "cat .env.integration > .env && yarn build",
+    "build:production": "cat .env.production > .env && yarn build",
+    "test": "yarn test:unit",
+    "test:unit": "TZ=UTC react-scripts test",
+    "test:unit:ci": "CI=true yarn test:unit --maxWorkers=2 --logHeapUsage --coverage",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.ts,.tsx",
-    "deploy:testing": "firebase deploy --only hosting --debug -P pc-backoffice-testing"
+    "deploy": "firebase deploy --only hosting --debug -P pc-backoffice-testing",
+    "deploy:testing": "cat .env.testing > .env && yarn deploy",
+    "deploy:staging": "cat .env.staging > .env && yarn deploy",
+    "deploy:integration": "cat .env.integration > .env && yarn deploy",
+    "deploy:production": "cat .env.production > .env && yarn deploy"
   },
   "eslintConfig": {
     "extends": [
