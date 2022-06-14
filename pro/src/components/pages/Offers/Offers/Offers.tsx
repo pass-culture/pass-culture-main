@@ -152,6 +152,7 @@ const Offers = ({
               isAdminForbidden={isAdminForbidden}
               selectAllOffers={selectAllOffers}
               updateStatusFilter={updateStatusFilter}
+              audience={audience}
             />
             <OffersTableBody
               areAllOffersSelected={areAllOffersSelected}
