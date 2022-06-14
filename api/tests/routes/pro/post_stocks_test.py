@@ -1,11 +1,14 @@
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
 
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.core.testing import override_features
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import dehumanize
@@ -16,9 +19,42 @@ from tests.conftest import TestClient
 
 @pytest.mark.usefixtures("db_session")
 class Returns201Test:
-    def test_create_one_stock(self, app):
+    @override_features(OFFER_FORM_SUMMARY_PAGE=True)
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_create_one_stock_with_summury(self, mocked_async_index_offer_ids, app):
         # Given
-        offer = offers_factories.ThingOfferFactory()
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [{"price": 20}],
+        }
+
+        response = (
+            TestClient(app.test_client()).with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        )
+        assert response.status_code == 201
+
+        response_dict = response.json
+        assert len(response_dict["stockIds"]) == len(stock_data["stocks"])
+
+        created_stock = Stock.query.get(dehumanize(response_dict["stockIds"][0]["id"]))
+        assert offer.id == created_stock.offerId
+        assert created_stock.price == 20
+        assert offer.isActive == False
+        assert offer.validation == OfferValidationStatus.DRAFT
+        assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
+        mocked_async_index_offer_ids.assert_not_called()
+
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_create_one_stock(self, mocked_async_index_offer_ids, app):
+        # Given
+        offer = offers_factories.ThingOfferFactory(validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -43,6 +79,10 @@ class Returns201Test:
         created_stock = Stock.query.get(dehumanize(response_dict["stockIds"][0]["id"]))
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
+        assert offer.isActive == True
+        assert offer.validation == OfferValidationStatus.APPROVED
+        assert len(mails_testing.outbox) == 2  # Mail for fraud validation and first offer of venue
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
 
     def test_create_one_stock_with_activation_codes(self, app):
         # Given

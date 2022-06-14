@@ -269,6 +269,11 @@ class EducationalOfferResponseIdModel(BaseModel):
         arbitrary_types_allowed = True
 
 
+class PatchOfferPublishBodyModel(BaseModel):
+    id: int
+    _dehumanize_id = dehumanize_field("id")
+
+
 class PatchOfferActiveStatusBodyModel(BaseModel):
     is_active: bool
     ids: list[int]

@@ -160,6 +160,7 @@ def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: Us
 def create_offer(
     offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
     user: User,
+    save_as_active: bool = True,
 ) -> Offer:
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)  # type: ignore [arg-type]
     venue = load_or_raise_error(Venue, offer_data.venue_id)
@@ -171,6 +172,7 @@ def create_offer(
         offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)  # type: ignore [arg-type]
 
     _complete_common_offer_fields(offer, offer_data, venue)
+    offer.isActive = save_as_active
 
     repository.save(offer)
 
@@ -674,9 +676,9 @@ def upsert_stocks(
 
     repository.save(*stocks, *activation_codes)
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
-
-    if offer.validation == OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(offer, user)
+    if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active():
+        if offer.validation == OfferValidationStatus.DRAFT:
+            update_offer_fraud_information(offer, user)
 
     for stock in edited_stocks:
         previous_beginning = edited_stocks_previous_beginnings[stock.id]
@@ -684,9 +686,19 @@ def upsert_stocks(
             bookings = bookings_repository.find_not_cancelled_bookings_by_stock(stock)
             _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
-    search.async_index_offer_ids([offer.id])
+
+    if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active():
+        search.async_index_offer_ids([offer.id])
 
     return stocks
+
+
+def publish_offer(offer_id: int, user: User) -> Offer:
+    offer = offers_repository.get_offer_by_id(offer_id)
+    offer.isActive = True
+    update_offer_fraud_information(offer, user)
+    search.async_index_offer_ids([offer.id])
+    return offer
 
 
 def update_offer_fraud_information(
