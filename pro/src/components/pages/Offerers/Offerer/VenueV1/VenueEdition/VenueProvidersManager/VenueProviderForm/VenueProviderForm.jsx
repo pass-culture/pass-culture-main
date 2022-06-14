@@ -2,16 +2,18 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import React, { useCallback } from 'react'
 
+import { isAllocineProvider, isCinemaProvider } from 'components/pages/Offers/domain/localProvider'
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
+import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
 import PropTypes from 'prop-types'
 import StocksProviderForm from '../StocksProviderForm/StocksProviderForm'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
-import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
 
 const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
   const displayAllocineProviderForm = isAllocineProvider(provider)
+  const displayCDSProviderForm = isCinemaProvider(provider)
   const dispatch = useDispatch()
   const createVenueProvider = useCallback(
     payload => {
@@ -46,6 +48,13 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
       saveVenueProvider={createVenueProvider}
       venueId={venue.id}
     />
+  ) : displayCDSProviderForm ? (
+    <CinemaProviderForm
+      isCreatedEntity
+      providerId={provider.id}
+      saveVenueProvider={createVenueProvider}
+      venueId={venue.id}
+      />
   ) : (
     <StocksProviderForm
       providerId={provider.id}

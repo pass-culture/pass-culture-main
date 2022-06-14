@@ -1,3 +1,4 @@
+import { CINEMA_PROVIDER_NAMES } from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueProvidersManager/utils/_constants';
 import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'components/pages/Offers/Offer/OfferDetails/_constants'
 
 const doesLastProviderExist = offer =>
@@ -13,6 +14,9 @@ export const isOfferFromStockProvider = (offer = null) => {
 
 export const isAllocineProvider = provider =>
   provider?.name.toLowerCase() === 'allociné'
+
+export const isCinemaProvider = provider =>
+   CINEMA_PROVIDER_NAMES.includes(provider?.name.toLowerCase())
 
 export const isAllocineOffer = (offer = null) => {
   return doesLastProviderExist(offer)
