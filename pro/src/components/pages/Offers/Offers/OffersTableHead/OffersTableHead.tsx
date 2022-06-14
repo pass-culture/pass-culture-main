@@ -1,8 +1,10 @@
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
+import { Audience } from 'core/shared'
 import React from 'react'
 import StatusFiltersButton from './StatusFiltersButton'
 import { TSearchFilters } from 'core/Offers/types'
 import { searchFiltersSelector } from 'store/offers/selectors'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useSelector } from 'react-redux'
 
 type OffersTableHeadProps = {
@@ -13,6 +15,7 @@ type OffersTableHeadProps = {
   isAdminForbidden: (searchFilters: TSearchFilters) => boolean
   selectAllOffers: () => void
   updateStatusFilter: (status: string) => void
+  audience: Audience
 }
 
 const OffersTableHead = ({
@@ -23,8 +26,12 @@ const OffersTableHead = ({
   applyFilters,
   selectAllOffers,
   updateStatusFilter,
+  audience,
 }: OffersTableHeadProps): JSX.Element => {
   const savedSearchFilters = useSelector(searchFiltersSelector)
+  const enableEducationalInstitutionAssociation = useActiveFeature(
+    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
+  )
 
   return (
     <thead>
@@ -59,7 +66,12 @@ const OffersTableHead = ({
         </th>
         <th />
         <th>Lieu</th>
-        <th>Stock</th>
+        <th>
+          {audience === Audience.COLLECTIVE &&
+          enableEducationalInstitutionAssociation
+            ? 'Etablissement'
+            : 'Stock'}
+        </th>
         <th className="th-with-filter">
           <StatusFiltersButton
             applyFilters={applyFilters}
