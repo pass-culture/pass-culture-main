@@ -1,11 +1,11 @@
-import {DataProvider, useNotify} from 'react-admin'
+import {DataProvider} from 'react-admin'
 import {UserSearchInterface, UserApiInterface} from "../resources/Interfaces/UserSearchInterface";
-import {API_URL} from "../config/utils";
+import { env } from "../libs/environment/env";
 import {UserCredit, UserManualReview} from "../resources/PublicUsers/types";
 
 
 let assets: UserApiInterface[] = []
-const urlBase = API_URL
+const urlBase = env.API_URL
 export const dataProvider: DataProvider = {
     // @ts-ignore see later
     async searchList(resource: string, params: string) {
@@ -20,11 +20,11 @@ export const dataProvider: DataProvider = {
 
                 const body: object = {
                     headers: {
-                        'Authorization': 'Bearer ' + token,
+                        'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/x-www-form-urlencoded'
                     }
                 }
-                const response = await fetch(`${API_URL}/${resource}?q=` + params, body)
+                const response = await fetch(`${env.API_URL}/${resource}?q=${encodeURIComponent(params)}`, body)
                 const json: UserSearchInterface = await response.json()
                 assets = json.accounts
                     .map((item) => ({
@@ -51,7 +51,7 @@ export const dataProvider: DataProvider = {
                 case 'public_users/search':
                     if (assets.length === 0) {
                         // @ts-ignore
-                        const response = await fetch(`${urlBase}/${resource}/?q=${params}`)
+                        const response = await fetch(`${urlBase}/${resource}/?q=${encodeURIComponent(params)}`)
                         const json: UserSearchInterface = await response.json()
                         assets = json.accounts
                             .map((item) => ({
@@ -88,7 +88,7 @@ export const dataProvider: DataProvider = {
                 try {
                     const body: object = {
                         headers: {
-                            'Authorization': 'Bearer ' + token,
+                            'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/x-www-form-urlencoded'
                         }
                     }
@@ -97,19 +97,17 @@ export const dataProvider: DataProvider = {
 
                     const creditInfo = async () => {
                         try {
-                            const response = await fetch(`${urlBase}/${resource}/${params.id}/credit`, body)
-                            return response
-                        } catch (e) {
-                            return Promise.reject(e)
+                            return fetch(`${urlBase}/${resource}/${params.id}/credit`, body)
+                        } catch (error) {
+                            throw error
                         }
                     }
 
                     const historyInfo = async () => {
                         try {
-                            const response = await fetch(`${urlBase}/${resource}/${params.id}/history`, body)
-                            return response
-                        } catch (e) {
-                            return Promise.reject(e)
+                            return fetch(`${urlBase}/${resource}/${params.id}/history`, body)
+                        } catch (error) {
+                            throw error
                         }
                     }
                     const userCredit: UserCredit = await (await creditInfo()).json()
@@ -118,8 +116,8 @@ export const dataProvider: DataProvider = {
                     const dataUser = {...user, userCredit, userHistory}
                     console.log(dataUser)
                     return {data: dataUser}
-                } catch (e) {
-                    return Promise.reject(e)
+                } catch (error) {
+                    throw error
                 }
         }
     },
@@ -196,11 +194,11 @@ export const dataProvider: DataProvider = {
 
             console.log(requestParams)
 
-            const response = await fetch(`${API_URL}/${resource}/${params.id}/review`, requestParams)
+            const response = await fetch(`${env.API_URL}/${resource}/${params.id}/review`, requestParams)
 
             return response
-        } catch (e) {
-            Promise.reject(e)
+        } catch (error) {
+            throw error
         }
     },
 
@@ -213,39 +211,39 @@ export const dataProvider: DataProvider = {
             const requestParams: object = {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ' + token,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             }
-            const response = await fetch(`${API_URL}/${resource}/${params.id}/resend-validation-email`, requestParams)
+            const response = await fetch(`${env.API_URL}/${resource}/${params.id}/resend-validation-email`, requestParams)
             return response
-        } catch (e) {
-            Promise.reject(e)
+        } catch (error) {
+            throw error
         }
     },
     async postSkipPhoneValidation(resource: string, params: UserApiInterface) {
         const token = localStorage.getItem('tokenApi')
         if (!token) {
-            return Promise.reject()
+            throw new Error()
         }
         try {
             const requestParams: object = {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer ' + token,
+                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             }
-            const response = await fetch(`${API_URL}/${resource}/${params.id}/skip-phone-validation`, requestParams)
+            const response = await fetch(`${env.API_URL}/${resource}/${params.id}/skip-phone-validation`, requestParams)
             return response
-        } catch (e) {
-            Promise.reject(e)
+        } catch (error) {
+            throw error
         }
     },
     async postPhoneValidationCode(resource: string, params: UserApiInterface) {
         const token = localStorage.getItem('tokenApi')
         if (!token) {
-            return Promise.reject()
+            throw new Error()
         }
         try {
             const requestParams: object = {
@@ -255,10 +253,10 @@ export const dataProvider: DataProvider = {
                     'Content-Type': 'application/json'
                 }
             }
-            const response = await fetch(`${API_URL}/${resource}/${params.id}/send-phone-validation-code`, requestParams)
+            const response = await fetch(`${env.API_URL}/${resource}/${params.id}/send-phone-validation-code`, requestParams)
             return response
-        } catch (e) {
-            Promise.reject(e)
+        } catch (error) {
+            throw error
         }
     },
 }

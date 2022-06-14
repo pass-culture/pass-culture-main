@@ -2,8 +2,7 @@ import * as React from 'react';
 import {Admin, CustomRoutes, Resource} from 'react-admin'
 import CssBaseline from '@mui/material/CssBaseline'
 import {dataProvider} from './providers/dataProvider'
-import authProvider from './providers/authProvider'
-import {createBrowserHistory} from 'history'
+import {authProvider} from './providers/authProvider'
 import {i18nProvider} from './providers/i18nProvider'
 import CustomLayout from "./layout/CustomLayout";
 import CustomTheme from "./layout/Theme"
@@ -11,8 +10,9 @@ import UserSearch from "./resources/PublicUsers/UserSearch";
 import UserDetail from "./resources/PublicUsers/UserDetail";
 import LoginPage from "./resources/Login/LoginPage";
 import {Route, BrowserRouter} from "react-router-dom";
+import { env } from './libs/environment/env'
 
-
+console.log('env', env)
 function App() {
     return (
         <>
