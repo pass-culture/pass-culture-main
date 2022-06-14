@@ -73,7 +73,7 @@ def parse_offer_validation_config(
             try:
                 model = _get_model(offer, parameter.get("model", None))
             except UnapplicableModel:
-                continue
+                break
 
             validation_item = OfferValidationItem(
                 model=model,
@@ -82,11 +82,12 @@ def parse_offer_validation_config(
                 condition=parameter["condition"],
             )
             validation_items.append(validation_item)
-        if validation_items:
-            rule_item = OfferValidationRuleItem(
-                name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items
-            )
-            rule_items.append(rule_item)
+        else:
+            if validation_items:
+                rule_item = OfferValidationRuleItem(
+                    name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items
+                )
+                rule_items.append(rule_item)
     return minimum_score, rule_items
 
 
