@@ -3,6 +3,7 @@ import logging
 from sqlalchemy.orm import exc as orm_exc
 
 from pcapi.core.educational import api
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization import venue as venue_serialization
@@ -67,3 +68,19 @@ def get_all_venues(
     return venue_serialization.GetVenuesWithOptionalSiretResponseModel(
         venues=[venue_serialization.VenueModelWithOptionalSiret.from_orm(venue) for venue in venues]
     )
+
+
+@blueprint.adage_v1.route("/venues/id/<int:venue_id>", methods=["GET"])
+@spectree_serialize(
+    api=blueprint.api,
+    response_model=venue_serialization.VenueModelWithOptionalSiret,
+    on_error_statuses=[404, 422],
+    tags=("get venue",),
+)
+@adage_api_key_required
+def get_venue_by_id(venue_id: int) -> venue_serialization.VenueModelWithOptionalSiret:
+    venue = offerers_repository.find_venue_by_id(venue_id)
+    if venue is None:
+        raise ApiErrors({"code": "VENUE_NOT_FOUND"}, status_code=404)
+
+    return venue_serialization.VenueModelWithOptionalSiret.from_orm(venue)
