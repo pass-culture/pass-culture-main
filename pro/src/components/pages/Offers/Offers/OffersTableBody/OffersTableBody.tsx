@@ -4,7 +4,11 @@ import React from 'react'
 type OffersTableBodyProps = {
   areAllOffersSelected: boolean
   offers: any[]
-  selectOffer: (offerId: string) => void
+  selectOffer: (
+    offerId: string,
+    isSelected: boolean,
+    isTemplate: boolean
+  ) => void
   selectedOfferIds: string[]
 }
 

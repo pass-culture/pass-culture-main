@@ -11,7 +11,7 @@ type StatusFiltersButtonProps = {
   applyFilters: () => void
   disabled?: boolean
   status?: string
-  updateStatusFilter: () => void
+  updateStatusFilter: (status: string) => void
 }
 
 const StatusFiltersButton = ({

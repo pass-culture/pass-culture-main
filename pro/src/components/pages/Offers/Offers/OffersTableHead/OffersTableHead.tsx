@@ -12,7 +12,7 @@ type OffersTableHeadProps = {
   filters: TSearchFilters
   isAdminForbidden: (searchFilters: TSearchFilters) => boolean
   selectAllOffers: () => void
-  updateStatusFilter: () => void
+  updateStatusFilter: (status: string) => void
 }
 
 const OffersTableHead = ({
