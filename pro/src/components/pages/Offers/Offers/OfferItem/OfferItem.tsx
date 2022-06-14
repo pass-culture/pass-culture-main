@@ -3,6 +3,7 @@ import {
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
 
+import { Audience } from 'core/shared'
 import Icon from 'components/layout/Icon'
 import { Link } from 'react-router-dom'
 import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
@@ -15,12 +16,14 @@ import { computeVenueDisplayName } from 'repository/venuesService'
 import { formatLocalTimeDateString } from 'utils/timezone'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { pluralize } from 'utils/pluralize'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 
 type OfferItemProps = {
   disabled?: boolean
   isSelected?: boolean
   offer: Offer
   selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
+  audience: Audience
 }
 
 const OfferItem = ({
@@ -28,6 +31,7 @@ const OfferItem = ({
   offer,
   isSelected = false,
   selectOffer,
+  audience,
 }: OfferItemProps) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
   const editionOfferLink = useOfferEditionURL(isEducational, id, !!isShowcase)
@@ -35,6 +39,9 @@ const OfferItem = ({
     isEducational,
     id,
     !!isShowcase
+  )
+  const enableEducationalInstitutionAssociation = useActiveFeature(
+    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
 
   function handleOnChangeSelected() {
@@ -44,7 +51,16 @@ const OfferItem = ({
   const computeNumberOfSoldOutStocks = () =>
     stocks.filter(stock => stock.remainingQuantity === 0).length
 
-  const computeRemainingStockValue = (stocks: Offer['stocks']) => {
+  const computeRemainingStockOrEducationalInstitutionValue = (
+    stocks: Offer['stocks']
+  ) => {
+    if (
+      audience === Audience.COLLECTIVE &&
+      enableEducationalInstitutionAssociation
+    ) {
+      return offer.educationalInstitution?.name ?? 'Tous les établissements'
+    }
+
     let totalRemainingStock = 0
     for (const stock of stocks) {
       if (stock.remainingQuantity === 'unlimited') {
@@ -139,7 +155,9 @@ const OfferItem = ({
       <td className="venue-column">
         {venue && computeVenueDisplayName(venue)}
       </td>
-      <td className="stock-column">{computeRemainingStockValue(stocks)}</td>
+      <td className="stock-column">
+        {computeRemainingStockOrEducationalInstitutionValue(stocks)}
+      </td>
       <td className="status-column">
         <StatusLabel status={offer.status} />
       </td>
