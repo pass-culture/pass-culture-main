@@ -1,8 +1,9 @@
+import { isAllocineProvider, isCinemaProvider } from 'components/pages/Offers/domain/localProvider'
 import AllocineProviderItem from '../AllocineProviderItem/AllocineProviderItem'
+import { CinemaProviderItem } from '../CinemaProviderItem/CinemaProviderItem'
 import PropTypes from 'prop-types'
 import React from 'react'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
-import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 
 const VenueProviderList = ({
   afterVenueProviderEdit,
@@ -19,6 +20,13 @@ const VenueProviderList = ({
             venueDepartmentCode={venue.departementCode}
             venueProvider={venueProvider}
           />
+        ) : isCinemaProvider(venueProvider.provider) ? (
+          <CinemaProviderItem
+            afterVenueProviderEdit={afterVenueProviderEdit}
+            key={venueProvider.id}
+            venueDepartementCode={venue.departementCode}
+            venueProvider={venueProvider}
+        />
         ) : (
           <VenueProviderItem
             key={venueProvider.id}
