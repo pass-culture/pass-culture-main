@@ -1,9 +1,11 @@
 from datetime import datetime
+from typing import Any
 from typing import List
 from typing import Optional
 
 from pydantic.main import BaseModel
 
+from pcapi.core.providers.models import VenueProvider
 from pcapi.serialization.utils import dehumanize_field
 from pcapi.serialization.utils import humanize_field
 from pcapi.serialization.utils import to_camel
@@ -55,6 +57,15 @@ class VenueProviderResponse(BaseModel):
     _humanize_id = humanize_field("id")
     _humanize_venue_id = humanize_field("venueId")
     _humanize_provider_id = humanize_field("providerId")
+
+    @classmethod
+    def from_orm(cls: Any, venue_provider: VenueProvider):  # type: ignore
+        result = super().from_orm(venue_provider)
+
+        if not venue_provider.isFromAllocineProvider:
+            result.isDuo = venue_provider.isDuoOffers
+
+        return result
 
     class Config:
         orm_mode = True

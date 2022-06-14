@@ -103,6 +103,15 @@ def change_venue_provider(
     return venue_provider
 
 
+def update_cinema_venue_provider(
+    venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
+) -> providers_models.VenueProvider:
+    venue_provider.isDuoOffers = bool(venue_provider_payload.isDuo)
+    repository.save(venue_provider)
+
+    return venue_provider
+
+
 def update_allocine_venue_provider(
     allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.AllocineVenueProvider:
