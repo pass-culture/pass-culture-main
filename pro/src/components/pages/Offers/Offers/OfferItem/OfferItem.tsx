@@ -6,7 +6,7 @@ import {
 import Icon from 'components/layout/Icon'
 import { Link } from 'react-router-dom'
 import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
-import PropTypes from 'prop-types'
+import { Offer } from 'core/Offers/types'
 import React from 'react'
 import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import { Tag } from 'ui-kit'
@@ -16,20 +16,29 @@ import { formatLocalTimeDateString } from 'utils/timezone'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { pluralize } from 'utils/pluralize'
 
+type OfferItemProps = {
+  disabled?: boolean
+  isSelected?: boolean
+  offer: Offer
+  selectOffer: (offerId: string, selected: boolean, isTemplate: boolean) => void
+  isNewModelEnabled: boolean
+  enableIndividualAndCollectiveSeparation: boolean
+}
+
 const OfferItem = ({
-  disabled,
+  disabled = false,
   offer,
-  isSelected,
+  isSelected = false,
   selectOffer,
   isNewModelEnabled,
   enableIndividualAndCollectiveSeparation,
-}) => {
+}: OfferItemProps) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
-  const editionOfferLink = useOfferEditionURL(isEducational, id, isShowcase)
+  const editionOfferLink = useOfferEditionURL(isEducational, id, !!isShowcase)
   const editionStockLink = useOfferStockEditionURL(
     isEducational,
     id,
-    isShowcase
+    !!isShowcase
   )
 
   function handleOnChangeSelected() {
@@ -37,19 +46,19 @@ const OfferItem = ({
       !isNewModelEnabled && enableIndividualAndCollectiveSeparation
         ? offer.offerId
         : offer.id
-    selectOffer(id, !isSelected, isShowcase)
+    selectOffer(id, !isSelected, !!isShowcase)
   }
 
   const computeNumberOfSoldOutStocks = () =>
     stocks.filter(stock => stock.remainingQuantity === 0).length
 
-  const computeRemainingStockValue = stocks => {
+  const computeRemainingStockValue = (stocks: Offer['stocks']) => {
     let totalRemainingStock = 0
     for (const stock of stocks) {
       if (stock.remainingQuantity === 'unlimited') {
         return 'Illimité'
       }
-      totalRemainingStock += stock.remainingQuantity
+      totalRemainingStock += Number(stock.remainingQuantity)
     }
 
     return totalRemainingStock
@@ -62,8 +71,7 @@ const OfferItem = ({
     offer.hasBookingLimitDatetimesPassed ||
     isOfferDisabled(offer.status)
   const shouldShowSoldOutWarning =
-    computeNumberOfSoldOutStocks(stocks) > 0 &&
-    offer.status !== OFFER_STATUS_SOLD_OUT
+    computeNumberOfSoldOutStocks() > 0 && offer.status !== OFFER_STATUS_SOLD_OUT
 
   const getDateInformations = () => {
     if (isShowcase) {
@@ -128,10 +136,7 @@ const OfferItem = ({
                 />
                 <span className="sold-out-dates">
                   <Icon alt="" svg="ico-warning-stocks" />
-                  {pluralize(
-                    computeNumberOfSoldOutStocks(stocks),
-                    'date épuisée'
-                  )}
+                  {pluralize(computeNumberOfSoldOutStocks(), 'date épuisée')}
                 </span>
               </div>
             )}
@@ -161,48 +166,6 @@ const OfferItem = ({
       </td>
     </tr>
   )
-}
-
-OfferItem.defaultProps = {
-  disabled: false,
-  isSelected: false,
-}
-
-OfferItem.propTypes = {
-  disabled: PropTypes.bool,
-  isSelected: PropTypes.bool,
-  offer: PropTypes.shape({
-    venue: PropTypes.shape({
-      name: PropTypes.string,
-      publicName: PropTypes.string,
-      offererName: PropTypes.string,
-      isVirtual: PropTypes.bool,
-      departementCode: PropTypes.string,
-    }),
-    stocks: PropTypes.arrayOf(
-      PropTypes.shape({
-        beginningDatetime: PropTypes.string,
-        remainingQuantity: PropTypes.oneOfType([
-          PropTypes.number,
-          PropTypes.string,
-        ]),
-      })
-    ),
-    id: PropTypes.string,
-    isEditable: PropTypes.bool,
-    isActive: PropTypes.bool,
-    hasBookingLimitDatetimesPassed: PropTypes.bool,
-    status: PropTypes.string,
-    thumbUrl: PropTypes.string,
-    name: PropTypes.string,
-    isEvent: PropTypes.bool,
-    productIsbn: PropTypes.string,
-    isEducational: PropTypes.bool,
-    isShowcase: PropTypes.bool,
-  }).isRequired,
-  selectOffer: PropTypes.func.isRequired,
-  isNewModelEnabled: PropTypes.bool.isRequired,
-  enableIndividualAndCollectiveSeparation: PropTypes.bool.isRequired,
 }
 
 export default OfferItem
