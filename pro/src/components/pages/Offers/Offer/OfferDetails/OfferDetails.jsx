@@ -79,9 +79,9 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
     }
   }, [categories, subCategories])
 
-  const goToStockAndPrice = async(offerId) => {
+  const goToStockAndPrice = async offerId => {
     let queryString = ''
-  
+
     if (formInitialValues.current.offererId !== undefined) {
       queryString = `?structure=${formInitialValues.current.offererId}`
     }
@@ -90,9 +90,7 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
       queryString += `&lieu=${formInitialValues.current.venueId}`
     }
 
-    history.push(
-      `/offre/${offerId}/individuel/stocks${queryString}`
-    )
+    history.push(`/offre/${offerId}/individuel/stocks${queryString}`)
   }
 
   const postThumbnail = useCallback(
@@ -102,7 +100,8 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
       if (offerThumbnailHasBeenUpdated) {
         const { credit, thumbnail, croppingRect, thumbUrl } = thumbnailInfo
 
-        await pcapi.postThumbnail(
+        await pcapi
+          .postThumbnail(
             offerId,
             credit,
             thumbnail,
@@ -111,7 +110,8 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
             croppingRect?.y,
             croppingRect?.height,
             croppingRect?.width
-          ).then(() => {
+          )
+          .then(() => {
             setThumbnailError(false)
             setThumbnailMsgError('')
 
@@ -119,7 +119,7 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
               goToStockAndPrice(offerId)
             }
           })
-          .catch((error) => {
+          .catch(error => {
             setThumbnailInfo({})
             setThumbnailError(true)
             if (error.errors?.errors?.length > 0) {

@@ -70,7 +70,7 @@ const OfferEducationalConfirmation = ({
   offererId,
   offerStatus,
   isShowcase,
-  enableIndividualAndCollectiveSeparation
+  enableIndividualAndCollectiveSeparation,
 }: IOfferEducationalConfirmationProps): JSX.Element => {
   const { title, description, Icon } = mapOfferStatusToData(
     offerStatus,
@@ -93,7 +93,9 @@ const OfferEducationalConfirmation = ({
       <div className={styles['confirmation-actions']}>
         <Link
           className={cn(styles['confirmation-action'], 'secondary-link')}
-          to={`/offres${enableIndividualAndCollectiveSeparation ? '/collectives' : ''}`}
+          to={`/offres${
+            enableIndividualAndCollectiveSeparation ? '/collectives' : ''
+          }`}
         >
           Voir mes offres
         </Link>

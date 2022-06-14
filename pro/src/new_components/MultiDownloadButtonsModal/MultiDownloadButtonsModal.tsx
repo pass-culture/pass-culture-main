@@ -90,16 +90,18 @@ const MultiDownloadButtonsModal = ({
             <DownloadSvg />
             Fichier CSV (.csv)
           </button>
-          <Icon className={style["separator"]} svg="ico-separator" />
+          <Icon className={style['separator']} svg="ico-separator" />
           <a
             className={style['insideModalButton']}
-            onClick={()=> {
+            onClick={() => {
               logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_OTHER_FORMAT, {
                 from: location.pathname,
               })
               setIsDownloadModalOptionOpen(!isDownloadModalOptionOpen)
             }}
-            href={'https://passculture.qualtrics.com/jfe/form/SV_7OKMUyNBgZxmx9Q'}
+            href={
+              'https://passculture.qualtrics.com/jfe/form/SV_7OKMUyNBgZxmx9Q'
+            }
             target={'_blank'}
           >
             <LinkIcon />

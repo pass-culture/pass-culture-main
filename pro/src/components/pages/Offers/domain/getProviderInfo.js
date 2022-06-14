@@ -71,7 +71,7 @@ export const getProviderInfo = providerName => {
       icon: 'logo-cine-digital-service',
       name: 'Ciné Office',
       synchronizedOfferMessage: 'Offre synchronisée avec Ciné Office',
-    }
+    },
   ]
 
   return providers.find(providerInfo =>

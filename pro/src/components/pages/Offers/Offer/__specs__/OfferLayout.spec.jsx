@@ -158,8 +158,10 @@ describe('offerLayout', () => {
       )
 
       // Then
-      expect(pcapi.updateOffersActiveStatus).toHaveBeenNthCalledWith(1, [editedOffer.id],
-        true,
+      expect(pcapi.updateOffersActiveStatus).toHaveBeenNthCalledWith(
+        1,
+        [editedOffer.id],
+        true
       )
       expect(
         screen.queryByRole('button', { name: 'Activer' })

@@ -1,7 +1,4 @@
-import React, {
-  useCallback,
-  useState,
-} from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { Audience } from 'core/shared'
 import ConfirmDialog from 'new_components/ConfirmDialog'
@@ -37,7 +34,7 @@ const getUpdateActiveStatusAdapter = (
   isActive: boolean,
   nbSelectedOffers: number,
   selectedOfferIds: string[],
-  audience: Audience,
+  audience: Audience
 ) => {
   if (areAllOffersSelected) {
     if (audience === Audience.COLLECTIVE) {
@@ -56,10 +53,15 @@ const getUpdateActiveStatusAdapter = (
   }
 
   if (audience === Audience.COLLECTIVE) {
-    return () => updateCollectiveOffersActiveStatusAdapter({ids: selectedOfferIds, isActive})
+    return () =>
+      updateCollectiveOffersActiveStatusAdapter({
+        ids: selectedOfferIds,
+        isActive,
+      })
   }
 
-  return () => updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
+  return () =>
+    updateOffersActiveStatusAdapter({ ids: selectedOfferIds, isActive })
 }
 
 const ActionsBar = ({
@@ -69,7 +71,7 @@ const ActionsBar = ({
   toggleSelectAllCheckboxes,
   areAllOffersSelected,
   nbSelectedOffers,
-  audience
+  audience,
 }: IActionBarProps): JSX.Element => {
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const searchFilters = useSelector(searchFiltersSelector)
@@ -92,7 +94,7 @@ const ActionsBar = ({
         audience
       )
 
-      const {isOk, message} = await adapter()
+      const { isOk, message } = await adapter()
       refreshOffers()
 
       if (!isOk) {
@@ -135,41 +137,45 @@ const ActionsBar = ({
   return (
     <div className="offers-actions-bar" data-testid="offers-actions-bar">
       <span>{computeSelectedOffersLabel()}</span>
-      {
-        isConfirmDialogOpen &&
+      {isConfirmDialogOpen && (
         <ConfirmDialog
           cancelText={'Annuler'}
           confirmText={'Désactiver'}
-          onCancel={()=> {
+          onCancel={() => {
             logEvent(Events.CLICKED_CANCELED_SELECTED_OFFERS, {
               from: location.pathname,
-              has_selected_all_offers: areAllOffersSelected
+              has_selected_all_offers: areAllOffersSelected,
             })
             setIsConfirmDialogOpen(false)
           }}
-          onConfirm={()=> {
+          onConfirm={() => {
             logEvent(Events.CLICKED_DISABLED_SELECTED_OFFERS, {
               from: location.pathname,
-              has_selected_all_offers: areAllOffersSelected
+              has_selected_all_offers: areAllOffersSelected,
             })
             handleDeactivate()
-          }
-          }
+          }}
           icon={EyeIcon}
-          title={ nbSelectedOffers === 1 ?
-            `Vous avez sélectionné ${nbSelectedOffers} offre,`
-            : `Vous avez sélectionné ${nbSelectedOffers} offres,`}
-          secondTitle={ nbSelectedOffers === 1 ?
-            `êtes-vous sûr de vouloir la désactiver${NBSP}?`
-            : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`}
+          title={
+            nbSelectedOffers === 1
+              ? `Vous avez sélectionné ${nbSelectedOffers} offre,`
+              : `Vous avez sélectionné ${nbSelectedOffers} offres,`
+          }
+          secondTitle={
+            nbSelectedOffers === 1
+              ? `êtes-vous sûr de vouloir la désactiver${NBSP}?`
+              : `êtes-vous sûr de vouloir toutes les désactiver${NBSP}?`
+          }
         >
-          {nbSelectedOffers === 1 ? "Dans ce cas, elle ne sera plus visible sur l’application pass Culture." : "Dans ce cas, elles ne seront plus visibles sur l’application pass Culture."}
+          {nbSelectedOffers === 1
+            ? 'Dans ce cas, elle ne sera plus visible sur l’application pass Culture.'
+            : 'Dans ce cas, elles ne seront plus visibles sur l’application pass Culture.'}
         </ConfirmDialog>
-      }
+      )}
       <div className="actions-container">
         <button
           className="primary-button with-icon"
-          onClick={()=>setIsConfirmDialogOpen(true)}
+          onClick={() => setIsConfirmDialogOpen(true)}
           type="button"
         >
           <Icon svg="ico-status-inactive" />

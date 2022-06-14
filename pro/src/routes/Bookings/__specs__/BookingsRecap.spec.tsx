@@ -505,7 +505,12 @@ describe('components | BookingsRecap | Pro user', () => {
         1,
         NTH_ARGUMENT_GET_BOOKINGS.eventDate
       )
-    ).toStrictEqual(formatBrowserTimezonedDateAsUTC(new Date(2020, 5, 8), FORMAT_ISO_DATE_ONLY))
+    ).toStrictEqual(
+      formatBrowserTimezonedDateAsUTC(
+        new Date(2020, 5, 8),
+        FORMAT_ISO_DATE_ONLY
+      )
+    )
   })
 
   it('should set booking period to null when user select event date', async () => {

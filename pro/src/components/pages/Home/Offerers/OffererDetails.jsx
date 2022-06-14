@@ -165,7 +165,8 @@ const OffererDetails = ({
               onClick={() =>
                 logEvent(Events.CLICKED_MODIFY_OFFERER, {
                   offerer_id: selectedOfferer.id,
-                })}
+                })
+              }
             >
               <Icon svg="ico-outer-pen" />
               Modifier

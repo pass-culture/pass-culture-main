@@ -14,7 +14,7 @@ import useNotification from 'components/hooks/useNotification'
 import { useParams } from 'react-router-dom'
 
 const OfferEducationalConfirmation = (): JSX.Element => {
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>() 
+  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId, isShowcase } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload>()
@@ -52,7 +52,9 @@ const OfferEducationalConfirmation = (): JSX.Element => {
       isShowcase={offer?.isShowcase}
       offerStatus={offer?.status}
       offererId={offer?.managingOffererId}
-      enableIndividualAndCollectiveSeparation={enableIndividualAndCollectiveSeparation}
+      enableIndividualAndCollectiveSeparation={
+        enableIndividualAndCollectiveSeparation
+      }
     />
   )
 }
