@@ -45,7 +45,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.ts,.tsx",
-    "deploy": "firebase deploy --only hosting --debug"
+    "deploy:testing": "firebase deploy --only hosting --debug -P pc-backoffice-testing"
   },
   "eslintConfig": {
     "extends": [
