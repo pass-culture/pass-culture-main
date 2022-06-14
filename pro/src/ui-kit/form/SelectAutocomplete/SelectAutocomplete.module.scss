@@ -1,5 +1,3 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_forms.scss' as forms;
 @use 'styles/mixins/_rem.scss' as rem;
 
 .select-autocomplete-container {
@@ -15,6 +13,10 @@
     span {
       position: absolute;
     }
+  }
+
+  .menu {
+    max-height: rem.torem(212px)
   }
 }
 

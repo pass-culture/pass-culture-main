@@ -11,6 +11,7 @@ type AutocompleteListProps = {
   renderOption: (option: (SelectOption & {disabled?: boolean})) => React.ReactNode
   displayNumberOfSelectedValues?: boolean
   numberOfSelectedOptions?: number
+  className?: string
 }
 
 const AutocompleteList = ({
@@ -20,6 +21,7 @@ const AutocompleteList = ({
   renderOption,
   displayNumberOfSelectedValues = false,
   numberOfSelectedOptions,
+  className,
 }: AutocompleteListProps): JSX.Element => {
   return (
     <div className={styles['field-overlay']}>
@@ -41,7 +43,7 @@ const AutocompleteList = ({
         </div>
         )}
       {isOpen && (
-        <div className={styles['menu']} role="listbox">
+        <div className={cx(styles['menu'], className)} role="listbox">
           {filteredOptions.length === 0 && (
             <span
               className={cx({
