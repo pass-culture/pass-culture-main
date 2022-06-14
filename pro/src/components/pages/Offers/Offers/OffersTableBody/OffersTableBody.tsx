@@ -6,31 +6,17 @@ type OffersTableBodyProps = {
   offers: any[]
   selectOffer: (offerId: string) => void
   selectedOfferIds: string[]
-  isNewModelEnabled: boolean
-  enableIndividualAndCollectiveSeparation: boolean
 }
+
 const OffersTableBody = ({
   areAllOffersSelected,
   offers,
   selectOffer,
   selectedOfferIds,
-  isNewModelEnabled,
-  enableIndividualAndCollectiveSeparation,
 }: OffersTableBodyProps) => (
   <tbody className="offers-list">
     {offers.map(offer => {
-      let offerId = ''
-
-      if (isNewModelEnabled) {
-        offerId = `${offer.isShowcase ? `T-` : ''}${offer.id}`
-      } else if (
-        !isNewModelEnabled &&
-        enableIndividualAndCollectiveSeparation
-      ) {
-        offerId = offer.offerId
-      } else {
-        offerId = offer.id
-      }
+      const offerId = `${offer.isShowcase ? `T-` : ''}${offer.id}`
 
       return (
         <OfferItem
