@@ -30,7 +30,7 @@ const Homepage = (): JSX.Element => {
     <div className="homepage">
       <PageTitle title="Espace acteurs culturels" />
       <h1>Bienvenue dans l’espace acteurs culturels</h1>
-      {IsBannerOneYearActive && <BannerOneYear/>}
+      {IsBannerOneYearActive && <BannerOneYear />}
       {!hasClosedRGSBanner && (
         <BannerRGS closable onClose={handleCloseRGSBanner} />
       )}
@@ -46,7 +46,7 @@ const Homepage = (): JSX.Element => {
       <section className="h-section" ref={profileRef}>
         <ProfileAndSupport />
         <div className="newsletter">
-          <Newsletter/>
+          <Newsletter />
         </div>
       </section>
     </div>

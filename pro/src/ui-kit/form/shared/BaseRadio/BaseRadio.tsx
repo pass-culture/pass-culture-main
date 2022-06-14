@@ -23,7 +23,13 @@ const BaseInput = ({
         [styles['has-error']]: hasError,
       })}
     />
-    <span className={cn(styles['base-radio-label'], {[styles['base-radio-label-checked']]: props.checked})}>{label}</span>
+    <span
+      className={cn(styles['base-radio-label'], {
+        [styles['base-radio-label-checked']]: props.checked,
+      })}
+    >
+      {label}
+    </span>
   </label>
 )
 

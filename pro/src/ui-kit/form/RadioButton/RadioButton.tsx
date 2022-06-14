@@ -27,7 +27,7 @@ const RadioButton = ({
     <div
       className={cn(style['radio-button'], className, {
         [style['with-border']]: withBorder,
-        [style['with-border-primary']]: withBorder && field.checked
+        [style['with-border-primary']]: withBorder && field.checked,
       })}
     >
       <BaseRadio
@@ -35,9 +35,9 @@ const RadioButton = ({
         id={name}
         label={label}
         value={value}
-        className={
-          cn(style['radio-input'], { [style['radio-input-checked']]: field.checked })
-        }
+        className={cn(style['radio-input'], {
+          [style['radio-input-checked']]: field.checked,
+        })}
       />
       {meta.touched && meta.error && (
         <FieldError name={name}>{meta.error}</FieldError>

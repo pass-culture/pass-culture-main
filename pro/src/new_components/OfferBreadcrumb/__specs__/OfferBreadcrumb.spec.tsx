@@ -49,8 +49,8 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
       expect(listItems).toHaveLength(3)
       expect(listItems[0]).toHaveTextContent("Détails de l'offre")
-      expect(listItems[1]).toHaveTextContent("Stock et prix")
-      expect(listItems[2]).toHaveTextContent("Confirmation")
+      expect(listItems[1]).toHaveTextContent('Stock et prix')
+      expect(listItems[2]).toHaveTextContent('Confirmation')
     })
 
     it('should generate link with offerId when user is editing an offer', async () => {
@@ -112,8 +112,8 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
       expect(listItems).toHaveLength(3)
       expect(listItems[0]).toHaveTextContent("Détails de l'offre")
-      expect(listItems[1]).toHaveTextContent("Date et prix")
-      expect(listItems[2]).toHaveTextContent("Confirmation")
+      expect(listItems[1]).toHaveTextContent('Date et prix')
+      expect(listItems[2]).toHaveTextContent('Confirmation')
     })
   })
 
@@ -150,9 +150,9 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
       expect(listItems).toHaveLength(4)
       expect(listItems[0]).toHaveTextContent("Détails de l'offre")
-      expect(listItems[1]).toHaveTextContent("Date et prix")
-      expect(listItems[2]).toHaveTextContent("Visibilité")
-      expect(listItems[3]).toHaveTextContent("Confirmation")
+      expect(listItems[1]).toHaveTextContent('Date et prix')
+      expect(listItems[2]).toHaveTextContent('Visibilité')
+      expect(listItems[3]).toHaveTextContent('Confirmation')
     })
 
     it('collective offer - should generate link with offerId when user is editing an offer', async () => {

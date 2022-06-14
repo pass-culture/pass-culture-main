@@ -119,7 +119,10 @@ describe('venues', () => {
     const byRole = within(validatedBookingsStat).getByRole('link', {
       name: 'Voir',
     })
-    expect(byRole).toHaveAttribute('href', '/reservations?page=1&bookingStatusFilter=validated&offerVenueId=VENUE01')
+    expect(byRole).toHaveAttribute(
+      'href',
+      '/reservations?page=1&bookingStatusFilter=validated&offerVenueId=VENUE01'
+    )
     expect(
       within(activeBookingsStat).getByRole('link', { name: 'Voir' })
     ).toHaveAttribute('href', '/reservations?page=1&offerVenueId=VENUE01')

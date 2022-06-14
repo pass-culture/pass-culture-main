@@ -3,18 +3,20 @@ import '@testing-library/jest-dom'
 import * as useNotification from 'components/hooks/useNotification'
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { updateAllOffersActiveStatus, updateOffersActiveStatus } from 'repository/pcapi/pcapi'
+import {
+  updateAllOffersActiveStatus,
+  updateOffersActiveStatus,
+} from 'repository/pcapi/pcapi'
 
 import ActionsBar from '../ActionsBar'
-import {Events} from 'core/FirebaseEvents/constants';
-import {MemoryRouter} from 'react-router';
-import {Provider} from 'react-redux'
+import { Events } from 'core/FirebaseEvents/constants'
+import { MemoryRouter } from 'react-router'
+import { Provider } from 'react-redux'
 import React from 'react'
 import { configureTestStore } from 'store/testUtils'
-import userEvent from "@testing-library/user-event";
+import userEvent from '@testing-library/user-event'
 
 const renderActionsBar = (props, store) => {
-
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={['/offres']}>
@@ -46,12 +48,15 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       nbSelectedOffers: 2,
     }
     store = configureTestStore({
-    app: { logEvent: mockLogEvent },
-    offers: {searchFilters: {
-      nameOrIsbn: 'keyword',
-      venueId: 'E3',
-      offererId: 'A4',
-    }} })
+      app: { logEvent: mockLogEvent },
+      offers: {
+        searchFilters: {
+          nameOrIsbn: 'keyword',
+          venueId: 'E3',
+          offererId: 'A4',
+        },
+      },
+    })
   })
 
   it('should have buttons to activate and deactivate offers, and to abort action', () => {
@@ -121,7 +126,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalled()
       })
-      expect(notifySuccess).toHaveBeenCalledWith('2 offres ont bien été activées')
+      expect(notifySuccess).toHaveBeenCalledWith(
+        '2 offres ont bien été activées'
+      )
     })
   })
 
@@ -143,10 +150,14 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
-        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_DISABLED_SELECTED_OFFERS, {
-          from: '/offres',
-          has_selected_all_offers: false,
-        })
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_DISABLED_SELECTED_OFFERS,
+          {
+            from: '/offres',
+            has_selected_all_offers: false,
+          }
+        )
         expect(updateOffersActiveStatus).toHaveBeenLastCalledWith(
           ['testId1', 'testId2'],
           false
@@ -154,7 +165,9 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(props.clearSelectedOfferIds).toHaveBeenCalledTimes(1)
         expect(props.refreshOffers).toHaveBeenCalledWith()
       })
-      expect(notifySuccess).toHaveBeenCalledWith('2 offres ont bien été désactivées')
+      expect(notifySuccess).toHaveBeenCalledWith(
+        '2 offres ont bien été désactivées'
+      )
     })
   })
 
@@ -214,10 +227,14 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
-        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_DISABLED_SELECTED_OFFERS, {
-          from: '/offres',
-          has_selected_all_offers: true,
-        })
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_DISABLED_SELECTED_OFFERS,
+          {
+            from: '/offres',
+            has_selected_all_offers: true,
+          }
+        )
         expect(updateAllOffersActiveStatus).toHaveBeenLastCalledWith(
           expectedBody
         )
@@ -239,10 +256,14 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
-        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_CANCELED_SELECTED_OFFERS, {
-          from: '/offres',
-          has_selected_all_offers: true,
-        })
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_CANCELED_SELECTED_OFFERS,
+          {
+            from: '/offres',
+            has_selected_all_offers: true,
+          }
+        )
       })
     })
     it('should track cancel offer on click on "Annuler" button', async () => {
@@ -259,10 +280,14 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       // then
       await waitFor(() => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
-        expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_CANCELED_SELECTED_OFFERS, {
-          from: '/offres',
-          has_selected_all_offers: false,
-        })
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_CANCELED_SELECTED_OFFERS,
+          {
+            from: '/offres',
+            has_selected_all_offers: false,
+          }
+        )
       })
     })
   })

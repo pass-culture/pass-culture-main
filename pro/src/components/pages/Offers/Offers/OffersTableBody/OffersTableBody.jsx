@@ -8,15 +8,18 @@ const OffersTableBody = ({
   selectOffer,
   selectedOfferIds,
   isNewModelEnabled,
-  enableIndividualAndCollectiveSeparation
+  enableIndividualAndCollectiveSeparation,
 }) => (
   <tbody className="offers-list">
     {offers.map(offer => {
       let offerId = ''
 
       if (isNewModelEnabled) {
-        offerId=`${offer.isShowcase ? `T-` : ''}${offer.id}`
-      } else if (!isNewModelEnabled && enableIndividualAndCollectiveSeparation) {
+        offerId = `${offer.isShowcase ? `T-` : ''}${offer.id}`
+      } else if (
+        !isNewModelEnabled &&
+        enableIndividualAndCollectiveSeparation
+      ) {
         offerId = offer.offerId
       } else {
         offerId = offer.id
@@ -30,7 +33,9 @@ const OffersTableBody = ({
           offer={offer}
           selectOffer={selectOffer}
           isNewModelEnabled={isNewModelEnabled}
-          enableIndividualAndCollectiveSeparation={enableIndividualAndCollectiveSeparation}
+          enableIndividualAndCollectiveSeparation={
+            enableIndividualAndCollectiveSeparation
+          }
         />
       )
     })}
@@ -43,7 +48,7 @@ OffersTableBody.propTypes = {
   selectOffer: PropTypes.func.isRequired,
   selectedOfferIds: PropTypes.arrayOf(PropTypes.string).isRequired,
   isNewModelEnabled: PropTypes.bool.isRequired,
-  enableIndividualAndCollectiveSeparation: PropTypes.bool.isRequired
+  enableIndividualAndCollectiveSeparation: PropTypes.bool.isRequired,
 }
 
 export default OffersTableBody

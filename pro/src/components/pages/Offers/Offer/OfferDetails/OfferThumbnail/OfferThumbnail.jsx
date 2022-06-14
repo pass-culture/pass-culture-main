@@ -23,9 +23,7 @@ const OfferThumbnail = ({
 
   const openModal = useCallback(e => {
     e.target.blur()
-    setThumbnailError(false),
-    setThumbnailMsgError(''),
-    setIsModalOpened(true)
+    setThumbnailError(false), setThumbnailMsgError(''), setIsModalOpened(true)
   }, [])
 
   useEffect(() => {
@@ -50,7 +48,9 @@ const OfferThumbnail = ({
         disabled={isDisabled}
         onClick={openModal}
         ref={thumbnailButtonRef}
-        title={`${preview && !thumbnailError ? 'Modifier l’image' : 'Ajouter une image'}`}
+        title={`${
+          preview && !thumbnailError ? 'Modifier l’image' : 'Ajouter une image'
+        }`}
         type="button"
       >
         {preview && !thumbnailError ? (
@@ -65,7 +65,9 @@ const OfferThumbnail = ({
         {thumbnailError && (
           <span className="of-error-message">
             <ErrorAlertIcon />
-            {thumbnailMsgError !== '' ? thumbnailMsgError : `L’image n’a pas pu être ajoutée. Veuillez réessayer.`}
+            {thumbnailMsgError !== ''
+              ? thumbnailMsgError
+              : `L’image n’a pas pu être ajoutée. Veuillez réessayer.`}
           </span>
         )}
       </button>
