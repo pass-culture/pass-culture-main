@@ -8,10 +8,12 @@ import {
 } from 'core/Offers/constants'
 
 import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
 import React from 'react'
 
-export const OFFER_STATUS_PROPERTIES = {
+export const OFFER_STATUS_PROPERTIES: Record<
+  string,
+  { className: string; icon: string; label: string }
+> = {
   [OFFER_STATUS_EXPIRED]: {
     className: 'status-expired',
     icon: 'ico-status-expired',
@@ -44,7 +46,10 @@ export const OFFER_STATUS_PROPERTIES = {
   },
 }
 
-const StatusLabel = ({ status }) => {
+type StatusLabelProps = {
+  status: string
+}
+const StatusLabel = ({ status }: StatusLabelProps) => {
   return (
     <span
       className={`op-offer-status ${OFFER_STATUS_PROPERTIES[status]?.className}`}
@@ -54,9 +59,4 @@ const StatusLabel = ({ status }) => {
     </span>
   )
 }
-
-StatusLabel.propTypes = {
-  status: PropTypes.string.isRequired,
-}
-
 export default StatusLabel
