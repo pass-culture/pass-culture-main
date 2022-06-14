@@ -1,5 +1,9 @@
+import {
+  EducationalInstitutionResponseModel,
+  GetOfferResponseModel,
+} from 'api/v1/gen/'
+
 import { CATEGORY_STATUS } from '.'
-import { GetOfferResponseModel } from 'api/v1/gen/'
 
 export type TSearchFilters = {
   nameOrIsbn: string
@@ -44,6 +48,7 @@ export type Offer = {
   stocks: Stock[]
   isEditable: boolean
   isShowcase?: boolean | null
+  educationalInstitution?: EducationalInstitutionResponseModel | null
 }
 
 export type Option = {
