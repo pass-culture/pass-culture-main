@@ -401,7 +401,7 @@ def test_unindex_collective_offer__templatesids():
         backend.unindex_collective_offer_template_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
-        assert posted_json["requests"][0]["body"]["objectID"] == 1
+        assert posted_json["requests"][0]["body"]["objectID"] == "T-1"
 
 
 def test_unindex_all_collective_offers_templates():
