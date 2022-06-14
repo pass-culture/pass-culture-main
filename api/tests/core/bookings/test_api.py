@@ -486,6 +486,7 @@ class CancelByBeneficiaryTest:
         queries += 1  # select exists booking
         queries += 1  # select stock
         queries += 1  # select booking ; offer
+        queries += 1  # select external_booking
 
         individual_booking = booking.individualBooking
         user = individual_booking.user

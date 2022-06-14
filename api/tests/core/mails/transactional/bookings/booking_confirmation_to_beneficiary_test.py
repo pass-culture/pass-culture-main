@@ -59,6 +59,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "ALL_BUT_NOT_VIRTUAL_THING": True,
             "ALL_THINGS_NOT_VIRTUAL_THING": False,
             "IS_EVENT": True,
+            "IS_EXTERNAL": False,
             "IS_SINGLE_EVENT": True,
             "IS_DUO_EVENT": False,
             "CAN_EXPIRE": False,
