@@ -28,7 +28,6 @@ from pcapi.routes.serialization.stock_serialize import EducationalStockIdRespons
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import image_conversion
 from pcapi.utils.human_ids import dehumanize
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
@@ -274,17 +273,13 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
 
     image_as_bytes = form.get_image_as_bytes(request)
 
-    try:
-        thumbnail = offers_api.create_mediation(
-            user=current_user,
-            offer=offer,
-            credit=form.credit,  # type: ignore [arg-type]
-            image_as_bytes=image_as_bytes,
-            crop_params=form.crop_params,
-        )
-    except image_conversion.ImageRatioError as err:
-        content = {"code": "BAD_RATIO", "message": str(err)}
-        raise ApiErrors(content, status_code=400)
+    thumbnail = offers_api.create_mediation(
+        user=current_user,
+        offer=offer,
+        credit=form.credit,  # type: ignore [arg-type]
+        image_as_bytes=image_as_bytes,
+        crop_params=form.crop_params,
+    )
 
     return CreateThumbnailResponseModel(id=thumbnail.id)
 
