@@ -265,9 +265,19 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     @property
     def nApprovedOffers(self) -> int:  # used in validation rule, do not remove
+        from pcapi.core.educational.models import CollectiveOffer
+        from pcapi.core.offers.models import Offer
         from pcapi.core.offers.models import OfferValidationStatus
 
-        return len([offer for offer in self.offers if offer.validation == OfferValidationStatus.APPROVED])
+        query_offer = db.session.query(func.count(Offer.id)).filter(
+            Offer.validation == OfferValidationStatus.APPROVED, Offer.venueId == self.id
+        )
+        query_collective = db.session.query(func.count(CollectiveOffer.id)).filter(
+            CollectiveOffer.validation == OfferValidationStatus.APPROVED, CollectiveOffer.venueId == self.id
+        )
+        results = query_offer.union(query_collective).all()
+
+        return sum(result for result, in results)
 
     @property
     def isBusinessUnitMainVenue(self) -> bool:
