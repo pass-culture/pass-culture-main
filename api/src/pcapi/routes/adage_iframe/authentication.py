@@ -11,5 +11,8 @@ from pcapi.serialization.decorator import spectree_serialize
 @adage_jwt_required
 def authenticate(authenticated_information: AuthenticatedInformation) -> AuthenticatedResponse:
     if authenticated_information.uai is not None:
-        return AuthenticatedResponse(role=AdageFrontRoles.REDACTOR)
+        return AuthenticatedResponse(
+            role=AdageFrontRoles.REDACTOR,
+            uai=authenticated_information.uai,
+        )
     return AuthenticatedResponse(role=AdageFrontRoles.READONLY)
