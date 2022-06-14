@@ -1,14 +1,38 @@
+import RadioGroup, { Direction, IRadioGroupProps } from './RadioGroup'
+
 import { Formik } from 'formik'
-import RadioGroup from './RadioGroup'
 import React from 'react'
 import { Story } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+
 export default {
   title: 'ui-kit/forms/RadioGroup',
   component: RadioGroup,
 }
+const args = {
+  name: 'question',
+  legend: 'This is the legend',
+  direction: Direction.VERTICAL,
+  group: [
+    {
+      label: 'Oui',
+      value: `question1`,
+    },
+    {
+      label: 'Non',
+      value: `question2`,
+    },
+  ],
+  withBorder: false,
+}
 
-const Template: Story<{ withBorder: boolean }> = ({ withBorder = false }) => (
+const Template: Story<IRadioGroupProps> = ({
+  direction,
+  name,
+  group,
+  legend,
+  withBorder,
+}) => (
   <Formik
     initialValues={{
       question: {},
@@ -19,18 +43,10 @@ const Template: Story<{ withBorder: boolean }> = ({ withBorder = false }) => (
       return (
         <RadioGroup
           {...getFieldProps('group')}
-          group={[
-            {
-              label: 'Oui',
-              value: `question1`,
-            },
-            {
-              label: 'Non',
-              value: `question2`,
-            },
-          ]}
-          name="question"
-          legend="This is the legend"
+          direction={direction}
+          group={group}
+          name={name}
+          legend={legend}
           withBorder={withBorder}
         />
       )
@@ -39,6 +55,16 @@ const Template: Story<{ withBorder: boolean }> = ({ withBorder = false }) => (
 )
 
 export const Default = Template.bind({})
+Default.args = args
 
 export const WithBorder = Template.bind({})
-WithBorder.args = { withBorder: true }
+WithBorder.args = {
+  ...args,
+  withBorder: true,
+}
+
+export const Horizontal = Template.bind({})
+Horizontal.args = {
+  ...args,
+  direction: Direction.HORIZONTAL,
+}

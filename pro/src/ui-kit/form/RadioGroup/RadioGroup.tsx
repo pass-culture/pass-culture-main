@@ -5,7 +5,12 @@ import cn from 'classnames'
 import styles from './RadioGroup.module.scss'
 import { useField } from 'formik'
 
-interface IRadioGroupProps {
+export enum Direction {
+  VERTICAL = 'vertical',
+  HORIZONTAL = 'horizontal',
+}
+export interface IRadioGroupProps {
+  direction?: Direction.HORIZONTAL | Direction.VERTICAL
   name: string
   legend?: string
   group: {
@@ -17,6 +22,7 @@ interface IRadioGroupProps {
 }
 
 const RadioGroup = ({
+  direction = Direction.VERTICAL,
   group,
   name,
   legend,
@@ -27,7 +33,11 @@ const RadioGroup = ({
 
   return (
     <FieldSetLayout
-      className={cn(styles['radio-group'], className)}
+      className={cn(
+        styles['radio-group'],
+        styles[`radio-group-${direction}`],
+        className
+      )}
       dataTestId={`wrapper-${name}`}
       error={meta.touched && !!meta.error ? meta.error : undefined}
       hideFooter
