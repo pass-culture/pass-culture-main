@@ -1,15 +1,18 @@
 import '@testing-library/jest-dom'
 
+import OfferItem, { OfferItemProps } from '../OfferItem'
 import { render, screen } from '@testing-library/react'
 
+import { Audience } from 'core/shared'
 import { MemoryRouter } from 'react-router'
-import OfferItem from '../OfferItem'
+import { Offer } from 'core/Offers/types'
 import { Provider } from 'react-redux'
 import React from 'react'
+import { Store } from 'redux'
 import { configureTestStore } from 'store/testUtils'
 import { within } from '@testing-library/dom'
 
-const renderOfferItem = (props, store) => {
+const renderOfferItem = (props: OfferItemProps, store: Store) => {
   return render(
     <Provider store={store}>
       <MemoryRouter>
@@ -24,9 +27,9 @@ const renderOfferItem = (props, store) => {
 }
 
 describe('src | components | pages | Offers | OfferItem', () => {
-  let props
-  let eventOffer
-  let store
+  let props: OfferItemProps
+  let eventOffer: Offer
+  let store: Store
 
   beforeEach(() => {
     store = configureTestStore({})
@@ -35,9 +38,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       id: 'M4',
       isActive: true,
       isEditable: true,
-      isFullyBooked: false,
       isEvent: true,
-      isThing: false,
       hasBookingLimitDatetimesPassed: false,
       name: 'My little offer',
       thumbUrl: '/my-fake-thumb',
@@ -47,19 +48,15 @@ describe('src | components | pages | Offers | OfferItem', () => {
         isVirtual: false,
         name: 'Paris',
         departementCode: '973',
+        offererName: 'Offerer name',
       },
+      isEducational: false,
     }
 
     props = {
-      dispatch: jest.fn(),
       offer: eventOffer,
-      location: {
-        search: '?orderBy=offer.id+desc',
-      },
       selectOffer: jest.fn(),
-      trackActivateOffer: jest.fn(),
-      trackDeactivateOffer: jest.fn(),
-      refreshOffers: jest.fn(),
+      audience: Audience.INDIVIDUAL,
     }
   })
 
@@ -137,7 +134,9 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         // then
-        const offerTitle = screen.queryByText(props.offer.name, 'a')
+        const offerTitle = screen.queryByText(props.offer.name as string, {
+          selector: 'a',
+        })
         expect(offerTitle).toBeInTheDocument()
         expect(offerTitle).toHaveAttribute(
           'href',
@@ -151,6 +150,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
       props.offer.venue = {
         name: 'Paris',
         isVirtual: false,
+        offererName: 'Offerer name',
       }
 
       // when
@@ -166,15 +166,14 @@ describe('src | components | pages | Offers | OfferItem', () => {
         name: 'Paris',
         publicName: 'lieu de ouf',
         isVirtual: false,
+        offererName: 'Offerer name',
       }
 
       // when
       renderOfferItem(props, store)
 
       // then
-      expect(
-        screen.queryByText(props.offer.venue.publicName)
-      ).toBeInTheDocument()
+      expect(screen.queryByText('lieu de ouf')).toBeInTheDocument()
     })
 
     it('should display the offerer name with "- Offre numérique" when venue is virtual', () => {
@@ -274,7 +273,10 @@ describe('src | components | pages | Offers | OfferItem', () => {
       it('should display the beginning date time when only one date', () => {
         // given
         props.offer.stocks = [
-          { beginningDatetime: '2021-05-27T20:00:00Z', remainingQuantity: 10 },
+          {
+            beginningDatetime: new Date('2021-05-27T20:00:00Z'),
+            remainingQuantity: 10,
+          },
         ]
 
         // when
@@ -295,10 +297,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         // then
-        const numberOfStocks = screen.getByText('2 dates').closest('span')
-        expect(
-          within(numberOfStocks).queryByRole('img')
-        ).not.toBeInTheDocument()
+        expect(screen.queryByText(/épuisée/)).not.toBeInTheDocument()
       })
 
       it('should not display a warning when all stocks are sold out', () => {
@@ -313,19 +312,15 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         // then
-        const numberOfStocks = screen.getByText('2 dates').closest('span')
-        expect(
-          within(numberOfStocks).queryByRole('img')
-        ).not.toBeInTheDocument()
+        expect(screen.queryByText(/épuisées/)).not.toBeInTheDocument()
       })
 
       it('should display a warning with number of stocks sold out when at least one stock is sold out', () => {
         // given
         props.offer.stocks = [
-          { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
+          { remainingQuantity: 0 },
           {
             remainingQuantity: 'unlimited',
-            hasBookingLimitDatetimePassed: false,
           },
         ]
 
@@ -333,31 +328,29 @@ describe('src | components | pages | Offers | OfferItem', () => {
         renderOfferItem(props, store)
 
         // then
-        const numberOfStocks = screen.getByText('2 dates').closest('span')
-        expect(within(numberOfStocks).queryAllByRole('img')[0]).toHaveAttribute(
+        const numberOfStocks = screen.getByText('1 date épuisée', {
+          selector: 'span',
+        })
+        expect(within(numberOfStocks).queryByRole('img')).toHaveAttribute(
           'src',
           expect.stringContaining('ico-warning-stocks')
         )
-        expect(
-          within(numberOfStocks).queryByText('1 date épuisée')
-        ).toBeInTheDocument()
       })
 
       it('should pluralize number of stocks sold out when at least two stocks are sold out', () => {
         // given
         props.offer.stocks = [
-          { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
-          { remainingQuantity: 0, hasBookingLimitDatetimePassed: false },
-          { remainingQuantity: 12, hasBookingLimitDatetimePassed: false },
+          { remainingQuantity: 0 },
+          { remainingQuantity: 0 },
+          { remainingQuantity: 12 },
         ]
 
         // when
         renderOfferItem(props, store)
 
         // then
-        const numberOfStocks = screen.getByText('3 dates').closest('span')
         expect(
-          within(numberOfStocks).queryByText('2 dates épuisées')
+          screen.queryByText('2 dates épuisées', { selector: 'span' })
         ).toBeInTheDocument()
       })
     })
