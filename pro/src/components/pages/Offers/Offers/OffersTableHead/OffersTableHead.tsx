@@ -1,8 +1,19 @@
 import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
-import PropTypes from 'prop-types'
 import React from 'react'
 import StatusFiltersButton from './StatusFiltersButton'
+import { TSearchFilters } from 'core/Offers/types'
+import { searchFiltersSelector } from 'store/offers/selectors'
 import { useSelector } from 'react-redux'
+
+type OffersTableHeadProps = {
+  applyFilters: () => void
+  areAllOffersSelected: boolean
+  areOffersPresent: boolean
+  filters: TSearchFilters
+  isAdminForbidden: (searchFilters: TSearchFilters) => boolean
+  selectAllOffers: () => void
+  updateStatusFilter: () => void
+}
 
 const OffersTableHead = ({
   areAllOffersSelected,
@@ -12,8 +23,8 @@ const OffersTableHead = ({
   applyFilters,
   selectAllOffers,
   updateStatusFilter,
-}) => {
-  const savedSearchFilters = useSelector(state => state.offers.searchFilters)
+}: OffersTableHeadProps): JSX.Element => {
+  const savedSearchFilters = useSelector(searchFiltersSelector)
 
   return (
     <thead>
@@ -62,18 +73,6 @@ const OffersTableHead = ({
       </tr>
     </thead>
   )
-}
-
-OffersTableHead.propTypes = {
-  applyFilters: PropTypes.func.isRequired,
-  areAllOffersSelected: PropTypes.bool.isRequired,
-  areOffersPresent: PropTypes.bool.isRequired,
-  filters: PropTypes.shape({
-    status: PropTypes.string,
-  }).isRequired,
-  isAdminForbidden: PropTypes.func.isRequired,
-  selectAllOffers: PropTypes.func.isRequired,
-  updateStatusFilter: PropTypes.func.isRequired,
 }
 
 export default OffersTableHead
