@@ -1,1 +1,1 @@
-export { default } from './RadioGroup'
+export { default, Direction } from './RadioGroup'

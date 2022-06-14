@@ -1,9 +1,10 @@
 import { FormikProvider, useFormik } from 'formik'
-import { RadioGroup, SubmitButton } from 'ui-kit'
 
 import FormLayout from 'new_components/FormLayout'
 import { Link } from 'react-router-dom'
+import RadioGroup from 'ui-kit/form/RadioGroup'
 import React from 'react'
+import { SubmitButton } from 'ui-kit'
 import styles from './CollectiveOfferVisibility.module.scss'
 
 const CollectiveOfferVisibility = () => {
