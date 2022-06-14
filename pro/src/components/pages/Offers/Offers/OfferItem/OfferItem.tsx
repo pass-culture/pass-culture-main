@@ -18,7 +18,7 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { pluralize } from 'utils/pluralize'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 
-type OfferItemProps = {
+export type OfferItemProps = {
   disabled?: boolean
   isSelected?: boolean
   offer: Offer
