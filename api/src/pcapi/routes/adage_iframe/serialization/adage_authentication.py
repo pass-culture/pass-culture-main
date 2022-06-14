@@ -26,6 +26,7 @@ class AuthenticatedInformation(BaseModel):
 
 class AuthenticatedResponse(BaseModel):
     role: AdageFrontRoles
+    uai: Optional[str]
 
     class Config:
         use_enum_values = True

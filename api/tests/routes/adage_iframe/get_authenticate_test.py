@@ -34,7 +34,10 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert response.json == {"role": "redactor"}
+        assert response.json == {
+            "role": "redactor",
+            "uai": self.valid_user.get("uai"),
+        }
 
     def test_should_return_readonly_role_when_token_has_no_uai_code(self, app):
         # Given
@@ -48,7 +51,10 @@ class Returns200Test:
 
         # Then
         assert response.status_code == 200
-        assert response.json == {"role": "readonly"}
+        assert response.json == {
+            "role": "readonly",
+            "uai": None,
+        }
 
 
 class ReturnsErrorTest:
@@ -72,7 +78,8 @@ class ReturnsErrorTest:
             expiration_date=expiration_date,
         )
 
-    def _create_adage_invalid_token(self) -> ByteString:
+    @staticmethod
+    def _create_adage_invalid_token() -> ByteString:
         return create_adage_jwt_fake_invalid_token(
             civility="M.", lastname="TESTABLE", firstname="Pascal", email="pascal.testable@example.com", uai="321UAE"
         )
