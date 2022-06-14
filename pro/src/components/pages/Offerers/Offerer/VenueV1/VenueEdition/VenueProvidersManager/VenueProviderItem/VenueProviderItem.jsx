@@ -1,11 +1,11 @@
 import './VenueProviderItem.scss'
 
+import { isAllocineProvider, isCinemaProvider } from 'components/pages/Offers/domain/localProvider'
 import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { formatLocalTimeDateString } from 'utils/timezone'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 import { pluralize } from 'utils/pluralize'
 
 const VenueProviderItem = ({
@@ -17,7 +17,7 @@ const VenueProviderItem = ({
     venueProvider
   const providerInfo = getProviderInfo(provider.name)
   const shouldDisplayProviderInformations =
-    isAllocineProvider(provider) || lastSyncDate
+    isAllocineProvider(provider) || isCinemaProvider(provider) || lastSyncDate
 
   return (
     <li className="venue-provider-row">

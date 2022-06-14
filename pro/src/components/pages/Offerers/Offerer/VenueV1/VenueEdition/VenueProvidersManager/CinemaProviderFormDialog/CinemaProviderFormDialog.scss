@@ -1,0 +1,35 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
+.cinema-provider-form-dialog {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: rem.torem(504px);
+  text-align: left;
+
+  .title {
+    @include fonts.gabarit();
+  }
+
+  .explanation {
+    margin-top: rem.torem(24px);
+  }
+
+  .cinema-provider-form {
+    margin-top: rem.torem(32px);
+
+    .actions {
+      display: flex;
+      justify-content: center;
+      margin-top: rem.torem(16px);
+
+      button {
+        margin: 0 rem.torem(16px);
+        padding: 0 rem.torem(80px);
+      }
+    }
+  }
+}
