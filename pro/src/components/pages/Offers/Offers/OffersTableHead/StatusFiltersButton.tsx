@@ -6,17 +6,25 @@ import React, { Fragment, useState } from 'react'
 
 import Icon from 'components/layout/Icon'
 import { OffersStatusFiltersModal } from '../OffersStatusFiltersModal/OffersStatusFiltersModal'
-import PropTypes from 'prop-types'
+
+type StatusFiltersButtonProps = {
+  applyFilters: () => void
+  disabled?: boolean
+  status?: string
+  updateStatusFilter: () => void
+}
 
 const StatusFiltersButton = ({
-  disabled,
+  disabled = false,
   applyFilters,
   status,
   updateStatusFilter,
-}) => {
+}: StatusFiltersButtonProps) => {
   const [isStatusFiltersVisible, setIsStatusFiltersVisible] = useState(false)
 
-  const isFilteredByStatus = OFFER_STATUS_LIST.includes(status)
+  const isFilteredByStatus = Boolean(
+    status && OFFER_STATUS_LIST.includes(status)
+  )
 
   function toggleStatusFiltersVisibility() {
     setIsStatusFiltersVisible(!isStatusFiltersVisible)
@@ -53,15 +61,3 @@ const StatusFiltersButton = ({
 }
 
 export default StatusFiltersButton
-
-StatusFiltersButton.defaultProps = {
-  disabled: false,
-  status: null,
-}
-
-StatusFiltersButton.propTypes = {
-  applyFilters: PropTypes.func.isRequired,
-  disabled: PropTypes.bool,
-  status: PropTypes.string,
-  updateStatusFilter: PropTypes.func.isRequired,
-}
