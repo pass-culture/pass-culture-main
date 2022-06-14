@@ -216,8 +216,8 @@ describe('src | components | pages | Offers | OfferItem', () => {
       expect(screen.getByText('Offre collective')).toBeInTheDocument()
     })
 
-    describe('offer remaining quantity', () => {
-      it('should be 0 when offer has no stock', () => {
+    describe('offer remaining quantity or institution', () => {
+      it('should be 0 when individual offer has no stock', () => {
         // when
         renderOfferItem(props, store)
 
@@ -225,7 +225,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(screen.queryByText('0')).toBeInTheDocument()
       })
 
-      it('should be the sum of offer stocks remaining quantity', () => {
+      it('should be the sum of individual offer stocks remaining quantity', () => {
         // given
         props.offer.stocks = [
           { remainingQuantity: 0 },
@@ -240,7 +240,7 @@ describe('src | components | pages | Offers | OfferItem', () => {
         expect(screen.queryByText('5')).toBeInTheDocument()
       })
 
-      it('should be "illimité" when at least one stock is unlimited', () => {
+      it('should be "illimité" when at least one stock of the individual offer is unlimited', () => {
         // given
         props.offer.stocks = [
           { remainingQuantity: 0 },
@@ -252,6 +252,59 @@ describe('src | components | pages | Offers | OfferItem', () => {
 
         // then
         expect(screen.queryByText('Illimité')).toBeInTheDocument()
+      })
+
+      it('should display "Tous les établissements" when offer is collective and is not assigned to a specific institution', () => {
+        // given
+        props.audience = Audience.COLLECTIVE
+        props.offer.educationalInstitution = null
+        store = configureTestStore({
+          features: {
+            initialized: true,
+            list: [
+              {
+                nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
+                isActive: true,
+              },
+            ],
+          },
+        })
+
+        // when
+        renderOfferItem(props, store)
+
+        // then
+        expect(
+          screen.queryByText('Tous les établissements')
+        ).toBeInTheDocument()
+      })
+
+      it('should display "Tous les établissements" when offer is collective and is assigned to a specific institution', () => {
+        // given
+        props.audience = Audience.COLLECTIVE
+        props.offer.educationalInstitution = {
+          id: 1,
+          name: 'Collège Bellevue',
+          city: 'Alès',
+          postalCode: '30100',
+        }
+        store = configureTestStore({
+          features: {
+            initialized: true,
+            list: [
+              {
+                nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
+                isActive: true,
+              },
+            ],
+          },
+        })
+
+        // when
+        renderOfferItem(props, store)
+
+        // then
+        expect(screen.queryByText('Collège Bellevue')).toBeInTheDocument()
       })
     })
 
