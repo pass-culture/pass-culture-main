@@ -12,7 +12,6 @@ import Spinner from 'components/layout/Spinner'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 
 type OffersProps = {
   applyFilters: () => void
@@ -67,7 +66,6 @@ const Offers = ({
     },
     [currentUser.isAdmin]
   )
-  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const updateStatusFilter = useCallback(
     (selectedStatus: string) => {
@@ -99,9 +97,7 @@ const Offers = ({
     (offerId: string, selected: boolean, isTemplate: boolean) => {
       setSelectedOfferIds(currentSelectedIds => {
         const newSelectedOfferIds = [...currentSelectedIds]
-        const id = isNewModelEnabled
-          ? `${isTemplate ? 'T-' : ''}${offerId}`
-          : offerId
+        const id = `${isTemplate ? 'T-' : ''}${offerId}`
         if (selected) {
           newSelectedOfferIds.push(id)
         } else {
