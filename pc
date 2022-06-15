@@ -318,7 +318,7 @@ elif [[ "$CMD" == "tag" ]]; then
 
     # TAG API
     cd "$ROOT_PATH"/api
-    echo "$TAG_VERSION" >version.txt
+    echo "$TAG_VERSION" > version.txt
     git add version.txt
 
     # TAG PRO
@@ -335,6 +335,8 @@ elif [[ "$CMD" == "tag" ]]; then
     git checkout -b "maint/v$TAG_ITERATION"
     git push origin "maint/v$TAG_ITERATION"
     # alembic revision -m "post tag $TAG_VERSION" --head=pre@head --depends-on=post@head
+    git reset --hard HEAD~1 # Cleanup for the generated commit used for tagging the version
+
 
     echo "New version tagged : $TAG_NAME"
 
