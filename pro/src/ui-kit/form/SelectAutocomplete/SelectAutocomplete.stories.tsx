@@ -28,7 +28,11 @@ const validationSchema = yup.object().shape({
 })
 
 const Template: Story<Args> = args => (
-  <Formik initialValues={args.initialValues} onSubmit={() => {}} validationSchema={validationSchema}>
+  <Formik
+    initialValues={args.initialValues}
+    onSubmit={() => {}}
+    validationSchema={validationSchema}
+  >
     <SelectAutocomplete {...args} />
   </Formik>
 )
@@ -68,4 +72,7 @@ export const Default = Template.bind({})
 Default.args = defaultProps
 
 export const WithDisabledOption = Template.bind({})
-WithDisabledOption.args = {...defaultProps, filterLabel: 'Résultats limités à 20 items'}
+WithDisabledOption.args = {
+  ...defaultProps,
+  filterLabel: 'Résultats limités à 20 items',
+}
