@@ -17,13 +17,14 @@
       fill: colors.$grey-light;
       position: absolute;
       right: 1rem;
-      top: -1.8rem;
+      bottom: rem.torem(8px);
       & img {
-        width: rem.torem(1rem);
+        width: rem.torem(20px);
       }
       &-is-closed {
         transform: rotate(180deg);
       }
+
     }
 
     .pellet {
@@ -78,4 +79,9 @@
   flex-wrap: wrap;
   gap: 8px;
   padding-top: 8px;
+}
+
+.multi-select-autocomplete-placeholder-input::placeholder {
+  font-style: normal;
+  color: colors.$black;
 }

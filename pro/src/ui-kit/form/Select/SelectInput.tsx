@@ -14,6 +14,7 @@ interface ISelectInputProps {
   options: Option[]
   disabled?: boolean
   hasError?: boolean
+  value: string
 }
 
 const SelectInput = ({
@@ -29,6 +30,7 @@ const SelectInput = ({
       aria-invalid={hasError}
       className={cn(styles['select-input'], {
         [styles['has-error']]: hasError,
+        [styles['select-input-placeholder']]: field.value === '',
       })}
       disabled={disabled}
       id={name}
