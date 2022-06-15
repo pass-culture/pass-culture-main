@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dataclasses import asdict
 import datetime
 from decimal import Decimal
@@ -12,6 +13,7 @@ import sqlalchemy as sa
 from pcapi import settings
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
+from pcapi.core.fraud import models as fraud_models
 from pcapi.core.fraud.common import models as common_fraud_models
 from pcapi.core.mails.transactional.pro.email_validation import send_email_validation_to_pro_email
 from pcapi.core.mails.transactional.users import reset_password
@@ -24,13 +26,12 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 from pcapi.core.users import external as users_external
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
-from pcapi.core.users.external import update_external_pro
-from pcapi.core.users.external import update_external_user
-from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
+from pcapi.models.beneficiary_import import BeneficiaryImport
+from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
@@ -816,3 +817,93 @@ def skip_phone_validation_step(user: models.User) -> None:
 
     user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name
     repository.save(user)
+
+
+EMAIL_CHANGE_ACTIONS = defaultdict(
+    lambda: "action de changement d'email inconnue",
+    {
+        models.EmailHistoryEventTypeEnum.UPDATE_REQUEST: "demande de changement d'email",
+        models.EmailHistoryEventTypeEnum.VALIDATION: "validation de changement d'email",
+        models.EmailHistoryEventTypeEnum.ADMIN_VALIDATION: "validation (admin) de changement d'email",
+    },
+)
+SUSPENSION_ACTIONS = defaultdict(
+    lambda: "action de suspension inconnue",
+    {
+        models.SuspensionEventType.SUSPENDED: "désactivation de compte",
+        models.SuspensionEventType.UNSUSPENDED: "réactivation de compte",
+    },
+)
+
+
+def public_account_history(user: models.User) -> list[dict]:
+    # TODO (ASK, 2022-06-10): à ajouter un jour:
+    #  - les commentaires sur l'utlisateur, horodatés et attribués à leur auteur
+    #    (pas possible avec simplement un champs texte `comment` sur le modèle `User`)
+    #  - l'horodatage et l'attribution de chaque modification de donnée utilisateur
+    #    (pas possible en l'état car on ne garde pas de trace de ces changements à part pour l'email)
+    email_changes = models.UserEmailHistory.query.filter_by(userId=user.id).all()
+    suspensions = models.UserSuspension.query.filter_by(userId=user.id).all()
+    fraud_checks = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).all()
+    reviews = fraud_models.BeneficiaryFraudReview.query.filter_by(userId=user.id).all()
+    imports = BeneficiaryImport.query.filter_by(beneficiaryId=user.id).join(BeneficiaryImportStatus).all()
+
+    email_changes_history = [
+        {
+            "action": EMAIL_CHANGE_ACTIONS[change.eventType],
+            "datetime": change.creationDate,
+            "message": f"de {change.oldUserEmail}@{change.oldDomainEmail} à {change.newUserEmail}@{change.newDomainEmail}",
+        }
+        for change in email_changes
+    ]
+
+    suspensions_history = [
+        {
+            "action": SUSPENSION_ACTIONS[suspension.eventType],
+            "datetime": suspension.eventDate,
+            "message": (
+                f"par {suspension.actorUser.publicName}: "
+                f"{getattr(suspension.reasonCode, 'value', '[aucun motif renseigné]')}"
+            ),
+        }
+        for suspension in suspensions
+    ]
+
+    fraud_checks_history = [
+        {
+            "action": "fraud check",
+            "datetime": check.dateCreated,
+            "message": (
+                f"{check.type.value}, {getattr(check.eligibilityType, 'value', '[éligibilité inconnue]')}, "
+                f"{check.status.value}, {getattr(check.reasonCodes, 'value', '[raison inconnue]')}, {check.reason}"
+            ),
+        }
+        for check in fraud_checks
+    ]
+
+    reviews_history = [
+        {
+            "action": "revue manuelle",
+            "datetime": review.dateReviewed,
+            "message": f"revue {review.review.value} par {review.author.publicName}: {review.reason}",
+        }
+        for review in reviews
+    ]
+
+    imports_history = [
+        {
+            "action": f"import {import_.source}",
+            "datetime": status.date,
+            "message": f"par {status.author.publicName}: {status.status.value} ({status.detail})",
+        }
+        for import_ in imports
+        for status in import_.statuses
+    ]
+
+    history = sorted(
+        email_changes_history + suspensions_history + fraud_checks_history + reviews_history + imports_history,
+        key=lambda item: item["datetime"],
+        reverse=True,
+    )
+
+    return history
