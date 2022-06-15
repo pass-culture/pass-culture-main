@@ -599,7 +599,7 @@ def _get_filtered_collective_bookings_query(
     if not pro_user.has_admin_role:
         collective_bookings_query = collective_bookings_query.filter(UserOfferer.user == pro_user)
 
-    collective_bookings_query = collective_bookings_query.filter(UserOfferer.validationToken.is_(None))
+    collective_bookings_query = collective_bookings_query.filter(UserOfferer.isValidated)
 
     if period:
         period_attribute_filter = (
@@ -912,7 +912,7 @@ def get_query_for_collective_offers_by_ids_for_user(user: User, ids: Iterable[in
         query = query.join(Venue, educational_models.CollectiveOffer.venue)
         query = query.join(Offerer, Venue.managingOfferer)
         query = query.join(UserOfferer, Offerer.UserOfferers)
-        query = query.filter(and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None)))
+        query = query.filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
     query = query.filter(educational_models.CollectiveOffer.id.in_(ids))
     return query
 
@@ -923,7 +923,7 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: It
         query = query.join(Venue, educational_models.CollectiveOfferTemplate.venue)
         query = query.join(Offerer, Venue.managingOfferer)
         query = query.join(UserOfferer, Offerer.UserOfferers)
-        query = query.filter(and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None)))
+        query = query.filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
     query = query.filter(educational_models.CollectiveOfferTemplate.id.in_(ids))
     return query
 

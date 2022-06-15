@@ -51,14 +51,16 @@ def get_all_offerers_for_user(
     if not user.has_admin_role:
         user_offerer_filters = [models.UserOfferer.userId == user.id]
         if not include_non_validated_user_offerers:
-            user_offerer_filters.append(models.UserOfferer.validationToken.is_(None))
+            user_offerer_filters.append(models.UserOfferer.isValidated)
         query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
 
     if validated is not None:
         if validated:
-            query = query.filter(models.Offerer.validationToken.is_(None))
+            query = query.filter(models.Offerer.isValidated)
         else:
-            query = query.filter(models.Offerer.validationToken.isnot(None))
+            query = query.filter(
+                ~models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
+            )
 
     if keywords:
         query = filter_offerers_with_keywords_string(query, keywords)
@@ -137,14 +139,16 @@ def get_filtered_venues(
     if not user_is_admin:
         query = query.filter(
             models.UserOfferer.userId == pro_user_id,
-            models.UserOfferer.validationToken.is_(None),
+            models.UserOfferer.isValidated,
         )
 
     if validated_offerer is not None:
         if validated_offerer:
-            query = query.filter(models.Offerer.validationToken.is_(None))
+            query = query.filter(models.Offerer.isValidated)
         else:
-            query = query.filter(models.Offerer.validationToken.isnot(None))
+            query = query.filter(
+                ~models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
+            )
 
     if active_offerers_only:
         query = query.filter(models.Offerer.isActive.is_(True))
@@ -182,7 +186,7 @@ def find_all_user_offerers_by_offerer_id(offerer_id: int) -> list[models.UserOff
 
 
 def filter_query_where_user_is_user_offerer_and_is_validated(query, user):  # type: ignore [no-untyped-def]
-    return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.validationToken.is_(None))
+    return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.isValidated)
 
 
 def find_venue_by_id(venue_id: int) -> Optional[models.Venue]:

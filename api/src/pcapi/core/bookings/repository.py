@@ -488,7 +488,7 @@ def _get_filtered_bookings_query(
     if not pro_user.has_admin_role:
         bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
 
-    bookings_query = bookings_query.filter(UserOfferer.validationToken.is_(None))
+    bookings_query = bookings_query.filter(UserOfferer.isValidated)
 
     if remove_educational_bookings:
         bookings_query = bookings_query.filter(Booking.educationalBookingId.is_(None))

@@ -289,7 +289,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     @property
     def isReleased(self) -> bool:
-        return self.isValidated and self.managingOfferer.isActive and self.managingOfferer.isValidated
+        return self.isValidated and self.managingOfferer.isActive and self.managingOfferer.isValidated  # type: ignore [return-value]
 
     @hybrid_property
     def timezone(self) -> str:

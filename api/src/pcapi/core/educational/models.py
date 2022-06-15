@@ -175,7 +175,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
     @property
     def isReleased(self) -> bool:
         return (
-            self.isActive
+            self.isActive  # type: ignore [return-value]
             and self.validation == OfferValidationStatus.APPROVED
             and self.venue.isValidated
             and self.venue.managingOfferer.isActive
@@ -346,7 +346,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
     @property
     def isReleased(self) -> bool:
         return (
-            self.isActive
+            self.isActive  # type: ignore [return-value]
             and self.validation == OfferValidationStatus.APPROVED
             and self.venue.isValidated
             and self.venue.managingOfferer.isActive

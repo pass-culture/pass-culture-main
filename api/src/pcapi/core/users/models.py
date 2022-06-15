@@ -288,9 +288,9 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
             return True
         return db.session.query(
             UserOfferer.query.filter(
-                (UserOfferer.offererId == offerer_id)
-                & (UserOfferer.userId == self.id)
-                & (UserOfferer.validationToken.is_(None))
+                UserOfferer.offererId == offerer_id,
+                UserOfferer.userId == self.id,
+                UserOfferer.isValidated,
             ).exists()
         ).scalar()
 

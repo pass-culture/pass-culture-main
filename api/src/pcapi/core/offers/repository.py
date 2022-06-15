@@ -103,9 +103,7 @@ def get_capped_offers_for_filters(
 def get_offers_by_ids(user: User, offer_ids: list[int]) -> BaseQuery:
     query = Offer.query
     if not user.has_admin_role:
-        query = query.join(Venue, Offerer, UserOfferer).filter(
-            and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
-        )
+        query = query.join(Venue, Offerer, UserOfferer).filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
     query = query.filter(Offer.id.in_(offer_ids))
     return query
 
@@ -113,9 +111,7 @@ def get_offers_by_ids(user: User, offer_ids: list[int]) -> BaseQuery:
 def get_collective_offers_by_offer_ids(user: User, offer_ids: list[int]) -> BaseQuery:
     query = CollectiveOffer.query
     if not user.has_admin_role:
-        query = query.join(Venue, Offerer, UserOfferer).filter(
-            and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
-        )
+        query = query.join(Venue, Offerer, UserOfferer).filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
     query = query.filter(CollectiveOffer.offerId.in_(offer_ids))
     return query
 
@@ -123,9 +119,7 @@ def get_collective_offers_by_offer_ids(user: User, offer_ids: list[int]) -> Base
 def get_collective_offers_template_by_offer_ids(user: User, offer_ids: list[int]) -> BaseQuery:
     query = CollectiveOfferTemplate.query
     if not user.has_admin_role:
-        query = query.join(Venue, Offerer, UserOfferer).filter(
-            and_(UserOfferer.userId == user.id, UserOfferer.validationToken.is_(None))
-        )
+        query = query.join(Venue, Offerer, UserOfferer).filter(UserOfferer.userId == user.id, UserOfferer.isValidated)
     query = query.filter(CollectiveOfferTemplate.offerId.in_(offer_ids))
     return query
 
@@ -149,7 +143,7 @@ def get_offers_by_filters(
             query.join(Venue)
             .join(Offerer)
             .join(UserOfferer)
-            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+            .filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
         )
     if offerer_id is not None:
         if user_is_admin:
@@ -206,9 +200,7 @@ def get_offers_by_filters(
             subquery = subquery.filter(Venue.managingOffererId == offerer_id)
         elif not user_is_admin:
             subquery = (
-                subquery.join(Offerer)
-                .join(UserOfferer)
-                .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+                subquery.join(Offerer).join(UserOfferer).filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
             )
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.offerId == Offer.id)
@@ -233,7 +225,7 @@ def get_collective_offers_by_filters(
             query.join(Venue)
             .join(Offerer)
             .join(UserOfferer)
-            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+            .filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
         )
     if offerer_id is not None:
         if user_is_admin:
@@ -285,9 +277,7 @@ def get_collective_offers_by_filters(
             subquery = subquery.filter(Venue.managingOffererId == offerer_id)
         elif not user_is_admin:
             subquery = (
-                subquery.join(Offerer)
-                .join(UserOfferer)
-                .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+                subquery.join(Offerer).join(UserOfferer).filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
             )
         q2 = subquery.subquery()
         query = query.join(q2, q2.c.collectiveOfferId == CollectiveOffer.id)
@@ -315,7 +305,7 @@ def get_collective_offers_template_by_filters(
             query.join(Venue)
             .join(Offerer)
             .join(UserOfferer)
-            .filter(and_(UserOfferer.userId == user_id, UserOfferer.validationToken.is_(None)))
+            .filter(UserOfferer.userId == user_id, UserOfferer.isValidated)
         )
     if offerer_id is not None:
         if user_is_admin:
@@ -595,7 +585,8 @@ def delete_past_draft_offers() -> None:
 def delete_past_draft_collective_offers() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
     CollectiveOffer.query.filter(
-        and_(CollectiveOffer.dateCreated < yesterday, CollectiveOffer.validation == OfferValidationStatus.DRAFT)
+        CollectiveOffer.dateCreated < yesterday,
+        CollectiveOffer.validation == OfferValidationStatus.DRAFT,
     ).delete()
     db.session.commit()
 
