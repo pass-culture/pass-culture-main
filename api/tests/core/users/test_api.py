@@ -1,6 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import timedelta
+import datetime
 from decimal import Decimal
 from typing import Optional
 
@@ -27,8 +25,6 @@ from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users import testing as sendinblue_testing
-from pcapi.core.users.constants import SuspensionEventType
-from pcapi.core.users.factories import UserFactory
 from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
@@ -45,9 +41,11 @@ class GenerateAndSaveTokenTest:
     def test_generate_and_save_token(self, app):
         user = users_factories.UserFactory(email="py@test.com")
         token_type = users_models.TokenType.RESET_PASSWORD
-        life_time = timedelta(hours=24)
+        life_time = datetime.timedelta(hours=24)
 
-        generated_token = users_api.generate_and_save_token(user, token_type, expiration=datetime.utcnow() + life_time)
+        generated_token = users_api.generate_and_save_token(
+            user, token_type, expiration=datetime.datetime.utcnow() + life_time
+        )
 
         saved_token = users_models.Token.query.filter_by(user=user).first()
 
@@ -79,7 +77,7 @@ class ValidateJwtTokenTest:
     def test_get_user_with_valid_token(self):
         user = users_factories.UserFactory()
         token_type = users_models.TokenType.RESET_PASSWORD
-        expiration_date = datetime.utcnow() + timedelta(hours=24)
+        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
 
         saved_token = users_factories.TokenFactory(
             user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
@@ -93,7 +91,7 @@ class ValidateJwtTokenTest:
     def test_get_user_and_mark_token_as_used(self):
         user = users_factories.UserFactory()
         token_type = users_models.TokenType.RESET_PASSWORD
-        expiration_date = datetime.utcnow() + timedelta(hours=24)
+        expiration_date = datetime.datetime.utcnow() + datetime.timedelta(hours=24)
 
         saved_token = users_factories.TokenFactory(
             user=user, value=self.token_value, type=token_type, expirationDate=expiration_date
@@ -142,7 +140,7 @@ class ValidateJwtTokenTest:
         user = users_factories.UserFactory()
         token_type = users_models.TokenType.RESET_PASSWORD
 
-        expiration_date = datetime.utcnow() - timedelta(hours=24)
+        expiration_date = datetime.datetime.utcnow() - datetime.timedelta(hours=24)
         users_factories.TokenFactory(user=user, value=self.token_value, type=token_type, expirationDate=expiration_date)
 
         assert users_models.Token.query.filter_by(value=self.token_value).first() is not None
@@ -156,15 +154,15 @@ class DeleteExpiredTokensTest:
     def test_deletion(self):
         user = users_factories.UserFactory()
         token_type = users_models.TokenType.RESET_PASSWORD
-        life_time = timedelta(hours=24)
+        life_time = datetime.timedelta(hours=24)
 
         never_expire_token = users_api.generate_and_save_token(user, token_type)
         not_expired_token = users_api.generate_and_save_token(
-            user, token_type, expiration=datetime.utcnow() + life_time
+            user, token_type, expiration=datetime.datetime.utcnow() + life_time
         )
         # Generate an expired token
-        with freeze_time(datetime.utcnow() - life_time):
-            users_api.generate_and_save_token(user, token_type, expiration=datetime.utcnow() + life_time)
+        with freeze_time(datetime.datetime.utcnow() - life_time):
+            users_api.generate_and_save_token(user, token_type, expiration=datetime.datetime.utcnow() + life_time)
 
         users_api.delete_expired_tokens()
 
@@ -185,8 +183,8 @@ class DeleteUserTokenTest:
         assert users_models.Token.query.one_or_none() == other_token
 
 
-def _datetime_within_last_5sec(when: datetime) -> bool:
-    return datetime.utcnow() - relativedelta(seconds=5) < when < datetime.utcnow()
+def _datetime_within_last_5sec(when: datetime.datetime) -> bool:
+    return datetime.datetime.utcnow() - relativedelta(seconds=5) < when < datetime.datetime.utcnow()
 
 
 def _assert_user_suspension_history(
@@ -227,12 +225,12 @@ class SuspendAccountTest:
         assert not UserSession.query.filter_by(userId=user.id).first()
         assert actor.isActive
 
-        _assert_user_suspension_history(user, SuspensionEventType.SUSPENDED, reason, actor)
+        _assert_user_suspension_history(user, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
 
     def test_suspend_beneficiary(self):
         user = users_factories.BeneficiaryGrant18Factory()
         cancellable_booking = bookings_factories.IndividualBookingFactory(individualBooking__user=user)
-        yesterday = datetime.utcnow() - timedelta(days=1)
+        yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         confirmed_booking = bookings_factories.IndividualBookingFactory(
             individualBooking__user=user, cancellation_limit_date=yesterday, status=BookingStatus.CONFIRMED
         )
@@ -254,7 +252,7 @@ class SuspendAccountTest:
         assert confirmed_booking.status is BookingStatus.CANCELLED
         assert used_booking.status is BookingStatus.USED
 
-        _assert_user_suspension_history(user, SuspensionEventType.SUSPENDED, reason, actor)
+        _assert_user_suspension_history(user, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
 
     def test_suspend_pro(self):
         booking = bookings_factories.IndividualBookingFactory()
@@ -267,7 +265,7 @@ class SuspendAccountTest:
         assert not pro.isActive
         assert booking.status is BookingStatus.CANCELLED
 
-        _assert_user_suspension_history(pro, SuspensionEventType.SUSPENDED, reason, actor)
+        _assert_user_suspension_history(pro, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
 
     def test_suspend_pro_with_other_offerer_users(self):
         booking = bookings_factories.IndividualBookingFactory()
@@ -281,7 +279,7 @@ class SuspendAccountTest:
         assert not pro.isActive
         assert booking.status is not BookingStatus.CANCELLED
 
-        _assert_user_suspension_history(pro, SuspensionEventType.SUSPENDED, reason, actor)
+        _assert_user_suspension_history(pro, users_constants.SuspensionEventType.SUSPENDED, reason, actor)
 
 
 class UnsuspendAccountTest:
@@ -296,7 +294,7 @@ class UnsuspendAccountTest:
         assert user.isActive
 
         _assert_user_suspension_history(
-            user, SuspensionEventType.UNSUSPENDED, None, suspension.actorUser, expected_history_length=2
+            user, users_constants.SuspensionEventType.UNSUSPENDED, None, suspension.actorUser, expected_history_length=2
         )
 
     def test_bulk_unsuspend_account(self):
@@ -323,7 +321,7 @@ class UnsuspendAccountTest:
         }
         for event in user_unsuspensions:
             assert event.actorUserId == actor.id
-            assert event.eventType == SuspensionEventType.UNSUSPENDED
+            assert event.eventType == users_constants.SuspensionEventType.UNSUSPENDED
             assert _datetime_within_last_5sec(event.eventDate)
 
 
@@ -398,7 +396,7 @@ class ChangeUserEmailTest:
 
 
 class CreateBeneficiaryTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
 
     def test_with_eligible_user(self):
         user = users_factories.UserFactory(roles=[], dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
@@ -410,13 +408,15 @@ class CreateBeneficiaryTest:
         assert len(user.deposits) == 1
 
     def test_with_eligible_underage_user(self):
-        user = users_factories.UserFactory(roles=[], dateOfBirth=datetime.utcnow() - relativedelta(years=16, months=4))
+        user = users_factories.UserFactory(
+            roles=[], dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=16, months=4)
+        )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
             status=fraud_models.FraudCheckStatus.OK,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
-            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.utcnow()),
+            resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
         )
         user = subscription_api.activate_beneficiary(user)
         assert user.has_underage_beneficiary_role
@@ -458,7 +458,7 @@ class CreateBeneficiaryTest:
 
 
 class FulfillBeneficiaryDataTest:
-    AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    AGE18_ELIGIBLE_BIRTH_DATE = datetime.datetime.utcnow() - relativedelta(years=18, months=4)
 
     def test_fill_user_with_password_token_and_deposit(self):
         # given
@@ -642,7 +642,7 @@ class DomainsCreditTest:
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
 
-        with freeze_time(datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, days=2)):
+        with freeze_time(datetime.datetime.utcnow() + relativedelta(years=GRANT_18_VALIDITY_IN_YEARS, days=2)):
             assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
                 all=users_models.Credit(initial=Decimal(300), remaining=Decimal(0)),
                 digital=users_models.Credit(initial=Decimal(100), remaining=Decimal(0)),
@@ -690,7 +690,7 @@ class CreateProUserTest:
 
 class BeneficiaryInformationUpdateTest:
     def test_update_user_information_from_dms(self):
-        user = UserFactory(
+        user = users_factories.UserFactory(
             activity=None,
             address=None,
             city=None,
@@ -704,14 +704,14 @@ class BeneficiaryInformationUpdateTest:
             first_name="Jane",
             activity="Lycéen",
             civility=dms_models.Civility.MME,
-            birth_date=date(2000, 5, 1),
+            birth_date=datetime.date(2000, 5, 1),
             email="jane.doe@test.com",
             phone="0612345678",
             postal_code="67200",
             address="11 Rue du Test",
             application_number=123,
             procedure_id=98012,
-            registration_datetime=datetime(2020, 5, 1),
+            registration_datetime=datetime.datetime(2020, 5, 1),
         )
 
         # when
@@ -724,7 +724,7 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.phoneNumber == "0612345678"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
-        assert beneficiary.dateOfBirth == datetime(2000, 5, 1, 0, 0)
+        assert beneficiary.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)
         assert not beneficiary.has_beneficiary_role
         assert not beneficiary.has_admin_role
         assert beneficiary.password is not None
@@ -733,29 +733,29 @@ class BeneficiaryInformationUpdateTest:
         assert not beneficiary.deposits
 
     def test_update_user_information_from_educonnect(self):
-        user = UserFactory(
+        user = users_factories.UserFactory(
             firstName=None,
             lastName=None,
         )
         educonnect_data = fraud_factories.EduconnectContentFactory(
             first_name="Raoul",
             last_name="Dufy",
-            birth_date=date(2000, 5, 1),
+            birth_date=datetime.date(2000, 5, 1),
             ine_hash="identifiantnati0naleleve",
         )
         new_user = users_api.update_user_information_from_external_source(user, educonnect_data)
 
         assert new_user.firstName == "Raoul"
         assert new_user.lastName == "Dufy"
-        assert new_user.dateOfBirth == datetime(2000, 5, 1, 0, 0)
+        assert new_user.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)
         assert new_user.ineHash == "identifiantnati0naleleve"
 
     def test_update_user_information_from_ubble(self):
-        user = UserFactory(civility=None)
+        user = users_factories.UserFactory(civility=None)
         ubble_data = fraud_factories.UbbleContentFactory(
             first_name="Raoul",
             last_name="Dufy",
-            birth_date=date(2000, 5, 1).isoformat(),
+            birth_date=datetime.date(2000, 5, 1).isoformat(),
             id_document_number="123456789",
             gender="M",
         )
@@ -763,12 +763,12 @@ class BeneficiaryInformationUpdateTest:
 
         assert new_user.firstName == "Raoul"
         assert new_user.lastName == "Dufy"
-        assert new_user.dateOfBirth == datetime(2000, 5, 1, 0, 0)
+        assert new_user.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)
         assert new_user.idPieceNumber == "123456789"
         assert new_user.civility == "M."
 
     def test_update_id_piece_number(self):
-        user = UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
+        user = users_factories.UserFactory(activity="Etudiant", postalCode="75001", idPieceNumber=None)
         dms_data = fraud_factories.DMSContentFactory(id_piece_number="140767100016")
 
         users_api.update_user_information_from_external_source(user, dms_data)
@@ -777,7 +777,7 @@ class BeneficiaryInformationUpdateTest:
     @override_features(ENABLE_PHONE_VALIDATION=True)
     def test_phone_number_does_not_update(self):
 
-        user = UserFactory(phoneNumber="+33611111111")
+        user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phoneNumber="+33622222222")
 
         users_api.update_user_information_from_external_source(user, dms_data)
@@ -787,7 +787,7 @@ class BeneficiaryInformationUpdateTest:
     @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_update_if_empty(self):
 
-        user = UserFactory(phoneNumber=None)
+        user = users_factories.UserFactory(phoneNumber=None)
         dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
 
         users_api.update_user_information_from_external_source(user, dms_data)
@@ -797,7 +797,7 @@ class BeneficiaryInformationUpdateTest:
     @override_features(ENABLE_PHONE_VALIDATION=False)
     def test_phone_number_does_not_update_if_not_empty(self):
 
-        user = UserFactory(phoneNumber="+33611111111")
+        user = users_factories.UserFactory(phoneNumber="+33611111111")
         dms_data = fraud_factories.DMSContentFactory(phone="+33622222222")
 
         users_api.update_user_information_from_external_source(user, dms_data)
@@ -805,7 +805,7 @@ class BeneficiaryInformationUpdateTest:
         assert user.phoneNumber == "+33611111111"
 
     def test_incomplete_data(self):
-        user = UserFactory(firstName="Julie")
+        user = users_factories.UserFactory(firstName="Julie")
         dms_data = fraud_factories.DMSContentFactory(birth_date=None)
 
         with pytest.raises(users_exceptions.IncompleteDataException):
@@ -817,57 +817,57 @@ class BeneficiaryInformationUpdateTest:
 class UpdateUserLastConnectionDateTest:
     @freeze_time("2021-9-20 11:11:11")
     def test_first_update(self):
-        user = UserFactory()
+        user = users_factories.UserFactory()
 
         users_api.update_last_connection_date(user)
 
         db.session.refresh(user)
 
-        assert user.lastConnectionDate == datetime(2021, 9, 20, 11, 11, 11)
+        assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @freeze_time("2021-9-20 01:11:11")
     def test_update_day_after(self):
-        user = UserFactory(lastConnectionDate=datetime(2021, 9, 19, 23, 00, 11))
+        user = users_factories.UserFactory(lastConnectionDate=datetime.datetime(2021, 9, 19, 23, 00, 11))
 
         users_api.update_last_connection_date(user)
 
         db.session.refresh(user)
 
-        assert user.lastConnectionDate == datetime(2021, 9, 20, 1, 11, 11)
+        assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 1, 11, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
     @freeze_time("2021-9-20 11:11:11")
     def test_update_same_day(self):
-        user = UserFactory(lastConnectionDate=datetime(2021, 9, 20, 9, 0))
+        user = users_factories.UserFactory(lastConnectionDate=datetime.datetime(2021, 9, 20, 9, 0))
 
         users_api.update_last_connection_date(user)
 
         db.session.refresh(user)
 
-        assert user.lastConnectionDate == datetime(2021, 9, 20, 11, 11, 11)
+        assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 11, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 0
 
     @freeze_time("2021-9-20 11:11:11")
     def test_no_update(self):
-        user = UserFactory(lastConnectionDate=datetime(2021, 9, 20, 11, 00, 11))
+        user = users_factories.UserFactory(lastConnectionDate=datetime.datetime(2021, 9, 20, 11, 00, 11))
 
         users_api.update_last_connection_date(user)
 
         db.session.refresh(user)
 
-        assert user.lastConnectionDate == datetime(2021, 9, 20, 11, 00, 11)
+        assert user.lastConnectionDate == datetime.datetime(2021, 9, 20, 11, 00, 11)
         assert len(sendinblue_testing.sendinblue_requests) == 0
 
 
 class GetEligibilityTest:
     def test_get_eligibility_at_date_timezones_tolerance(self):
-        date_of_birth = datetime(2000, 2, 1, 0, 0)
+        date_of_birth = datetime.datetime(2000, 2, 1, 0, 0)
 
-        specified_date = datetime(2019, 2, 1, 8, 0)
+        specified_date = datetime.datetime(2019, 2, 1, 8, 0)
         assert users_api.get_eligibility_at_date(date_of_birth, specified_date) == users_models.EligibilityType.AGE18
 
-        specified_date = datetime(2019, 2, 1, 12, 0)
+        specified_date = datetime.datetime(2019, 2, 1, 12, 0)
         assert users_api.get_eligibility_at_date(date_of_birth, specified_date) is None
 
 

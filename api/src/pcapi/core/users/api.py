@@ -24,6 +24,9 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 from pcapi.core.users import external as users_external
 from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
+from pcapi.core.users.external import update_external_pro
+from pcapi.core.users.external import update_external_user
+from pcapi.core.users.repository import find_user_by_email
 from pcapi.domain.password import random_hashed_password
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.models import db
