@@ -9,6 +9,7 @@ from typing import cast
 
 from flask_sqlalchemy import BaseQuery
 from pydantic.error_wrappers import ValidationError
+import sqlalchemy as sqla
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.elements import not_
 
@@ -70,7 +71,6 @@ from pcapi.routes.serialization.collective_stock_serialize import CollectiveStoc
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.utils.clean_accents import clean_accents
-from pcapi.utils.db import unaccent
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
@@ -481,8 +481,8 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
     venues = (
         offerers_models.Venue.query.filter(
             or_(
-                unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
-                unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
+                sqla.func.unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
+                sqla.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
             )
         )
         .filter(offerers_models.Venue.isVirtual.is_(False))
