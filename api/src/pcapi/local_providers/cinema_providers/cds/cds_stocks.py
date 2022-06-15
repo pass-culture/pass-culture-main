@@ -93,6 +93,18 @@ class CDSStocks(LocalProvider):
             obj.extraData = {}
         obj.extraData = {"visa": self.movie_information.visa}
 
+    def get_object_thumb(self) -> bytes:
+        if self.movie_information.posterpath:
+            image_url = self.movie_information.posterpath
+            return self._get_cds_movie_poster(image_url)
+        return bytes()
+
+    def get_object_thumb_index(self) -> int:
+        return 1
+
+    def get_keep_poster_ratio(self) -> bool:
+        return True
+
     def _get_cds_movies(self) -> list[Movie]:
         if not self.apiUrl:
             raise Exception("CDS API URL not configured in this env")
@@ -102,6 +114,16 @@ class CDSStocks(LocalProvider):
             cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
         )
         return client_cds.get_venue_movies()
+
+    def _get_cds_movie_poster(self, image_url: str) -> bytes:
+        if not self.apiUrl:
+            raise Exception("CDS API URL not configured in this env")
+        client_cds = CineDigitalServiceAPI(
+            cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            api_url=self.apiUrl,
+            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
+        )
+        return client_cds.get_movie_poster(image_url)
 
 
 def get_next_product_id_from_database():  # type: ignore [no-untyped-def]

@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -11,6 +12,9 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models.product import Product
+from pcapi.utils.human_ids import humanize
+
+import tests
 
 
 @pytest.mark.usefixtures("db_session")
@@ -26,8 +30,22 @@ class CDSStocksTest:
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         mocked_movies = [
-            Movie(id="123", title="Coupez !", duration=120, description="Ca tourne mal", visa="123456"),
-            Movie(id="51", title="Top Gun", duration=150, description="Film sur les avions", visa="333333"),
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
+            Movie(
+                id="51",
+                title="Top Gun",
+                duration=150,
+                description="Film sur les avions",
+                visa="333333",
+                posterpath="fakeUrl/topgun.png",
+            ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
 
@@ -50,7 +68,14 @@ class CDSStocksTest:
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         mocked_movies = [
-            Movie(id="123", title="Coupez !", duration=120, description="Ca tourne mal", visa="123456"),
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
 
@@ -83,8 +108,22 @@ class CDSStocksTest:
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         mocked_movies = [
-            Movie(id="123", title="Coupez !", duration=120, description="Ca tourne mal", visa="123456"),
-            Movie(id="51", title="Top Gun", duration=150, description="Film sur les avions", visa="333333"),
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
+            Movie(
+                id="51",
+                title="Top Gun",
+                duration=150,
+                description="Film sur les avions",
+                visa="333333",
+                posterpath="fakeUrl/topgun.png",
+            ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
         cds_stocks = CDSStocks(venue_provider=venue_provider)
@@ -107,8 +146,22 @@ class CDSStocksTest:
         )
         CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
         mocked_movies = [
-            Movie(id="123", title="Coupez !", duration=120, description="Ca tourne mal", visa="123456"),
-            Movie(id="51", title="Top Gun", duration=150, description="Film sur les avions", visa="333333"),
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
+            Movie(
+                id="51",
+                title="Top Gun",
+                duration=150,
+                description="Film sur les avions",
+                visa="333333",
+                posterpath="fakeUrl/topgun.png",
+            ),
         ]
         mock_get_venue_movies.return_value = mocked_movies
         cds_stocks = CDSStocks(venue_provider=venue_provider)
@@ -145,3 +198,57 @@ class CDSStocksTest:
         assert created_products[1].description == "Film sur les avions"
         assert created_products[1].durationMinutes == 150
         assert created_products[1].extraData == {"visa": "333333"}
+
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_movie_poster")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
+    def should_create_product_with_correct_thumb(self, mock_get_venue_movies, mocked_get_movie_poster):
+        # Given
+        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
+        venue_provider = VenueProviderFactory(provider=cds_provider, isDuoOffers=True)
+        cinema_provider_pivot = CinemaProviderPivotFactory(
+            venue=venue_provider.venue, idAtProvider=venue_provider.venueIdAtOfferProvider
+        )
+        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+        mocked_movies = [
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
+            Movie(
+                id="51",
+                title="Top Gun",
+                duration=150,
+                description="Film sur les avions",
+                visa="333333",
+                posterpath="fakeUrl/topgun.png",
+            ),
+        ]
+        mock_get_venue_movies.return_value = mocked_movies
+
+        file_path = Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(file_path, "rb") as thumb_file:
+            mocked_get_movie_poster.return_value = thumb_file.read()
+
+        cds_stocks = CDSStocks(venue_provider=venue_provider)
+
+        # When
+        cds_stocks.updateObjects()
+
+        # Then
+        created_products = Product.query.order_by(Product.id).all()
+        assert (
+            created_products[0].thumbUrl
+            == f"http://localhost/storage/thumbs/products/{humanize(created_products[0].id)}"
+        )
+        assert created_products[0].thumbCount == 1
+
+        assert (
+            created_products[1].thumbUrl
+            == f"http://localhost/storage/thumbs/products/{humanize(created_products[1].id)}"
+        )
+        assert created_products[1].thumbCount == 1

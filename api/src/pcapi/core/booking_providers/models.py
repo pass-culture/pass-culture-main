@@ -66,6 +66,7 @@ class Movie:
     title: str
     duration: int  # duration in minutes
     description: str
+    posterpath: Optional[str]
     visa: str
 
 
