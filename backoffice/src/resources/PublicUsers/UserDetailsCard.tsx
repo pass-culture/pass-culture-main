@@ -8,10 +8,11 @@ import {
   Form,
   useNotify,
   TextInput,
-  UpdateParams,
   SaveButton,
+  UpdateParams,
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
+import { captureException } from '@sentry/react'
 
 export const UserDetailsCard = (
   user: UserBaseInfo,
@@ -74,16 +75,14 @@ export const UserDetailsCard = (
   const submitForm = async (params: FieldValues) => {
     if (params && user.id) {
       try {
-        console.log('params', params.lastName)
         const formData = {
           address: params.address,
           city: params.city,
-          dateOfBirth: params.dateOfBirth,
+          dateOfBirth: Moment(params.dateOfBirth).format(),
           email: params.email,
           firstName: params.firstName,
           idPieceNumber: params.idPieceNumber,
           lastName: params.lastName,
-          phoneNumer: params.phoneNumber,
           postalCode: params.postalCode,
         }
         const formParams: UpdateParams = {
@@ -95,11 +94,12 @@ export const UserDetailsCard = (
           'public_accounts',
           formParams
         )
-        const data = response.data
-        console.log(data)
+        if (response.data) {
+          notify('Les modifications ont été appliquées avec succès', { type: 'success' })
+        }
         setEditable(false)
       } catch (error) {
-        throw error
+        captureException(error)
       }
     }
   }
@@ -178,15 +178,7 @@ export const UserDetailsCard = (
             <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
               <Grid item xs={4}>
                 <p>Numéro de téléphone</p>
-                <TextInput
-                  source={'phoneNumber'}
-                  id="user-phone-number"
-                  label=""
-                  variant="standard"
-                  defaultValue={user.phoneNumber ? user.phoneNumber : ''}
-                  disabled={!editable}
-                  style={{ width: '100%' }}
-                />
+                <p>{user.phoneNumber ? user.phoneNumber : ''}</p>
 
                 <Stack
                   width={'60%'}

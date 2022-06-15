@@ -22,6 +22,7 @@ import { UserApiInterface } from '../Interfaces/UserSearchInterface'
 import { FieldValues } from 'react-hook-form'
 import { StatusBadge } from './StatusBadge'
 import { BeneficiaryBadge } from './BeneficiaryBadge'
+import { captureException } from '@sentry/react'
 
 const UpperCaseText = (
   props: JSX.IntrinsicAttributes &
@@ -87,6 +88,14 @@ const UserCard = (props: { record: any }) => {
 export const UserSearch = () => {
   const [userData, setUserData] = useState([])
   useAuthenticated()
+  const stopTypingOnSearch = (event: {
+    key: string
+    stopPropagation: () => void
+  }) => {
+    if (event.key === 'Enter') {
+      event.stopPropagation()
+    }
+  }
   const formSubmit = async (params: FieldValues) => {
     if (params && params.search) {
       setUserData([])
@@ -104,7 +113,7 @@ export const UserSearch = () => {
           setUserData(response.data)
         }
       } catch (error) {
-        throw error
+        captureException(error)
       }
     }
   }
@@ -166,11 +175,7 @@ export const UserSearch = () => {
                       marginLeft: 'auto',
                       marginRight: 5,
                     }}
-                    onKeyUp={event => {
-                      if (event.key === 'Enter') {
-                        event.stopPropagation()
-                      }
-                    }}
+                    onKeyUp={stopTypingOnSearch}
                   />
 
                   <Button
