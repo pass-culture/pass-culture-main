@@ -5,6 +5,7 @@ import {
 } from '../resources/Interfaces/UserSearchInterface'
 import { env } from '../libs/environment/env'
 import { UserCredit, UserManualReview } from '../resources/PublicUsers/types'
+import { captureException } from '@sentry/react'
 
 let assets: UserApiInterface[] = []
 const urlBase = env.API_URL
@@ -78,7 +79,7 @@ export const dataProvider: DataProvider = {
             try {
               return fetch(`${urlBase}/${resource}/${params.id}/credit`, body)
             } catch (error) {
-              throw error
+              captureException(error)
             }
           }
 
@@ -86,16 +87,18 @@ export const dataProvider: DataProvider = {
             try {
               return fetch(`${urlBase}/${resource}/${params.id}/history`, body)
             } catch (error) {
-              throw error
+              captureException(error)
             }
           }
-          const userCredit: UserCredit = await (await creditInfo()).json()
-          const userHistory = await (await historyInfo()).json()
+          const [userCredit, userHistory] = await Promise.all([
+            creditInfo(),
+            historyInfo(),
+          ])
 
           const dataUser = { ...user, userCredit, userHistory }
           return { data: dataUser }
         } catch (error) {
-          throw error
+          captureException(error)
         }
     }
   },
@@ -137,7 +140,7 @@ export const dataProvider: DataProvider = {
             body: bodyString,
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/x-www-form-urlencoded',
+              'Content-Type': 'application/json',
             },
           }
           const response = await fetch(
@@ -149,7 +152,7 @@ export const dataProvider: DataProvider = {
             data: responseData,
           }
         } catch (error) {
-          throw error
+          captureException(error)
         }
     }
   },
@@ -201,7 +204,7 @@ export const dataProvider: DataProvider = {
 
       return response
     } catch (error) {
-      throw error
+      captureException(error)
     }
   },
   async postResendValidationEmail(resource: string, params: UserApiInterface) {
@@ -223,7 +226,7 @@ export const dataProvider: DataProvider = {
       )
       return response
     } catch (error) {
-      throw error
+      captureException(error)
     }
   },
   async postSkipPhoneValidation(resource: string, params: UserApiInterface) {
@@ -245,7 +248,7 @@ export const dataProvider: DataProvider = {
       )
       return response
     } catch (error) {
-      throw error
+      captureException(error)
     }
   },
   async postPhoneValidationCode(resource: string, params: UserApiInterface) {
@@ -267,7 +270,7 @@ export const dataProvider: DataProvider = {
       )
       return response
     } catch (error) {
-      throw error
+      captureException(error)
     }
   },
 }
