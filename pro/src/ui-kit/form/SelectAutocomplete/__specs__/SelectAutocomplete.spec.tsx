@@ -110,11 +110,16 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
       it('should display disabled option', async () => {
         render(
           <Formik initialValues={initialValues} onSubmit={() => {}}>
-            <SelectAutocomplete {...props} filterLabel='Résultats limités à 15 items' />
+            <SelectAutocomplete
+              {...props}
+              filterLabel="Résultats limités à 15 items"
+            />
           </Formik>
         )
         await userEvent.click(screen.getByRole('textbox'))
-        const additionalOption = await screen.findByLabelText('Résultats limités à 15 items')
+        const additionalOption = await screen.findByLabelText(
+          'Résultats limités à 15 items'
+        )
         expect(additionalOption).toBeInTheDocument()
         expect(additionalOption).toBeDisabled()
         expect(await screen.findAllByRole('option')).toHaveLength(16)
