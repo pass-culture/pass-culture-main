@@ -1,8 +1,3 @@
-# temporary
-# FIXME: remove pygments version restriction when no more needed
-pygments<2.11.2  # because pygments 2.11.2 breaks pgcli, see https://github.com/dbcli/pgcli/issues/1303
-# /temporary
-
 alembic==1.4.3
 algoliasearch==2.4.0
 APScheduler==3.6.3
@@ -39,7 +34,7 @@ MarkupSafe==2.0.1
 mypy==0.941
 notion-client==0.9.0
 openpyxl
-pgcli==2.2.0
+pgcli # a tool not used in code. There is no point in pinning its version
 phonenumberslite==8.12.23
 Pillow>=8.1.1
 pydantic[email]==1.9.1
