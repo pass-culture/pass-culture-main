@@ -253,3 +253,17 @@ export type EducationalDomain = {
   id: number
   name: string
 }
+
+export type EducationalInstitution = {
+  id: number
+  name: string
+  postalCode: string
+  city: string
+}
+
+export type EducationalInstitutions = {
+  educationalInstitutions: EducationalInstitution[]
+  page: number
+  pages: number
+  total: number
+}
