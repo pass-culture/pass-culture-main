@@ -443,6 +443,8 @@ class AlgoliaBackend(base.SearchBackend):
     @classmethod
     def serialize_venue(cls, venue: offerers_models.Venue) -> dict:
         social_medias = getattr(venue.contact, "social_medias", {})
+        has_at_least_one_bookable_offer = offerers_api.has_venue_at_least_one_bookable_offer(venue)
+
         return {
             "objectID": venue.id,
             "city": venue.city,
@@ -464,7 +466,9 @@ class AlgoliaBackend(base.SearchBackend):
             "tags": [criterion.name for criterion in venue.criteria],
             "banner_url": venue.bannerUrl,
             "_geoloc": position(venue),
-            "is_eligible_for_strict_search": offerers_api.is_venue_eligible_for_strict_search(venue),
+            # TODO: remove "is_eligible_for_strict_search" key when the app does not use it anymore
+            "is_eligible_for_strict_search": has_at_least_one_bookable_offer,
+            "has_at_least_one_bookable_offer": has_at_least_one_bookable_offer,
         }
 
     @classmethod
