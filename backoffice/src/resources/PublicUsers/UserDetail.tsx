@@ -105,6 +105,8 @@ export const UserDetail = () => {
     digitalCreditProgression =
       (data.userCredit.remainingCredit / data.userCredit.initialCredit) * 100
     if (
+      data.userHistory['subscriptions'] &&
+      data.userHistory['subscriptions']['AGE18'] &&
       data.userHistory['subscriptions']['AGE18']['idCheckHistory'].length > 0
     ) {
       idsCheckHistory =
@@ -112,6 +114,8 @@ export const UserDetail = () => {
       subscriptionItems =
         data.userHistory['subscriptions']['AGE18']['subscriptionItems']
     } else if (
+      data.userHistory['subscriptions'] &&
+      data.userHistory['subscriptions']['UNDERAGE'] &&
       data.userHistory['subscriptions']['UNDERAGE']['idCheckHistory'].length > 0
     ) {
       idsCheckHistory =

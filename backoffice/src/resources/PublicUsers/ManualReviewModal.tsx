@@ -11,6 +11,7 @@ import {
 import { FieldValues } from 'react-hook-form'
 import { dataProvider } from '../../providers/dataProvider'
 import { UserManualReview } from './types'
+import { captureException } from '@sentry/react'
 
 export const ManualReviewModal = (userId: any) => {
   const [openModal, setOpenModal] = useState(false)
@@ -56,7 +57,7 @@ export const ManualReviewModal = (userId: any) => {
           handleCloseModal()
         }
       } catch (error) {
-        throw error
+        captureException(error)
       }
     }
   }

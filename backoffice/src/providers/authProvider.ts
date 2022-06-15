@@ -3,6 +3,7 @@ import { UserManager } from 'oidc-client'
 
 import { getProfileFromToken } from './getProfileFromToken'
 import { env } from '../libs/environment/env'
+import { captureException } from '@sentry/react'
 
 const userManager = new UserManager({
   authority: env.AUTH_ISSUER,
@@ -29,12 +30,12 @@ async function getTokenApiFromAuthToken() {
       `${env.API_URL}/auth/token?token=${authToken.id_token}`
     )
     if (!response.ok) {
-      throw new Error(response.statusText)
+      captureException(response.statusText)
     }
     const res = await response.json()
     localStorage.setItem('tokenApi', res.token)
   } catch (error) {
-    alert("Une erreur s'est produite. On répare ça au plus vite !")
+    captureException(error)
   }
 }
 
@@ -56,10 +57,11 @@ export const authProvider: AuthProvider = {
       cleanup()
       return Promise.resolve()
     } catch (error) {
-      throw error
+      captureException(error)
     }
   },
   async checkError(error) {
+    captureException(error)
     return Promise.reject(error)
   },
   async checkAuth(params) {
