@@ -86,7 +86,7 @@
     display: flex;
     flex-direction: row;
 
-    .input-select {
+    .input-select { /* stylelint-disable-line no-descending-specificity */
       margin-left: rem.torem(24px);
       margin-top: rem.torem(24px);
       width: rem.torem(220px);
@@ -219,12 +219,12 @@
     justify-content: center;
     margin-top: rem.torem(35px);
 
-    button {
+    button { /* stylelint-disable-line no-descending-specificity */
       background: none;
       border: none;
       height: rem.torem(24px);
 
-      &:disabled {
+      &:disabled { /* stylelint-disable-line no-descending-specificity */
         cursor: not-allowed;
       }
     }

@@ -75,9 +75,10 @@
 
     button {
       margin-left: rem.torem(20px);
-      min-width: rem.torem(
-        103px
-      ); // we use similar width for all button to avoid them moving on click.
+      min-width:
+        rem.torem(
+          103px
+        ); // we use similar width for all button to avoid them moving on click.
     }
   }
 }

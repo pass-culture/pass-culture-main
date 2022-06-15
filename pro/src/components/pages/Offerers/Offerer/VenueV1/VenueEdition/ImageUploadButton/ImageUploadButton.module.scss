@@ -1,5 +1,4 @@
 @use 'sass:math' as math;
-
 @use 'styles/variables/_colors.scss' as colors;
 @use 'styles/mixins/_fonts.scss' as fonts;
 @use 'styles/mixins/_rem.scss' as rem;
@@ -11,16 +10,17 @@
   align-items: center;
   gap: 16px;
   $height: rem.torem(176px);
+
   width: math.div($height * 3, 2);
   height: $height;
   border: 1px solid colors.$grey-medium;
   background-color: colors.$grey-light;
   color: colors.$black;
-  box-shadow: 0px 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.15);
+  box-shadow: 0 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.15);
   border-radius: 4px;
 
   &:hover {
-    box-shadow: 0px 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.3);
+    box-shadow: 0 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.3);
 
     .image-upload-button-label {
       text-decoration: underline;
@@ -36,7 +36,7 @@
     width: rem.torem(32px);
   }
 
-  &-label {
+  &-label { /* stylelint-disable-line no-descending-specificity */
     font-weight: bold;
     font-size: 15px;
     line-height: 18px;

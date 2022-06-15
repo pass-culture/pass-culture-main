@@ -47,6 +47,7 @@ input[type='checkbox'] {
     }
   }
 
+  /* stylelint-disable no-descending-specificity */
   &:not(:checked) {
     background-color: colors.$white;
 

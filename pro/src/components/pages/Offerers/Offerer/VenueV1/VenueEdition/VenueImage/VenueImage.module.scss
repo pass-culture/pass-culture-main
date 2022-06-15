@@ -4,10 +4,11 @@
 
 .venue-image {
   $height: rem.torem(176px);
+
   width: math.div($height * 3, 2);
   height: $height;
   object-fit: cover;
   border: 1px solid colors.$grey-medium;
   border-radius: 4px;
-  box-shadow: 0px 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.15);
+  box-shadow: 0 1px 8px rgba(colors.$black-with-transparency, $alpha: 0.15);
 }

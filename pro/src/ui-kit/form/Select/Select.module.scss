@@ -6,6 +6,7 @@
 
 .select-input {
   @include formsM.input-theme();
+
   padding-right: rem.torem(forms.$input-right-icon-padding);
 
   &.has-error {
@@ -22,6 +23,7 @@
 
   &-placeholder {
     @include fonts.placeholder();
+
     color: colors.$grey-dark;
   }
 }

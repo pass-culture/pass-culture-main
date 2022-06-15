@@ -11,9 +11,11 @@
   background-color: colors.$white;
   margin-top: rem.torem(6px);
   padding: rem.torem(12px) rem.torem(15px) rem.torem(16px) rem.torem(15px);
+
   &:first-child {
     margin-top: 0;
   }
+
   &:last-child {
     padding-bottom: 0;
   }

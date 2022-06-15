@@ -33,6 +33,7 @@
 
       p {
         @include fonts.caption();
+
         color: colors.$grey-dark;
         text-align: justify;
       }

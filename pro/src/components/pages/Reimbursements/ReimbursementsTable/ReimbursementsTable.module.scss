@@ -20,6 +20,7 @@ table.reimbursement-table {
 
       button {
         @include fonts.caption();
+
         background: none;
         border: none;
         display: flex;
@@ -39,23 +40,26 @@ table.reimbursement-table {
       padding: rem.torem(20px) rem.torem(8px);
       width: rem.torem(120px);
     }
+
     th:nth-child(1) {
-        width: rem.torem(120px);
+      width: rem.torem(120px);
     }
 
     th:nth-child(2) {
       width: rem.torem(240px);
     }
+
     th:nth-child(3) {
       width: rem.torem(140px);
     }
 
     th:nth-child(4) {
-        width: rem.torem(70px);
+      width: rem.torem(70px);
     }
+
     th:nth-child(5) {
       cursor: default;
-      text-align: right
+      text-align: right;
     }
   }
 

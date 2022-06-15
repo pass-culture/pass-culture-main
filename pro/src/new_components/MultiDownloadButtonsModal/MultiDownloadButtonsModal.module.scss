@@ -5,7 +5,8 @@
 .downloadModalButton > button {
   padding-left: rem.torem(60px);
   width: rem.torem(270px);
-  &:after {
+
+  &::after {
     border-right: rem.torem(1px) solid white;
     content: '';
     left: rem.torem(-30px);
@@ -21,8 +22,8 @@
 .downloadModalOption {
   background: white;
   border-radius: rem.torem(6px);
-  border: rem.torem(1px) solid #F1F1F4;
-  box-shadow: rem.torem(0px) rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
+  border: rem.torem(1px) solid #f1f1f4;
+  box-shadow: rem.torem(0) rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
   display: inline-block;
   overflow: hidden;
   padding: rem.torem(12px) 0;
@@ -40,6 +41,7 @@
     font-size: rem.torem(16px);
     padding: rem.torem(8px) rem.torem(17px);
     width: 100%;
+
     &:hover {
       background: colors.$grey-medium;
     }
@@ -48,10 +50,12 @@
       margin-right: rem.torem(10px);
     }
   }
+
   .separator {
     padding: 0 rem.torem(17px);
     margin: rem.torem(5px) 0;
   }
+
   .iconLink {
     margin-right: rem.torem(10px);
   }

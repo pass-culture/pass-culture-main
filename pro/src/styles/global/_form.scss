@@ -71,7 +71,7 @@ textarea.textarea {
       }
 
       &:last-child {
-        .button {
+        .button { /* stylelint-disable-line no-descending-specificity */
           border-left: none;
         }
       }

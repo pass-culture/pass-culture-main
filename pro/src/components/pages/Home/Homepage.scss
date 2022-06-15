@@ -8,6 +8,7 @@
       color: colors.$black;
     }
   }
+
   .bi-link {
     display: flex;
     margin-top: rem.torem(8px);
@@ -60,7 +61,7 @@
       }
     }
 
-    .h-card-inner {
+    .h-card-inner { /* stylelint-disable-line no-descending-specificity */
       border-left: rem.torem(8px) solid colors.$grey-medium;
       height: 100%;
       padding: rem.torem(16px) rem.torem(16px) rem.torem(24px);
@@ -195,15 +196,17 @@
 
       .h-card {
         flex: 1 1;
-        margin-left: rem.torem(
-          24px
-        ); // in case it's inside a section-row with multiple cards
+        margin-left:
+          rem.torem(
+            24px
+          ); // in case it's inside a section-row with multiple cards
 
         &:first-child {
           margin-left: 0;
         }
       }
     }
+
     .newsletter {
       position: relative;
       margin-top: rem.torem(16px);
@@ -238,7 +241,7 @@
 
   .offerer-banner {
     .actions-container {
-      a {
+      a { /* stylelint-disable-line no-descending-specificity */
         max-width: rem.torem(255px);
       }
     }
@@ -253,10 +256,11 @@
       }
     }
 
-    .h-card-inner {
-      padding-bottom: rem.torem(
-        16px
-      ); // FIXME: remove this fix when venue list card get content.
+    .h-card-inner { /* stylelint-disable-line no-descending-specificity */
+      padding-bottom:
+        rem.torem(
+          16px
+        ); // FIXME: remove this fix when venue list card get content.
     }
   }
 }

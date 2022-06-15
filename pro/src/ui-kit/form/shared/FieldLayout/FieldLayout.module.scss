@@ -18,6 +18,7 @@
 
   &-optional {
     @include fonts.caption();
+
     color: colors.$grey-dark;
   }
 
@@ -34,6 +35,7 @@
 
   &-counter {
     @include fonts.caption();
+
     color: colors.$grey-dark;
     flex: initial;
     justify-self: flex-end;

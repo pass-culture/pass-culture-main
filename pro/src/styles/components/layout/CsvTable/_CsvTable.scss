@@ -28,7 +28,7 @@
       vertical-align: middle;
     }
 
-    tr {
+    tr { /* stylelint-disable-line no-descending-specificity */
       @include dotted.dotted(colors.$primary);
     }
   }

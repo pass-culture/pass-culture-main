@@ -114,7 +114,7 @@
       height: rem.torem(1px);
     }
 
-    button {
+    button { /* stylelint-disable-line no-descending-specificity */
       flex: 3;
     }
   }

@@ -221,7 +221,7 @@
         }
       }
 
-      .field-select {
+      .field-select { /* stylelint-disable-line no-descending-specificity */
         background-image: none;
         cursor: default;
         opacity: 1;

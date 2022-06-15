@@ -11,6 +11,7 @@
     display: flex;
     margin-top: -0.1rem;
     width: 100%;
+
     :disabled + & {
       color: forms.$input-text-color-disabled;
       cursor: default;
@@ -52,7 +53,7 @@
       background-color: forms.$input-border-color-error;
     }
 
-    &:disabled {
+    &:disabled { /* stylelint-disable-line no-descending-specificity */
       cursor: default;
       border-color: forms.$input-border-color-disabled;
     }

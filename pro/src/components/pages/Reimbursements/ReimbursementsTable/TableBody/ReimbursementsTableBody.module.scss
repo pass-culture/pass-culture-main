@@ -8,6 +8,7 @@ tbody.reimbursement-body {
 
   .date {
     @include fonts.bold();
+
     padding-left: rem.torem(16px);
     width: rem.torem(120px);
   }

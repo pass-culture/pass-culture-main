@@ -13,6 +13,7 @@
   &-text {
     margin-top: rem.torem(4px);
     display: block;
+
     @include fonts.bold();
   }
 

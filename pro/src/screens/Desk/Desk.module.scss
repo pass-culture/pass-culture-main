@@ -15,22 +15,25 @@
       margin: rem.torem(10px) auto rem.torem(15px);
       width: rem.torem(328px);
     }
+
+    :global(.bi-banner) {
+      text-align: left;
+    }
+
     :global(.input-text .labels) {
       margin: 0 auto;
       width: rem.torem(328px);
-    }
-    :global(.bi-banner) {
-      text-align: left;
     }
   }
 }
 
 .desk-button {
-  background-image: linear-gradient(
-    to left,
-    colors.$primary 10%,
-    transparent 0%
-  );
+  background-image:
+    linear-gradient(
+      to left,
+      colors.$primary 10%,
+      transparent 0%
+    );
   background-position: center;
   background-repeat: repeat-x;
   background-size: 6px 1px;
