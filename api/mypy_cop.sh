@@ -19,7 +19,7 @@ then
 elif [ ${this_branch_count} -lt ${master_count} ]
 then
     echo '<p>🎉 Number of type ignore inferior to master, good job !</p>'
-    echo "<p>Have yourself a merry little break and learn a few facts about the year <a href='https://fr.wikipedia.org/wiki/$type_ignore_counter' target='_blank'>$type_ignore_counter</a> </p>"
+    echo "<p>Have yourself a merry little break and learn a few facts about the year <a href='https://fr.wikipedia.org/wiki/${this_branch_count}' target='_blank'>${this_branch_count}</a> </p>"
 elif [ ${this_branch_count} -gt ${master_count} ]
 then
     diff=$((${this_branch_count} - ${master_count}))
