@@ -37,6 +37,7 @@ class MediaCDS(BaseModel):
     id: int
     title: str
     duration: int  # CDS api returns duration in seconds
+    posterpath: Optional[str]
     storyline: str
     visanumber: str
 
@@ -49,6 +50,7 @@ class MediaCDS(BaseModel):
             title=self.title,
             duration=self.duration // 60,
             description=self.storyline,
+            posterpath=self.posterpath,
             visa=self.visanumber,
         )
 
