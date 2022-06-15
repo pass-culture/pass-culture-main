@@ -188,6 +188,10 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
                 price_booking(booking)
         except Exception as exc:  # pylint: disable=broad-except
             errorred_business_unit_ids.add(booking.venue.businessUnitId)
+            logger.info(
+                "Ignoring further bookings from business unit",
+                extra={"business_unit": booking.venue.businessUnitId},
+            )
             logger.exception(
                 "Could not price booking",
                 extra={
@@ -211,6 +215,10 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
                     price_booking(collective_booking)
             except Exception as exc:  # pylint: disable=broad-except
                 errorred_business_unit_ids.add(collective_booking.venue.businessUnitId)
+                logger.info(
+                    "Ignoring further bookings from business unit",
+                    extra={"business_unit": collective_booking.venue.businessUnitId},
+                )
                 logger.exception(
                     "Could not price collective booking",
                     extra={
