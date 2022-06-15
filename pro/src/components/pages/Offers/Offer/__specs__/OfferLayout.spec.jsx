@@ -109,6 +109,7 @@ describe('offerLayout', () => {
           name: 'venue',
           managingOfferer: {
             id: 'ID',
+            name: 'offerer name',
           },
         },
         subcategoryId: 'ID',

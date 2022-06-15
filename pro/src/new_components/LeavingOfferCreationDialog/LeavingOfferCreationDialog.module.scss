@@ -1,6 +1,6 @@
 @use 'styles/mixins/_rem.scss' as rem;
 
-.exit-offer-creation-dialog {
+.dialog {
   text-align: center;
 
   p {
@@ -9,6 +9,6 @@
   }
 }
 
-.route-leaving-guard-icon {
+.dialog-icon {
   margin-bottom: rem.torem(40px);
 }
