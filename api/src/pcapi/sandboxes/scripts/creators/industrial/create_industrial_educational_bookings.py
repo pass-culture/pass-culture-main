@@ -18,6 +18,13 @@ class StockData:
     otherAddress: str
 
 
+@dataclass
+class TemplateOfferData:
+    name: str
+    addressType: str
+    otherAddress: str
+
+
 FAKE_STOCK_DATA = [
     StockData(
         name="Visite de l'Abbaye Royale + Musée d'art moderne + Nocturne Les étoiles de Fontevraud",
@@ -120,6 +127,23 @@ PASSED_STOCK_DATA: list[StockData] = [
     ),
 ]
 
+TEMPLATE_OFFERS_DATA = [
+    TemplateOfferData(
+        name="Visite du studio d'enregistrement de l'EAC collectif",
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    TemplateOfferData(
+        name="Plongez au coeur de la pâtisserie du 12 rue Duhesme",
+        addressType="other",
+        otherAddress="12 rue Duhesme, Paris 75018",
+    ),
+    TemplateOfferData(
+        name="Une offre vitrine pas comme les autres",
+        addressType="school",
+        otherAddress="",
+    ),
+]
 ADDRESSES = [
     {"department": "04", "postalCode": "04400", "city": "Barcelonnette"},
     {"department": "14", "postalCode": "14000", "city": "Caen"},
@@ -273,6 +297,9 @@ def create_industrial_educational_bookings() -> None:
             collectiveStock=next_year_stock,
         )
 
+    for template_data in TEMPLATE_OFFERS_DATA:
+        _create_collective_offer_template(template_data, venue)
+
 
 def _create_collective_stock(
     stock_data: StockData,
@@ -312,6 +339,31 @@ def _create_collective_stock(
         collectiveOffer__contactPhone="01010100101",
         collectiveOffer__motorDisabilityCompliant=True,
         collectiveOffer__visualDisabilityCompliant=True,
+    )
+
+
+def _create_collective_offer_template(
+    offer_data: TemplateOfferData,
+    venue: offerers_models.Venue,
+) -> None:
+    educational_factories.CollectiveOfferTemplateFactory(
+        name=offer_data.name,
+        durationMinutes=60,
+        description="Une description multi-lignes.\nUn lien en description ? https://youtu.be/dQw4w9WgXcQ\n Un email ?",
+        venue=venue,
+        students=[
+            educational_models.StudentLevels.CAP1,
+            educational_models.StudentLevels.GENERAL1,
+        ],
+        offerVenue={
+            "addressType": offer_data.addressType,
+            "otherAddress": offer_data.otherAddress,
+            "venueId": humanize(venue.id),
+        },
+        contactEmail="miss.rond@point.com",
+        contactPhone="01010100101",
+        motorDisabilityCompliant=True,
+        visualDisabilityCompliant=True,
     )
 
 
