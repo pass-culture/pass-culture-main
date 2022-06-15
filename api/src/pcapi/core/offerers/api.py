@@ -24,6 +24,7 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
+from pcapi.core.offerers.repository import dms_token_exists
 from pcapi.core.offerers.repository import find_offerer_by_siren
 from pcapi.core.offerers.repository import find_offerer_by_validation_token
 from pcapi.core.offerers.repository import find_siren_by_offerer_id
@@ -68,6 +69,7 @@ def create_digital_venue(offerer: Offerer) -> Venue:
     digital_venue.name = "Offre numérique"
     digital_venue.venueTypeCode = offerers_models.VenueTypeCode.DIGITAL  # type: ignore [attr-defined]
     digital_venue.managingOfferer = offerer
+    digital_venue.dms_token = generate_dms_token()
     return digital_venue
 
 
@@ -174,7 +176,7 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
-
+    venue.dms_token = generate_dms_token()
     repository.save(venue)
 
     if venue_data.businessUnitId:
@@ -498,3 +500,15 @@ def has_venue_at_least_one_bookable_offer(venue: offerers_models.Venue) -> bool:
     )
 
     return db.session.query(at_least_one_eligible_offer_query).scalar()
+
+
+def generate_dms_token() -> str:
+    """
+    Returns a 12-char hex str of 6 random bytes
+    The collision probability is 0.001 for 750k Venues
+    """
+    for _i in range(10):
+        dms_token = secrets.token_hex(6)
+        if not dms_token_exists(dms_token):
+            return dms_token
+    raise ValueError("Could not generate new dms_token for Venue")
