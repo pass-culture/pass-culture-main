@@ -347,3 +347,7 @@ def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
         models.Offerer.id == offerer_id,
     )
     return bool(query.count())
+
+
+def dms_token_exists(dms_token: str) -> bool:
+    return db.session.query(models.Venue.query.filter_by(dms_token=dms_token).exists()).scalar()
