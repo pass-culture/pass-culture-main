@@ -22,7 +22,7 @@ def maybe_send_offerer_validation_email(
         return True
     email = make_offerer_internal_validation_email(offerer, user_offerer)
     recipients = [settings.ADMINISTRATION_EMAIL_ADDRESS]
-    return mails.send(recipients=recipients, data=email)  # type: ignore [arg-type]
+    return mails.send(recipients=recipients, data=email)
 
 
 def _check_offer_subcategory_before_send(offer: Offer) -> bool:
