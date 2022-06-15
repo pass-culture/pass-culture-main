@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import RouteLeavingGuard, {
+import RouteLeavingGuardOfferCreation, {
   RouteLeavingGuardOfferCreationProps,
 } from '../RouteLeavingGuardOfferCreation'
 import { render, screen } from '@testing-library/react'
@@ -19,15 +19,12 @@ const renderRouteLeavingGuardOfferCreation = async (
   render(
     <Router history={history}>
       <Link to="/about">About</Link>
-      <Link to={'/offre/creation/individuel'}>Création</Link>
+      <Link to={'/offre/individuel/creation'}>Création</Link>
       <Link to={'/offre/AE/individuel/creation/stocks'}>Stocks</Link>
-      <Link to={'/offre/AE/individuel/creation/recapitulatif'}>
-        Récapitulatif
-      </Link>
       <Link to={'/offre/AE/individuel/creation/confirmation'}>
         Confirmation
       </Link>
-      <RouteLeavingGuard {...props} />
+      <RouteLeavingGuardOfferCreation {...props} />
     </Router>
   )
 }
@@ -92,18 +89,9 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not display confirmation modal when going to summary', async () => {
-    history.push('/offre/AE/individuel/creation/stocks')
-    await renderRouteLeavingGuardOfferCreation(props, history)
-    await userEvent.click(screen.getByText('Récapitulatif'))
-    expect(
-      await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
-    ).not.toBeInTheDocument()
-  })
-
   it('should not display confirmation modal when going to confirmation', async () => {
-    history.push('/offre/AE/individuel/creation/recapitulatif')
-    await renderRouteLeavingGuardOfferCreation(props, history)
+    history.push('/offre/AE/individuel/stocks')
+    renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Confirmation'))
     expect(
       await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
@@ -111,6 +99,10 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
   })
 
   describe('CollectiveOffer', () => {
+    beforeEach(() => {
+      props.isCollectiveFlow = true
+    })
+
     it('should not display confirmation modal when going to visibilité', async () => {
       history.push('/')
       render(
@@ -120,7 +112,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
           <Link to={`/offre/AE/collective/stocks`}>Stocks</Link>
           <Link to={`/offre/AE/collectif/visibilite`}>Visibilité</Link>
           <Link to={`/offre/AE/collective/confirmation`}>Confirmation</Link>
-          <RouteLeavingGuard {...props} />
+          <RouteLeavingGuardOfferCreation {...props} />
         </Router>
       )
       await userEvent.click(screen.getByText('Visibilité'))
