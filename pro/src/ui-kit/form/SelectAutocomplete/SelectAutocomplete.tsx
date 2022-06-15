@@ -133,9 +133,9 @@ const SelectAutocomplete = ({
               disabled={disabled}
               checked={field.value === value}
               onClick={() => {
-                  helpers.setValue(value)
-                  setIsOpen(false)
-                  setFieldValue(`search-${fieldName}`, label, false)
+                helpers.setValue(value)
+                setIsOpen(false)
+                setFieldValue(`search-${fieldName}`, label, false)
               }}
             />
           )}
