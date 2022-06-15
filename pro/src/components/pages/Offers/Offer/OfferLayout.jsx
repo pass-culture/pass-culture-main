@@ -13,9 +13,11 @@ import OfferDetails from './OfferDetails'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import Titles from 'components/layout/Titles/Titles'
 import { apiV1 } from 'api/api'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 
 const mapPathToStep = {
   creation: OfferBreadcrumbStep.DETAILS,
@@ -43,6 +45,7 @@ const OfferLayout = () => {
   const match = useRouteMatch()
   const isCreatingOffer = location.pathname.includes('creation')
   const [offer, setOffer] = useState(null)
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
   const loadOffer = async offerId => {
     try {
@@ -89,6 +92,11 @@ const OfferLayout = () => {
     )
   }
 
+  let offerHaveStock = false
+  if (offer?.stocks !== undefined) {
+    offerHaveStock = offer.stocks.length > 0
+  }
+
   return (
     <div className="offer-page">
       <Titles action={offerHeader} title={pageTitle} />
@@ -98,11 +106,18 @@ const OfferLayout = () => {
         isCreatingOffer={isCreatingOffer}
         isOfferEducational={offer?.isEducational}
         offerId={offer?.id}
+        haveStock={offerHaveStock}
       />
 
       <div className="offer-content">
         <Switch>
-          <Route exact path="/offre/creation/individuel">
+          <Route
+            exact
+            path={[
+              '/offre/creation/individuel',
+              '/offre/:offer_id/individuel/creation',
+            ]}
+          >
             {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
             {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
             {/* in OfferDetails as the offer is loaded in the stock edition page */}
@@ -135,7 +150,11 @@ const OfferLayout = () => {
           </Route>
         </Switch>
       </div>
-      <RouteLeavingGuardOfferCreation when={isCreatingOffer} />
+      {useSummaryPage ? (
+        <RouteLeavingGuardOfferIndividual when={isCreatingOffer} />
+      ) : (
+        <RouteLeavingGuardOfferCreation when={isCreatingOffer} />
+      )}
     </div>
   )
 }
