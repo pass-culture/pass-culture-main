@@ -14,6 +14,7 @@ import {
   EditCollectiveStockPayload,
   EditEducationalOfferPayload,
   EducationalDomain,
+  EducationalInstitutions,
   StockPayload,
 } from 'core/OfferEducational'
 import {
@@ -177,6 +178,13 @@ export const patchCollectiveOfferTemplateIntoCollectiveOffer = async (
     `/collective/offers-template/${offerId}/to-collective-offer`,
     body
   )
+
+export const getEducationalInstitutions = (
+  page?: number
+): Promise<EducationalInstitutions> => {
+  const queryParams = page ? `?page=${page}` : ''
+  return client.get(`/educational_institutions${queryParams}`)
+}
 
 //
 // offerers
