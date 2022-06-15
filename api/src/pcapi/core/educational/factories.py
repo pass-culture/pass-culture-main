@@ -11,6 +11,7 @@ from pcapi.core.testing import BaseFactory
 from pcapi.models.offer_mixin import OfferValidationStatus
 
 from . import models
+from .models import CollectiveBookingCancellationReasons
 from .models import EducationalBookingStatus
 from .models import Ministry
 from .models import StudentLevels
@@ -241,6 +242,7 @@ class CollectiveBookingFactory(BaseFactory):
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CANCELLED
     cancellationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(hours=1))
+    cancellationReason = factory.Iterator(CollectiveBookingCancellationReasons)
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
