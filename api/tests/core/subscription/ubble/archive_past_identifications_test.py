@@ -116,13 +116,6 @@ class GetFraudCheckToArchiveTest:
             dateCreated=date_between_start_and_end,
             idPicturesStored=id_picture_store_status_none,
         )
-        # fraud_check_unwanted_type
-        BeneficiaryFraudCheckFactory(
-            status=fraud_status_ok,
-            type=FraudCheckType.JOUVE,
-            dateCreated=date_between_start_and_end,
-            idPicturesStored=id_picture_store_status_none,
-        )
         # fraud_check_unwanted_date_created
         BeneficiaryFraudCheckFactory(
             status=fraud_status_ok,

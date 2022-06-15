@@ -18,42 +18,6 @@ import pcapi.core.users.factories as users_factories
 from . import models
 
 
-JOUVE_CTRL_VALUES = ["OK", "KO"]
-
-
-class JouveContentFactory(factory.Factory):
-    class Meta:
-        model = models.JouveContent
-
-    activity = random.choice(["Etudiant"])
-    address = "25 rue du moulin vert"
-    birthDateTxt = LazyAttribute(lambda _: (datetime.utcnow() - relativedelta(years=18)).strftime("%d/%m/%Y"))
-    birthLocationCtrl = random.choice(JOUVE_CTRL_VALUES)
-    bodyBirthDateCtrl = random.choice(JOUVE_CTRL_VALUES)
-    bodyBirthDateLevel = factory.Faker("pyint", max_value=100)
-    bodyFirstnameCtrl = random.choice(JOUVE_CTRL_VALUES)
-    bodyFirstnameLevel = factory.Faker("pyint", max_value=100)
-    bodyNameLevel = factory.Faker("pyint", max_value=100)
-    bodyNameCtrl = random.choice(JOUVE_CTRL_VALUES)
-    bodyPieceNumber = factory.fuzzy.FuzzyText(length=12, chars=string.digits)
-    bodyPieceNumberCtrl = random.choice(JOUVE_CTRL_VALUES)
-    bodyPieceNumberLevel = factory.Faker("pyint", max_value=100)
-    city = "Paris"
-    creatorCtrl = random.choice(JOUVE_CTRL_VALUES)
-    id = factory.Faker("pyint")
-    email = factory.Sequence("jeanne.doux{}@example.com".format)
-    firstName = factory.Sequence("Jeanne{}".format)
-    gender = random.choice(["Male", "Female"])
-    initialNumberCtrl = factory.Faker("pyint")
-    initialSizeCtrl = random.choice(JOUVE_CTRL_VALUES)
-    lastName = factory.Sequence("doux{}".format)
-    phoneNumber = factory.Sequence("+3361212121{}".format)
-    postalCode = "75008"
-    posteCodeCtrl = "75"
-    serviceCodeCtrl = factory.Faker("pystr")
-    registrationDate = LazyAttribute(lambda _: (datetime.utcnow()).strftime("%m/%d/%Y %H:%M %p"))
-
-
 USERPROFILING_RATING = [rating.value for rating in models.UserProfilingRiskRating]
 USERPROFILING_RESULTS = ["sucess", "failure"]
 USERPROFILING_BOOL = ["yes", "no"]
@@ -164,7 +128,6 @@ class ProfileCompletionContentFactory(factory.Factory):
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION = {
     models.FraudCheckType.DMS: DMSContentFactory,
-    models.FraudCheckType.JOUVE: JouveContentFactory,
     models.FraudCheckType.USER_PROFILING: UserProfilingFraudDataFactory,
     models.FraudCheckType.UBBLE: UbbleContentFactory,
     models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
@@ -177,7 +140,7 @@ class BeneficiaryFraudCheckFactory(testing.BaseFactory):
         model = models.BeneficiaryFraudCheck
 
     user = factory.SubFactory(users_factories.BeneficiaryGrant18Factory)
-    type = models.FraudCheckType.JOUVE
+    type = models.FraudCheckType.UBBLE
     thirdPartyId = factory.LazyFunction(lambda: str(uuid.uuid4()))
     status = models.FraudCheckStatus.PENDING
     eligibilityType = users_models.EligibilityType.AGE18

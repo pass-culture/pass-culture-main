@@ -1148,20 +1148,6 @@ class IdentityCheckSubscriptionStatusTest:
 
         assert status == subscription_models.SubscriptionItemStatus.KO
 
-    def test_jouve_ok(self):
-        user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
-
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            type=fraud_models.FraudCheckType.JOUVE,
-            status=fraud_models.FraudCheckStatus.OK,
-        )
-
-        status = subscription_api.get_identity_check_subscription_status(user, users_models.EligibilityType.AGE18)
-
-        assert status == subscription_models.SubscriptionItemStatus.OK
-
 
 @pytest.mark.usefixtures("db_session")
 class NeedsToPerformeIdentityCheckTest:
@@ -1240,7 +1226,7 @@ class GetFirstRegistrationDateTest:
         )
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=fraud_models.FraudCheckType.JOUVE,
+            type=fraud_models.FraudCheckType.UBBLE,
             dateCreated=d2,
             resultContent=None,
             eligibilityType=users_models.EligibilityType.UNDERAGE,
