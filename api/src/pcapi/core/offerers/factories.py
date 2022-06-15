@@ -4,6 +4,7 @@ from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import crypto
 
+from . import api
 from . import models
 
 
@@ -53,6 +54,7 @@ class VenueFactory(BaseFactory):
     )
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
     bookingEmail = factory.Sequence("venue{}@example.net".format)
+    dms_token = factory.LazyFunction(api.generate_dms_token)
 
     @factory.post_generation
     def venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
