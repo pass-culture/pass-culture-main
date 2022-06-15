@@ -11,23 +11,26 @@
 master_count=$1
 this_branch_count=$2
 
-echo "<h2>🚓 Mypy cop report:</h2>"
+
+extra=""
 
 if [ ${this_branch_count} -eq ${master_count} ]
 then
-    echo "<p>Number of type ignore equal to master:</p>"
+    # blue circle
+    symbol_url="https://github.githubassets.com/images/icons/emoji/unicode/1f535.png"
+    sign="="
 elif [ ${this_branch_count} -lt ${master_count} ]
 then
-    echo '<p>🎉 Number of type ignore inferior to master, good job !</p>'
-    echo "<p>Have yourself a merry little break and learn a few facts about the year <a href='https://fr.wikipedia.org/wiki/${this_branch_count}' target='_blank'>${this_branch_count}</a> </p>"
+    # green check mark
+    symbol_url="https://github.githubassets.com/images/icons/emoji/unicode/2714.png"
+    sign="↘"
+    extra="<p>Have yourself a merry little break and learn a few facts about the year <a href='https://fr.wikipedia.org/wiki/${this_branch_count}' target='_blank'>${this_branch_count}</a>.</p>"
 elif [ ${this_branch_count} -gt ${master_count} ]
 then
-    diff=$((${this_branch_count} - ${master_count}))
-    echo '<p>😿 Number of type ignore superior to master</p>'
-    echo "<p>At least $diff <i>#type:ignore</i> comments need to be resolved before merging</p>"
+    # red cross
+    sign="↗"
+    symbol_url="https://github.githubassets.com/images/icons/emoji/unicode/274c.png"
 fi
 
-echo "<table>"
-echo "<tr><th>Master</th><th>Current branch</th></tr>"
-echo "<tr><td>$master_count</td><td>$this_branch_count</td></tr>"
-echo "</table>"
+echo "<p><img src=\"${symbol_url}\" width=\"12\" height=\"12\"> mypy cop report: ${master_count} (master) ${sign} ${this_branch_count} (your branch)</p>"
+echo ${extra}
