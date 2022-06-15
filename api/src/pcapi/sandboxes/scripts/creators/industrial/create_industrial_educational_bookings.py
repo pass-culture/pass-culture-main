@@ -155,18 +155,17 @@ def create_industrial_educational_bookings() -> None:
     ]
 
     # This venue has no adageId hence its validation go through siren validation
-    venue = offerers_factories.CollectiveVenueFactory(
+    venue_with_right_siren = offerers_factories.CollectiveVenueFactory(
         name="Opéra Royal de Versailles",
         siret="95046949400021",
         managingOfferer__siren="950469494",
         managingOfferer__name="Bonne structure pour l'EAC (siren)",
         adageId=None,
     )
-    offerers_factories.UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
     educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
 
-    venues = []
+    venues = [venue_with_right_siren]
     for address in ADDRESSES:
         venues.append(
             offerers_factories.CollectiveVenueFactory(
@@ -175,6 +174,9 @@ def create_industrial_educational_bookings() -> None:
                 postalCode=address["postalCode"],
             )
         )
+
+    for venue in venues:
+        offerers_factories.UserOffererFactory(validationToken=None, offerer=venue.managingOfferer)
 
     deposits = []
     for educational_institution in educational_institutions:
@@ -199,7 +201,13 @@ def create_industrial_educational_bookings() -> None:
     passed_stocks: list[educational_models.CollectiveStock] = []
     next_year_stocks: list[educational_models.CollectiveStock] = []
 
+    iterable_venues = iter(venues)
     for stock_data in FAKE_STOCK_DATA:
+        try:
+            venue = next(iterable_venues)
+        except StopIteration:
+            iterable_venues = iter(venues)
+            venue = next(iterable_venues)
         stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=False)[0])
 
     for stock_data in PASSED_STOCK_DATA:
