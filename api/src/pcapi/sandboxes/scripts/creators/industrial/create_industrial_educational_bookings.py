@@ -232,6 +232,12 @@ def create_industrial_educational_bookings() -> None:
             educationalYear=educational_current_year,
             collectiveStock=stock,
         )
+        educational_factories.CancelledCollectiveBookingFactory(
+            educationalRedactor=educational_redactor,
+            educationalInstitution=educational_institution,
+            educationalYear=educational_current_year,
+            collectiveStock=stock,
+        )
 
     for stock in passed_stocks:
         try:
