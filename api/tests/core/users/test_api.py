@@ -29,6 +29,8 @@ from pcapi.core.users.repository import get_user_with_valid_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models import db
+from pcapi.models.beneficiary_import import BeneficiaryImportSources
+from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.models.user_session import UserSession
 from pcapi.notifications.push import testing as batch_testing
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
@@ -897,3 +899,292 @@ class SkipPhoneValidationTest:
         # then
         assert user.phoneNumber == "+33612345678"
         assert user.phoneValidationStatus == users_models.PhoneValidationStatusType.VALIDATED
+
+
+class PublicAccountHistoryTest:
+    def test_history_contains_email_changes(self):
+        # given
+        user = users_factories.UserFactory()
+        email_request = users_factories.EmailUpdateEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10)
+        )
+        email_validation = users_factories.EmailValidationEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
+        )
+
+        # when
+        history = users_api.public_account_history(user)
+
+        # then
+        assert len(history) == 2
+        assert {
+            "action": "demande de changement d'email",
+            "datetime": email_request.creationDate,
+            "message": (
+                f"de {email_request.oldUserEmail}@{email_request.oldDomainEmail} "
+                f"à {email_request.newUserEmail}@{email_request.newDomainEmail}"
+            ),
+        } in history
+        assert {
+            "action": "validation de changement d'email",
+            "datetime": email_validation.creationDate,
+            "message": (
+                f"de {email_validation.oldUserEmail}@{email_validation.oldDomainEmail} "
+                f"à {email_validation.newUserEmail}@{email_validation.newDomainEmail}"
+            ),
+        } in history
+
+    def test_history_contains_suspensions(self):
+        # given
+        user = users_factories.UserFactory()
+        actor_user = users_factories.UserFactory()
+        deactivation = users_factories.UserSuspensionByFraudFactory(
+            user=user,
+            actorUser=actor_user,
+            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            reasonCode=users_constants.SuspensionReason.FRAUD_SUSPICION,
+        )
+        reactivation = users_factories.UnsuspendedSuspensionFactory(
+            user=user,
+            actorUser=actor_user,
+            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+        )
+
+        # when
+        history = users_api.public_account_history(user)
+
+        # then
+        assert len(history) == 2
+        assert {
+            "action": "désactivation de compte",
+            "datetime": deactivation.eventDate,
+            "message": f"par {deactivation.actorUser.publicName}: fraud suspicion",
+        } in history
+        assert {
+            "action": "réactivation de compte",
+            "datetime": reactivation.eventDate,
+            "message": f"par {deactivation.actorUser.publicName}: [aucun motif renseigné]",
+        } in history
+
+    def test_history_contains_fraud_checks(self):
+        # given
+        user = users_factories.UserFactory()
+        dms = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.DMS,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+        )
+        phone = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PHONE_VALIDATION,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+        )
+        honor = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+        )
+
+        # when
+        history = users_api.public_account_history(user)
+
+        # then
+        assert len(history) == 3
+        assert {
+            "action": "fraud check",
+            "datetime": dms.dateCreated,
+            "message": f"{dms.type.value}, {dms.eligibilityType.value}, {dms.status.value}, [raison inconnue], {dms.reason}",
+        } in history
+        assert {
+            "action": "fraud check",
+            "datetime": phone.dateCreated,
+            "message": f"{phone.type.value}, {phone.eligibilityType.value}, {phone.status.value}, [raison inconnue], {phone.reason}",
+        } in history
+        assert {
+            "action": "fraud check",
+            "datetime": honor.dateCreated,
+            "message": f"{honor.type.value}, {honor.eligibilityType.value}, {honor.status.value}, [raison inconnue], {honor.reason}",
+        } in history
+
+    def test_history_contains_reviews(self):
+        # given
+        user = users_factories.UserFactory()
+        author_user = users_factories.UserFactory()
+        ko = fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=author_user,
+            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            review=fraud_models.FraudReviewStatus.KO,
+            reason="pas glop",
+        )
+        dms = fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=author_user,
+            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+            review=fraud_models.FraudReviewStatus.REDIRECTED_TO_DMS,
+            reason="",
+        )
+
+        # when
+        history = users_api.public_account_history(user)
+
+        # then
+        assert len(history) == 2
+        assert {
+            "action": "revue manuelle",
+            "datetime": ko.dateReviewed,
+            "message": f"revue {ko.review.value} par {ko.author.publicName}: {ko.reason}",
+        } in history
+        assert {
+            "action": "revue manuelle",
+            "datetime": dms.dateReviewed,
+            "message": f"revue {dms.review.value} par {dms.author.publicName}: {dms.reason}",
+        } in history
+
+    def test_history_contains_imports(self):
+        # given
+        user = users_factories.UserFactory()
+        author_user = users_factories.UserFactory()
+        dms = users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            source=BeneficiaryImportSources.demarches_simplifiees.value,
+            statuses=[
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.DRAFT,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=30),
+                    author=author_user,
+                    detail="c'est parti",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.ONGOING,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=25),
+                    author=author_user,
+                    detail="patience",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.REJECTED,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=20),
+                    author=author_user,
+                    detail="échec",
+                ),
+            ],
+        )
+        ubble = users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            source=BeneficiaryImportSources.ubble.value,
+            statuses=[
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.DRAFT,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+                    author=author_user,
+                    detail="c'est reparti",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.ONGOING,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+                    author=author_user,
+                    detail="loading, please wait",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.CREATED,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+                    author=author_user,
+                    detail="félicitation",
+                ),
+            ],
+        )
+
+        # when
+        history = users_api.public_account_history(user)
+
+        # then
+        assert len(history) == 6
+        for status in dms.statuses:
+            assert {
+                "action": "import demarches_simplifiees",
+                "datetime": status.date,
+                "message": f"par {status.author.publicName}: {status.status.value} ({status.detail})",
+            } in history
+        for status in ubble.statuses:
+            assert {
+                "action": "import ubble",
+                "datetime": status.date,
+                "message": f"par {status.author.publicName}: {status.status.value} ({status.detail})",
+            } in history
+
+    def test_history_is_sorted_antichronologically(self):
+        # given
+        user = users_factories.UserFactory()
+        author_user = users_factories.UserFactory()
+        actor_user = users_factories.UserFactory()
+
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=55),
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=50),
+        )
+        users_factories.BeneficiaryImportFactory(
+            beneficiary=user,
+            source=BeneficiaryImportSources.ubble.value,
+            statuses=[
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.DRAFT,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=45),
+                    author=author_user,
+                    detail="bonne chance",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.ONGOING,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=40),
+                    author=author_user,
+                    detail="ça vient",
+                ),
+                users_factories.BeneficiaryImportStatusFactory(
+                    status=ImportStatus.REJECTED,
+                    date=datetime.datetime.utcnow() - datetime.timedelta(minutes=20),
+                    author=author_user,
+                    detail="raté",
+                ),
+            ],
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.PROFILE_COMPLETION,
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=35),
+        )
+        users_factories.EmailUpdateEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=30)
+        )
+        users_factories.UserSuspensionByFraudFactory(
+            user=user,
+            actorUser=actor_user,
+            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=25),
+            reasonCode=users_constants.SuspensionReason.FRAUD_SUSPICION,
+        )
+        users_factories.EmailValidationEntryFactory(
+            user=user, creationDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=15)
+        )
+        users_factories.UnsuspendedSuspensionFactory(
+            user=user,
+            actorUser=actor_user,
+            eventDate=datetime.datetime.utcnow() - datetime.timedelta(minutes=10),
+        )
+        fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=author_user,
+            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
+            review=fraud_models.FraudReviewStatus.OK,
+        )
+
+        # when
+        history = users_api.public_account_history(user)
+
+        # then
+        assert len(history) == 11
+        datetimes = [item["datetime"] for item in history]
+        assert datetimes == sorted(datetimes, reverse=True)
