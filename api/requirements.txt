@@ -16,7 +16,6 @@ blinker==1.4
 boto3==1.21.9
 coveralls==2.1.2
 debugpy
-email-validator==1.1.2
 factory-boy
 Flask==2.0.*
 Flask-Admin==1.6.0
