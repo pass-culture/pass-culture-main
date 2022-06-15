@@ -10,4 +10,4 @@ test('renders learn react link', () => {
   superFlushWithAct()
 
   expect(linkElement).toBeInTheDocument()
-});
+})

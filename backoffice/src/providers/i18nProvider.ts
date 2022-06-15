@@ -8,12 +8,10 @@ export enum LOCALES {
 
 export const initialLocale = LOCALES.EN
 
-export const i18nProvider = polyglotI18nProvider((locale) => {
+export const i18nProvider = polyglotI18nProvider(locale => {
   if (locale === LOCALES.FR) {
-    return import('../i18n/fr').then((messages) => messages.default) // for later
+    return import('../i18n/fr').then(messages => messages.default) // for later
   }
   // initial call, must return synchronously
   return englishMessages
 }, initialLocale)
-
-
