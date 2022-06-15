@@ -1,4 +1,4 @@
-import { DataProvider } from 'react-admin'
+import { DataProvider, GetOneResult } from 'react-admin'
 import {
   UserSearchInterface,
   UserApiInterface,
@@ -9,7 +9,6 @@ import { UserCredit, UserManualReview } from '../resources/PublicUsers/types'
 let assets: UserApiInterface[] = []
 const urlBase = env.API_URL
 export const dataProvider: DataProvider = {
-  // @ts-ignore see later
   async searchList(resource: string, params: string) {
     switch (resource) {
       default:
@@ -45,40 +44,13 @@ export const dataProvider: DataProvider = {
         }
     }
   },
-  // @ts-ignore see later
   async getList(resource, params) {
-    if (resource.includes('/')) {
-      switch (resource) {
-        default:
-        case 'public_users/search':
-          if (assets.length === 0) {
-            // @ts-ignore
-            const response = await fetch(
-              `${urlBase}/${resource}/?q=${encodeURIComponent(params)}`
-            )
-            const json: UserSearchInterface = await response.json()
-            assets = json.accounts.map(item => ({
-              ...item,
-              id: item.id,
-            }))
-
-            assets = assets.filter(
-              (obj, pos, arr) => arr.map(({ id }) => id).indexOf(obj.id) === pos
-            )
-          }
-
-          return {
-            data: assets,
-            total: assets.length,
-          }
-      }
-    }
     return {
       data: [],
       total: 0,
     }
   },
-  //@ts-ignore
+  //@ts-ignore TODO: (akarki) refortmatter le typage de la réponse
   async getOne(resource, params) {
     switch (resource) {
       default:
@@ -121,7 +93,6 @@ export const dataProvider: DataProvider = {
           const userHistory = await (await historyInfo()).json()
 
           const dataUser = { ...user, userCredit, userHistory }
-          console.log(dataUser)
           return { data: dataUser }
         } catch (error) {
           throw error
