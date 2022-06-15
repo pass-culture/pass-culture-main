@@ -638,6 +638,10 @@ jobs:
           name: Running linter
           working_directory: pro
           command: yarn lint:js --max-warnings 0
+      - run:
+          name: Running Scss linter
+          working_directory: pro
+          command: yarn lint:scss --max-warnings 0
       - when:
           condition:
             equal: ["master", << pipeline.git.branch >>]
