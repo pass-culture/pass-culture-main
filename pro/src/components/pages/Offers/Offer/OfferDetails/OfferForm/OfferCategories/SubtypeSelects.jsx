@@ -192,7 +192,7 @@ SubtypeSelects.propTypes = {
   }).isRequired,
   currentSubCategoryConditionalFields: PropTypes.arrayOf(PropTypes.string)
     .isRequired,
-  getErrorMessage: PropTypes.string.isRequired,
+  getErrorMessage: PropTypes.func.isRequired,
   handleSelection: PropTypes.func.isRequired,
   readOnlyFields: PropTypes.arrayOf(PropTypes.string).isRequired,
 }
