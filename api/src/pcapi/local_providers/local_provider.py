@@ -67,6 +67,9 @@ class LocalProvider(Iterator):
     def get_object_thumb_index(self) -> int:
         return 0
 
+    def get_keep_poster_ratio(self) -> bool:
+        return False
+
     @property
     @abstractmethod
     def name(self):  # type: ignore [no-untyped-def]
@@ -82,7 +85,7 @@ class LocalProvider(Iterator):
         if not new_thumb:
             return
 
-        _save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb)
+        _save_same_thumb_from_thumb_count_to_index(pc_object, new_thumb_index, new_thumb, self.get_keep_poster_ratio())
         self.createdThumbs += new_thumb_index
 
     def _create_object(self, providable_info: ProvidableInfo) -> Model:  # type: ignore [valid-type]
@@ -244,16 +247,16 @@ class LocalProvider(Iterator):
             repository.save(self.venue_provider)
 
 
-def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes):  # type: ignore [no-untyped-def, valid-type]
+def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes, keep_poster_ratio: bool = False):  # type: ignore [no-untyped-def, valid-type]
     if pc_object.thumbCount is None:  # type: ignore [attr-defined] # handle unsaved object
         pc_object.thumbCount = 0  # type: ignore [attr-defined]
     if thumb_index <= pc_object.thumbCount:  # type: ignore [attr-defined]
         # replace existing thumb
-        create_thumb(pc_object, image_as_bytes, thumb_index)
+        create_thumb(pc_object, image_as_bytes, thumb_index, keep_ratio=keep_poster_ratio)
     else:
         # add new thumb
         for index in range(pc_object.thumbCount, thumb_index):  # type: ignore [attr-defined]
-            create_thumb(pc_object, image_as_bytes, index)
+            create_thumb(pc_object, image_as_bytes, index, keep_ratio=keep_poster_ratio)
             pc_object.thumbCount += 1  # type: ignore [attr-defined]
 
 

@@ -6,6 +6,7 @@ from typing import Union
 from pcapi import settings
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedCancelBookingSuccess
+from pcapi.core.booking_providers.cds.mocked_api_calls import MockedMovies
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedPaymentType
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedScreens
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedSeatMap
@@ -34,6 +35,7 @@ MOCKS: dict[ResourceCDS, Union[dict, list[dict], list]] = {
     ResourceCDS.SCREENS: MockedScreens,
     ResourceCDS.CANCEL_BOOKING: MockedCancelBookingSuccess,
     ResourceCDS.SEATMAP: MockedSeatMap,
+    ResourceCDS.MEDIA: MockedMovies,
 }
 
 
@@ -102,6 +104,17 @@ def post_resource(
         ) from None
 
     return response.json()
+
+
+def get_movie_poster_from_api(image_url: str) -> bytes:
+    api_response = requests.get(image_url)
+
+    if api_response.status_code != 200:
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Error getting CDS API movie poster {image_url}" f" with code {api_response.status_code}"
+        )
+
+    return api_response.content
 
 
 def _build_url(

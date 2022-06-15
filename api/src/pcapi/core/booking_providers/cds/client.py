@@ -6,6 +6,7 @@ from typing import Optional
 from pydantic.tools import parse_obj_as
 
 from pcapi.connectors.cine_digital_service import ResourceCDS
+from pcapi.connectors.cine_digital_service import get_movie_poster_from_api
 from pcapi.connectors.cine_digital_service import get_resource
 from pcapi.connectors.cine_digital_service import post_resource
 from pcapi.connectors.cine_digital_service import put_resource
@@ -47,6 +48,9 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.MEDIA)
         cds_movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
         return [cds_movie.to_generic_movie() for cds_movie in cds_movies]
+
+    def get_movie_poster(self, image_url: str) -> bytes:
+        return get_movie_poster_from_api(image_url)
 
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.PAYMENT_TYPE)
