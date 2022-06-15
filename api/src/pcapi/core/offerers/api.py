@@ -444,7 +444,7 @@ def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> l
 
     if offerer_id and current_user.has_admin_role:
         offerers = Offerer.query.filter(
-            Offerer.validationToken.is_(None), Offerer.isActive.is_(True), Offerer.id == dehumanize(offerer_id)
+            Offerer.isValidated, Offerer.isActive.is_(True), Offerer.id == dehumanize(offerer_id)
         ).all()
 
     else:

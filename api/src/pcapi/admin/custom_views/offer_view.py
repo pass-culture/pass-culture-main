@@ -431,7 +431,7 @@ class ValidationBaseView(BaseAdminView):
             self.model.query.join(Venue)
             .join(Offerer)
             .options(sqla_orm.contains_eager(self.model.venue).contains_eager(Venue.managingOfferer))
-            .filter(Offerer.validationToken.is_(None))
+            .filter(Offerer.isValidated)
             .filter(self.model.validation == OfferValidationStatus.PENDING)
         )
 
@@ -440,7 +440,7 @@ class ValidationBaseView(BaseAdminView):
             self.session.query(func.count(self.model.id))
             .join(Venue)
             .join(Offerer)
-            .filter(Offerer.validationToken.is_(None))
+            .filter(Offerer.isValidated)
             .filter(self.model.validation == OfferValidationStatus.PENDING)
         )
 
