@@ -115,6 +115,10 @@ const MultiSelectAutocomplete = ({
           }}
           placeholder={field.value.length > 1 ? pluralLabel : label}
           style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
+          className={cx({
+            [styles['multi-select-autocomplete-placeholder-input']]:
+              field.value.length > 0,
+          })}
           hasError={searchMeta.touched && !!searchMeta.error}
           type="text"
           {...searchField}

@@ -52,6 +52,7 @@ type SelectInputArgs = {
     label: string
   }[]
   disabled: boolean
+  value: string
 }
 
 const SelectInputTemplate: Story<SelectInputArgs> = args => (
@@ -65,4 +66,5 @@ StandeloneSelect.args = {
   hasError: false,
   options: mockCategoriesOptions,
   disabled: false,
+  value: '',
 }
