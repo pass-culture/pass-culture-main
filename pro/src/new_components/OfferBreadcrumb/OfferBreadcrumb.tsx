@@ -7,6 +7,7 @@ import {
 } from 'components/hooks/useOfferEditionURL'
 
 import React from 'react'
+import type { Step } from 'new_components/Breadcrumb'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 
 export enum OfferBreadcrumbStep {
@@ -23,6 +24,7 @@ interface IOfferBreadcrumb {
   offerId?: string
   isOfferEducational?: boolean
   className?: string
+  haveStock?: boolean
 }
 
 const OfferBreadcrumb = ({
@@ -31,6 +33,7 @@ const OfferBreadcrumb = ({
   offerId = '',
   isOfferEducational = false,
   className,
+  haveStock = false,
 }: IOfferBreadcrumb): JSX.Element => {
   const enableEducationalInstitutionAssociation = useActiveFeature(
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
@@ -39,7 +42,7 @@ const OfferBreadcrumb = ({
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
-  let steps = []
+  let steps: Step[] = []
 
   if (!isCreatingOffer) {
     steps = [
@@ -73,36 +76,54 @@ const OfferBreadcrumb = ({
         : []),
     ]
   } else {
-    steps = [
-      {
+    const stepList: { [key: string]: Step } = {
+      [OfferBreadcrumbStep.DETAILS]: {
         id: OfferBreadcrumbStep.DETAILS,
         label: "Détails de l'offre",
       },
-      {
+      [OfferBreadcrumbStep.STOCKS]: {
         id: OfferBreadcrumbStep.STOCKS,
         label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
       },
       ...(isOfferEducational && enableEducationalInstitutionAssociation
-        ? [
-            {
+        ? {
+            [OfferBreadcrumbStep.VISIBILITY]: {
               id: OfferBreadcrumbStep.VISIBILITY,
               label: 'Visibilité',
             },
-          ]
-        : []),
+          }
+        : {}),
       ...(!isOfferEducational && useSummaryPage
-        ? [
-            {
+        ? {
+            [OfferBreadcrumbStep.SUMMARY]: {
               id: OfferBreadcrumbStep.SUMMARY,
               label: 'Récapitulatif',
             },
-          ]
-        : []),
-      {
+          }
+        : {}),
+      [OfferBreadcrumbStep.CONFIRMATION]: {
         id: OfferBreadcrumbStep.CONFIRMATION,
         label: 'Confirmation',
       },
-    ]
+    }
+
+    if (useSummaryPage && offerId) {
+      stepList[
+        OfferBreadcrumbStep.DETAILS
+      ].url = `/offre/${offerId}/individuel/creation`
+
+      stepList[
+        OfferBreadcrumbStep.STOCKS
+      ].url = `/offre/${offerId}/individuel/creation/stocks`
+
+      if (haveStock) {
+        stepList[
+          OfferBreadcrumbStep.SUMMARY
+        ].url = `/offre/${offerId}/individuel/creation/recapitulatif`
+      }
+    }
+
+    steps = Object.values(stepList)
   }
 
   return (
