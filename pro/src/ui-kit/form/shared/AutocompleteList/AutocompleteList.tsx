@@ -4,6 +4,8 @@ import { SelectOption } from 'custom_types/form'
 import cx from 'classnames'
 import styles from './AutocompleteList.module.scss'
 
+// FIXME (MathildeDuboille - 15-06-22): improve accessibility and refactor if needed.
+// This component is used in SelectAutocomplete and MultiselectAutocomplete
 type AutocompleteListProps = {
   isOpen: boolean
   onButtonClick: () => void
