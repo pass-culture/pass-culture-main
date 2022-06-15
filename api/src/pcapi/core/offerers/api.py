@@ -478,12 +478,7 @@ def get_offerer_by_collective_offer_template_id(collective_offer_id: int) -> Off
     return get_by_collective_offer_template_id(collective_offer_id)
 
 
-def is_venue_eligible_for_strict_search(venue: offerers_models.Venue) -> bool:
-    """
-    A venue is considered eligible for strict search if
-      1. it is eligible for search and validated/active;
-      2. at least one if its offers is eligible for search
-    """
+def has_venue_at_least_one_bookable_offer(venue: offerers_models.Venue) -> bool:
     if not FeatureToggle.ENABLE_VENUE_STRICT_SEARCH.is_active():
         return True
 
