@@ -1,4 +1,4 @@
-import humanize
+import typing
 
 from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
@@ -18,7 +18,45 @@ class ImageValidationError(Exception):
 
 class FileSizeExceeded(ImageValidationError):
     def __init__(self, max_size):  # type: ignore [no-untyped-def]
-        super().__init__(f"Utilisez une image dont le poids est inférieur à {humanize.naturalsize(max_size)}")
+        super().__init__(f"Utilisez une image dont le poids est inférieur à {self._natural_size(max_size)}")
+
+    @staticmethod
+    def _natural_size(value: typing.Union[float, str]) -> str:
+        """Format a number of bytes like a human readable filesize (e.g. 10 kB).
+        Decimal suffixes (kB, MB) are used.
+        Compatible with jinja2's `filesizeformat` filter.
+
+        This function is a simplified version of naturalsize from :
+        https://github.com/python-humanize/humanize/blob/main/src/humanize/filesize.py
+        Examples:
+            ```pycon
+            >>> naturalsize(3000000)
+            '3.0 MB'
+            >>> naturalsize(300)
+            '300B'
+            >>> naturalsize(3000)
+            '3.0 KB'
+            >>> naturalsize(3000)
+            '2.9 KB'
+            ```
+        """
+        suffix = ("kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+
+        base = 1000
+        float_value = float(value)
+        abs_bytes = abs(float_value)
+
+        if int(abs_bytes) == 1:
+            return f"{int(float_value)} Byte"
+        if abs_bytes < base:
+            return f"{int(float_value)} Bytes"
+
+        for i, s in enumerate(suffix):
+            unit = base ** (i + 2)
+            if abs_bytes < unit:
+                return ("%.1f" + " %s") % ((base * float_value / unit), s)
+
+        return ("%.1f" + " %s") % ((base * float_value / unit), "YB")
 
 
 class ImageTooSmall(ImageValidationError):
