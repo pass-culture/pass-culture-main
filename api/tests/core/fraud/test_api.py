@@ -17,20 +17,6 @@ import pcapi.core.users.models as users_models
 
 @pytest.mark.usefixtures("db_session")
 class CommonTest:
-    def test_validator_data(self):
-        user = users_factories.UserFactory()
-        fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
-        fraud_data = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.JOUVE,
-            dateCreated=datetime.datetime.utcnow() + datetime.timedelta(seconds=2),
-        )
-
-        expected = fraud_api.get_source_data(user)
-
-        assert isinstance(expected, fraud_models.JouveContent)
-        assert expected == fraud_models.JouveContent(**fraud_data.resultContent)
-
     @pytest.mark.parametrize(
         "id_piece_number",
         ["I III1", "I I 1JII 11IB I E", "", "Passeport n: XXXXX", "15347402 5 ZX9 "],
@@ -535,9 +521,7 @@ class EduconnectFraudTest:
 class HasUserPerformedIdentityCheckTest:
     def test_has_not_performed(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=1))
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.JOUVE, eligibilityType=users_models.EligibilityType.UNDERAGE
-        )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=users_models.EligibilityType.UNDERAGE)
 
         assert not fraud_api.has_user_performed_identity_check(user)
 
@@ -550,7 +534,7 @@ class HasUserPerformedIdentityCheckTest:
             (18, users_models.EligibilityType.AGE18),
         ],
     )
-    @pytest.mark.parametrize("check_type", [fraud_models.FraudCheckType.JOUVE, fraud_models.FraudCheckType.UBBLE])
+    @pytest.mark.parametrize("check_type", [fraud_models.FraudCheckType.DMS, fraud_models.FraudCheckType.UBBLE])
     @pytest.mark.parametrize("status", [fraud_models.FraudCheckStatus.PENDING, fraud_models.FraudCheckStatus.OK])
     def test_has_user_performed_identity_check(self, age, eligibility_type, check_type, status):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=age, months=1))
@@ -641,9 +625,7 @@ class HasUserPerformedIdentityCheckTest:
 
     def test_user_not_eligible_anymore_but_has_performed(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=20, months=1))
-        fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user, type=fraud_models.FraudCheckType.JOUVE, eligibilityType=users_models.EligibilityType.AGE18
-        )
+        fraud_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=users_models.EligibilityType.AGE18)
 
         assert fraud_api.has_user_performed_identity_check(user)
 

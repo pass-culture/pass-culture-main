@@ -12,7 +12,6 @@ class GetRegistrationDatetimeTest:
         [
             fraud_factories.UbbleContentFactory,
             fraud_factories.DMSContentFactory,
-            fraud_factories.JouveContentFactory,
             fraud_factories.EduconnectContentFactory,
         ],
     )

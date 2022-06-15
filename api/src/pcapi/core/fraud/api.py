@@ -3,7 +3,6 @@ import logging
 import re
 import typing
 
-import pydantic
 import sqlalchemy
 from sqlalchemy.orm import Query
 
@@ -453,25 +452,6 @@ def on_user_profiling_check_result(
         user.validate_profiling()
 
     repository.save(user)
-
-
-def get_source_data(user: users_models.User) -> pydantic.BaseModel:
-    fraud_check = (
-        models.BeneficiaryFraudCheck.query.filter(
-            models.BeneficiaryFraudCheck.userId == user.id,
-            models.BeneficiaryFraudCheck.type.in_(
-                [
-                    models.FraudCheckType.JOUVE,
-                    models.FraudCheckType.DMS,
-                    models.FraudCheckType.EDUCONNECT,
-                    models.FraudCheckType.UBBLE,
-                ]
-            ),
-        )
-        .order_by(models.BeneficiaryFraudCheck.dateCreated.desc())
-        .first()
-    )
-    return models.FRAUD_CHECK_MAPPING[fraud_check.type](**fraud_check.resultContent)
 
 
 def _create_failed_phone_validation_fraud_check(
