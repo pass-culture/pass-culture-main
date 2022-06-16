@@ -66,6 +66,10 @@ class Returns200Test:
                     "phoneNumber": venue1.contact.phone_number,
                     "email": venue1.contact.email,
                     "website": venue1.contact.website,
+                    "audioDisabilityCompliant": False,
+                    "mentalDisabilityCompliant": False,
+                    "motorDisabilityCompliant": False,
+                    "visualDisabilityCompliant": False,
                 }
             ]
         }
