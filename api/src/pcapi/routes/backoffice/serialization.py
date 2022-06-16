@@ -177,3 +177,16 @@ class BeneficiaryReviewRequestModel(BaseModel):
 class BeneficiaryReviewResponseModel(BeneficiaryReviewRequestModel):
     userId: int
     authorId: int
+
+
+class PublicHistoryItem(BaseModel):
+    class config:
+        extra = pydantic.Extra.forbid
+
+    action: str
+    datetime: datetime.datetime
+    message: str
+
+
+class PublicHistoryResponseModel(BaseModel):
+    history: list[PublicHistoryItem]

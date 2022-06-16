@@ -232,3 +232,18 @@ def skip_phone_validation(user_id: int) -> None:
         users_api.skip_phone_validation_step(user)
     except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
         raise ApiErrors({"user_id": "Le numéro de téléphone est déjà validé"})
+
+
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/logs", methods=["GET"])
+@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
+@spectree_serialize(
+    response_model=s11n.PublicHistoryResponseModel,
+    on_success_status=200,
+    api=blueprint.api,
+)
+def get_public_history(user_id: int) -> s11n.PublicHistoryResponseModel:
+    user = get_user_or_error(user_id)
+
+    history = users_api.public_account_history(user)
+
+    return s11n.PublicHistoryResponseModel(history=[s11n.PublicHistoryItem(**item) for item in history])
