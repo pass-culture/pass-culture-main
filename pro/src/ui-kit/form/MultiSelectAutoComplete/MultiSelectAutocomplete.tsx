@@ -11,29 +11,35 @@ import cx from 'classnames'
 import styles from './MultiSelectAutocomplete.module.scss'
 
 export interface MultiSelectAutocompleteProps {
-  options: SelectOption[]
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-  label: string
   className?: string
   fieldName: string
-  pluralLabel: string
   hideFooter?: boolean
-  isOptional?: boolean
-  smallLabel?: boolean
   hideTags?: boolean
+  isOptional?: boolean
+  label: string
+  maxDisplayOptions?: number
+  maxDisplayOptionsLabel?: string
+  maxHeight?: number
+  options: SelectOption[]
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
+  pluralLabel: string
+  smallLabel?: boolean
 }
 
 const MultiSelectAutocomplete = ({
+  className,
+  fieldName,
+  hideFooter = false,
+  hideTags = false,
+  isOptional = false,
+  label,
   options,
   onChange,
-  label,
-  fieldName,
-  className,
+  maxDisplayOptions,
+  maxDisplayOptionsLabel,
+  maxHeight,
   pluralLabel,
-  hideFooter = false,
-  isOptional = false,
   smallLabel = false,
-  hideTags = false,
 }: MultiSelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, handleChange, setFieldTouched } =
     useFormikContext<any>()
@@ -148,6 +154,50 @@ const MultiSelectAutocomplete = ({
             />
           )}
         />
+        {isOpen && (
+          <div
+            className={styles['multi-select-autocomplete__menu']}
+            style={maxHeight ? { maxHeight } : {}}
+          >
+            {filteredOptions.length === 0 && (
+              <span
+                className={cx({
+                  [styles['multi-select-autocomplete__menu--no-results']]:
+                    filteredOptions.length === 0,
+                })}
+              >
+                Aucun résultat
+              </span>
+            )}
+            {filteredOptions
+              .slice(0, maxDisplayOptions ?? filteredOptions.length)
+              .map(({ value, label }) => (
+                <BaseCheckbox
+                  label={label}
+                  key={`${fieldName}-${value}`}
+                  value={value}
+                  name={fieldName}
+                  onChange={e => {
+                    setFieldTouched(`search-${fieldName}`, true)
+                    handleChange(e)
+                    onChange?.(e)
+                  }}
+                  checked={field.value.includes(value)}
+                />
+              ))}
+            {maxDisplayOptions &&
+              maxDisplayOptionsLabel &&
+              filteredOptions.length > maxDisplayOptions && (
+                <BaseCheckbox
+                  disabled
+                  label={maxDisplayOptionsLabel}
+                  value=""
+                  name={`${fieldName}-display-more-label`}
+                  checked={false}
+                />
+              )}
+          </div>
+        )}
       </div>
       {!hideTags && field.value.length > 0 && (
         <div className={styles['multi-select-autocomplete-tags']}>
