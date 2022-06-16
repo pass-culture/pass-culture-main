@@ -1,15 +1,15 @@
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_rem.scss" as rem;
 
-.newsletterContainer {
+.newsletterContainer {/* stylelint-disable-line selector-class-pattern */
   display: flex;
   min-height: rem.torem(53px);
 
-  .newsletterImg {
+  .newsletterImg {/* stylelint-disable-line selector-class-pattern */
     position: absolute;
     width: 100%;
   }
 
-  .newsletterLink {
+  .newsletterLink {/* stylelint-disable-line selector-class-pattern */
     position: relative;
     display: flex;
     justify-content: center;
@@ -20,7 +20,7 @@
       line-height: rem.torem(23px);
     }
 
-    .iconNewsletter {
+    .iconNewsletter {/* stylelint-disable-line selector-class-pattern */
       margin-right: rem.torem(10px);
     }
   }

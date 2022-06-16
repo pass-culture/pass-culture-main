@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .field-group {
   display: table;
@@ -11,9 +11,9 @@
 input.input,
 .select select,
 textarea.textarea {
-  @include fonts.body();
+  @include fonts.body;
 
-  &[readonly]:not([type='checkbox']) {
+  &[readonly]:not([type="checkbox"]) {
     background-color: transparent;
     border: none;
     padding-left: 0.125rem;
@@ -36,7 +36,7 @@ textarea.textarea {
     }
 
     .display-name {
-      @include fonts.button();
+      @include fonts.button;
 
       color: colors.$black;
       display: inline-block;
@@ -200,10 +200,10 @@ textarea.textarea {
     }
   }
 
-  .required:not(.readOnly) {
+  .required:not(.readOnly) { /* stylelint-disable-line selector-class-pattern */
     &::after {
       color: colors.$accent;
-      content: ' *';
+      content: " *";
       display: inline;
     }
   }

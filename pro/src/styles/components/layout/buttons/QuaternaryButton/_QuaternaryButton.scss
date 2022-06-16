@@ -1,9 +1,9 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 @mixin quaternary {
-  @include fonts.caption();
+  @include fonts.caption;
 
   color: colors.$black;
   line-height: rem.torem(22px);
@@ -27,5 +27,5 @@
 }
 
 .quaternary-link {
-  @include quaternary();
+  @include quaternary;
 }

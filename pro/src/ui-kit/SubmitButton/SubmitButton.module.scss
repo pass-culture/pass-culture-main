@@ -1,7 +1,7 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
 
-.submitButton {
+.submitButton { /* stylelint-disable-line selector-class-pattern */
   /* @debt duplicated "Gaël : regroup all buttons and delete global styles to avoid important" */
   color: colors.$white !important;
 

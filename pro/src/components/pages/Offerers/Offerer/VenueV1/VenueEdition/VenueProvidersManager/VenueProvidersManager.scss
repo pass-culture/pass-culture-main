@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .venue-providers-manager {
   form {
@@ -29,7 +29,7 @@
   }
 
   .account-value {
-    @include fonts.title4();
+    @include fonts.title4;
 
     height: rem.torem(36px);
   }

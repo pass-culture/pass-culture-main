@@ -1,14 +1,13 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/variables/_forms.scss' as forms;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
 
 @mixin input-theme {
-  @include fonts.body();
+  @include fonts.body;
 
   width: 100%;
   outline: none;
-  -webkit-appearance: none;
   appearance: none;
   min-height: rem.torem(40px);
   line-height: 1.3;
@@ -17,7 +16,7 @@
   background-color: forms.$input-bg-color;
   padding: 0 rem.torem(16px);
   color: forms.$input-text-color;
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
+  box-shadow: 0 0 0 0 rgb(0 0 0 / 0%);
   transition: border 150ms ease, background 150ms ease, box-shadow 150ms ease;
 
   &:focus,
@@ -37,7 +36,7 @@
   }
 
   &::placeholder {
-    @include fonts.placeholder();
+    @include fonts.placeholder;
 
     color: forms.$placeholder-text-color;
   }

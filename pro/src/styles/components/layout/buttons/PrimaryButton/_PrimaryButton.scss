@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 @mixin primary-focus {
   background-color: colors.$primary-dark;
@@ -8,7 +8,7 @@
 }
 
 @mixin primary {
-  @include fonts.button();
+  @include fonts.button;
 
   background-color: colors.$primary;
   border: 3px solid colors.$primary;
@@ -21,7 +21,7 @@
   &:active,
   &:hover,
   &:focus {
-    @include primary-focus();
+    @include primary-focus;
 
     color: colors.$white;
   }
@@ -32,7 +32,7 @@
 }
 
 .primary-button {
-  @include primary();
+  @include primary;
 
   &:disabled {
     background-color: colors.$primary-disabled;
@@ -55,7 +55,7 @@
 }
 
 .primary-link {
-  @include primary();
+  @include primary;
 
   display: inline-block;
 

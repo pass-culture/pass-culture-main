@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .desk-screen {
   .desk-form {
@@ -41,7 +41,7 @@
 }
 
 .desk-message {
-  @include fonts.caption();
+  @include fonts.caption;
 
   color: colors.$green-valid;
 

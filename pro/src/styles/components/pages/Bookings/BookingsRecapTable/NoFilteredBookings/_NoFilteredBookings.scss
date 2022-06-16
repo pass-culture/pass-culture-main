@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .no-filtered-bookings-wrapper {
   align-items: center;
@@ -15,7 +15,7 @@
   }
 
   span {
-    @include fonts.body();
+    @include fonts.body;
 
     color: colors.$grey-dark;
 
@@ -25,7 +25,7 @@
   }
 
   button {
-    @include fonts.button();
+    @include fonts.button;
 
     background: none;
     border: none;

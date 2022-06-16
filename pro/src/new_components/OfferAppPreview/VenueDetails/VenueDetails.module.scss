@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .venue-details {
   background-color: colors.$grey-very-light;
@@ -22,13 +22,13 @@
 }
 
 .title {
-  @include fonts.button();
+  @include fonts.button;
 
   margin-bottom: rem.torem(16px);
 }
 
 .sub-title {
-  @include fonts.highlight();
+  @include fonts.highlight;
 
   line-height: rem.torem(16px);
 }
@@ -38,7 +38,7 @@
 }
 
 .text {
-  @include fonts.preview-text();
+  @include fonts.preview-text;
 
   margin-bottom: rem.torem(16px);
 

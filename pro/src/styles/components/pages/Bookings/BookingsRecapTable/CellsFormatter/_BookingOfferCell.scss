@@ -1,9 +1,9 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .booking-offer-name {
-  @include fonts.button();
+  @include fonts.button;
 
   max-width: rem.torem(130px);
   overflow: hidden;

@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 // sass doc: https://sass-lang.com/documentation
 .tutorial-box {
@@ -23,7 +23,7 @@
 
   li {
     list-style-position: inside;
-    list-style-type: '- ';
+    list-style-type: "- ";
     margin-top: rem.torem(8px);
   }
 
@@ -60,7 +60,7 @@
     .nav-step-active {
       background: colors.$primary;
       border-radius: 50%;
-      box-shadow: 0 0 3px 0 rgba(colors.$secondary, 0.21);
+      box-shadow: 0 0 3px 0 rgb(colors.$secondary 0.21);
       height: 12px;
       width: 12px;
     }

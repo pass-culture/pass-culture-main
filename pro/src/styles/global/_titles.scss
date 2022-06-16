@@ -1,16 +1,16 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 h1 {
-  @include fonts.title1();
+  @include fonts.title1;
 
   color: colors.$black;
   line-height: rem.torem(36px);
 }
 
 h2 {
-  @include fonts.title2();
+  @include fonts.title2;
 
   line-height: rem.torem(28px);
 }

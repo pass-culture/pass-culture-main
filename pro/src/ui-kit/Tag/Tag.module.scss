@@ -1,9 +1,9 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .tag {
-  @include fonts.highlight();
+  @include fonts.highlight;
 
   white-space: nowrap;
   justify-content: center;
@@ -21,7 +21,7 @@
   }
 
   &-close-button {
-    @include fonts.highlight();
+    @include fonts.highlight;
 
     line-height: rem.torem(16px);
     background: none;

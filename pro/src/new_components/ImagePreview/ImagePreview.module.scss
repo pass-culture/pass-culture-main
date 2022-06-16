@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .image-preview-previews {
   background: colors.$grey-light;
@@ -27,7 +27,7 @@
   align-items: center;
 
   figcaption {
-    @include fonts.caption();
+    @include fonts.caption;
   }
 }
 

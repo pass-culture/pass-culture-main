@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .bank-information {
   position: relative;
@@ -32,7 +32,7 @@
     width: fit-content;
 
     select {
-      @include fonts.body-important();
+      @include fonts.body-important;
 
       appearance: none;
       background-color: colors.$white;
@@ -49,7 +49,7 @@
       border-radius: rem.torem(2px);
       border-right: 0;
       border-top: 0;
-      content: '';
+      content: "";
       height: rem.torem(10px);
       margin-top: rem.torem(-19px);
       pointer-events: none;

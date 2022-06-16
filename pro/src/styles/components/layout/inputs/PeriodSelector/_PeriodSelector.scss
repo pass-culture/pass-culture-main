@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .period-filter {
   .period-filter-inputs {
@@ -21,7 +21,7 @@
 
   .period-filter-inputs .field-date {
     align-items: center;
-    background: url(/icons/ico-calendar.svg) no-repeat 93% center;
+    background: url("/icons/ico-calendar.svg") no-repeat 93% center;
     box-shadow: none;
     display: flex;
     height: rem.torem(40px);
@@ -31,7 +31,7 @@
     }
 
     &.disabled {
-      background-image: url(/icons/ico-calendar-disabled.svg);
+      background-image: url("/icons/ico-calendar-disabled.svg");
     }
   }
 
@@ -61,7 +61,7 @@
   }
 
   .period-filter-input {
-    @include fonts.body();
+    @include fonts.body;
 
     background: none;
     border: 0;

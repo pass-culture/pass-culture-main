@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'src/styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "src/styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
 
 .reimbursements-page {
   .header {
@@ -10,12 +10,12 @@
     padding-bottom: rem.torem(36px);
 
     &-title {
-      @include fonts.title3();
+      @include fonts.title3;
     }
   }
 
   .reset-filters {
-    @include fonts.button();
+    @include fonts.button;
 
     color: colors.$primary;
     line-height: rem.torem(22px);
@@ -99,7 +99,7 @@
   }
 
   .no-refunds-title {
-    @include fonts.title4();
+    @include fonts.title4;
 
     margin: rem.torem(16px) 0;
   }

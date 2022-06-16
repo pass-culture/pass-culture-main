@@ -1,4 +1,5 @@
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/variables/_colors.scss" as colors;
+/* stylelint-disable selector-class-pattern */
 
 .react-datepicker-wrapper {
   width: 100%;
@@ -27,7 +28,7 @@
   color: colors.$white;
 }
 
-.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected {
+.react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list li.react-datepicker__time-list-item--selected { /* stylelint-disable-line max-line-length */
   background-color: colors.$primary;
 
   &:hover,

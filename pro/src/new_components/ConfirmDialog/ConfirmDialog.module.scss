@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .confirm-dialog {
   align-items: center;
@@ -11,7 +11,7 @@
   text-align: center;
 
   &-title {
-    @include fonts.gabarit();
+    @include fonts.gabarit;
 
     margin-top: rem.torem(32px);
 

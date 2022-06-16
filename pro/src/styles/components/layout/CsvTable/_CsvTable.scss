@@ -1,7 +1,7 @@
-@use 'styles/mixins/_dotted.scss' as dotted;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_dotted.scss" as dotted;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 #csv-container {
   display: flex;
@@ -56,9 +56,11 @@
 
 #main-container {
   background-color: colors.$white;
+  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
   grid-column-end: end-line;
   grid-column-start: col-start;
   grid-row-start: row-header;
+  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
 }
 
 #spinner-container {

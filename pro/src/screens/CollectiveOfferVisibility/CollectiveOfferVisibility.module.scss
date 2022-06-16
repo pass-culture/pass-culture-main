@@ -1,5 +1,5 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .description-text {
   margin-bottom: rem.torem(24px);
@@ -16,7 +16,7 @@
 .legend {
   border: none;
 
-  @include fonts.title4();
+  @include fonts.title4;
 
   margin-bottom: rem.torem(24px);
 }

@@ -1,24 +1,24 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .stocks-page {
   /* Chrome, Safari, Edge, Opera */
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
+    appearance: none;
     margin: 0;
   }
 
   /* Firefox */
-  input[type='number'] {
-    -moz-appearance: textfield;
+  input[type="number"] {
+    appearance: textfield;
   }
 
   .resized-input input {
     width: 100%;
 
-    &[type='number']:disabled {
+    &[type="number"]:disabled {
       border: 1px solid transparent;
     }
   }
@@ -33,7 +33,7 @@
   }
 
   .with-euro-icon {
-    background: url(/icons/ico-euro.svg) no-repeat 85% center;
+    background: url("/icons/ico-euro.svg") no-repeat 85% center;
   }
 
   .action-column .tertiary-button {
@@ -46,7 +46,7 @@
 
   .field-date {
     align-items: center;
-    background: url(/icons/ico-calendar.svg) no-repeat 90% center;
+    background: url("/icons/ico-calendar.svg") no-repeat 90% center;
     border-width: 1px;
     box-shadow: none;
     display: flex;
@@ -62,7 +62,7 @@
 
     &.disabled {
       background-color: colors.$grey-light;
-      background-image: url(/icons/ico-calendar-disabled.svg);
+      background-image: url("/icons/ico-calendar-disabled.svg");
       border-color: transparent;
     }
   }
@@ -72,7 +72,7 @@
   }
 
   .datetime-input {
-    @include fonts.body();
+    @include fonts.body;
 
     background: none;
     border: 0;

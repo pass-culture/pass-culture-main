@@ -1,5 +1,5 @@
-@use 'styles/variables/_forms.scss' as forms;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
 
 .base-checkbox {
   display: inline-flex;
@@ -28,7 +28,6 @@
   }
 
   &-input {
-    -webkit-appearance: none;
     appearance: none;
     background-color: forms.$input-bg-color;
     border: 2px solid forms.$input-border-color;

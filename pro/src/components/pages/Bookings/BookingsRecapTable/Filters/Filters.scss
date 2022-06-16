@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .vertical-bar {
   background-color: colors.$grey-medium;
@@ -35,10 +35,10 @@
     }
 
     .fw-booking-text-filters-select {
-      @include fonts.button();
+      @include fonts.button;
 
       appearance: none;
-      background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
+      background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
       border: 1px solid colors.$grey-medium;
       border-radius: 20px 0 0 20px;
       border-right: none;
@@ -54,10 +54,10 @@
       }
 
       &:disabled {
-        @include fonts.body-important();
+        @include fonts.body-important;
 
         background-color: colors.$grey-light;
-        background-image: url(/icons/dropdown-disclosure-down-b-disabled.svg);
+        background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
         border-color: colors.$grey-light;
         color: colors.$grey-dark;
         cursor: initial;
@@ -66,7 +66,7 @@
     }
 
     .fw-booking-text-filters-input {
-      @include fonts.body();
+      @include fonts.body;
 
       border: 1px solid colors.$grey-medium;
       border-left: none;
@@ -101,7 +101,7 @@
 
     .field-date {
       align-items: center;
-      background-image: url(/icons/ico-calendar.svg);
+      background-image: url("/icons/ico-calendar.svg");
       background-position-x: 90%;
       background-position-y: center;
       background-repeat: no-repeat;
@@ -115,7 +115,7 @@
       }
 
       &.disabled {
-        background-image: url(/icons/ico-calendar-disabled.svg);
+        background-image: url("/icons/ico-calendar-disabled.svg");
       }
     }
 
@@ -153,7 +153,7 @@
       }
 
       .fw-offer-date-input {
-        @include fonts.body();
+        @include fonts.body;
 
         background: none;
         border: 0;
@@ -178,14 +178,14 @@
       flex-direction: column;
 
       .fw-offer-venue-label {
-        @include fonts.body();
+        @include fonts.body;
       }
 
       select {
-        @include fonts.body();
+        @include fonts.body;
 
         appearance: none;
-        background: url(/icons/dropdown-disclosure-down-b.svg) no-repeat 92% 56%;
+        background: url("/icons/dropdown-disclosure-down-b.svg") no-repeat 92% 56%;
         border: 1px solid colors.$grey-medium;
         border-radius: 20px;
         box-shadow: 1px 2px 6px 0 colors.$black-shadow;
@@ -207,7 +207,7 @@
 
         &:disabled {
           background-color: colors.$grey-light;
-          background-image: url(/icons/dropdown-disclosure-down-b-disabled.svg);
+          background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
           border-color: colors.$grey-light;
           box-shadow: none;
           color: colors.$grey-dark;
@@ -227,7 +227,7 @@
   position: relative;
 
   .bs-filter-label {
-    @include fonts.caption();
+    @include fonts.caption;
 
     color: colors.$grey-dark;
     padding-bottom: rem.torem(8px);
@@ -237,7 +237,7 @@
   .bs-filter-tooltip {
     background-color: colors.$white;
     border-radius: 4px;
-    box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 10px 0 rgb(0 0 0 / 30%);
     left: rem.torem(-90px);
     margin-top: rem.torem(8px);
     padding: rem.torem(16px);
@@ -246,7 +246,7 @@
   }
 
   label {
-    @include fonts.body();
+    @include fonts.body;
 
     display: flex;
     padding-bottom: rem.torem(8px);

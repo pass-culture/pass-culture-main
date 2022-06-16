@@ -1,8 +1,8 @@
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/variables/_colors.scss" as colors;
 
 .field-date-only {
-  @extend .field-input;
-  @extend .field-date;
+  @extend .field-input; /* stylelint-disable-line scss/at-extend-no-missing-placeholder */
+  @extend .field-date; /* stylelint-disable-line scss/at-extend-no-missing-placeholder */
 
   &.disabled {
     background-color: colors.$grey-light;

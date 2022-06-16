@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .activation-codes-upload {
   align-items: center;
@@ -16,7 +16,7 @@
   }
 
   .activation-codes-upload-title {
-    @include fonts.title4();
+    @include fonts.title4;
 
     margin-top: rem.torem(8px);
   }
@@ -40,7 +40,7 @@
   }
 
   .activation-codes-upload-gabarit {
-    @include fonts.gabarit();
+    @include fonts.gabarit;
 
     margin-bottom: rem.torem(10px);
   }

@@ -1,13 +1,13 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .input-select {
   display: flex;
   flex-direction: column;
 
   .it-sub-label {
-    @include fonts.caption();
+    @include fonts.caption;
 
     color: colors.$grey-dark;
     float: right;
@@ -15,11 +15,11 @@
   }
 
   select {
-    @include fonts.body();
+    @include fonts.body;
 
     appearance: none;
     background:
-      url('/icons/dropdown-disclosure-down-b.svg') no-repeat right
+      url("/icons/dropdown-disclosure-down-b.svg") no-repeat right
       rem.torem(15px) top 56%;
     border: 1px solid colors.$grey-medium;
     border-radius: rem.torem(20px);
@@ -37,7 +37,7 @@
 
     &:disabled {
       background-color: colors.$grey-light;
-      background-image: url('/icons/dropdown-disclosure-down-b-disabled.svg');
+      background-image: url("/icons/dropdown-disclosure-down-b-disabled.svg");
       border-color: colors.$grey-light;
       color: colors.$grey-dark;
       cursor: initial;

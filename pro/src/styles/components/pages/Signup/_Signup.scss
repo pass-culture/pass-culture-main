@@ -1,11 +1,11 @@
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/variables/_colors.scss" as colors;
 
 .sign-up-page {
   display: flex;
   flex-direction: row;
 
   .logo-side {
-    background-image: url(/icons/linear-gradient.svg);
+    background-image: url("/icons/linear-gradient.svg");
     box-shadow: inset -10px 0 20px 0 colors.$black-shadow;
     min-width: 520px;
     background-size: cover;

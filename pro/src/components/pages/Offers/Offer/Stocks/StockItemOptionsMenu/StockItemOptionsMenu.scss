@@ -1,10 +1,10 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .stocks-page {
   .stock-options-menu-button {
-    @include fonts.title2();
+    @include fonts.title2;
 
     background-color: transparent;
     border: none;
@@ -26,7 +26,7 @@
 }
 
 .stock-options-menu-item-text {
-  @include fonts.caption();
+  @include fonts.caption;
 
   color: colors.$black;
 }
@@ -37,7 +37,7 @@
 }
 
 .stock-options-menu-item {
-  @include fonts.button();
+  @include fonts.button;
 
   align-items: center;
   column-gap: 4px;
@@ -88,7 +88,7 @@
 [data-reach-menu-popover] {
   z-index: 3;
   border: rem.torem(1px) solid #f1f1f4;
-  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgba(103, 104, 107, 0.1);
+  box-shadow: 0 rem.torem(3px) rem.torem(4px) rgb(103 104 107 / 10%);
   border-radius: rem.torem(6px);
   overflow: hidden;
 }

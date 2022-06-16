@@ -1,8 +1,8 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .no-data {
-  @include fonts.title4();
+  @include fonts.title4;
 
   align-items: center;
   display: flex;

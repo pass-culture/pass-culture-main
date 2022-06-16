@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .bookings-page {
   .vertical-bar {
@@ -24,7 +24,7 @@
     .pf-offer-date {
       .field-date {
         align-items: center;
-        background-image: url(/icons/ico-calendar.svg);
+        background-image: url("/icons/ico-calendar.svg");
         background-position-x: 90%;
         background-position-y: center;
         background-repeat: no-repeat;
@@ -42,7 +42,7 @@
         }
 
         &.disabled {
-          background-image: url(/icons/ico-calendar-disabled.svg);
+          background-image: url("/icons/ico-calendar-disabled.svg");
           border: none;
           box-shadow: none;
         }
@@ -65,7 +65,7 @@
       }
 
       .pf-offer-date-input {
-        @include fonts.body();
+        @include fonts.body;
 
         background: none;
         border: 0;
@@ -146,7 +146,7 @@
   }
 
   .pf-refresh-message {
-    @include fonts.body();
+    @include fonts.body;
 
     color: colors.$red-error;
     line-height: rem.torem(16px);

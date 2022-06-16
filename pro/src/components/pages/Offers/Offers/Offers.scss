@@ -1,17 +1,17 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .offers-page {
   .op-title {
-    @include fonts.title3();
+    @include fonts.title3;
 
     display: inline-block;
     margin: 0 rem.torem(20px) rem.torem(24px) 0;
   }
 
   .offerer-filter {
-    @include fonts.caption();
+    @include fonts.caption;
 
     align-items: center;
     background-color: colors.$notification-info;
@@ -114,7 +114,7 @@
     width: 100%;
 
     th {
-      @include fonts.caption();
+      @include fonts.caption;
 
       color: colors.$black;
       padding: 0 rem.torem(8px) rem.torem(10px);
@@ -126,7 +126,7 @@
       padding: 0;
 
       input {
-        @include fonts.body-important();
+        @include fonts.body-important;
 
         &:disabled {
           cursor: not-allowed;
@@ -212,7 +212,7 @@
   }
 
   .pagination {
-    @include fonts.caption();
+    @include fonts.caption;
 
     align-items: center;
     display: flex;

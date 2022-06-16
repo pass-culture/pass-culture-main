@@ -1,10 +1,10 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .bookings-table {
   .booking-status-label {
-    @include fonts.caption();
+    @include fonts.caption;
 
     border-radius: rem.torem(5px);
     color: colors.$white;
@@ -66,26 +66,26 @@
   }
 
   .bs-offer-title {
-    @include fonts.button();
+    @include fonts.button;
 
     display: block;
   }
 
   .bs-offer-amount {
-    @include fonts.caption();
+    @include fonts.caption;
 
     display: block;
     margin-top: rem.torem(7px);
   }
 
   .bs-history-title {
-    @include fonts.body();
+    @include fonts.body;
 
     margin-top: rem.torem(16px);
   }
 
   .bs-history-label {
-    @include fonts.body();
+    @include fonts.body;
 
     margin-top: rem.torem(12px);
   }

@@ -1,9 +1,10 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_forms.scss' as forms;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
 
 .text-area {
   @include forms.input-theme;
+
   $line-height: 1.3;
   $padding: 8px;
   $font-size: 16px;

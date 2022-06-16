@@ -1,6 +1,6 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/variables/_colors.scss" as colors;
 
 .columns,
 .field.is-grouped {
@@ -14,14 +14,14 @@ main {
     padding-top: 0;
 
     .main-list-title {
-      @include fonts.title4();
+      @include fonts.title4;
 
       border-bottom: thin solid colors.$grey-medium;
       margin: 0.75rem 0;
       padding-bottom: 0.5rem;
 
       .main-list-title-text {
-        @include fonts.title4();
+        @include fonts.title4;
       }
 
       span {
@@ -37,7 +37,7 @@ main {
   }
 
   .advice {
-    @include fonts.title4();
+    @include fonts.title4;
 
     margin-bottom: rem.torem(32px);
 
@@ -52,10 +52,12 @@ main {
   }
 
   &.fullscreen {
+    /* stylelint-disable declaration-block-no-redundant-longhand-properties */
     grid-column-end: end-line;
     grid-column-start: col-start;
     grid-row-end: end-line;
     grid-row-start: row-nav;
+    /* stylelint-enable declaration-block-no-redundant-longhand-properties */
     height: 100vh;
 
     .container {
@@ -71,9 +73,11 @@ main {
   }
 
   &.container {
+    /* stylelint-disable declaration-block-no-redundant-longhand-properties */
     grid-column-start: col-main;
     grid-row-end: row-footer;
     grid-row-start: row-header;
+    /* stylelint-enable declaration-block-no-redundant-longhand-properties */
 
     .page-content {
       background: colors.$white;
@@ -89,7 +93,7 @@ main {
         }
 
         .back-button {
-          @include fonts.button();
+          @include fonts.button;
 
           padding-left: rem.torem(30px);
           position: absolute;

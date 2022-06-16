@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .hero-section {
   display: flex;
@@ -15,7 +15,7 @@
   }
 
   .section-icon {
-    background-image: url(/icons/ico-structure.svg);
+    background-image: url("/icons/ico-structure.svg");
     background-position: center;
     background-repeat: no-repeat;
     background-size: 80%;
@@ -41,7 +41,7 @@
 
   .title-action-links {
     .link {
-      @include fonts.caption();
+      @include fonts.caption;
 
       background-color: transparent;
       color: colors.$primary;
@@ -82,5 +82,5 @@
 }
 
 h3.section-title {
-  @include fonts.title3();
+  @include fonts.title3;
 }

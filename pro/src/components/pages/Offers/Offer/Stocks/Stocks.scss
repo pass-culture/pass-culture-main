@@ -1,14 +1,16 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
+/* stylelint-disable scss/dollar-variable-pattern */
 $actionsPaddingTop: rem.torem(20px);
 $actionsPaddingBottom: rem.torem(20px);
 $buttonHeight: rem.torem(40px);
+/* stylelint-enable scss/dollar-variable-pattern */
 
 .stocks-page {
   h2 {
-    @include fonts.title3();
+    @include fonts.title3;
   }
 
   .add-first-stock-button {
@@ -34,7 +36,7 @@ $buttonHeight: rem.torem(40px);
   }
 
   th {
-    @include fonts.caption();
+    @include fonts.caption;
 
     text-align: left;
   }

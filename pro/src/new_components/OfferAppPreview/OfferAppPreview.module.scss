@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .offer-preview-container {
   border: rem.torem(1px) solid colors.$grey-medium;
@@ -36,7 +36,7 @@
   margin-bottom: rem.torem(16px);
 
   .offer-title {
-    @include fonts.button();
+    @include fonts.button;
 
     max-width: rem.torem(224px);
     overflow-wrap: break-word;
@@ -50,7 +50,7 @@
   }
 
   .offer-description {
-    @include fonts.preview-text();
+    @include fonts.preview-text;
 
     padding: rem.torem(0) rem.torem(15px) rem.torem(15px);
     word-break: break-word;

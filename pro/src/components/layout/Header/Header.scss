@@ -1,13 +1,15 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 header.menu-v2 {
   background-image: colors.$linear-gradient-to-right;
+  /* stylelint-disable declaration-block-no-redundant-longhand-properties */
   grid-column-end: end-line;
   grid-column-start: col-start;
   grid-row-end: row-main;
   grid-row-start: row-nav;
+  /* stylelint-enable declaration-block-no-redundant-longhand-properties */
 
   nav {
     display: grid;
@@ -29,7 +31,7 @@ header.menu-v2 {
 
       button.nav-item,
       a.nav-item {
-        @include fonts.button();
+        @include fonts.button;
 
         align-items: center;
         color: colors.$white;

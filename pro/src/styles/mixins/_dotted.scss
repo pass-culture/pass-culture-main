@@ -1,6 +1,21 @@
 @mixin dotted($color, $position: top) {
-  background-image: if($position == top or $position == bottom, linear-gradient(to left, $color 10%, transparent 0%), linear-gradient($color 10%, transparent 0%));
+  background-image:
+    if(
+      $position == top or $position == bottom,
+      linear-gradient(to left, $color 10%, transparent 0%),
+      linear-gradient($color 10%, transparent 0%)
+    );
   background-position: $position;
-  background-repeat: if($position == top or $position == bottom, repeat-x, repeat-y);
-  background-size: if($position == top or $position == bottom, 6px 1px, 1px 6px);
+  background-repeat:
+    if(
+      $position == top or $position == bottom,
+      repeat-x,
+      repeat-y
+    );
+  background-size:
+    if(
+      $position == top or $position == bottom,
+      6px 1px,
+      1px 6px
+    );
 }

@@ -1,9 +1,9 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
 
 .button {
-  @include fonts.button();
+  @include fonts.button;
 
   display: inline-flex;
   align-items: center;
@@ -88,7 +88,7 @@
   }
 
   &-ternary {
-    @include fonts.button();
+    @include fonts.button;
 
     color: colors.$black;
     background-color: transparent;

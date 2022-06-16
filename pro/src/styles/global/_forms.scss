@@ -1,6 +1,6 @@
-@use 'styles/mixins/_fonts.scss' as fonts;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .field-group {
   display: table;
@@ -13,7 +13,7 @@
 }
 
 .field-label {
-  @include fonts.title4();
+  @include fonts.title4;
 
   color: colors.$black;
   margin-bottom: rem.torem(12px);
@@ -48,7 +48,7 @@
 .checkbox-field,
 .checkboxes-field {
   .field-inner {
-    @include fonts.body-important();
+    @include fonts.body-important;
 
     border: none;
     border-radius: 0;
@@ -58,7 +58,7 @@
 }
 
 .field-select {
-  @include fonts.body-important();
+  @include fonts.body-important;
 
   appearance: none;
   background-position: 97.5% 50%;
@@ -93,7 +93,7 @@
 
 .field-input,
 .field-textarea {
-  @include fonts.body-important();
+  @include fonts.body-important;
 
   border: 1px solid colors.$grey-medium;
   border-radius: 1.125em;
@@ -115,7 +115,7 @@
   padding: rem.torem(6px);
 
   input.date {
-    @include fonts.preview-text();
+    @include fonts.preview-text;
 
     border: 0;
     min-width: rem.torem(60px);
@@ -150,7 +150,7 @@
   }
 
   .character-count {
-    @include fonts.preview-text();
+    @include fonts.preview-text;
   }
 }
 
@@ -200,7 +200,7 @@
 
       .field-checkbox,
       .field-checkboxes {
-        input[type='checkbox'] {
+        input[type="checkbox"] {
           opacity: 1;
         }
       }
@@ -210,7 +210,7 @@
       .field-input,
       .field-textarea,
       .field-select {
-        @include fonts.body-important();
+        @include fonts.body-important;
 
         background-color: transparent;
         border: 0;
@@ -261,7 +261,7 @@
 }
 
 .field-errors {
-  @include fonts.caption();
+  @include fonts.caption;
 
   color: colors.$primary;
   display: flex;
@@ -275,10 +275,10 @@
   }
 }
 
-.input[type='email'],
-.input[type='text'],
-.input[type='url'] {
-  @include fonts.body();
+.input[type="email"],
+.input[type="text"],
+.input[type="url"] {
+  @include fonts.body;
 
   align-items: center;
   appearance: none;

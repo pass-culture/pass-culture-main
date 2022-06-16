@@ -1,16 +1,16 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_forms.scss' as formsM;
-@use 'styles/variables/_forms.scss' as forms;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_forms.scss" as formsM;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .select-input {
-  @include formsM.input-theme();
+  @include formsM.input-theme;
 
   padding-right: rem.torem(forms.$input-right-icon-padding);
 
   &.has-error {
-    @include formsM.input-theme-error();
+    @include formsM.input-theme-error;
   }
 
   &-icon {
@@ -22,7 +22,7 @@
   }
 
   &-placeholder {
-    @include fonts.placeholder();
+    @include fonts.placeholder;
 
     color: colors.$grey-dark;
   }

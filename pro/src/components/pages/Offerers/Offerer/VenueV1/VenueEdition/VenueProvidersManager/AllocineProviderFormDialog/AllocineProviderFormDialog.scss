@@ -1,6 +1,6 @@
-@use 'styles/variables/_colors.scss' as colors;
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/mixins/_fonts.scss' as fonts;
+@use "styles/variables/_colors.scss" as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
 
 .allocine-provider-form-dialog {
   align-items: center;
@@ -11,7 +11,7 @@
   text-align: left;
 
   .title {
-    @include fonts.gabarit();
+    @include fonts.gabarit;
   }
 
   .explanation {
@@ -21,12 +21,12 @@
   .allocine-provider-form {
     margin-top: rem.torem(32px);
 
-    input[type='number'] {
+    input[type="number"] {
       height: rem.torem(40px);
     }
 
     .imported-offres-clarification {
-      @include fonts.caption();
+      @include fonts.caption;
 
       color: colors.$grey-dark;
       margin-top: rem.torem(24px);

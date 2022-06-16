@@ -1,5 +1,5 @@
-@use 'styles/mixins/_rem.scss' as rem;
-@use 'styles/variables/_colors.scss' as colors;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/variables/_colors.scss" as colors;
 
 .bi-banner {
   &.attention {
@@ -32,7 +32,7 @@
 }
 
 .bi-link {
-  &.bi-external-link--mod-topright {
+  &.bi-external-link--mod-topright { /* stylelint-disable-line selector-class-pattern */
     position: absolute;
     right: 0;
     top: rem.torem(-6px);
