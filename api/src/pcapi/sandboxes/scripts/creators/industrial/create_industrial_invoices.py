@@ -19,6 +19,8 @@ logger = logging.getLogger(__name__)
 def create_industrial_invoices():  # type: ignore [no-untyped-def]
     logger.info("create_industrial_invoices")
 
+    finance_api.price_bookings()
+
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows_created = finance_models.Cashflow.query.count()
     logger.info("Created %s Cashflows", cashflows_created)
