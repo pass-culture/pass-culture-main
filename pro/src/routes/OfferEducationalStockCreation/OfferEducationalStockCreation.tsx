@@ -35,6 +35,9 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const enableIndividualAndCollectiveSeparation = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
+  const enableEducationalInstitutionAssociation = useActiveFeature(
+    'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
+  )
 
   const handleSubmitStock = async (
     offer: GetStockOfferSuccessPayload,
@@ -82,11 +85,17 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     const successPayload = payload as unknown as { id: string }
     const shouldUseNewTemplateIds =
       isTemplate && enableIndividualAndCollectiveSeparation
-    history.push(
-      `/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${
-        shouldUseNewTemplateIds ? successPayload.id : offer.id
-      }/collectif/visibilite`
-    )
+
+    let url = `/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${
+      shouldUseNewTemplateIds ? successPayload.id : offer.id
+    }/collectif`
+
+    if (enableEducationalInstitutionAssociation) {
+      url = `${url}/visibilite`
+    } else {
+      url = `${url}/confirmation`
+    }
+    history.push(url)
   }
 
   useEffect(() => {
