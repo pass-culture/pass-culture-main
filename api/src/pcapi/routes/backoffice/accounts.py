@@ -17,7 +17,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
-from . import serialization as s11n
+from . import serialization
 from .utils import get_user_or_error
 
 
@@ -34,38 +34,42 @@ SUBSCRIPTION_ITEM_METHODS = [
 @blueprint.backoffice_blueprint.route("public_accounts/search", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=s11n.ListPublicAccountsResponseModel,
+    response_model=serialization.ListPublicAccountsResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
-def search_public_account(query: s11n.PublicAccountSearchQuery) -> s11n.ListPublicAccountsResponseModel:
+def search_public_account(
+    query: serialization.PublicAccountSearchQuery,
+) -> serialization.ListPublicAccountsResponseModel:
     terms = query.q.split()
     accounts = users_api.search_public_account(terms)
 
-    return s11n.ListPublicAccountsResponseModel(accounts=[s11n.PublicAccount.from_orm(account) for account in accounts])
+    return serialization.ListPublicAccountsResponseModel(
+        accounts=[serialization.PublicAccount.from_orm(account) for account in accounts]
+    )
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=s11n.PublicAccount,
+    response_model=serialization.PublicAccount,
     on_success_status=200,
     api=blueprint.api,
 )
-def get_public_account(user_id: int) -> s11n.PublicAccount:
+def get_public_account(user_id: int) -> serialization.PublicAccount:
     user = get_user_or_error(user_id)
 
-    return s11n.PublicAccount.from_orm(user)
+    return serialization.PublicAccount.from_orm(user)
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["POST"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=s11n.PublicAccount,
+    response_model=serialization.PublicAccount,
     on_success_status=200,
     api=blueprint.api,
 )
-def update_public_account(user_id: int, body: s11n.PublicAccountUpdateRequest) -> s11n.PublicAccount:
+def update_public_account(user_id: int, body: serialization.PublicAccountUpdateRequest) -> serialization.PublicAccount:
     user = users_repository.get_user_by_id(user_id)
     if not user:
         raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"})
@@ -94,22 +98,22 @@ def update_public_account(user_id: int, body: s11n.PublicAccountUpdateRequest) -
 
     users_external.update_external_user(user)
 
-    return s11n.PublicAccount.from_orm(user)
+    return serialization.PublicAccount.from_orm(user)
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/credit", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=s11n.GetBeneficiaryCreditResponseModel,
+    response_model=serialization.GetBeneficiaryCreditResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
-def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseModel:
+def get_beneficiary_credit(user_id: int) -> serialization.GetBeneficiaryCreditResponseModel:
     user = get_user_or_error(user_id)
 
     domains_credit = users_api.get_domains_credit(user) if user.is_beneficiary else None
 
-    return s11n.GetBeneficiaryCreditResponseModel(
+    return serialization.GetBeneficiaryCreditResponseModel(
         initialCredit=float(domains_credit.all.initial) if domains_credit else 0.0,
         remainingCredit=float(domains_credit.all.remaining) if domains_credit else 0.0,
         remainingDigitalCredit=float(domains_credit.digital.remaining)
@@ -122,40 +126,41 @@ def get_beneficiary_credit(user_id: int) -> s11n.GetBeneficiaryCreditResponseMod
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/history", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=s11n.GetUserSubscriptionHistoryResponseModel,
+    response_model=serialization.GetUserSubscriptionHistoryResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
-def get_user_subscription_history(user_id: int) -> s11n.GetUserSubscriptionHistoryResponseModel:
+def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscriptionHistoryResponseModel:
     user = get_user_or_error(user_id)
 
     subscriptions = {}
 
     for eligibility in list(users_models.EligibilityType):
-        subscriptions[eligibility.name] = s11n.EligibilitySubscriptionHistoryModel(
+        subscriptions[eligibility.name] = serialization.EligibilitySubscriptionHistoryModel(
             subscriptionItems=[
-                s11n.SubscriptionItemModel.from_orm(method(user, eligibility)) for method in SUBSCRIPTION_ITEM_METHODS
+                serialization.SubscriptionItemModel.from_orm(method(user, eligibility))
+                for method in SUBSCRIPTION_ITEM_METHODS
             ],
             idCheckHistory=[
-                s11n.IdCheckItemModel.from_orm(fraud_check)
+                serialization.IdCheckItemModel.from_orm(fraud_check)
                 for fraud_check in user.beneficiaryFraudChecks
                 if fraud_check.eligibilityType == eligibility
             ],
         )
 
-    return s11n.GetUserSubscriptionHistoryResponseModel(subscriptions=subscriptions)
+    return serialization.GetUserSubscriptionHistoryResponseModel(subscriptions=subscriptions)
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/review", methods=["POST"])
 @perm_utils.permission_required(perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=s11n.BeneficiaryReviewResponseModel,
+    response_model=serialization.BeneficiaryReviewResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
 def review_public_account(
-    user_id: int, body: s11n.BeneficiaryReviewRequestModel
-) -> s11n.BeneficiaryReviewResponseModel:
+    user_id: int, body: serialization.BeneficiaryReviewRequestModel
+) -> serialization.BeneficiaryReviewResponseModel:
     user = get_user_or_error(user_id, error_code=412)
 
     eligibility = None if body.eligibility is None else users_models.EligibilityType[body.eligibility]
@@ -172,7 +177,7 @@ def review_public_account(
     except (fraud_api.FraudCheckError, fraud_api.EligibilityError) as err:
         raise ApiErrors({"global": str(err)}, status_code=412) from err
 
-    return s11n.BeneficiaryReviewResponseModel(
+    return serialization.BeneficiaryReviewResponseModel(
         userId=review.user.id,
         authorId=review.author.id,
         review=getattr(review.review, "value", None),
@@ -237,13 +242,15 @@ def skip_phone_validation(user_id: int) -> None:
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/logs", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=s11n.PublicHistoryResponseModel,
+    response_model=serialization.PublicHistoryResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
-def get_public_history(user_id: int) -> s11n.PublicHistoryResponseModel:
+def get_public_history(user_id: int) -> serialization.PublicHistoryResponseModel:
     user = get_user_or_error(user_id)
 
     history = users_api.public_account_history(user)
 
-    return s11n.PublicHistoryResponseModel(history=[s11n.PublicHistoryItem(**item) for item in history])
+    return serialization.PublicHistoryResponseModel(
+        history=[serialization.PublicHistoryItem(**item) for item in history]
+    )
