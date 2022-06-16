@@ -50,7 +50,10 @@ const MultiSelectAutocomplete = ({
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
-      if (!containerRef.current?.contains(e.target as Node)) {
+      if (
+        !containerRef.current?.contains(e.target as Node) &&
+        searchField.value !== ''
+      ) {
         setIsOpen(false)
         setFieldValue(`search-${fieldName}`, '', false)
       }
@@ -149,6 +152,7 @@ const MultiSelectAutocomplete = ({
         <div className={styles['multi-select-autocomplete-tags']}>
           {field.value.map((value: string) => (
             <Tag
+              key={`tag-${fieldName}-${value}`}
               label={optionsLabelById[value]}
               closeable={{
                 onClose: () => {

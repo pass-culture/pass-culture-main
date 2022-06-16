@@ -39,6 +39,7 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   notifications: false,
   notificationEmail: '',
   domains: [],
+  'search-domains': '',
 }
 
 export const PARTICIPANTS: Record<string, StudentLevels> = {
