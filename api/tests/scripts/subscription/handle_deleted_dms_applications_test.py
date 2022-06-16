@@ -6,8 +6,8 @@ import pytest
 from pcapi.connectors.dms import api as api_dms
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
-from pcapi.scripts.subscription.handle_deleted_dms_applications import get_latest_deleted_application_datetime
-from pcapi.scripts.subscription.handle_deleted_dms_applications import handle_deleted_dms_applications
+from pcapi.scripts.subscription.dms.handle_deleted_dms_applications import get_latest_deleted_application_datetime
+from pcapi.scripts.subscription.dms.handle_deleted_dms_applications import handle_deleted_dms_applications
 
 from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
 
