@@ -1,9 +1,12 @@
 export interface Environment {
-  NODE_ENV: 'development' | 'production'
-  REACT_APP_ENV: 'testing' | 'staging' | 'integration' | 'production'
-  REACT_APP_OIDC_CLIENT_ID: string
-  REACT_APP_AUTH_ISSUER: string
-  REACT_APP_OIDC_REDIRECT_URI: string
-  REACT_APP_BASE_PATH: string
-  REACT_APP_URL_BASE: string
+  NODE_ENV: 'development' | 'production' | 'test'
+  ENV: 'testing' | 'staging' | 'integration' | 'production'
+  OIDC_CLIENT_ID: string
+  AUTH_ISSUER: string
+  OIDC_REDIRECT_URI: string
+  BASE_PATH: string
+  URL_BASE: string
+  SAMPLE_RATE: number
+  SENTRY_DSN: string
+  API_URL: string
 }

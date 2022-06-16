@@ -1,36 +1,27 @@
-import { DataProvider, GetOneResult } from 'react-admin'
-import {
-  UserSearchInterface,
-  UserApiInterface,
-} from '../resources/Interfaces/UserSearchInterface'
-import { env } from '../libs/environment/env'
-import { UserCredit, UserManualReview } from '../resources/PublicUsers/types'
-import { captureException } from '@sentry/react'
+import { DataProvider } from 'react-admin'
 
-let assets: UserApiInterface[] = []
-const urlBase = env.API_URL
+import { env } from '../libs/environment/env'
+import { eventMonitoring } from '../libs/monitoring/sentry'
+import {
+  UserSearchResponse,
+  UserApiResponse,
+} from '../resources/Interfaces/UserSearchInterface'
+import { UserManualReview } from '../resources/PublicUsers/types'
+
+import { safeFetch } from './apiHelpers'
+
+let assets: UserApiResponse[] = []
+
 export const dataProvider: DataProvider = {
   async searchList(resource: string, params: string) {
     switch (resource) {
-      default:
-      case 'public_users/search':
-        const token = localStorage.getItem('tokenApi')
-        if (!token) {
-          return Promise.reject()
-        }
-
-        const body: object = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-        const response = await fetch(
-          `${env.API_URL}/${resource}?q=${encodeURIComponent(params)}`,
-          body
+      case 'public_accounts/search': {
+        const response = await safeFetch(
+          `${env.API_URL}/${resource}?q=${encodeURIComponent(params)}`
         )
-        const json: UserSearchInterface = await response.json()
-        assets = json.accounts.map(item => ({
+
+        const userSearchResponse: UserSearchResponse = response.json
+        assets = userSearchResponse.accounts.map(item => ({
           ...item,
           id: item.id,
         }))
@@ -43,78 +34,89 @@ export const dataProvider: DataProvider = {
           data: assets,
           total: assets.length,
         }
+      }
+      default:
+        break
     }
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getList(resource, params) {
     return {
       data: [],
       total: 0,
     }
   },
-  //@ts-ignore TODO: (akarki) refortmatter le typage de la réponse
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore TODO: (akarki) reformatter le typage de la réponse
   async getOne(resource, params) {
     switch (resource) {
-      default:
-        break
-      case 'public_accounts':
-        const token = localStorage.getItem('tokenApi')
-        if (!token) {
-          return Promise.reject()
-        }
-
+      case 'public_accounts': {
         try {
-          const body: object = {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/x-www-form-urlencoded',
-            },
-          }
-          const response = await fetch(
-            `${urlBase}/${resource}/${params.id}`,
-            body
+          const response = await safeFetch(
+            `${env.API_URL}/${resource}/${params.id}`
           )
-          const user: UserApiInterface = await response.json()
+          const user: UserApiResponse = response.json
 
           const creditInfo = async () => {
             try {
-              return fetch(`${urlBase}/${resource}/${params.id}/credit`, body)
+              return safeFetch(`${env.API_URL}/${resource}/${params.id}/credit`)
             } catch (error) {
-              captureException(error)
+              eventMonitoring.captureException(error)
+              throw error
             }
           }
 
           const historyInfo = async () => {
             try {
-              return fetch(`${urlBase}/${resource}/${params.id}/history`, body)
+              return safeFetch(
+                `${env.API_URL}/${resource}/${params.id}/history`
+              )
             } catch (error) {
-              captureException(error)
+              eventMonitoring.captureException(error)
+              throw error
             }
           }
-          const [userCredit, userHistory] = await Promise.all([
+          const [userCreditResponse, userHistoryResponse] = await Promise.all([
             creditInfo(),
             historyInfo(),
           ])
 
-          const dataUser = { ...user, userCredit, userHistory }
+          const dataUser = {
+            ...user,
+            userCredit: userCreditResponse.json,
+            userHistory: userHistoryResponse.json,
+          }
           return { data: dataUser }
         } catch (error) {
-          captureException(error)
+          eventMonitoring.captureException(error)
+          throw error
         }
+      }
+      default:
+        break
     }
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getMany(resource, params) {
     return {
       data: [],
       total: 0,
     }
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getManyReference(resource, params) {
     return {
       data: [],
       total: 0,
     }
   },
-  // @ts-ignore
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore 12356
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async create(resource, params) {
     return {
       data: {
@@ -122,28 +124,21 @@ export const dataProvider: DataProvider = {
       },
     }
   },
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore 12356
   async update(resource, params) {
     switch (resource) {
-      default:
-        break
-      case 'public_accounts':
-        const token = localStorage.getItem('tokenApi')
-        if (!token) {
-          return Promise.reject()
-        }
-
+      case 'public_accounts': {
         try {
           const bodyString = JSON.stringify(params.data, null, 4)
-          const body: object = {
+          const body = {
             method: 'POST',
             body: bodyString,
-            headers: {
-              Authorization: `Bearer ${token}`,
+            headers: new Headers({
               'Content-Type': 'application/json',
-            },
+            }),
           }
-          const response = await fetch(
+          const response = await safeFetch(
             `${env.API_URL}/${resource}/${params.id}`,
             body
           )
@@ -152,16 +147,24 @@ export const dataProvider: DataProvider = {
             data: responseData,
           }
         } catch (error) {
-          captureException(error)
+          eventMonitoring.captureException(error)
+          throw error
         }
+      }
+      default:
+        break
     }
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async updateMany(resource, params) {
     return {
       data: [],
     }
   },
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore 12356
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async delete(resource, params) {
     return {
       data: {
@@ -169,108 +172,88 @@ export const dataProvider: DataProvider = {
       },
     }
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async deleteMany(resource, params) {
     return {
       data: [],
     }
   },
   async postUserManualReview(resource: string, params: UserManualReview) {
-    const token = localStorage.getItem('tokenApi')
-
-    if (!token) {
-      return Promise.reject()
-    }
     try {
       const bodyString = JSON.stringify({
         eligibility: params.eligibility,
         reason: params.reason,
         review: params.review,
       })
-      const requestParams: object = {
+      const requestParams = {
         method: 'POST',
         body: bodyString,
-        headers: {
-          Authorization: 'Bearer ' + token,
+        headers: new Headers({
           'Content-Type': 'application/json',
-        },
+        }),
       }
 
       console.log(requestParams)
 
-      const response = await fetch(
+      return await safeFetch(
         `${env.API_URL}/${resource}/${params.id}/review`,
         requestParams
       )
-
-      return response
     } catch (error) {
-      captureException(error)
+      eventMonitoring.captureException(error)
+      throw error
     }
   },
-  async postResendValidationEmail(resource: string, params: UserApiInterface) {
-    const token = localStorage.getItem('tokenApi')
-    if (!token) {
-      return Promise.reject()
-    }
+  async postResendValidationEmail(resource: string, params: UserApiResponse) {
     try {
-      const requestParams: object = {
+      const requestParams = {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
+        headers: new Headers({
           'Content-Type': 'application/json',
-        },
+        }),
       }
-      const response = await fetch(
+      return safeFetch(
         `${env.API_URL}/${resource}/${params.id}/resend-validation-email`,
         requestParams
       )
-      return response
     } catch (error) {
-      captureException(error)
+      eventMonitoring.captureException(error)
+      throw error
     }
   },
-  async postSkipPhoneValidation(resource: string, params: UserApiInterface) {
-    const token = localStorage.getItem('tokenApi')
-    if (!token) {
-      throw new Error()
-    }
+  async postSkipPhoneValidation(resource: string, params: UserApiResponse) {
     try {
-      const requestParams: object = {
+      const requestParams = {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
+        headers: new Headers({
           'Content-Type': 'application/json',
-        },
+        }),
       }
-      const response = await fetch(
+      return safeFetch(
         `${env.API_URL}/${resource}/${params.id}/skip-phone-validation`,
         requestParams
       )
-      return response
     } catch (error) {
-      captureException(error)
+      eventMonitoring.captureException(error)
+      throw error
     }
   },
-  async postPhoneValidationCode(resource: string, params: UserApiInterface) {
-    const token = localStorage.getItem('tokenApi')
-    if (!token) {
-      throw new Error()
-    }
+  async postPhoneValidationCode(resource: string, params: UserApiResponse) {
     try {
-      const requestParams: object = {
+      const requestParams = {
         method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + token,
+        headers: new Headers({
           'Content-Type': 'application/json',
-        },
+        }),
       }
-      const response = await fetch(
+      return safeFetch(
         `${env.API_URL}/${resource}/${params.id}/send-phone-validation-code`,
         requestParams
       )
-      return response
     } catch (error) {
-      captureException(error)
+      eventMonitoring.captureException(error)
+      throw error
     }
   },
 }

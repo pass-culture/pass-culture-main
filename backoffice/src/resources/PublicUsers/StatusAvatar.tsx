@@ -1,7 +1,7 @@
-import { green, red, yellow } from '@mui/material/colors'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Avatar } from '@mui/material'
+import { green, red, yellow } from '@mui/material/colors'
 import React from 'react'
 
 export const StatusAvatar = (subscriptionItem: string) => {

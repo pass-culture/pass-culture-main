@@ -1,5 +1,4 @@
-import { useAuthenticated, useGetOne, useRedirect } from 'react-admin'
-import { useParams } from 'react-router-dom'
+import { Card } from '@material-ui/core'
 import {
   Box,
   Button,
@@ -11,15 +10,17 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
+import moment from 'moment'
 import React from 'react'
-import { Card } from '@material-ui/core'
-import { StatusBadge } from './StatusBadge'
+import { useAuthenticated, useGetOne, useRedirect } from 'react-admin'
+import { useParams } from 'react-router-dom'
+
 import { BeneficiaryBadge } from './BeneficiaryBadge'
-import { ManualReviewModal } from './ManualReviewModal'
-import Moment from 'moment'
-import { CheckHistory, SubscriptionItemStatus, UserBaseInfo } from './types'
 import { CheckHistoryCard } from './CheckHistoryCard'
+import { ManualReviewModal } from './ManualReviewModal'
 import { StatusAvatar } from './StatusAvatar'
+import { StatusBadge } from './StatusBadge'
+import { CheckHistory, SubscriptionItemStatus, UserBaseInfo } from './types'
 import { UserDetailsCard } from './UserDetailsCard'
 
 interface TabPanelProps {
@@ -70,6 +71,7 @@ export const UserDetail = () => {
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
+
   const { data, isLoading } = useGetOne(
     'public_accounts',
     { id },
@@ -95,7 +97,7 @@ export const UserDetail = () => {
       firstName: data.firstName,
       id: data.id,
       lastName: data.lastName,
-      phoneNumer: data.phoneNumber,
+      phoneNumber: data.phoneNumber,
       postalCode: data.postalCode,
     }
     activeBadge = StatusBadge(data.isActive)
@@ -163,7 +165,7 @@ export const UserDetail = () => {
                 <Typography variant="body2" gutterBottom component="div">
                   Crédité le :
                   {data.userCredit &&
-                    Moment(data.userCredit.dateCreated).format('D/MM/YYYY')}
+                    moment(data.userCredit.dateCreated).format('D/MM/YYYY')}
                 </Typography>
               </Grid>
             </Grid>
@@ -176,7 +178,7 @@ export const UserDetail = () => {
                   Suspendre le compte
                 </Button>
 
-                <ManualReviewModal userId={userBaseInfo.id} />
+                <ManualReviewModal user={userBaseInfo} />
               </Stack>
             </div>
           </Grid>
@@ -254,7 +256,7 @@ export const UserDetail = () => {
             <Typography variant={'h4'}>
               {idsCheckHistory &&
                 idsCheckHistory[0] &&
-                Moment(idsCheckHistory[0]['dateCreated']).format(
+                moment(idsCheckHistory[0]['dateCreated']).format(
                   'D/MM/YYYY à HH:mm'
                 )}
             </Typography>

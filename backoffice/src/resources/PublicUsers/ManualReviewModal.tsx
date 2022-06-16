@@ -1,24 +1,26 @@
-import * as React from 'react'
 import { Box, Button, Modal } from '@mui/material'
+import { captureException } from '@sentry/react'
+import * as React from 'react'
 import { useState } from 'react'
 import {
   Form,
-  SelectInput,
-  useNotify,
-  TextInput,
   SaveButton,
+  SelectInput,
+  TextInput,
+  useNotify,
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
-import { dataProvider } from '../../providers/dataProvider'
-import { UserManualReview } from './types'
-import { captureException } from '@sentry/react'
 
-export const ManualReviewModal = (userId: any) => {
+import { dataProvider } from '../../providers/dataProvider'
+
+import { UserBaseInfo, UserManualReview } from './types'
+
+export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
   const [openModal, setOpenModal] = useState(false)
   const notify = useNotify()
 
   const styleModal = {
-    position: 'absolute' as 'absolute',
+    position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -33,10 +35,10 @@ export const ManualReviewModal = (userId: any) => {
   const handleCloseModal = () => setOpenModal(false)
 
   const formSubmit = async (params: FieldValues) => {
-    if (params && userId) {
+    if (params && user) {
       try {
         const formData: UserManualReview = {
-          id: userId.userId,
+          id: Number(user.id),
           review: params.review,
           reason: params.reason,
           eligibility: params.eligibility,
