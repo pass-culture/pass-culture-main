@@ -25,12 +25,12 @@
   }
 }
 .stock-options-menu-item-text {
-  @include fonts.caption();
+  @include fonts.button();
   color: colors.$black;
 }
 .stock-options-menu-item-icon {
-  height: rem.torem(20px);
-  width: rem.torem(20px);
+  max-height: rem.torem(20px);
+  max-width: rem.torem(20px);
 }
 
 .stock-options-menu-item {
@@ -68,7 +68,7 @@
 .stock-options-menu-list[data-reach-menu-list] {
   padding: rem.torem(12px) 0;
   white-space: pre-wrap;
-  width: 200px;
+  width: rem.torem(215px);
   .stock-options-menu-item:hover {
     background: colors.$grey-medium;
   }
