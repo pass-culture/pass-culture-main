@@ -39,6 +39,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
 
+  // FIX ME
   const handleSubmitStock = async (
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
@@ -82,7 +83,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       return notify.error(message)
     }
 
-    const successPayload = payload as unknown as { id: string }
+    const successPayload = payload
     const shouldUseNewTemplateIds =
       isTemplate && enableIndividualAndCollectiveSeparation
 
