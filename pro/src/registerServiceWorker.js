@@ -5,6 +5,8 @@ export function unregister() {
         registration.unregister()
       })
       .catch(error => {
+        // FIX ME
+        // eslint-disable-next-line
         console.error(error.message)
       })
   }

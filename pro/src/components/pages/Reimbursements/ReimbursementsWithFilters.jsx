@@ -64,6 +64,8 @@ const Reimbursements = ({ currentUser }) => {
       setVenuesOptions(selectOptions)
       setIsLoading(false)
     } catch (err) {
+      // FIX ME
+      // eslint-disable-next-line
       console.error(err)
     }
   }, [setVenuesOptions])
@@ -80,6 +82,8 @@ const Reimbursements = ({ currentUser }) => {
         )
       )
     } catch (err) {
+      // FIX ME
+      // eslint-disable-next-line
       console.error(err)
     }
   }, [setBusinessUnitsOptions])

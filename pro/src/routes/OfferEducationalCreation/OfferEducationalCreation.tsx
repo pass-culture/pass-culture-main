@@ -70,6 +70,8 @@ const OfferEducationalCreation = (): JSX.Element => {
 
         if (results.some(res => !res.isOk)) {
           // handle error with notification at some point
+          // FIX ME
+          // eslint-disable-next-line
           console.error(results?.find(res => !res.isOk)?.message)
         }
 
