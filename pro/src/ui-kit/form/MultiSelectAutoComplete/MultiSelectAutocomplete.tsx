@@ -49,13 +49,14 @@ const MultiSelectAutocomplete = ({
   }, [options])
 
   useEffect(() => {
+    if (!isOpen && searchField.value !== '')
+      setFieldValue(`search-${fieldName}`, '', false)
+  }, [isOpen])
+
+  useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
-      if (
-        !containerRef.current?.contains(e.target as Node) &&
-        searchField.value !== ''
-      ) {
+      if (!containerRef.current?.contains(e.target as Node)) {
         setIsOpen(false)
-        setFieldValue(`search-${fieldName}`, '', false)
       }
     }
     if (containerRef.current) {
