@@ -22,7 +22,7 @@ export const renderVisibilityStep = () => {
         onSubmit={jest.fn()}
         validationSchema={validationSchema}
       >
-        <CollectiveOfferVisibility />
+        <CollectiveOfferVisibility getInstitutions={jest.fn()} />
       </Formik>
     </MemoryRouter>
   )
