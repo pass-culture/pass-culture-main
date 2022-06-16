@@ -21,6 +21,10 @@ class BaseVenueModel(BaseModel):
     email: Optional[str]
     website: Optional[str]
     phoneNumber: Optional[str]
+    audioDisabilityCompliant: bool
+    mentalDisabilityCompliant: bool
+    motorDisabilityCompliant: bool
+    visualDisabilityCompliant: bool
 
     @classmethod
     def from_orm(cls: Any, venue: Venue):  # type: ignore

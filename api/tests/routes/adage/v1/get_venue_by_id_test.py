@@ -30,6 +30,10 @@ class Returns200Test:
             "phoneNumber": venue.contact.phone_number,
             "email": venue.contact.email,
             "website": venue.contact.website,
+            "audioDisabilityCompliant": False,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
         }
 
 
