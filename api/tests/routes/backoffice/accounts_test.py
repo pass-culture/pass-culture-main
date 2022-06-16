@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
 import re
 from unittest import mock
 
@@ -1292,3 +1293,73 @@ class SendPhoneValidationCodeTest:
         # then
         assert response.status_code == 400
         assert response.json.get("user_id") == "L'email de l'utilisateur n'est pas encore validé"
+
+
+class GetPublicAccountHistoryTest:
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_get_public_account_history(self, client):
+        # given
+        user = users_factories.UserFactory()
+        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.USER_PROFILING,
+            dateCreated=datetime.utcnow() - timedelta(minutes=50),
+        )
+        review = fraud_factories.BeneficiaryFraudReviewFactory(
+            user=user,
+            author=users_factories.UserFactory(),
+            dateReviewed=datetime.utcnow() - timedelta(minutes=5),
+            review=fraud_models.FraudReviewStatus.OK,
+        )
+        auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_public_history", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 200
+        history = response.json.get("history", [])
+        assert history
+        assert len(history) == 2
+        assert history[0] == {
+            "action": "revue manuelle",
+            "datetime": review.dateReviewed.isoformat(),
+            "message": f"revue {review.review.value} par {review.author.publicName}: {review.reason}",
+        }
+        assert history[1] == {
+            "action": "fraud check",
+            "datetime": fraud_check.dateCreated.isoformat(),
+            "message": (
+                f"{fraud_check.type.value}, {fraud_check.eligibilityType.value}, "
+                f"{fraud_check.status.value}, [raison inconnue], {fraud_check.reason}"
+            ),
+        }
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_public_account_history_without_permission(self, client):
+        # given
+        user = users_factories.UserFactory()
+        auth_token = generate_token(users_factories.UserFactory(), [])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.get_public_history", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_cannot_get_public_account_history_as_anonymous(self, client):
+        # given
+        user = users_factories.UserFactory()
+
+        # when
+        response = client.get(
+            url_for("backoffice_blueprint.get_public_history", user_id=user.id),
+        )
+
+        # then
+        assert response.status_code == 403
