@@ -218,6 +218,9 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
     )
 
+    # TODO(fseguin,2022-06-20): Make column non-nullable when column is populated on all envs
+    dms_token = Column(Text, nullable=True, unique=True)
+
     @property
     def is_eligible_for_search(self) -> bool:
         not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE  # type: ignore [attr-defined]
