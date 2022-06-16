@@ -39,13 +39,13 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
-from pcapi.scripts.beneficiary import archive_dms_applications
-from pcapi.scripts.beneficiary.handle_inactive_dms_applications import handle_inactive_dms_applications
-from pcapi.scripts.beneficiary.import_dms_accepted_applications import import_dms_accepted_applications
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
-from pcapi.scripts.subscription.handle_deleted_dms_applications import handle_deleted_dms_applications
+from pcapi.scripts.subscription.dms import archive_dms_applications
+from pcapi.scripts.subscription.dms.handle_deleted_dms_applications import handle_deleted_dms_applications
+from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import handle_inactive_dms_applications
+from pcapi.scripts.subscription.dms.import_dms_accepted_applications import import_dms_accepted_applications
 from pcapi.utils.blueprint import Blueprint
 
 
