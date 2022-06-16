@@ -4,14 +4,12 @@ import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
-  cancelActiveBookingsAdapter,
   cancelCollectiveBookingAdapter,
   extractOfferIdAndOfferTypeFromRouteParams,
   getCategoriesAdapter,
   getEducationalDomainsAdapter,
   getOfferersAdapter,
   patchIsCollectiveOfferActiveAdapter,
-  patchIsOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
@@ -19,7 +17,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
-import { Offer } from 'custom_types/offer'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
@@ -27,10 +24,8 @@ import Spinner from 'components/layout/Spinner'
 import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 import getCollectiveOfferAdapter from './adapters/getCollectiveOfferAdapter'
 import getCollectiveOfferTemplateAdapter from './adapters/getCollectiveOfferTemplateAdapter'
-import getOfferAdapter from './adapters/getOfferAdapter'
 import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
-import patchOfferAdapter from './adapters/patchOfferAdapter'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 
@@ -44,10 +39,7 @@ const OfferEducationalEdition = (): JSX.Element => {
   const { offerId, isShowcase } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const history = useHistory()
-  const enableIndividualAndCollectiveSeparation = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
-  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
+
   const enableEducationalDomains = useActiveFeature(
     'ENABLE_EDUCATIONAL_DOMAINS'
   )
@@ -56,29 +48,18 @@ const OfferEducationalEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
   const [offer, setOffer] = useState<
-    Offer | CollectiveOffer | CollectiveOfferTemplate
+    CollectiveOffer | CollectiveOfferTemplate
   >()
   const notify = useNotification()
 
   const editOffer = useCallback(
     async (offerFormValues: IOfferEducationalFormValues) => {
       if (offer) {
-        let patchOfferId = offerId
-
-        if (enableIndividualAndCollectiveSeparation && !isNewModelEnabled) {
-          patchOfferId = (offer as CollectiveOffer).offerId || ''
-        }
-
-        let patchAdapter
-        if (isNewModelEnabled) {
-          patchAdapter = isShowcase
-            ? patchCollectiveOfferTemplateAdapter
-            : patchCollectiveOfferAdapter
-        } else {
-          patchAdapter = patchOfferAdapter
-        }
+        const patchAdapter = isShowcase
+          ? patchCollectiveOfferTemplateAdapter
+          : patchCollectiveOfferAdapter
         const offerResponse = await patchAdapter({
-          offerId: patchOfferId,
+          offerId,
           offer: offerFormValues,
           initialValues,
         })
@@ -95,21 +76,12 @@ const OfferEducationalEdition = (): JSX.Element => {
   )
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchOfferId =
-      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
-        ? (offer as CollectiveOffer).offerId || ''
-        : offerId
-    let patchAdapter
-    if (isNewModelEnabled) {
-      patchAdapter = isShowcase
-        ? patchIsTemplateOfferActiveAdapter
-        : patchIsCollectiveOfferActiveAdapter
-    } else {
-      patchAdapter = patchIsOfferActiveAdapter
-    }
+    const patchAdapter = isShowcase
+      ? patchIsTemplateOfferActiveAdapter
+      : patchIsCollectiveOfferActiveAdapter
     const { isOk, message } = await patchAdapter({
       isActive,
-      offerId: patchOfferId,
+      offerId,
     })
 
     if (!isOk) {
@@ -121,15 +93,8 @@ const OfferEducationalEdition = (): JSX.Element => {
   }
 
   const cancelActiveBookings = async () => {
-    const patchOfferId =
-      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
-        ? offerId
-        : offerId
-    const cancelAdapter = isNewModelEnabled
-      ? cancelCollectiveBookingAdapter
-      : cancelActiveBookingsAdapter
-    const { isOk, message } = await cancelAdapter({
-      offerId: patchOfferId,
+    const { isOk, message } = await cancelCollectiveBookingAdapter({
+      offerId,
     })
 
     if (!isOk) {
@@ -144,7 +109,6 @@ const OfferEducationalEdition = (): JSX.Element => {
     async (
       offerResponse:
         | AdapterFailure<null>
-        | AdapterSuccess<Offer>
         | AdapterSuccess<CollectiveOffer>
         | AdapterSuccess<CollectiveOfferTemplate>
     ) => {
@@ -214,37 +178,17 @@ const OfferEducationalEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const _loadData = async () => {
-        let offerResponse:
-          | AdapterFailure<null>
-          | AdapterSuccess<Offer>
-          | AdapterSuccess<CollectiveOffer>
-          | AdapterSuccess<CollectiveOfferTemplate>
-
-        if (enableIndividualAndCollectiveSeparation) {
-          const getOfferAdapter = isShowcase
-            ? getCollectiveOfferTemplateAdapter
-            : getCollectiveOfferAdapter
-          offerResponse = await getOfferAdapter(offerId)
-        } else {
-          offerResponse = await getOfferAdapter(offerId)
-          if (offerResponse.isOk && !offerResponse.payload.isEducational) {
-            return history.push(`/offre/${offerId}/individuel/edition`)
-          }
-        }
+        const getOfferAdapter = isShowcase
+          ? getCollectiveOfferTemplateAdapter
+          : getCollectiveOfferAdapter
+        const offerResponse = await getOfferAdapter(offerId)
 
         loadData(offerResponse)
       }
 
       _loadData()
     }
-  }, [
-    isReady,
-    offerId,
-    loadData,
-    history,
-    enableIndividualAndCollectiveSeparation,
-    isShowcase,
-  ])
+  }, [isReady, offerId, loadData, history, isShowcase])
 
   return (
     <OfferEducationalLayout
