@@ -481,6 +481,9 @@ class AlgoliaBackend(base.SearchBackend):
                 "students": [student.value for student in collective_offer.students],
                 "subcategoryId": collective_offer.subcategoryId,
                 "domains": [domain.id for domain in collective_offer.domains],
+                "educationalInstitutionUAICode": collective_offer.institution.institutionId
+                if collective_offer.institution
+                else None,
             },
             "offerer": {
                 "name": offerer.name,
