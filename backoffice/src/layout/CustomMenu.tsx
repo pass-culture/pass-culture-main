@@ -1,10 +1,9 @@
-import * as React from 'react'
-import { useState } from 'react'
-import Box from '@mui/material/Box'
 import AccountBoxIcon from '@mui/icons-material/AccountBox'
 import ApartmentIcon from '@mui/icons-material/Apartment'
 import ReviewsIcon from '@mui/icons-material/Reviews'
-
+import Box from '@mui/material/Box'
+import { useState } from 'react'
+import * as React from 'react'
 import {
   useTranslate,
   MenuItemLink,
@@ -56,7 +55,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
         <MenuItemLink
           to="/public_users/search"
           state={{ _scrollToTop: true }}
-          primaryText={translate(`menu.beneficiary`, {
+          primaryText={translate('menu.beneficiary', {
             smart_count: 2,
           })}
           dense={dense}
@@ -64,7 +63,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
         <MenuItemLink
           to="/users/list"
           state={{ _scrollToTop: true }}
-          primaryText={translate(`menu.users`, {
+          primaryText={translate('menu.users', {
             smart_count: 2,
           })}
           dense={dense}
@@ -73,7 +72,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
         <MenuItemLink
           to="/users/features"
           state={{ _scrollToTop: true }}
-          primaryText={translate(`menu.features`, {
+          primaryText={translate('menu.features', {
             smart_count: 2,
           })}
           dense={dense}
@@ -82,7 +81,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
         <MenuItemLink
           to="/users/categories"
           state={{ _scrollToTop: true }}
-          primaryText={translate(`menu.categories`, {
+          primaryText={translate('menu.categories', {
             smart_count: 2,
           })}
           dense={dense}
@@ -100,7 +99,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
         <MenuItemLink
           to="/pros"
           state={{ _scrollToTop: true }}
-          primaryText={translate(`menu.pros`, {
+          primaryText={translate('menu.pros', {
             smart_count: 2,
           })}
           dense={dense}
@@ -109,7 +108,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
         <MenuItemLink
           to="/pros/categories"
           state={{ _scrollToTop: true }}
-          primaryText={translate(`menu.categories`, {
+          primaryText={translate('menu.categories', {
             smart_count: 2,
           })}
           dense={dense}
@@ -120,7 +119,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
       <MenuItemLink
         to="/reviews"
         state={{ _scrollToTop: true }}
-        primaryText={translate(`menu.roleManagement`, {
+        primaryText={translate('menu.roleManagement', {
           smart_count: 2,
         })}
         leftIcon={<ReviewsIcon />}

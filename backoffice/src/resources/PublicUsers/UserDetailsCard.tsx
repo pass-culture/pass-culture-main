@@ -1,9 +1,8 @@
-import { CheckHistory, UserBaseInfo } from './types'
 import { Card } from '@material-ui/core'
 import { Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
-import Moment from 'moment'
+import { captureException } from '@sentry/react'
+import moment from 'moment'
 import React, { useState } from 'react'
-import { dataProvider } from '../../providers/dataProvider'
 import {
   Form,
   useNotify,
@@ -12,7 +11,10 @@ import {
   UpdateParams,
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
-import { captureException } from '@sentry/react'
+
+import { dataProvider } from '../../providers/dataProvider'
+
+import { CheckHistory, UserBaseInfo } from './types'
 
 export const UserDetailsCard = (
   user: UserBaseInfo,
@@ -78,7 +80,7 @@ export const UserDetailsCard = (
         const formData = {
           address: params.address,
           city: params.city,
-          dateOfBirth: Moment(params.dateOfBirth).format(),
+          dateOfBirth: moment(params.dateOfBirth).format(),
           email: params.email,
           firstName: params.firstName,
           idPieceNumber: params.idPieceNumber,
@@ -95,7 +97,9 @@ export const UserDetailsCard = (
           formParams
         )
         if (response.data) {
-          notify('Les modifications ont été appliquées avec succès', { type: 'success' })
+          notify('Les modifications ont été appliquées avec succès', {
+            type: 'success',
+          })
         }
         setEditable(false)
       } catch (error) {
@@ -231,7 +235,7 @@ export const UserDetailsCard = (
                   label={''}
                   defaultValue={
                     user.dateOfBirth
-                      ? Moment(user.dateOfBirth).format('YYYY-MM-D')
+                      ? moment(user.dateOfBirth).format('YYYY-MM-D')
                       : ''
                   }
                   disabled={!editable}
@@ -245,7 +249,7 @@ export const UserDetailsCard = (
 
                 <p>
                   {firstIdCheckHistory && firstIdCheckHistory.dateCreated
-                    ? Moment(firstIdCheckHistory.dateCreated).format(
+                    ? moment(firstIdCheckHistory.dateCreated).format(
                         'D/MM/YYYY à HH:mm'
                       )
                     : 'N/A'}

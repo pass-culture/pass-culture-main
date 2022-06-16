@@ -2,8 +2,12 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import { Chip } from '@mui/material'
 
-export const StatusBadge = (isActive: Boolean) => {
-  if (isActive === true) {
+type Props = {
+  active?: boolean
+}
+
+export const StatusBadge = ({ active }: Props) => {
+  if (active) {
     return (
       <Chip
         color={'success'}

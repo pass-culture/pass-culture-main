@@ -1,8 +1,9 @@
 {
   "name": "@passculture/backoffice",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "devDependencies": {
+    "@sentry/webpack-plugin": "^1.18.9",
     "@types/history": "^5.0.0",
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.27",
@@ -12,13 +13,15 @@
     "@typescript-eslint/parser": "^5.28.0",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.30.0",
     "firebase-tools": "^10.6.0",
     "flush-promises": "^1.0.2",
     "jest-watch-typeahead": "0.6.5",
     "prettier": "^2.7.0",
-    "ra-data-json-server": "^4.0.2"
+    "ra-data-json-server": "^4.0.2",
+    "react-app-rewired": "^2.2.1"
   },
   "dependencies": {
     "@emotion/react": "^11.9.0",
@@ -48,16 +51,16 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-app-rewired start",
     "start:testing": "cat .env.testing > .env && yarn start",
-    "build": "react-scripts build",
+    "build": "react-app-rewired build",
     "build:testing": "cat .env.testing > .env && yarn build",
     "build:staging": "cat .env.staging > .env && yarn build",
     "build:production": "cat .env.production > .env && yarn build",
     "test": "yarn test:types && yarn test:lint && yarn test:unit",
     "test:lint": "eslint . --ext .js,.ts,.tsx --cache",
     "test:types": "tsc --noEmit",
-    "test:unit": "TZ=UTC react-scripts test",
+    "test:unit": "TZ=UTC react-app-rewired test",
     "test:unit:ci": "CI=true yarn test:unit --maxWorkers=2 --logHeapUsage --coverage",
     "eject": "react-scripts eject",
     "lint": "eslint .",
