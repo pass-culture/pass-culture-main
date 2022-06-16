@@ -33,6 +33,7 @@
     background-color: forms.$input-bg-color-disabled;
     border-color: forms.$input-border-color-disabled;
     color: forms.$input-text-color-disabled;
+    opacity: 1;
   }
 
   &::placeholder {
