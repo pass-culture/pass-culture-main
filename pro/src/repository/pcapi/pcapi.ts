@@ -186,6 +186,11 @@ export const getEducationalInstitutions = (
   return client.get(`/educational_institutions${queryParams}`)
 }
 
+export const patchEducationalInstitution = (
+  offerId: string,
+  institutionId: string
+) => client.patch(`/educational_institutions`, { offerId, institutionId })
+
 //
 // offerers
 //
