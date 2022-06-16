@@ -1,7 +1,4 @@
-from datetime import date
-from datetime import datetime
-from datetime import time
-from datetime import timedelta
+import datetime
 import re
 from unittest import mock
 
@@ -529,7 +526,8 @@ class GetUserHistoryTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_history_16y_no_subscription(self, client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=16, days=5)
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=16, days=5)
         )
 
         data = self._test_user_history(client, user)
@@ -560,7 +558,8 @@ class GetUserHistoryTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_history_18y_no_subscription(self, client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, days=5)
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, days=5)
         )
 
         data = self._test_user_history(client, user)
@@ -591,7 +590,8 @@ class GetUserHistoryTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_subscription_history_ubble(self, client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=18, days=5),
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=18, days=5),
             activity=users_models.ActivityEnum.STUDENT.value,
         )
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
@@ -659,7 +659,8 @@ class GetUserHistoryTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_user_subscription_history_dms(self, client):
         user = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(date.today(), time(0, 0)) - relativedelta(years=15, days=5),
+            dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
+            - relativedelta(years=15, days=5),
             activity=users_models.ActivityEnum.HIGH_SCHOOL_STUDENT.value,
         )
 
@@ -770,7 +771,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_review_ko_application(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.DMS, status=fraud_models.FraudCheckStatus.KO
         )
@@ -802,7 +803,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_review_dms_application(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         reviewer = users_factories.UserFactory()
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
@@ -830,7 +831,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_review_educonnect_application(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=15, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=15, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.EDUCONNECT,
@@ -862,7 +863,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_review_ubble_application(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.UserFactory()
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
@@ -917,7 +918,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_with_unknown_data(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.UserFactory()
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
@@ -934,7 +935,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_with_missing_data(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.UserFactory()
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
@@ -951,7 +952,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_without_permission(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         reviewer = users_factories.UserFactory()
         auth_token = generate_token(reviewer, [])
@@ -968,7 +969,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_as_anonymous(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         auth_token = generate_token(users_factories.UserFactory.build(), [Permissions.REVIEW_PUBLIC_ACCOUNT])
 
@@ -984,7 +985,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_when_no_age_is_found(self, client):
         # given
-        birth_date_15_yo = datetime.utcnow() - relativedelta(years=15, months=2)
+        birth_date_15_yo = datetime.datetime.utcnow() - relativedelta(years=15, months=2)
         user = users_factories.UserFactory(dateOfBirth=birth_date_15_yo)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -1023,7 +1024,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_review_ok_already_beneficiary_account(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.UBBLE)
         DepositGrantFactory(user=user)
         reviewer = users_factories.UserFactory()
@@ -1041,7 +1042,7 @@ class PostManualReviewTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_review_with_non_default_eligibility(self, client):
         # given
-        user = users_factories.UserFactory(dateOfBirth=datetime.utcnow() - relativedelta(years=18, months=2))
+        user = users_factories.UserFactory(dateOfBirth=datetime.datetime.utcnow() - relativedelta(years=18, months=2))
         check = fraud_factories.BeneficiaryFraudCheckFactory(user=user, type=fraud_models.FraudCheckType.DMS)
         reviewer = users_factories.UserFactory()
         auth_token = generate_token(reviewer, [Permissions.REVIEW_PUBLIC_ACCOUNT])
@@ -1303,12 +1304,12 @@ class GetPublicAccountHistoryTest:
         fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=fraud_models.FraudCheckType.USER_PROFILING,
-            dateCreated=datetime.utcnow() - timedelta(minutes=50),
+            dateCreated=datetime.datetime.utcnow() - datetime.timedelta(minutes=50),
         )
         review = fraud_factories.BeneficiaryFraudReviewFactory(
             user=user,
             author=users_factories.UserFactory(),
-            dateReviewed=datetime.utcnow() - timedelta(minutes=5),
+            dateReviewed=datetime.datetime.utcnow() - datetime.timedelta(minutes=5),
             review=fraud_models.FraudReviewStatus.OK,
         )
         auth_token = generate_token(users_factories.UserFactory(), [Permissions.READ_PUBLIC_ACCOUNT])
