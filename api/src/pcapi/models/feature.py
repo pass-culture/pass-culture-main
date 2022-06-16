@@ -70,7 +70,9 @@ class FeatureToggle(enum.Enum):
         "Active l'association d'une offre collective à un établissement scolaire"
     )
     ENABLE_NEW_BOOKING_FILTERS = "Active les nouveaux filtres sur les statuts pour la page de réservations"
-    ENABLE_NEW_BANK_INFORMATIONS_CREATION = "Active le nouveau parcours d'ajout de coordonnées bancaires sur la page lieu"
+    ENABLE_NEW_BANK_INFORMATIONS_CREATION = (
+        "Active le nouveau parcours d'ajout de coordonnées bancaires sur la page lieu"
+    )
     ENABLE_NEW_COLLECTIVE_MODEL = "Utiliser le nouveau modèle des offres collectives"
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
