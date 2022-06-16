@@ -25,6 +25,7 @@ from pcapi.core.educational import exceptions
 from pcapi.core.offers.models import Offer
 from pcapi.models import Model
 from pcapi.models.accessibility_mixin import AccessibilityMixin
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import StatusMixin
 from pcapi.models.offer_mixin import ValidationMixin
@@ -151,9 +152,15 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
         return True
 
+    @property
+    def isEditable(self) -> bool:
+        return self.status not in [OfferStatus.PENDING, OfferStatus.REJECTED]
+
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
-        return self.collectiveStock.isSoldOut
+        if self.collectiveStock:
+            return self.collectiveStock.isSoldOut
+        return True
 
     @isSoldOut.expression  # type: ignore[no-redef]
     def isSoldOut(cls):  # pylint: disable=no-self-argument
@@ -323,6 +330,10 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
         # FIXME (rpaoloni, 2022-05-09): Remove legacy support layer
         return True
 
+    @property
+    def isEditable(self) -> bool:
+        return self.status not in [OfferStatus.PENDING, OfferStatus.REJECTED]
+
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
         # this property is here for compatibility reasons
@@ -469,12 +480,13 @@ class CollectiveStock(PcObject, Model):  # type: ignore[valid-type, misc]
     def isEditable(self) -> bool:
         """this rule has nothing to do with the isEditable from pcapi.core.offers.models.Booking
         a collectiveStock is editable if there is no booking with status REIMBURSED, USED, CONFIRMED
+        and its offer is editable.
         """
         bookable = (CollectiveBookingStatus.PENDING, CollectiveBookingStatus.CANCELLED)
         for booking in self.collectiveBookings:
             if booking.status not in bookable:
                 return False
-        return True
+        return self.collectiveOffer.isEditable
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimePassed(self):

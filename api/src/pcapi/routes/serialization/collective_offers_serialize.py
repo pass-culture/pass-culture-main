@@ -104,7 +104,7 @@ def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemp
         hasBookingLimitDatetimesPassed=offer.hasBookingLimitDatetimesPassed if not is_offer_template else False,
         id=humanize(offer.id),
         isActive=offer.isActive,
-        isEditable=True,
+        isEditable=offer.isEditable,
         isEvent=True,
         isThing=False,
         isEducational=True,
@@ -256,6 +256,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     hasBookingLimitDatetimesPassed: bool
     offerId: Optional[str]
     isActive: bool
+    isEditable: bool
     nonHumanizedId: int
     name: str
     subcategoryId: SubcategoryIdEnum
