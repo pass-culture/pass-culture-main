@@ -8,6 +8,7 @@ interface ICheckboxProps {
   label: string
   Icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   hasError?: boolean
+  disabled?: boolean
 }
 
 const CheckboxGroupItem = ({
@@ -16,6 +17,7 @@ const CheckboxGroupItem = ({
   name,
   hasError,
   Icon,
+  disabled,
 }: ICheckboxProps): JSX.Element => {
   const [field] = useField({ name, type: 'checkbox' })
 
@@ -31,6 +33,7 @@ const CheckboxGroupItem = ({
       hasError={hasError}
       label={label}
       onChange={onChange}
+      disabled={disabled}
     />
   )
 }

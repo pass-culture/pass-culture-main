@@ -18,6 +18,11 @@
     &-is-closed {
       transform: rotate(180deg);
     }
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.5;
+    }
   }
 
   .pellet {

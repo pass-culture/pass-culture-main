@@ -210,6 +210,7 @@ type CollectiveOfferBaseResponseModel = {
   offerId?: string | null
   domains: EducationalDomain[]
   institution?: EducationalInstitution | null
+  isEditable: boolean
 }
 
 export type CollectiveOfferResponseModel = CollectiveOfferBaseResponseModel & {

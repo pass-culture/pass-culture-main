@@ -24,6 +24,13 @@
     background: none;
     border:none;
     display: flex;
+
+    &--disabled {
+      cursor: default;
+      .tag-close-button-icon {
+        cursor: default;
+      }
+    }
     
    
     &-icon {
