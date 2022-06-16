@@ -111,7 +111,7 @@ const OfferEducationalForm = ({
 
       <FormVenue
         isEligible={isEligible}
-        mode={mode}
+        disableForm={mode !== Mode.CREATION}
         userOfferers={userOfferers}
         venuesOptions={venuesOptions}
       />
@@ -121,15 +121,17 @@ const OfferEducationalForm = ({
             categories={educationalCategories}
             subCategories={educationalSubCategories}
             domainsOptions={domainsOptions}
+            disableForm={mode === Mode.READ_ONLY}
           />
           <FormEventAddress
             currentOfferer={currentOfferer}
             venuesOptions={venuesOptions}
+            disableForm={mode === Mode.READ_ONLY}
           />
-          <FormParticipants />
-          <FormAccessibility />
-          <FormContact />
-          <FormNotifications />
+          <FormParticipants disableForm={mode === Mode.READ_ONLY} />
+          <FormAccessibility disableForm={mode === Mode.READ_ONLY} />
+          <FormContact disableForm={mode === Mode.READ_ONLY} />
+          <FormNotifications disableForm={mode === Mode.READ_ONLY} />
         </>
       ) : null}
       <FormLayout.Actions>

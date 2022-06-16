@@ -16,6 +16,7 @@ interface ICheckboxProps {
       title?: string | undefined
     }
   >
+  disabled?: boolean
 }
 
 const Checkbox = ({
@@ -25,6 +26,7 @@ const Checkbox = ({
   className,
   Icon,
   hideFooter,
+  disabled,
 }: ICheckboxProps): JSX.Element => {
   const [field, meta] = useField({ name, type: 'checkbox' })
   return (
@@ -35,6 +37,7 @@ const Checkbox = ({
         hasError={meta.touched && !!meta.error}
         label={label}
         value={value}
+        disabled={disabled}
       />
       {!hideFooter && (
         <div className={styles['checkbox-error']}>

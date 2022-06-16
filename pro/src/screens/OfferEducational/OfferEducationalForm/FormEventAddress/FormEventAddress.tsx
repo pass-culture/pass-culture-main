@@ -23,6 +23,7 @@ import { useFormikContext } from 'formik'
 interface IFormEventAddressProps {
   venuesOptions: SelectOptions
   currentOfferer: IUserOfferer | null
+  disableForm: boolean
 }
 
 const adressTypeRadios = [
@@ -43,6 +44,7 @@ const adressTypeRadios = [
 const FormEventAddress = ({
   venuesOptions,
   currentOfferer,
+  disableForm,
 }: IFormEventAddressProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
@@ -100,13 +102,14 @@ const FormEventAddress = ({
           group={adressTypeRadios}
           legend="Adresse où se déroulera l’événement :"
           name="eventAddress.addressType"
+          disabled={disableForm}
         />
       </FormLayout.Row>
 
       {values.eventAddress.addressType === OfferAddressType.OffererVenue && (
         <FormLayout.Row>
           <Select
-            disabled={venuesOptions.length === 1}
+            disabled={venuesOptions.length === 1 || disableForm}
             label={EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL}
             name="eventAddress.venueId"
             options={venuesOptions}
@@ -132,6 +135,7 @@ const FormEventAddress = ({
             label={EVENT_ADDRESS_OTHER_ADDRESS_LABEL}
             maxLength={200}
             name="eventAddress.otherAddress"
+            disabled={disableForm}
           />
         </FormLayout.Row>
       )}

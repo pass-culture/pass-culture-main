@@ -1,7 +1,6 @@
 import {
   IOfferEducationalFormValues,
   IUserOfferer,
-  Mode,
 } from 'core/OfferEducational'
 import { OFFERER_LABEL, VENUE_LABEL } from '../../constants/labels'
 
@@ -15,14 +14,14 @@ interface IFormVenueProps {
   userOfferers: IUserOfferer[]
   venuesOptions: SelectOptions
   isEligible: boolean | undefined
-  mode: Mode
+  disableForm: boolean
 }
 
 const FormVenue = ({
   userOfferers,
   venuesOptions,
   isEligible,
-  mode,
+  disableForm,
 }: IFormVenueProps): JSX.Element => {
   let offerersOptions = userOfferers.map(item => ({
     value: item['id'] as string,
@@ -44,7 +43,7 @@ const FormVenue = ({
     >
       <FormLayout.Row>
         <Select
-          disabled={offerersOptions.length === 1 || mode === Mode.EDITION}
+          disabled={offerersOptions.length === 1 || disableForm}
           label={OFFERER_LABEL}
           name="offererId"
           options={offerersOptions}
@@ -79,9 +78,7 @@ const FormVenue = ({
       {isEligible === true && venuesOptions.length > 0 && (
         <FormLayout.Row>
           <Select
-            disabled={
-              venuesOptions.length === 1 || !isEligible || mode === Mode.EDITION
-            }
+            disabled={venuesOptions.length === 1 || !isEligible || disableForm}
             label={VENUE_LABEL}
             name="venueId"
             options={venuesOptions}

@@ -22,12 +22,14 @@ interface IFormTypeProps {
   categories: IEducationalCategory[]
   subCategories: IEducationalSubCategory[]
   domainsOptions: SelectOption[]
+  disableForm: boolean
 }
 
 const FormOfferType = ({
   categories,
   subCategories,
   domainsOptions,
+  disableForm,
 }: IFormTypeProps): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
@@ -87,6 +89,7 @@ const FormOfferType = ({
           label={CATEGORY_LABEL}
           name="category"
           options={categoriesOptions}
+          disabled={disableForm}
         />
       </FormLayout.Row>
       {!!availableSubCategories?.length && (
@@ -95,6 +98,7 @@ const FormOfferType = ({
             label={SUBCATEGORY_LABEL}
             name="subCategory"
             options={subCategoriesOptions}
+            disabled={disableForm}
           />
         </FormLayout.Row>
       )}
@@ -105,6 +109,7 @@ const FormOfferType = ({
             label="Domaine artistique et culturel"
             pluralLabel="Domaines artistiques et culturels"
             fieldName="domains"
+            disabled={disableForm}
           />
         </FormLayout.Row>
       )}
@@ -114,6 +119,7 @@ const FormOfferType = ({
           label={TITLE_LABEL}
           maxLength={90}
           name="title"
+          disabled={disableForm}
         />
       </FormLayout.Row>
       <FormLayout.Row>
@@ -124,6 +130,7 @@ const FormOfferType = ({
           maxLength={1000}
           name="description"
           placeholder="Détaillez ici votre projet et son interêt pédagogique"
+          disabled={disableForm}
         />
       </FormLayout.Row>
       <FormLayout.Row>
@@ -132,6 +139,7 @@ const FormOfferType = ({
           label={DURATION_LABEL}
           name="duration"
           placeholder="HH:MM"
+          disabled={disableForm}
         />
       </FormLayout.Row>
     </FormLayout.Section>

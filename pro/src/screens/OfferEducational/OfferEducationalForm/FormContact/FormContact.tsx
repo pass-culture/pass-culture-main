@@ -4,16 +4,20 @@ import FormLayout from 'new_components/FormLayout'
 import React from 'react'
 import { TextInput } from 'ui-kit'
 
-const FormContact = (): JSX.Element => (
+const FormContact = ({
+  disableForm,
+}: {
+  disableForm: boolean
+}): JSX.Element => (
   <FormLayout.Section
     description={`Ces informations sont affichées sur votre offre.\n Elles permettent aux enseignants et aux chefs d’établissement scolaires de vous contacter.`}
     title="Contact"
   >
     <FormLayout.Row>
-      <TextInput label={PHONE_LABEL} name="phone" />
+      <TextInput label={PHONE_LABEL} name="phone" disabled={disableForm} />
     </FormLayout.Row>
     <FormLayout.Row>
-      <TextInput label={EMAIL_LABEL} name="email" />
+      <TextInput label={EMAIL_LABEL} name="email" disabled={disableForm} />
     </FormLayout.Row>
   </FormLayout.Section>
 )

@@ -17,6 +17,7 @@ type AutocompleteListProps = {
   renderOption: (
     option: SelectOption & { disabled?: boolean }
   ) => React.ReactNode
+  disabled?: boolean
 }
 
 const AutocompleteList = ({
@@ -28,6 +29,7 @@ const AutocompleteList = ({
   displayNumberOfSelectedValues = false,
   numberOfSelectedOptions,
   className,
+  disabled,
 }: AutocompleteListProps): JSX.Element => {
   return (
     <div className={styles['field-overlay']}>
@@ -37,6 +39,7 @@ const AutocompleteList = ({
           [styles['dropdown-indicator-is-closed']]: !isOpen,
         })}
         type="button"
+        disabled={disabled}
       >
         <Icon
           svg="open-dropdown"
