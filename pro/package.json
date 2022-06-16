@@ -16,6 +16,7 @@
     "lint:js": "eslint '{src,testcafe}/**/*.{js,jsx,ts,tsx}'",
     "lint:js:fix": "yarn lint:js --fix",
     "lint:scss": "stylelint '**/*.scss'",
+    "lint:scss:pre-commit": "stylelint",
     "lint:scss:fix": "yarn lint:scss --fix",
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
     "qa:diff": "scripts/compare-screenshots.sh",

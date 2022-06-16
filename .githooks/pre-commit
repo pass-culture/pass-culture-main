@@ -28,8 +28,11 @@ then
     yarn lint:js $STAGED_FILES
     LINTER_EXIT_CODE=$?
 
+    yarn lint:scss:pre-commit $STAGED_FILES
+    STYLELINT_EXIT_CODE=$?
+
     # check linter exit code
-    if [ $LINTER_EXIT_CODE -ne 0 ]; then
+    if [ $LINTER_EXIT_CODE -ne 0 ] | [ $STYLELINT_EXIT_CODE -ne 0 ]; then
         echo "❌ Please fix lint errors first "
         exit 1
     else
