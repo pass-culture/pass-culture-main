@@ -9,7 +9,11 @@ import FormLayout from 'new_components/FormLayout'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { useFormikContext } from 'formik'
 
-const FormNotifications = (): JSX.Element => {
+const FormNotifications = ({
+  disableForm,
+}: {
+  disableForm: boolean
+}): JSX.Element => {
   const { values, setFieldValue } =
     useFormikContext<IOfferEducationalFormValues>()
 
@@ -27,6 +31,7 @@ const FormNotifications = (): JSX.Element => {
           label={NOTIFICATIONS_LABEL}
           name="notifications"
           value=""
+          disabled={disableForm}
         />
       </FormLayout.Row>
       {values.notifications && (
@@ -34,6 +39,7 @@ const FormNotifications = (): JSX.Element => {
           <TextInput
             label={NOTIFICATIONS_EMAIL_LABEL}
             name="notificationEmail"
+            disabled={disableForm}
           />
         </FormLayout.Row>
       )}

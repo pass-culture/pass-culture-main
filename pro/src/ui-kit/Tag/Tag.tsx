@@ -5,6 +5,7 @@ import styles from './Tag.module.scss'
 interface Closeable {
   onClose?: (event: React.MouseEvent<HTMLButtonElement>) => void
   closeLabel?: string
+  disabled?: boolean
 }
 interface ITagProps {
   className?: string
@@ -23,10 +24,13 @@ const Tag = ({ label, className, closeable }: ITagProps): JSX.Element => {
     >
       {closeable ? (
         <button
-          className={styles['tag-close-button']}
+          className={cx(styles['tag-close-button'], {
+            [styles['tag-close-button--disabled']]: closeable.disabled,
+          })}
           onClick={closeable.onClose}
           title={closeable.closeLabel}
           type="button"
+          disabled={closeable.disabled}
         >
           {label}
           <Icon

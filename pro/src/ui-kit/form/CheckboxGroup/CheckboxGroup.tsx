@@ -14,6 +14,7 @@ interface ICheckboxGroupProps {
     icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   }[]
   className?: string
+  disabled?: boolean
 }
 
 const CheckboxGroup = ({
@@ -21,6 +22,7 @@ const CheckboxGroup = ({
   groupName,
   legend,
   className,
+  disabled,
 }: ICheckboxGroupProps): JSX.Element => {
   const [, meta, helpers] = useField({ name: groupName })
 
@@ -41,6 +43,7 @@ const CheckboxGroup = ({
             setGroupTouched={() =>
               !meta.touched ? helpers.setTouched(true) : null
             }
+            disabled={disabled}
           />
         </div>
       ))}

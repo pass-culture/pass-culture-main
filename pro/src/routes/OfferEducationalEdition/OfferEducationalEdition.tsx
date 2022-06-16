@@ -204,7 +204,7 @@ const OfferEducationalEdition = (): JSX.Element => {
           initialValues={initialValues}
           isOfferActive={offer?.isActive}
           isOfferBooked={offer?.isBooked}
-          mode={Mode.EDITION}
+          mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
           notify={notify}
           onSubmit={editOffer}
           setIsOfferActive={setIsOfferActive}

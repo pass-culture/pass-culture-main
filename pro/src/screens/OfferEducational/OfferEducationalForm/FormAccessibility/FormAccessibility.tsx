@@ -4,7 +4,11 @@ import React from 'react'
 import { accessibilityOptions } from './accessibilityOptions'
 import useAccessibilityUpdates from './useAccessibilityUpdates'
 
-const FormAccessibility = (): JSX.Element => {
+const FormAccessibility = ({
+  disableForm,
+}: {
+  disableForm: boolean
+}): JSX.Element => {
   useAccessibilityUpdates()
 
   return (
@@ -14,6 +18,7 @@ const FormAccessibility = (): JSX.Element => {
           group={accessibilityOptions}
           groupName="accessibility"
           legend="Cette offre est accessible au public en situation de handicap :"
+          disabled={disableForm}
         />
       </FormLayout.Row>
     </FormLayout.Section>

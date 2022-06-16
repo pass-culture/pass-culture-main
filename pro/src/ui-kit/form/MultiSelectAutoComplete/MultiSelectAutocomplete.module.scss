@@ -17,5 +17,8 @@
 
 .multi-select-autocomplete-placeholder-input::placeholder {
   font-style: normal;
-  color: colors.$black;
+  
+  &:not(:disabled) {
+    color: colors.$black;
+  }
 }

@@ -24,6 +24,7 @@ export interface MultiSelectAutocompleteProps {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
   pluralLabel: string
   smallLabel?: boolean
+  disabled?: boolean
 }
 
 const MultiSelectAutocomplete = ({
@@ -39,6 +40,7 @@ const MultiSelectAutocomplete = ({
   maxHeight,
   pluralLabel,
   smallLabel = false,
+  disabled = false,
 }: MultiSelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, handleChange, setFieldTouched } =
     useFormikContext<any>()
@@ -130,9 +132,11 @@ const MultiSelectAutocomplete = ({
           })}
           hasError={searchMeta.touched && !!searchMeta.error}
           type="text"
+          disabled={disabled}
           {...searchField}
         />
         <AutocompleteList
+          disabled={disabled}
           onButtonClick={toggleField}
           isOpen={isOpen}
           filteredOptions={[
@@ -182,6 +186,7 @@ const MultiSelectAutocomplete = ({
                     field.value.filter((_value: string) => _value !== value)
                   )
                 },
+                disabled,
               }}
             />
           ))}
