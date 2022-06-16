@@ -141,6 +141,8 @@ const BusinessUnitList = (): JSX.Element => {
       try {
         pcapi.editBusinessUnit(businessUnitId, siret)
       } catch (e) {
+        // FIX ME
+        // eslint-disable-next-line
         console.error(e)
       }
     },

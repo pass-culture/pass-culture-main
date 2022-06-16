@@ -1,7 +1,8 @@
-import { configure } from 'enzyme'
-import Adapter from 'enzyme-adapter-react-16'
-import fetch from 'jest-fetch-mock'
 import 'regenerator-runtime/runtime'
+
+import Adapter from 'enzyme-adapter-react-16'
+import { configure } from 'enzyme'
+import fetch from 'jest-fetch-mock'
 configure({ adapter: new Adapter() })
 
 global.fetch = fetch
@@ -40,7 +41,8 @@ fetch.mockResponse(req => {
 ----------------------------------------------------------------------------
 /!\\ UNMOCKED FETCH CALL TO :  ${req.url}
 ----------------------------------------------------------------------------
-`
+` // FIX ME
+  // eslint-disable-next-line
   console.error(msg)
   return Promise.reject(new Error(msg))
 })
