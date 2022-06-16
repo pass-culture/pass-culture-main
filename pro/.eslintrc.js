@@ -27,6 +27,7 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     'sort-imports': 1,
+    'no-console': 1,
   },
   overrides: [
     {
