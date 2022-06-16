@@ -13,7 +13,7 @@ export interface UserBaseInfo extends RaRecord {
 }
 
 export interface UserManualReview {
-  id: string
+  id: number
   eligibility?: 'UNDERAGE' | 'AGE18'
   reason: string
   review: 'OK' | 'KO' | 'REDIRECTED_TO_DMS'

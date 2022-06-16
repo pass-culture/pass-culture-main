@@ -1,14 +1,16 @@
-import { AuthProvider } from 'react-admin'
 import { UserManager } from 'oidc-client'
+import { AuthProvider } from 'react-admin'
+
+import { env } from '../libs/environment/env'
+import { eventMonitoring } from '../libs/monitoring/sentry'
 
 import { getProfileFromToken } from './getProfileFromToken'
-import { env } from '../libs/environment/env'
-import { captureException } from '@sentry/react'
+import { AuthToken } from './types'
 
 const userManager = new UserManager({
   authority: env.AUTH_ISSUER,
   client_id: env.OIDC_CLIENT_ID,
-  redirect_uri: env.REDIRECT_URI,
+  redirect_uri: env.OIDC_REDIRECT_URI,
   response_type: 'code',
   scope: 'openid email profile', // Allow to retrieve the email and user name later api side
 })
@@ -30,12 +32,13 @@ async function getTokenApiFromAuthToken() {
       `${env.API_URL}/auth/token?token=${authToken.id_token}`
     )
     if (!response.ok) {
-      captureException(response.statusText)
+      eventMonitoring.captureException(response.statusText)
     }
     const res = await response.json()
     localStorage.setItem('tokenApi', res.token)
   } catch (error) {
-    captureException(error)
+    eventMonitoring.captureException(error)
+    throw error
   }
 }
 
@@ -50,51 +53,62 @@ export const authProvider: AuthProvider = {
 
       const tokenApi = localStorage.getItem('tokenApi')
       if (!tokenApi) {
-        return Promise.reject('No Token Found')
+        throw new Error('NO_TOKEN_API')
       }
 
       await userManager.clearStaleState()
       cleanup()
-      return Promise.resolve()
     } catch (error) {
-      captureException(error)
+      eventMonitoring.captureException(error)
+      throw error
     }
   },
-  async checkError(error) {
-    captureException(error)
-    return Promise.reject(error)
+  checkError(error) {
+    console.log('checkError', error)
+    // if (status === 401 || status === 403) {
+    //   localStorage.removeItem('username');
+    //   return Promise.reject();
+    // }
+    eventMonitoring.captureException(error)
+    throw error
   },
-  async checkAuth(params) {
+  async checkAuth() {
     const token = localStorage.getItem('token')
 
     if (!token) {
-      return Promise.reject('No Token Found')
+      throw new Error('No Token Found')
     }
 
     // This is specific to the Google authentication implementation
     const jwt = getProfileFromToken(token)
     const now = new Date()
 
-    // @ts-ignore
-    return now.getTime() > jwt.exp * 1000 ? Promise.reject() : Promise.resolve()
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore 12356
+    if (now.getTime() > jwt.exp * 1000) {
+      throw new Error('EXPIRED_TOKEN')
+    }
   },
   async logout() {
     localStorage.removeItem('token')
     localStorage.removeItem('tokenApi')
-    return Promise.resolve()
   },
   async getIdentity() {
-    const token = localStorage.getItem('token')
-    const jwt: any = token ? getProfileFromToken(token) : ''
+    try {
+      const token = localStorage.getItem('token')
+      const jwt: AuthToken = getProfileFromToken(token as string)
 
-    return {
-      id: jwt.sub,
-      fullName: jwt.name,
-      avatar: jwt.picture,
+      return {
+        id: jwt.sub,
+        fullName: jwt.name,
+        avatar: jwt.picture,
+      }
+    } catch (error) {
+      throw new Error('Pas de token en mémoire')
     }
   },
   // authorization
-  getPermissions(params) {
-    return Promise.reject('Unknown method')
+  getPermissions() {
+    throw new Error('Unknown method')
   },
 }

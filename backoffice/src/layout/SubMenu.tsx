@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { ReactElement, ReactNode } from 'react'
+import ExpandMore from '@mui/icons-material/ExpandMore'
 import {
   List,
   MenuItem,
@@ -8,7 +7,8 @@ import {
   Collapse,
   Tooltip,
 } from '@mui/material'
-import ExpandMore from '@mui/icons-material/ExpandMore'
+import React from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { useTranslate, useSidebarState } from 'react-admin'
 
 interface Props {
