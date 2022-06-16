@@ -19,6 +19,10 @@ class OffererFactory(BaseFactory):
     isActive = True
 
 
+class CollectiveOffererFactory(OffererFactory):
+    name = factory.Sequence("[EAC] La structure de Moz'Art {}".format)
+
+
 class VenueFactory(BaseFactory):
     class Meta:
         model = models.Venue
@@ -67,6 +71,10 @@ class CollectiveVenueFactory(VenueFactory):
     isPermanent = True
 
     adageId = factory.Sequence(str)
+
+    managingOfferer = factory.SubFactory(CollectiveOffererFactory)
+
+    name = factory.Sequence("[EAC] Le lieu de Moz'Art {}".format)
 
 
 class VirtualVenueFactory(VenueFactory):

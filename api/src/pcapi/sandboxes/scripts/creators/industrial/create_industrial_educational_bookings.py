@@ -177,19 +177,34 @@ def create_industrial_educational_bookings() -> None:
             phoneNumber=None,
         ),
     ]
-
-    # This venue has no adageId hence its validation go through siren validation
-    venue_with_right_siren = offerers_factories.CollectiveVenueFactory(
-        name="Opéra Royal de Versailles",
-        siret="95046949400021",
-        managingOfferer__siren="950469494",
-        managingOfferer__name="Bonne structure pour l'EAC (siren)",
-        adageId=None,
+    offerer_with_right_siren = offerers_factories.CollectiveOffererFactory(
+        siren="950469494",
+        name="Bonne structure pour l'EAC (siren)",
     )
+    venues = []
+    for i in range(0, 3):
+        venues.append(
+            offerers_factories.CollectiveVenueFactory(
+                name=f"[EAC] Opéra Royal de Versailles - Salle {i}",
+                siret=f"9504694940002{i}",
+                managingOfferer=offerer_with_right_siren,
+                adageId=None,
+            )
+        )
+
+    cnl_like_offerer = offerers_factories.CollectiveOffererFactory(name="[EAC] Structure factice CNL")
+    for i in range(0, 3):
+        venues.append(
+            offerers_factories.CollectiveVenueFactory(
+                siret=None,
+                managingOfferer=cnl_like_offerer,
+                name=f"[EAC] Lieux factice du CNL {i}",
+                comment="Ce lieu est un lieu fictif créé pour les tests de l'EAC",
+            )
+        )
 
     educational_redactor = educational_factories.EducationalRedactorFactory(email="compte.test@education.gouv.fr")
 
-    venues = [venue_with_right_siren]
     for address in ADDRESSES:
         venues.append(
             offerers_factories.CollectiveVenueFactory(
