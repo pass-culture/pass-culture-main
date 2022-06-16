@@ -98,6 +98,54 @@ FAKE_STOCK_DATA = [
         addressType="school",
         otherAddress="",
     ),
+    StockData(
+        name="Le Grognement de la voie lactée - Bonn Park/Paul Moulin, Maia Sandoz",
+        price=400,
+        timedelta=5,
+        numberOfTickets=10,
+        addressType="school",
+        otherAddress="",
+    ),
+    StockData(
+        name="Baal - Bertolt Brecht / Armel Roussel",
+        price=200,
+        timedelta=2,
+        numberOfTickets=80,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    StockData(
+        name="Intervention Estampe en Partage - Collège Les Célestins de Vichy",
+        price=100,
+        timedelta=18,
+        numberOfTickets=12,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    StockData(
+        name="Sensibilisation au jazz par une approche vivante en lien avec 'Anglet Jazz Festival'",
+        price=150,
+        timedelta=10,
+        numberOfTickets=50,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    StockData(
+        name="L'art de la mosaïque sur la colline de Fourvière",
+        price=150,
+        timedelta=10,
+        numberOfTickets=50,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
+    StockData(
+        name="À la découverte de la lignée évolutive humaine",
+        price=150,
+        timedelta=10,
+        numberOfTickets=50,
+        addressType="offererVenue",
+        otherAddress="",
+    ),
 ]
 
 PASSED_STOCK_DATA: list[StockData] = [
@@ -162,6 +210,8 @@ def create_industrial_educational_bookings() -> None:
     create_educational_domains()
     educational_current_year = educational_factories.EducationalYearFactory()
     educational_next_year = educational_factories.EducationalYearFactory()
+
+    educational_factories.EducationalInstitutionFactory.create_batch(20)
 
     educational_institutions = [
         educational_factories.EducationalInstitutionFactory(institutionId="0780032L"),
@@ -250,9 +300,19 @@ def create_industrial_educational_bookings() -> None:
         stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=False)[0])
 
     for stock_data in PASSED_STOCK_DATA:
+        try:
+            venue = next(iterable_venues)
+        except StopIteration:
+            iterable_venues = iter(venues)
+            venue = next(iterable_venues)
         passed_stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=True)[0])
 
     for stock_data in FAKE_STOCK_DATA:
+        try:
+            venue = next(iterable_venues)
+        except StopIteration:
+            iterable_venues = iter(venues)
+            venue = next(iterable_venues)
         next_year_stocks.append(
             _create_collective_stock(stock_data, educational_next_year.beginningDate, venue, 2, is_passed=False)[0]
         )
