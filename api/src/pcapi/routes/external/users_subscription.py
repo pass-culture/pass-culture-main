@@ -41,7 +41,7 @@ def ubble_webhook_update_application_status(
         raise ValueError(f"no Ubble fraud check found with identification_id {body.identification_id}")
 
     try:
-        ubble_subscription_api.update_ubble_workflow(fraud_check, body.status)
+        ubble_subscription_api.update_ubble_workflow(fraud_check)
     except Exception:
         logger.exception(
             "Could not update Ubble workflow",
