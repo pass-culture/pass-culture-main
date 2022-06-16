@@ -33,10 +33,9 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 
-def update_ubble_workflow(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, status: ubble_fraud_models.UbbleIdentificationStatus
-) -> None:
+def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
     content = ubble.get_content(fraud_check.thirdPartyId)
+    status = content.status
 
     if not settings.IS_PROD and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.dateOfBirth.date() if fraud_check.user.dateOfBirth else None
