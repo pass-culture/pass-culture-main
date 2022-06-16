@@ -1,3 +1,4 @@
+import SearchIcon from '@mui/icons-material/Search'
 import {
   Box,
   Button,
@@ -8,6 +9,7 @@ import {
   List,
   Typography,
 } from '@mui/material'
+import { ClassAttributes, HTMLAttributes, useState } from 'react'
 import {
   Form,
   ReferenceField,
@@ -15,14 +17,14 @@ import {
   ShowButton,
   useAuthenticated,
 } from 'react-admin'
-import { dataProvider } from '../../providers/dataProvider'
-import { ClassAttributes, HTMLAttributes, useState } from 'react'
-import SearchIcon from '@mui/icons-material/Search'
-import { UserApiInterface } from '../Interfaces/UserSearchInterface'
 import { FieldValues } from 'react-hook-form'
-import { StatusBadge } from './StatusBadge'
+
+import { eventMonitoring } from '../../libs/monitoring/sentry'
+import { dataProvider } from '../../providers/dataProvider'
+import { UserApiResponse } from '../Interfaces/UserSearchInterface'
+
 import { BeneficiaryBadge } from './BeneficiaryBadge'
-import { captureException } from '@sentry/react'
+import { StatusBadge } from './StatusBadge'
 
 const UpperCaseText = (
   props: JSX.IntrinsicAttributes &
@@ -37,44 +39,47 @@ const UpperCaseText = (
   ></span>
 )
 
-const UserCard = (props: { record: any }) => {
-  const record: UserApiInterface = props.record
-
-  let statusBadge, activeBadge
-
-  activeBadge = StatusBadge(record.isActive)
-  statusBadge = BeneficiaryBadge(record.roles[0])
+const UserCard = ({ record }: { record: UserApiResponse }) => {
+  const {
+    id,
+    email,
+    roles,
+    isActive,
+    firstName,
+    lastName,
+    phoneNumber,
+  }: UserApiResponse = record
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
         <div>
-          {activeBadge} &nbsp;&nbsp;
-          {statusBadge}
+          <BeneficiaryBadge role={roles[0]} />
+          <StatusBadge active={isActive} />
         </div>
-        <br />
         <Typography variant="subtitle1" component="h4" align="left">
-          {record.firstName} <UpperCaseText>{record.lastName}</UpperCaseText>
+          {firstName} <UpperCaseText>{lastName}</UpperCaseText>
         </Typography>
         <Typography variant="subtitle2" component="h5" align="left">
           <ReferenceField source="id" reference="/public_accounts/users/">
-            <Typography>id user : {record.id}</Typography>
+            <Typography>id user : {id}</Typography>
           </ReferenceField>
         </Typography>
         <Typography variant="body1" component="p" align="left">
-          <b>e-mail</b>: {record.email}
+          <strong>e-mail</strong>: {email}
         </Typography>
         <Typography variant="body1" component="p" align="left">
-          <b>tél : </b> {record.phoneNumber}
+          <strong>tél : </strong> {phoneNumber}
         </Typography>
       </CardContent>
       <CardActions>
         <ShowButton
+          onClick={event => event.preventDefault()}
           resource={'public_accounts/user'}
           label={'Consulter ce profil'}
         />
 
         <Button
-          href={`/public_accounts/user/${record.id}`}
+          href={`/public_accounts/user/${id}`}
           variant={'text'}
           color={'secondary'}
         >
@@ -85,38 +90,38 @@ const UserCard = (props: { record: any }) => {
   )
 }
 
+function stopTypingOnSearch(event: {
+  key: string
+  stopPropagation: () => void
+}) {
+  if (event.key === 'Enter') {
+    event.stopPropagation()
+  }
+}
+
 export const UserSearch = () => {
   const [userData, setUserData] = useState([])
   useAuthenticated()
-  const stopTypingOnSearch = (event: {
-    key: string
-    stopPropagation: () => void
-  }) => {
-    if (event.key === 'Enter') {
-      event.stopPropagation()
-    }
-  }
-  const formSubmit = async (params: FieldValues) => {
+
+  async function formSubmit(params: FieldValues) {
     if (params && params.search) {
       setUserData([])
       try {
-        const token = localStorage.getItem('token') || ''
-
         const response = await dataProvider.searchList(
           'public_accounts/search',
-          String(params.search),
-          {
-            token: JSON.parse(token).id_token,
-          }
+          String(params.search)
         )
+        console.log(response)
         if (response && response.data && response.data.length > 0) {
           setUserData(response.data)
         }
       } catch (error) {
-        captureException(error)
+        console.log(error)
+        eventMonitoring.captureException(error)
       }
     }
   }
+
   return (
     <Grid
       container

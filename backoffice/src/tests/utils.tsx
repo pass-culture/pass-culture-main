@@ -1,5 +1,5 @@
-import flushPromises from 'flush-promises'
 import { act } from '@testing-library/react'
+import flushPromises from 'flush-promises'
 
 export async function flushAllPromises() {
   await flushPromises()

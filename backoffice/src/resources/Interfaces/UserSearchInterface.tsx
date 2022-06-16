@@ -5,7 +5,7 @@ export enum PublicUserRolesEnum {
   underageBeneficiary = 'UNDERAGE_BENEFICIARY',
 }
 
-export interface UserApiInterface extends RaRecord {
+export interface UserApiResponse extends RaRecord {
   id: Identifier
   firstName: string
   lastName: string
@@ -13,9 +13,9 @@ export interface UserApiInterface extends RaRecord {
   email: string
   roles: [PublicUserRolesEnum]
   phoneNumber: string
-  isActive: Boolean
+  isActive: boolean
 }
 
-export interface UserSearchInterface {
-  accounts: UserApiInterface[]
+export interface UserSearchResponse {
+  accounts: UserApiResponse[]
 }

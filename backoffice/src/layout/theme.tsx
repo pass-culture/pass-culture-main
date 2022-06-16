@@ -1,6 +1,8 @@
 import { createTheme } from '@mui/material/styles'
+
 import { colors } from './Colors'
-export const CustomTheme = createTheme({
+
+export const theme = createTheme({
   palette: {
     primary: {
       // light: will be calculated from palette.primary.main,

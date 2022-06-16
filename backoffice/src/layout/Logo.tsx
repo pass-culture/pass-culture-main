@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { SVGProps } from 'react'
 import { colors } from '@mui/material'
+import React from 'react'
+import { SVGProps } from 'react'
 
 export const Logo = (props: SVGProps<SVGSVGElement>) => {
   return (

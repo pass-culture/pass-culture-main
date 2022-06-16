@@ -14,7 +14,7 @@ const messages: TranslationMessages = {
     categories: 'Catégories et sous-catégories',
     prosTitle: 'Acteurs Culturels',
     pros: 'List des acteurs culturels',
-    offersCategory: "Catégories et sous-catégories d'Offres",
+    offersCategory: `Catégories et sous-catégories d'Offres`,
     conformity: 'Règles de conformité',
     offerValidation: 'Validation des offres',
     roleManagement: 'Gestion des rôles',

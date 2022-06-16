@@ -1,8 +1,8 @@
 import jwtDecode from 'jwt-decode'
 
+import { AuthToken } from './types'
+
 export const getProfileFromToken = (tokenJson: string) => {
   const token = JSON.parse(tokenJson)
-
-  const jwt = jwtDecode(token.id_token)
-  return jwt
+  return jwtDecode<AuthToken>(token.id_token)
 }

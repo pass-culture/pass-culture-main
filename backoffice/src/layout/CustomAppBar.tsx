@@ -1,24 +1,19 @@
-import * as React from 'react'
-import { Logo } from './Logo'
-import { Box, Typography, useMediaQuery, Theme } from '@mui/material'
-import { AppBar, UserMenu } from 'react-admin'
-import { Fragment } from 'react'
-import { forwardRef } from 'react'
-import { useLogout } from 'react-admin'
 import ExitIcon from '@mui/icons-material/PowerSettingsNew'
-import MenuItem from '@mui/material/MenuItem'
+import { Box, Typography, useMediaQuery, Theme, MenuItem } from '@mui/material'
+import React from 'react'
+import { AppBar, useLogout, UserMenu } from 'react-admin'
 
-const MyLogoutButton = forwardRef((props, ref) => {
+import { Logo } from './Logo'
+
+function MyLogoutButton() {
   const logout = useLogout()
-  const handleClick = () => logout()
   return (
-    <MenuItem onClick={handleClick}>
+    <MenuItem onClick={logout}>
       <ExitIcon />
-      &nbsp;Se&nbsp;Déconnecter
+      <span>Se Déconnecter</span>
     </MenuItem>
   )
-})
-
+}
 function CustomUserMenu() {
   return (
     <UserMenu>
@@ -27,7 +22,7 @@ function CustomUserMenu() {
   )
 }
 
-export const CustomAppBar = (props: any) => {
+export const CustomAppBar = (props = {}) => {
   const isLargeEnough = useMediaQuery<Theme>(theme =>
     theme.breakpoints.up('sm')
   )
@@ -45,7 +40,7 @@ export const CustomAppBar = (props: any) => {
         id="react-admin-title"
       />
       {isLargeEnough && <Logo />}
-      {isLargeEnough && <Fragment>&nbsp;Back Office</Fragment>}
+      {isLargeEnough && <span>Back Office</span>}
       {isLargeEnough && <Box component="span" sx={{ flex: 1 }} />}
     </AppBar>
   )

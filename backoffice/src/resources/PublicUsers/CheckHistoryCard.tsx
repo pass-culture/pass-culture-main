@@ -1,4 +1,4 @@
-import { CheckHistory } from './types'
+import { Card } from '@material-ui/core'
 import {
   FormControlLabel,
   Grid,
@@ -6,11 +6,13 @@ import {
   Switch,
   Typography,
 } from '@mui/material'
-import Moment from 'moment'
-import { Card } from '@material-ui/core'
+import moment from 'moment'
 import React, { useState } from 'react'
-import { StatusAvatar } from './StatusAvatar'
+
 import { snakeCaseToTitleCase } from '../../tools/textTools'
+
+import { StatusAvatar } from './StatusAvatar'
+import { CheckHistory } from './types'
 
 export const CheckHistoryCard = (idCheckHistory: CheckHistory) => {
   const cardStyle = {
@@ -37,7 +39,7 @@ export const CheckHistoryCard = (idCheckHistory: CheckHistory) => {
             </Grid>
             <Grid item xs={6}>
               <p>
-                {Moment(idCheckHistory.dateCreated).format(
+                {moment(idCheckHistory.dateCreated).format(
                   'D/MM/YYYY à HH:mm:s'
                 )}
               </p>
