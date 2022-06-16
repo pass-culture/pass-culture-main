@@ -46,22 +46,27 @@ const RouteLeavingGuardOfferCreation = ({
         redirectPath = '/offres'
         return { redirectPath, shouldBlock: true }
       }
-      // going from confirmation to stock
+      // going from confirmation to stock or visibility
       if (location.pathname.match(confirmationPathRegex)) {
-        if (nextLocation.pathname.match(stocksPathRegex)) {
+        if (
+          nextLocation.pathname.match(stocksPathRegex) ||
+          nextLocation.pathname.match(visibilityPathRegex)
+        ) {
           redirectPath = '/offres'
         }
         return { redirectPath, shouldBlock: false }
       }
-      // going to stocks
-      // or to visibility
-      // or to confirmation
-      // or from collective to individual or reverse
+
       if (
+        // going to stocks
         nextLocation.pathname.match(stocksPathRegex) ||
+        // or to visibility
         nextLocation.pathname.match(visibilityPathRegex) ||
+        // or to confirmation
         nextLocation.pathname.match(confirmationPathRegex) ||
+        // or to recapitulatif
         (summaryPathRegex && nextLocation.pathname.match(summaryPathRegex)) ||
+        // or from collective to individual or reverse
         (location.pathname.startsWith(offerCreationPath) &&
           nextLocation.pathname.startsWith(offerCreationPath))
       ) {

@@ -11,10 +11,15 @@
 
 .row-layout {
   width: 310px;
+  margin-bottom: rem.torem(32px);
 }
 
 .legend {
   border:none;
   @include fonts.title4();
   margin-bottom: rem.torem(24px);
+}
+
+.actions-layout {
+  padding-top: rem.torem(24px);
 }
