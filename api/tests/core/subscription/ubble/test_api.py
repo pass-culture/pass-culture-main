@@ -99,7 +99,7 @@ class UbbleWorkflowTest:
             fraud_check.thirdPartyId,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         ubble_content = fraud_check.resultContent
         assert ubble_content["status"] == status.value
@@ -118,7 +118,7 @@ class UbbleWorkflowTest:
             fraud_check.thirdPartyId,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
             message = subscription_models.SubscriptionMessage.query.one()
             assert message.userMessage == "Ton document d'identité est en cours de vérification."
             assert message.popOverIcon == subscription_models.PopOverIcon.CLOCK
@@ -141,7 +141,7 @@ class UbbleWorkflowTest:
             fraud_check.thirdPartyId,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
             message = subscription_models.SubscriptionMessage.query.one()
             assert (
                 message.userMessage
@@ -181,7 +181,7 @@ class UbbleWorkflowTest:
             ubble_identification,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         fraud_checks = sorted(user.beneficiaryFraudChecks, key=lambda fc: fc.id)
 
@@ -227,7 +227,7 @@ class UbbleWorkflowTest:
             ubble_identification,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         fraud_checks = user.beneficiaryFraudChecks
         assert len(fraud_checks) == 1
@@ -261,7 +261,7 @@ class UbbleWorkflowTest:
             fraud_check.thirdPartyId,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         db.session.refresh(user)
         assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=4)
@@ -287,7 +287,7 @@ class UbbleWorkflowTest:
             fraud_check.thirdPartyId,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(fraud_check, ubble_response.data.attributes.status)
+            ubble_subscription_api.update_ubble_workflow(fraud_check)
 
         db.session.refresh(user)
         assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=6)
