@@ -71,8 +71,8 @@ const defaultProps: Args = {
 export const Default = Template.bind({})
 Default.args = defaultProps
 
-export const WithDisabledOption = Template.bind({})
-WithDisabledOption.args = {
+export const WithMaxDisplayOptions = Template.bind({})
+WithMaxDisplayOptions.args = {
   ...defaultProps,
-  filterLabel: 'Résultats limités à 20 items',
+  maxDisplayOptions: 2,
 }
