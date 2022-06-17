@@ -262,20 +262,6 @@ commands:
           name: Clone pass-culture-db-operations-repo
           command: git clone git@github.com:pass-culture/pass-culture-db-operations.git ~/pass-culture-db-operations
 
-  setup_sentry:
-    description: Setup sentry credentials for Backoffice
-    steps:
-      - run:
-          name: Setup sentry credentials for Backoffice
-          command: |
-            echo "[defaults]" >> ~/.sentryclirc
-            echo "url=https://sentry.internal-passculture.app/" >> ~/.sentryclirc
-            echo "org=sentry" >> ~/.sentryclirc
-            echo "project=backoffice" >> ~/.sentryclirc
-            echo "" >> ~/.sentryclirc
-            echo "[auth]" >> ~/.sentryclirc
-            echo "token=$SENTRY_AUTH_TOKEN" >> ~/.sentryclirc
-
 ###################
 #  JOBS
 ###################
