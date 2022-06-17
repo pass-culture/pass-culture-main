@@ -5,7 +5,7 @@ import type { SearchBoxProvided } from 'react-instantsearch-core'
 import { connectSearchBox } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'api/gen'
-import { LEGACY_INITIAL_FACET_FILTERS, INITIAL_QUERY } from 'app/constants'
+import { INITIAL_QUERY } from 'app/constants'
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext, AlgoliaQueryContext } from 'app/providers'
 import { FiltersContext } from 'app/providers/FiltersContextProvider'
@@ -25,7 +25,6 @@ export interface SearchProps extends SearchBoxProvided {
   user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
-  useNewAlgoliaIndex: boolean
 }
 
 enum OfferTab {
@@ -38,7 +37,6 @@ export const OffersSearchComponent = ({
   removeVenueFilter,
   venueFilter,
   refine,
-  useNewAlgoliaIndex,
 }: SearchProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
@@ -69,7 +67,11 @@ export const OffersSearchComponent = ({
   const handleLaunchSearchButton = (filters: Filters): void => {
     setIsLoading(true)
     setFacetFilters(
-      populateFacetFilters({ ...filters, venueFilter, useNewAlgoliaIndex })
+      populateFacetFilters({
+        ...filters,
+        venueFilter,
+        useNewAlgoliaIndex: true,
+      })
     )
     setQueryTag(query)
     refine(query)
@@ -80,26 +82,15 @@ export const OffersSearchComponent = ({
     removeQuery()
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
-    if (useNewAlgoliaIndex) {
-      setFacetFilters([])
-    } else {
-      setFacetFilters([...LEGACY_INITIAL_FACET_FILTERS])
-    }
+    setFacetFilters([])
     refine(INITIAL_QUERY)
   }
 
   useEffect(() => {
     if (venueFilter?.id) {
-      if (useNewAlgoliaIndex) {
-        setFacetFilters([`venue.id:${venueFilter.id}`])
-      } else {
-        setFacetFilters([
-          ...LEGACY_INITIAL_FACET_FILTERS,
-          `venue.id:${venueFilter.id}`,
-        ])
-      }
+      setFacetFilters([`venue.id:${venueFilter.id}`])
     }
-  }, [setFacetFilters, venueFilter, useNewAlgoliaIndex])
+  }, [setFacetFilters, venueFilter])
 
   return (
     <>

@@ -56,7 +56,6 @@ export const OffersInstantSearch = ({
       />
       <OffersSearch
         removeVenueFilter={removeVenueFilter}
-        useNewAlgoliaIndex={useNewAlgoliaIndex}
         user={user}
         venueFilter={venueFilter}
       />
