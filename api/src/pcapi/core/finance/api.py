@@ -1631,6 +1631,7 @@ def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.List[typing.D
             *common_columns,
             models.Pricing.amount.label("pricing_amount"),
             bookings_models.Booking.amount.label("booking_amount"),
+            bookings_models.Booking.quantity.label("booking_quantity"),
             bookings_models.Booking.individualBookingId,
         )
         .join(models.Pricing.booking)
@@ -1666,7 +1667,7 @@ def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.List[typing.D
         individual_amount = 0
         for booking in bookings:
             reimbursed_amount += booking.pricing_amount
-            validated_booking_amount += decimal.Decimal(booking.booking_amount)
+            validated_booking_amount += decimal.Decimal(booking.booking_amount) * booking.booking_quantity
             if booking.individualBookingId:
                 individual_amount += booking.pricing_amount
         if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() and venue_id in collective_reimbursement_by_venue:
