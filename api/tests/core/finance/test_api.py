@@ -1988,7 +1988,7 @@ class PrepareInvoiceContextTest:
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
 
-    def generate_and_compare_invoice(self, stocks, business_unit):
+    def generate_and_compare_invoice(self, stocks, business_unit, venue):
         bookings = []
         user = create_rich_user()
         for stock in stocks:
@@ -2002,6 +2002,10 @@ class GenerateInvoiceHtmlTest:
         api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         for booking in bookings[3:]:
             api.price_booking(booking)
+        duo_offer = offers_factories.OfferFactory(venue=venue, isDuo=True)
+        duo_stock = offers_factories.StockFactory(offer=duo_offer, price=1)
+        duo_booking = bookings_factories.UsedIndividualBookingFactory(stock=duo_stock, quantity=2)
+        api.price_booking(duo_booking)
         api.generate_cashflows(cutoff=datetime.datetime.utcnow())
         cashflows = (
             models.Cashflow.query.join(models.Cashflow.pricings)
@@ -2054,7 +2058,7 @@ class GenerateInvoiceHtmlTest:
         api.price_booking(educational_booking1)
         api.price_booking(educational_booking2)
 
-        self.generate_and_compare_invoice(stocks, business_unit)
+        self.generate_and_compare_invoice(stocks, business_unit, venue)
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_basics_with_new_collective_model(self, invoice_data):
@@ -2072,7 +2076,7 @@ class GenerateInvoiceHtmlTest:
         api.price_booking(collective_booking)
         api.price_booking(collective_booking2)
 
-        self.generate_and_compare_invoice(stocks, business_unit)
+        self.generate_and_compare_invoice(stocks, business_unit, venue)
 
 
 class StoreInvoicePdfTest:
