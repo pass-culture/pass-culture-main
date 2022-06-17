@@ -1,11 +1,12 @@
-import * as React from 'react'
-import { useCallback, useEffect, useState } from 'react'
-import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
-
 import '@fontsource/barlow'
 import '@fontsource/barlow/600.css'
 import '@fontsource/barlow/700.css'
 import '@fontsource/barlow/300.css'
+
+import * as React from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
+
 import { api } from 'api/api'
 import { AdageFrontRoles, AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
@@ -89,7 +90,7 @@ export const App = (): JSX.Element => {
       ) ? (
         <AppLayout
           removeVenueFilter={removeVenueFilter}
-          userRole={user.role}
+          user={user}
           venueFilter={venueFilter}
         />
       ) : (
