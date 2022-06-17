@@ -94,6 +94,8 @@ def update_venue(
             "Change Venue.businessUnitId where Venue.siret and BusinessUnit.siret are equal",
             extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
         )
+    if "businessUnitId" in modifications:
+        set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
@@ -175,6 +177,9 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
     repository.save(venue)
 
+    if venue_data.businessUnitId:
+        set_business_unit_to_venue_id(venue_data.businessUnitId, venue.id)
+
     search.async_index_venue_ids([venue.id])
 
     update_external_pro(venue.bookingEmail)
@@ -183,7 +188,7 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
 
 def set_business_unit_to_venue_id(
-    business_unit_id: int,
+    business_unit_id: Optional[int],
     venue_id: int,
     timestamp: Optional[datetime] = None,
 ) -> None:
@@ -199,10 +204,11 @@ def set_business_unit_to_venue_id(
             timestamp,
         )
         db.session.add(current_link)
-    new_link = finance_models.BusinessUnitVenueLink(
-        businessUnitId=business_unit_id, venueId=venue_id, timespan=(timestamp, None)
-    )
-    db.session.add(new_link)
+    if business_unit_id:
+        new_link = finance_models.BusinessUnitVenueLink(
+            businessUnitId=business_unit_id, venueId=venue_id, timespan=(timestamp, None)
+        )
+        db.session.add(new_link)
     Venue.query.filter(Venue.id == venue_id).update({"businessUnitId": business_unit_id})
     db.session.commit()
 
