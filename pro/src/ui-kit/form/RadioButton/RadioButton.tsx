@@ -6,6 +6,7 @@ import style from './RadioButton.module.scss'
 import { useField } from 'formik'
 
 interface IRadioButtonProps {
+  disabled?: boolean
   name: string
   label: string
   value: string
@@ -15,6 +16,7 @@ interface IRadioButtonProps {
 }
 
 const RadioButton = ({
+  disabled,
   name,
   label,
   value,
@@ -32,6 +34,7 @@ const RadioButton = ({
     >
       <BaseRadio
         {...field}
+        disabled={disabled}
         id={name}
         label={label}
         value={value}
