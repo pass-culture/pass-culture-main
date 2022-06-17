@@ -10,6 +10,7 @@ import {
   FacetFiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
+import { FeaturesContext } from 'app/providers/FeaturesContextProvider'
 
 import { App } from '../App'
 
@@ -72,12 +73,24 @@ jest.mock('api/api', () => ({
 }))
 const mockedApi = api as jest.Mocked<typeof api>
 
+const features = [
+  {
+    name: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
+    nameKey: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
+    isActive: true,
+    description: '',
+    id: '1',
+  },
+]
+
 const renderApp = () => {
   render(
     <FiltersContextProvider>
       <AlgoliaQueryContextProvider>
         <FacetFiltersContextProvider>
-          <App />
+          <FeaturesContext.Provider value={features}>
+            <App />
+          </FeaturesContext.Provider>
         </FacetFiltersContextProvider>
       </AlgoliaQueryContextProvider>
     </FiltersContextProvider>
@@ -106,6 +119,7 @@ describe('app', () => {
 
       mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
         role: AdageFrontRoles.Redactor,
+        uai: 'uai',
       })
       mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
       mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
@@ -150,7 +164,6 @@ describe('app', () => {
       expect(Configure).toHaveBeenCalledTimes(2)
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
         `venue.id:${venue.id}`,
       ])
 
@@ -193,7 +206,6 @@ describe('app', () => {
       expect(Configure).toHaveBeenCalledTimes(2)
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
         `venue.id:${venue.id}`,
       ])
 
@@ -266,17 +278,67 @@ describe('app', () => {
       const searchConfigurationFirstCall = (Configure as jest.Mock).mock
         .calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
         `venue.id:${venue.id}`,
       ])
 
       const searchConfigurationLastCall = (Configure as jest.Mock).mock
         .calls[3][0]
-      expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
-      ])
+      expect(searchConfigurationLastCall.facetFilters).toStrictEqual([])
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
       expect(queryResetFiltersButton()).not.toBeInTheDocument()
+    })
+
+    describe('tabs', () => {
+      it('should display tabs if user has UAI code', async () => {
+        // Given
+        renderApp()
+
+        const firstTab = await screen.findByText('Toutes les offres')
+        const secondTab = await screen.findByText(
+          'Partagé avec mon établissement'
+        )
+
+        expect(firstTab).toBeInTheDocument()
+        expect(secondTab).toBeInTheDocument()
+      })
+
+      it('should not display tabs if user does not have UAI code', async () => {
+        // Given
+        mockedApi.getAdageIframeAuthenticate.mockResolvedValueOnce({
+          role: AdageFrontRoles.Redactor,
+          uai: null,
+        })
+        renderApp()
+
+        // wait that app is rendered
+        await screen.findByText('Rechercher une offre', {
+          selector: 'h2',
+        })
+
+        const firstTab = screen.queryByText('Toutes les offres')
+        const secondTab = screen.queryByText('Partagé avec mon établissement')
+
+        expect(firstTab).not.toBeInTheDocument()
+        expect(secondTab).not.toBeInTheDocument()
+      })
+
+      it('should add a facet filter when user clicks on "Partagé avec mon établissement"', async () => {
+        // Given
+        renderApp()
+
+        const secondTab = await screen.findByText(
+          'Partagé avec mon établissement'
+        )
+        userEvent.click(secondTab)
+
+        const searchConfigurationSecondCall = (Configure as jest.Mock).mock
+          .calls[2][0]
+
+        expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
+          `venue.id:${venue.id}`,
+          'offer.educationalInstitutionUAICode:uai',
+        ])
+      })
     })
   })
 

@@ -155,13 +155,11 @@ describe('app', () => {
     const searchConfigurationFirstCall = (Configure as jest.Mock).mock
       .calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
       ['venue.departmentCode:01'],
     ])
     const searchConfigurationSecondCall = (Configure as jest.Mock).mock
       .calls[2][0]
     expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
       ['venue.departmentCode:01', 'venue.departmentCode:59'],
       [
         'offer.subcategoryId:CINE_PLEIN_AIR',
@@ -206,22 +204,18 @@ describe('app', () => {
     const searchConfigurationFirstCall = (Configure as jest.Mock).mock
       .calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
       ['venue.departmentCode:01', 'venue.departmentCode:59'],
       ['offer.students:Collège - 4e'],
     ])
     const searchConfigurationSecondCall = (Configure as jest.Mock).mock
       .calls[2][0]
     expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
       ['venue.departmentCode:59'],
       ['offer.students:Collège - 4e'],
     ])
     const searchConfigurationThirdCall = (Configure as jest.Mock).mock
       .calls[3][0]
-    expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
-    ])
+    expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([])
 
     expect(queryTag('01 - Ain')).not.toBeInTheDocument()
     expect(queryTag('59 - Nord')).not.toBeInTheDocument()

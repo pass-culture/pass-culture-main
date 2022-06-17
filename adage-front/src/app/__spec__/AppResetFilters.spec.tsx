@@ -158,9 +158,7 @@ describe('app', () => {
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
       .calls[4][0]
-    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
-    ])
+    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([])
     expect(queryTag('01 - Ain')).not.toBeInTheDocument()
     expect(queryTag('59 - Nord')).not.toBeInTheDocument()
     expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
@@ -195,15 +193,12 @@ describe('app', () => {
     const searchConfigurationFirstCall = (Configure as jest.Mock).mock
       .calls[2][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
       ['venue.departmentCode:01'],
       'venue.id:1436',
     ])
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
       .calls[3][0]
-    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
-      'offer.isEducational:true',
-    ])
+    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([])
     expect(queryTag('a')).not.toBeInTheDocument()
     expect(queryTag('01 - Ain')).not.toBeInTheDocument()
   })
