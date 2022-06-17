@@ -903,7 +903,7 @@ jobs:
       - build-frontend-app:
           node_env: <<parameters.app_environment>>
           build_dir: ./pro
-          yarn_build_subcommand: "build"
+          yarn_build_subcommand: "build:<<parameters.app_environment>>"
       - unless:
           condition:
             equal: ["testing", <<parameters.app_environment>>]
