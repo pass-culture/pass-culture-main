@@ -115,6 +115,7 @@ const CollectiveOfferVisibility = ({
                 1. Qui peut visualiser votre offre ?
               </fieldset>
               <RadioGroup
+                disabled={mode === Mode.READ_ONLY}
                 group={[
                   {
                     label: 'Tous les établissements',

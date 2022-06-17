@@ -2,12 +2,12 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { CollectiveStockResponseModel } from 'core/OfferEducational'
 
-type IPayloadSuccess = {
+export type IPayloadSuccess = {
   stock: CollectiveStockResponseModel | null
 }
-type IPayloadFailure = { stock: null }
+export type IPayloadFailure = { stock: null }
 type GetCollectiveStockAdapter = Adapter<
-  { offerId: string; isNewCollectiveModelEnabled: boolean },
+  { offerId: string },
   IPayloadSuccess,
   IPayloadFailure
 >
@@ -20,7 +20,6 @@ const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
 
 export const getCollectiveStockAdapter: GetCollectiveStockAdapter = async ({
   offerId,
-  isNewCollectiveModelEnabled,
 }) => {
   try {
     const stock = await pcapi.getCollectiveStockForOffer(offerId)
@@ -30,7 +29,7 @@ export const getCollectiveStockAdapter: GetCollectiveStockAdapter = async ({
       payload: {
         stock: {
           ...stock,
-          id: isNewCollectiveModelEnabled ? stock.id : stock.stockId ?? '',
+          id: stock.id,
         },
       },
     }

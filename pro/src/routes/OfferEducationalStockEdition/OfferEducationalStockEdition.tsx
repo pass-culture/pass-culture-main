@@ -166,7 +166,6 @@ const OfferEducationalStockEdition = (): JSX.Element => {
           enableIndividualAndCollectiveSeparation
             ? getCollectiveStockAdapter({
                 offerId,
-                isNewCollectiveModelEnabled,
               })
             : getEducationalStockAdapter(offerId)
         const getOfferAdapter = getGetOfferAdapter(
