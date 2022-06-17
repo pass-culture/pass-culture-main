@@ -88,7 +88,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       isTemplate && enableIndividualAndCollectiveSeparation
 
     let url = `/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${
-      shouldUseNewTemplateIds ? successPayload.id : offer.id
+      shouldUseNewTemplateIds ? successPayload?.id : offer.id
     }/collectif`
 
     if (enableEducationalInstitutionAssociation && !isTemplate) {

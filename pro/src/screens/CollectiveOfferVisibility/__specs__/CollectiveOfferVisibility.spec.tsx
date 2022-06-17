@@ -93,6 +93,17 @@ describe('CollectiveOfferVisibility', () => {
     ).toBeDisabled()
   })
 
+  it('should display details on selected institution', async () => {
+    const spyPatch = jest.fn().mockResolvedValue({ isOk: true })
+    renderVisibilityStep({ ...props, patchInstitution: spyPatch })
+    await userEvent.click(
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
+    await userEvent.click(await screen.findByAltText(/Afficher les options/))
+    await userEvent.click(await screen.findByLabelText(/Institution 1/))
+    expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
+  })
+
   it('should save selected institution and go to confirmation', async () => {
     const spyPatch = jest.fn().mockResolvedValue({ isOk: true })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
@@ -132,7 +143,7 @@ describe('CollectiveOfferVisibility', () => {
     await waitFor(() => expect(notifyError).toHaveBeenNthCalledWith(1, 'Ooops'))
   })
 
-  it('should not save visibility when all institution are selected', async () => {
+  it('should not save visibility and redirect to confirmation when all institution are selected', async () => {
     const spyPatch = jest.fn()
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
