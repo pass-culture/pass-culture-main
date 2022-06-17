@@ -73,8 +73,9 @@
     background: colors.$grey-medium;
   }
   .stock-options-menu-item:last-child > svg{
-      height: rem.torem(32px);
-      width: rem.torem(32px);
+      min-height: rem.torem(32px);
+      min-width: rem.torem(32px);
+      margin: rem.torem(-5px);
   }
 }
 
