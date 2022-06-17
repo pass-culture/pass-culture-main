@@ -88,13 +88,12 @@ def update_venue(
         return venue
 
     business_unit_id = modifications.get("businessUnitId")
-    if business_unit_id and venue.businessUnit:
-        if venue.businessUnitId != business_unit_id and venue.isBusinessUnitMainVenue:
-            delete_business_unit(venue.businessUnit)
-            logger.info(
-                "Change Venue.businessUnitId where Venue.siret and BusinessUnit.siret are equal",
-                extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
-            )
+    if business_unit_id and venue.isBusinessUnitMainVenue:
+        delete_business_unit(venue.businessUnit)
+        logger.info(
+            "Change Venue.businessUnitId where Venue.siret and BusinessUnit.siret are equal",
+            extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
+        )
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
