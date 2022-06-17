@@ -7,7 +7,6 @@ from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
-from pcapi.core.venues import repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
@@ -184,7 +183,7 @@ def get_venue_stats(humanized_venue_id: str) -> VenueStatsResponseModel:
         validated_bookings_count,
         active_offers_count,
         sold_out_offers_count,
-    ) = repository.get_venue_stats(venue.id)
+    ) = offerers_repository.get_venue_stats(venue.id)
 
     return VenueStatsResponseModel(
         activeBookingsQuantity=active_bookings_quantity,
