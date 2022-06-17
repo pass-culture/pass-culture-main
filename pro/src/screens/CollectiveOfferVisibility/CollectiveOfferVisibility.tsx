@@ -1,7 +1,7 @@
+import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import { FormikProvider, useFormik } from 'formik'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
-import { SelectAutocomplete, SubmitButton } from 'ui-kit'
 
 import FormLayout from 'new_components/FormLayout'
 import { GetEducationalInstitutionsAdapter } from 'routes/CollectiveOfferVisibility/adapters/getEducationalInstitutionsAdapter'
@@ -49,28 +49,10 @@ const CollectiveOfferVisibility = ({
   const [institutionsOptions, setInstitutionsOptions] =
     useState<InstitutionOption[]>()
 
-  const [buttonPressed, setButtonPressed] = useState(false)
+  const [selectedInstitution, setSelectedInstitution] =
+    useState<InstitutionOption | null>()
 
-  const handleSubmit = () => {
-    setButtonPressed(true)
-    const successUrl = `/offre/${offerId}/collectif/confirmation`
-    if (formik.values.visibility === 'one') {
-      patchInstitution({
-        offerId,
-        institutionId: formik.values.institution,
-      }).then(result => {
-        if (result.isOk) {
-          history.push(successUrl)
-        } else {
-          notify.error(result.message)
-          setButtonPressed(false)
-        }
-      })
-    } else {
-      // if visibility === 'all' nothing to save
-      history.push(successUrl)
-    }
-  }
+  const [buttonPressed, setButtonPressed] = useState(false)
 
   useEffect(() => {
     getInstitutions().then(res => {
@@ -86,12 +68,38 @@ const CollectiveOfferVisibility = ({
     })
   }, [])
 
+  useEffect(() => {
+    if (formik.values.institution) {
+      const selected = institutionsOptions?.find(
+        institution => institution.value === formik.values.institution
+      )
+      setSelectedInstitution(selected)
+    } else {
+      setSelectedInstitution(null)
+    }
+  }, [formik.values.institution])
+
   return (
     <FormikProvider value={formik}>
       <form
-        onSubmit={e => {
-          handleSubmit()
-          e.preventDefault()
+        onSubmit={async () => {
+          setButtonPressed(true)
+          const successUrl = `/offre/${offerId}/collectif/confirmation`
+          if (formik.values.visibility === 'one') {
+            const result = await patchInstitution({
+              offerId,
+              institutionId: formik.values.institution,
+            })
+            if (result.isOk) {
+              history.push(successUrl)
+            } else {
+              notify.error(result.message)
+              setButtonPressed(false)
+            }
+          } else {
+            // if visibility === 'all' nothing to save
+            history.push(successUrl)
+          }
         }}
       >
         <FormLayout>
@@ -134,9 +142,15 @@ const CollectiveOfferVisibility = ({
                   maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
                   maxHeight={100}
                 />
+                {selectedInstitution && (
+                  <Banner type="light">
+                    {selectedInstitution.label}
+                    <br />
+                    {`${selectedInstitution.postalCode} ${selectedInstitution.city}`}
+                  </Banner>
+                )}
               </FormLayout.Row>
             )}
-            {formik.values.institution && <></>}
           </FormLayout.Section>
 
           <FormLayout.Actions className={styles['actions-layout']}>
