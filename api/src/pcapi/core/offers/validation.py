@@ -10,25 +10,25 @@ from PIL import Image
 from pcapi import settings
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
+from pcapi.core.categories import subcategories
+from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
+from pcapi.core.categories.subcategories import WITHDRAWABLE_SUBCATEGORIES
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
-import pcapi.core.finance.repository as finance_repository
+from pcapi.core.finance import repository as finance_repository
+from pcapi.core.offers import exceptions
+from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import Stock
+from pcapi.core.offers.models import WithdrawalTypeEnum
+from pcapi.core.providers.models import Provider
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
-
-from . import exceptions
-from ..categories import subcategories
-from ..categories.subcategories import ALL_SUBCATEGORIES_DICT
-from ..categories.subcategories import WITHDRAWABLE_SUBCATEGORIES
-from ..providers.models import Provider
-from .models import ActivationCode
-from .models import OfferValidationStatus
-from .models import WithdrawalTypeEnum
+from pcapi.utils import date
 
 
 logger = logging.getLogger(__name__)
@@ -376,6 +376,22 @@ def check_booking_limit_datetime(
             beginning = stock.beginningDatetime
         if booking_limit_datetime is None:
             booking_limit_datetime = stock.bookingLimitDatetime
+
+        if isinstance(stock, CollectiveStock):
+            offer = stock.collectiveOffer
+        else:
+            offer = stock.offer
+
+        if beginning and booking_limit_datetime and offer and offer.venue.departementCode is not None:
+            beginning_tz = date.utc_datetime_to_department_timezone(beginning, offer.venue.departementCode)
+            booking_limit_datetime_tz = date.utc_datetime_to_department_timezone(
+                booking_limit_datetime, offer.venue.departementCode
+            )
+
+            same_date = beginning_tz.date() == booking_limit_datetime_tz.date()
+            if not same_date and booking_limit_datetime_tz > beginning_tz:
+                raise exceptions.BookingLimitDatetimeTooLate()
+            return
 
     if beginning and booking_limit_datetime and booking_limit_datetime > beginning:
         raise exceptions.BookingLimitDatetimeTooLate()
