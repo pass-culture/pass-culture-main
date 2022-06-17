@@ -41,7 +41,7 @@ export const OffersSearchComponent = ({
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState(OfferTab.ALL)
 
-  const { dispatchCurrentFilters } = useContext(FiltersContext)
+  const { dispatchCurrentFilters, currentFilters } = useContext(FiltersContext)
   const { setFacetFilters } = useContext(FacetFiltersContext)
   const { query, removeQuery, setQueryTag } = useContext(AlgoliaQueryContext)
 
@@ -49,17 +49,32 @@ export const OffersSearchComponent = ({
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
 
+  const handleTabChange = (tab: OfferTab) => {
+    setActiveTab(tab)
+    setFacetFilters(
+      populateFacetFilters({
+        ...currentFilters,
+        venueFilter,
+        uai:
+          enableEducationalInstitutionAssociation &&
+          tab === OfferTab.ASSOCIATED_TO_INSTITUTION
+            ? user.uai
+            : null,
+      })
+    )
+  }
+
   const tabs = [
     {
       label: 'Toutes les offres',
       key: OfferTab.ALL,
-      onClick: () => setActiveTab(OfferTab.ALL),
+      onClick: () => handleTabChange(OfferTab.ALL),
       Icon: OffersIcon,
     },
     {
       label: 'Partagé avec mon établissement',
       key: OfferTab.ASSOCIATED_TO_INSTITUTION,
-      onClick: () => setActiveTab(OfferTab.ASSOCIATED_TO_INSTITUTION),
+      onClick: () => handleTabChange(OfferTab.ASSOCIATED_TO_INSTITUTION),
       Icon: InstitutionIcon,
     },
   ]
@@ -70,7 +85,11 @@ export const OffersSearchComponent = ({
       populateFacetFilters({
         ...filters,
         venueFilter,
-        useNewAlgoliaIndex: true,
+        uai:
+          enableEducationalInstitutionAssociation &&
+          activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+            ? user.uai
+            : null,
       })
     )
     setQueryTag(query)
@@ -82,7 +101,11 @@ export const OffersSearchComponent = ({
     removeQuery()
     removeVenueFilter()
     dispatchCurrentFilters({ type: 'RESET_CURRENT_FILTERS' })
-    setFacetFilters([])
+    setFacetFilters(
+      activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+        ? [`offer.educationalInstitutionUAICode:${user.uai}`]
+        : []
+    )
     refine(INITIAL_QUERY)
   }
 
