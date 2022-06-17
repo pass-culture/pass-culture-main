@@ -30,6 +30,7 @@ class FeatureToggle(enum.Enum):
         "Autoriser les utilisateurs de moins de 15 à 17 ans à suivre le parcours d inscription ID Check"
     )
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
+    APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
     APP_ENABLE_SEARCH_HOMEPAGE_REWORK = "Active les modifications concernant le rework de la recherche de la homepage"
     BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
     DISABLE_ENTERPRISE_API = "Désactiver les appels à l'API entreprise"
