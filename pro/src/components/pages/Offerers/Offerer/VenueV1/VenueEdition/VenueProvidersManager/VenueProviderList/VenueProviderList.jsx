@@ -1,4 +1,7 @@
-import { isAllocineProvider, isCinemaProvider } from 'components/pages/Offers/domain/localProvider'
+import {
+  isAllocineProvider,
+  isCinemaProvider,
+} from 'components/pages/Offers/domain/localProvider'
 import AllocineProviderItem from '../AllocineProviderItem/AllocineProviderItem'
 import { CinemaProviderItem } from '../CinemaProviderItem/CinemaProviderItem'
 import PropTypes from 'prop-types'
@@ -26,7 +29,7 @@ const VenueProviderList = ({
             key={venueProvider.id}
             venueDepartementCode={venue.departementCode}
             venueProvider={venueProvider}
-        />
+          />
         ) : (
           <VenueProviderItem
             key={venueProvider.id}
