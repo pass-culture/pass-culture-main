@@ -11,6 +11,7 @@ export enum Direction {
 }
 export interface IRadioGroupProps {
   direction?: Direction.HORIZONTAL | Direction.VERTICAL
+  disabled?: boolean
   name: string
   legend?: string
   group: {
@@ -23,6 +24,7 @@ export interface IRadioGroupProps {
 
 const RadioGroup = ({
   direction = Direction.VERTICAL,
+  disabled,
   group,
   name,
   legend,
@@ -47,6 +49,7 @@ const RadioGroup = ({
       {group.map(item => (
         <div className={styles['radio-group-item']} key={item.label}>
           <RadioButton
+            disabled={disabled}
             label={item.label}
             name={name}
             value={item.value}

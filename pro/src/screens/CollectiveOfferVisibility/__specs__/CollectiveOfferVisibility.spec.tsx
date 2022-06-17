@@ -83,6 +83,14 @@ describe('CollectiveOfferVisibility', () => {
       patchInstitution: jest.fn(),
     }
   })
+
+  it('should disable visibility choice if offer is not editable', async () => {
+    renderVisibilityStep({ ...props, mode: Mode.READ_ONLY })
+    expect(
+      screen.getByLabelText(/Un établissement en particulier/)
+    ).toBeDisabled()
+  })
+
   it('should disable submit button if the user wants his offer to concern one Institution but has selected none', async () => {
     renderVisibilityStep(props)
     await userEvent.click(
