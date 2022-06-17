@@ -121,7 +121,11 @@ const OfferLayout = () => {
             {/* FIXME (cgaunet, 2022-01-31) This is a quick win to fix a flaky E2E test */}
             {/* There is a concurrency run between the RouteLeavingGuardOfferCreation and the reloadOffer call */}
             {/* in OfferDetails as the offer is loaded in the stock edition page */}
-            <OfferDetails offer={offer} reloadOffer={reloadOffer} />
+            <OfferDetails
+              isCreatingOffer={isCreatingOffer}
+              offer={offer}
+              reloadOffer={reloadOffer}
+            />
           </Route>
           <Route exact path={`${match.url}/edition`}>
             <OfferDetails offer={offer} reloadOffer={reloadOffer} />
