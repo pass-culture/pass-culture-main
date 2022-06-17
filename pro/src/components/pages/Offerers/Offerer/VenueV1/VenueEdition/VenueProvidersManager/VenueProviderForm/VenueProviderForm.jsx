@@ -2,7 +2,10 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import React, { useCallback } from 'react'
 
-import { isAllocineProvider, isCinemaProvider } from 'components/pages/Offers/domain/localProvider'
+import {
+  isAllocineProvider,
+  isCinemaProvider,
+} from 'components/pages/Offers/domain/localProvider'
 import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
 import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
 import PropTypes from 'prop-types'
@@ -54,7 +57,7 @@ const VenueProviderForm = ({ afterSubmit, provider, venue }) => {
       providerId={provider.id}
       saveVenueProvider={createVenueProvider}
       venueId={venue.id}
-      />
+    />
   ) : (
     <StocksProviderForm
       providerId={provider.id}

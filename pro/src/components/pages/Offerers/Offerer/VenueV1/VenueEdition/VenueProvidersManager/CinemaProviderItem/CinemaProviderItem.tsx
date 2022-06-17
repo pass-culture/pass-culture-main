@@ -14,7 +14,6 @@ interface ICinemaProviderItemProps {
   venueDepartementCode: string
 }
 
-
 export const CinemaProviderItem = ({
   afterVenueProviderEdit,
   venueProvider,
@@ -22,7 +21,8 @@ export const CinemaProviderItem = ({
 }: ICinemaProviderItemProps) => {
   const [isOpenedFormDialog, setIsOpenedFormDialog] = useState(false)
   const dispatch = useDispatch()
-  const editVenueProvider = useCallback((payload: any) => {
+  const editVenueProvider = useCallback(
+    (payload: any) => {
       pcapi
         .editVenueProvider(payload)
         .then(editedVenueProvider => {
@@ -55,11 +55,14 @@ export const CinemaProviderItem = ({
     setIsOpenedFormDialog(false)
   }, [])
 
-  const onConfirmDialog = useCallback((payload: any) => {
-    editVenueProvider(payload)
+  const onConfirmDialog = useCallback(
+    (payload: any) => {
+      editVenueProvider(payload)
 
-    closeFromDialog()
-  }, [closeFromDialog, editVenueProvider])
+      closeFromDialog()
+    },
+    [closeFromDialog, editVenueProvider]
+  )
 
   const initialValues = {
     isDuo: venueProvider.isDuo,
@@ -67,29 +70,30 @@ export const CinemaProviderItem = ({
 
   return (
     <VenueProviderItem
-    venueDepartmentCode={venueDepartementCode}
-    venueProvider={venueProvider}
+      venueDepartmentCode={venueDepartementCode}
+      venueProvider={venueProvider}
     >
       <>
-      <li>
-        <span>{'Accepter les offres DUO : '}</span>
-        <span>{`${venueProvider.isDuo ? 'Oui' : 'Non'} `}</span>
-      </li>
-      <button
-        className="primary-button"
-        onClick={openFormDialog}
-        type="button">
-        Modifier les paramètres
-      </button>
-      {isOpenedFormDialog && (
-        <CinemaProviderFormDialog
-          onCancel={closeFromDialog}
-          onConfirm={onConfirmDialog}
-          initialValues={initialValues}
-          providerId={venueProvider.providerId}
-          venueId={venueProvider.venueId}
+        <li>
+          <span>{'Accepter les offres DUO : '}</span>
+          <span>{`${venueProvider.isDuo ? 'Oui' : 'Non'} `}</span>
+        </li>
+        <button
+          className="primary-button"
+          onClick={openFormDialog}
+          type="button"
+        >
+          Modifier les paramètres
+        </button>
+        {isOpenedFormDialog && (
+          <CinemaProviderFormDialog
+            onCancel={closeFromDialog}
+            onConfirm={onConfirmDialog}
+            initialValues={initialValues}
+            providerId={venueProvider.providerId}
+            venueId={venueProvider.venueId}
           />
-      )}
+        )}
       </>
     </VenueProviderItem>
   )

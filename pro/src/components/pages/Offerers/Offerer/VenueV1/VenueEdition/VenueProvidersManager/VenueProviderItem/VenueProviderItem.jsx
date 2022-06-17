@@ -1,6 +1,9 @@
 import './VenueProviderItem.scss'
 
-import { isAllocineProvider, isCinemaProvider } from 'components/pages/Offers/domain/localProvider'
+import {
+  isAllocineProvider,
+  isCinemaProvider,
+} from 'components/pages/Offers/domain/localProvider'
 import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
 import React from 'react'

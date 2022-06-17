@@ -12,14 +12,20 @@ interface ICinemaProviderFormDialogProps {
   venueId: string
 }
 
-export const CinemaProviderFormDialog = ({onCancel, onConfirm, initialValues, providerId, venueId}: ICinemaProviderFormDialogProps) => {
-
+export const CinemaProviderFormDialog = ({
+  onCancel,
+  onConfirm,
+  initialValues,
+  providerId,
+  venueId,
+}: ICinemaProviderFormDialogProps) => {
   return (
-    <DialogBox extraClassNames="cinema-provider-form-dialog"
-               labelledBy="cinema-provider-form-dialog"
-               onDismiss={onCancel}
-               hasCloseButton
-               >
+    <DialogBox
+      extraClassNames="cinema-provider-form-dialog"
+      labelledBy="cinema-provider-form-dialog"
+      onDismiss={onCancel}
+      hasCloseButton
+    >
       <div className="title">
         <strong>Modifier mes offres</strong>
       </div>
@@ -32,8 +38,8 @@ export const CinemaProviderFormDialog = ({onCancel, onConfirm, initialValues, pr
         onCancel={onCancel}
         saveVenueProvider={onConfirm}
         providerId={providerId}
-        venueId={venueId} />
+        venueId={venueId}
+      />
     </DialogBox>
   )
-
 }

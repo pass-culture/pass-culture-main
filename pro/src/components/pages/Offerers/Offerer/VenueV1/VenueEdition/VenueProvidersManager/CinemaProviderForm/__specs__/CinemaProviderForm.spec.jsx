@@ -51,7 +51,7 @@ describe('components | CinemaProviderForm', () => {
 
     pcapi.loadVenueProviders.mockResolvedValue([])
 
-    provider = {id: 'providerId', name: 'Ciné Office'}
+    provider = { id: 'providerId', name: 'Ciné Office' }
     pcapi.loadProviders.mockResolvedValue([provider])
   })
 
@@ -82,7 +82,9 @@ describe('components | CinemaProviderForm', () => {
       await renderCinemaProviderForm()
 
       // then
-      const isDuoCheckbox = screen.getByLabelText('Accepter les réservations DUO')
+      const isDuoCheckbox = screen.getByLabelText(
+        'Accepter les réservations DUO'
+      )
       expect(isDuoCheckbox).toBeInTheDocument()
       expect(isDuoCheckbox).toBeChecked()
     })
@@ -190,7 +192,9 @@ describe('components | CinemaProviderForm', () => {
       await renderCinemaProviderForm()
 
       // then
-      const isDuoCheckbox = screen.getByLabelText('Accepter les réservations DUO')
+      const isDuoCheckbox = screen.getByLabelText(
+        'Accepter les réservations DUO'
+      )
       expect(isDuoCheckbox).not.toBeChecked()
     })
 
@@ -212,7 +216,9 @@ describe('components | CinemaProviderForm', () => {
         name: 'Modifier',
       })
 
-      const isDuoCheckbox = screen.getByLabelText('Accepter les réservations DUO')
+      const isDuoCheckbox = screen.getByLabelText(
+        'Accepter les réservations DUO'
+      )
 
       fireEvent.change(isDuoCheckbox, { target: { value: true } })
 
