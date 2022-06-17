@@ -1,9 +1,11 @@
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
+import { Mode } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import React from 'react'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
+import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
 
 const CollectiveOfferVisibility = () => {
   return (
@@ -14,6 +16,8 @@ const CollectiveOfferVisibility = () => {
     >
       <CollectiveOfferVisibilityScreen
         getInstitutions={getEducationalInstitutionsAdapter}
+        mode={Mode.CREATION}
+        patchInstitution={patchEducationalInstitutionAdapter}
       />
       <RouteLeavingGuardOfferCreation isCollectiveFlow />
     </OfferEducationalLayout>
