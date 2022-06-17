@@ -484,6 +484,14 @@ def get_collective_stock_from_stock_id(stock_id: Union[int, str]) -> educational
     ).one_or_none()
 
 
+def get_collective_stock(collective_stock_id: int) -> Optional[educational_models.CollectiveStock]:
+    query = educational_models.CollectiveStock.query.filter(
+        educational_models.CollectiveStock.id == collective_stock_id
+    )
+    query = query.options(joinedload(educational_models.CollectiveStock.collectiveOffer))
+    return query.one_or_none()
+
+
 def get_collective_offers_for_filters(
     user_id: int,
     user_is_admin: bool,

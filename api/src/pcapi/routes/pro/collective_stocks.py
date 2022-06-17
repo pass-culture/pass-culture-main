@@ -5,7 +5,6 @@ from flask_login import login_required
 
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.repository import get_collective_stock_for_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
@@ -73,7 +72,7 @@ def create_collective_stock(
 def edit_collective_stock(
     collective_stock_id: str, body: collective_stock_serialize.CollectiveStockEditionBodyModel
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
-    collective_stock = CollectiveStock.query.get(dehumanize_or_raise(collective_stock_id))
+    collective_stock = educational_api.get_collective_stock(dehumanize_or_raise(collective_stock_id))
     if collective_stock is None:
         raise ApiErrors({"code": "COLLECTIVE_STOCK_NOT_FOUND"}, status_code=404)
 

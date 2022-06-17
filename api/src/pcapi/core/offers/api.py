@@ -645,12 +645,18 @@ def upsert_stocks(
                 raise errors
             check_booking_limit_datetime(stock, stock_data.beginning_datetime, stock_data.booking_limit_datetime)
             edited_stocks_previous_beginnings[stock.id] = stock.beginningDatetime
+
+            booking_limit_datetime = stock_data.booking_limit_datetime or stock.bookingLimitDatetime
+            beginning = stock_data.beginning_datetime or stock.beginningDatetime
+            if beginning and booking_limit_datetime and beginning > booking_limit_datetime:
+                booking_limit_datetime = beginning
+
             edited_stock = _edit_stock(
                 stock,
                 price=stock_data.price,
                 quantity=stock_data.quantity,  # type: ignore [arg-type]
                 beginning=stock_data.beginning_datetime,  # type: ignore [arg-type]
-                booking_limit_datetime=stock_data.booking_limit_datetime,  # type: ignore [arg-type]
+                booking_limit_datetime=booking_limit_datetime,
             )
             edited_stocks.append(edited_stock)
             stocks.append(edited_stock)
@@ -668,12 +674,20 @@ def upsert_stocks(
 
             quantity = len(stock_data.activation_codes) if activation_codes_exist else stock_data.quantity  # type: ignore[arg-type]
 
+            booking_limit_datetime = stock_data.booking_limit_datetime
+            if (
+                stock_data.beginning_datetime
+                and booking_limit_datetime
+                and stock_data.beginning_datetime > booking_limit_datetime
+            ):
+                booking_limit_datetime = stock.beginningDatetime
+
             created_stock = _create_stock(
                 offer=offer,
                 price=stock_data.price,
                 quantity=quantity,
                 beginning=stock_data.beginning_datetime,
-                booking_limit_datetime=stock_data.booking_limit_datetime,
+                booking_limit_datetime=booking_limit_datetime,
             )
 
             if activation_codes_exist:

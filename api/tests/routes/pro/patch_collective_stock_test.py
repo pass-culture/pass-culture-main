@@ -68,6 +68,45 @@ class Return200Test:
             "stockId": None,
         }
 
+    def test_edit_collective_stock_begining_datedame_same_day(self, client):
+        # Given
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=datetime(2021, 12, 18, 18, 22, 12),
+            price=1200,
+            numberOfTickets=32,
+            bookingLimitDatetime=datetime(2021, 12, 18, 18, 22, 11),
+            priceDetail="Détail du prix",
+        )
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=stock.collectiveOffer.venue.managingOfferer,
+        )
+
+        # When
+        stock_edition_payload = {
+            "beginningDatetime": "2021-12-18T00:00:00Z",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.patch(f"/collective/stocks/{humanize(stock.id)}", json=stock_edition_payload)
+
+        # Then
+        assert response.status_code == 200
+        edited_stock = CollectiveStock.query.get(stock.id)
+        assert edited_stock.beginningDatetime == datetime(2021, 12, 18, 00)
+        assert edited_stock.bookingLimitDatetime == datetime(2021, 12, 18, 00)
+
+        assert response.json == {
+            "beginningDatetime": "2021-12-18T00:00:00Z",
+            "bookingLimitDatetime": "2021-12-18T00:00:00Z",
+            "id": humanize(stock.id),
+            "price": 1200.0,
+            "numberOfTickets": 32,
+            "isEducationalStockEditable": True,
+            "educationalPriceDetail": "Détail du prix",
+            "stockId": None,
+        }
+
     def test_edit_collective_stock_partially(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(
