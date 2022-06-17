@@ -21,6 +21,7 @@ from pcapi.core.testing import override_settings
 from pcapi.core.users import factories as users_factories
 from pcapi.models import api_errors
 from pcapi.routes.serialization import base as serialize_base
+from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.utils.human_ids import humanize
 
@@ -28,6 +29,55 @@ import tests
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+
+class CreateVenueTest:
+    def base_data(self, offerer):
+        return {
+            "address": "rue du test",
+            "city": "Paris",
+            "postalCode": "75000",
+            "latitude": 1,
+            "longitude": 1,
+            "managingOffererId": humanize(offerer.id),
+            "name": "La Venue",
+            "venueTypeCode": "VISUAL_ARTS",
+            "bookingEmail": "venue@example.com",
+            "siret": offerer.siren + "00000",
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": True,
+            "visualDisabilityCompliant": True,
+        }
+
+    def test_basics(self):
+        offerer = offerers_factories.OffererFactory()
+        data = venues_serialize.PostVenueBodyModel(**self.base_data(offerer))
+        offerers_api.create_venue(data)
+
+        venue = offerers_models.Venue.query.one()
+        assert venue.address == "rue du test"
+        assert venue.city == "Paris"
+        assert venue.postalCode == "75000"
+        assert venue.latitude == 1
+        assert venue.longitude == 1
+        assert venue.managingOfferer == offerer
+        assert venue.name == "La Venue"
+        assert venue.bookingEmail == "venue@example.com"
+
+    def test_with_business_unit(self):
+        offerer = offerers_factories.OffererFactory()
+        business_unit = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            siret=offerer.siren + "12345",
+        ).businessUnit
+        data = dict(self.base_data(offerer), businessUnitId=business_unit.id)
+        offerers_api.create_venue(venues_serialize.PostVenueBodyModel(**data))
+
+        venue = offerers_models.Venue.query.order_by(offerers_models.Venue.id.desc()).first()
+        assert venue.businessUnit == business_unit
+        links = [link for link in business_unit.venue_links if link.venueId == venue.id]
+        assert len(links) == 1
 
 
 class EditVenueTest:
@@ -247,6 +297,14 @@ class EditVenueTest:
         assert venue.businessUnitId == business_unit.id
         assert deleted_business_unit.status == finance_models.BusinessUnitStatus.DELETED
         assert offerers_models.Venue.query.filter(offerers_models.Venue.businessUnitId.is_(None)).count() == 3
+        links = (
+            finance_models.BusinessUnitVenueLink.query.filter_by(venueId=venue.id)
+            .order_by(finance_models.BusinessUnitVenueLink.id)
+            .all()
+        )
+        assert len(links) == 2
+        assert links[0].timespan.upper is not None
+        assert links[1].timespan.upper is None
 
     def test_update_virtual_venue_business_unit(self):
         offerer = offerers_factories.OffererFactory(siren="000000000")
@@ -258,6 +316,18 @@ class EditVenueTest:
         offerers_api.update_venue(virtual_venue, **venue_data)
 
         assert virtual_venue.businessUnitId == venue.businessUnitId
+
+    def test_updating_business_unit_sets_a_new_link(self):
+        venue = offerers_factories.VenueFactory(businessUnit=None)
+        siren = venue.managingOfferer.siren
+        business_unit = finance_factories.BusinessUnitFactory(siret=siren + "00000")
+
+        offerers_api.update_venue(venue, businessUnitId=business_unit.id)
+
+        assert venue.businessUnit == business_unit
+        link = finance_models.BusinessUnitVenueLink.query.filter_by(venueId=venue.id).one()
+        assert link.businessUnit == business_unit
+        assert link.timespan.upper is None
 
 
 class EditVenueContactTest:
