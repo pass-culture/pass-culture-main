@@ -515,9 +515,9 @@ class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type, misc]
 
     institutionId = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
-    name = sa.Column(sa.Text(), nullable=True)
+    name = sa.Column(sa.Text(), nullable=False)
 
-    city = sa.Column(sa.Text(), nullable=True)
+    city = sa.Column(sa.Text(), nullable=False)
 
     postalCode = sa.Column(sa.String(10), nullable=True)
 
