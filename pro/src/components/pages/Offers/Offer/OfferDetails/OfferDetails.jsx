@@ -1,7 +1,6 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { DEFAULT_FORM_VALUES } from './_constants'
@@ -14,29 +13,24 @@ import OfferThumbnail from './OfferThumbnail'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
+import { computeInitialValuesFromOffer } from './utils'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import { loadCategories } from 'store/offers/thunks'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+import { useGetCategories } from 'core/Offers/adapters'
 import useNotification from 'components/hooks/useNotification'
 
-const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
-  const dispatch = useDispatch()
-  const initialValues = {}
+const OfferDetails = ({
+  isCreatingOffer,
+  isUserAdmin,
+  offer,
+  reloadOffer,
+  userEmail,
+}) => {
   const history = useHistory()
   const location = useLocation()
-  const queryParams = queryParamsFromOfferer(location)
 
-  if (queryParams.structure !== '') {
-    initialValues.offererId = queryParams.structure
-  }
-
-  if (queryParams.lieu !== '') {
-    initialValues.venueId = queryParams.lieu
-  }
-
-  initialValues.isVirtualVenue = queryParams.numerique
-
-  const formInitialValues = useRef(initialValues)
+  const [formInitialValues, setFormInitialValues] = useState({})
+  const [isReady, setIsReady] = useState(false)
 
   const [formErrors, setFormErrors] = useState({})
   const [offerPreviewData, setOfferPreviewData] = useState({})
@@ -44,10 +38,33 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
   const [thumbnailMsgError, setThumbnailMsgError] = useState('')
-  const { categories, subCategories } = useSelector(
-    state => state.offers.categories
-  )
-  const [isLoading, setIsLoading] = useState(!(categories && subCategories))
+
+  const {
+    data: categoriesData,
+    isLoading: isLoadingCategories,
+    error: categoriesError,
+  } = useGetCategories()
+
+  useEffect(() => {
+    if (!isLoadingCategories) {
+      let initialValues = {}
+      const queryParams = queryParamsFromOfferer(location)
+      if (queryParams.structure !== '') {
+        initialValues.offererId = queryParams.structure
+      }
+      if (queryParams.lieu !== '') {
+        initialValues.venueId = queryParams.lieu
+      }
+      initialValues.isVirtualVenue = queryParams.numerique
+
+      initialValues = {
+        ...initialValues,
+        ...computeInitialValuesFromOffer(offer, categoriesData.subCategories),
+      }
+      setFormInitialValues(initialValues)
+      setIsReady(true)
+    }
+  }, [isLoadingCategories, categoriesData, offer])
 
   const notification = useNotification()
   const showErrorNotification = useCallback(
@@ -69,25 +86,15 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
       )
   }, [setShowThumbnailForm, offerPreviewData.subcategoryId])
 
-  useEffect(() => {
-    dispatch(loadCategories())
-  }, [dispatch])
-
-  useEffect(() => {
-    if (categories && subCategories) {
-      setIsLoading(false)
-    }
-  }, [categories, subCategories])
-
   const goToStockAndPrice = async offerId => {
     let queryString = ''
 
-    if (formInitialValues.current.offererId !== undefined) {
-      queryString = `?structure=${formInitialValues.current.offererId}`
+    if (formInitialValues.offererId !== undefined) {
+      queryString = `?structure=${formInitialValues.offererId}`
     }
 
-    if (formInitialValues.current.venueId !== undefined) {
-      queryString += `&lieu=${formInitialValues.current.venueId}`
+    if (formInitialValues.venueId !== undefined) {
+      queryString += `&lieu=${formInitialValues.venueId}`
     }
 
     history.push(`/offre/${offerId}/individuel/creation/stocks${queryString}`)
@@ -187,7 +194,13 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
   const offerStatus = offer?.status
   const isDisabled = offerStatus ? isOfferDisabled(offerStatus) : false
 
-  if (isLoading) {
+  if (categoriesError) {
+    notification.error(categoriesError)
+    history.push('/offres/')
+    return null
+  }
+
+  if (!isReady) {
     return (
       <>
         <PageTitle title="Détails de l'offre" />
@@ -202,31 +215,31 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
 
       <div className="sidebar-container">
         <div className="content">
-          {offer ? (
+          {offer && !isCreatingOffer ? (
             <>
               {isDisabled && <OfferStatusBanner status={offerStatus} />}
               <OfferEdition
-                categories={categories}
+                categories={categoriesData.categories}
                 isDisabled={isDisabled}
                 isUserAdmin={isUserAdmin}
                 offer={offer}
                 onSubmit={handleSubmitOffer}
                 setOfferPreviewData={setOfferPreviewData}
                 showErrorNotification={showErrorNotification}
-                subCategories={subCategories}
+                subCategories={categoriesData.subCategories}
                 submitErrors={formErrors}
                 userEmail={userEmail}
               />
             </>
           ) : (
             <OfferCreation
-              categories={categories}
-              initialValues={formInitialValues.current}
+              categories={categoriesData.categories}
+              initialValues={formInitialValues}
               isUserAdmin={isUserAdmin}
               onSubmit={handleSubmitOffer}
               setOfferPreviewData={setOfferPreviewData}
               showErrorNotification={showErrorNotification}
-              subCategories={subCategories}
+              subCategories={categoriesData.subCategories}
               submitErrors={formErrors}
               userEmail={userEmail}
             />
@@ -262,6 +275,7 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
 OfferDetails.defaultProps = {
   offer: null,
   reloadOffer: null,
+  isCreatingOffer: false,
 }
 
 OfferDetails.propTypes = {
@@ -269,6 +283,7 @@ OfferDetails.propTypes = {
   offer: PropTypes.shape(),
   reloadOffer: PropTypes.func,
   userEmail: PropTypes.string.isRequired,
+  isCreatingOffer: PropTypes.bool,
 }
 
 export default OfferDetails
