@@ -7,29 +7,33 @@ import cx from 'classnames'
 import styles from './SelectAutocomplete.module.scss'
 
 export type SelectAutocompleteProps = {
-  label: string
-  fieldName: string
-  smallLabel?: boolean
-  isOptional?: boolean
-  hideFooter?: boolean
-  options: SelectOption[]
   className?: string
   disabled?: boolean
+  fieldName: string
   filterLabel?: string
+  hideFooter?: boolean
+  isOptional?: boolean
+  label: string
+  maxDisplayOptions?: number
+  maxDisplayOptionsLabel?: string
+  maxHeight?: number
   onSearchChange?: () => void
+  options: SelectOption[]
+  smallLabel?: boolean
 }
 
 const SelectAutocomplete = ({
-  label,
-  fieldName,
-  smallLabel = false,
-  isOptional = false,
-  hideFooter = false,
-  options,
   className,
   disabled = false,
-  filterLabel,
+  fieldName,
+  hideFooter = false,
+  isOptional = false,
+  label,
+  maxDisplayOptions,
+  maxHeight,
   onSearchChange,
+  options,
+  smallLabel = false,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, setFieldTouched } = useFormikContext<any>()
   const [field, meta, helpers] = useField(fieldName)
@@ -113,11 +117,21 @@ const SelectAutocomplete = ({
             }
             setFieldTouched(fieldName, true)
           }}
+          maxHeight={maxHeight}
           isOpen={isOpen}
           filteredOptions={[
-            ...filteredOptions,
-            ...(filterLabel
-              ? [{ value: filterLabel, label: filterLabel, disabled: true }]
+            ...filteredOptions.slice(
+              0,
+              maxDisplayOptions ?? filteredOptions.length
+            ),
+            ...(maxDisplayOptions && maxDisplayOptions < filteredOptions.length
+              ? [
+                  {
+                    value: '',
+                    label: `${maxDisplayOptions} résultats maximum. Veuillez affiner votre recherche`,
+                    disabled: true,
+                  },
+                ]
               : []),
           ]}
           renderOption={({ value, label, disabled }) => (

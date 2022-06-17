@@ -56,7 +56,7 @@
   }
 
   &-action {
-    width: rem.torem(192px);
+    min-width: rem.torem(192px);
     margin-left: rem.torem(24px);
     text-align: center;
 
