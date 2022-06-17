@@ -1,21 +1,31 @@
 import { FormikProvider, useFormik } from 'formik'
+import { Link, useHistory, useParams } from 'react-router-dom'
 import { MultiSelectAutocomplete, SubmitButton } from 'ui-kit'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
 import { GetEducationalInstitutionsAdapter } from 'routes/CollectiveOfferVisibility/adapters/getEducationalInstitutionsAdapter'
-import { Link } from 'react-router-dom'
+import { Mode } from 'core/OfferEducational'
+import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import { SelectOption } from 'custom_types/form'
 import { computeOffersUrl } from 'core/Offers/utils'
+import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import styles from './CollectiveOfferVisibility.module.scss'
+import useNotification from 'components/hooks/useNotification'
 import validationSchema from './validationSchema'
 
 interface Props {
   getInstitutions: GetEducationalInstitutionsAdapter
+  patchInstitution: PatchEducationalInstitutionAdapter
+  mode: Mode
 }
 
-const CollectiveOfferVisibility = ({ getInstitutions }: Props) => {
+const CollectiveOfferVisibility = ({
+  getInstitutions,
+  mode,
+  patchInstitution,
+}: Props) => {
   const formik = useFormik({
     initialValues: {
       visibility: 'all',
@@ -25,8 +35,37 @@ const CollectiveOfferVisibility = ({ getInstitutions }: Props) => {
     onSubmit: () => {},
     validationSchema,
   })
+
+  const notify = useNotification()
+  const history = useHistory()
+
+  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
+  const { offerId, isShowcase } =
+    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
+
   const [institutionsOptions, setInstitutionsOptions] =
     useState<SelectOption[]>()
+
+  const [buttonPressed, setButtonPressed] = useState(false)
+
+  const handleSubmit = () => {
+    setButtonPressed(true)
+    patchInstitution({
+      offerId,
+      institutionId: '12',
+    }).then(result => {
+      if (result.isOk) {
+        notify.success(result.message)
+        history.push(
+          `/offre/${isShowcase ? 'T-' : ''}${offerId}/collectif/confirmation`
+        )
+      } else {
+        notify.error(result.message)
+        setButtonPressed(false)
+      }
+    })
+  }
+
   useEffect(() => {
     if (formik.values.visibility === 'one' && !institutionsOptions) {
       getInstitutions().then(res => {
@@ -40,9 +79,15 @@ const CollectiveOfferVisibility = ({ getInstitutions }: Props) => {
       })
     }
   }, [formik.values.visibility])
+
   return (
     <FormikProvider value={formik}>
-      <form onSubmit={formik.handleSubmit}>
+      <form
+        onSubmit={() => {
+          handleSubmit()
+          formik.handleSubmit()
+        }}
+      >
         <FormLayout>
           <FormLayout.Section title="Visibilité de l’offre">
             <p className={styles['description-text']}>
@@ -96,12 +141,15 @@ const CollectiveOfferVisibility = ({ getInstitutions }: Props) => {
             <SubmitButton
               className=""
               disabled={
-                formik.values.visibility === 'one' &&
-                formik.values.institution.length === 0
+                buttonPressed ||
+                (formik.values.visibility === 'one' &&
+                  formik.values.institution.length === 0)
               }
               isLoading={false}
             >
-              Valider et créer l’offre
+              {mode === Mode.CREATION
+                ? 'Valider et créer l’offre'
+                : 'Valider et enregistrer l’offre'}
             </SubmitButton>
           </FormLayout.Actions>
         </FormLayout>
