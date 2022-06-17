@@ -301,11 +301,11 @@
 {% for venue in reimbursements_by_venue %}
         <tr>
             <td>{{ venue.venue_name }}</td>
-            <td>{{ venue.validated_booking_amount }} €</td>
-            <td>{{ venue.validated_booking_amount - venue.reimbursed_amount }} €</td>
-            <td class="coloredSection">{{ venue.reimbursed_amount }} €</td>
-            <td>{{ venue.individual_amount }} €</td>
-            <td>{{ venue.reimbursed_amount - venue.individual_amount }} €</td>
+            <td>{{ venue.validated_booking_amount|fr_currency }} €</td>
+            <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency }} €</td>
+            <td class="coloredSection">{{ venue.reimbursed_amount|fr_currency }} €</td>
+            <td>{{ venue.individual_amount|fr_currency }} €</td>
+            <td>{{ (venue.reimbursed_amount - venue.individual_amount)|fr_currency }} €</td>
         </tr>
 {% endfor %}
     </tbody>
