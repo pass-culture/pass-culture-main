@@ -221,8 +221,6 @@ def create_industrial_educational_bookings() -> None:
         educational_factories.EducationalInstitutionFactory(institutionId="0910620E"),
         educational_factories.EducationalInstitutionFactory(
             institutionId="0560071Y",
-            name=None,
-            city=None,
             email=None,
             phoneNumber=None,
         ),
