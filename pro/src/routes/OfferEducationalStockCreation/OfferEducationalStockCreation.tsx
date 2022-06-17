@@ -90,7 +90,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       shouldUseNewTemplateIds ? successPayload.id : offer.id
     }/collectif`
 
-    if (enableEducationalInstitutionAssociation) {
+    if (enableEducationalInstitutionAssociation && !isTemplate) {
       url = `${url}/visibilite`
     } else {
       url = `${url}/confirmation`
