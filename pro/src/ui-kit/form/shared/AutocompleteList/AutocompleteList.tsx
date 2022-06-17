@@ -7,21 +7,23 @@ import styles from './AutocompleteList.module.scss'
 // FIXME (MathildeDuboille - 15-06-22): improve accessibility and refactor if needed.
 // This component is used in SelectAutocomplete and MultiselectAutocomplete
 type AutocompleteListProps = {
-  isOpen: boolean
-  onButtonClick: () => void
+  className?: string
+  displayNumberOfSelectedValues?: boolean
   filteredOptions: (SelectOption & { disabled?: boolean })[]
+  isOpen: boolean
+  maxHeight?: number
+  numberOfSelectedOptions?: number
+  onButtonClick: () => void
   renderOption: (
     option: SelectOption & { disabled?: boolean }
   ) => React.ReactNode
-  displayNumberOfSelectedValues?: boolean
-  numberOfSelectedOptions?: number
-  className?: string
 }
 
 const AutocompleteList = ({
   isOpen,
   onButtonClick,
   filteredOptions,
+  maxHeight,
   renderOption,
   displayNumberOfSelectedValues = false,
   numberOfSelectedOptions,
@@ -47,7 +49,11 @@ const AutocompleteList = ({
         </div>
       )}
       {isOpen && (
-        <div className={cx(styles['menu'], className)} role="listbox">
+        <div
+          className={cx(styles['menu'], className)}
+          style={maxHeight ? { maxHeight } : {}}
+          role="listbox"
+        >
           {filteredOptions.length === 0 && (
             <span
               className={cx({

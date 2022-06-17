@@ -31,7 +31,7 @@
     margin-top: rem.torem(24px);
 
     button {
-      width: rem.torem(150px);
+      min-width: rem.torem(150px);
     }
 
     .primary-button {

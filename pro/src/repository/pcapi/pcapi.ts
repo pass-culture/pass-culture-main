@@ -189,7 +189,10 @@ export const getEducationalInstitutions = (
 export const patchEducationalInstitution = (
   offerId: string,
   institutionId: string
-) => client.patch(`/educational_institutions`, { offerId, institutionId })
+) =>
+  client.patch(`/collective/offers/${offerId}/educational_institution`, {
+    educationalInstitutionId: institutionId,
+  })
 
 //
 // offerers
