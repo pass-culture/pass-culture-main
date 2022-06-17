@@ -1677,9 +1677,9 @@ def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.List[typing.D
         reimbursements_by_venue.append(
             {
                 "venue_name": venue_name,
-                "reimbursed_amount": -finance_utils.to_euros(reimbursed_amount),
-                "validated_booking_amount": validated_booking_amount,
-                "individual_amount": -finance_utils.to_euros(individual_amount),
+                "reimbursed_amount": reimbursed_amount,
+                "validated_booking_amount": -utils.to_eurocents(validated_booking_amount),
+                "individual_amount": individual_amount,
             }
         )
     return reimbursements_by_venue
