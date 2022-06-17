@@ -1225,8 +1225,7 @@ workflows:
            branches:
              only:
                - master
-         requires:
-           - restart-pcapi
+               - bsr-fix-backoffice-deployment
          context:
            - GCP
            - GCP_EHP
