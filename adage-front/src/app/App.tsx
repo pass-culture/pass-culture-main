@@ -7,7 +7,7 @@ import '@fontsource/barlow/600.css'
 import '@fontsource/barlow/700.css'
 import '@fontsource/barlow/300.css'
 import { api } from 'api/api'
-import { AdageFrontRoles, VenueResponse } from 'api/gen'
+import { AdageFrontRoles, AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { UnauthenticatedError } from 'app/components/UnauthenticatedError/UnauthenticatedError'
 
 import { AppLayout } from './AppLayout'
@@ -29,7 +29,7 @@ export const queryClient = new QueryClient({
 })
 
 export const App = (): JSX.Element => {
-  const [userRole, setUserRole] = useState<AdageFrontRoles | null>()
+  const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [venueFilter, setVenueFilter] = useState<VenueResponse | null>(null)
   const [notification, setNotification] = useState<Notification | null>(null)
@@ -37,7 +37,7 @@ export const App = (): JSX.Element => {
   useEffect(() => {
     api
       .getAdageIframeAuthenticate()
-      .then(({ role: userRole }) => setUserRole(userRole))
+      .then(user => setUser(user))
       .then(() => {
         const params = new URLSearchParams(window.location.search)
         const siret = params.get('siret')
@@ -70,7 +70,7 @@ export const App = (): JSX.Element => {
             )
         }
       })
-      .catch(() => setUserRole(null))
+      .catch(() => setUser(null))
       .finally(() => setIsLoading(false))
   }, [])
 
@@ -83,17 +83,18 @@ export const App = (): JSX.Element => {
   return (
     <QueryClientProvider client={queryClient}>
       {notification && <NotificationComponent notification={notification} />}
-      {userRole &&
-        [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
-          userRole
-        ) && (
-          <AppLayout
-            removeVenueFilter={removeVenueFilter}
-            userRole={userRole}
-            venueFilter={venueFilter}
-          />
-        )}
-      {userRole === null && <UnauthenticatedError />}
+      {user?.role &&
+      [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
+        user.role
+      ) ? (
+        <AppLayout
+          removeVenueFilter={removeVenueFilter}
+          userRole={user.role}
+          venueFilter={venueFilter}
+        />
+      ) : (
+        <UnauthenticatedError />
+      )}
     </QueryClientProvider>
   )
 }
