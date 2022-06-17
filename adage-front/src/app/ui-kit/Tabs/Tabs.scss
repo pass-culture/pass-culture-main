@@ -1,0 +1,50 @@
+@import 'sass-rem';
+@import 'styles';
+
+.tabs {
+  display: flex;
+  margin-bottom: rem(32px);
+  padding-left: 0;
+
+  &-tab {
+    background-color: transparent;
+    padding-bottom: rem(8px);
+    border-bottom: 2px solid transparent;
+    list-style: none;
+
+    &-icon {
+      fill: $black;
+      width: rem(20px);
+      height: auto;
+      margin-right: rem(12px);
+    }
+
+    &-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: transparent;
+      border: unset;
+      font-family: 'Barlow';
+      font-weight: 700;
+      font-size: rem(15px);
+      cursor: pointer;
+    }
+
+    &.is-selected {
+      border-bottom: 2px solid $primary;
+
+      .tabs-tab-button {
+        color: $primary;
+      }
+
+      .tabs-tab-icon {
+        fill: $primary;
+      }
+    }
+
+    &:not(:last-of-type) {
+      margin-right: rem(32px);
+    }
+  }
+}
