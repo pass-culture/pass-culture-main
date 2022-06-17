@@ -2,7 +2,7 @@ import algoliasearch from 'algoliasearch/lite'
 import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
-import { AdageFrontRoles, VenueResponse } from 'api/gen'
+import { AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext } from 'app/providers'
 import {
@@ -26,11 +26,11 @@ const attributesToRetrieve = [
 ]
 
 export const OffersInstantSearch = ({
-  userRole,
+  user,
   removeVenueFilter,
   venueFilter,
 }: {
-  userRole: AdageFrontRoles
+  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
@@ -57,7 +57,7 @@ export const OffersInstantSearch = ({
       <OffersSearch
         removeVenueFilter={removeVenueFilter}
         useNewAlgoliaIndex={useNewAlgoliaIndex}
-        userRole={userRole}
+        user={user}
         venueFilter={venueFilter}
       />
     </InstantSearch>
