@@ -579,13 +579,18 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
     from pcapi.core.offers.api import _update_educational_booking_cancellation_limit_date
 
     beginning = stock_data.get("beginningDatetime")
-    booking_limit_datetime = stock_data.get("bookingLimitDatetime")
     beginning = as_utc_without_timezone(beginning) if beginning else None
+    booking_limit_datetime = stock_data.get("bookingLimitDatetime")
     booking_limit_datetime = as_utc_without_timezone(booking_limit_datetime) if booking_limit_datetime else None
 
     updatable_fields = _extract_updatable_fields_from_stock_data(stock, stock_data, beginning, booking_limit_datetime)
 
     offer_validation.check_booking_limit_datetime(stock, beginning, booking_limit_datetime)
+
+    # due to check_booking_limit_datetime the only reason beginning < booking_limit_dt is when they are on the same day
+    # in the venue timezone
+    if beginning is not None and beginning < updatable_fields["bookingLimitDatetime"]:
+        updatable_fields["bookingLimitDatetime"] = updatable_fields["beginningDatetime"]
 
     collective_stock_unique_booking = CollectiveBooking.query.filter(
         CollectiveBooking.collectiveStockId == stock.id,
@@ -1041,3 +1046,7 @@ def update_collective_offer_educational_institution(
     search.async_index_collective_offer_ids([offer_id])
 
     return offer
+
+
+def get_collective_stock(collective_stock_id: int) -> Optional[educational_models.CollectiveStock]:
+    return educational_repository.get_collective_stock(collective_stock_id)
