@@ -34,6 +34,7 @@ def get_settings() -> serializers.SettingsResponse:
         FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
         FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION,
         FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK,
+        FeatureToggle.APP_ENABLE_AUTOCOMPLETE,
     )
 
     return serializers.SettingsResponse(
@@ -41,6 +42,7 @@ def get_settings() -> serializers.SettingsResponse:
         # FIXME (ahello, 2022-02-16): remove `auto_activate_digital_bookings`
         # once all alive versions of the app works without this setting.
         auto_activate_digital_bookings=True,
+        app_enable_autocomplete=features[FeatureToggle.APP_ENABLE_AUTOCOMPLETE],
         app_enable_search_homepage_rework=features[FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK],
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
