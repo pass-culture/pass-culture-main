@@ -36,7 +36,6 @@ const MultiSelectAutocomplete = ({
   options,
   onChange,
   maxDisplayOptions,
-  maxDisplayOptionsLabel,
   maxHeight,
   pluralLabel,
   smallLabel = false,
@@ -136,7 +135,22 @@ const MultiSelectAutocomplete = ({
         <AutocompleteList
           onButtonClick={toggleField}
           isOpen={isOpen}
-          filteredOptions={filteredOptions}
+          filteredOptions={[
+            ...filteredOptions.slice(
+              0,
+              maxDisplayOptions ?? filteredOptions.length
+            ),
+            ...(maxDisplayOptions && maxDisplayOptions < filteredOptions.length
+              ? [
+                  {
+                    value: '',
+                    label: `${maxDisplayOptions} résultats maximum. Veuillez affiner votre recherche`,
+                    disabled: true,
+                  },
+                ]
+              : []),
+          ]}
+          maxHeight={maxHeight}
           displayNumberOfSelectedValues={field.value.length > 0}
           numberOfSelectedOptions={field.value.length}
           renderOption={({ value, label }) => (
@@ -154,50 +168,6 @@ const MultiSelectAutocomplete = ({
             />
           )}
         />
-        {isOpen && (
-          <div
-            className={styles['multi-select-autocomplete__menu']}
-            style={maxHeight ? { maxHeight } : {}}
-          >
-            {filteredOptions.length === 0 && (
-              <span
-                className={cx({
-                  [styles['multi-select-autocomplete__menu--no-results']]:
-                    filteredOptions.length === 0,
-                })}
-              >
-                Aucun résultat
-              </span>
-            )}
-            {filteredOptions
-              .slice(0, maxDisplayOptions ?? filteredOptions.length)
-              .map(({ value, label }) => (
-                <BaseCheckbox
-                  label={label}
-                  key={`${fieldName}-${value}`}
-                  value={value}
-                  name={fieldName}
-                  onChange={e => {
-                    setFieldTouched(`search-${fieldName}`, true)
-                    handleChange(e)
-                    onChange?.(e)
-                  }}
-                  checked={field.value.includes(value)}
-                />
-              ))}
-            {maxDisplayOptions &&
-              maxDisplayOptionsLabel &&
-              filteredOptions.length > maxDisplayOptions && (
-                <BaseCheckbox
-                  disabled
-                  label={maxDisplayOptionsLabel}
-                  value=""
-                  name={`${fieldName}-display-more-label`}
-                  checked={false}
-                />
-              )}
-          </div>
-        )}
       </div>
       {!hideTags && field.value.length > 0 && (
         <div className={styles['multi-select-autocomplete-tags']}>

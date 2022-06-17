@@ -1,35 +1,38 @@
 import { FormikProvider, useFormik } from 'formik'
 import { Link, useHistory, useParams } from 'react-router-dom'
-import { MultiSelectAutocomplete, SubmitButton } from 'ui-kit'
 import React, { useEffect, useState } from 'react'
+import { SelectAutocomplete, SubmitButton } from 'ui-kit'
 
 import FormLayout from 'new_components/FormLayout'
 import { GetEducationalInstitutionsAdapter } from 'routes/CollectiveOfferVisibility/adapters/getEducationalInstitutionsAdapter'
 import { Mode } from 'core/OfferEducational'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
-import { SelectOption } from 'custom_types/form'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import styles from './CollectiveOfferVisibility.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import validationSchema from './validationSchema'
 
-interface Props {
+export interface CollectiveOfferVisibilityProps {
   getInstitutions: GetEducationalInstitutionsAdapter
   patchInstitution: PatchEducationalInstitutionAdapter
   mode: Mode
+}
+interface InstitutionOption extends SelectOption {
+  postalCode?: string
+  city?: string
 }
 
 const CollectiveOfferVisibility = ({
   getInstitutions,
   mode,
   patchInstitution,
-}: Props) => {
+}: CollectiveOfferVisibilityProps) => {
   const formik = useFormik({
     initialValues: {
       visibility: 'all',
-      institution: [],
+      institution: '',
       'search-institution': '',
     },
     onSubmit: () => {},
@@ -40,52 +43,55 @@ const CollectiveOfferVisibility = ({
   const history = useHistory()
 
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
-  const { offerId, isShowcase } =
+  const { offerId } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
   const [institutionsOptions, setInstitutionsOptions] =
-    useState<SelectOption[]>()
+    useState<InstitutionOption[]>()
 
   const [buttonPressed, setButtonPressed] = useState(false)
 
   const handleSubmit = () => {
     setButtonPressed(true)
-    patchInstitution({
-      offerId,
-      institutionId: '12',
-    }).then(result => {
-      if (result.isOk) {
-        notify.success(result.message)
-        history.push(
-          `/offre/${isShowcase ? 'T-' : ''}${offerId}/collectif/confirmation`
-        )
-      } else {
-        notify.error(result.message)
-        setButtonPressed(false)
-      }
-    })
+    const successUrl = `/offre/${offerId}/collectif/confirmation`
+    if (formik.values.visibility === 'one') {
+      patchInstitution({
+        offerId,
+        institutionId: formik.values.institution,
+      }).then(result => {
+        if (result.isOk) {
+          history.push(successUrl)
+        } else {
+          notify.error(result.message)
+          setButtonPressed(false)
+        }
+      })
+    } else {
+      // if visibility === 'all' nothing to save
+      history.push(successUrl)
+    }
   }
 
   useEffect(() => {
-    if (formik.values.visibility === 'one' && !institutionsOptions) {
-      getInstitutions().then(res => {
-        if (res.isOk)
-          setInstitutionsOptions(
-            res.payload.institutions.map(({ name, id }) => ({
-              label: name,
-              value: id,
-            }))
-          )
-      })
-    }
-  }, [formik.values.visibility])
+    getInstitutions().then(res => {
+      if (res.isOk)
+        setInstitutionsOptions(
+          res.payload.institutions.map(({ name, id, city, postalCode }) => ({
+            label: name,
+            value: String(id),
+            city,
+            postalCode,
+          }))
+        )
+    })
+  }, [])
 
   return (
     <FormikProvider value={formik}>
       <form
-        onSubmit={() => {
+        onSubmit={e => {
           handleSubmit()
-          formik.handleSubmit()
+          e.preventDefault()
         }}
       >
         <FormLayout>
@@ -120,18 +126,17 @@ const CollectiveOfferVisibility = ({
                 <fieldset className={styles['legend']}>
                   2. Choix de l’établissement
                 </fieldset>
-                <MultiSelectAutocomplete
+                <SelectAutocomplete
                   fieldName="institution"
                   options={institutionsOptions}
                   label="Établissement scolaire"
                   maxDisplayOptions={20}
                   maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
                   maxHeight={100}
-                  pluralLabel="Établissements"
-                  hideTags
                 />
               </FormLayout.Row>
             )}
+            {formik.values.institution && <></>}
           </FormLayout.Section>
 
           <FormLayout.Actions className={styles['actions-layout']}>
