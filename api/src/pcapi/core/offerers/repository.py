@@ -5,10 +5,12 @@ from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sqla
 import sqlalchemy.orm as sqla_orm
 
+import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.offers.models import Offer
+import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
@@ -153,6 +155,20 @@ def get_filtered_venues(
         query = query.filter(models.Venue.managingOffererId == offerer_id)
 
     return query.order_by(models.Venue.name).all()
+
+
+def get_venue_stats(venue_id: int) -> tuple[int, int, int, int]:
+    active_bookings_quantity = bookings_repository.get_active_bookings_quantity_for_venue(venue_id)
+    validated_bookings_count = bookings_repository.get_validated_bookings_quantity_for_venue(venue_id)
+    active_offers_count = offers_repository.get_active_offers_count_for_venue(venue_id)
+    sold_out_offers_count = offers_repository.get_sold_out_offers_count_for_venue(venue_id)
+
+    return (
+        active_bookings_quantity,
+        validated_bookings_count,
+        active_offers_count,
+        sold_out_offers_count,
+    )
 
 
 def get_api_key_prefixes(offerer_id: int) -> list[str]:
