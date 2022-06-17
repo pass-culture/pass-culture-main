@@ -1001,21 +1001,17 @@ jobs:
       - restore_cache:
           name: Restore Yarn Package Cache
           key: << pipeline.parameters.backoffice-front_cache_key >>
-      - build-frontend-app:
-          node_env: <<parameters.app_environment>>
-          build_dir: <<parameters.build_dir>>
-          yarn_build_subcommand: "build"
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: << pipeline.parameters.backoffice-front_cache_key >>
-          paths:
-            - backoffice/node_modules
       - run:
           name: Deploy backoffice front <<parameters.app_environment>>
           command: |
             echo "$<<parameters.service_account_backoffice_key>>" > ~/gcp_backoffice_testing.json
             export GOOGLE_APPLICATION_CREDENTIALS=~/gcp_backoffice_testing.json
             yarn --cwd <<parameters.build_dir>> deploy:<<parameters.app_environment>>
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: << pipeline.parameters.backoffice-front_cache_key >>
+          paths:
+            - backoffice/node_modules
 
   release-synthesis:
     machine:
