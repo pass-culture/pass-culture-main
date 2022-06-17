@@ -1060,4 +1060,6 @@ def update_collective_offer_educational_institution(
     offer.institution = institution
     db.session.commit()
 
+    search.async_index_collective_offer_ids([offer_id])
+
     return offer
