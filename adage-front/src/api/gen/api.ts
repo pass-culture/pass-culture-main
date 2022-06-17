@@ -49,6 +49,7 @@ export enum AdageFrontRoles {
 }
 export interface AuthenticatedResponse {
   role: AdageFrontRoles
+  uai?: string | null
 }
 
 export interface BookCollectiveOfferRequest {
@@ -82,6 +83,7 @@ export interface CollectiveOfferResponseModel {
   description?: string | null
   domains: Array<OfferDomain>
   durationMinutes?: number | null
+  educationalInstitution?: EducationalInstitutionResponseModel | null
   educationalPriceDetail?: string | null
   id: number
   isExpired: boolean
@@ -123,6 +125,13 @@ export interface CollectiveOfferTemplateResponseModel {
 export interface Coordinates {
   latitude?: number | null
   longitude?: number | null
+}
+
+export interface EducationalInstitutionResponseModel {
+  city: string
+  id: number
+  name: string
+  postalCode: string
 }
 
 export interface FeatureResponseModel {
