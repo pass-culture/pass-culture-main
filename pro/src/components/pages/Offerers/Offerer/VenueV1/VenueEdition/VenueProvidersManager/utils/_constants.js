@@ -3,6 +3,4 @@ export const DEFAULT_PROVIDER_OPTION = {
   displayName: 'Choix de la source',
 }
 
-export const CINEMA_PROVIDER_NAMES = [
-  "ciné office",
-]
+export const CINEMA_PROVIDER_NAMES = ['ciné office']
