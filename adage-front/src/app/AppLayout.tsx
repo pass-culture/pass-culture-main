@@ -1,17 +1,17 @@
 import './AppLayout.scss'
 import * as React from 'react'
 
-import { AdageFrontRoles, VenueResponse } from 'api/gen'
+import { AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { OffersInstantSearch } from 'app/components/OffersInstantSearch/OffersInstantSearch'
 import { ReactComponent as Download } from 'assets/download.svg'
 import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
 
 export const AppLayout = ({
-  userRole,
+  user,
   removeVenueFilter,
   venueFilter,
 }: {
-  userRole: AdageFrontRoles
+  user: AuthenticatedResponse
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
@@ -35,7 +35,7 @@ export const AppLayout = ({
       </div>
       <OffersInstantSearch
         removeVenueFilter={removeVenueFilter}
-        userRole={userRole}
+        user={user}
         venueFilter={venueFilter}
       />
     </main>

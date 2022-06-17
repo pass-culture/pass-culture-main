@@ -39,7 +39,7 @@ describe('offersSearch component', () => {
 
   beforeEach(() => {
     props = {
-      userRole: AdageFrontRoles.Redactor,
+      user: { role: AdageFrontRoles.Redactor, uai: 'uai' },
       removeVenueFilter: jest.fn(),
       venueFilter: null,
       refine: jest.fn(),
