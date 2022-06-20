@@ -34,7 +34,6 @@ export interface OffersComponentProps extends HitsProvided<ResultType> {
   userRole: AdageFrontRoles
   setIsLoading: (isLoading: boolean) => void
   handleResetFiltersAndLaunchSearch: () => void
-  useNewAlgoliaIndex: boolean
 }
 
 export const OffersComponent = ({
@@ -42,7 +41,6 @@ export const OffersComponent = ({
   setIsLoading,
   handleResetFiltersAndLaunchSearch,
   hits,
-  useNewAlgoliaIndex,
 }: OffersComponentProps): JSX.Element => {
   const offersThumbById = {}
   hits.forEach(hit => {
@@ -54,21 +52,15 @@ export const OffersComponent = ({
       queryKey: ['offer', hit.objectID],
       queryFn: async () => {
         try {
-          let offer: OfferType
-          if (useNewAlgoliaIndex) {
-            const offerId = extractOfferIdFromObjectId(hit.objectID)
-            const { isOk, payload } = await (hit.isTemplate
-              ? getCollectiveOfferTemplateAdapter(offerId)
-              : getCollectiveOfferAdapter(offerId))
+          const offerId = extractOfferIdFromObjectId('T-4')
+          const { isOk, payload: offer } = await (hit.isTemplate
+            ? getCollectiveOfferTemplateAdapter(offerId)
+            : getCollectiveOfferAdapter(offerId))
 
-            if (!isOk) {
-              return
-            }
-
-            offer = payload as OfferType
-          } else {
-            offer = await pcapi.getOffer(hit.objectID)
+          if (!isOk) {
+            return
           }
+
           if (offer && offerIsBookable(offer)) return offer
         } catch (e) {
           captureException(e)
