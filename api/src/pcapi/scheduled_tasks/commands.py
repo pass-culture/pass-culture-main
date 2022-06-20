@@ -42,11 +42,8 @@ from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
+from pcapi.scripts.subscription import dms as dms_script
 from pcapi.scripts.subscription import ubble as ubble_script
-from pcapi.scripts.subscription.dms import archive_dms_applications
-from pcapi.scripts.subscription.dms.handle_deleted_dms_applications import handle_deleted_dms_applications
-from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import handle_inactive_dms_applications
-from pcapi.scripts.subscription.dms.import_dms_accepted_applications import import_dms_accepted_applications
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -89,8 +86,8 @@ def synchronize_provider_api() -> None:
 @log_cron_with_transaction
 def import_dms_users_beneficiaries() -> None:
     procedure_id = settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID
-    import_dms_accepted_applications(procedure_id)
-    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+    dms_script.import_dms_accepted_applications(procedure_id)
+    dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 # FIXME (xordoquy, 2021-06-16): This clock must be removed once every application from procedure
@@ -101,16 +98,16 @@ def import_dms_users_beneficiaries_from_old_dms() -> None:
     if not settings.IS_PROD:
         return
     procedure_id = DMS_OLD_PROCEDURE_ID
-    import_dms_accepted_applications(procedure_id)
-    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+    dms_script.import_dms_accepted_applications(procedure_id)
+    dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 @blueprint.cli.command("import_beneficiaries_from_dms_v3")
 @log_cron_with_transaction
 def import_beneficiaries_from_dms_v3() -> None:
     procedure_id = settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING
-    import_dms_accepted_applications(procedure_id)
-    archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+    dms_script.import_dms_accepted_applications(procedure_id)
+    dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 @blueprint.cli.command("import_beneficiaries_from_dms_v4")
@@ -123,8 +120,8 @@ def import_beneficiaries_from_dms_v4() -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        import_dms_accepted_applications(procedure_id)
-        archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+        dms_script.import_dms_accepted_applications(procedure_id)
+        dms_script.archive_dms_applications.archive_applications(procedure_id, dry_run=False)
 
 
 @blueprint.cli.command("handle_expired_bookings")
@@ -320,16 +317,16 @@ def delete_suspended_accounts_after_withdrawal_period() -> None:
 def handle_inactive_dms_applications_cron() -> None:
     # DMS_ENROLLMENT_PROCEDURE_ID_v4_ET is excluded because the review delay is longer
     # TESTING
-    handle_inactive_dms_applications(
+    dms_script.handle_inactive_dms_applications(
         settings.DMS_ENROLLMENT_PROCEDURE_ID_v4_FR, with_never_eligible_applicant_rule=settings.IS_TESTING
     )
 
     if settings.IS_PROD:
-        handle_inactive_dms_applications(settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
-        handle_inactive_dms_applications(
+        dms_script.handle_inactive_dms_applications(settings.DMS_ENROLLMENT_PROCEDURE_ID_AFTER_GENERAL_OPENING)
+        dms_script.handle_inactive_dms_applications(
             settings.DMS_NEW_ENROLLMENT_PROCEDURE_ID, with_never_eligible_applicant_rule=True
         )
-        handle_inactive_dms_applications(DMS_OLD_PROCEDURE_ID)
+        dms_script.handle_inactive_dms_applications(DMS_OLD_PROCEDURE_ID)
 
 
 @blueprint.cli.command("handle_deleted_dms_applications_cron")
@@ -345,7 +342,7 @@ def handle_deleted_dms_applications_cron() -> None:
         procedures.append(DMS_OLD_PROCEDURE_ID)
     for procedure_id in procedures:
         try:
-            handle_deleted_dms_applications(procedure_id)
+            dms_script.handle_deleted_dms_applications(procedure_id)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
 
