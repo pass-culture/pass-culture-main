@@ -42,6 +42,7 @@ from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
+from pcapi.scripts.subscription import ubble as ubble_script
 from pcapi.scripts.subscription.dms import archive_dms_applications
 from pcapi.scripts.subscription.dms.handle_deleted_dms_applications import handle_deleted_dms_applications
 from pcapi.scripts.subscription.dms.handle_inactive_dms_applications import handle_inactive_dms_applications
@@ -347,3 +348,9 @@ def handle_deleted_dms_applications_cron() -> None:
             handle_deleted_dms_applications(procedure_id)
         except Exception:  # pylint: disable=broad-except
             logger.exception("Failed to handle deleted DMS applications for procedure %s", procedure_id)
+
+
+@blueprint.cli.command("update_pending_ubble_applications_cron")
+@log_cron_with_transaction
+def update_pending_ubble_applications_cron() -> None:
+    ubble_script.update_pending_ubble_applications(dry_run=False)
