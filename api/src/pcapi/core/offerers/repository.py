@@ -15,7 +15,6 @@ from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_mo
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 
@@ -75,15 +74,13 @@ def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
     Venues that do not have any offers are not included in the
     returned dictionary.
     """
-    is_new_model_enabled = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
 
     offer_query = Offer.query.filter(
         Offer.validation != OfferValidationStatus.DRAFT,
         Offer.venueId.in_(venue_ids),
     )
 
-    if is_new_model_enabled:
-        offer_query = offer_query.filter(Offer.isEducational.is_(False))
+    offer_query = offer_query.filter(Offer.isEducational.is_(False))
 
     individual_offers_count = dict(
         offer_query.with_entities(Offer.venueId, sqla.func.count()).group_by(Offer.venueId).all()
@@ -92,26 +89,25 @@ def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
     collective_offers_count = {}
     collective_offers_template_count = {}
 
-    if is_new_model_enabled:
-        collective_offers_count = dict(
-            CollectiveOffer.query.filter(
-                CollectiveOffer.validation != OfferValidationStatus.DRAFT,
-                CollectiveOffer.venueId.in_(venue_ids),
-            )
-            .with_entities(CollectiveOffer.venueId, sqla.func.count())
-            .group_by(CollectiveOffer.venueId)
-            .all()
+    collective_offers_count = dict(
+        CollectiveOffer.query.filter(
+            CollectiveOffer.validation != OfferValidationStatus.DRAFT,
+            CollectiveOffer.venueId.in_(venue_ids),
         )
+        .with_entities(CollectiveOffer.venueId, sqla.func.count())
+        .group_by(CollectiveOffer.venueId)
+        .all()
+    )
 
-        collective_offers_template_count = dict(
-            CollectiveOfferTemplate.query.filter(
-                CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
-                CollectiveOfferTemplate.venueId.in_(venue_ids),
-            )
-            .with_entities(CollectiveOfferTemplate.venueId, sqla.func.count())
-            .group_by(CollectiveOfferTemplate.venueId)
-            .all()
+    collective_offers_template_count = dict(
+        CollectiveOfferTemplate.query.filter(
+            CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
+            CollectiveOfferTemplate.venueId.in_(venue_ids),
         )
+        .with_entities(CollectiveOfferTemplate.venueId, sqla.func.count())
+        .group_by(CollectiveOfferTemplate.venueId)
+        .all()
+    )
 
     offers_count_by_venue_id = {}
     for venue_id in venue_ids:
