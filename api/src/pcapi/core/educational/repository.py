@@ -119,22 +119,6 @@ def get_and_lock_educational_deposit(
     return educational_deposit
 
 
-def get_confirmed_educational_bookings_amount(
-    educational_institution_id: int,
-    educational_year_id: str,
-) -> Decimal:
-    educational_bookings = (
-        educational_models.EducationalBooking.query.filter_by(
-            educationalInstitutionId=educational_institution_id, educationalYearId=educational_year_id
-        )
-        .join(Booking)
-        .filter(~Booking.status.in_([BookingStatus.CANCELLED, BookingStatus.PENDING]))
-        .options(joinedload(educational_models.EducationalBooking.booking).load_only(Booking.amount, Booking.quantity))
-        .all()
-    )
-    return Decimal(sum(educational_booking.booking.total_amount for educational_booking in educational_bookings))
-
-
 def get_confirmed_collective_bookings_amount(
     educational_institution_id: int,
     educational_year_id: str,
