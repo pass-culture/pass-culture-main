@@ -2,14 +2,12 @@ import {
   GetStockOfferSuccessPayload,
   extractOfferIdAndOfferTypeFromRouteParams,
   getStockCollectiveOfferAdapter,
-  getStockOfferAdapter,
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
 import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 import Spinner from 'components/layout/Spinner'
 import { getStockCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferTemplateAdapter'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import { useParams } from 'react-router-dom'
 
@@ -19,17 +17,12 @@ const CollectiveOfferConfirmation = (): JSX.Element => {
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload>()
   const notify = useNotification()
-  const enableIndividualAndCollectiveSeparation = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
 
   useEffect(() => {
     const loadOffer = async () => {
-      const getOfferAdapter = enableIndividualAndCollectiveSeparation
-        ? isShowcase
-          ? getStockCollectiveOfferTemplateAdapter
-          : getStockCollectiveOfferAdapter
-        : getStockOfferAdapter
+      const getOfferAdapter = isShowcase
+        ? getStockCollectiveOfferTemplateAdapter
+        : getStockCollectiveOfferAdapter
 
       const offerResponse = await getOfferAdapter(offerId)
 
@@ -52,9 +45,6 @@ const CollectiveOfferConfirmation = (): JSX.Element => {
       isShowcase={offer?.isShowcase}
       offerStatus={offer?.status}
       offererId={offer?.managingOffererId}
-      enableIndividualAndCollectiveSeparation={
-        enableIndividualAndCollectiveSeparation
-      }
     />
   )
 }
