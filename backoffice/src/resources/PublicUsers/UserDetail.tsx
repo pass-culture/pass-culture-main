@@ -299,13 +299,11 @@ export const UserDetail = () => {
                           Validation email
                         </Typography>
                         <StatusAvatar
-                          subscriptionItem={
-                            subscriptionItems.find(
-                              subscriptionItem =>
-                                subscriptionItem.type ===
-                                SubscriptionItemType.EMAIL_VALIDATION
-                            )!
-                          }
+                          subscriptionItem={subscriptionItems.find(
+                            subscriptionItem =>
+                              subscriptionItem.type ===
+                              SubscriptionItemType.EMAIL_VALIDATION
+                          )}
                         />
                       </Stack>
                     </Grid>
@@ -319,16 +317,14 @@ export const UserDetail = () => {
                           Complétion Profil
                         </Typography>
                         <StatusAvatar
-                          subscriptionItem={
-                            subscriptionItems.find(
-                              (item: {
-                                type: string
-                                status: SubscriptionItemStatus
-                              }) =>
-                                item.type ===
-                                SubscriptionItemType.PROFILE_COMPLETION
-                            )!
-                          }
+                          subscriptionItem={subscriptionItems.find(
+                            (item: {
+                              type: string
+                              status: SubscriptionItemStatus
+                            }) =>
+                              item.type ===
+                              SubscriptionItemType.PROFILE_COMPLETION
+                          )}
                         />
                       </Stack>
                     </Grid>
@@ -342,16 +338,14 @@ export const UserDetail = () => {
                           Validation Téléphone
                         </Typography>
                         <StatusAvatar
-                          subscriptionItem={
-                            subscriptionItems.find(
-                              (item: {
-                                type: string
-                                status: SubscriptionItemStatus
-                              }) =>
-                                item.type ===
-                                SubscriptionItemType.PHONE_VALIDATION
-                            )!
-                          }
+                          subscriptionItem={subscriptionItems.find(
+                            (item: {
+                              type: string
+                              status: SubscriptionItemStatus
+                            }) =>
+                              item.type ===
+                              SubscriptionItemType.PHONE_VALIDATION
+                          )}
                         />
                       </Stack>
                     </Grid>
@@ -363,16 +357,10 @@ export const UserDetail = () => {
                       >
                         <Typography variant={'body1'}>ID Check</Typography>
                         <StatusAvatar
-                          subscriptionItem={
-                            subscriptionItems.find(
-                              (item: {
-                                type: string
-                                status: SubscriptionItemStatus
-                              }) =>
-                                item.type ===
-                                SubscriptionItemType.IDENTITY_CHECK
-                            )!
-                          }
+                          subscriptionItem={subscriptionItems.find(
+                            item =>
+                              item.type === SubscriptionItemType.IDENTITY_CHECK
+                          )}
                         />
                       </Stack>
                     </Grid>
@@ -386,16 +374,11 @@ export const UserDetail = () => {
                           Profil Utilisateur
                         </Typography>
                         <StatusAvatar
-                          subscriptionItem={
-                            subscriptionItems.find(
-                              (item: {
-                                type: string
-                                status: SubscriptionItemStatus
-                              }) =>
-                                item.type ===
-                                SubscriptionItemType.PROFILE_COMPLETION
-                            )!
-                          }
+                          subscriptionItem={subscriptionItems.find(
+                            item =>
+                              item.type ===
+                              SubscriptionItemType.PROFILE_COMPLETION
+                          )}
                         />
                       </Stack>
                     </Grid>
@@ -409,16 +392,13 @@ export const UserDetail = () => {
                           Honor Statement
                         </Typography>
                         <StatusAvatar
-                          subscriptionItem={
-                            subscriptionItems.find(
-                              (item: {
-                                type: string
-                                status: SubscriptionItemStatus
-                              }) =>
-                                item.type ===
-                                SubscriptionItemType.HONOR_STATEMENT
-                            )!
-                          }
+                          subscriptionItem={subscriptionItems.find(
+                            (item: {
+                              type: string
+                              status: SubscriptionItemStatus
+                            }) =>
+                              item.type === SubscriptionItemType.HONOR_STATEMENT
+                          )}
                         />
                       </Stack>
                     </Grid>
