@@ -71,7 +71,6 @@ from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
-from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
@@ -124,7 +123,6 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
 
     This function is normally called by a cron job.
     """
-    is_new_collective_model_enable = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
     # The upper bound on `dateUsed` avoids selecting a very recent
     # booking that may have been COMMITed to the database just before
     # another booking with a slightly older `dateUsed` (see note in
@@ -168,11 +166,7 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
         )
     )
 
-    # If CollectiveBooking model is used, we dont need to price educational
-    # bookings anymore, otherwise we will price twice the same booking (because
-    # the data has been duplicated between EducationalBooking and CollectiveBooking)
-    if is_new_collective_model_enable:
-        bookings = bookings.filter(bookings_models.Booking.educationalBookingId.is_(None))
+    bookings = bookings.filter(bookings_models.Booking.educationalBookingId.is_(None))
 
     errorred_business_unit_ids = set()
     for booking in bookings:
@@ -200,32 +194,31 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
                 },
             )
 
-    if is_new_collective_model_enable:
-        collective_bookings_query = educational_repository.get_collective_bookings_query_for_pricing_generation(window)
-        for collective_booking in collective_bookings_query:
-            try:
-                if collective_booking.venue.businessUnitId in errorred_business_unit_ids:
-                    continue
-                extra = {
+    collective_bookings_query = educational_repository.get_collective_bookings_query_for_pricing_generation(window)
+    for collective_booking in collective_bookings_query:
+        try:
+            if collective_booking.venue.businessUnitId in errorred_business_unit_ids:
+                continue
+            extra = {
+                "collective_booking": collective_booking.id,
+                "business_unit_id": collective_booking.venue.businessUnitId,
+            }
+            with log_elapsed(logger, "Priced collective booking", extra):
+                price_booking(collective_booking)
+        except Exception as exc:  # pylint: disable=broad-except
+            errorred_business_unit_ids.add(collective_booking.venue.businessUnitId)
+            logger.info(
+                "Ignoring further bookings from business unit",
+                extra={"business_unit": collective_booking.venue.businessUnitId},
+            )
+            logger.exception(
+                "Could not price collective booking",
+                extra={
                     "collective_booking": collective_booking.id,
-                    "business_unit_id": collective_booking.venue.businessUnitId,
-                }
-                with log_elapsed(logger, "Priced collective booking", extra):
-                    price_booking(collective_booking)
-            except Exception as exc:  # pylint: disable=broad-except
-                errorred_business_unit_ids.add(collective_booking.venue.businessUnitId)
-                logger.info(
-                    "Ignoring further bookings from business unit",
-                    extra={"business_unit": collective_booking.venue.businessUnitId},
-                )
-                logger.exception(
-                    "Could not price collective booking",
-                    extra={
-                        "collective_booking": collective_booking.id,
-                        "business_unit": collective_booking.venue.businessUnitId,
-                        "exc": str(exc),
-                    },
-                )
+                    "business_unit": collective_booking.venue.businessUnitId,
+                    "exc": str(exc),
+                },
+            )
 
 
 def _booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
@@ -499,8 +492,7 @@ def _delete_dependent_pricings(
         )
     )
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        pricings = pricings.filter(bookings_models.Booking.educationalBookingId.is_(None))
+    pricings = pricings.filter(bookings_models.Booking.educationalBookingId.is_(None))
 
     pricings = pricings.with_entities(
         models.Pricing.id, models.Pricing.bookingId, models.Pricing.status, bookings_models.Booking.stockId
@@ -663,7 +655,6 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     """Generate a new CashflowBatch and a new cashflow for each business
     unit for which there is money to transfer.
     """
-    is_new_collective_model_enabled = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
     logger.info("Started to generate cashflows")
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
@@ -681,37 +672,26 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         BankInformation.status == BankInformationStatus.ACCEPTED,
     )
 
-    if is_new_collective_model_enabled:
-        filters = (
-            *filters,
-            # Even if a booking is marked as used prematurely, we should
-            # wait for the event to happen.
-            # Either the Pricing has a bookingId and we want the filter to be
-            # applied on the Stock model or the Pricing has a collectiveBookingId
-            # and we want the filter to be applied on the CollectiveStock model
-            sqla.or_(
-                sqla.and_(
-                    models.Pricing.bookingId.isnot(None),
-                    sqla.or_(
-                        offers_models.Stock.beginningDatetime.is_(None), offers_models.Stock.beginningDatetime < cutoff
-                    ),
-                ),
-                sqla.and_(
-                    models.Pricing.collectiveBookingId.isnot(None),
-                    educational_models.CollectiveStock.beginningDatetime < cutoff,
+    filters = (
+        *filters,
+        # Even if a booking is marked as used prematurely, we should
+        # wait for the event to happen.
+        # Either the Pricing has a bookingId and we want the filter to be
+        # applied on the Stock model or the Pricing has a collectiveBookingId
+        # and we want the filter to be applied on the CollectiveStock model
+        sqla.or_(
+            sqla.and_(
+                models.Pricing.bookingId.isnot(None),
+                sqla.or_(
+                    offers_models.Stock.beginningDatetime.is_(None), offers_models.Stock.beginningDatetime < cutoff
                 ),
             ),
-        )
-    else:
-        filters = (
-            *filters,
-            # Even if a booking is marked as used prematurely, we should
-            # wait for the event to happen.
-            sqla.or_(
-                offers_models.Stock.beginningDatetime.is_(None),
-                offers_models.Stock.beginningDatetime < cutoff,
+            sqla.and_(
+                models.Pricing.collectiveBookingId.isnot(None),
+                educational_models.CollectiveStock.beginningDatetime < cutoff,
             ),
-        )
+        ),
+    )
 
     def _mark_as_processed(pricings: sqla_orm.Query) -> None:
         pricings_to_update = models.Pricing.query.filter(
@@ -722,26 +702,16 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
             synchronize_session=False,
         )
 
-    if is_new_collective_model_enabled:
-        business_unit_ids_and_bank_account_ids_base_query = (
-            models.Pricing.query.filter(
-                models.BusinessUnit.bankAccountId.isnot(None),
-                *filters,
-            )
-            .outerjoin(models.Pricing.booking)
-            .outerjoin(models.Pricing.collectiveBooking)
-            .outerjoin(bookings_models.Booking.stock)
-            .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+    business_unit_ids_and_bank_account_ids_base_query = (
+        models.Pricing.query.filter(
+            models.BusinessUnit.bankAccountId.isnot(None),
+            *filters,
         )
-    else:
-        business_unit_ids_and_bank_account_ids_base_query = (
-            models.Pricing.query.filter(
-                models.BusinessUnit.bankAccountId.isnot(None),
-                *filters,
-            )
-            .join(models.Pricing.booking)
-            .join(bookings_models.Booking.stock)
-        )
+        .outerjoin(models.Pricing.booking)
+        .outerjoin(models.Pricing.collectiveBooking)
+        .outerjoin(bookings_models.Booking.stock)
+        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+    )
 
     business_unit_ids_and_bank_account_ids = (
         business_unit_ids_and_bank_account_ids_base_query.join(models.Pricing.businessUnit)
@@ -754,17 +724,12 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         logger.info("Generating cashflow", extra={"business_unit": business_unit_id})
         try:
             with transaction():
-                if is_new_collective_model_enabled:
-                    pricing_base_query = (
-                        models.Pricing.query.outerjoin(models.Pricing.booking)
-                        .outerjoin(bookings_models.Booking.stock)
-                        .outerjoin(models.Pricing.collectiveBooking)
-                        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-                    )
-                else:
-                    pricing_base_query = models.Pricing.query.join(models.Pricing.booking).join(
-                        bookings_models.Booking.stock
-                    )
+                pricing_base_query = (
+                    models.Pricing.query.outerjoin(models.Pricing.booking)
+                    .outerjoin(bookings_models.Booking.stock)
+                    .outerjoin(models.Pricing.collectiveBooking)
+                    .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+                )
                 pricings = (
                     pricing_base_query.join(models.BusinessUnit)
                     .join(models.BusinessUnit.bankAccount)
@@ -822,15 +787,11 @@ def generate_payment_files(batch_id: int) -> None:
             f"because {not_pending_cashflows} cashflows are not pending",
         )
 
-    is_new_collective_model_enabled = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
-
     file_paths = {}
     logger.info("Generating business units file")
     file_paths["business_units"] = _generate_business_units_file()
     logger.info("Generating payments file")
-    file_paths["payments"] = (
-        _generate_new_payments_file(batch_id) if is_new_collective_model_enabled else _generate_payments_file(batch_id)
-    )
+    file_paths["payments"] = _generate_new_payments_file(batch_id)
     logger.info("Generating wallets file")
     file_paths["wallets"] = _generate_wallets_file()
     logger.info(
@@ -985,102 +946,6 @@ def _clean_for_accounting(value: str) -> str:
         return value
     # Accounting software dislikes quotes and newline characters.
     return value.strip().replace('"', "").replace("\n", "")
-
-
-def _generate_payments_file(batch_id: int) -> pathlib.Path:
-    header = [
-        "Identifiant de la BU",
-        "SIRET de la BU",
-        "Libellé de la BU",  # actually, the commercial name of the related venue
-        "Identifiant du lieu",
-        "Libellé du lieu",
-        "Identifiant de l'offre",
-        "Nom de l'offre",
-        "Sous-catégorie de l'offre",
-        "Prix de la réservation",
-        "Type de réservation",
-        "Date de validation",
-        "Identifiant de la valorisation",
-        "Taux de remboursement",
-        "Montant remboursé à l'offreur",
-        "Ministère",
-    ]
-    # We join `Venue` twice: once to get the venue that is related to
-    # the business unit ; and once to get the venue of the offer. To
-    # distinguish them in `with_entities()`, we need aliases.
-    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
-    OfferVenue = sqla_orm.aliased(offers_models.Offer.venue)
-    query = (
-        models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
-        .join(models.Pricing.cashflows)
-        .join(models.Pricing.booking)
-        .filter(bookings_models.Booking.amount != 0)
-        .join(models.Pricing.businessUnit)
-        # There should be a Venue with the same SIRET as the business
-        # unit... but edition has been sloppy and there are
-        # inconsistencies. To avoid excluding business unit, we do an
-        # _outer_ join and not an _inner_ join here. Obviously, the
-        # corresponding columns will be empty in the CSV file.
-        # See also `_generate_business_units_file()` and `generate_invoice_file()`.
-        .outerjoin(
-            BusinessUnitVenue,
-            models.BusinessUnit.siret == BusinessUnitVenue.siret,
-        )
-        .join(bookings_models.Booking.stock)
-        .join(offers_models.Stock.offer)
-        .join(offers_models.Offer.venue.of_type(OfferVenue))
-        .join(bookings_models.Booking.offerer)
-        .outerjoin(bookings_models.Booking.individualBooking)
-        .outerjoin(bookings_models.IndividualBooking.deposit)
-        .outerjoin(bookings_models.Booking.educationalBooking)
-        .outerjoin(educational_models.EducationalBooking.educationalInstitution)
-        .outerjoin(
-            educational_models.EducationalDeposit,
-            and_(
-                educational_models.EducationalDeposit.educationalYearId
-                == educational_models.EducationalBooking.educationalYearId,
-                educational_models.EducationalDeposit.educationalInstitutionId
-                == educational_models.EducationalInstitution.id,
-            ),
-        )
-        .filter(models.Cashflow.batchId == batch_id)
-        .distinct(models.Pricing.id)
-        .order_by(models.Pricing.id)
-        .with_entities(
-            BusinessUnitVenue.id.label("business_unit_venue_id"),
-            models.BusinessUnit.siret.label("business_unit_siret"),
-            sqla_func.coalesce(
-                BusinessUnitVenue.publicName,
-                BusinessUnitVenue.name,
-            ).label("business_unit_venue_name"),
-            OfferVenue.id.label("offer_venue_id"),
-            OfferVenue.name.label("offer_venue_name"),
-            offers_models.Offer.id.label("offer_id"),
-            offers_models.Offer.name.label("offer_name"),
-            offers_models.Offer.subcategoryId.label("offer_subcategory_id"),
-            bookings_models.Booking.amount.label("booking_amount"),
-            bookings_models.Booking.quantity.label("booking_quantity"),
-            bookings_models.Booking.educationalBookingId.label("educational_booking_id"),
-            bookings_models.Booking.individualBookingId.label("individual_booking_id"),
-            bookings_models.Booking.dateUsed.label("booking_used_date"),
-            payments_models.Deposit.type.label("deposit_type"),
-            models.Pricing.id.label("pricing_id"),
-            models.Pricing.amount.label("pricing_amount"),
-            educational_models.EducationalDeposit.ministry.label("ministry"),
-        )
-        # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
-        # but I am not sure it helps here. We have used
-        # `pcapi.utils.db.get_batches` in the old-style payment code
-        # and that may be what's best here.
-        .yield_per(1000)
-    )
-    return _write_csv(
-        "payment_details",
-        header,
-        rows=query,
-        row_formatter=_payment_details_row_formatter,
-        compress=True,  # it's a large CSV file (> 100 Mb), we should compress it
-    )
 
 
 def _generate_new_payments_file(batch_id: int) -> pathlib.Path:
@@ -1527,33 +1392,32 @@ def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]) -> models.
         },
     )
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        db.session.execute(
-            """
-            UPDATE collective_booking
-            SET
-            status =
-                CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
-                THEN CAST(:cancelled AS bookingstatus)
-                ELSE CAST(:reimbursed AS bookingstatus)
-                END,
-            "reimbursementDate" = :reimbursement_date
-            FROM pricing, cashflow_pricing
-            WHERE
-            (
-                collective_booking.id = pricing."collectiveBookingId" OR
-                (pricing."bookingId" is not null AND collective_booking."bookingId" = pricing."bookingId")
-            )
-            AND pricing.id = cashflow_pricing."pricingId"
-            AND cashflow_pricing."cashflowId" IN :cashflow_ids
-            """,
-            {
-                "cancelled": bookings_models.BookingStatus.CANCELLED.value,
-                "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
-                "cashflow_ids": tuple(cashflow_ids),
-                "reimbursement_date": datetime.datetime.utcnow(),
-            },
+    db.session.execute(
+        """
+        UPDATE collective_booking
+        SET
+        status =
+            CASE WHEN collective_booking.status = CAST(:cancelled AS bookingstatus)
+            THEN CAST(:cancelled AS bookingstatus)
+            ELSE CAST(:reimbursed AS bookingstatus)
+            END,
+        "reimbursementDate" = :reimbursement_date
+        FROM pricing, cashflow_pricing
+        WHERE
+        (
+            collective_booking.id = pricing."collectiveBookingId" OR
+            (pricing."bookingId" is not null AND collective_booking."bookingId" = pricing."bookingId")
         )
+        AND pricing.id = cashflow_pricing."pricingId"
+        AND cashflow_pricing."cashflowId" IN :cashflow_ids
+        """,
+        {
+            "cancelled": bookings_models.BookingStatus.CANCELLED.value,
+            "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
+            "cashflow_ids": tuple(cashflow_ids),
+            "reimbursement_date": datetime.datetime.utcnow(),
+        },
+    )
     db.session.commit()
     return invoice
 
@@ -1641,23 +1505,22 @@ def get_reimbursements_by_venue(
             sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
         )
     )
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        collective_query = (
-            pricing_query.with_entities(
-                *common_columns,
-                sqla_func.sum(models.Pricing.amount).label("amount_total"),
-            )
-            .join(models.Pricing.collectiveBooking)
-            .join(CollectiveBooking.venue)
-            .group_by(
-                offerers_models.Venue.id,
-                sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
-            )
-            .order_by(
-                offerers_models.Venue.id,
-                sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
-            )
+    collective_query = (
+        pricing_query.with_entities(
+            *common_columns,
+            sqla_func.sum(models.Pricing.amount).label("amount_total"),
         )
+        .join(models.Pricing.collectiveBooking)
+        .join(CollectiveBooking.venue)
+        .group_by(
+            offerers_models.Venue.id,
+            sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
+        )
+        .order_by(
+            offerers_models.Venue.id,
+            sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
+        )
+    )
 
     reimbursements_by_venue = {}
     for (venue_id, venue_name), bookings in itertools.groupby(query, lambda x: (x.venue_id, x.venue_name)):
@@ -1676,21 +1539,21 @@ def get_reimbursements_by_venue(
             "individual_amount": individual_amount,
         }
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        for venue_pricing_info in collective_query:
-            venue_id = venue_pricing_info.venue_id
-            venue_name = venue_pricing_info.venue_name
-            amount_total = venue_pricing_info.amount_total
-            if venue_pricing_info.venue_id in reimbursements_by_venue:
-                reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += amount_total
-                reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += amount_total
-            else:
-                reimbursements_by_venue[venue_pricing_info.venue_id] = {
-                    "venue_name": venue_name,
-                    "reimbursed_amount": amount_total,
-                    "validated_booking_amount": amount_total,
-                    "individual_amount": 0,
-                }
+
+    for venue_pricing_info in collective_query:
+        venue_id = venue_pricing_info.venue_id
+        venue_name = venue_pricing_info.venue_name
+        amount_total = venue_pricing_info.amount_total
+        if venue_pricing_info.venue_id in reimbursements_by_venue:
+            reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += amount_total
+            reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += amount_total
+        else:
+            reimbursements_by_venue[venue_pricing_info.venue_id] = {
+                "venue_name": venue_name,
+                "reimbursed_amount": amount_total,
+                "validated_booking_amount": amount_total,
+                "individual_amount": 0,
+            }
 
     return reimbursements_by_venue.values()
 
