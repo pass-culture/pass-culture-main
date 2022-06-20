@@ -4,7 +4,11 @@ import { Avatar } from '@mui/material'
 import { green, red, yellow } from '@mui/material/colors'
 import React from 'react'
 
-export const StatusAvatar = (subscriptionItem: string) => {
+type Props = {
+  subscriptionItem: string
+}
+
+export const StatusAvatar = ({ subscriptionItem }: Props) => {
   let color, icon
 
   switch (subscriptionItem) {

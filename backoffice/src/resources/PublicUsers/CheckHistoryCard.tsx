@@ -59,7 +59,7 @@ export const CheckHistoryCard = (idCheckHistory: CheckHistory) => {
             </Grid>
             <Grid item xs={6}>
               <p>
-                {idCheckHistory.status && StatusAvatar(idCheckHistory.status)}
+                <StatusAvatar subscriptionItem={idCheckHistory?.status} />
               </p>
             </Grid>
           </Stack>
