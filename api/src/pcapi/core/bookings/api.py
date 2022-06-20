@@ -267,10 +267,8 @@ def _cancel_collective_booking(
             )
             return False
 
-        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-            if old_status is CollectiveBookingStatus.USED:
-                # FIXME (MathildeDuboille - 2022-03-03): Fix cancel_pricing to handle collective booking
-                finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
+        if old_status is CollectiveBookingStatus.USED:
+            finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
 
         collective_booking.cancellationReason = reason  # type: ignore [assignment]
         repository.save(collective_booking, collective_stock)
