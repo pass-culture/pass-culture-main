@@ -1,7 +1,12 @@
+from datetime import datetime
 from unittest.mock import patch
 
 import pytest
 
+from pcapi.connectors.serialization.cine_digital_service_serializers import IdObjectCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
+from pcapi.connectors.serialization.cine_digital_service_serializers import ShowTariffCDS
+from pcapi.core.booking_providers.models import Movie
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
@@ -244,9 +249,10 @@ class Returns201Test:
         assert venue_provider.venue.venueProviders == [venue_provider]
 
     @pytest.mark.usefixtures("db_session")
-    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def test_create_venue_provider_for_cds_cinema(self, mocked_get_resource, client):
+    def test_create_venue_provider_for_cds_cinema(self, mock_get_venue_movies, mock_get_shows, client):
         # Given
         user = user_factories.AdminFactory()
         client = client.with_session_auth(email=user.email)
@@ -261,24 +267,57 @@ class Returns201Test:
             "venueId": humanize(venue.id),
             # TODO AMARINIER : add isDuo to payload when we implement cds modal
         }
-        movies_json = [
+        mocked_movies = [
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
+            Movie(
+                id="51",
+                title="Top Gun",
+                duration=150,
+                description="Film sur les avions",
+                visa="333333",
+                posterpath="fakeUrl/topgun.png",
+            ),
+        ]
+        mock_get_venue_movies.return_value = mocked_movies
+
+        mocked_shows = [
             {
-                "id": 1,
-                "title": "Test movie #1",
-                "duration": 7200,
-                "storyline": "Test description #1",
-                "visanumber": "123",
+                "show_information": ShowCDS(
+                    id=1,
+                    is_cancelled=False,
+                    is_deleted=False,
+                    is_disabled_seatmap=False,
+                    internet_remaining_place=10,
+                    showtime=datetime(2022, 6, 20, 11, 00, 00),
+                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+                    screen=IdObjectCDS(id=1),
+                    media=IdObjectCDS(id=123),
+                ),
+                "price": 5,
             },
             {
-                "id": 2,
-                "title": "Test movie #2",
-                "duration": 5400,
-                "storyline": "Test description #2",
-                "visanumber": "456",
+                "show_information": ShowCDS(
+                    id=2,
+                    is_cancelled=False,
+                    is_deleted=False,
+                    is_disabled_seatmap=False,
+                    internet_remaining_place=11,
+                    showtime=datetime(2022, 7, 1, 12, 00, 00),
+                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+                    screen=IdObjectCDS(id=1),
+                    media=IdObjectCDS(id=51),
+                ),
+                "price": 6,
             },
         ]
-
-        mocked_get_resource.return_value = movies_json
+        mock_get_shows.return_value = mocked_shows
 
         # When
         response = client.post("/venueProviders", json=venue_provider_data)

@@ -2,13 +2,17 @@ from datetime import datetime
 from typing import Iterator
 from typing import Union
 
+import pytz
 from sqlalchemy import Sequence
 
 from pcapi import settings
+from pcapi.connectors.serialization.cine_digital_service_serializers import ShowCDS
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 from pcapi.core.booking_providers.models import Movie
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_api_token
 from pcapi.local_providers.local_provider import LocalProvider
@@ -16,6 +20,7 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.product import Product
+import pcapi.utils.date as utils_date
 
 
 class CDSStocks(LocalProvider):
@@ -29,21 +34,40 @@ class CDSStocks(LocalProvider):
         self.cinema_id = venue_provider.venueIdAtOfferProvider
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.movies: Iterator[Movie] = iter(self._get_cds_movies())
+        self.shows = self._get_cds_shows()
+        self.filtered_movie_showtimes = None
+        self.last_offer_id = None
 
     def __next__(self) -> list[ProvidableInfo]:
 
         movie_infos = next(self.movies)
         if movie_infos:
             self.movie_information = movie_infos
+            self.filtered_movie_showtimes = _find_showtimes_by_movie_id(self.shows, int(self.movie_information.id))  # type: ignore [assignment]
+            if not self.filtered_movie_showtimes:
+                return []
+
+        providable_information_list = []
 
         product_providable_info = self.create_providable_info(
-            Product, self.movie_information.id, datetime.utcnow(), self.movie_information.id
+            Product, str(self.movie_information.id), datetime.utcnow(), str(self.movie_information.id)
         )
-        offer_providable_info = self.create_providable_info(
-            Offer, self.movie_information.id, datetime.utcnow(), self.movie_information.id
-        )
+        providable_information_list.append(product_providable_info)
 
-        return [product_providable_info, offer_providable_info]
+        venue_movie_unique_id = _build_movie_uuid(self.movie_information.id, self.venue)
+        offer_providable_info = self.create_providable_info(
+            Offer, venue_movie_unique_id, datetime.utcnow(), venue_movie_unique_id
+        )
+        providable_information_list.append(offer_providable_info)
+
+        for show in self.filtered_movie_showtimes:  # type: ignore [attr-defined]
+            id_at_providers = _build_stock_uuid(self.movie_information.id, self.venue, show["show_information"])
+            stock_providable_info = self.create_providable_info(
+                Stock, id_at_providers, datetime.utcnow(), id_at_providers
+            )
+            providable_information_list.append(stock_providable_info)
+
+        return providable_information_list
 
     def fill_object_attributes(self, pc_object: Model) -> None:
         if isinstance(pc_object, Product):
@@ -51,6 +75,9 @@ class CDSStocks(LocalProvider):
 
         if isinstance(pc_object, Offer):
             self.fill_offer_attributes(pc_object)
+
+        if isinstance(pc_object, Stock):
+            self.fill_stock_attributes(pc_object)
 
     def fill_product_attributes(self, cds_product: Product) -> None:
         cds_product.name = self.movie_information.title
@@ -83,6 +110,35 @@ class CDSStocks(LocalProvider):
         if is_new_offer_to_insert:
             cds_offer.id = get_next_offer_id_from_database()
             cds_offer.isDuo = self.isDuo
+
+        self.last_offer_id = cds_offer.id  # type: ignore [assignment]
+
+    def fill_stock_attributes(self, cds_stock: Stock):  # type: ignore [no-untyped-def]
+        cds_stock.offerId = self.last_offer_id  # type: ignore [assignment]
+
+        showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
+        showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
+        if showtime:
+            show_price = showtime["price"]
+            show: ShowCDS = showtime["show_information"]
+
+        local_tz = utils_date.get_department_timezone(self.venue.departementCode)
+        datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
+        bookingLimitDatetime = utils_date.get_day_start(datetime_in_utc.date(), pytz.timezone(local_tz))
+        cds_stock.beginningDatetime = datetime_in_utc
+
+        is_new_stock_to_insert = cds_stock.id is None
+        if is_new_stock_to_insert:
+            cds_stock.fieldsUpdated = []
+
+        if "bookingLimitDatetime" not in cds_stock.fieldsUpdated:
+            cds_stock.bookingLimitDatetime = bookingLimitDatetime
+
+        if "quantity" not in cds_stock.fieldsUpdated:
+            cds_stock.quantity = show.internet_remaining_place
+
+        if "price" not in cds_stock.fieldsUpdated:
+            cds_stock.price = show_price
 
     def update_from_movie_information(self, obj: Union[Offer, Product], movie_information: Movie) -> None:
         if movie_information.description:
@@ -125,6 +181,27 @@ class CDSStocks(LocalProvider):
         )
         return client_cds.get_movie_poster(image_url)
 
+    def _get_cds_shows(self) -> list[dict]:
+        if not self.apiUrl:
+            raise Exception("CDS API URL not configured in this env")
+        client_cds = CineDigitalServiceAPI(
+            cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            api_url=self.apiUrl,
+            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
+        )
+
+        shows = client_cds.get_shows()
+
+        shows_with_pass_culture_tariff = []
+        for show in shows:
+            min_price_voucher = client_cds.get_voucher_type_for_show(show)
+            if min_price_voucher is not None:
+                shows_with_pass_culture_tariff.append(
+                    {"show_information": show, "price": min_price_voucher.tariff.price}
+                )
+
+        return shows_with_pass_culture_tariff
+
 
 def get_next_product_id_from_database():  # type: ignore [no-untyped-def]
     sequence = Sequence("product_id_seq")
@@ -134,3 +211,35 @@ def get_next_product_id_from_database():  # type: ignore [no-untyped-def]
 def get_next_offer_id_from_database():  # type: ignore [no-untyped-def]
     sequence = Sequence("offer_id_seq")
     return db.session.execute(sequence)
+
+
+def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int) -> list[dict]:
+    return list(
+        filter(
+            lambda showtime: showtime["show_information"].media.id == movie_id,
+            showtimes_information,
+        )
+    )
+
+
+def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> Union[dict, None]:
+    for showtime in showtimes:
+        if _build_showtime_uuid(showtime["show_information"]) == showtime_uuid:
+            return showtime
+    return None
+
+
+def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):  # type: ignore [no-untyped-def]
+    return id_at_provider.split("#")[1]
+
+
+def _build_movie_uuid(movie_information_id: str, venue: Venue) -> str:
+    return f"{movie_information_id}%{venue.siret}"
+
+
+def _build_showtime_uuid(showtime_details: ShowCDS) -> str:
+    return f"{showtime_details.id}/{showtime_details.showtime}"
+
+
+def _build_stock_uuid(movie_information_id: str, venue: Venue, showtime_details: ShowCDS) -> str:
+    return f"{_build_movie_uuid(movie_information_id, venue)}#{_build_showtime_uuid(showtime_details)}"

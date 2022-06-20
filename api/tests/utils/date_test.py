@@ -1,15 +1,18 @@
 import datetime
+from zoneinfo import ZoneInfo
 
 import dateutil
 import pytest
 
 from pcapi.utils.date import CUSTOM_TIMEZONES
 from pcapi.utils.date import FrenchParserInfo
+from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import get_time_formatted_for_email
+from pcapi.utils.date import local_datetime_to_default_timezone
 
 
 class GetDateFormattedForEmailTest:
@@ -136,3 +139,27 @@ class FormatTimeInSecondToHumanReadableTest:
     def test_format_many_weeks(self):
         time_in_second = 60 * 60 * 24 * 7 * 2
         assert format_time_in_second_to_human_readable(time_in_second) == "2 semaines"
+
+
+class FormatDatetimeFromLocalTimezoneToUtcTest:
+    def test_should_convert_datetime_local_timezone_to_utc_timezone(self):
+        # Given
+        dt = datetime.datetime(2022, 6, 24, 12, 0)
+        local_tz = METROPOLE_TIMEZONE
+
+        # when
+        result = local_datetime_to_default_timezone(dt=dt, local_tz=local_tz)
+
+        # Then
+        assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)
+
+    def test_should_ignore_local_tz_when_datetime_already_have_a_timezone(self):
+        # Given
+        dt = datetime.datetime(2022, 6, 24, 12, 0, tzinfo=ZoneInfo(METROPOLE_TIMEZONE))
+        local_tz = "US/Eastern"
+
+        # when
+        result = local_datetime_to_default_timezone(dt=dt, local_tz=local_tz)
+
+        # Then
+        assert result == datetime.datetime(2022, 6, 24, 10, 0, tzinfo=datetime.timezone.utc)

@@ -3,7 +3,6 @@ import re
 from typing import Optional
 from typing import Union
 
-from dateutil import tz
 from dateutil.parser import parse
 from sqlalchemy import Sequence
 
@@ -21,8 +20,8 @@ from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.product import Product
-from pcapi.utils.date import DEFAULT_STORED_TIMEZONE
 from pcapi.utils.date import get_department_timezone
+from pcapi.utils.date import local_datetime_to_default_timezone
 
 
 DIGITAL_PROJECTION = "DIGITAL"
@@ -194,7 +193,7 @@ class AllocineStocks(LocalProvider):
         )
 
         local_tz = get_department_timezone(self.venue.departementCode)
-        date_in_utc = _format_date_from_local_timezone_to_utc(parsed_showtimes["startsAt"], local_tz)
+        date_in_utc = local_datetime_to_default_timezone(parsed_showtimes["startsAt"], local_tz)
         allocine_stock.beginningDatetime = date_in_utc
 
         is_new_stock_to_insert = allocine_stock.id is None
@@ -284,13 +283,6 @@ def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -
         if _build_showtime_uuid(showtime) == showtime_uuid:
             return showtime
     return None
-
-
-def _format_date_from_local_timezone_to_utc(date: datetime, local_tz: str) -> datetime:
-    from_zone = tz.gettz(local_tz)
-    to_zone = tz.gettz(DEFAULT_STORED_TIMEZONE)
-    date_in_tz = date.replace(tzinfo=from_zone)
-    return date_in_tz.astimezone(to_zone)
 
 
 def _get_showtimes_uuid_by_idAtProvider(id_at_provider: str):  # type: ignore [no-untyped-def]
