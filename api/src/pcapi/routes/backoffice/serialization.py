@@ -62,9 +62,9 @@ class PublicAccount(BaseModel):
     phoneNumber: typing.Optional[str]
     roles: list[users_models.UserRole]
     isActive: bool
-    address: str
+    address: typing.Optional[str]
     postalCode: typing.Optional[str]
-    city: str
+    city: typing.Optional[str]
 
 
 class PublicAccountSearchQuery(BaseModel):

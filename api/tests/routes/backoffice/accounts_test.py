@@ -47,15 +47,23 @@ def create_bunch_of_accounts():
     random = users_factories.UserFactory(
         firstName="Anne", lastName="Algézic", email="aa@example.com", phoneNumber="0606060606"
     )
+    no_address = users_factories.UserFactory(
+        firstName="Jean-Luc",
+        lastName="Delarue",
+        email="jld@example.com",
+        phoneNumber="00000000",
+        city=None,
+        address=None,
+    )
 
-    return underage, grant_18, pro, random
+    return underage, grant_18, pro, random, no_address
 
 
 class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_id(self, client):
         # given
-        underage, _, _, _ = create_bunch_of_accounts()
+        underage, _, _, _, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -80,7 +88,7 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_name(self, client):
         # given
-        _, grant_18, _, _ = create_bunch_of_accounts()
+        _, grant_18, _, _, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -105,7 +113,7 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_email(self, client):
         # given
-        _, _, _, random = create_bunch_of_accounts()
+        _, _, _, random, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -130,7 +138,7 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_phone(self, client):
         # given
-        _, _, _, random = create_bunch_of_accounts()
+        _, _, _, random, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -151,6 +159,21 @@ class PublicAccountSearchTest:
         assert found_user["phoneNumber"] == random.phoneNumber
         assert found_user["roles"] == []
         assert found_user["isActive"] is True
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_can_search_public_account_even_with_missing_city_address(self, client):
+        # given
+        _, _, _, _, no_address = create_bunch_of_accounts()
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q=no_address.phoneNumber),
+        )
+
+        # then
+        assert response.status_code == 200
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_search_public_account_without_permission(self, client):
@@ -247,7 +270,7 @@ class UpdatePublicAccountTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_update_public_account(self, client):
         # given
-        _, user, _, _ = create_bunch_of_accounts()
+        _, user, _, _, _ = create_bunch_of_accounts()
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
@@ -293,7 +316,7 @@ class UpdatePublicAccountTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_update_public_account_email(self, client):
         # given
-        user, _, _, _ = create_bunch_of_accounts()
+        user, _, _, _, _ = create_bunch_of_accounts()
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
@@ -359,7 +382,7 @@ class UpdatePublicAccountTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_update_public_account_invalid_email(self, client):
         # given
-        user, _, _, _ = create_bunch_of_accounts()
+        user, _, _, _, _ = create_bunch_of_accounts()
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
@@ -376,7 +399,7 @@ class UpdatePublicAccountTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_update_public_account_used_email(self, client):
         # given
-        user1, user2, _, _ = create_bunch_of_accounts()
+        user1, user2, _, _, _ = create_bunch_of_accounts()
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
@@ -393,7 +416,7 @@ class UpdatePublicAccountTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_update_public_account_phone_number(self, client):
         # given
-        _, user, _, _ = create_bunch_of_accounts()
+        _, user, _, _, _ = create_bunch_of_accounts()
         admin = users_factories.UserFactory()
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
@@ -431,7 +454,7 @@ class GetBeneficiaryCreditTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_beneficiary_credit(self, client):
         # given
-        _, grant_18, _, _ = create_bunch_of_accounts()
+        _, grant_18, _, _, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.READ_PUBLIC_ACCOUNT])
 
@@ -458,7 +481,7 @@ class GetBeneficiaryCreditTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_get_non_beneficiary_credit(self, client):
         # given
-        _, _, pro, random = create_bunch_of_accounts()
+        _, _, pro, random, _ = create_bunch_of_accounts()
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.READ_PUBLIC_ACCOUNT])
 
