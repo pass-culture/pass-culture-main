@@ -11,9 +11,16 @@ import {
   Typography,
 } from '@mui/material'
 import moment from 'moment'
-import React from 'react'
-import { useAuthenticated, useGetOne, useRedirect } from 'react-admin'
+import React, { useState } from 'react'
+import {
+  Identifier,
+  useAuthenticated,
+  useGetOne,
+  useRedirect,
+} from 'react-admin'
 import { useParams } from 'react-router-dom'
+
+import { eventMonitoring } from '../../libs/monitoring/sentry'
 
 import { BeneficiaryBadge } from './BeneficiaryBadge'
 import { CheckHistoryCard } from './CheckHistoryCard'
@@ -67,53 +74,47 @@ export const UserDetail = () => {
   useAuthenticated()
   const { id } = useParams() // this component is rendered in the /books/:id path
   const redirect = useRedirect()
-  const [value, setValue] = React.useState(1)
+  const [value, setValue] = useState(1)
+
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue)
   }
 
-  const { data, isLoading } = useGetOne(
+  const { data: userBaseInfo, isLoading } = useGetOne<UserBaseInfo>(
     'public_accounts',
-    { id },
+    { id: id as Identifier },
     // redirect to the list if the book is not found
     { onError: () => redirect('/public_users/search') }
   )
-  let subscriptionItems, idsCheckHistory, userData
 
   if (isLoading) {
     return <CircularProgress size={18} thickness={2} />
+  } else if (!userBaseInfo) {
+    eventMonitoring.captureException(new Error('NO_USER_BASE_INFO_LOADED'), {
+      extra: { id },
+    })
+    return <CircularProgress size={18} thickness={2} />
   }
-  const userBaseInfo: UserBaseInfo = {
-    address: data.address,
-    city: data.city,
-    dateOfBirth: data.dateOfBirth,
-    email: data.email,
-    firstName: data.firstName,
-    id: data.id,
-    lastName: data.lastName,
-    phoneNumber: data.phoneNumber,
-    postalCode: data.postalCode,
-  }
-  const activeBadge = <StatusBadge active={data.isActive} />
-  const beneficiaryBadge = <BeneficiaryBadge role={data.roles[0]} />
-  const creditProgression =
-    (data.userCredit.remainingCredit / data.userCredit.initialCredit) * 100
-  const digitalCreditProgression =
-    (data.userCredit.remainingCredit / data.userCredit.initialCredit) * 100
-  if (data.userHistory.subscriptions?.AGE18?.idCheckHistory?.length > 0) {
-    userData = data.userHistory.subscriptions.AGE18
-    if (userData) {
-      idsCheckHistory = userData.idCheckHistory
-      subscriptionItems = userData.subscriptionItems
-    }
-  } else if (
-    data.userHistory.subscriptions?.UNDERAGE?.idCheckHistory?.length > 0
-  ) {
-    userData = data.userHistory.subscriptions.UNDERAGE
-    if (userData) {
-      idsCheckHistory = userData.idCheckHistory
-      subscriptionItems = userData.subscriptionItems
-    }
+
+  const { remainingCredit, initialCredit } = userBaseInfo.userCredit
+  const { AGE18, UNDERAGE } = userBaseInfo.userHistory.subscriptions
+
+  const activeBadge = <StatusBadge active={userBaseInfo.isActive} />
+
+  const beneficiaryBadge = <BeneficiaryBadge role={userBaseInfo.roles[0]} />
+
+  const creditProgression = (remainingCredit / initialCredit) * 100
+
+  const digitalCreditProgression = (remainingCredit / initialCredit) * 100
+
+  let subscriptionItems, idsCheckHistory
+
+  if (AGE18?.idCheckHistory?.length > 0) {
+    idsCheckHistory = AGE18.idCheckHistory
+    subscriptionItems = AGE18.subscriptionItems
+  } else if (UNDERAGE?.idCheckHistory?.length > 0) {
+    idsCheckHistory = UNDERAGE.idCheckHistory
+    subscriptionItems = UNDERAGE.subscriptionItems
   }
 
   return (
@@ -132,8 +133,8 @@ export const UserDetail = () => {
                 <div>
                   <Typography variant="h5" gutterBottom component="div">
                     {userBaseInfo.lastName}&nbsp;{userBaseInfo.firstName} &nbsp;{' '}
-                    {data.isActive && activeBadge} &nbsp;{' '}
-                    {data.roles[0] && beneficiaryBadge}
+                    {userBaseInfo.isActive && activeBadge} &nbsp;{' '}
+                    {userBaseInfo.roles[0] && beneficiaryBadge}
                   </Typography>
                   <Typography variant="body1" gutterBottom component="div">
                     User ID : {userBaseInfo.id}
@@ -153,8 +154,10 @@ export const UserDetail = () => {
               <Grid item xs={6}>
                 <Typography variant="body2" gutterBottom component="div">
                   Crédité le :
-                  {data.userCredit &&
-                    moment(data.userCredit.dateCreated).format('D/MM/YYYY')}
+                  {userBaseInfo.userCredit &&
+                    moment(userBaseInfo.userCredit.dateCreated).format(
+                      'D/MM/YYYY'
+                    )}
                 </Typography>
               </Grid>
             </Grid>
@@ -177,7 +180,7 @@ export const UserDetail = () => {
         <Grid item xs={4}>
           <Card style={cardStyle}>
             <Typography variant={'h5'}>
-              {data.userCredit.remainingCredit}&euro;
+              {userBaseInfo.userCredit.remainingCredit}&euro;
             </Typography>
             <Stack
               direction={'row'}
@@ -191,7 +194,7 @@ export const UserDetail = () => {
             >
               <Typography variant={'body1'}>Crédit restant </Typography>
               <Typography variant={'body1'}>
-                {data.userCredit.initialCredit}&euro;
+                {userBaseInfo.userCredit.initialCredit}&euro;
               </Typography>
             </Stack>
             <LinearProgress
@@ -205,7 +208,7 @@ export const UserDetail = () => {
         <Grid item xs={4}>
           <Card style={cardStyle}>
             <Typography variant={'h5'}>
-              {data.userCredit.remainingDigitalCredit}&euro;
+              {userBaseInfo.userCredit.remainingDigitalCredit}&euro;
             </Typography>
             <Stack
               direction={'row'}
@@ -219,7 +222,7 @@ export const UserDetail = () => {
             >
               <Typography variant={'body1'}>Crédit digital restant </Typography>
               <Typography variant={'body1'}>
-                {data.userCredit.initialCredit}&euro;
+                {userBaseInfo.userCredit.initialCredit}&euro;
               </Typography>
             </Stack>
             <LinearProgress
@@ -272,11 +275,7 @@ export const UserDetail = () => {
           <Stack spacing={3}>
             <UserDetailsCard
               {...userBaseInfo}
-              firstIdCheckHistory={
-                idsCheckHistory && idsCheckHistory.length > 0
-                  ? idsCheckHistory[0]
-                  : null
-              }
+              firstIdCheckHistory={idsCheckHistory && idsCheckHistory[0]}
             />
 
             <Card style={cardStyle}>
