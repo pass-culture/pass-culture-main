@@ -2,14 +2,12 @@ import '@testing-library/jest-dom'
 import 'react-router-dom'
 
 import * as useNotification from 'components/hooks/useNotification'
-import * as yup from 'yup'
 
 import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
 import { render, screen, waitFor } from '@testing-library/react'
 
-import { Formik } from 'formik'
 import { MemoryRouter } from 'react-router'
 import { Mode } from 'core/OfferEducational'
 import { Provider } from 'react-redux'
@@ -30,19 +28,10 @@ jest.mock('react-router-dom', () => ({
 }))
 
 export const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) => {
-  const validationSchema = yup.object().shape({
-    visibility: yup.string(),
-  })
   render(
     <Provider store={configureTestStore()}>
       <MemoryRouter>
-        <Formik
-          initialValues={{}}
-          onSubmit={jest.fn()}
-          validationSchema={validationSchema}
-        >
-          <CollectiveOfferVisibility {...props} />
-        </Formik>
+        <CollectiveOfferVisibility {...props} />
       </MemoryRouter>
     </Provider>
   )

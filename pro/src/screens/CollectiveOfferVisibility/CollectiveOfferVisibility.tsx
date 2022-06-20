@@ -24,18 +24,45 @@ interface InstitutionOption extends SelectOption {
   city?: string
 }
 
+type FormikValues = {
+  visibility: 'all' | 'one'
+  institution: string
+  'search-institution': string
+}
+
 const CollectiveOfferVisibility = ({
   getInstitutions,
   mode,
   patchInstitution,
 }: CollectiveOfferVisibilityProps) => {
-  const formik = useFormik({
+  const onSubmit = async (values: FormikValues) => {
+    setButtonPressed(true)
+    const successUrl = `/offre/${offerId}/collectif/confirmation`
+
+    if (values.visibility === 'one') {
+      const result = await patchInstitution({
+        offerId,
+        institutionId: values.institution,
+      })
+      if (result.isOk) {
+        history.push(successUrl)
+      } else {
+        notify.error(result.message)
+        setButtonPressed(false)
+      }
+    } else {
+      // if visibility === 'all' nothing to save
+      history.push(successUrl)
+    }
+  }
+
+  const formik = useFormik<FormikValues>({
     initialValues: {
       visibility: 'all',
       institution: '',
       'search-institution': '',
     },
-    onSubmit: () => {},
+    onSubmit,
     validationSchema,
   })
 
@@ -81,27 +108,7 @@ const CollectiveOfferVisibility = ({
 
   return (
     <FormikProvider value={formik}>
-      <form
-        onSubmit={async () => {
-          setButtonPressed(true)
-          const successUrl = `/offre/${offerId}/collectif/confirmation`
-          if (formik.values.visibility === 'one') {
-            const result = await patchInstitution({
-              offerId,
-              institutionId: formik.values.institution,
-            })
-            if (result.isOk) {
-              history.push(successUrl)
-            } else {
-              notify.error(result.message)
-              setButtonPressed(false)
-            }
-          } else {
-            // if visibility === 'all' nothing to save
-            history.push(successUrl)
-          }
-        }}
-      >
+      <form onSubmit={formik.handleSubmit}>
         <FormLayout>
           <FormLayout.Section title="Visibilité de l’offre">
             <p className={styles['description-text']}>
@@ -144,7 +151,7 @@ const CollectiveOfferVisibility = ({
                   maxHeight={100}
                 />
                 {selectedInstitution && (
-                  <Banner type="light">
+                  <Banner type="light" className={styles['institution']}>
                     {selectedInstitution.label}
                     <br />
                     {`${selectedInstitution.postalCode} ${selectedInstitution.city}`}
