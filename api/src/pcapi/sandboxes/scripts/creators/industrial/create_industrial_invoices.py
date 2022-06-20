@@ -44,7 +44,12 @@ def create_specific_invoice():  # type: ignore [no-untyped-def]
         siret=business_unit.siret,
         businessUnit=business_unit,
         managingOfferer=offerer,
+        pricing_point="self",
+        reimbursement_point="self",
     )
+    bank_info.venue = venue
+    db.session.add(bank_info)
+    db.session.commit()
     thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
     thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
     book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)

@@ -105,6 +105,8 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
                 venueTypeCode=venue_type_code,
                 isPermanent=True,
                 businessUnit__name=offerer.name,
+                pricing_point="self" if siret else None,
+                reimbursement_point="self" if siret else None,
             )
             providers_factories.VenueProviderFactory(venue=venue)
 
