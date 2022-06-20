@@ -4,7 +4,13 @@ import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
 import {} from 'app/__spec__/__test_utils__/elements'
-import { AdageFrontRoles } from 'api/gen'
+import { api } from 'api/api'
+import {
+  AdageFrontRoles,
+  CollectiveOfferResponseModel,
+  OfferAddressType,
+  StudentLevels,
+} from 'api/gen'
 import {
   OffersComponent as Offers,
   OffersComponentProps,
@@ -13,12 +19,10 @@ import {
   AlgoliaQueryContextProvider,
   FacetFiltersContextProvider,
 } from 'app/providers'
-import { OfferType } from 'app/types/offers'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { ResultType } from 'utils/types'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getOffer: jest.fn(),
+jest.mock('api/api', () => ({
+  api: { getAdageIframeGetCollectiveOffer: jest.fn() },
 }))
 
 jest.mock('react-instantsearch-dom', () => {
@@ -34,7 +38,7 @@ const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
+const mockedPcapi = api as jest.Mocked<typeof api>
 
 const searchFakeResults: Hit<ResultType>[] = [
   {
@@ -81,9 +85,9 @@ const renderOffers = (props: OffersComponentProps) => {
 }
 
 describe('offers', () => {
-  let offerInParis: OfferType
-  let offerInCayenne: OfferType
-  let otherOffer: OfferType
+  let offerInParis: CollectiveOfferResponseModel
+  let offerInCayenne: CollectiveOfferResponseModel
+  let otherOffer: CollectiveOfferResponseModel
   let offersProps: OffersComponentProps
 
   beforeEach(() => {
@@ -93,15 +97,13 @@ describe('offers', () => {
       name: 'Une chouette à la mer',
       description: 'Une offre vraiment chouette',
       subcategoryLabel: 'Cinéma',
-      stocks: [
-        {
-          id: 825,
-          beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-          isBookable: true,
-          price: 140000,
-        },
-      ],
+      stock: {
+        id: 825,
+        beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+        bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+        isBookable: true,
+        price: 140000,
+      },
       venue: {
         id: 1,
         address: '1 boulevard Poissonnière',
@@ -123,6 +125,15 @@ describe('offers', () => {
       mentalDisabilityCompliant: true,
       audioDisabilityCompliant: true,
       motorDisabilityCompliant: true,
+      contactEmail: '',
+      contactPhone: '',
+      domains: [],
+      offerVenue: {
+        venueId: 'VENUE_ID',
+        otherAddress: '',
+        addressType: OfferAddressType.OffererVenue,
+      },
+      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
     }
 
     offerInCayenne = {
@@ -130,15 +141,13 @@ describe('offers', () => {
       description: 'Une offre vraiment coco',
       name: 'Coco channel',
       subcategoryLabel: 'Cinéma',
-      stocks: [
-        {
-          id: 826,
-          beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-          isBookable: true,
-          price: 80000,
-        },
-      ],
+      stock: {
+        id: 826,
+        beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        isBookable: true,
+        price: 80000,
+      },
       venue: {
         id: 1,
         address: '1 boulevard Poissonnière',
@@ -160,6 +169,15 @@ describe('offers', () => {
       mentalDisabilityCompliant: true,
       audioDisabilityCompliant: true,
       motorDisabilityCompliant: true,
+      contactEmail: '',
+      contactPhone: '',
+      domains: [],
+      offerVenue: {
+        venueId: 'VENUE_ID',
+        otherAddress: '',
+        addressType: OfferAddressType.OffererVenue,
+      },
+      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
     }
 
     otherOffer = {
@@ -167,15 +185,13 @@ describe('offers', () => {
       description: 'Une autre offre',
       name: 'Un autre titre',
       subcategoryLabel: 'Cinéma',
-      stocks: [
-        {
-          id: 827,
-          beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-          isBookable: true,
-          price: 3000,
-        },
-      ],
+      stock: {
+        id: 827,
+        beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        isBookable: true,
+        price: 3000,
+      },
       venue: {
         id: 1,
         address: '1 boulevard Poissonnière',
@@ -197,6 +213,15 @@ describe('offers', () => {
       mentalDisabilityCompliant: true,
       audioDisabilityCompliant: true,
       motorDisabilityCompliant: true,
+      contactEmail: '',
+      contactPhone: '',
+      domains: [],
+      offerVenue: {
+        venueId: 'VENUE_ID',
+        otherAddress: '',
+        addressType: OfferAddressType.OffererVenue,
+      },
+      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
     }
 
     offersProps = {
@@ -204,14 +229,17 @@ describe('offers', () => {
       hits: searchFakeResults,
       setIsLoading: jest.fn(),
       userRole: AdageFrontRoles.Redactor,
-      useNewAlgoliaIndex: false,
     }
   })
 
   it('should display two offers with their respective stocks when two bookable offers', async () => {
     // Given
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInParis
+    )
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInCayenne
+    )
 
     // When
     renderOffers(offersProps)
@@ -226,10 +254,16 @@ describe('offers', () => {
 
   it('should remove previous rendered offers on results update', async () => {
     // Given
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInParis
+    )
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInCayenne
+    )
     const { rerender } = renderOffers(offersProps)
-    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      otherOffer
+    )
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {
@@ -260,12 +294,16 @@ describe('offers', () => {
 
   it('should show most recent results and cancel previous request', async () => {
     // Given
-    mockedPcapi.getOffer.mockReturnValueOnce(
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockReturnValueOnce(
       new Promise(resolve => setTimeout(() => resolve(offerInParis), 500))
     )
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInCayenne
+    )
     const { rerender } = renderOffers(offersProps)
-    mockedPcapi.getOffer.mockResolvedValueOnce(otherOffer)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      otherOffer
+    )
     const otherSearchResult: Hit<ResultType> = {
       objectID: '481',
       offer: {
@@ -299,10 +337,12 @@ describe('offers', () => {
 
   it('should show a loader while waiting for response', async () => {
     // Given
-    mockedPcapi.getOffer.mockReturnValueOnce(
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockReturnValueOnce(
       new Promise(resolve => setTimeout(() => resolve(offerInParis), 500))
     )
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInCayenne
+    )
 
     // When
     renderOffers(offersProps)
@@ -317,8 +357,12 @@ describe('offers', () => {
   it('should display only non sold-out offers', async () => {
     // Given
     offerInParis.isSoldOut = true
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInParis
+    )
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInCayenne
+    )
 
     // When
     renderOffers(offersProps)
@@ -332,8 +376,12 @@ describe('offers', () => {
   it('should not display expired offer', async () => {
     // Given
     offerInParis.isExpired = true
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-    mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInParis
+    )
+    mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+      offerInCayenne
+    )
 
     // When
     renderOffers(offersProps)
@@ -363,8 +411,12 @@ describe('offers', () => {
       // Given
       offerInParis.isExpired = true
       offerInCayenne.isSoldOut = true
-      mockedPcapi.getOffer.mockResolvedValueOnce(offerInParis)
-      mockedPcapi.getOffer.mockResolvedValueOnce(offerInCayenne)
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+        offerInParis
+      )
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValueOnce(
+        offerInCayenne
+      )
 
       // When
       renderOffers(offersProps)
@@ -380,8 +432,12 @@ describe('offers', () => {
 
     it('when offers are not found', async () => {
       // Given
-      mockedPcapi.getOffer.mockRejectedValue('Offre inconnue')
-      mockedPcapi.getOffer.mockRejectedValue('Offre inconnue')
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockRejectedValue(
+        'Offre inconnue'
+      )
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockRejectedValue(
+        'Offre inconnue'
+      )
 
       // When
       renderOffers(offersProps)

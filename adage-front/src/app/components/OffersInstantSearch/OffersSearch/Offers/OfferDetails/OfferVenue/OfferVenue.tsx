@@ -1,7 +1,6 @@
 import React from 'react'
 
-import { OfferAddressType } from 'api/gen'
-import { OfferType } from 'app/types/offers'
+import { OfferAddressType, OfferVenueResponse } from 'api/gen'
 
 interface IOfferVenue {
   offerVenue?: {
@@ -9,7 +8,7 @@ interface IOfferVenue {
     otherAddress: string
     venueId: string
   }
-  venue: OfferType['venue']
+  venue: OfferVenueResponse
 }
 
 const OfferVenue = ({ offerVenue, venue }: IOfferVenue): JSX.Element => {
