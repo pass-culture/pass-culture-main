@@ -150,10 +150,8 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
           await postThumbnail(createdOfferId, thumbnailInfo)
 
           if (Object.keys(thumbnailInfo).length === 0) {
-            await goToStockAndPrice(createdOfferId)
+            return Promise.resolve(() => goToStockAndPrice(createdOfferId))
           }
-
-          return Promise.resolve()
         }
       } catch (error) {
         if (error && 'errors' in error) {
@@ -171,9 +169,9 @@ const OfferDetails = ({ isUserAdmin, offer, reloadOffer, userEmail }) => {
           }
           setFormErrors(newFormErrors)
           showErrorNotification()
-          return Promise.resolve()
         }
       }
+      return Promise.resolve(null)
     },
     [
       history,

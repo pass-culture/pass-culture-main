@@ -18,7 +18,7 @@ import {
   setOfferValues,
   sidebarDisplayed,
 } from '../helpers'
-import { render, screen } from '@testing-library/react'
+import { render, within } from '@testing-library/react'
 
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
@@ -26,6 +26,7 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import { apiV1 } from 'api/api'
 import { configureTestStore } from 'store/testUtils'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createOffer: jest.fn(),
@@ -65,7 +66,8 @@ const renderOffer = async (props, store, pathname, queryParams = null) => {
 const renderOfferCreation = async ({
   props,
   store,
-  subCategory,
+  categoryName,
+  subCategoryName,
   offererId = null,
   venueId = null,
 }) => {
@@ -82,12 +84,14 @@ const renderOfferCreation = async ({
     '/offre/creation/individuel',
     queryParams
   )
-  setOfferValues({ categoryId: subCategory.categoryId })
-  await getOfferInputForField('subcategoryId')
-  setOfferValues({ subcategoryId: subCategory.id })
-  await sidebarDisplayed()
+  const categorySelect = await getOfferInputForField('categoryId')
+  await userEvent.selectOptions(categorySelect, categoryName)
+  const subCategorySelect = await getOfferInputForField('subcategoryId')
+  await userEvent.selectOptions(subCategorySelect, subCategoryName)
+
+  const sidebar = await sidebarDisplayed()
   if (venueId) {
-    await screen.findByText('Où ?')
+    await within(sidebar).findByText('Où ?')
   }
 
   return rtlRenderReturn
@@ -115,7 +119,7 @@ export const initialize = async ({
     offer === null
   ) {
     throw Error(
-      'Test initialize() need a "offer", a"selectedVenue" or a "selectedVenueFromUrl" argument.'
+      'Test initialize() need a "offer", a "selectedVenue" or a "selectedVenueFromUrl" argument.'
     )
   }
 
@@ -160,6 +164,9 @@ export const initialize = async ({
     const selectedSubcategory = categories.subcategories.find(
       subCategory => subCategory.id === selectedSubcategoryId
     )
+    const selectedCategory = categories.categories.find(
+      category => category.id === selectedSubcategory.categoryId
+    )
 
     pcapi.getVenue.mockReturnValue(
       selectedVenue ? selectedVenue : selectedVenueFromUrl
@@ -168,20 +175,26 @@ export const initialize = async ({
     rtlRenderReturn = await renderOfferCreation({
       props: {},
       store,
-      subCategory: selectedSubcategory,
+      categoryName: selectedCategory.proLabel,
+      subCategoryName: selectedSubcategory.proLabel,
       offererId: selectedVenueFromUrl
         ? selectedVenueFromUrl.managingOffererId
         : null,
-      venueId: selectedVenueFromUrl ? selectedVenueFromUrl.id : null,
+      venueId: selectedVenueFromUrl
+        ? selectedVenueFromUrl.id
+        : selectedVenue.id,
     })
   }
 
   if (selectedVenue) {
-    setOfferValues({
+    await setOfferValues({
       offererId: selectedVenue.managingOffererId,
       venueId: selectedVenue.id,
     })
-    await screen.findByText('Où ?')
+    const sidebar = await sidebarDisplayed()
+    if (!selectedVenue.isVirtual) {
+      await within(sidebar).findByText('Où ?')
+    }
   }
 
   return rtlRenderReturn

@@ -5,19 +5,12 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { MemoryRouter, Route } from 'react-router'
 import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from '@testing-library/react'
-import {
   fieldLabels,
   findInputErrorForField,
   getOfferInputForField,
   setOfferValues,
 } from './helpers'
+import { render, screen, waitFor, within } from '@testing-library/react'
 
 import { DEFAULT_FORM_VALUES } from '../_constants'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
@@ -49,7 +42,7 @@ jest.mock('utils/windowMatchMedia', () => ({
 }))
 
 const renderOffers = async (props, store, queryParams = '') => {
-  await render(
+  const rtlUtils = render(
     <Provider store={store}>
       <MemoryRouter
         initialEntries={[
@@ -68,6 +61,12 @@ const renderOffers = async (props, store, queryParams = '') => {
       </MemoryRouter>
     </Provider>
   )
+
+  await screen.findByLabelText(fieldLabels.categoryId.label, {
+    exact: fieldLabels.categoryId.exact,
+  })
+
+  return rtlUtils
 }
 
 describe('offerDetails - Edition', () => {
@@ -233,7 +232,7 @@ describe('offerDetails - Edition', () => {
               exact: fieldLabels.mentalDisabilityCompliant.exact,
             }
           )
-          userEvent.click(mentalDisabilityCompliantCheckbox)
+          await userEvent.click(mentalDisabilityCompliantCheckbox)
 
           // Then
           accessibilityErrorNotification = screen.queryByText(
@@ -269,7 +268,7 @@ describe('offerDetails - Edition', () => {
         editedOffer.thumbUrl = 'http://example.net/active-image.png'
         await renderOffers({}, store)
 
-        userEvent.click(
+        await userEvent.click(
           await screen.findByTitle('Modifier l’image', { selector: 'button' })
         )
 
@@ -336,7 +335,7 @@ describe('offerDetails - Edition', () => {
         await renderOffers({}, store)
 
         // When
-        userEvent.click(
+        await userEvent.click(
           await screen.findByTitle('Ajouter une image', { selector: 'button' })
         )
 
@@ -837,8 +836,8 @@ describe('offerDetails - Edition', () => {
           nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My synchronized offer',
-          showType: 400,
-          showSubType: 401,
+          showType: '400',
+          showSubType: '401',
           description: 'Offer description',
           venue: editedOfferVenue,
           venueId: editedOfferVenue.id,
@@ -882,8 +881,8 @@ describe('offerDetails - Edition', () => {
           nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
-          showType: 400,
-          showSubType: 401,
+          showType: '400',
+          showSubType: '401',
           description: 'Offer description',
           venue: editedOfferVenue,
           venueId: editedOfferVenue.id,
@@ -1055,8 +1054,8 @@ describe('offerDetails - Edition', () => {
           nonHumanizedId: 111,
           subcategoryId: 'ID',
           name: 'My edited offer',
-          showType: 400,
-          showSubType: 401,
+          showType: '400',
+          showSubType: '401',
           description: 'Offer description',
           venue: editedOfferVenue,
           venueId: editedOfferVenue.id,
@@ -1118,10 +1117,11 @@ describe('offerDetails - Edition', () => {
         jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
         await renderOffers(props, store)
 
-        // when
-        await act(async () => {
-          await setOfferValues({ receiveNotificationEmails: true })
-        })
+        const emailsOptInCheckbox = await screen.findByLabelText(
+          fieldLabels['receiveNotificationEmails'].label,
+          { exact: true }
+        )
+        await userEvent.click(emailsOptInCheckbox)
 
         // then
         await waitFor(() =>
@@ -1156,11 +1156,12 @@ describe('offerDetails - Edition', () => {
       // When
       await setOfferValues({ subcategoryId: editValues.subcategoryId })
       await setOfferValues(editValues)
+
       const newEditedOffer = { ...editedOffer, ...editValues }
       jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(newEditedOffer)
-      fireEvent.click(await screen.findByText('Enregistrer'))
-      fireEvent.click(screen.getByText('Stock et prix'))
-      fireEvent.click(await screen.findByText("Détails de l'offre"))
+      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(screen.getByText('Stock et prix'))
+      await userEvent.click(await screen.findByText("Détails de l'offre"))
 
       // Then
       await expect(getOfferInputForField('name')).resolves.toHaveValue(
@@ -1221,7 +1222,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
 
       // Then
       await waitFor(() =>
@@ -1260,13 +1261,13 @@ describe('offerDetails - Edition', () => {
       }
       jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
       await renderOffers(props, store)
-      const submitButton = await screen.findByText('Enregistrer')
+
+      const submitButton = screen.getByText('Enregistrer')
 
       // When
-      userEvent.click(submitButton)
+      await userEvent.click(submitButton)
 
       // Then
-      await waitFor(() => expect(submitButton).toBeDisabled())
       const successNotification = await screen.findByText(
         'Votre offre a bien été modifiée'
       )
@@ -1316,7 +1317,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
 
       // Then
       await waitFor(() =>
@@ -1363,7 +1364,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
 
       // Then
       await waitFor(() =>
@@ -1402,9 +1403,9 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      await setOfferValues({ author: DEFAULT_FORM_VALUES.author })
+      await setOfferValues({ author: DEFAULT_FORM_VALUES['author'] })
 
-      // Then
+      // // Then
       await userEvent.click(await screen.findByText('Enregistrer'))
       await waitFor(() =>
         expect(pcapi.updateOffer).toHaveBeenCalledWith(
@@ -1458,7 +1459,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ author: DEFAULT_FORM_VALUES.author })
 
       // Then
-      userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
 
       await waitFor(() =>
         expect(pcapi.updateOffer).toHaveBeenCalledWith(
@@ -1498,7 +1499,7 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ receiveNotificationEmails: false })
 
       // When
-      userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
 
       // Then
       await waitFor(() =>
@@ -1531,12 +1532,10 @@ describe('offerDetails - Edition', () => {
       const emailInput = await screen.findByLabelText(
         'Email auquel envoyer les notifications :'
       )
-      fireEvent.change(emailInput, {
-        target: { value: '' },
-      })
+      await userEvent.clear(emailInput)
 
       // When
-      userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
 
       // Then
       const bookingEmailInput = await findInputErrorForField('bookingEmail')
@@ -1605,7 +1604,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      fireEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(await screen.findByText('Enregistrer'))
 
       // Then
       const successNotification = await screen.findByText(
@@ -1619,7 +1618,11 @@ describe('offerDetails - Edition', () => {
     it('should call computeOffersUrl with proper params', async () => {
       // Given
       const testStore = {
-        data: { users: [{ publicName: 'François', isAdmin: false }] },
+        data: {
+          users: [
+            { publicName: 'François', isAdmin: false, email: 'test@toto.com' },
+          ],
+        },
         offers: {
           searchFilters: {
             name: 'test',
@@ -1652,7 +1655,7 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      userEvent.click(
+      await userEvent.click(
         await screen.findByRole('link', { name: 'Annuler et quitter' })
       )
 
@@ -1666,7 +1669,11 @@ describe('offerDetails - Edition', () => {
     it('should redirect to offers page', async () => {
       // Given
       store = configureTestStore({
-        data: { users: [{ publicName: 'François', isAdmin: false }] },
+        data: {
+          users: [
+            { publicName: 'François', isAdmin: false, email: 'test@toto.com' },
+          ],
+        },
         offers: {
           searchFilters: {},
         },
