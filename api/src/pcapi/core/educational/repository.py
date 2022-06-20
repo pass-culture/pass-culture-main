@@ -54,7 +54,6 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 
 
 COLLECTIVE_BOOKING_STATUS_LABELS = {
@@ -458,30 +457,7 @@ def get_collective_offers_for_filters(
         period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
         period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
-    query = query.order_by(educational_models.CollectiveOffer.id.desc())
-
-    is_new_model_enabled = FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active()
-    if not is_new_model_enabled:
-        query = query.filter(educational_models.CollectiveOffer.offerId.isnot(None))
-
-    offers = (
-        query.options(
-            joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer)
-        )
-        .options(
-            joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
-                educational_models.CollectiveStock.collectiveBookings
-            )
-        )
-        .options(joinedload(educational_models.CollectiveOffer.institution))
-        .limit(offers_limit)
-        .all()
-    )
-
-    if not is_new_model_enabled:
-        offers = [offer for offer in offers if offer.collectiveStock.stockId is not None]
-
-    return offers
+    return query.order_by(educational_models.CollectiveOffer.id.desc())
 
 
 def get_collective_offers_template_for_filters(
@@ -512,9 +488,6 @@ def get_collective_offers_template_for_filters(
         return []
 
     query = query.order_by(educational_models.CollectiveOfferTemplate.id.desc())
-
-    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        query = query.filter(educational_models.CollectiveOfferTemplate.offerId.isnot(None))
 
     offers = (
         query.options(
