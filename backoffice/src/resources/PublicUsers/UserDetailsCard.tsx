@@ -16,10 +16,11 @@ import { dataProvider } from '../../providers/dataProvider'
 
 import { CheckHistory, UserBaseInfo } from './types'
 
-export const UserDetailsCard = (
-  user: UserBaseInfo,
+type Props = {
+  user: UserBaseInfo
   firstIdCheckHistory: CheckHistory
-) => {
+}
+export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
   const notify = useNotify()
 
   const [editable, setEditable] = useState(false)
