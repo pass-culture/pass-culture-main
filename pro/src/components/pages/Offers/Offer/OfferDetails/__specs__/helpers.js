@@ -1,4 +1,3 @@
-import { fireEvent } from '@testing-library/dom'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
@@ -54,7 +53,7 @@ export const queryInputErrorForField = fieldName => {
   return screen.queryByTestId(`input-error-field-${fieldName}`)
 }
 
-export const setOfferValues = values => {
+export const setOfferValues = async values => {
   const checkboxes = [
     'audioDisabilityCompliant',
     'mentalDisabilityCompliant',
@@ -77,10 +76,14 @@ export const setOfferValues = values => {
       } else {
         await userEvent.click(screen.getByLabelText('Aucune'))
       }
+    } else if (input.type.includes('select')) {
+      await userEvent.selectOptions(input, value)
     } else if (field === 'durationMinutes') {
       await userEvent.type(input, value)
+    } else if (value === '') {
+      await userEvent.clear(input)
     } else {
-      fireEvent.change(input, { target: { value } })
+      await userEvent.type(input, value)
     }
 
     return input
@@ -89,9 +92,9 @@ export const setOfferValues = values => {
   const modifiedInputs = {}
   for (const fieldName in values) {
     if (fieldName === 'extraData') {
-      modifiedInputs[fieldName] = setOfferValues(values.extraData)
+      modifiedInputs[fieldName] = await setOfferValues(values.extraData)
     } else {
-      modifiedInputs[fieldName] = setFormValueForField(
+      modifiedInputs[fieldName] = await setFormValueForField(
         fieldName,
         values[fieldName]
       )
@@ -101,7 +104,5 @@ export const setOfferValues = values => {
   return Promise.resolve(modifiedInputs)
 }
 
-export const sidebarDisplayed = async () => {
-  await screen.findByText('Ajouter une image')
-  return Promise.resolve(null)
-}
+export const sidebarDisplayed = async () =>
+  await screen.findByTestId('offer-preview-section')

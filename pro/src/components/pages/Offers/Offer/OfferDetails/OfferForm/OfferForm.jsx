@@ -583,7 +583,11 @@ const OfferForm = ({
           submittedValues.withdrawalDelay = null
         }
 
-        await onSubmit(submittedValues)
+        const nextStepRedirect = await onSubmit(submittedValues)
+        if (nextStepRedirect !== null) {
+          await nextStepRedirect()
+          return
+        }
       } else {
         showErrorNotification()
       }
