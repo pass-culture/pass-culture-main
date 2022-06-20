@@ -5,13 +5,11 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.core.testing import assert_num_queries
-from pcapi.core.testing import override_features
 from pcapi.utils.date import format_into_utc_date
 
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_get_collective_bookings(self, client) -> None:  # type: ignore [no-untyped-def]
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -137,7 +135,6 @@ class Returns200Test:
             ]
         }
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_get_collective_bookings_filter_UAI(self, client) -> None:  # type: ignore [no-untyped-def]
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -214,7 +211,6 @@ class Returns200Test:
             ]
         }
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_get_collective_bookings_filter_year_id(self, client) -> None:  # type: ignore [no-untyped-def]
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -291,7 +287,6 @@ class Returns200Test:
             ]
         }
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_get_collective_bookings_filter_redactor_email(self, client) -> None:  # type: ignore [no-untyped-def]
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
@@ -368,7 +363,6 @@ class Returns200Test:
             ]
         }
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_get_collective_bookings_filter_status(self, client) -> None:  # type: ignore [no-untyped-def]
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()

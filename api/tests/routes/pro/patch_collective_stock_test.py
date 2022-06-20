@@ -10,7 +10,6 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
@@ -104,7 +103,6 @@ class Return200Test:
         assert len(adage_api_testing.adage_requests) == 0
 
     @override_settings(ADAGE_API_URL="https://adage_base_url")
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_edit_collective_stock_with_pending_booking(self, client):
         # Given
         stock = educational_factories.CollectiveStockFactory(

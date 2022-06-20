@@ -14,13 +14,11 @@ from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.testing import override_features
 
 
 @pytest.mark.usefixtures("db_session")
 @freeze_time("2022-11-17 15:00:00")
 class Returns200Test:
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_refuse_collective_booking(
         self,
         client: Any,

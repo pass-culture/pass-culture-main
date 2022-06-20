@@ -826,35 +826,6 @@ class CreateEducationalOfferStocksTest:
         }
         assert models.Stock.query.count() == 0
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=False)
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
-        self,
-        mocked_set_offer_status_based_on_fraud_criteria,
-        mocked_send_first_venue_approved_offer_email_to_pro,
-        mocked_offer_creation_notification_to_admin,
-    ):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.EducationalEventOfferFactory(validation=models.OfferValidationStatus.DRAFT)
-        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
-            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            totalPrice=1500,
-            numberOfTickets=38,
-        )
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = models.OfferValidationStatus.APPROVED
-
-        # When
-        api.create_educational_stock(stock_data=created_stock_data, user=user)
-
-        # Then
-        mocked_offer_creation_notification_to_admin.assert_called_once_with(offer)
-        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
-
     @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
     @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
