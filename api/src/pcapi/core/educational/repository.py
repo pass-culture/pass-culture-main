@@ -152,55 +152,6 @@ def get_confirmed_collective_bookings_amount(
     return query.first().amount or Decimal(0)
 
 
-def find_educational_booking_by_id(
-    educational_booking_id: int,
-) -> Optional[educational_models.EducationalBooking]:
-    return (
-        educational_models.EducationalBooking.query.filter(
-            educational_models.EducationalBooking.id == educational_booking_id
-        )
-        .options(
-            joinedload(educational_models.EducationalBooking.booking, innerjoin=True)
-            .joinedload(Booking.stock, innerjoin=True)
-            .joinedload(Stock.offer, innerjoin=True)
-            .load_only(Offer.name)
-            .joinedload(Offer.venue, innerjoin=True)
-            .load_only(Venue.name)
-        )
-        .options(
-            joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True).load_only(
-                educational_models.EducationalRedactor.email,
-                educational_models.EducationalRedactor.firstName,
-                educational_models.EducationalRedactor.lastName,
-            )
-        )
-        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
-        .one_or_none()
-    )
-
-
-def find_collective_booking_by_booking_id(booking_id: int) -> Optional[educational_models.CollectiveBooking]:
-    return (
-        CollectiveBooking.query.filter(educational_models.CollectiveBooking.bookingId == booking_id)
-        .options(
-            joinedload(educational_models.CollectiveBooking.collectiveStock, innerjoin=True)
-            .joinedload(educational_models.CollectiveStock.collectiveOffer, innerjoin=True)
-            .load_only(educational_models.CollectiveOffer.name)
-            .joinedload(educational_models.CollectiveOffer.venue, innerjoin=True)
-            .load_only(Venue.name)
-        )
-        .options(joinedload(educational_models.CollectiveBooking.educationalInstitution, innerjoin=True))
-        .options(
-            joinedload(educational_models.CollectiveBooking.educationalRedactor, innerjoin=True).load_only(
-                educational_models.EducationalRedactor.email,
-                educational_models.EducationalRedactor.firstName,
-                educational_models.EducationalRedactor.lastName,
-            )
-        )
-        .one_or_none()
-    )
-
-
 def find_collective_booking_by_id(booking_id: int) -> Optional[educational_models.CollectiveBooking]:
     return (
         CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
