@@ -703,7 +703,7 @@ describe('screen Offers', () => {
   })
 
   describe('offers selection', () => {
-    it.skip('should display actionsBar when at least one offer is selected', async () => {
+    it('should display actionsBar when at least one offer is selected', async () => {
       // Given
       render(
         <Provider store={store}>
