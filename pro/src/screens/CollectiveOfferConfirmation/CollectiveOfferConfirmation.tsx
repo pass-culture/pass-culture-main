@@ -11,7 +11,6 @@ interface ICollectiveOfferConfirmationProps {
   offererId?: string | null
   offerStatus?: OfferStatus
   isShowcase?: boolean
-  enableIndividualAndCollectiveSeparation: boolean
 }
 
 const activeOffer = {
@@ -70,7 +69,6 @@ const CollectiveOfferConfirmation = ({
   offererId,
   offerStatus,
   isShowcase,
-  enableIndividualAndCollectiveSeparation,
 }: ICollectiveOfferConfirmationProps): JSX.Element => {
   const { title, description, Icon } = mapOfferStatusToData(
     offerStatus,
@@ -93,9 +91,7 @@ const CollectiveOfferConfirmation = ({
       <div className={styles['confirmation-actions']}>
         <Link
           className={cn(styles['confirmation-action'], 'secondary-link')}
-          to={`/offres${
-            enableIndividualAndCollectiveSeparation ? '/collectives' : ''
-          }`}
+          to="/offres/collectives"
         >
           Voir mes offres
         </Link>
