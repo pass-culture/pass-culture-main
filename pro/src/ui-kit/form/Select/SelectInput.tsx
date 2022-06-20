@@ -14,22 +14,29 @@ interface ISelectInputProps {
   options: Option[]
   disabled?: boolean
   hasError?: boolean
+  hasDescription?: boolean
   value: string
 }
 
 const SelectInput = ({
   hasError = false,
+  hasDescription = false,
   defaultOption = null,
   name,
   disabled,
   options,
   ...field
 }: ISelectInputProps): JSX.Element => (
-  <div className={styles['select-input-wrapper']}>
+  <div
+    className={cn(styles['select-input-wrapper'], {
+      [styles['has-description']]: hasDescription,
+    })}
+  >
     <select
       aria-invalid={hasError}
       className={cn(styles['select-input'], {
         [styles['has-error']]: hasError,
+        [styles['has-description']]: hasDescription,
         [styles['select-input-placeholder']]: field.value === '',
       })}
       disabled={disabled}
