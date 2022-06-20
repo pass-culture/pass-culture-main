@@ -45,6 +45,7 @@ const CollectiveOfferConfirmation = (): JSX.Element => {
       isShowcase={offer?.isShowcase}
       offerStatus={offer?.status}
       offererId={offer?.managingOffererId}
+      institutionName={offer?.institution?.name}
     />
   )
 }
