@@ -35,6 +35,7 @@ export const getStockCollectiveOfferAdapter: GetStockCollectiveOfferAdapter =
           isEducational: true,
           isShowcase: false,
           offerId: offer.offerId,
+          institution: offer.institution,
         },
       }
     } catch (error) {
