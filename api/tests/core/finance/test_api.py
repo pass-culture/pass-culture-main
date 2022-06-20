@@ -33,7 +33,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.testing import clean_temporary_files
-from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
@@ -233,7 +232,6 @@ class PriceBookingTest:
 
 
 class PriceCollectiveBookingTest:
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_basics(self):
         collective_booking = UsedCollectiveBookingFactory(collectiveStock__price=10)
         pricing = api.price_booking(collective_booking)
@@ -247,7 +245,6 @@ class PriceCollectiveBookingTest:
         assert pricing.customRule is None
         assert pricing.revenue == 0
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_pricing_lines(self):
         booking1 = UsedCollectiveBookingFactory(
             collectiveStock__price=19_999,
@@ -273,7 +270,6 @@ class PriceCollectiveBookingTest:
         assert pricing2.lines[1].category == models.PricingLineCategory.OFFERER_CONTRIBUTION
         assert pricing2.lines[1].amount == 0
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_price_free_booking(self):
         booking = UsedCollectiveBookingFactory(
             collectiveStock__price=0,
@@ -282,7 +278,6 @@ class PriceCollectiveBookingTest:
         assert models.Pricing.query.count() == 1
         assert pricing.amount == 0
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_accrue_revenue(self):
         booking = UsedCollectiveBookingFactory(
             collectiveStock__price=10,
@@ -290,25 +285,21 @@ class PriceCollectiveBookingTest:
         pricing = api.price_booking(booking)
         assert pricing.revenue == 0
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_price_booking_that_is_already_priced(self):
         existing = factories.CollectivePricingFactory()
         pricing = api.price_booking(existing.collectiveBooking)
         assert pricing == existing
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_price_booking_that_is_not_used(self):
         booking = CollectiveBookingFactory()
         pricing = api.price_booking(booking)
         assert pricing is None
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_price_booking_checks_business_unit(self):
         booking = UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue__businessUnit__siret=None)
         pricing = api.price_booking(booking)
         assert pricing is None
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_price_booking_ignores_missing_bank_information(self):
         booking = UsedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
@@ -733,7 +724,6 @@ class PriceBookingsTest:
 class PriceBookingsWithNewCollectiveModelsTest:
     few_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_basics(self):
         booking = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
         educational_booking = bookings_factories.UsedEducationalBookingFactory(dateUsed=self.few_minutes_ago)
@@ -743,7 +733,6 @@ class PriceBookingsWithNewCollectiveModelsTest:
         assert len(educational_booking.pricings) == 0
         assert len(collective_booking.pricings) == 1
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_error_on_a_booking_does_not_block_other_bookings(self):
         booking1 = create_booking_with_undeletable_dependent(date_used=self.few_minutes_ago)
         booking2 = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
@@ -755,7 +744,6 @@ class PriceBookingsWithNewCollectiveModelsTest:
         assert len(booking2.pricings) == 1
         assert len(collective_booking1.pricings) == 1
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_price_even_without_accepted_bank_info(self):
         booking = bookings_factories.UsedBookingFactory(
             dateUsed=self.few_minutes_ago,
@@ -897,7 +885,6 @@ class GenerateCashflowsTest:
 
         assert models.Cashflow.query.count() == 2
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_create_cashflow_for_collective_bookings_but_not_educational_booking_if_ff_is_enabled(self):
         now = datetime.datetime.utcnow()
         business_unit1 = factories.BusinessUnitFactory(siret="85331845900023")
@@ -1023,7 +1010,6 @@ def test_generate_business_units_file():
 
 
 @clean_temporary_files
-@override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
 def test_generate_new_payments_file():
     used_date = datetime.datetime(2020, 1, 2)
     # This pricing belong to a business unit whose venue is the same
@@ -1666,7 +1652,6 @@ class GenerateInvoiceTest:
         assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_update_statuses_when_new_model_is_enabled(self):
         booking1 = bookings_factories.UsedEducationalBookingFactory(
             stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1)
@@ -1840,7 +1825,6 @@ class GenerateInvoiceHtmlTest:
 
         self.generate_and_compare_invoice(stocks, business_unit, venue)
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_basics_with_new_collective_model(self, invoice_data):
         business_unit, stocks, venue = invoice_data
         only_collective_venue = offerers_factories.VenueFactory(businessUnit=business_unit, name="Coiffeur collecTIF")
