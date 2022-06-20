@@ -1,8 +1,8 @@
-from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
 from operator import attrgetter
+import typing
 from typing import List
 from typing import Optional
 
@@ -539,22 +539,37 @@ def get_expired_offers(interval: List[datetime]) -> BaseQuery:
     )
 
 
-def find_today_event_stock_ids_metropolitan_france(today_min: Optional[datetime] = None) -> set[int]:
-    """
-    Find stocks linked to offers that happen today (and that are not
-    cancelled).
-    """
-    if not today_min:
-        today_min = datetime.utcnow()
-    today_max = datetime.combine(date.today(), time.max)
-
+def find_today_event_stock_ids_metropolitan_france(today_min: datetime, today_max: datetime) -> set[int]:
     not_overseas_france = and_(
         not_(Venue.departementCode.startswith("97")),
         not_(Venue.departementCode.startswith("98")),
     )
 
+    return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, not_overseas_france)
+
+
+def find_today_event_stock_ids_from_departments(
+    today_min: datetime,
+    today_max: datetime,
+    postal_codes_prefixes: typing.Any,
+) -> set[int]:
+    departments = and_(*[Venue.departementCode.startswith(code) for code in postal_codes_prefixes])
+    return _find_today_event_stock_ids_filter_by_departments(today_min, today_max, departments)
+
+
+def _find_today_event_stock_ids_filter_by_departments(
+    today_min: datetime,
+    today_max: datetime,
+    departments_filter: typing.Any,
+) -> set[int]:
+    """
+    Find stocks linked to offers that:
+        * happen today;
+        * are not cancelled;
+        * matches the `departments_filter`.
+    """
     base_query = find_event_stocks_day(today_min, today_max)
-    query = base_query.join(Venue).filter(not_overseas_france).with_entities(Stock.id)
+    query = base_query.join(Venue).filter(departments_filter).with_entities(Stock.id)
 
     return {stock.id for stock in query}
 

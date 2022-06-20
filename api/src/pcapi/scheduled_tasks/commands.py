@@ -1,10 +1,12 @@
 import datetime
 import logging
 
+import click
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 import pcapi.core.bookings.api as bookings_api
+from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
 from pcapi.core.bookings.external.booking_notifications import send_today_events_notifications_metropolitan_france
 import pcapi.core.bookings.repository as bookings_repository
@@ -173,11 +175,26 @@ def send_yesterday_event_offers_notifications() -> None:
 @log_cron_with_transaction
 def send_today_events_notifications_metropolitan_france_command() -> None:
     """
-    Find bookings (grouped by stocks) that occur today in metropolitan
-    France but not the morning (11h UTC -> 12h/13h local time), and
-    send notification to all the user to remind them of the event.
+    Find bookings that occur today in metropolitan France and send
+    notification to all the user to remind them of the event to remind
+    the users of the incoming event
     """
     send_today_events_notifications_metropolitan_france()
+
+
+@blueprint.cli.command("send_today_events_notifications_overseas_france")
+@log_cron_with_transaction
+@click.option("--utc-mean-offset", help="UTC offset to use (can be negative)", type=int)
+@click.option("--departments", help="target departments (list of str)", type=list)
+def send_today_events_notifications_overseas_france(utc_mean_offset: int, departments: list[str]) -> None:
+    """
+    Find bookings (grouped by stocks) that occur today in overseas
+    France departments and send notifications to remind the users
+    of the incoming event
+    """
+    booking_notifications.send_today_events_notifications_overseas(
+        utc_mean_offset=utc_mean_offset, departments=departments
+    )
 
 
 @blueprint.cli.command("send_email_reminder_7_days_before_event")
