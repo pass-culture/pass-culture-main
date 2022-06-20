@@ -289,8 +289,8 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
-    stock: Optional[GetCollectiveOfferCollectiveStockResponseModel] = Field(alias="collectiveStock")
-    educationalInstitution: Optional[EducationalInstitutionResponseModel]
+    collectiveStock: Optional[GetCollectiveOfferCollectiveStockResponseModel]
+    institution: Optional[EducationalInstitutionResponseModel]
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
