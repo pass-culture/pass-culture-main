@@ -20,6 +20,7 @@ def create_show_cds(
     showtime: datetime.datetime = datetime.datetime.utcnow(),
     shows_tariff_pos_type_ids=None,
     screen_id: int = 50,
+    media_id: int = 52,
 ) -> cds_serializers.ShowCDS:
     if shows_tariff_pos_type_ids is None:
         shows_tariff_pos_type_ids = []
@@ -35,6 +36,7 @@ def create_show_cds(
             for show_tariff_id in shows_tariff_pos_type_ids
         ],
         screen=cds_serializers.IdObjectCDS(id=screen_id),
+        media=cds_serializers.IdObjectCDS(id=media_id),
     )
 
 
@@ -75,6 +77,7 @@ class CineDigitalServiceGetShowTest:
                     {"tariffid": {"id": 2}},
                 ],
                 "screenid": {"id": 10},
+                "mediaid": {"id": 52},
             },
             {
                 "id": 2,
@@ -87,6 +90,7 @@ class CineDigitalServiceGetShowTest:
                     {"tariffid": {"id": 96}},
                 ],
                 "screenid": {"id": 10},
+                "mediaid": {"id": 52},
             },
             {
                 "id": 3,
@@ -97,6 +101,7 @@ class CineDigitalServiceGetShowTest:
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
                 "screenid": {"id": 20},
+                "mediaid": {"id": 52},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -124,6 +129,7 @@ class CineDigitalServiceGetShowTest:
                 "is_deleted": False,
                 "showsTariffPostypeCollection": [{"tariffid": {"id": 96}}],
                 "screenid": {"id": 10},
+                "mediaid": {"id": 52},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -159,6 +165,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                     {"tariffid": {"id": 2}},
                 ],
                 "screenid": {"id": 10},
+                "mediaid": {"id": 52},
             },
             {
                 "id": 2,
@@ -171,6 +178,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                     {"tariffid": {"id": 2}},
                 ],
                 "screenid": {"id": 10},
+                "mediaid": {"id": 52},
             },
             {
                 "id": 3,
@@ -183,6 +191,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
                     {"tariffid": {"id": 2}},
                 ],
                 "screenid": {"id": 10},
+                "mediaid": {"id": 52},
             },
         ]
         mocked_get_resource.return_value = json_shows
@@ -611,6 +620,7 @@ class CineDigitalServiceGetVoucherForShowTest:
             showtime=datetime.datetime.utcnow(),
             shows_tariff_pos_type_collection=[cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=5))],
             screen=cds_serializers.IdObjectCDS(id=1),
+            media=cds_serializers.IdObjectCDS(id=52),
         )
         json_voucher_types = [
             {"id": 1, "code": "TESTCODE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},
@@ -641,6 +651,7 @@ class CineDigitalServiceGetVoucherForShowTest:
                 cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=2)),
             ],
             screen=cds_serializers.IdObjectCDS(id=1),
+            media=cds_serializers.IdObjectCDS(id=52),
         )
         json_voucher_types = [
             {"id": 1, "code": "PSCULTURE", "tariffid": {"id": 2, "price": 5, "active": True, "labeltariff": ""}},

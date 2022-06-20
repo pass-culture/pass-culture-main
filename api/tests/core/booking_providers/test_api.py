@@ -101,6 +101,7 @@ class GetShowStockTest:
             showtime=datetime.utcnow(),
             shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
             screen=IdObjectCDS(id=2),
+            media=IdObjectCDS(id=1),
         )
 
         # When

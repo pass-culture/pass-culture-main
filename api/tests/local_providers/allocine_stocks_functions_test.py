@@ -5,7 +5,6 @@ import pytest
 
 from pcapi.local_providers.allocine.allocine_stocks import _filter_only_digital_and_non_experience_showtimes
 from pcapi.local_providers.allocine.allocine_stocks import _find_showtime_by_showtime_uuid
-from pcapi.local_providers.allocine.allocine_stocks import _format_date_from_local_timezone_to_utc
 from pcapi.local_providers.allocine.allocine_stocks import _format_poster_url
 from pcapi.local_providers.allocine.allocine_stocks import _get_showtimes_uuid_by_idAtProvider
 from pcapi.local_providers.allocine.allocine_stocks import _parse_movie_duration
@@ -250,20 +249,6 @@ class FormatPosterUrlTest:
         assert formatted_url == "https://fr.web.img4.acsta.net/pictures/19/07/23/15/55/2940058.jpg"
 
 
-class FormatDateFromLocalTimezoneToUtcTest:
-    def test_should_convert_date_to_utc_timezone(self):
-        # Given
-        local_date = datetime(2019, 12, 3, 20, 0)
-        local_tz = "America/Cayenne"
-
-        # When
-        date_in_utc = _format_date_from_local_timezone_to_utc(local_date, local_tz)
-
-        # Then
-        assert date_in_utc.hour == 23
-        assert date_in_utc.tzname() == "UTC"
-
-
 class FilterOnlyDigitalAndNonExperiencedShowtimesTest:
     def test_should_filter_only_digital_and_non_experience_showtimes(self):
         # Given
@@ -315,20 +300,6 @@ class GetShowtimeUUIDFromIdAtProviderTest:
 
         # Then
         assert showtime_uuid == "LOCAL/2019-12-04T18:00:00"
-
-
-class FormatNaiveDateToUtcTest:
-    def test_should_convert_date_to_utc_timezone(self):
-        # Given
-        local_date = datetime(2019, 12, 3, 20, 0)
-        local_tz = "America/Cayenne"
-
-        # When
-        date_in_utc = _format_date_from_local_timezone_to_utc(local_date, local_tz)
-
-        # Then
-        assert date_in_utc.hour == 23
-        assert date_in_utc.tzname() == "UTC"
 
 
 class FindShowtimesByShowtimeUUIDTest:
