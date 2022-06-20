@@ -6,14 +6,14 @@ import {
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
-import OfferEducationalConfirmationScreen from 'screens/OfferEducationalConfirmation'
+import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 import Spinner from 'components/layout/Spinner'
 import { getStockCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferTemplateAdapter'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import { useParams } from 'react-router-dom'
 
-const OfferEducationalConfirmation = (): JSX.Element => {
+const CollectiveOfferConfirmation = (): JSX.Element => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId, isShowcase } =
     extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
@@ -48,7 +48,7 @@ const OfferEducationalConfirmation = (): JSX.Element => {
   }
 
   return (
-    <OfferEducationalConfirmationScreen
+    <CollectiveOfferConfirmationScreen
       isShowcase={offer?.isShowcase}
       offerStatus={offer?.status}
       offererId={offer?.managingOffererId}
@@ -59,4 +59,4 @@ const OfferEducationalConfirmation = (): JSX.Element => {
   )
 }
 
-export default OfferEducationalConfirmation
+export default CollectiveOfferConfirmation
