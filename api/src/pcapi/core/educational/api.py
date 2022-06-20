@@ -34,7 +34,6 @@ from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
 from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.repository import find_collective_booking_by_booking_id
 from pcapi.core.educational.repository import get_and_lock_collective_stock
 from pcapi.core.educational.repository import get_collective_offers_for_filters
 from pcapi.core.educational.repository import get_collective_offers_template_for_filters
@@ -55,9 +54,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.models import User
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -337,21 +334,10 @@ def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking
 
 
 def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:
-    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        educational_booking = educational_repository.find_educational_booking_by_id(educational_booking_id)
 
-        if educational_booking is None:
-            raise exceptions.EducationalBookingNotFound()
-
-        collective_booking = find_collective_booking_by_booking_id(educational_booking.booking.id)
-
-        if collective_booking is None:
-            # FIXME (MathildeDuboille - 2022-03-03): raise an error once data has been migrated to the new model
-            return None  # type: ignore [return-value]
-    else:
-        collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
-        if collective_booking is None:
-            raise exceptions.EducationalBookingNotFound()
+    collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
+    if collective_booking is None:
+        raise exceptions.EducationalBookingNotFound()
 
     collective_booking = cast(CollectiveBooking, collective_booking)  # we already checked it was not None
 
@@ -384,26 +370,25 @@ def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:
         },
     )
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        booking_email = collective_booking.collectiveStock.collectiveOffer.bookingEmail
-        if booking_email:
-            collective_stock = collective_booking.collectiveStock
-            data = SendinblueTransactionalEmailData(
-                template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
-                params={
-                    "OFFER_NAME": collective_stock.collectiveOffer.name,
-                    "EDUCATIONAL_INSTITUTION_NAME": collective_booking.educationalInstitution.name,
-                    "VENUE_NAME": collective_stock.collectiveOffer.venue.name,
-                    "EVENT_DATE": collective_stock.beginningDatetime.strftime("%d/%m/%Y"),
-                    "EVENT_HOUR": collective_stock.beginningDatetime.strftime("%H:%M"),
-                    "REDACTOR_FIRSTNAME": collective_booking.educationalRedactor.firstName,
-                    "REDACTOR_LASTNAME": collective_booking.educationalRedactor.lastName,
-                    "REDACTOR_EMAIL": collective_booking.educationalRedactor.email,
-                    "EDUCATIONAL_INSTITUTION_CITY": collective_booking.educationalInstitution.city,
-                    "EDUCATIONAL_INSTITUTION_POSTAL_CODE": collective_booking.educationalInstitution.postalCode,
-                },
-            )
-            mails.send(recipients=[booking_email], data=data)
+    booking_email = collective_booking.collectiveStock.collectiveOffer.bookingEmail
+    if booking_email:
+        collective_stock = collective_booking.collectiveStock
+        data = SendinblueTransactionalEmailData(
+            template=TransactionalEmail.EDUCATIONAL_BOOKING_CANCELLATION_BY_INSTITUTION.value,
+            params={
+                "OFFER_NAME": collective_stock.collectiveOffer.name,
+                "EDUCATIONAL_INSTITUTION_NAME": collective_booking.educationalInstitution.name,
+                "VENUE_NAME": collective_stock.collectiveOffer.venue.name,
+                "EVENT_DATE": collective_stock.beginningDatetime.strftime("%d/%m/%Y"),
+                "EVENT_HOUR": collective_stock.beginningDatetime.strftime("%H:%M"),
+                "REDACTOR_FIRSTNAME": collective_booking.educationalRedactor.firstName,
+                "REDACTOR_LASTNAME": collective_booking.educationalRedactor.lastName,
+                "REDACTOR_EMAIL": collective_booking.educationalRedactor.email,
+                "EDUCATIONAL_INSTITUTION_CITY": collective_booking.educationalInstitution.city,
+                "EDUCATIONAL_INSTITUTION_POSTAL_CODE": collective_booking.educationalInstitution.postalCode,
+            },
+        )
+        mails.send(recipients=[booking_email], data=data)
 
     search.async_index_collective_offer_ids([collective_booking.collectiveStock.collectiveOfferId])
 
@@ -631,11 +616,10 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
 
     logger.info("Stock has been updated", extra={"stock": stock.id})
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        notify_educational_redactor_on_collective_offer_or_stock_edit(
-            stock.collectiveOffer.id,
-            list(stock_data.keys()),
-        )
+    notify_educational_redactor_on_collective_offer_or_stock_edit(
+        stock.collectiveOffer.id,
+        list(stock_data.keys()),
+    )
 
     db.session.refresh(stock)
     return stock
@@ -715,14 +699,8 @@ def create_collective_stock(
         extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
     )
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        if collective_offer.validation == OfferValidationStatus.DRAFT:
-            update_offer_fraud_information(collective_offer, user)
-    else:
-        collective_offer.validation = OfferValidationStatus.APPROVED
-        collective_offer.lastValidationDate = datetime.datetime.utcnow()
-        collective_offer.lastValidationType = OfferValidationType.AUTO
-        repository.save(collective_offer)
+    if collective_offer.validation == OfferValidationStatus.DRAFT:
+        update_offer_fraud_information(collective_offer, user)
 
     search.async_index_collective_offer_ids([collective_offer.id])
 
