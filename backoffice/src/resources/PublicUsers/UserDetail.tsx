@@ -78,52 +78,41 @@ export const UserDetail = () => {
     // redirect to the list if the book is not found
     { onError: () => redirect('/public_users/search') }
   )
-  let activeBadge,
-    beneficiaryBadge,
-    creditProgression,
-    digitalCreditProgression,
-    subscriptionItems,
-    idsCheckHistory,
-    userBaseInfo: UserBaseInfo
+  let subscriptionItems, idsCheckHistory, userData
 
   if (isLoading) {
     return <CircularProgress size={18} thickness={2} />
-  } else {
-    userBaseInfo = {
-      address: data.address,
-      city: data.city,
-      dateOfBirth: data.dateOfBirth,
-      email: data.email,
-      firstName: data.firstName,
-      id: data.id,
-      lastName: data.lastName,
-      phoneNumber: data.phoneNumber,
-      postalCode: data.postalCode,
+  }
+  const userBaseInfo: UserBaseInfo = {
+    address: data.address,
+    city: data.city,
+    dateOfBirth: data.dateOfBirth,
+    email: data.email,
+    firstName: data.firstName,
+    id: data.id,
+    lastName: data.lastName,
+    phoneNumber: data.phoneNumber,
+    postalCode: data.postalCode,
+  }
+  const activeBadge = <StatusBadge active={data.isActive} />
+  const beneficiaryBadge = <BeneficiaryBadge role={data.roles[0]} />
+  const creditProgression =
+    (data.userCredit.remainingCredit / data.userCredit.initialCredit) * 100
+  const digitalCreditProgression =
+    (data.userCredit.remainingCredit / data.userCredit.initialCredit) * 100
+  if (data.userHistory.subscriptions?.AGE18?.idCheckHistory?.length > 0) {
+    userData = data.userHistory.subscriptions.AGE18
+    if (userData) {
+      idsCheckHistory = userData.idCheckHistory
+      subscriptionItems = userData.subscriptionItems
     }
-    activeBadge = StatusBadge(data.isActive)
-    beneficiaryBadge = BeneficiaryBadge(data.roles[0])
-    creditProgression =
-      (data.userCredit.remainingCredit / data.userCredit.initialCredit) * 100
-    digitalCreditProgression =
-      (data.userCredit.remainingCredit / data.userCredit.initialCredit) * 100
-    if (
-      data.userHistory['subscriptions'] &&
-      data.userHistory['subscriptions']['AGE18'] &&
-      data.userHistory['subscriptions']['AGE18']['idCheckHistory'].length > 0
-    ) {
-      idsCheckHistory =
-        data.userHistory['subscriptions']['AGE18']['idCheckHistory']
-      subscriptionItems =
-        data.userHistory['subscriptions']['AGE18']['subscriptionItems']
-    } else if (
-      data.userHistory['subscriptions'] &&
-      data.userHistory['subscriptions']['UNDERAGE'] &&
-      data.userHistory['subscriptions']['UNDERAGE']['idCheckHistory'].length > 0
-    ) {
-      idsCheckHistory =
-        data.userHistory['subscriptions']['UNDERAGE']['idCheckHistory']
-      subscriptionItems =
-        data.userHistory['subscriptions']['UNDERAGE']['subscriptionItems']
+  } else if (
+    data.userHistory.subscriptions?.UNDERAGE?.idCheckHistory?.length > 0
+  ) {
+    userData = data.userHistory.subscriptions.UNDERAGE
+    if (userData) {
+      idsCheckHistory = userData.idCheckHistory
+      subscriptionItems = userData.subscriptionItems
     }
   }
 
