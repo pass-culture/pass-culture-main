@@ -2,8 +2,11 @@ import './Offer.scss'
 import cn from 'classnames'
 import React, { useState } from 'react'
 
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'api/gen'
 import { useActiveFeature } from 'app/hooks/useActiveFeature'
-import { OfferType } from 'app/types/offers'
 import { Tag } from 'app/ui-kit'
 import { ReactComponent as ChevronIcon } from 'assets/chevron.svg'
 import { ReactComponent as Logo } from 'assets/logo-without-text.svg'
@@ -14,16 +17,17 @@ import OfferSummary from './OfferSummary/OfferSummary'
 import PrebookingButton from './PrebookingButton/PrebookingButton'
 import { formatDescription } from './utils/formatDescription'
 import { getOfferVenueAndOffererName } from './utils/getOfferVenueAndOffererName'
+import { isOfferCollectiveOffer } from './utils/offerIsCollectiveOffer'
 
 export const Offer = ({
   offer,
   canPrebookOffers,
 }: {
   canPrebookOffers: boolean
-  offer: OfferType
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
 }): JSX.Element => {
   const [displayDetails, setDisplayDetails] = useState(false)
-  const offerIsShowcase = Boolean(offer?.extraData?.isShowcase)
+  const offerIsShowcase = !isOfferCollectiveOffer(offer)
   const displayEducationalDomains = useActiveFeature(
     'ENABLE_EDUCATIONAL_DOMAINS'
   )
@@ -32,7 +36,7 @@ export const Offer = ({
     <li className="offer" data-testid="offer-listitem">
       <div
         className={cn('offer-image-placeholder', {
-          'offer-image-placeholder-showcase': offer?.extraData?.isShowcase,
+          'offer-image-placeholder-showcase': offerIsShowcase,
         })}
         data-testid="thumb-placeholder"
       >
@@ -42,14 +46,14 @@ export const Offer = ({
         {offerIsShowcase ? (
           <ContactButton
             className="offer-prebooking-button"
-            contactEmail={offer.extraData?.contactEmail}
-            contactPhone={offer.extraData?.contactPhone}
+            contactEmail={offer.contactEmail}
+            contactPhone={offer.contactPhone}
           />
         ) : (
           <PrebookingButton
             canPrebookOffers={canPrebookOffers}
             className="offer-prebooking-button"
-            stock={offer.stocks[0]}
+            stock={offer.stock}
           />
         )}
         <div className="offer-header">
