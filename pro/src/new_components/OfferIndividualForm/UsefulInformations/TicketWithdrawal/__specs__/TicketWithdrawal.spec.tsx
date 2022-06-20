@@ -2,19 +2,20 @@ import '@testing-library/jest-dom'
 
 import * as yup from 'yup'
 
+import { Form, Formik } from 'formik'
 import TicketWithdrawal, { ITicketWithdrawalProps } from '../TicketWithdrawal'
 import { render, screen, waitFor } from '@testing-library/react'
+
 import { CATEGORY_STATUS } from 'core/Offers'
-import { Formik } from 'formik'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
 import React from 'react'
+import { SubmitButton } from 'ui-kit'
 import userEvent from '@testing-library/user-event'
 import { validationSchema } from '../'
 
 interface IInitialValues {
-  offererId: string
-  venueId: string
-  subcategoryId: string
+  isEvent?: boolean
+  subCategoryId: string
   withdrawalDetails: string
   ticketWithdrawal: string
   ticketSentDate: string
@@ -36,7 +37,12 @@ const renderTicketWithdrawal = ({
       onSubmit={onSubmit}
       validationSchema={yup.object().shape(validationSchema)}
     >
-      <TicketWithdrawal {...props} />
+      <Form>
+        <TicketWithdrawal {...props} />
+        <SubmitButton className="primary-button" isLoading={false}>
+          Submit
+        </SubmitButton>
+      </Form>
     </Formik>
   )
 }
@@ -47,73 +53,26 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
   const onSubmit = jest.fn()
 
   beforeEach(() => {
-    const subCategories = [
-      {
-        id: 'A-A',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie de A',
-        isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
-        id: 'B-A',
-        categoryId: 'B',
-        proLabel: 'Sous catégorie de B',
-        isEvent: false,
-        conditionalFields: ['musicType', 'musicSubType'],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
-        id: 'C-A',
-        categoryId: 'C',
-        proLabel: 'Sous catégorie de C',
-        isEvent: false,
-        conditionalFields: ['showType', 'showSubType'],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-    ]
     initialValues = {
-      offererId: '',
-      venueId: '',
-      subcategoryId: '',
+      isEvent: true,
+      subCategoryId: '',
       withdrawalDetails: '',
       ticketWithdrawal: '',
       ticketSentDate: '',
       ticketWithdrawalHour: '',
     }
     props = {
-      subCategories,
+      subCategories: [],
     }
   })
 
-  it('should contain withdrawal ticket informations when subcategory is an event', async () => {
+  it('should display "ticketSentDate" or "ticketWithdrawalHour" field depending of ticketWithdrawal selected value.', async () => {
     // for an event subCategory
-    initialValues.subcategoryId = 'A-A'
-
-    renderTicketWithdrawal({
+    await renderTicketWithdrawal({
       initialValues,
       onSubmit,
       props,
     })
-
-    expect(
-      await screen.findByText(
-        'Comment les billets, places seront-ils transmis ?'
-      )
-    ).toBeInTheDocument()
 
     // should contain sent date information when tickets are sent by mail
     await userEvent.click(await screen.findByText('Envoi par e-mail'))
@@ -126,10 +85,7 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     expect(await screen.findByText('Heure de retrait')).toBeInTheDocument()
   })
 
-  it('should display an error when the user has not filled all required fields', async () => {
-    // for an event subCategory
-    initialValues.subcategoryId = 'A-A'
-
+  it('should display an error when ticketWithdrawal is empty', async () => {
     renderTicketWithdrawal({
       initialValues,
       onSubmit,
@@ -146,55 +102,84 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
       screen.queryByText('Vous devez choisir une heure de retrait')
     ).not.toBeInTheDocument()
 
+    await userEvent.click(screen.getByText('Submit'))
+    expect(
+      await screen.getByText('Vous devez cocher l’une des options ci-dessus')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une date d’envoi')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une heure de retrait')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display an error when ticketSentDate is empty', async () => {
+    renderTicketWithdrawal({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    await userEvent.click(screen.getByText('Envoi par e-mail'))
+    expect(
+      screen.queryByText('Vous devez cocher l’une des options ci-dessus')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une date d’envoi')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une heure de retrait')
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByLabelText('Date d’envoi'))
+    // FIXME: select field need two click outside in order to trigger validation.
+    await userEvent.tab()
+    await userEvent.tab()
+    expect(
+      screen.queryByText('Vous devez cocher l’une des options ci-dessus')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Vous devez choisir une date d’envoi')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une heure de retrait')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should display an error when ticketSentDate is empty', async () => {
+    renderTicketWithdrawal({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
     await userEvent.click(
-      await screen.findByText(
-        'Comment les billets, places seront-ils transmis ?'
-      )
+      screen.getByText('Retrait sur place (guichet, comptoir ...)')
     )
+    expect(
+      screen.queryByText('Vous devez cocher l’une des options ci-dessus')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une heure de retrait')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une date d’envoi')
+    ).not.toBeInTheDocument()
+
+    await userEvent.click(screen.getByLabelText('Heure de retrait'))
+    // FIXME: select field need two click outside in order to trigger validation.
+    await userEvent.tab()
     await userEvent.tab()
 
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Vous devez cocher l’une des options ci-dessus')
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText('Vous devez choisir une date d’envoi')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Vous devez choisir une heure de retrait')
-      ).not.toBeInTheDocument()
-    })
-
-    userEvent.click(await screen.findByText('Envoi par e-mail'))
-    await userEvent.tab()
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Vous devez cocher l’une des options ci-dessus')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Vous devez choisir une date d’envoi')
-      ).toBeInTheDocument()
-      expect(
-        screen.queryByText('Vous devez choisir une heure de retrait')
-      ).not.toBeInTheDocument()
-    })
-
-    userEvent.click(
-      await screen.findByText('Retrait sur place (guichet, comptoir ...)')
-    )
-    await userEvent.tab()
-
-    await waitFor(() => {
-      expect(
-        screen.queryByText('Vous devez cocher l’une des options ci-dessus')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Vous devez choisir une date d’envoi')
-      ).not.toBeInTheDocument()
-      expect(
-        screen.queryByText('Vous devez choisir une heure de retrait')
-      ).toBeInTheDocument()
-    })
+    expect(
+      screen.queryByText('Vous devez cocher l’une des options ci-dessus')
+    ).not.toBeInTheDocument()
+    expect(
+      screen.getByText('Vous devez choisir une heure de retrait')
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('Vous devez choisir une date d’envoi')
+    ).not.toBeInTheDocument()
   })
 })

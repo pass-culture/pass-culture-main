@@ -143,4 +143,27 @@ describe('OfferIndividual section: UsefulInformations', () => {
     await screen.findByRole('heading', { name: 'Informations pratiques' })
     expect(screen.getByLabelText('Rayonnement national')).toBeInTheDocument()
   })
+
+  // TODO
+  // it('should contain withdrawal ticket informations when subcategory is an event', async () => {
+
+  // TODO
+  // it.only('should not contain withdrawal ticket informations when subcategory is not an event', async () => {
+  //   // for an event subCategory
+  //   initialValues = {
+  //     ...initialValues,
+  //     isEvent: false,
+  //   }
+  //   await renderTicketWithdrawal({
+  //     initialValues,
+  //     onSubmit,
+  //     props,
+  //   })
+
+  //   expect(
+  //     await screen.queryByText(
+  //       'Comment les billets, places seront-ils transmis ?'
+  //     )
+  //   ).not.toBeInTheDocument()
+  // })
 })
