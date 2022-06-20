@@ -28,7 +28,7 @@ class Returns200Test:
         assert "bic" not in response_json["venue"]["managingOfferer"]
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "dateCreated" in response_json
-        assert "educationalInstitution" in response.json
+        assert "institution" in response.json
         assert response_json["nonHumanizedId"] == offer.id
 
     def test_performance(self, client):
