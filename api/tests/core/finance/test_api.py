@@ -223,7 +223,6 @@ class PriceBookingTest:
         queries += 1  # select for update on BusinessUnit (lock)
         queries += 1  # fetch booking again with multiple joinedload
         queries += 1  # select existing Pricing (if any)
-        queries += 1  # select FF ENABLE_NEW_COLLECTIVE_MODEL
         queries += 1  # select dependent pricings
         queries += 1  # select latest pricing (to get revenue)
         queries += 1  # select all CustomReimbursementRule
@@ -644,8 +643,7 @@ class PriceBookingsTest:
     def test_num_queries(self):
         bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
         n_queries = 2  # 1 for bookings + 1 for collective bookings
-        n_queries_get_FF = 1
-        with assert_num_queries(n_queries + n_queries_get_FF):
+        with assert_num_queries(n_queries):
             api.price_bookings(self.few_minutes_ago)
 
     def test_error_on_a_booking_does_not_block_other_bookings(self):
@@ -880,7 +878,6 @@ class GenerateCashflowsTest:
         cutoff = datetime.datetime.utcnow()
 
         n_queries = 0
-        n_queries += 1  # select FF
         n_queries += 1  # compute next CashflowBatch.label
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # commit
@@ -1022,230 +1019,6 @@ def test_generate_business_units_file():
         "Libellé de la BU": "Venue 2 public name",
         "IBAN": "iban 2",
         "BIC": "bic 2",
-    }
-
-
-@clean_temporary_files
-def test_generate_payments_file():
-    used_date = datetime.datetime(2020, 1, 2)
-    # This pricing belong to a business unit whose venue is the same
-    # as the venue of the offer.
-    venue1 = offerers_factories.VenueFactory(
-        name='Le Petit Rintintin "test"\n',
-        siret='123456 "test"\n',
-    )
-    pricing1 = factories.PricingFactory(
-        amount=-1000,  # rate = 100 %
-        booking__amount=10,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire formidable",
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=venue1,
-    )
-    # A free booking that should not appear in the CSV file.
-    factories.PricingFactory(
-        amount=0,
-        booking__amount=0,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name='Une histoire "gratuite"\n',
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=venue1,
-    )
-    # These other pricings belong to a business unit whose venue is
-    # NOT the venue of the offers.
-    business_unit_venue2 = offerers_factories.VenueFactory(
-        siret="22222222233333",
-        name="BU du Gigantesque Cubitus\n",
-    )
-    business_unit2 = business_unit_venue2.businessUnit
-    offer_venue2 = offerers_factories.VenueFactory(
-        name="Le Gigantesque Cubitus\n",
-        siret="99999999999999",
-        businessUnit=business_unit2,
-    )
-    pricing2 = factories.PricingFactory(
-        amount=-900,  # rate = 75 %
-        booking__amount=12,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=offer_venue2,
-    )
-    pricing3 = factories.PricingFactory(
-        amount=-600,  # rate = 50 %
-        booking__amount=12,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=offer_venue2,
-        standardRule="",
-        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
-    )
-    # pricing for an underage individual booking
-    underage_user = users_factories.UnderageBeneficiaryFactory()
-    pricing4 = factories.PricingFactory(
-        amount=-600,  # rate = 50 %
-        booking__amount=12,
-        booking__individualBooking__user=underage_user,
-        booking__dateUsed=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
-        booking__stock__offer__venue=offer_venue2,
-        standardRule="",
-        customRule=payments_factories.CustomReimbursementRuleFactory(amount=6),
-    )
-    # pricing for educational booking
-    # check that the right deposit is used for csv
-    year1 = EducationalYearFactory()
-    year2 = EducationalYearFactory()
-    year3 = EducationalYearFactory()
-    educational_institution = EducationalInstitutionFactory()
-    EducationalDepositFactory(
-        educationalInstitution=educational_institution, educationalYear=year1, ministry=Ministry.AGRICULTURE.name
-    )
-    deposit2 = EducationalDepositFactory(
-        educationalInstitution=educational_institution,
-        educationalYear=year2,
-        ministry=Ministry.EDUCATION_NATIONALE.name,
-    )
-    EducationalDepositFactory(
-        educationalInstitution=educational_institution, educationalYear=year3, ministry=Ministry.ARMEES.name
-    )
-    pricing5 = factories.EducationalPricingFactory(
-        amount=-600,  # rate = 100 %
-        booking__amount=6,
-        booking__dateUsed=used_date,
-        booking__stock__beginningDatetime=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
-        booking__stock__offer__venue=offer_venue2,
-        booking__educationalBooking__educationalInstitution=deposit2.educationalInstitution,
-        booking__educationalBooking__educationalYear=deposit2.educationalYear,
-    )
-    # A pricing that belongs to a business unit whose SIRET is not a
-    # SIRET of any venue.
-    pricing6 = factories.PricingFactory(
-        amount=-1000,  # rate = 100 %
-        booking__dateUsed=used_date,
-        booking__stock__offer__venue__businessUnit__siret="orphan siret",
-    )
-
-    cutoff = datetime.datetime.utcnow()
-    batch_id = api.generate_cashflows(cutoff)
-
-    n_queries = 1  # select pricings
-    with assert_num_queries(n_queries):
-        path = api._generate_payments_file(batch_id)
-
-    with zipfile.ZipFile(path) as zfile:
-        with zfile.open("payment_details.csv") as csv_bytefile:
-            csv_textfile = io.TextIOWrapper(csv_bytefile)
-            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
-            rows = list(reader)
-
-    assert len(rows) == 6
-    assert rows[0] == {
-        "Identifiant de la BU": human_ids.humanize(venue1.id),
-        "SIRET de la BU": "123456 test",
-        "Libellé de la BU": "Le Petit Rintintin test",
-        "Identifiant du lieu": human_ids.humanize(venue1.id),
-        "Libellé du lieu": "Le Petit Rintintin test",
-        "Identifiant de l'offre": pricing1.booking.stock.offerId,
-        "Nom de l'offre": "Une histoire formidable",
-        "Sous-catégorie de l'offre": "SUPPORT_PHYSIQUE_FILM",
-        "Prix de la réservation": 10,
-        "Type de réservation": "PC",
-        "Date de validation": "2020-01-02 00:00:00",
-        "Identifiant de la valorisation": pricing1.id,
-        "Taux de remboursement": 1,
-        "Montant remboursé à l'offreur": 10,
-        "Ministère": "",
-    }
-    assert rows[1] == {
-        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
-        "SIRET de la BU": "22222222233333",
-        "Libellé de la BU": "BU du Gigantesque Cubitus",
-        "Identifiant du lieu": human_ids.humanize(offer_venue2.id),
-        "Libellé du lieu": "Le Gigantesque Cubitus",
-        "Identifiant de l'offre": pricing2.booking.stock.offerId,
-        "Nom de l'offre": "Une histoire plutôt bien",
-        "Sous-catégorie de l'offre": "SUPPORT_PHYSIQUE_FILM",
-        "Prix de la réservation": 12,
-        "Type de réservation": "PC",
-        "Date de validation": "2020-01-02 00:00:00",
-        "Identifiant de la valorisation": pricing2.id,
-        "Taux de remboursement": 0.75,
-        "Montant remboursé à l'offreur": 9,
-        "Ministère": "",
-    }
-    assert rows[2] == {
-        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
-        "SIRET de la BU": "22222222233333",
-        "Libellé de la BU": "BU du Gigantesque Cubitus",
-        "Identifiant du lieu": human_ids.humanize(offer_venue2.id),
-        "Libellé du lieu": "Le Gigantesque Cubitus",
-        "Identifiant de l'offre": pricing3.booking.stock.offerId,
-        "Nom de l'offre": "Une histoire plutôt bien",
-        "Sous-catégorie de l'offre": "SUPPORT_PHYSIQUE_FILM",
-        "Prix de la réservation": 12,
-        "Type de réservation": "PC",
-        "Date de validation": "2020-01-02 00:00:00",
-        "Identifiant de la valorisation": pricing3.id,
-        "Taux de remboursement": 0.50,
-        "Montant remboursé à l'offreur": 6,
-        "Ministère": "",
-    }
-    assert rows[3] == {
-        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
-        "SIRET de la BU": "22222222233333",
-        "Libellé de la BU": "BU du Gigantesque Cubitus",
-        "Identifiant du lieu": human_ids.humanize(offer_venue2.id),
-        "Libellé du lieu": "Le Gigantesque Cubitus",
-        "Identifiant de l'offre": pricing4.booking.stock.offerId,
-        "Nom de l'offre": "Une histoire plutôt bien",
-        "Sous-catégorie de l'offre": "SUPPORT_PHYSIQUE_FILM",
-        "Prix de la réservation": 12,
-        "Type de réservation": "EACI",
-        "Date de validation": "2020-01-02 00:00:00",
-        "Identifiant de la valorisation": pricing4.id,
-        "Taux de remboursement": 0.50,
-        "Montant remboursé à l'offreur": 6,
-        "Ministère": "",
-    }
-    assert rows[4] == {
-        "Identifiant de la BU": human_ids.humanize(business_unit_venue2.id),
-        "SIRET de la BU": "22222222233333",
-        "Libellé de la BU": "BU du Gigantesque Cubitus",
-        "Identifiant du lieu": human_ids.humanize(offer_venue2.id),
-        "Libellé du lieu": "Le Gigantesque Cubitus",
-        "Identifiant de l'offre": pricing5.booking.stock.offerId,
-        "Nom de l'offre": "Une histoire plutôt bien",
-        "Sous-catégorie de l'offre": "CINE_PLEIN_AIR",
-        "Prix de la réservation": 6,
-        "Type de réservation": "EACC",
-        "Date de validation": "2020-01-02 00:00:00",
-        "Identifiant de la valorisation": pricing5.id,
-        "Taux de remboursement": 1.0,
-        "Montant remboursé à l'offreur": 6,
-        "Ministère": Ministry.EDUCATION_NATIONALE.name,
-    }
-    assert rows[5] == {
-        # Some fields are empty since there are no corresponding venue.
-        "Identifiant de la BU": "",
-        "SIRET de la BU": "orphan siret",
-        "Libellé de la BU": "",
-        "Identifiant du lieu": human_ids.humanize(pricing6.booking.venue.id),
-        "Libellé du lieu": pricing6.booking.venue.name,
-        "Identifiant de l'offre": pricing6.booking.stock.offerId,
-        "Nom de l'offre": pricing6.booking.stock.offer.name,
-        "Sous-catégorie de l'offre": pricing6.booking.stock.offer.subcategoryId,
-        "Prix de la réservation": pricing6.booking.total_amount,
-        "Type de réservation": "PC",
-        "Date de validation": "2020-01-02 00:00:00",
-        "Identifiant de la valorisation": pricing6.id,
-        "Taux de remboursement": 1.0,
-        "Montant remboursé à l'offreur": 10,
-        "Ministère": "",
     }
 
 

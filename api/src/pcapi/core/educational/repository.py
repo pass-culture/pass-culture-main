@@ -441,7 +441,22 @@ def get_collective_offers_for_filters(
         period_beginning_date=period_beginning_date,  # type: ignore [arg-type]
         period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
-    return query.order_by(educational_models.CollectiveOffer.id.desc())
+
+    query = query.order_by(educational_models.CollectiveOffer.id.desc())
+    offers = (
+        query.options(
+            joinedload(educational_models.CollectiveOffer.venue).joinedload(offerers_models.Venue.managingOfferer)
+        )
+        .options(
+            joinedload(educational_models.CollectiveOffer.collectiveStock).joinedload(
+                educational_models.CollectiveStock.collectiveBookings
+            )
+        )
+        .options(joinedload(educational_models.CollectiveOffer.institution))
+        .limit(offers_limit)
+        .all()
+    )
+    return offers
 
 
 def get_collective_offers_template_for_filters(
