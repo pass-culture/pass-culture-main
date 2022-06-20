@@ -191,121 +191,25 @@ def find_all_offerers_payments(
     )
     results = []
 
-    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        results.extend(
-            _get_sent_pricings_for_individual_offers(
-                offerer_ids,
-                reimbursement_period,
-                venue_id,
-            )
+    results.extend(
+        _get_sent_pricings_for_individual_bookings(
+            offerer_ids,
+            reimbursement_period,
+            venue_id,
         )
-
-    else:
-        results.extend(
-            _get_sent_pricings_for_individual_bookings(
-                offerer_ids,
-                reimbursement_period,
-                venue_id,
-            )
+    )
+    results.extend(
+        _get_sent_pricings_for_collective_bookings(
+            offerer_ids,
+            reimbursement_period,
+            venue_id,
         )
-        results.extend(
-            _get_sent_pricings_for_collective_bookings(
-                offerer_ids,
-                reimbursement_period,
-                venue_id,
-            )
-        )
+    )
 
     if FeatureToggle.INCLUDE_LEGACY_PAYMENTS_FOR_REIMBURSEMENTS.is_active():
         results.extend(sent_payments.all())
 
     return results
-
-
-def _get_sent_pricings_for_individual_offers(
-    offerer_ids: list[int],
-    reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: typing.Optional[int] = None,
-) -> list[tuple]:
-    BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
-    return (
-        models.Pricing.query.join(models.Pricing.booking)
-        .join(models.Pricing.cashflows)
-        .join(models.Cashflow.bankAccount)
-        .join(models.Cashflow.batch)
-        .join(models.Cashflow.invoices)
-        .outerjoin(models.Pricing.customRule)
-        .filter(
-            models.Pricing.status == models.PricingStatus.INVOICED,
-            sqla.cast(models.Cashflow.creationDate, sqla.Date).between(
-                *reimbursement_period,
-                symmetric=True,
-            ),
-            bookings_models.Booking.offererId.in_(offerer_ids),
-            (bookings_models.Booking.venueId == venue_id) if venue_id else sqla.true(),
-        )
-        .join(bookings_models.Booking.offerer)
-        .outerjoin(bookings_models.Booking.educationalBooking)
-        .outerjoin(educational_models.EducationalBooking.educationalRedactor)
-        .join(bookings_models.Booking.stock)
-        .join(offers_models.Stock.offer)
-        .join(bookings_models.Booking.venue)
-        .join(offerers_models.Venue.businessUnit)
-        # There should be a Venue with the same SIRET as the business
-        # unit... but edition has been sloppy and there are
-        # inconsistencies. See also similar outer joins in `finance/api.py`.
-        # FIXME (dbaty, 2022-05-18): if the BusinessUnit model stays,
-        # revisit this issue. This is barely acceptable.
-        .outerjoin(BusinessUnitVenue, BusinessUnitVenue.siret == models.BusinessUnit.siret)
-        .order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc())
-        .with_entities(
-            educational_models.EducationalRedactor.firstName.label("redactor_firstname"),
-            educational_models.EducationalRedactor.lastName.label("redactor_lastname"),
-            bookings_models.Booking.token.label("booking_token"),
-            bookings_models.Booking.dateUsed.label("booking_used_date"),
-            bookings_models.Booking.quantity.label("booking_quantity"),
-            bookings_models.Booking.amount.label("booking_amount"),
-            offers_models.Offer.name.label("offer_name"),
-            offers_models.Offer.isEducational.label("offer_is_educational"),
-            offerers_models.Venue.name.label("venue_name"),
-            sqla_func.coalesce(
-                offerers_models.Venue.address,
-                offerers_models.Offerer.address,
-            ).label("venue_address"),
-            sqla_func.coalesce(
-                offerers_models.Venue.postalCode,
-                offerers_models.Offerer.postalCode,
-            ).label("venue_postal_code"),
-            sqla_func.coalesce(
-                offerers_models.Venue.city,
-                offerers_models.Offerer.city,
-            ).label("venue_city"),
-            offerers_models.Venue.siret.label("venue_siret"),
-            BusinessUnitVenue.name.label("business_unit_name"),
-            sqla_func.coalesce(
-                BusinessUnitVenue.address,
-                offerers_models.Offerer.address,
-            ).label("business_unit_address"),
-            sqla_func.coalesce(
-                BusinessUnitVenue.postalCode,
-                offerers_models.Offerer.postalCode,
-            ).label("business_unit_postal_code"),
-            sqla_func.coalesce(
-                BusinessUnitVenue.city,
-                offerers_models.Offerer.city,
-            ).label("business_unit_city"),
-            BusinessUnitVenue.siret.label("business_unit_siret"),
-            # See note about `amount` in `core/finance/models.py`.
-            (-models.Pricing.amount).label("amount"),
-            models.Pricing.standardRule.label("rule_name"),
-            models.Pricing.customRuleId.label("rule_id"),
-            models.Invoice.date.label("invoice_date"),
-            models.Invoice.reference.label("invoice_reference"),
-            models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
-            models.CashflowBatch.label.label("cashflow_batch_label"),
-            BankInformation.iban.label("iban"),
-        )
-    ).all()
 
 
 def _get_sent_pricings_for_collective_bookings(
