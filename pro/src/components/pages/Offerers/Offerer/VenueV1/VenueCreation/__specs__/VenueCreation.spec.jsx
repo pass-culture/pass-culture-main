@@ -83,6 +83,7 @@ describe('venue form', () => {
     ])
     pcapi.getVenueLabels.mockResolvedValue([])
     pcapi.getBusinessUnits.mockResolvedValue([])
+    pcapi.getUserInformations.mockResolvedValue(storeOverrides.data.users[0])
   })
 
   describe('when submiting a valide form', () => {
@@ -114,7 +115,7 @@ describe('venue form', () => {
 
     it('should handle success response', async () => {
       pcapi.createVenue.mockResolvedValue({ id: 'fake_success_id' })
-      userEvent.click(submitButton)
+      await userEvent.click(submitButton)
       await waitFor(() => {
         expect(submitButton).toBeDisabled()
       })
@@ -146,10 +147,7 @@ describe('venue form', () => {
         name: ['error on name'],
       }
       pcapi.createVenue.mockRejectedValue({ errors })
-      userEvent.click(submitButton)
-      await waitFor(() => {
-        expect(submitButton).toBeDisabled()
-      })
+      await userEvent.click(submitButton)
       await waitFor(() => {
         expect(submitButton).not.toBeDisabled()
         expect(pcapi.createVenue).toHaveBeenCalledWith({
@@ -214,9 +212,9 @@ describe('venue form', () => {
     const contactMail = await screen.findByLabelText('Mail :')
     const contactUrl = await screen.findByLabelText('URL de votre site web :')
 
-    userEvent.paste(contactPhoneNumber, '0606060606')
-    userEvent.paste(contactMail, 'test@test.com')
-    userEvent.paste(contactUrl, 'https://some-url-test.com')
+    await userEvent.paste(contactPhoneNumber, '0606060606')
+    await userEvent.paste(contactMail, 'test@test.com')
+    await userEvent.paste(contactUrl, 'https://some-url-test.com')
     waitFor(() => {
       expect(contactUrl).toHaveValue('https://some-url-test.com')
       expect(contactPhoneNumber).toHaveValue('0606060606')
