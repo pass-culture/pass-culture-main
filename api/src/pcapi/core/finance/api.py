@@ -58,7 +58,6 @@ import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.finance import utils as finance_utils
 from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional.pro.invoice_available_to_pro import send_invoice_available_to_pro_email
 from pcapi.core.object_storage import store_public_object
@@ -1613,8 +1612,9 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
     )
 
 
-def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.List[typing.Dict[str, str]]:
-    reimbursements_by_venue = []
+def get_reimbursements_by_venue(
+    invoice: models.Invoice,
+) -> typing.ValuesView:
     common_columns = (
         offerers_models.Venue.id.label("venue_id"),
         sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name).label("venue_name"),
@@ -1659,8 +1659,7 @@ def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.List[typing.D
             )
         )
 
-        collective_reimbursement_by_venue = {pricing.venue_id: pricing.amount_total for pricing in collective_query}
-
+    reimbursements_by_venue = {}
     for (venue_id, venue_name), bookings in itertools.groupby(query, lambda x: (x.venue_id, x.venue_name)):
         validated_booking_amount = decimal.Decimal(0)
         reimbursed_amount = 0
@@ -1670,19 +1669,30 @@ def get_reimbursements_by_venue(invoice: models.Invoice) -> typing.List[typing.D
             validated_booking_amount += decimal.Decimal(booking.booking_amount) * booking.booking_quantity
             if booking.individualBookingId:
                 individual_amount += booking.pricing_amount
-        if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() and venue_id in collective_reimbursement_by_venue:
-            reimbursed_amount += collective_reimbursement_by_venue[venue_id]
-            validated_booking_amount += -finance_utils.to_euros(collective_reimbursement_by_venue[venue_id])
+        reimbursements_by_venue[venue_id] = {
+            "venue_name": venue_name,
+            "reimbursed_amount": reimbursed_amount,
+            "validated_booking_amount": -utils.to_eurocents(validated_booking_amount),
+            "individual_amount": individual_amount,
+        }
 
-        reimbursements_by_venue.append(
-            {
-                "venue_name": venue_name,
-                "reimbursed_amount": reimbursed_amount,
-                "validated_booking_amount": -utils.to_eurocents(validated_booking_amount),
-                "individual_amount": individual_amount,
-            }
-        )
-    return reimbursements_by_venue
+    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
+        for venue_pricing_info in collective_query:
+            venue_id = venue_pricing_info.venue_id
+            venue_name = venue_pricing_info.venue_name
+            amount_total = venue_pricing_info.amount_total
+            if venue_pricing_info.venue_id in reimbursements_by_venue:
+                reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += amount_total
+                reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += amount_total
+            else:
+                reimbursements_by_venue[venue_pricing_info.venue_id] = {
+                    "venue_name": venue_name,
+                    "reimbursed_amount": amount_total,
+                    "validated_booking_amount": amount_total,
+                    "individual_amount": 0,
+                }
+
+    return reimbursements_by_venue.values()
 
 
 def _generate_invoice_html(invoice: models.Invoice) -> str:
