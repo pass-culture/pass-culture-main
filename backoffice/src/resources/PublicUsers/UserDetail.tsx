@@ -272,7 +272,7 @@ export const UserDetail = () => {
         <TabPanel value={value} index={1}>
           <Stack spacing={3}>
             <UserDetailsCard
-              {...userBaseInfo}
+              user={userBaseInfo}
               firstIdCheckHistory={idsCheckHistory[0]}
             />
 
@@ -292,14 +292,16 @@ export const UserDetail = () => {
                         <Typography variant={'body1'}>
                           Validation email
                         </Typography>
-                        {StatusAvatar(
-                          subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) => item.type === 'email-validation'
-                          ).status
-                        )}
+                        <StatusAvatar
+                          subscriptionItem={
+                            subscriptionItems.find(
+                              (item: {
+                                type: string
+                                status: SubscriptionItemStatus
+                              }) => item.type === 'email-validation'
+                            ).status
+                          }
+                        />
                       </Stack>
                     </Grid>
                     <Grid item xs={6}>
@@ -311,14 +313,16 @@ export const UserDetail = () => {
                         <Typography variant={'body1'}>
                           Complétion Profil
                         </Typography>
-                        {StatusAvatar(
-                          subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) => item.type === 'profile-completion'
-                          ).status
-                        )}
+                        <StatusAvatar
+                          subscriptionItem={
+                            subscriptionItems.find(
+                              (item: {
+                                type: string
+                                status: SubscriptionItemStatus
+                              }) => item.type === 'profile-completion'
+                            ).status
+                          }
+                        />
                       </Stack>
                     </Grid>
                     <Grid item xs={6}>
@@ -330,14 +334,16 @@ export const UserDetail = () => {
                         <Typography variant={'body1'}>
                           Validation Téléphone
                         </Typography>
-                        {StatusAvatar(
-                          subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) => item.type === 'phone-validation'
-                          ).status
-                        )}
+                        <StatusAvatar
+                          subscriptionItem={
+                            subscriptionItems.find(
+                              (item: {
+                                type: string
+                                status: SubscriptionItemStatus
+                              }) => item.type === 'phone-validation'
+                            ).status
+                          }
+                        />
                       </Stack>
                     </Grid>
                     <Grid item xs={6}>
@@ -347,14 +353,16 @@ export const UserDetail = () => {
                         style={{ width: '100%' }}
                       >
                         <Typography variant={'body1'}>ID Check</Typography>
-                        {StatusAvatar(
-                          subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) => item.type === 'identity-check'
-                          ).status
-                        )}
+                        <StatusAvatar
+                          subscriptionItem={
+                            subscriptionItems.find(
+                              (item: {
+                                type: string
+                                status: SubscriptionItemStatus
+                              }) => item.type === 'identity-check'
+                            ).status
+                          }
+                        />
                       </Stack>
                     </Grid>
                     <Grid item xs={6}>
@@ -366,14 +374,16 @@ export const UserDetail = () => {
                         <Typography variant={'body1'}>
                           Profil Utilisateur
                         </Typography>
-                        {StatusAvatar(
-                          subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) => item.type === 'profile-completion'
-                          ).status
-                        )}
+                        <StatusAvatar
+                          subscriptionItem={
+                            subscriptionItems.find(
+                              (item: {
+                                type: string
+                                status: SubscriptionItemStatus
+                              }) => item.type === 'profile-completion'
+                            ).status
+                          }
+                        />
                       </Stack>
                     </Grid>
                     <Grid item xs={6}>
@@ -385,14 +395,16 @@ export const UserDetail = () => {
                         <Typography variant={'body1'}>
                           Honor Statement
                         </Typography>
-                        {StatusAvatar(
-                          subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) => item.type === 'honor-statement'
-                          ).status
-                        )}
+                        <StatusAvatar
+                          subscriptionItem={
+                            subscriptionItems.find(
+                              (item: {
+                                type: string
+                                status: SubscriptionItemStatus
+                              }) => item.type === 'honor-statement'
+                            ).status
+                          }
+                        />
                       </Stack>
                     </Grid>
                   </Grid>
