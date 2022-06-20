@@ -11,11 +11,11 @@ import {
 import OfferForm from '../OfferForm'
 import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
-import { computeInitialValuesFromOffer } from '../utils'
 import { computeOffersUrl } from 'core/Offers/utils'
 
 const OfferEdition = ({
   categories,
+  initialValues,
   isDisabled,
   isUserAdmin,
   offer,
@@ -30,7 +30,6 @@ const OfferEdition = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [readOnlyFields, setReadOnlyFields] = useState([])
-  const [initialValues, setInitialValues] = useState([])
 
   useEffect(() => {
     const computeReadOnlyFields = offer => {
@@ -58,12 +57,10 @@ const OfferEdition = ({
       }
     }
 
-    const initialValues = computeInitialValuesFromOffer(offer, subCategories)
     const readOnlyFields = computeReadOnlyFields(offer)
-    setInitialValues(initialValues)
     setReadOnlyFields(readOnlyFields)
     setIsLoading(false)
-  }, [isDisabled, offer, setIsLoading, subCategories])
+  }, [isDisabled, offer, setIsLoading])
 
   let providerName = null
   if (isSynchronizedOffer(offer)) {
@@ -110,6 +107,7 @@ OfferEdition.defaultProps = {
 
 OfferEdition.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  initialValues: PropTypes.shape().isRequired,
   isDisabled: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
