@@ -37,6 +37,21 @@ const showcaseOfferRadios = [
   },
 ]
 
+const getNextButtonWording = (
+  mode: Mode,
+  offerType: EducationalOfferType
+): string => {
+  if (mode === Mode.EDITION) {
+    return 'Enregistrer'
+  }
+
+  if (offerType === EducationalOfferType.CLASSIC) {
+    return 'Étape suivante'
+  }
+
+  return 'Valider et créer l’offre'
+}
+
 export interface IOfferEducationalStockProps {
   initialValues: OfferEducationalStockFormValues
   offer: GetStockOfferSuccessPayload
@@ -177,9 +192,7 @@ const OfferEducationalStock = ({
                 }
                 isLoading={isLoading}
               >
-                {mode === Mode.CREATION
-                  ? 'Valider et créer l’offre'
-                  : 'Enregistrer'}
+                {getNextButtonWording(mode, formik.values.educationalOfferType)}
               </SubmitButton>
             </FormLayout.Actions>
           </FormLayout>
