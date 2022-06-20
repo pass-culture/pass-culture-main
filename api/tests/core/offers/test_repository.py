@@ -16,6 +16,7 @@ from pcapi.core.offers.factories import ActivationCodeFactory
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
+import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.repository import check_stock_consistency
 from pcapi.core.offers.repository import delete_past_draft_collective_offers
 from pcapi.core.offers.repository import delete_past_draft_offers
@@ -1177,8 +1178,27 @@ class IncomingEventStocksTest:
     def test_find_today_event_stock_ids_metropolitan_france(self):
         self.setup_stocks()
 
-        stock_ids = find_today_event_stock_ids_metropolitan_france()
+        today_min = datetime(2020, 10, 15, 12, 00)
+        today_max = datetime(2020, 10, 15, 23, 00)
+
+        stock_ids = find_today_event_stock_ids_metropolitan_france(today_min, today_max)
+
         assert set(stock_ids) == {self.stock_today.id}
+
+    @freeze_time("2020-10-15 15:00:00")
+    def test_find_today_event_stock_ids_by_departments(self):
+        self.setup_stocks()
+
+        today_min = datetime(2020, 10, 15, 8, 00)
+        today_max = datetime(2020, 10, 15, 19, 00)
+
+        departments_prefixes = ["971"]
+
+        stock_ids = offers_repository.find_today_event_stock_ids_from_departments(
+            today_min, today_max, departments_prefixes
+        )
+
+        assert set(stock_ids) == {self.stock_today_overseas.id}
 
 
 @pytest.mark.usefixtures("db_session")
