@@ -3,6 +3,8 @@ import enum
 import typing
 from typing import Optional
 
+import psycopg2.extras
+import pytz
 import sqlalchemy as sa
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -19,6 +21,7 @@ from sqlalchemy import UniqueConstraint
 from sqlalchemy import case
 from sqlalchemy import cast
 from sqlalchemy import func
+import sqlalchemy.dialects.postgresql as sa_psql
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
@@ -400,6 +403,79 @@ ts_indexes = [
 ]
 
 (Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
+
+
+class VenuePricingPointLink(Model):  # type: ignore [misc, valid-type]
+    """At any given time, the booking of a venue are priced against a
+    particular venue that we call the "pricing point" of the venue.
+    There should only ever be one pricing point for each venue, but
+    for flexibility's sake we store the link in a table with the
+    period during which this link is active.
+    """
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venue = relationship(Venue, foreign_keys=[venueId])
+    pricingPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    pricingPoint = relationship(Venue, foreign_keys=[pricingPointId])
+    # The lower bound is inclusive and required. The upper bound is
+    # exclusive and optional. If there is no upper bound, it means
+    # that the venue is still linked to the pricing point. For links
+    # that existed before this table was introduced, the lower bound
+    # is set to the Epoch.
+    timespan = Column(sa_psql.TSRANGE, nullable=False)
+
+    __table_args__ = (
+        # A venue cannot be linked to multiple pricing points at the
+        # same time.
+        sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
+    )
+
+    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
+        kwargs["timespan"] = self._make_timespan(*kwargs["timespan"])
+        super().__init__(**kwargs)
+
+    @classmethod
+    def _make_timespan(cls, start, end=None):  # type: ignore [no-untyped-def]
+        start = start.astimezone(pytz.utc).isoformat()
+        end = end.astimezone(pytz.utc).isoformat() if end else None
+        return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
+
+
+class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
+    """At any given time, all bookings of a venue are reimbursed to a bank
+    account that is attached to a particular venue that we call the
+    "reimbursement point" of the venue. It may be the venue itself or
+    any other venue (that has a related bank account) of the same offerer.
+    """
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    venue = relationship(Venue, foreign_keys=[venueId])
+    reimbursementPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])
+    # The lower bound is inclusive and required. The upper bound is
+    # exclusive and optional. If there is no upper bound, it means
+    # that the venue is still linked to the pricing point. For links
+    # that existed before this table was introduced, the lower bound
+    # is set to the Epoch.
+    timespan = Column(sa_psql.TSRANGE, nullable=False)
+
+    __table_args__ = (
+        # A venue cannot be linked to multiple reimbursement points at
+        # the same time.
+        sa_psql.ExcludeConstraint(("venueId", "="), ("timespan", "&&")),
+    )
+
+    def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
+        kwargs["timespan"] = self._make_timespan(*kwargs["timespan"])
+        super().__init__(**kwargs)
+
+    @classmethod
+    def _make_timespan(cls, start, end=None):  # type: ignore [no-untyped-def]
+        start = start.astimezone(pytz.utc).isoformat()
+        end = end.astimezone(pytz.utc).isoformat() if end else None
+        return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
 
 class Offerer(

@@ -132,12 +132,18 @@ class Pricing(Model):  # type: ignore [valid-type, misc]
         "CollectiveBooking", foreign_keys=[collectiveBookingId], backref="pricings"
     )
 
+    # FIXME (dbaty, 2022-06-20): remove `businessUnitId` and `siret`
+    # columns once we have fully switched to `pricingPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
     businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # `siret` is either the SIRET of the venue if it has one, or the
     # SIRET of its business unit (at the time of the creation of the
     # pricing).
     siret = sqla.Column(sqla.String(14), nullable=False, index=True)
+    # FIXME (dbaty, 2022-06-20): set non-NULLABLE once pricing code
+    # has been updated and old data has been migrated.
+    pricingPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
+    pricingPoint = sqla_orm.relationship("Venue", foreign_keys=[pricingPointId])  # type: ignore [misc]
 
     creationDate = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     # `valueDate` is `Booking.dateUsed` but it's useful to denormalize
@@ -222,8 +228,8 @@ class Cashflow(Model):  # type: ignore [valid-type, misc]
     creationDate = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     status = sqla.Column(db_utils.MagicEnum(CashflowStatus), index=True, nullable=False)
 
-    # FIXME (dbaty, 2022-01-26): set NOT NULL constraint once the
-    # table has been populated.
+    # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
+    # fully switched to `reimbursementPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
     businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # We denormalize `BusinessUnit.bankAccountId` here because it may
@@ -231,6 +237,10 @@ class Cashflow(Model):  # type: ignore [valid-type, misc]
     # the time the cashflow was created.
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False)
     bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])  # type: ignore [misc]
+    # FIXME (dbaty, 2022-06-20): set non-NULLABLE once cashflow code
+    # has been updated and old data has been migrated.
+    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
+    reimbursementPoint = sqla_orm.relationship("Venue", foreign_keys=[reimbursementPointId])  # type: ignore [misc]
 
     batchId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
     batch = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])
@@ -350,8 +360,14 @@ class Invoice(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     date = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     reference = sqla.Column(sqla.Text, nullable=False, unique=True)
+    # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
+    # fully switched to `reimbursementPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
     businessUnit = sqla_orm.relationship("BusinessUnit", back_populates="invoices")
+    # FIXME (dbaty, 2022-06-20): set non-NULLABLE once invoice code
+    # has been updated and old data has been migrated.
+    reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
+    reimbursementPoint = sqla_orm.relationship("Venue", foreign_keys=[reimbursementPointId])  # type: ignore [misc]
     # See the note about `amount` at the beginning of this module.
     amount = sqla.Column(sqla.Integer, nullable=False)
     token = sqla.Column(sqla.Text, unique=True, nullable=False)

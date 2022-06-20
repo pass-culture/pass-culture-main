@@ -1,3 +1,5 @@
+import datetime
+
 import factory
 
 from pcapi.core.testing import BaseFactory
@@ -57,7 +59,7 @@ class VenueFactory(BaseFactory):
     dms_token = factory.LazyFunction(api.generate_dms_token)
 
     @factory.post_generation
-    def venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    def business_unit_venue_link(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
         import pcapi.core.finance.factories as finance_factories
 
         if not create:
@@ -65,6 +67,31 @@ class VenueFactory(BaseFactory):
         if not venue.businessUnit:
             return None
         return finance_factories.BusinessUnitVenueLinkFactory(venue=venue, businessUnit=venue.businessUnit)
+
+    @factory.post_generation
+    def pricing_point(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+        if not create:
+            return None
+        pricing_point = extracted
+        if not pricing_point:
+            return None
+        if pricing_point == "self":
+            pricing_point = venue
+        return VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point)
+
+    @factory.post_generation
+    def reimbursement_point(venue, create, extracted, **kwargs):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+        if not create:
+            return None
+        reimbursement_point = extracted
+        if not reimbursement_point:
+            return None
+        if reimbursement_point == "self":
+            reimbursement_point = venue
+        return VenueReimbursementPointLinkFactory(
+            venue=venue,
+            reimbursementPoint=reimbursement_point,
+        )
 
 
 class CollectiveVenueFactory(VenueFactory):
@@ -93,6 +120,40 @@ class VirtualVenueFactory(VenueFactory):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
     venueTypeCode = models.VenueTypeCode.DIGITAL  # type: ignore[attr-defined]
+
+
+class VenuePricingPointLinkFactory(BaseFactory):
+    class Meta:
+        model = models.VenuePricingPointLink
+
+    venue = factory.SubFactory(VenueFactory)
+    pricingPoint = factory.SubFactory(
+        VenueFactory,
+        managingOfferer=factory.SelfAttribute("..venue.managingOfferer"),
+    )
+    timespan = factory.LazyFunction(
+        lambda: [
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            None,
+        ]
+    )
+
+
+class VenueReimbursementPointLinkFactory(BaseFactory):
+    class Meta:
+        model = models.VenueReimbursementPointLink
+
+    venue = factory.SubFactory(VenueFactory)
+    reimbursementPoint = factory.SubFactory(
+        VenueFactory,
+        managingOfferer=factory.SelfAttribute("..venue.managingOfferer"),
+    )
+    timespan = factory.LazyFunction(
+        lambda: [
+            datetime.datetime.utcnow() - datetime.timedelta(days=365),
+            None,
+        ]
+    )
 
 
 class UserOffererFactory(BaseFactory):
