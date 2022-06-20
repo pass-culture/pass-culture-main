@@ -1,12 +1,6 @@
 import { Feature } from 'app/types'
-import { EducationalDomain, OfferType } from 'app/types/offers'
+import { EducationalDomain } from 'app/types/offers'
 import { client } from 'repository/pcapi/pcapiClient'
-
-export const getOffer = async (
-  offerId: number | string
-): Promise<OfferType> => {
-  return client.get(`/adage-iframe/offer/${offerId}`)
-}
 
 export const preBookStock = async (stockId: number): Promise<number> => {
   return client.post('/adage-iframe/bookings', { stockId })

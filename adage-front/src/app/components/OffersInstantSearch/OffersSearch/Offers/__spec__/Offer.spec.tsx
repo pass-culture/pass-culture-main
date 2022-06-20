@@ -4,7 +4,13 @@ import React from 'react'
 import type { Hit } from 'react-instantsearch-core'
 import { QueryCache, QueryClient, QueryClientProvider } from 'react-query'
 
-import { AdageFrontRoles, OfferAddressType } from 'api/gen'
+import { api } from 'api/api'
+import {
+  AdageFrontRoles,
+  CollectiveOfferResponseModel,
+  OfferAddressType,
+  StudentLevels,
+} from 'api/gen'
 import {
   OffersComponent as Offers,
   OffersComponentProps,
@@ -13,12 +19,10 @@ import {
   FiltersContextProvider,
   AlgoliaQueryContextProvider,
 } from 'app/providers'
-import { OfferType } from 'app/types/offers'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { ResultType } from 'utils/types'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getOffer: jest.fn(),
+jest.mock('api/api', () => ({
+  api: { getAdageIframeGetCollectiveOffer: jest.fn() },
 }))
 
 jest.mock('react-instantsearch-dom', () => {
@@ -34,7 +38,7 @@ const wrapper = ({ children }) => (
   <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 )
 
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
+const mockedPcapi = api as jest.Mocked<typeof api>
 
 const searchFakeResult: Hit<ResultType> = {
   objectID: '479',
@@ -62,8 +66,8 @@ const renderOffers = (props: OffersComponentProps) =>
   )
 
 describe('offer', () => {
-  let offerInParis: OfferType
-  let offerInCayenne: OfferType
+  let offerInParis: CollectiveOfferResponseModel
+  let offerInCayenne: CollectiveOfferResponseModel
   let offersProps: OffersComponentProps
 
   beforeEach(() => {
@@ -73,16 +77,15 @@ describe('offer', () => {
       description: 'Une offre vraiment chouette',
       name: 'Une chouette à la mer',
       subcategoryLabel: 'Cinéma',
-      stocks: [
-        {
-          id: 825,
-          beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-          bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-          isBookable: true,
-          price: 140000,
-          numberOfTickets: 10,
-        },
-      ],
+      stock: {
+        id: 825,
+        beginningDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+        bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
+        isBookable: true,
+        price: 140000,
+        numberOfTickets: 10,
+      },
+
       venue: {
         id: 1,
         address: '1 boulevard Poissonnière',
@@ -98,20 +101,21 @@ describe('offer', () => {
           longitude: 2.3785,
         },
       },
-      extraData: {
-        offerVenue: {
-          venueId: 'VENUE_ID',
-          otherAddress: '',
-          addressType: OfferAddressType.OffererVenue,
-        },
-        students: ['Collège - 4e', 'Collège - 3e'],
+      offerVenue: {
+        venueId: 'VENUE_ID',
+        otherAddress: '',
+        addressType: OfferAddressType.OffererVenue,
       },
+      students: [StudentLevels.Collge4e, StudentLevels.Collge3e],
       isSoldOut: false,
       isExpired: false,
       audioDisabilityCompliant: false,
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
+      contactEmail: '',
+      contactPhone: '',
+      domains: [],
     }
 
     offerInCayenne = {
@@ -119,16 +123,14 @@ describe('offer', () => {
       description: 'Une offre vraiment chouette',
       name: 'Une chouette à la mer',
       subcategoryLabel: 'Cinéma',
-      stocks: [
-        {
-          id: 825,
-          beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-          bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-          isBookable: true,
-          price: 0,
-          educationalPriceDetail: 'Le détail de mon prix',
-        },
-      ],
+      stock: {
+        id: 825,
+        beginningDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
+        isBookable: true,
+        price: 0,
+      },
+      educationalPriceDetail: 'Le détail de mon prix',
       venue: {
         id: 1,
         address: '1 boulevard Poissonnière',
@@ -144,20 +146,21 @@ describe('offer', () => {
           longitude: 2.3785,
         },
       },
-      extraData: {
-        offerVenue: {
-          venueId: '',
-          otherAddress: 'A la mairie',
-          addressType: OfferAddressType.Other,
-        },
-        students: ['Collège - 4e'],
+      offerVenue: {
+        venueId: '',
+        otherAddress: 'A la mairie',
+        addressType: OfferAddressType.Other,
       },
+      students: [StudentLevels.Collge4e],
       isSoldOut: false,
       isExpired: false,
       audioDisabilityCompliant: false,
       visualDisabilityCompliant: false,
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
+      contactEmail: '',
+      contactPhone: '',
+      domains: [],
     }
 
     offersProps = {
@@ -165,14 +168,15 @@ describe('offer', () => {
       setIsLoading: jest.fn(),
       userRole: AdageFrontRoles.Redactor,
       handleResetFiltersAndLaunchSearch: jest.fn(),
-      useNewAlgoliaIndex: false,
     }
   })
 
   describe('offer item', () => {
     it('should not show all information at first', async () => {
       // Given
-      mockedPcapi.getOffer.mockResolvedValue(offerInParis)
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValue(
+        offerInParis
+      )
 
       // When
       renderOffers(offersProps)
@@ -215,7 +219,9 @@ describe('offer', () => {
 
     it('should show all offer informations if user click on "en savoir plus"', async () => {
       // Given
-      mockedPcapi.getOffer.mockResolvedValue(offerInCayenne)
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValue(
+        offerInCayenne
+      )
 
       // When
       renderOffers(offersProps)
@@ -274,7 +280,7 @@ describe('offer', () => {
 
     it('should format the description when links are present', async () => {
       // Given
-      mockedPcapi.getOffer.mockResolvedValue({
+      mockedPcapi.getAdageIframeGetCollectiveOffer.mockResolvedValue({
         ...offerInParis,
         description: `lien 1 : www.lien1.com
           https://lien2.com et http://lien3.com

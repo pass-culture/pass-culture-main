@@ -12,7 +12,6 @@ import {
   AlgoliaQueryContextProvider,
 } from 'app/providers'
 import { FeaturesContextProvider } from 'app/providers/FeaturesContextProvider'
-import * as pcapi from 'repository/pcapi/pcapi'
 
 import { App } from '../App'
 
@@ -42,7 +41,6 @@ jest.mock('react-instantsearch-dom', () => {
 })
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getOffer: jest.fn(),
   getEducationalDomains: jest.fn().mockResolvedValue([
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
@@ -53,7 +51,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
       { name: 'ENABLE_EDUCATIONAL_DOMAINS', isActive: true },
     ]),
 }))
-const mockedPcapi = pcapi as jest.Mocked<typeof pcapi>
 
 jest.mock('api/api', () => ({
   api: {
@@ -88,6 +85,7 @@ jest.mock('api/api', () => ({
         },
       ],
     }),
+    getAdageIframeGetCollectiveOffer: jest.fn(),
   },
 }))
 const mockedApi = api as jest.Mocked<typeof api>
@@ -212,7 +210,7 @@ describe('app', () => {
 
   it('should display a "Réinitialiser les filtres" button when no result query is not empty', async () => {
     // Given
-    mockedPcapi.getOffer.mockRejectedValue('')
+    mockedApi.getAdageIframeGetCollectiveOffer.mockRejectedValue('')
     renderApp()
     const searchBox = await findSearchBox()
     const launchSearchButton = await findLaunchSearchButton()
@@ -229,7 +227,7 @@ describe('app', () => {
 
   it('should display a "Réinitialiser les filtres" button when no result and at least one filter is set', async () => {
     // Given
-    mockedPcapi.getOffer.mockRejectedValue('')
+    mockedApi.getAdageIframeGetCollectiveOffer.mockRejectedValue('')
     renderApp()
 
     // When
@@ -247,7 +245,7 @@ describe('app', () => {
 
   it('should not display a "Réinitialiser les filtres" button when there is no query and no filters', async () => {
     // Given
-    mockedPcapi.getOffer.mockRejectedValue('')
+    mockedApi.getAdageIframeGetCollectiveOffer.mockRejectedValue('')
     renderApp()
 
     // Then
