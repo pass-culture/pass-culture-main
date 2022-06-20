@@ -311,7 +311,7 @@ def find_expired_individual_bookings_ordered_by_offerer(expired_on: date = None)
     )
 
 
-def get_active_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
+def get_active_bookings_quantity_for_venue(venue_id: int) -> int:
     # Stock.dnBookedQuantity cannot be used here because we exclude used/confirmed bookings.
     active_bookings_query = Booking.query.join(Stock, Booking.stock).filter(
         Booking.venueId == venue_id,
@@ -327,41 +327,35 @@ def get_active_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: 
         ),
     )
 
-    if is_new_model_enabled:
-        active_bookings_query = active_bookings_query.filter(Booking.educationalBookingId.is_(None))
+    active_bookings_query = active_bookings_query.filter(Booking.educationalBookingId.is_(None))
 
     n_active_bookings = active_bookings_query.with_entities(coalesce(func.sum(Booking.quantity), 0)).one()[0]
 
-    n_active_collective_bookings = 0
-
-    if is_new_model_enabled:
-        n_active_collective_bookings = (
-            educational_models.CollectiveBooking.query.join(
-                educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
-            )
-            .filter(
-                educational_models.CollectiveBooking.venueId == venue_id,
-                or_(
-                    and_(
-                        educational_models.CollectiveBooking.status
-                        == educational_models.CollectiveBookingStatus.PENDING,
-                        not_(educational_models.CollectiveStock.hasBookingLimitDatetimePassed),
-                    ),
-                    and_(
-                        educational_models.CollectiveBooking.status
-                        == educational_models.CollectiveBookingStatus.CONFIRMED,
-                        educational_models.CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
-                    ),
-                ),
-            )
-            .with_entities(coalesce(func.sum(1), 0))
-            .one()[0]
+    n_active_collective_bookings = (
+        educational_models.CollectiveBooking.query.join(
+            educational_models.CollectiveStock, educational_models.CollectiveBooking.collectiveStock
         )
+        .filter(
+            educational_models.CollectiveBooking.venueId == venue_id,
+            or_(
+                and_(
+                    educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.PENDING,
+                    not_(educational_models.CollectiveStock.hasBookingLimitDatetimePassed),
+                ),
+                and_(
+                    educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CONFIRMED,
+                    educational_models.CollectiveBooking.isConfirmed.is_(False),  # type: ignore [attr-defined]
+                ),
+            ),
+        )
+        .with_entities(coalesce(func.sum(1), 0))
+        .one()[0]
+    )
 
     return n_active_bookings + n_active_collective_bookings
 
 
-def get_validated_bookings_quantity_for_venue(venue_id: int, is_new_model_enabled: bool = False) -> int:
+def get_validated_bookings_quantity_for_venue(venue_id: int) -> int:
     validated_bookings_quantity_query = Booking.query.filter(
         Booking.venueId == venue_id,
         Booking.status != BookingStatus.CANCELLED,
@@ -369,28 +363,22 @@ def get_validated_bookings_quantity_for_venue(venue_id: int, is_new_model_enable
         or_(Booking.is_used_or_reimbursed.is_(True), Booking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
     )
 
-    if is_new_model_enabled:
-        validated_bookings_quantity_query = validated_bookings_quantity_query.filter(
-            Booking.educationalBookingId.is_(None)
-        )
+    validated_bookings_quantity_query = validated_bookings_quantity_query.filter(Booking.educationalBookingId.is_(None))
 
     n_validated_bookings_quantity = validated_bookings_quantity_query.with_entities(
         coalesce(func.sum(Booking.quantity), 0)
     ).one()[0]
 
-    n_validated_collective_bookings_quantity = 0
-
-    if is_new_model_enabled:
-        n_validated_collective_bookings_quantity = (
-            educational_models.CollectiveBooking.query.filter(
-                educational_models.CollectiveBooking.venueId == venue_id,
-                educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
-                educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.PENDING,
-                or_(educational_models.CollectiveBooking.is_used_or_reimbursed.is_(True), educational_models.CollectiveBooking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
-            )
-            .with_entities(coalesce(func.sum(1), 0))
-            .one()[0]
+    n_validated_collective_bookings_quantity = (
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.venueId == venue_id,
+            educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.CANCELLED,
+            educational_models.CollectiveBooking.status != educational_models.CollectiveBookingStatus.PENDING,
+            or_(educational_models.CollectiveBooking.is_used_or_reimbursed.is_(True), educational_models.CollectiveBooking.isConfirmed.is_(True)),  # type: ignore [attr-defined]
         )
+        .with_entities(coalesce(func.sum(1), 0))
+        .one()[0]
+    )
 
     return n_validated_bookings_quantity + n_validated_collective_bookings_quantity
 
