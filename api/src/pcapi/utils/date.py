@@ -2,11 +2,12 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from babel.dates import format_date
 from babel.dates import format_datetime as babel_format_datetime
-from dateutil import tz
 from dateutil.parser import parserinfo
+from pytz import BaseTzInfo as pytz_BaseTzInfo
 
 from pcapi.domain.postal_code.postal_code import PostalCode
 
@@ -100,8 +101,8 @@ def get_department_timezone(departement_code: Optional[str]) -> str:
 
 
 def utc_datetime_to_department_timezone(date_time: Optional[datetime], departement_code: str) -> datetime:
-    from_zone = tz.gettz(DEFAULT_STORED_TIMEZONE)
-    to_zone = tz.gettz(get_department_timezone(departement_code))
+    from_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
+    to_zone = ZoneInfo(get_department_timezone(departement_code))
     utc_datetime = date_time.replace(tzinfo=from_zone)  # type: ignore [union-attr]
     return utc_datetime.astimezone(to_zone)
 
@@ -129,7 +130,7 @@ def get_time_in_seconds_from_datetime(date_time: datetime) -> int:
     return hour_in_seconds + minute_in_seconds + seconds
 
 
-def get_day_start(dt: date, timezone) -> datetime:  # type: ignore [no-untyped-def]
+def get_day_start(dt: date, timezone: pytz_BaseTzInfo) -> datetime:
     """Return a ``datetime`` object that is the first second of the given
     ``date`` in the given timezone.
     """
@@ -151,3 +152,11 @@ def format_time_in_second_to_human_readable(time_in_second: int) -> Optional[str
             unit = NAMES[i][0] if time_in_unit == 1 else NAMES[i][1]
             return f"{time_in_unit} {unit}"
     return None
+
+
+def local_datetime_to_default_timezone(dt: datetime, local_tz: str) -> datetime:
+    from_zone = ZoneInfo(local_tz)
+    to_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
+    if dt.tzinfo:
+        return dt.astimezone(to_zone)
+    return dt.replace(tzinfo=from_zone).astimezone(to_zone)
