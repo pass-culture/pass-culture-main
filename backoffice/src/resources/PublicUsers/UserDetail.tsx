@@ -107,7 +107,8 @@ export const UserDetail = () => {
 
   const digitalCreditProgression = (remainingCredit / initialCredit) * 100
 
-  let subscriptionItems, idsCheckHistory
+  let subscriptionItems = []
+  let idsCheckHistory = []
 
   if (AGE18?.idCheckHistory?.length > 0) {
     idsCheckHistory = AGE18.idCheckHistory
@@ -239,15 +240,12 @@ export const UserDetail = () => {
             <Typography variant={'h5'}>
               Dossier{' '}
               <strong>
-                {idsCheckHistory &&
-                  idsCheckHistory[0] &&
-                  idsCheckHistory[0]['type']}
+                {idsCheckHistory[0] && idsCheckHistory[0]['type']}
               </strong>{' '}
               importé le :
             </Typography>
             <Typography variant={'h4'}>
-              {idsCheckHistory &&
-                idsCheckHistory[0] &&
+              {idsCheckHistory[0] &&
                 moment(idsCheckHistory[0]['dateCreated']).format(
                   'D/MM/YYYY à HH:mm'
                 )}
@@ -275,14 +273,14 @@ export const UserDetail = () => {
           <Stack spacing={3}>
             <UserDetailsCard
               {...userBaseInfo}
-              firstIdCheckHistory={idsCheckHistory && idsCheckHistory[0]}
+              firstIdCheckHistory={idsCheckHistory[0]}
             />
 
             <Card style={cardStyle}>
               <Typography variant={'h5'}>
                 Parcours d'inscription {beneficiaryBadge}
               </Typography>
-              {subscriptionItems && (
+              {subscriptionItems.length > 0 && (
                 <>
                   <Grid container spacing={5} sx={{ mt: 4 }}>
                     <Grid item xs={6}>
@@ -401,11 +399,12 @@ export const UserDetail = () => {
                 </>
               )}
             </Card>
-
-            {idsCheckHistory &&
-              idsCheckHistory.map((idCheckHistory: CheckHistory) => {
-                return <CheckHistoryCard {...idCheckHistory} />
-              })}
+            {idsCheckHistory.map((idCheckHistory: CheckHistory) => (
+              <CheckHistoryCard
+                key={idCheckHistory.sourceId}
+                {...idCheckHistory}
+              />
+            ))}
           </Stack>
         </TabPanel>
         <TabPanel value={value} index={2}>
