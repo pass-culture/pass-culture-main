@@ -2045,6 +2045,12 @@ class GenerateInvoiceHtmlTest:
 
     def test_basics(self, invoice_data):
         business_unit, stocks, venue = invoice_data
+        only_educational_venue = offerers_factories.VenueFactory(businessUnit=business_unit, name="Coiffeur collecTIF")
+        only_educational_booking = bookings_factories.UsedEducationalBookingFactory(
+            stock__price=666,
+            stock__offer__venue=only_educational_venue,
+            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+        )
         educational_booking1 = bookings_factories.UsedEducationalBookingFactory(
             stock__price=5000,
             stock__offer__venue=venue,
@@ -2057,12 +2063,19 @@ class GenerateInvoiceHtmlTest:
         )
         api.price_booking(educational_booking1)
         api.price_booking(educational_booking2)
+        api.price_booking(only_educational_booking)
 
         self.generate_and_compare_invoice(stocks, business_unit, venue)
 
     @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_basics_with_new_collective_model(self, invoice_data):
         business_unit, stocks, venue = invoice_data
+        only_collective_venue = offerers_factories.VenueFactory(businessUnit=business_unit, name="Coiffeur collecTIF")
+        only_collective_booking = educational_factories.UsedCollectiveBookingFactory(
+            collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
+            collectiveStock__collectiveOffer__venue=only_collective_venue,
+            collectiveStock__price=666,
+        )
         collective_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
             collectiveStock__collectiveOffer__venue=venue,
@@ -2075,6 +2088,7 @@ class GenerateInvoiceHtmlTest:
         )
         api.price_booking(collective_booking)
         api.price_booking(collective_booking2)
+        api.price_booking(only_collective_booking)
 
         self.generate_and_compare_invoice(stocks, business_unit, venue)
 
