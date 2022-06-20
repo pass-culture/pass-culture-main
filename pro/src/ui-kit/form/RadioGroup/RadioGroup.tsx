@@ -42,7 +42,7 @@ const RadioGroup = ({
       )}
       dataTestId={`wrapper-${name}`}
       error={meta.touched && !!meta.error ? meta.error : undefined}
-      hideFooter
+      hideFooter={false}
       legend={legend}
       name={`radio-group-${name}`}
     >

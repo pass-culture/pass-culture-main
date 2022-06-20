@@ -23,7 +23,7 @@ const RadioButton = ({
   withBorder,
   className,
 }: IRadioButtonProps): JSX.Element => {
-  const [field, meta] = useField({ name, value, type: 'radio' })
+  const [field] = useField({ name, value, type: 'radio' })
 
   return (
     <div
@@ -43,9 +43,6 @@ const RadioButton = ({
         })}
         checked={field.checked}
       />
-      {meta.touched && meta.error && (
-        <FieldError name={name}>{meta.error}</FieldError>
-      )}
     </div>
   )
 }

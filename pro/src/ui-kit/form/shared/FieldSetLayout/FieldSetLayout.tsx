@@ -21,23 +21,25 @@ const FieldSetLayout = ({
   name,
   hideFooter = false,
   dataTestId,
-}: IFieldSetLayoutProps): JSX.Element => (
-  <fieldset
-    className={cn(styles['fieldset-layout'], className)}
-    data-testid={dataTestId}
-  >
-    {legend && (
-      <legend className={styles['fieldset-layout-legend']}>{legend}</legend>
-    )}
+}: IFieldSetLayoutProps): JSX.Element => {
+  return (
+    <fieldset
+      className={cn(styles['fieldset-layout'], className)}
+      data-testid={dataTestId}
+    >
+      {legend && (
+        <legend className={styles['fieldset-layout-legend']}>{legend}</legend>
+      )}
 
-    {children}
+      <div> {children} </div>
 
-    {!hideFooter && (
-      <div className={styles['fieldset-layout-error']}>
-        {!!error && <FieldError name={name}>{error}</FieldError>}
-      </div>
-    )}
-  </fieldset>
-)
+      {!hideFooter && (
+        <div className={styles['fieldset-layout-error']}>
+          {!!error && <FieldError name={name}>{error}</FieldError>}
+        </div>
+      )}
+    </fieldset>
+  )
+}
 
 export default FieldSetLayout

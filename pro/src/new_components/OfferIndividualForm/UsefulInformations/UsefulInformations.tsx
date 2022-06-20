@@ -1,6 +1,6 @@
 import { Checkbox, TextArea } from 'ui-kit'
-import FormLayout from 'new_components/FormLayout'
 
+import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from '../types'
 import { IOfferSubCategory } from 'core/Offers/types'
 import React from 'react'
