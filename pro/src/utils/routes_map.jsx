@@ -1,5 +1,6 @@
 import Bookings from 'routes/Bookings'
 import CollectiveBookings from 'routes/CollectiveBookings'
+import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
 import CollectiveOffers from 'routes/CollectiveOffers'
@@ -7,7 +8,6 @@ import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
 import Homepage from 'components/pages/Home/Homepage'
 import LostPassword from 'components/pages/LostPassword/LostPassword'
-import OfferEducationalConfirmation from 'routes/OfferEducationalConfirmation'
 import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
@@ -203,13 +203,13 @@ const routes = [
     featureName: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION',
   },
   {
-    component: OfferEducationalConfirmation,
+    component: CollectiveOfferConfirmation,
     exact: true,
     path: '/offre/:offerId([A-Z0-9]+)/collectif/confirmation',
     title: 'Page de confirmation de création d’offre',
   },
   {
-    component: OfferEducationalConfirmation,
+    component: CollectiveOfferConfirmation,
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/confirmation',
     title: 'Page de confirmation de création d’offre',
