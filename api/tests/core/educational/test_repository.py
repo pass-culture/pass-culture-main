@@ -1,83 +1,20 @@
 from datetime import datetime
 from datetime import timedelta
-from decimal import Decimal
 
 from dateutil import tz
 from freezegun import freeze_time
 import pytest
 
-from pcapi.core.bookings.factories import EducationalBookingFactory
-from pcapi.core.bookings.factories import RefusedEducationalBookingFactory
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
-from pcapi.core.educational.repository import get_confirmed_educational_bookings_amount
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
-
-
-class EducationalRepositoryTest:
-    def test_get_not_cancelled_educational_bookings_amount(self, db_session):
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        another_educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_year = educational_factories.EducationalYearFactory(adageId="1")
-        another_educational_year = educational_factories.EducationalYearFactory(adageId="2")
-        EducationalBookingFactory(
-            amount=Decimal(20.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-        )
-        EducationalBookingFactory(
-            amount=Decimal(400.00),
-            quantity=1,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.CONFIRMED,
-        )
-        EducationalBookingFactory(
-            amount=Decimal(400.00),
-            quantity=1,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.USED,
-        )
-        EducationalBookingFactory(
-            amount=Decimal(20.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.PENDING,
-        )
-        RefusedEducationalBookingFactory(
-            amount=Decimal(10.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=educational_year,
-        )
-        EducationalBookingFactory(
-            amount=Decimal(10.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=another_educational_institution,
-            educationalBooking__educationalYear=educational_year,
-            status=BookingStatus.CONFIRMED,
-        )
-        EducationalBookingFactory(
-            amount=Decimal(10.00),
-            quantity=20,
-            educationalBooking__educationalInstitution=educational_institution,
-            educationalBooking__educationalYear=another_educational_year,
-            status=BookingStatus.CONFIRMED,
-        )
-
-        total_amount = get_confirmed_educational_bookings_amount(educational_institution.id, educational_year.adageId)
-        assert total_amount == Decimal(1200.00)
 
 
 @freeze_time("2022-03-20")
