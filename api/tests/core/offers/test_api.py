@@ -27,6 +27,7 @@ from pcapi.core.offers import exceptions
 from pcapi.core.offers import factories
 from pcapi.core.offers import models
 from pcapi.core.offers import offer_validation
+from pcapi.core.offers.api import _get_show_id_from_uuid
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_features
@@ -2528,3 +2529,19 @@ class UnindexExpiredOffersTest:
         assert mock_unindex_offer_ids.mock_calls == [
             mock.call([stock1.offerId]),
         ]
+
+
+class GetShowIdFromUuidTest:
+    def test_get_show_id_from_uuid(self):
+        # Given
+        uuid = "movie_id%%siret#show_id/showtime"
+        uuid2 = "123%12345678912345#111/2022-12-12 11:00:00"
+        uuid3 = None
+        # When
+        result = _get_show_id_from_uuid(uuid=uuid)
+        result2 = _get_show_id_from_uuid(uuid=uuid2)
+        result3 = _get_show_id_from_uuid(uuid=uuid3)
+        # Then
+        assert result == "show_id"
+        assert result2 == "111"
+        assert result3 == ""

@@ -34,6 +34,16 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         return {show.id: show.internet_remaining_place for show in shows if show.id in show_ids}
 
+    def get_shows(self) -> list[cds_serializers.ShowCDS]:
+        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
+        shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
+        if shows:
+            return shows
+
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Shows not found in Cine Digital Service API for cinemaId={self.cinema_id} & url={self.api_url}"
+        )
+
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)

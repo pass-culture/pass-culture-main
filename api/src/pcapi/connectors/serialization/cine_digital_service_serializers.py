@@ -28,6 +28,7 @@ class ShowCDS(BaseModel):
     showtime: datetime.datetime
     shows_tariff_pos_type_collection: list[ShowTariffCDS] = Field(alias="showsTariffPostypeCollection")
     screen: IdObjectCDS = Field(alias="screenid")
+    media: IdObjectCDS = Field(alias="mediaid")
 
     class Config:
         allow_population_by_field_name = True
