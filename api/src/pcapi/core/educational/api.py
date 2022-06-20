@@ -410,8 +410,18 @@ def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:
     return collective_booking
 
 
-def create_educational_institution(institution_id: str) -> educational_models.EducationalInstitution:
-    educational_institution = educational_models.EducationalInstitution(institutionId=institution_id)
+def create_educational_institution(
+    institution_id: str,
+    institution_data: dict[str, str],
+) -> educational_models.EducationalInstitution:
+    educational_institution = educational_models.EducationalInstitution(
+        institutionId=institution_id,
+        name=institution_data["name"],
+        city=institution_data["city"],
+        postalCode=institution_data["postalCode"],
+        email=institution_data["email"],
+        phoneNumber=institution_data["phoneNumber"],
+    )
     repository.save(educational_institution)
 
     return educational_institution

@@ -27,8 +27,12 @@ def import_educational_institutions_and_deposits(
     with open(f"{path}{filename}", "r", encoding="utf-8") as csv_file:
         csv_rows = csv.DictReader(csv_file, delimiter=";")
         headers = csv_rows.fieldnames
-        if not headers or "UAICode" not in headers or "depositAmount" not in headers:
-            print("\033[91mERROR: UAICode or depositAmount missing in CSV headers\033[0m")
+        header_names = set(["UAICode", "name", "city", "postalCode", "phoneNumber", "email", "depositAmount"])
+        if not headers or not header_names.issubset(set(headers)):
+            header_names_list_string = ", ".join(header_names)
+            print(
+                f"\033[91mERROR: CSV headers is missing at least one of the following header : {header_names_list_string} \033[0m"
+            )
             return
         _process_educational_csv(csv_rows, ministry, educational_year_beginning)
     return
@@ -52,10 +56,17 @@ def _process_educational_csv(
     for row in educational_institutions_rows:
         institution_id = row["UAICode"]
         deposit_amount = row["depositAmount"]
+        institution_data = {
+            "name": row["name"],
+            "city": row["city"],
+            "postalCode": row["postalCode"],
+            "phoneNumber": row["phoneNumber"],
+            "email": row["email"],
+        }
 
         educational_institution = educational_repository.find_educational_institution_by_uai_code(institution_id)
         if educational_institution is None:
-            educational_institution = api.create_educational_institution(institution_id)
+            educational_institution = api.create_educational_institution(institution_id, institution_data)
             logger.info("Educational institution with UAI code %s has been created", institution_id)
 
         if educational_repository.find_educational_deposit_by_institution_id_and_year(
