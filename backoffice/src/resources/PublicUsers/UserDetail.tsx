@@ -27,7 +27,13 @@ import { CheckHistoryCard } from './CheckHistoryCard'
 import { ManualReviewModal } from './ManualReviewModal'
 import { StatusAvatar } from './StatusAvatar'
 import { StatusBadge } from './StatusBadge'
-import { CheckHistory, SubscriptionItemStatus, UserBaseInfo } from './types'
+import {
+  CheckHistory,
+  SubscriptionItem,
+  SubscriptionItemStatus,
+  SubscriptionItemType,
+  UserBaseInfo,
+} from './types'
 import { UserDetailsCard } from './UserDetailsCard'
 
 interface TabPanelProps {
@@ -107,8 +113,8 @@ export const UserDetail = () => {
 
   const digitalCreditProgression = (remainingCredit / initialCredit) * 100
 
-  let subscriptionItems = []
-  let idsCheckHistory = []
+  let subscriptionItems: SubscriptionItem[] = []
+  let idsCheckHistory: CheckHistory[] = []
 
   if (AGE18?.idCheckHistory?.length > 0) {
     idsCheckHistory = AGE18.idCheckHistory
@@ -295,11 +301,10 @@ export const UserDetail = () => {
                         <StatusAvatar
                           subscriptionItem={
                             subscriptionItems.find(
-                              (item: {
-                                type: string
-                                status: SubscriptionItemStatus
-                              }) => item.type === 'email-validation'
-                            ).status
+                              subscriptionItem =>
+                                subscriptionItem.type ===
+                                SubscriptionItemType.EMAIL_VALIDATION
+                            )!
                           }
                         />
                       </Stack>
@@ -319,8 +324,10 @@ export const UserDetail = () => {
                               (item: {
                                 type: string
                                 status: SubscriptionItemStatus
-                              }) => item.type === 'profile-completion'
-                            ).status
+                              }) =>
+                                item.type ===
+                                SubscriptionItemType.PROFILE_COMPLETION
+                            )!
                           }
                         />
                       </Stack>
@@ -340,8 +347,10 @@ export const UserDetail = () => {
                               (item: {
                                 type: string
                                 status: SubscriptionItemStatus
-                              }) => item.type === 'phone-validation'
-                            ).status
+                              }) =>
+                                item.type ===
+                                SubscriptionItemType.PHONE_VALIDATION
+                            )!
                           }
                         />
                       </Stack>
@@ -359,8 +368,10 @@ export const UserDetail = () => {
                               (item: {
                                 type: string
                                 status: SubscriptionItemStatus
-                              }) => item.type === 'identity-check'
-                            ).status
+                              }) =>
+                                item.type ===
+                                SubscriptionItemType.IDENTITY_CHECK
+                            )!
                           }
                         />
                       </Stack>
@@ -380,8 +391,10 @@ export const UserDetail = () => {
                               (item: {
                                 type: string
                                 status: SubscriptionItemStatus
-                              }) => item.type === 'profile-completion'
-                            ).status
+                              }) =>
+                                item.type ===
+                                SubscriptionItemType.PROFILE_COMPLETION
+                            )!
                           }
                         />
                       </Stack>
@@ -401,8 +414,10 @@ export const UserDetail = () => {
                               (item: {
                                 type: string
                                 status: SubscriptionItemStatus
-                              }) => item.type === 'honor-statement'
-                            ).status
+                              }) =>
+                                item.type ===
+                                SubscriptionItemType.HONOR_STATEMENT
+                            )!
                           }
                         />
                       </Stack>
@@ -411,10 +426,10 @@ export const UserDetail = () => {
                 </>
               )}
             </Card>
-            {idsCheckHistory.map((idCheckHistory: CheckHistory) => (
+            {idsCheckHistory.map(idCheckHistory => (
               <CheckHistoryCard
-                key={idCheckHistory.sourceId}
-                {...idCheckHistory}
+                key={idCheckHistory.thirdPartyId}
+                idCheckHistory={idCheckHistory}
               />
             ))}
           </Stack>

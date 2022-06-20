@@ -21,9 +21,21 @@ export interface UserManualReview {
 
 export enum SubscriptionItemStatus {
   KO = 'ko',
-  OK = 'ko',
+  OK = 'ok',
   NOT_APPLICABLE = 'not-applicable',
   VOID = 'void',
+}
+export enum SubscriptionItemType {
+  EMAIL_VALIDATION = 'email-validation',
+  PHONE_VALIDATION = 'phone-validation',
+  PROFILE_COMPLETION = 'profile-completion',
+  IDENTITY_CHECK = 'identity-check',
+  HONOR_STATEMENT = 'honor-statement',
+}
+
+export interface SubscriptionItem {
+  type: SubscriptionItemType
+  status: SubscriptionItemStatus
 }
 
 export interface CheckHistoryTechnicalDetails {
