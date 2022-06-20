@@ -48,7 +48,20 @@ class ImportEducationalInstitutionTest:
         )
 
         # When
-        _process_educational_csv([{"UAICode": "3790032L", "depositAmount": 3000}], "EDUCATION_NATIONALE")
+        _process_educational_csv(
+            [
+                {
+                    "UAICode": "3790032L",
+                    "depositAmount": 3000,
+                    "name": "nom étab",
+                    "email": "email@example.com",
+                    "phoneNumber": "0601010101",
+                    "city": "Ville étab",
+                    "postalCode": "75000",
+                }
+            ],
+            "EDUCATION_NATIONALE",
+        )
 
         # Then it does not update educational deposit or create one if it exists for current year
         educational_deposit = models.EducationalDeposit.query.filter(
@@ -76,7 +89,20 @@ class ImportEducationalInstitutionTest:
         )
 
         # When
-        _process_educational_csv([{"UAICode": "4790032L", "depositAmount": 5000}], "EDUCATION_NATIONALE")
+        _process_educational_csv(
+            [
+                {
+                    "UAICode": "4790032L",
+                    "depositAmount": 5000,
+                    "name": "nom étab",
+                    "email": "email@example.com",
+                    "phoneNumber": "0601010101",
+                    "city": "Ville étab",
+                    "postalCode": "75000",
+                }
+            ],
+            "EDUCATION_NATIONALE",
+        )
 
         # Then it creates educational deposit for current year even if it exists for another year
         educational_deposit = models.EducationalDeposit.query.filter(
@@ -104,7 +130,21 @@ class ImportEducationalInstitutionTest:
         )
 
         # When
-        _process_educational_csv([{"UAICode": "4790032L", "depositAmount": 5000}], "EDUCATION_NATIONALE", "2024")
+        _process_educational_csv(
+            [
+                {
+                    "UAICode": "4790032L",
+                    "depositAmount": 5000,
+                    "name": "nom étab",
+                    "email": "email@example.com",
+                    "phoneNumber": "0601010101",
+                    "city": "Ville étab",
+                    "postalCode": "75000",
+                }
+            ],
+            "EDUCATION_NATIONALE",
+            "2024",
+        )
 
         # Then it creates educational deposit for future year because we give year as input
         educational_deposit = models.EducationalDeposit.query.filter(
