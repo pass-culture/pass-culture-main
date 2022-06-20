@@ -137,8 +137,8 @@ describe('test creation form venue edition', () => {
       selectedVenueFromUrl: venuePhysicalUndefinedAccessibility,
       selectedSubcategoryId: 'ID_SUB_CATEGORY_1_ONLINE_OR_OFFLINE',
     })
+    await setOfferValues({ venueId: venuePhysicalAccessible.id })
 
-    setOfferValues({ venueId: venuePhysicalAccessible.id })
     await expect(
       getOfferInputForField('audioDisabilityCompliant')
     ).resolves.toBeChecked()
@@ -156,7 +156,7 @@ describe('test creation form venue edition', () => {
     ).resolves.not.toBeChecked()
 
     // virtual venues have all accessibility values as null
-    setOfferValues({ venueId: venueVirtual.id })
+    await setOfferValues({ venueId: venueVirtual.id })
     await expect(
       getOfferInputForField('audioDisabilityCompliant')
     ).resolves.not.toBeChecked()
@@ -179,7 +179,8 @@ describe('test creation form venue edition', () => {
       selectedVenueFromUrl: venuePhysicalAccessible,
       selectedSubcategoryId: 'ID_SUB_CATEGORY_1_ONLINE_OR_OFFLINE',
     })
-    setOfferValues({ subcategoryId: 'ID_SUB_CATEGORY_1_ONLINE' })
+
+    await setOfferValues({ subcategoryId: 'ID_SUB_CATEGORY_1_ONLINE' })
 
     await expect(
       getOfferInputForField('audioDisabilityCompliant')
@@ -206,10 +207,11 @@ describe('test creation form offerer edition', () => {
       selectedSubcategoryId: 'ID_SUB_CATEGORY_1_OFFLINE',
     })
 
-    setOfferValues({
+    await setOfferValues({
       offererId: offerer2.id,
       venueId: offerer2VenuePhysicalAccessible.id,
     })
+
     await screen.findByDisplayValue(offerer2VenuePhysicalAccessible.name)
     await expect(
       getOfferInputForField('audioDisabilityCompliant')
