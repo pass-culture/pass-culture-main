@@ -2,8 +2,11 @@ import './OfferSummary.scss'
 
 import React from 'react'
 
-import { OfferAddressType } from 'api/gen'
-import { OfferType } from 'app/types/offers'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+  OfferAddressType,
+} from 'api/gen'
 import { ReactComponent as BuildingIcon } from 'assets/building.svg'
 import { ReactComponent as DateIcon } from 'assets/date.svg'
 import { ReactComponent as EuroIcon } from 'assets/euro.svg'
@@ -12,6 +15,8 @@ import { ReactComponent as SubcategoryIcon } from 'assets/subcategory.svg'
 import { ReactComponent as UserIcon } from 'assets/user.svg'
 import { toISOStringWithoutMilliseconds } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
+
+import { isOfferCollectiveOffer } from '../utils/offerIsCollectiveOffer'
 
 const extractDepartmentCode = (venuePostalCode: string): string => {
   const departmentNumberBase: number = parseInt(venuePostalCode.slice(0, 2))
@@ -41,30 +46,36 @@ const getLocalBeginningDatetime = (
   return stockLocalBeginningDate
 }
 
-const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
-  const { subcategoryLabel, stocks, venue, extraData } = offer
-  const { beginningDatetime, numberOfTickets, price } = extraData?.isShowcase
+const OfferSummary = ({
+  offer,
+}: {
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+}): JSX.Element => {
+  const { subcategoryLabel, venue, offerVenue, students } = offer
+  const { beginningDatetime, numberOfTickets, price } = !isOfferCollectiveOffer(
+    offer
+  )
     ? {
         beginningDatetime: undefined,
         numberOfTickets: undefined,
         price: undefined,
       }
-    : stocks[0]
+    : offer.stock
 
-  let offerVenue = `${venue.postalCode}, ${venue.city}`
+  let offerVenueLabel = `${venue.postalCode}, ${venue.city}`
 
-  if (extraData?.offerVenue) {
-    if (extraData?.offerVenue.addressType === OfferAddressType.Other) {
-      offerVenue = extraData.offerVenue.otherAddress
-    } else if (extraData?.offerVenue.addressType === OfferAddressType.School) {
-      offerVenue = "Dans l'établissement scolaire"
+  if (offerVenue) {
+    if (offerVenue.addressType === OfferAddressType.Other) {
+      offerVenueLabel = offerVenue.otherAddress
+    } else if (offerVenue.addressType === OfferAddressType.School) {
+      offerVenueLabel = "Dans l'établissement scolaire"
     }
   }
 
-  const students = extraData?.students
-    ? extraData.students?.length > 1
+  const studentsLabel = students
+    ? students?.length > 1
       ? 'Multi niveaux'
-      : extraData.students[0]
+      : students[0]
     : ''
 
   const getFormattedPrice = (price?: number) => {
@@ -97,7 +108,7 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
         )}
         <li className="offer-summary-item">
           <LocationIcon className="offer-summary-item-icon" />
-          {offerVenue}
+          {offerVenueLabel}
         </li>
       </ul>
       <ul className="offer-summary">
@@ -113,10 +124,10 @@ const OfferSummary = ({ offer }: { offer: OfferType }): JSX.Element => {
             {formattedPrice}
           </li>
         )}
-        {students && (
+        {studentsLabel && (
           <li className="offer-summary-item">
             <BuildingIcon className="offer-summary-item-icon" />
-            {students}
+            {studentsLabel}
           </li>
         )}
       </ul>

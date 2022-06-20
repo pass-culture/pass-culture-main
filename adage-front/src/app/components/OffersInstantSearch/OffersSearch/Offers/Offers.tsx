@@ -6,19 +6,22 @@ import { connectHits } from 'react-instantsearch-core'
 import { Stats } from 'react-instantsearch-dom'
 import { useQueries } from 'react-query'
 
-import { AdageFrontRoles } from 'api/gen'
+import {
+  AdageFrontRoles,
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'api/gen'
 import { getCollectiveOfferAdapter } from 'app/adapters/getCollectiveOfferAdapter'
 import { getCollectiveOfferTemplateAdapter } from 'app/adapters/getCollectiveOfferTemplateAdapter'
 import { Spinner } from 'app/components/Layout/Spinner/Spinner'
-import { OfferType } from 'app/types/offers'
-import * as pcapi from 'repository/pcapi/pcapi'
 import { ResultType } from 'utils/types'
 
 import { NoResultsPage } from './NoResultsPage/NoResultsPage'
 import { Offer } from './Offer'
 
-const offerIsBookable = (offer: OfferType): boolean =>
-  !offer.isSoldOut && !offer.isExpired
+const offerIsBookable = (
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+): boolean => !offer.isSoldOut && !offer.isExpired
 
 const extractOfferIdFromObjectId = (offerId: string): number => {
   const splitResult = offerId.split('T-')
@@ -52,7 +55,7 @@ export const OffersComponent = ({
       queryKey: ['offer', hit.objectID],
       queryFn: async () => {
         try {
-          const offerId = extractOfferIdFromObjectId('T-4')
+          const offerId = extractOfferIdFromObjectId(hit.objectID)
           const { isOk, payload: offer } = await (hit.isTemplate
             ? getCollectiveOfferTemplateAdapter(offerId)
             : getCollectiveOfferAdapter(offerId))
@@ -85,8 +88,11 @@ export const OffersComponent = ({
   }
 
   const offers = queries
-    .map(({ data }) => data as OfferType | undefined)
-    .filter(offer => typeof offer !== 'undefined') as OfferType[]
+    .map(({ data }) => data)
+    .filter(offer => typeof offer !== 'undefined') as (
+    | CollectiveOfferResponseModel
+    | CollectiveOfferTemplateResponseModel
+  )[]
 
   if (hits.length === 0 || offers.length === 0) {
     return (
