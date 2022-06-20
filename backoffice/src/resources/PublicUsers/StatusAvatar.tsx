@@ -3,20 +3,21 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import { Avatar } from '@mui/material'
 import { green, red, yellow } from '@mui/material/colors'
 import React from 'react'
+import { CheckHistory, SubscriptionItem, SubscriptionItemStatus } from './types'
 
 type Props = {
-  subscriptionItem: string
+  subscriptionItem: SubscriptionItem | CheckHistory
 }
 
 export const StatusAvatar = ({ subscriptionItem }: Props) => {
   let color, icon
 
-  switch (subscriptionItem) {
-    case 'ok':
+  switch (subscriptionItem.status) {
+    case SubscriptionItemStatus.OK:
       color = green['700']
       icon = <CheckCircleOutlineIcon />
       break
-    case 'ko':
+    case SubscriptionItemStatus.KO:
       color = red['700']
       icon = <ErrorOutlineIcon />
       break

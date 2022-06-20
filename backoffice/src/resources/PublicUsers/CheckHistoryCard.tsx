@@ -14,7 +14,11 @@ import { snakeCaseToTitleCase } from '../../tools/textTools'
 import { StatusAvatar } from './StatusAvatar'
 import { CheckHistory } from './types'
 
-export const CheckHistoryCard = (idCheckHistory: CheckHistory) => {
+type Props = {
+  idCheckHistory: CheckHistory
+}
+
+export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
   const cardStyle = {
     width: '100%',
     marginTop: '20px',
@@ -59,7 +63,7 @@ export const CheckHistoryCard = (idCheckHistory: CheckHistory) => {
             </Grid>
             <Grid item xs={6}>
               <p>
-                <StatusAvatar subscriptionItem={idCheckHistory?.status} />
+                <StatusAvatar subscriptionItem={idCheckHistory} />
               </p>
             </Grid>
           </Stack>
