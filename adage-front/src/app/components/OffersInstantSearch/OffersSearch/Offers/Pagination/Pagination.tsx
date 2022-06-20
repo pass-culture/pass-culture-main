@@ -51,7 +51,9 @@ const CustomPagination = ({
               </a>
             </li>
           ) : (
-            <span className="page-dots">{page}</span>
+            <span className="page-dots" key={page}>
+              {page}
+            </span>
           )
         )}
       </ul>
