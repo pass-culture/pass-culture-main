@@ -13,7 +13,6 @@ from pcapi.core.offers.factories import MediationFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import OfferReportFactory
 from pcapi.core.offers.factories import ProductFactory
-from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.factories import StockWithActivationCodesFactory
 from pcapi.core.offers.factories import ThingStockFactory
 from pcapi.core.offers.models import OfferReport
@@ -72,7 +71,6 @@ class OffersTest:
         offer_id = offer.id
         queries = 1  # select offer
         queries += 1  # select feature
-
         with assert_num_queries(queries):
             response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
 
@@ -191,21 +189,6 @@ class OffersTest:
         assert response.json["isEducational"]
         assert not response.json["isExpired"]
         assert response.json["venue"]["isPermanent"]
-
-    def test_get_offer_only_not_deleted(self, app):
-        offer = OfferFactory()
-        bookable_stock = StockFactory(offer=offer)
-        StockFactory(offer=offer, isSoftDeleted=True)
-
-        offer_id = offer.id
-        queries = 1  # select offer
-        queries += 1  # select feature
-        with assert_num_queries(queries):
-            response = TestClient(app.test_client()).get(f"/native/v1/offer/{offer_id}")
-
-        assert response.status_code == 200
-        assert len(response.json["stocks"]) == 1
-        assert response.json["stocks"][0]["id"] == bookable_stock.id
 
     def test_get_digital_offer_with_available_activation_and_no_expiration_date(self, app):
         # given
