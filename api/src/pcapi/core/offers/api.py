@@ -35,7 +35,6 @@ from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.adage_backends as adage_client
-from pcapi.core.educational.models import ADAGE_STUDENT_LEVEL_MAPPING
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
@@ -396,12 +395,11 @@ def update_collective_offer(
     else:
         search.async_index_collective_offer_ids([offer_to_update.id])
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() or not legacy:
-        if not is_offer_showcase:
-            educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
-                offer_to_update.id,
-                updated_fields,
-            )
+    if not is_offer_showcase:
+        educational_api.notify_educational_redactor_on_collective_offer_or_stock_edit(
+            offer_to_update.id,
+            updated_fields,
+        )
 
 
 def update_collective_offe_template(offer_id: int, new_values: dict) -> None:
@@ -418,20 +416,6 @@ def _update_collective_offer(offer: Union[CollectiveOffer, CollectiveOfferTempla
     updated_fields = []
     for key, value in new_values.items():
         updated_fields.append(key)
-
-        # FIXME (MathildeDuboille - 2022-03-07): remove this "if" once ENABLE_NEW_COLLECTIVE_MODEL FF is enabled on production
-        if key == "extraData":
-            for extra_data_key, extra_data_value in value.items():
-                # We denormalize extra_data for Adage mailing
-                updated_fields.append(extra_data_key)
-
-                if extra_data_key == "students":
-                    students = [ADAGE_STUDENT_LEVEL_MAPPING[student] for student in extra_data_value]
-                    offer.students = students
-                    continue
-
-                setattr(offer, extra_data_key, extra_data_value)
-            continue
 
         if key == "subcategoryId":
             validation.check_offer_is_eligible_for_educational(value.name, True)
@@ -764,7 +748,7 @@ def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user
     logger.info("Educational stock has been created", extra={"offer": offer_id})
 
     if offer.validation == OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(offer, user, silent=FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active())
+        update_offer_fraud_information(offer, user, silent=True)
 
     search.async_index_offer_ids([offer.id])
 
@@ -817,11 +801,10 @@ def edit_educational_stock(stock: Stock, stock_data: dict) -> Stock:
 
     search.async_index_offer_ids([stock.offerId])
 
-    if not FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
-            stock.offerId,  # type: ignore [arg-type]
-            list(stock_data.keys()),
-        )
+    educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
+        stock.offerId,  # type: ignore [arg-type]
+        list(stock_data.keys()),
+    )
 
     db.session.refresh(stock)
     return stock
@@ -1309,18 +1292,8 @@ def create_collective_offer_template_and_delete_collective_offer(
     db.session.add(collective_offer_template)
     db.session.commit()
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        if offer.validation == OfferValidationStatus.DRAFT:
-            update_offer_fraud_information(collective_offer_template, user)
-    else:
-        # the offer validation is copied from the offer. The only problem is when the offer is in draft as the fraud is
-        # not enabled of collectiveOfferTemplate it will stay in draft. Therefor we force its status
-        if collective_offer_template.validation == OfferValidationStatus.DRAFT:
-            collective_offer_template.validation = OfferValidationStatus.APPROVED  # type: ignore [assignment]
-            collective_offer_template.lastValidationDate = datetime.datetime.utcnow()
-            collective_offer_template.lastValidationType = OfferValidationType.AUTO  # type: ignore [assignment]
-            db.session.commit()
-
+    if offer.validation == OfferValidationStatus.DRAFT:
+        update_offer_fraud_information(collective_offer_template, user)
     search.unindex_collective_offer_ids([collective_offer.id])
     search.async_index_collective_offer_template_ids([collective_offer_template.id])
 
@@ -1368,31 +1341,30 @@ def cancel_collective_offer_booking(offer_id: int, *, legacy: bool = False) -> N
         extra={"stock": collective_stock.id, "collective_booking": cancelled_booking.id},
     )
 
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active() or not legacy:
-        try:
-            adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
-        except AdageException as adage_error:
-            logger.error(
-                "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
-                adage_error.message,
-                extra={
-                    "collectiveBookingId": cancelled_booking.id,
-                    "adage status code": adage_error.status_code,
-                    "adage response text": adage_error.response_text,
-                },
-            )
-        except ValidationError:
-            logger.exception(
-                "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
-                extra={
-                    "collectiveBookingId": cancelled_booking.id,
-                },
-            )
-        if not send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
-            logger.warning(
-                "Could not notify offerer about deletion of stock",
-                extra={"collectiveStock": collective_stock.id},
-            )
+    try:
+        adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
+    except AdageException as adage_error:
+        logger.error(
+            "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
+            adage_error.message,
+            extra={
+                "collectiveBookingId": cancelled_booking.id,
+                "adage status code": adage_error.status_code,
+                "adage response text": adage_error.response_text,
+            },
+        )
+    except ValidationError:
+        logger.exception(
+            "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
+            extra={
+                "collectiveBookingId": cancelled_booking.id,
+            },
+        )
+    if not send_collective_booking_cancellation_confirmation_by_pro_email(cancelled_booking):
+        logger.warning(
+            "Could not notify offerer about deletion of stock",
+            extra={"collectiveStock": collective_stock.id},
+        )
 
 
 def create_educational_shadow_stock_and_set_offer_showcase(

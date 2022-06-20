@@ -36,7 +36,6 @@ def test_access_by_pro(client):
     n_queries += 1  # select offerers
     n_queries += 1  # select count of offerers
     n_queries += 1  # select count of offers for all venues
-    n_queries += 1  # select FF ENABLE_NEW_COLLECTIVE_MODEL
     n_queries += 1  # select count of collective offers for all venues
     n_queries += 1  # select count of collective offers templates for all venues
     with testing.assert_num_queries(n_queries):
