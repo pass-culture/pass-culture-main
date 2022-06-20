@@ -220,6 +220,7 @@ const OfferDetails = ({
               {isDisabled && <OfferStatusBanner status={offerStatus} />}
               <OfferEdition
                 categories={categoriesData.categories}
+                initialValues={formInitialValues}
                 isDisabled={isDisabled}
                 isUserAdmin={isUserAdmin}
                 offer={offer}
