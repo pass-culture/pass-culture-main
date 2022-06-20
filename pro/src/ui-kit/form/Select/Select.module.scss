@@ -8,6 +8,12 @@
   @include formsM.input-theme();
   padding-right: rem.torem(forms.$input-right-icon-padding);
 
+  &.has-description {
+    display: inline-block;
+    width: auto;
+    margin-right: rem.torem(8px);
+  }
+
   &.has-error {
     @include formsM.input-theme-error();
   }
@@ -18,6 +24,10 @@
 
   &-wrapper {
     position: relative;
+    &.has-description {
+      display: inline-block;
+      vertical-align: middle;
+    }
   }
 
   &-placeholder {

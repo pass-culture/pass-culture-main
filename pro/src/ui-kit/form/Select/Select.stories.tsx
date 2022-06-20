@@ -26,12 +26,9 @@ type SelectArgs = {
 }
 
 const Template: Story<SelectArgs> = args => (
-  <Formik
-    initialValues={{ categorie: 'theatre' }}
-    onSubmit={action('onSubmit')}
-  >
+  <Formik initialValues={{ category: 'theatre' }} onSubmit={action('onSubmit')}>
     {({ getFieldProps }) => {
-      return <Select {...getFieldProps('categorie')} {...args} />
+      return <Select {...getFieldProps('category')} {...args} />
     }}
   </Formik>
 )
@@ -67,4 +64,34 @@ StandeloneSelect.args = {
   options: mockCategoriesOptions,
   disabled: false,
   value: '',
+}
+
+type SelectInlineArgs = {
+  label: string
+  options: {
+    value: string
+    label: string
+  }[]
+  description: string
+}
+
+const SelectInlineTemplate: Story<SelectInlineArgs> = args => (
+  <Formik
+    initialValues={{ category: 'theatre' }}
+    onSubmit={action('onSubmit')}
+    errors={{
+      category: 'Oups, même joueur joue encore.',
+    }}
+  >
+    {({ getFieldProps }) => {
+      return <Select {...getFieldProps('category')} {...args} />
+    }}
+  </Formik>
+)
+
+export const SelectInline = SelectInlineTemplate.bind({})
+SelectInline.args = {
+  label: 'Catégorie',
+  options: mockCategoriesOptions,
+  description: 'super select inline',
 }
