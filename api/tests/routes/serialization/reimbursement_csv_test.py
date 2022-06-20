@@ -13,7 +13,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.payments.factories as payments_factories
-from pcapi.core.testing import override_features
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import _get_validation_period
 from pcapi.routes.serialization.reimbursement_csv_serialize import _legacy_get_validation_period
@@ -251,7 +250,6 @@ def test_find_all_offerer_reimbursement_details() -> None:
 @pytest.mark.usefixtures("db_session")
 @mock.patch("pcapi.core.finance.api._store_invoice_pdf", lambda **kwargs: "make it quick")
 class CollectiveReimbursementDetailsTest:
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_find_all_offerer_reimbursement_details_on_collective(self) -> None:
         offerer = offerers_factories.OffererFactory(siren="123456789")
         venue1 = offerers_factories.VenueFactory(managingOfferer=offerer)
@@ -381,7 +379,6 @@ class CollectiveReimbursementDetailsTest:
         assert row[20] == "21,00"
         assert row[21] == "offre collective"
 
-    @override_features(ENABLE_NEW_COLLECTIVE_MODEL=True)
     def test_reimbursement_details_with_custom_rule_as_csv(self) -> None:
         # given
         custom_reimbursement_rule = payments_factories.CustomReimbursementRuleFactory(
