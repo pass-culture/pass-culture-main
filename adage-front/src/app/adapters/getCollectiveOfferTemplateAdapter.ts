@@ -1,8 +1,12 @@
 import { api } from 'api/api'
+import { CollectiveOfferTemplateResponseModel } from 'api/gen'
 import { Adapter, AdapterFailure } from 'app/types'
-import { OfferType } from 'app/types/offers'
 
-type GetCollectiveOfferTemplateAdapter = Adapter<number, OfferType, null>
+type GetCollectiveOfferTemplateAdapter = Adapter<
+  number,
+  CollectiveOfferTemplateResponseModel,
+  null
+>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -18,28 +22,7 @@ export const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapte
       return {
         isOk: true,
         message: null,
-        payload: {
-          ...result,
-          stocks: [
-            // False stock to satisfy ts
-            {
-              educationalPriceDetail: result.educationalPriceDetail,
-              beginningDatetime: new Date('2030-01-01').toISOString(),
-              numberOfTickets: undefined,
-              price: 0,
-              id: 0,
-              isBookable: false,
-              bookingLimitDatetime: new Date('2030-01-01').toISOString(),
-            },
-          ],
-          extraData: {
-            students: result.students,
-            offerVenue: result.offerVenue,
-            isShowcase: true,
-            contactEmail: result.contactEmail,
-            contactPhone: result.contactPhone,
-          },
-        },
+        payload: result,
       }
     } catch (e) {
       return FAILING_RESPONSE

@@ -2,7 +2,10 @@ import React from 'react'
 
 import './OfferDetails.scss'
 
-import { OfferType } from 'app/types/offers'
+import {
+  CollectiveOfferResponseModel,
+  CollectiveOfferTemplateResponseModel,
+} from 'api/gen'
 
 import OfferSection from './OfferSection'
 import OfferVenue from './OfferVenue'
@@ -42,19 +45,24 @@ const computeDisabilityString = (
   return disabilityCompliance.join(', ') || 'Non accessible'
 }
 
-const OfferDetails = ({ offer }: { offer: OfferType }): JSX.Element => {
+const OfferDetails = ({
+  offer,
+}: {
+  offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
+}): JSX.Element => {
   const {
     durationMinutes,
-    extraData,
     venue,
     audioDisabilityCompliant,
     mentalDisabilityCompliant,
     motorDisabilityCompliant,
     visualDisabilityCompliant,
-    stocks,
+    students,
+    offerVenue,
+    contactEmail,
+    contactPhone,
+    educationalPriceDetail,
   } = offer
-  const { students, offerVenue, contactEmail, contactPhone } = extraData ?? {}
-  const { educationalPriceDetail } = stocks[0] ?? {}
 
   const durationString = computeDurationString(durationMinutes)
   const displayContactSection = contactEmail || contactPhone
