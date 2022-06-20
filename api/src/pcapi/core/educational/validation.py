@@ -14,10 +14,8 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.repository import get_confirmed_collective_bookings_amount
-from pcapi.core.educational.repository import get_confirmed_educational_bookings_amount
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.offers.models import Stock
-from pcapi.models.feature import FeatureToggle
 
 
 def check_institution_fund(
@@ -26,11 +24,7 @@ def check_institution_fund(
     booking_amount: Decimal,
     deposit: EducationalDeposit,
 ) -> None:
-    if FeatureToggle.ENABLE_NEW_COLLECTIVE_MODEL.is_active():
-        spent_amount = get_confirmed_collective_bookings_amount(educational_institution_id, educational_year_id)
-    else:
-        spent_amount = get_confirmed_educational_bookings_amount(educational_institution_id, educational_year_id)
-
+    spent_amount = get_confirmed_collective_bookings_amount(educational_institution_id, educational_year_id)
     total_amount = booking_amount + spent_amount
     deposit.check_has_enough_fund(total_amount)
 
