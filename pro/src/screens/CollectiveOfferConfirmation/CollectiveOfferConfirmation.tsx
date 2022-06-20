@@ -5,9 +5,9 @@ import React from 'react'
 import { Title } from 'ui-kit'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import cn from 'classnames'
-import styles from './OfferEducationalConfirmation.module.scss'
+import styles from './CollectiveOfferConfirmation.module.scss'
 
-interface IOfferEducationalConfirmationProps {
+interface ICollectiveOfferConfirmationProps {
   offererId?: string | null
   offerStatus?: OfferStatus
   isShowcase?: boolean
@@ -66,12 +66,12 @@ const mapOfferStatusToData = (status?: OfferStatus, isShowcase?: boolean) => {
   return activeOffer
 }
 
-const OfferEducationalConfirmation = ({
+const CollectiveOfferConfirmation = ({
   offererId,
   offerStatus,
   isShowcase,
   enableIndividualAndCollectiveSeparation,
-}: IOfferEducationalConfirmationProps): JSX.Element => {
+}: ICollectiveOfferConfirmationProps): JSX.Element => {
   const { title, description, Icon } = mapOfferStatusToData(
     offerStatus,
     isShowcase
@@ -110,4 +110,4 @@ const OfferEducationalConfirmation = ({
   )
 }
 
-export default OfferEducationalConfirmation
+export default CollectiveOfferConfirmation
