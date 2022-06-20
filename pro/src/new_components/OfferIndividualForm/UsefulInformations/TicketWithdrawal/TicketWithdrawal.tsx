@@ -6,11 +6,11 @@ import {
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
 } from './constants'
+
 import { FORM_DEFAULT_VALUES } from 'new_components/OfferIndividualForm'
 import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from '../../types'
 import { IOfferSubCategory } from 'core/Offers/types'
-import styles from './TicketWithdrawal.module.scss'
 import { useFormikContext } from 'formik'
 
 export interface ITicketWithdrawalProps {
@@ -25,12 +25,10 @@ const TicketWithdrawal = ({
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
 
-  const subCategory = subCategories.find(s => s.id === subcategoryId)
-  const isEvent = subCategory?.isEvent
-
   useEffect(
     function onSubCategoryChange() {
-      if (!isEvent) {
+      const subCategory = subCategories.find(s => s.id === subcategoryId)
+      if (!subCategory?.isEvent) {
         setFieldValue(
           'ticketWithdrawal',
           FORM_DEFAULT_VALUES['ticketWithdrawal']
@@ -71,27 +69,23 @@ const TicketWithdrawal = ({
 
       {ticketWithdrawal === TICKETWITHDRAWAL.emailTicket && (
         <FormLayout.Row>
-          <div className={styles['ticket-options']}>
-            <Select
-              label="Date d’envoi"
-              name="ticketSentDate"
-              options={ticketSentDateOptions}
-            />
-            <p>avant le début de l'événement</p>
-          </div>
+          <Select
+            label="Date d’envoi"
+            description="avant le début de l'événement"
+            name="ticketSentDate"
+            options={ticketSentDateOptions}
+          />
         </FormLayout.Row>
       )}
 
       {ticketWithdrawal === TICKETWITHDRAWAL.onPlaceTicket && (
         <FormLayout.Row>
-          <div className={styles['ticket-options']}>
-            <Select
-              label="Heure de retrait"
-              name="ticketWithdrawalHour"
-              options={ticketWithdrawalHourOptions}
-            />
-            <p>avant le début de l'événement</p>
-          </div>
+          <Select
+            label="Heure de retrait"
+            description="avant le début de l'événement"
+            name="ticketWithdrawalHour"
+            options={ticketWithdrawalHourOptions}
+          />
         </FormLayout.Row>
       )}
     </>
