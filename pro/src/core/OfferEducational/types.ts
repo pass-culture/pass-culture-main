@@ -162,6 +162,7 @@ export type GetStockOfferSuccessPayload = {
   isEducational: boolean
   isShowcase: boolean
   offerId?: string | null
+  institution?: EducationalInstitution | null
 }
 
 export enum EducationalOfferType {
@@ -208,6 +209,7 @@ type CollectiveOfferBaseResponseModel = {
   status: OfferStatus
   offerId?: string | null
   domains: EducationalDomain[]
+  institution?: EducationalInstitution | null
 }
 
 export type CollectiveOfferResponseModel = CollectiveOfferBaseResponseModel & {

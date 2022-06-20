@@ -11,20 +11,33 @@ interface ICollectiveOfferConfirmationProps {
   offererId?: string | null
   offerStatus?: OfferStatus
   isShowcase?: boolean
+  institutionName?: string
 }
 
-const activeOffer = {
+const activeOffer = (institutionName?: string) => ({
   title: 'Offre créée avec succès !',
   description: (
     <>
       Votre offre est désormais disponible sur <b>ADAGE</b> (L'Application
-      Dédiée À la Généralisation de l’Éducation artistique et culturelle) et
-      visible par les enseignants et chefs d’établissement de l’Éducation
-      nationale.
+      Dédiée À la Généralisation de l’Éducation artistique et culturelle) et{' '}
+      {institutionName ? (
+        <>
+          <b>visible uniquement</b> par :
+          <br />
+          <br />
+          <br />
+          <b>{institutionName}</b>
+        </>
+      ) : (
+        <>
+          visible par les enseignants et chefs d’établissement de l’Éducation
+          nationale.
+        </>
+      )}
     </>
   ),
   Icon: ValidateIcon,
-}
+})
 
 const pendingOffer = {
   title: 'Offre en cours de validation !',
@@ -53,7 +66,11 @@ const showcaseOffer = {
   Icon: ValidateIcon,
 }
 
-const mapOfferStatusToData = (status?: OfferStatus, isShowcase?: boolean) => {
+const mapOfferStatusToData = (
+  status?: OfferStatus,
+  isShowcase?: boolean,
+  institutionName?: string
+) => {
   if (status === OfferStatus.PENDING) {
     return pendingOffer
   }
@@ -62,17 +79,19 @@ const mapOfferStatusToData = (status?: OfferStatus, isShowcase?: boolean) => {
     return showcaseOffer
   }
 
-  return activeOffer
+  return activeOffer(institutionName)
 }
 
 const CollectiveOfferConfirmation = ({
   offererId,
   offerStatus,
   isShowcase,
+  institutionName,
 }: ICollectiveOfferConfirmationProps): JSX.Element => {
   const { title, description, Icon } = mapOfferStatusToData(
     offerStatus,
-    isShowcase
+    isShowcase,
+    institutionName
   )
 
   return (
