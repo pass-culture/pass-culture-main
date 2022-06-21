@@ -47,6 +47,11 @@ const CollectiveOfferVisibility = () => {
         getInstitutions={getEducationalInstitutionsAdapter}
         mode={isEditable ? Mode.EDITION : Mode.READ_ONLY}
         patchInstitution={patchEducationalInstitutionAdapter}
+        initialValues={{
+          institution: institution?.id?.toString() ?? '',
+          'search-institution': institution?.name ?? '',
+          visibility: institution ? 'one' : 'all',
+        }}
       />
       <RouteLeavingGuardOfferCreation isCollectiveFlow />
     </OfferEducationalLayout>
