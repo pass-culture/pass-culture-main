@@ -18,6 +18,13 @@ def generate_firebase_dynamic_link(path: str, params: dict | None) -> str:
     return f"{settings.FIREBASE_DYNAMIC_LINKS_URL}/?{firebase_dynamic_query_string}"
 
 
+def offer_app_link(offer_id: int, utm: str | None = None) -> str:
+    base = f"{settings.WEBAPP_V2_URL}/offer/{offer_id}"
+    if utm:
+        return f"{base}?{utm}"
+    return base
+
+
 def booking_app_link(booking: Booking) -> str:
     return f"{settings.WEBAPP_V2_URL}/reservation/{booking.id}/details"
 
