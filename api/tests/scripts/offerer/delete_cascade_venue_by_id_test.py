@@ -40,7 +40,6 @@ def test_delete_cascade_venue_should_abort_when_venue_has_any_bookings():
     assert exception.value.errors["cannotDeleteVenueWithBookingsException"] == [
         "Lieu non supprimable car il contient des réservations"
     ]
-    assert Offerer.query.count() == 1
     assert Venue.query.count() == 1
     assert Stock.query.count() == 1
     assert Booking.query.count() == 1
@@ -82,7 +81,6 @@ def test_delete_cascade_venue_should_remove_offers_stocks_and_activation_codes()
     recap_data = delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
-    assert Offerer.query.count() == 1
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
     assert Stock.query.count() == 1
@@ -143,7 +141,6 @@ def test_delete_cascade_venue_should_remove_mediations_of_managed_offers():
     delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
-    assert Offerer.query.count() == 2
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
     assert Mediation.query.count() == 1
@@ -161,7 +158,6 @@ def test_delete_cascade_venue_should_remove_favorites_of_managed_offers():
     delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
-    assert Offerer.query.count() == 2
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
     assert Favorite.query.count() == 1
@@ -179,7 +175,6 @@ def test_delete_cascade_venue_should_remove_criterions():
     delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
-    assert Offerer.query.count() == 2
     assert Venue.query.count() == 1
     assert Offer.query.count() == 1
     assert criteria_models.OfferCriterion.query.count() == 1
@@ -198,7 +193,6 @@ def test_delete_cascade_venue_should_remove_synchronization_to_provider():
     delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
-    assert Offerer.query.count() == 2
     assert Venue.query.count() == 1
     assert VenueProvider.query.count() == 1
     assert Provider.query.count() > 0
@@ -216,7 +210,6 @@ def test_delete_cascade_venue_should_remove_synchronization_to_allocine_provider
     delete_cascade_venue_by_id(venue_to_delete.id)
 
     # Then
-    assert Offerer.query.count() == 2
     assert Venue.query.count() == 1
     assert VenueProvider.query.count() == 1
     assert AllocineVenueProvider.query.count() == 1
