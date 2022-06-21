@@ -24,7 +24,6 @@ export const CinemaProviderFormDialog = ({
       extraClassNames="cinema-provider-form-dialog"
       labelledBy="cinema-provider-form-dialog"
       onDismiss={onCancel}
-      hasCloseButton
     >
       <div className="title">
         <strong>Modifier mes offres</strong>

@@ -18,28 +18,39 @@
     margin-top: rem.torem(24px);
   }
 
-  .allocine-provider-form {
-    margin-top: rem.torem(32px);
+  form {
+    width: 100%;
 
-    input[type='number'] {
+    .allocine-provider-form {
+      margin-top: rem.torem(32px);
+
+      input[type='number'] {
       height: rem.torem(40px);
-    }
+      }
 
-    .imported-offres-clarification {
-      @include fonts.caption();
+      .imported-offres-clarification {
+        @include fonts.caption();
 
-      color: colors.$grey-dark;
-      margin-top: rem.torem(24px);
-    }
+        color: colors.$grey-dark;
+        margin-top: rem.torem(24px);
+      }
 
-    .actions {
-      display: flex;
-      justify-content: center;
-      margin-top: rem.torem(40px);
+      .actions {
+        display: flex;
+        justify-content: center;
+        margin-top: rem.torem(40px);
 
-      button {
-        margin: 0 rem.torem(16px);
-        padding: 0 rem.torem(80px);
+        .secondary-button {
+          margin-right: rem.torem(20px);
+        }
+
+        .primary-button {
+          margin-left: rem.torem(20px);
+        }
+
+        button {
+          padding: 0 rem.torem(80px);
+        }
       }
     }
   }
