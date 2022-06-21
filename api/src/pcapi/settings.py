@@ -95,6 +95,7 @@ PROFILE_REQUESTS_LINES_LIMIT = int(os.environ.get("PROFILE_REQUESTS_LINES_LIMIT"
 FLASK_PORT = int(os.environ.get("PORT", 5001))
 FLASK_SECRET = os.environ.get("FLASK_SECRET", "+%+3Q23!zbc+!Dd@")
 CORS_ALLOWED_ORIGINS = os.environ.get("CORS_ALLOWED_ORIGINS").split(",")  # type: ignore [union-attr]
+CORS_ALLOWED_ORIGINS_BACKOFFICE = os.environ.get("CORS_ALLOWED_ORIGINS_BACKOFFICE", "").split(",")
 CORS_ALLOWED_ORIGINS_NATIVE = os.environ.get("CORS_ALLOWED_ORIGINS_NATIVE").split(",")  # type: ignore [union-attr]
 CORS_ALLOWED_ORIGINS_ADAGE_IFRAME = os.environ.get("CORS_ALLOWED_ORIGINS_ADAGE_IFRAME").split(",")  # type: ignore [union-attr]
 
