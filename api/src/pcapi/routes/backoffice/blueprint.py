@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask_cors import CORS
 
+from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
 
@@ -8,9 +9,7 @@ from pcapi.serialization.utils import before_handler
 backoffice_blueprint = Blueprint("backoffice_blueprint", __name__)
 CORS(
     backoffice_blueprint,
-    # FIXME (ASK, 2022/04/12): adapter le CORS resources car c'est sûrement pas
-    #  ce qu'on veut au final
-    resources={r"/*": {"origins": "*"}},
+    origins=settings.CORS_ALLOWED_ORIGINS_BACKOFFICE,
     supports_credentials=True,
 )
 

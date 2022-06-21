@@ -315,6 +315,12 @@ class TestClient:
         self._print_spec("DELETE", route, None, result)
         return result
 
+    def options(self, route: str, headers: dict = None):
+        headers = headers or {}
+        result = self.client.options(route, headers={**self.auth_header, **headers})
+        self._print_spec("OPTIONS", route, None, result)
+        return result
+
     def get(self, route: str, params=None, headers=None):
         headers = headers or {}
         kwargs = {}
