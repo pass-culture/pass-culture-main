@@ -1,4 +1,4 @@
-import { BaseRadio, FieldError } from '../shared'
+import { BaseRadio } from '../shared'
 
 import React from 'react'
 import cn from 'classnames'
