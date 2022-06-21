@@ -1,10 +1,10 @@
 from pydantic import parse_obj_as
 
 from pcapi import settings
-from pcapi.connectors.api_adage import AdageException
-from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.exceptions import AdageException
+from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.models import AdageApiResult
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
