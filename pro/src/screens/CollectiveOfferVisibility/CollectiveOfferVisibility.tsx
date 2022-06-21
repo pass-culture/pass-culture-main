@@ -1,6 +1,6 @@
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import { FormikProvider, useFormik } from 'formik'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Mode, VisibilityFormValues } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
@@ -9,7 +9,6 @@ import { GetEducationalInstitutionsAdapter } from 'routes/CollectiveOfferVisibil
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import { computeOffersUrl } from 'core/Offers/utils'
-import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import styles from './CollectiveOfferVisibility.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import validationSchema from './validationSchema'
@@ -19,6 +18,13 @@ export interface CollectiveOfferVisibilityProps {
   patchInstitution: PatchEducationalInstitutionAdapter
   mode: Mode
   initialValues: VisibilityFormValues
+  onSuccess: ({
+    offerId,
+    message,
+  }: {
+    offerId: string
+    message: string
+  }) => void
 }
 interface InstitutionOption extends SelectOption {
   postalCode?: string
@@ -30,26 +36,25 @@ const CollectiveOfferVisibility = ({
   mode,
   patchInstitution,
   initialValues,
+  onSuccess,
 }: CollectiveOfferVisibilityProps) => {
+  const { offerId } = useParams<{ offerId: string }>()
+  const notify = useNotification()
+
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
-    const successUrl = `/offre/${offerId}/collectif/confirmation`
+    const result = await patchInstitution({
+      offerId,
+      institutionId: values.institution,
+    })
 
-    if (values.visibility === 'one') {
-      const result = await patchInstitution({
-        offerId,
-        institutionId: values.institution,
-      })
-      if (result.isOk) {
-        history.push(successUrl)
-      } else {
-        notify.error(result.message)
-        setButtonPressed(false)
-      }
-    } else {
-      // if visibility === 'all' nothing to save
-      history.push(successUrl)
+    if (!result.isOk) {
+      setButtonPressed(false)
+      return notify.error(result.message)
     }
+
+    onSuccess({ offerId, message: result.message ?? '' })
+    setButtonPressed(false)
   }
 
   const formik = useFormik<VisibilityFormValues>({
@@ -57,13 +62,6 @@ const CollectiveOfferVisibility = ({
     onSubmit,
     validationSchema,
   })
-
-  const notify = useNotification()
-  const history = useHistory()
-
-  const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
-  const { offerId } =
-    extractOfferIdAndOfferTypeFromRouteParams(offerIdFromParams)
 
   const [institutionsOptions, setInstitutionsOptions] =
     useState<InstitutionOption[]>()

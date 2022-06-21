@@ -37,6 +37,10 @@ const CollectiveOfferVisibility = () => {
     })
   }, [])
 
+  const onSuccess = ({ message }: { message: string }) => {
+    notify.success(message)
+  }
+
   return (
     <OfferEducationalLayout
       activeStep={OfferBreadcrumbStep.VISIBILITY}
@@ -52,6 +56,7 @@ const CollectiveOfferVisibility = () => {
           'search-institution': institution?.name ?? '',
           visibility: institution ? 'one' : 'all',
         }}
+        onSuccess={onSuccess}
       />
       <RouteLeavingGuardOfferCreation isCollectiveFlow />
     </OfferEducationalLayout>

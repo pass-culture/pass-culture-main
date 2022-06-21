@@ -71,6 +71,7 @@ describe('CollectiveOfferVisibility', () => {
       mode: Mode.CREATION,
       patchInstitution: jest.fn(),
       initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
+      onSuccess: jest.fn(),
     }
   })
 
