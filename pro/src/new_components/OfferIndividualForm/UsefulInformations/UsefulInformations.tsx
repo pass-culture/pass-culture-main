@@ -36,6 +36,9 @@ const UsefulInformations = ({
       description="Les informations pratiques permettent de donner aux utilisateurs des informations sur le retrait de leur commande."
     >
       <Venue offererNames={offererNames} venueList={venueList} />
+
+      {isEvent && <TicketWithdrawal subCategories={subCategories} />}
+
       <FormLayout.Row>
         <TextArea
           countCharacters
@@ -56,8 +59,6 @@ const UsefulInformations = ({
           />
         </FormLayout.Row>
       )}
-
-      {isEvent && <TicketWithdrawal subCategories={subCategories} />}
     </FormLayout.Section>
   )
 }
