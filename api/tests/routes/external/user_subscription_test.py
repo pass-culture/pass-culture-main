@@ -414,7 +414,32 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
+        assert send_user_message.call_args[0][2] == (
+            "Bonjour,\n"
+            "\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne:\n"
+            " - ta pièce d'identité\n"
+            " - ton code postal\n"
+            "\n"
+            "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
+            "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t’invitons à consulter les articles suivants :\n"
+            'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
+            'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
+            "\n"
+            "Ton code postal doit être renseigné sous format 5 chiffres uniquement, sans lettre ni espace\n"
+            '<a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">Comment bien renseigner mon adresse et mon code postal lors de l’inscription ? </a>\n'
+            "\n"
+            "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
+            '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n'
+            "\n"
+            "Merci de corriger ton dossier.\n"
+            "\n"
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            "\n"
+            "Nous te souhaitons une belle journée.\n"
+            "\n"
+            "L’équipe du pass Culture"
+        )
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
@@ -532,7 +557,21 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE
+        assert send_user_message.call_args[0][2] == (
+            "Bonjour,\n"
+            "\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ta pièce d'identité, inscrit sur le formulaire en ligne:\n"
+            "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
+            '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n'
+            "\n"
+            "Merci de corriger ton dossier.\n"
+            "\n"
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            "\n"
+            "Nous te souhaitons une belle journée.\n"
+            "\n"
+            "L’équipe du pass Culture"
+        )
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
@@ -562,7 +601,18 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert send_user_message.call_args[0][2] == subscription_messages.DMS_NAME_INVALID_ERROR_MESSAGE
+        assert send_user_message.call_args[0][2] == (
+            "Bonjour,\n"
+            "\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton prénom, inscrit sur le formulaire en ligne:\n"
+            "Merci de corriger ton dossier.\n"
+            "\n"
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            "\n"
+            "Nous te souhaitons une belle journée.\n"
+            "\n"
+            "L’équipe du pass Culture"
+        )
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
@@ -596,7 +646,26 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert send_user_message.call_args[0][2] == subscription_messages.DMS_NAME_INVALID_ERROR_MESSAGE
+        assert send_user_message.call_args[0][2] == (
+            "Bonjour,\n"
+            "\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne:\n"
+            " - ton prénom\n"
+            " - ton nom\n"
+            "\n"
+            "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
+            "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t’invitons à consulter les articles suivants :\n"
+            'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
+            'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
+            "\n"
+            "Merci de corriger ton dossier.\n"
+            "\n"
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            "\n"
+            "Nous te souhaitons une belle journée.\n"
+            "\n"
+            "L’équipe du pass Culture"
+        )
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
@@ -626,7 +695,21 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE
+        assert send_user_message.call_args[0][2] == (
+            "Bonjour,\n"
+            "\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton code postal, inscrit sur le formulaire en ligne:\n"
+            "Ton code postal doit être renseigné sous format 5 chiffres uniquement, sans lettre ni espace\n"
+            '<a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">Comment bien renseigner mon adresse et mon code postal lors de l’inscription ? </a>\n'
+            "\n"
+            "Merci de corriger ton dossier.\n"
+            "\n"
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            "\n"
+            "Nous te souhaitons une belle journée.\n"
+            "\n"
+            "L’équipe du pass Culture"
+        )
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (
@@ -659,7 +742,18 @@ class DmsWebhookApplicationTest:
         assert response.status_code == 204
         assert execute_query.call_count == 1
         assert send_user_message.call_count == 1
-        assert send_user_message.call_args[0][2] == subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
+        assert send_user_message.call_args[0][2] == (
+            "Bonjour,\n"
+            "\n"
+            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ta date de naissance, inscrit sur le formulaire en ligne:\n"
+            "Merci de corriger ton dossier.\n"
+            "\n"
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            "\n"
+            "Nous te souhaitons une belle journée.\n"
+            "\n"
+            "L’équipe du pass Culture"
+        )
         assert len(user.subscriptionMessages) == 1
         assert user.subscriptionMessages[0].popOverIcon == subscription_models.PopOverIcon.WARNING
         assert (

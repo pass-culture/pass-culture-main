@@ -15,6 +15,7 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 import pcapi.core.subscription.api as subscription_api
+from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.users import models as users_models
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users.repository import find_user_by_email
@@ -136,34 +137,13 @@ def handle_dms_application(
     return fraud_check
 
 
-def _notify_parsing_error(parsing_errors: dict[str, typing.Optional[str]], application_scalar_id: str) -> None:
+def _notify_parsing_error(parsing_errors: list[dms_types.DmsParsingErrorDetails], application_scalar_id: str) -> None:
     client = dms_connector_api.DMSGraphQLClient()
-    if "birth_date" in parsing_errors:
-        client.send_user_message(
-            application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
-        )
-    elif "postal_code" in parsing_errors and "id_piece_number" in parsing_errors:
-        client.send_user_message(
-            application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSAGE_DOUBLE_ERROR
-        )
-    elif "postal_code" in parsing_errors and "id_piece_number" not in parsing_errors:
-        client.send_user_message(
-            application_scalar_id,
-            settings.DMS_INSTRUCTOR_ID,
-            subscription_messages.DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE,
-        )
-    elif "id_piece_number" in parsing_errors and "postal_code" not in parsing_errors:
-        client.send_user_message(
-            application_scalar_id,
-            settings.DMS_INSTRUCTOR_ID,
-            subscription_messages.DMS_ERROR_MESSAGE_ERROR_ID_PIECE,
-        )
-    elif "first_name" in parsing_errors or "last_name" in parsing_errors:
-        client.send_user_message(
-            application_scalar_id,
-            settings.DMS_INSTRUCTOR_ID,
-            subscription_messages.DMS_NAME_INVALID_ERROR_MESSAGE,
-        )
+    client.send_user_message(
+        application_scalar_id,
+        settings.DMS_INSTRUCTOR_ID,
+        subscription_messages.build_parsing_errors_user_message(parsing_errors),
+    )
 
 
 def _process_parsing_error(

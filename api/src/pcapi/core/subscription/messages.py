@@ -30,76 +30,35 @@ DMS_ERROR_MESSAGE_USER_NOT_FOUND = """Bonjour,
 
                 L’équipe pass Culture"""
 
-DMS_ERROR_MESSAGE_ERROR_ID_PIECE = """Bonjour,
 
-Nous avons bien reçu ton dossier, mais le numéro de pièce d'identité sur le formulaire ne correspond pas à celui indiqué sur ta pièce d'identité.
+def build_parsing_errors_user_message(parsing_errors: list[dms_models.DmsParsingErrorDetails]) -> str:
+    error_keys = [error.key for error in parsing_errors]
+    parsing_errors_list_str = "\n".join(f" - {field.get_field_label()}" for field in parsing_errors)
+    message = (
+        f"Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant {parsing_errors[0].get_field_label()}, inscrit sur le formulaire en ligne:\n"
+        if len(parsing_errors) == 1
+        else f"Nous avons bien reçu ton dossier, mais il y a une erreur dans les champs suivants, inscrits sur le formulaire en ligne:\n{parsing_errors_list_str}\n\n"
+        "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
+        "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t’invitons à consulter les articles suivants :\n"
+        'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
+        'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n\n'
+    )
+    if dms_models.DmsParsingErrorKeyEnum.postal_code in error_keys:
+        message += "Ton code postal doit être renseigné sous format 5 chiffres uniquement, sans lettre ni espace\n"
+        message += '<a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">Comment bien renseigner mon adresse et mon code postal lors de l’inscription ? </a>\n\n'
+    if dms_models.DmsParsingErrorKeyEnum.id_piece_number in error_keys:
+        message += "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
+        message += '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n\n'
+    general_help_article_link = '<a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>'
 
-Cet article peut t’aider à le trouver sur ta pièce d'identité : <a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité-">https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité-</a>
-
-Peux-tu mettre à jour ton dossier sur le formulaire en ligne ?
-
-Pour t'aider à corriger ton dossier, merci de consulter cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-</a>
-
-Merci et à très vite,
-
-L'équipe du pass Culture"""
-
-DMS_ERROR_MESSAGE_ERROR_POSTAL_CODE = """Bonjour,
-
-            Le champ du code postal doit être rempli par 5 chiffres uniquement, sans lettre ni espace. Si tu as saisi ta ville dans le champ du code postal, merci de ne saisir que ces 5 chiffres.
-
-            Pour corriger ton formulaire, cet article est là pour t'aider : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-</a>
-
-            Très cordialement,
-
-            L'équipe pass du Culture"""
-
-DMS_ERROR_MESSAGE_DOUBLE_ERROR = """Bonjour,
-
-                                 Nous avons bien reçu ton dossier !
-                                 Cependant, ton dossier ne peut pas être traiter pour la raison suivante :
-                                 Un ou plusieurs champs ont été renseignés au mauvais format :
-
-                                 - le champ Code Postal
-                                 - le champ Numéro de la pièce d’identité
-
-                                 Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention de remplir correctement toutes les informations (notamment ton code postal sous format 5 chiffres et le numéro de ta pièce d’identité sous format alphanumérique sans espace et sans caractères spéciaux).
-
-                                 Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, je t’invite à consulter les articles suivants :
-
-                                 Où puis-je trouver le numéro de ma pièce d'identité ? <a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité</a>
-                                 Comment bien renseigner mon adresse et mon code postal lors de l'inscription ? <a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-</a>
-
-
-                                 Nous te souhaitons une belle journée.
-
-                                 L’équipe pass Culture"""
-
-DMS_ERROR_MESSSAGE_BIRTH_DATE = """Bonjour,
-
-                        Nous avons bien reçu ton dossier, mais il y a une erreur dans la date de naissance inscrite sur le formulaire en ligne.
-
-                        Merci de corriger ton dossier.
-                        Tu trouveras de l'aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-</a>
-
-                        Bonne journée,
-
-                        L'équipe du pass Culture"""
-
-DMS_NAME_INVALID_ERROR_MESSAGE = """Bonjour,
-
-                            Nous avons bien reçu ton dossier !
-                            Cependant, ton dossier ne peut pas être traité pour la raison suivante :
-                            Les champs "Nom" et / ou "Prénom" ont été renseignés au mauvais format.
-
-                            Pour que ton dossier soit traité, tu dois les modifier en faisant bien attention à remplir correctement toutes les informations. Pour avoir plus d'informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t'invitons à consulter les articles suivants :
-
-                            Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-Démarches-Simplifiées</a>
-                            Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-Démarches-Simplifiées-</a>
-
-                            Nous te souhaitons une belle journée,
-
-                            L'équipe du pass Culture"""
+    return (
+        "Bonjour,\n\n"
+        f"{message}"
+        "Merci de corriger ton dossier.\n\n"
+        f"Tu trouveras de l’aide dans cet article : {general_help_article_link}\n\n"
+        "Nous te souhaitons une belle journée.\n\n"
+        "L’équipe du pass Culture"
+    )
 
 
 def on_review_pending(user: users_models.User) -> None:
