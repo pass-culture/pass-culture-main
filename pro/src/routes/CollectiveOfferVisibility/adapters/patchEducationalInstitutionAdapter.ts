@@ -16,7 +16,8 @@ export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdap
 
       return {
         isOk: true,
-        message: null,
+        message:
+          'Les paramètres de visibilité de votre offre ont bien été enregistrés',
         payload: null,
       }
     } catch (e) {
