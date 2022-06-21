@@ -4,6 +4,7 @@ from pcapi.core import search
 from pcapi.core.bookings.exceptions import CannotDeleteVenueWithBookingsException
 from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.models as criteria_models
+from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import ActivationCode
@@ -23,8 +24,13 @@ logger = logging.getLogger(__name__)
 
 def delete_cascade_venue_by_id(venue_id: int) -> None:
     venue_has_bookings = db.session.query(Booking.query.filter(Booking.venueId == venue_id).exists()).scalar()
+    venue_has_collective_bookings = db.session.query(
+        educational_models.CollectiveBooking.query.filter(
+            educational_models.CollectiveBooking.venueId == venue_id
+        ).exists()
+    ).scalar()
 
-    if venue_has_bookings:
+    if venue_has_bookings or venue_has_collective_bookings:
         raise CannotDeleteVenueWithBookingsException()
 
     deleted_activation_codes_count = ActivationCode.query.filter(
@@ -38,6 +44,10 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     deleted_stocks_count = Stock.query.filter(Stock.offerId == Offer.id, Offer.venueId == venue_id).delete(
         synchronize_session=False
     )
+    deleted_collective_stocks_count = educational_models.CollectiveStock.query.filter(
+        educational_models.CollectiveStock.collectiveOfferId == educational_models.CollectiveOffer.id,
+        educational_models.CollectiveOffer.venueId == venue_id,
+    ).delete(synchronize_session=False)
 
     deleted_favorites_count = Favorite.query.filter(Favorite.offerId == Offer.id, Offer.venueId == venue_id).delete(
         synchronize_session=False
@@ -64,8 +74,26 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     ).delete(synchronize_session=False)
 
     offer_ids_to_delete = [id[0] for id in db.session.query(Offer.id).filter(Offer.venueId == venue_id).all()]
+    collective_offer_ids_to_delete = [
+        id[0]
+        for id in db.session.query(educational_models.CollectiveOffer.id)
+        .filter(educational_models.CollectiveOffer.venueId == venue_id)
+        .all()
+    ]
+    collective_offer_template_ids_to_delete = [
+        id[0]
+        for id in db.session.query(educational_models.CollectiveOfferTemplate.id)
+        .filter(educational_models.CollectiveOfferTemplate.venueId == venue_id)
+        .all()
+    ]
 
     deleted_offers_count = Offer.query.filter(Offer.venueId == venue_id).delete(synchronize_session=False)
+    deleted_collective_offers_count = educational_models.CollectiveOffer.query.filter(
+        educational_models.CollectiveOffer.venueId == venue_id
+    ).delete(synchronize_session=False)
+    deleted_collective_offer_templates_count = educational_models.CollectiveOfferTemplate.query.filter(
+        educational_models.CollectiveOfferTemplate.venueId == venue_id
+    ).delete(synchronize_session=False)
 
     deleted_venue_providers_count = VenueProvider.query.filter(VenueProvider.venueId == venue_id).delete(
         synchronize_session=False
@@ -89,10 +117,14 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
     db.session.commit()
 
     search.unindex_offer_ids(offer_ids_to_delete)
+    search.unindex_collective_offer_ids(collective_offer_ids_to_delete)
+    search.unindex_collective_offer_template_ids(collective_offer_template_ids_to_delete)
     search.unindex_venue_ids([venue_id])
 
     recap_data = {
         "offer_ids_to_unindex": offer_ids_to_delete,
+        "collective_offer_ids_to_unindex": collective_offer_ids_to_delete,
+        "collective_offer_template_ids_to_unindex": collective_offer_template_ids_to_delete,
         "venue_id": venue_id,
         "deleted_bank_informations_count": deleted_bank_informations_count,
         "deleted_venues_count": deleted_venues_count,
@@ -100,10 +132,13 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         "deleted_allocine_venue_providers_count": deleted_allocine_venue_providers_count,
         "deleted_business_unit_venue_links": deleted_business_unit_venue_links_count,
         "deleted_offers_count": deleted_offers_count,
+        "deleted_collective_offers_count": deleted_collective_offers_count,
+        "deleted_collective_offer_templates_count": deleted_collective_offer_templates_count,
         "deleted_mediations_count": deleted_mediations_count,
         "deleted_favorites_count": deleted_favorites_count,
         "deleted_offer_criteria_count": deleted_offer_criteria_count,
         "deleted_stocks_count": deleted_stocks_count,
+        "deleted_collective_stocks_count": deleted_collective_stocks_count,
         "deleted_activation_codes_count": deleted_activation_codes_count,
     }
     logger.info("Deleted venue", extra=recap_data)
