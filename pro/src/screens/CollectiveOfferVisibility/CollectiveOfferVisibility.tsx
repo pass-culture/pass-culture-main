@@ -96,6 +96,16 @@ const CollectiveOfferVisibility = ({
     }
   }, [formik.values.institution, institutionsOptions])
 
+  const noInstitutionSelected =
+    formik.values.visibility === 'one' && formik.values.institution.length === 0
+  const userHasNotUpdatedForm =
+    mode === Mode.EDITION &&
+    !(['visibility', 'institution'] as const).some(
+      key => formik.values[key] !== formik.initialValues[key]
+    )
+  const nextStepDisabled =
+    buttonPressed || noInstitutionSelected || userHasNotUpdatedForm
+
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
@@ -157,11 +167,7 @@ const CollectiveOfferVisibility = ({
             </Link>
             <SubmitButton
               className=""
-              disabled={
-                buttonPressed ||
-                (formik.values.visibility === 'one' &&
-                  formik.values.institution.length === 0)
-              }
+              disabled={nextStepDisabled}
               isLoading={false}
             >
               {mode === Mode.CREATION
