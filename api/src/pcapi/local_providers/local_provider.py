@@ -249,11 +249,11 @@ def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: in
         pc_object.thumbCount = 0  # type: ignore [attr-defined]
     if thumb_index <= pc_object.thumbCount:  # type: ignore [attr-defined]
         # replace existing thumb
-        create_thumb(pc_object, image_as_bytes, thumb_index)
+        create_thumb(pc_object, image_as_bytes, thumb_index, keep_ratio=True)
     else:
         # add new thumb
         for index in range(pc_object.thumbCount, thumb_index):  # type: ignore [attr-defined]
-            create_thumb(pc_object, image_as_bytes, index)
+            create_thumb(pc_object, image_as_bytes, index, keep_ratio=True)
             pc_object.thumbCount += 1  # type: ignore [attr-defined]
 
 
