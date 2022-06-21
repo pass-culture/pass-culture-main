@@ -134,6 +134,22 @@ class DMSOrphanSubsriptionTest:
 
 @pytest.mark.usefixtures("db_session")
 class HandleDmsApplicationTest:
+    id_piece_number_not_accepted_message = (
+        "Bonjour,\n"
+        "\n"
+        "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ta pièce d'identité, inscrit sur le formulaire en ligne:\n"
+        "Ton numéro de pièce d’identité doit être renseigné sous format alphanumérique sans espace et sans caractères spéciaux\n"
+        '<a href="https://aide.passculture.app/hc/fr/articles/4411999008657--Jeunes-Où-puis-je-trouver-le-numéro-de-ma-pièce-d-identité">Où puis-je trouver le numéro de ma pièce d’identité ?</a>\n'
+        "\n"
+        "Merci de corriger ton dossier.\n"
+        "\n"
+        'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+        "\n"
+        "Nous te souhaitons une belle journée.\n"
+        "\n"
+        "L’équipe du pass Culture"
+    )
+
     def test_concurrent_accepted_calls(self):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
@@ -190,10 +206,7 @@ class HandleDmsApplicationTest:
 
         send_dms_message_mock.assert_called_once()
         assert send_dms_message_mock.call_args[0][0] == "XYZQVM"
-        assert (
-            "Nous avons bien reçu ton dossier, mais le numéro de pièce d'identité sur le formulaire ne correspond pas à celui indiqué sur ta pièce d'identité."
-            in send_dms_message_mock.call_args[0][2]
-        )
+        assert send_dms_message_mock.call_args[0][2] == self.id_piece_number_not_accepted_message
         assert len(mails_testing.outbox) == 0
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
@@ -222,7 +235,7 @@ class HandleDmsApplicationTest:
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
             subscription_message.userMessage
-            == "Il semblerait que le champ ‘ta pièce d'identité’ soit erroné. Tu peux te rendre sur le site Démarches-simplifiées pour le rectifier."
+            == f"Nous avons bien reçu ton dossier le {datetime.date.today():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
         )
 
         send_dms_message_mock.assert_not_called()
@@ -287,7 +300,7 @@ class HandleDmsApplicationTest:
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
             subscription_message.userMessage
-            == "Ton dossier déposé sur le site Démarches-Simplifiées a été refusé car le champ ‘ta pièce d'identité’ n’est pas valide."
+            == "Ton dossier déposé sur le site Démarches-Simplifiées a été rejeté. Tu n’es malheureusement pas éligible au pass culture."
         )
 
         send_dms_message_mock.assert_not_called()
