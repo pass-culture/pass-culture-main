@@ -1,8 +1,7 @@
-import typing
-
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.subscription.dms import models as dms_models
 
 
 def send_create_account_after_dms_email(user_email: str) -> bool:
@@ -20,15 +19,23 @@ def send_complete_subscription_after_dms_email(user_email: str) -> bool:
 
 
 def send_pre_subscription_from_dms_error_email_to_beneficiary(
-    user_email: str, postal_code: typing.Optional[str], id_card_number: typing.Optional[str]
+    user_email: str, parsing_errors: list[dms_models.DmsParsingErrorDetails]
 ) -> bool:
-    if postal_code == None and id_card_number == None:
+    postal_code_error = next(
+        (error for error in parsing_errors if error.key == dms_models.DmsParsingErrorKeyEnum.postal_code), None
+    )
+    id_card_number_error = next(
+        (error for error in parsing_errors if error.key == dms_models.DmsParsingErrorKeyEnum.id_piece_number),
+        None,
+    )
+    if postal_code_error == None and id_card_number_error == None:
         return False
 
+    # TODO: print all errors in email, not only these two
     data = SendinblueTransactionalEmailData(template=TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value)
-    if postal_code:
-        data.params["POSTAL_CODE"] = postal_code
-    if id_card_number:
-        data.params["ID_CARD_NUMBER"] = id_card_number
+    if postal_code_error:
+        data.params["POSTAL_CODE"] = postal_code_error.value
+    if id_card_number_error:
+        data.params["ID_CARD_NUMBER"] = id_card_number_error.value
 
     return mails.send(recipients=[user_email], data=data)

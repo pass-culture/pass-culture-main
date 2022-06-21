@@ -5,6 +5,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.mails.transactional.users.dms_subscription_emails import (
     send_pre_subscription_from_dms_error_email_to_beneficiary,
 )
+from pcapi.core.subscription.dms import models as dms_models
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -16,8 +17,15 @@ class PreSubscriptionDmsErrorEmailSendinblueTest:
         user_mail = "test@exemple.com"
         postal_code = "75"
         id_card_number = "1122"
+
+        parsing_errors = [
+            dms_models.DmsParsingErrorDetails(key=dms_models.DmsParsingErrorKeyEnum.postal_code, value=postal_code),
+            dms_models.DmsParsingErrorDetails(
+                key=dms_models.DmsParsingErrorKeyEnum.id_piece_number, value=id_card_number
+            ),
+        ]
         # When
-        send_pre_subscription_from_dms_error_email_to_beneficiary(user_mail, postal_code, id_card_number)
+        send_pre_subscription_from_dms_error_email_to_beneficiary(user_mail, parsing_errors)
         # Then
         assert mails_testing.outbox[0].sent_data["To"] == user_mail
         assert (
@@ -25,6 +33,6 @@ class PreSubscriptionDmsErrorEmailSendinblueTest:
             == TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value.__dict__
         )
         assert mails_testing.outbox[0].sent_data["params"] == {
-            "POSTAL_CODE": "75",
-            "ID_CARD_NUMBER": "1122",
+            "POSTAL_CODE": postal_code,
+            "ID_CARD_NUMBER": id_card_number,
         }

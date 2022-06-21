@@ -19,6 +19,7 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.api as subscription_api
+from pcapi.core.subscription.dms import models as dms_types
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -165,7 +166,8 @@ class ParsingErrorsTest:
         with pytest.raises(ValueError) as exc_info:
             dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
-        assert exc_info.value.errors["postal_code"] == "Strasbourg"
+        assert exc_info.value.errors[0].key == dms_types.DmsParsingErrorKeyEnum.postal_code
+        assert exc_info.value.errors[0].value == "Strasbourg"
 
     @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
     def test_beneficiary_information_id_piece_number_error(self, possible_value):
@@ -174,7 +176,8 @@ class ParsingErrorsTest:
         with pytest.raises(ValueError) as exc_info:
             dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
-        assert exc_info.value.errors["id_piece_number"] == possible_value
+        assert exc_info.value.errors[0].key == dms_types.DmsParsingErrorKeyEnum.id_piece_number
+        assert exc_info.value.errors[0].value == possible_value
 
 
 @pytest.mark.usefixtures("db_session")
