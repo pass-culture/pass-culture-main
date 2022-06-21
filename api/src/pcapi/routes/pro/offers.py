@@ -7,8 +7,6 @@ from flask_login import login_required
 from sqlalchemy.orm import exc as orm_exc
 from sqlalchemy.orm import joinedload
 
-from pcapi.connectors.api_adage import AdageException
-from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions as educational_exceptions
@@ -127,12 +125,12 @@ def create_educational_offer(
                 "Offer extraData is None after create_educational_offer call",
                 extra={"offer_id": offer.id, "offer_name": offer.name, "payload": body.json()},
             )
-    except CulturalPartnerNotFoundException:
+    except educational_exceptions.CulturalPartnerNotFoundException:
         logger.info(
             "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
         )
         raise ApiErrors({"offerer: not found in adage"}, 403)  # type: ignore [arg-type]
-    except AdageException:
+    except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
         raise ApiErrors({"adage_api: error"}, 500)  # type: ignore [arg-type]
     except exceptions.UnknownOfferSubCategory as error:

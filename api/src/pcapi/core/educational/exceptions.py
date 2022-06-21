@@ -109,3 +109,15 @@ class CollectiveOfferNotEditable(Exception):
 
 class CollectiveStockNotBookableByUser(Exception):
     pass
+
+
+class AdageException(Exception):
+    def __init__(self, message, status_code, response_text):  # type: ignore [no-untyped-def]
+        self.message = message
+        self.status_code = status_code
+        self.response_text = response_text
+        super().__init__(message)
+
+
+class CulturalPartnerNotFoundException(Exception):
+    pass

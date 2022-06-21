@@ -14,7 +14,6 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.elements import not_
 
 from pcapi import settings
-from pcapi.connectors.api_adage import AdageException
 from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
@@ -27,6 +26,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 import pcapi.core.educational.adage_backends as adage_client
+from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter

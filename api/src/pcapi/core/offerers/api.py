@@ -9,9 +9,8 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.connectors import thumb_storage as storage
-from pcapi.connectors.api_adage import AdageException
-from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core import search
+import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.models as finance_models
 from pcapi.core.mails.transactional.pro.new_offerer_validation import send_new_offerer_validation_email_to_pro
 from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
@@ -435,8 +434,13 @@ def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:
     try:
         response = adage_client.get_adage_offerer(siren)
         if len(response) == 0:
-            raise CulturalPartnerNotFoundException("No venue has been found for the selected siren")
-    except (CulturalPartnerNotFoundException, AdageException) as exception:
+            raise educational_exceptions.CulturalPartnerNotFoundException(
+                "No venue has been found for the selected siren"
+            )
+    except (
+        educational_exceptions.CulturalPartnerNotFoundException,
+        educational_exceptions.AdageException,
+    ) as exception:
         raise exception
 
 

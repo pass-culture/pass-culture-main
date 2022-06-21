@@ -1,9 +1,9 @@
 import pytest
 import requests_mock
 
-from pcapi.connectors.api_adage import AdageException
 from pcapi.core.bookings import factories as booking_factories
 import pcapi.core.educational.adage_backends as adage_client
+from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.testing import override_settings
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 

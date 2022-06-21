@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.categories import subcategories
+import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.educational.factories as educational_factories
 from pcapi.core.educational.models import CollectiveOffer
 import pcapi.core.offerers.factories as offerers_factories
@@ -115,7 +115,7 @@ class Returns403Test:
     def test_create_collective_offer_no_adage_offerer(self, client):
         # Given
         def raise_ac(*args, **kwargs):
-            raise CulturalPartnerNotFoundException("pouet")
+            raise educational_exceptions.CulturalPartnerNotFoundException("pouet")
 
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer

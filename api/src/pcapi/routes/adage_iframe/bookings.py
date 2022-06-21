@@ -1,9 +1,7 @@
 import logging
 
-from pcapi.connectors.api_adage import AdageException
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions
-from pcapi.core.educational.exceptions import MissingRequiredRedactorInformation
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
@@ -34,7 +32,7 @@ def book_educational_offer(
             redactor_informations=get_redactor_information_from_adage_authentication(authenticated_information),
             stock_id=body.stockId,
         )
-    except AdageException as exception:
+    except exceptions.AdageException as exception:
         logger.info(
             "Could not book offer: adage api call failed",
             extra={
@@ -48,7 +46,7 @@ def book_educational_offer(
             status_code=500,
         )
 
-    except MissingRequiredRedactorInformation:
+    except exceptions.MissingRequiredRedactorInformation:
         logger.info(
             "Could not book offer: missing information in adage jwt",
             extra={"authenticated_information": authenticated_information.dict()},
@@ -96,7 +94,7 @@ def book_collective_offer(
             redactor_informations=get_redactor_information_from_adage_authentication(authenticated_information),
             stock_id=body.stockId,
         )
-    except AdageException as exception:
+    except exceptions.AdageException as exception:
         logger.info(
             "Could not book offer: adage api call failed",
             extra={
@@ -110,7 +108,7 @@ def book_collective_offer(
             status_code=500,
         )
 
-    except MissingRequiredRedactorInformation:
+    except exceptions.MissingRequiredRedactorInformation:
         logger.info(
             "Could not book offer: missing information in adage jwt",
             extra={"authenticated_information": authenticated_information.dict()},

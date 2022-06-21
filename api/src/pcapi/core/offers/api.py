@@ -15,7 +15,6 @@ import yaml
 from yaml.scanner import ScannerError
 
 from pcapi import settings
-from pcapi.connectors.api_adage import AdageException
 from pcapi.connectors.thumb_storage import create_thumb
 from pcapi.connectors.thumb_storage import remove_thumb
 from pcapi.core import search
@@ -1272,7 +1271,7 @@ def cancel_educational_offer_booking(offer: Offer) -> None:
             adage_client.notify_booking_cancellation_by_offerer(
                 data=serialize_educational_booking(booking.educationalBooking)  # type: ignore [arg-type]
             )
-        except AdageException as adage_error:
+        except educational_exceptions.AdageException as adage_error:
             logger.error(
                 "%s Could not notify adage of educational booking cancellation by offerer. Educational institution won't be notified.",
                 adage_error.message,
@@ -1370,7 +1369,7 @@ def cancel_collective_offer_booking(offer_id: int, *, legacy: bool = False) -> N
 
     try:
         adage_client.notify_booking_cancellation_by_offerer(data=serialize_collective_booking(cancelled_booking))
-    except AdageException as adage_error:
+    except educational_exceptions.AdageException as adage_error:
         logger.error(
             "%s Could not notify adage of collective booking cancellation by offerer. Educational institution won't be notified.",
             adage_error.message,
