@@ -7,7 +7,7 @@ import CloseButton from './CloseButton'
 
 interface DialogProps {
   extraClassNames?: string
-  hasCloseButton: boolean
+  hasCloseButton?: boolean
   labelledBy: string
   onDismiss?: () => void
   initialFocusRef?: React.RefObject<HTMLButtonElement>
@@ -17,7 +17,7 @@ interface DialogProps {
 const DialogBox: FunctionComponent<DialogProps> = ({
   children,
   extraClassNames,
-  hasCloseButton,
+  hasCloseButton = false,
   labelledBy,
   onDismiss,
   initialFocusRef,
