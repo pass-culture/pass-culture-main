@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import Optional
+import typing
 
 from dateutil import parser as date_parser
 
@@ -8,6 +8,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
 from pcapi.core.subscription import exceptions as subscription_exceptions
+from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.users import models as users_models
 from pcapi.utils.date import FrenchParserInfo
 
@@ -50,13 +51,17 @@ def parse_beneficiary_information_graphql(
     phone = None
     postal_code = None
 
-    parsing_errors: dict[str, Optional[str]] = {}
+    parsing_errors: list[dms_types.DmsParsingErrorDetails] = []
 
     if not fraud_api.is_subscription_name_valid(first_name):
-        parsing_errors["first_name"] = first_name
+        parsing_errors.append(
+            dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.first_name, value=first_name)
+        )
 
     if not fraud_api.is_subscription_name_valid(last_name):
-        parsing_errors["last_name"] = last_name
+        parsing_errors.append(
+            dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.last_name, value=last_name)
+        )
 
     for field in application_detail.fields:
         label = field.label
@@ -66,7 +71,9 @@ def parse_beneficiary_information_graphql(
             try:
                 birth_date = date_parser.parse(value, FrenchParserInfo())  # type: ignore [arg-type]
             except Exception:  # pylint: disable=broad-except
-                parsing_errors["birth_date"] = value
+                parsing_errors.append(
+                    dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.birth_date, value=value)
+                )
 
         elif label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
             phone = value.replace(" ", "")  # type: ignore [union-attr]
@@ -79,7 +86,9 @@ def parse_beneficiary_information_graphql(
             try:
                 postal_code = re.search("^[0-9]{5}", space_free).group(0)  # type: ignore [union-attr]
             except Exception:  # pylint: disable=broad-except
-                parsing_errors["postal_code"] = value
+                parsing_errors.append(
+                    dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.postal_code, value=value)
+                )
 
         elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
             activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
@@ -98,7 +107,9 @@ def parse_beneficiary_information_graphql(
         ):
             value = value.strip()  # type: ignore [union-attr]
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
-                parsing_errors["id_piece_number"] = value
+                parsing_errors.append(
+                    dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.id_piece_number, value=value)
+                )
             else:
                 id_piece_number = value
         elif label in (dms_models.FieldLabel.CITY_FR.value, dms_models.FieldLabel.CITY_ET.value):
@@ -129,7 +140,7 @@ def parse_beneficiary_information_graphql(
     return result_content
 
 
-def _parse_dms_civility(civility: dms_models.Civility) -> Optional[users_models.GenderEnum]:
+def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_models.GenderEnum]:
     if civility == dms_models.Civility.M:
         return users_models.GenderEnum.M
     if civility == dms_models.Civility.MME:

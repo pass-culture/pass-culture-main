@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pcapi.core.fraud.common.models import IdentityCheckContent
+from pcapi.core.subscription.dms import types as dms_types
 
 
 class SubscriptionException(Exception):
@@ -26,7 +27,7 @@ class CannotUpgradeBeneficiaryRole(SubscriptionException):
 
 
 class DMSParsingError(ValueError):
-    def __init__(self, user_email: str, errors: dict[str, Optional[str]], result_content: IdentityCheckContent, *args, **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, user_email: str, errors: list[dms_types.DmsParsingErrorDetails], result_content: IdentityCheckContent, *args, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(*args, **kwargs)
         self.errors = errors
         self.user_email = user_email

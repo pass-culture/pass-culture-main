@@ -1,6 +1,7 @@
 import datetime
 
 from pcapi import settings
+from pcapi.core.subscription.dms import models as dms_models
 import pcapi.core.users.models as users_models
 from pcapi.repository import repository
 
@@ -299,27 +300,20 @@ def add_error_message(user: users_models.User, message: str) -> None:
     repository.save(message)
 
 
-def _generate_form_field_error(error_text_singular: str, error_text_plural: str, error_fields: list[str]) -> str:
-    french_field_name = {
-        "id_piece_number": "ta pièce d'identité",
-        "postal_code": "ton code postal",
-        "birth_date": "ta date de naissance",
-        "first_name": "ton prénom",
-        "last_name": "ton nom",
-    }
-
-    user_message = error_text_singular.format(
-        formatted_error_fields=french_field_name.get(error_fields[0], error_fields[0])
-    )
-    if len(error_fields) > 1:
-        field_text = ", ".join(french_field_name.get(field, field) for field in error_fields)
+def _generate_form_field_error(
+    error_text_singular: str, error_text_plural: str, error_fields: list[dms_models.DmsParsingErrorDetails]
+) -> str:
+    field_text = ", ".join(field.get_field_label() for field in error_fields)
+    if len(error_fields) == 1:
+        user_message = error_text_singular.format(formatted_error_fields=field_text)
+    else:
         user_message = error_text_plural.format(formatted_error_fields=field_text)
 
     return user_message
 
 
 def on_dms_application_parsing_errors(
-    user: users_models.User, error_fields: list[str], is_application_updatable: bool
+    user: users_models.User, error_fields: list[dms_models.DmsParsingErrorDetails], is_application_updatable: bool
 ) -> None:
     if is_application_updatable:
         user_message = _generate_form_field_error(

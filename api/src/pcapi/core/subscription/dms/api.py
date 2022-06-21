@@ -175,7 +175,7 @@ def _process_parsing_error(
 ) -> fraud_models.BeneficiaryFraudCheck:
     subscription_messages.on_dms_application_parsing_errors(
         user,
-        list(parsing_error.errors.keys()),
+        parsing_error.errors,
         is_application_updatable=state
         in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going),
     )
@@ -185,8 +185,7 @@ def _process_parsing_error(
     elif state == dms_models.GraphQLApplicationStates.accepted:
         dms_subscription_emails.send_pre_subscription_from_dms_error_email_to_beneficiary(
             parsing_error.user_email,
-            parsing_error.errors.get("postal_code"),
-            parsing_error.errors.get("id_piece_number"),
+            parsing_error.errors,
         )
 
     return _create_parsing_error_fraud_check(user, application_number, state, parsing_error)
@@ -200,7 +199,9 @@ def _create_parsing_error_fraud_check(
 ) -> fraud_models.BeneficiaryFraudCheck:
     fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number)
 
-    errors = ",".join([f"'{key}' ({value})" for key, value in sorted(parsing_error.errors.items())])
+    errors = ",".join(
+        [f"'{parsing_error.key.value}' ({parsing_error.value})" for parsing_error in parsing_error.errors]
+    )
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
     fraud_check.resultContent = parsing_error.result_content.dict()

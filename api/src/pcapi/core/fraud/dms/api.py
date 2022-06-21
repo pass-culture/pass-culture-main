@@ -7,6 +7,7 @@ from pcapi.connectors.dms.api import DMSGraphQLClient
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
 from pcapi.core.subscription import messages as subscription_messages
+from pcapi.core.subscription.dms import models as dms_models
 import pcapi.core.users.models as users_models
 from pcapi.repository import repository
 
@@ -69,7 +70,16 @@ def on_dms_eligibility_error(
         fraud_check.thirdPartyId,
         extra=extra_data,
     )
-    subscription_messages.on_dms_application_parsing_errors(user, ["birth_date"], is_application_updatable=True)
+    fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
+    birth_date = fraud_check_content.get_birth_date()
+    birth_date_parsing_error = dms_models.DmsParsingErrorDetails(
+        key=dms_models.DmsParsingErrorKeyEnum.birth_date, value=birth_date.isoformat() if birth_date else None
+    )
+    subscription_messages.on_dms_application_parsing_errors(
+        user,
+        [birth_date_parsing_error],
+        is_application_updatable=True,
+    )
     dms_client.send_user_message(
         application_scalar_id, settings.DMS_INSTRUCTOR_ID, subscription_messages.DMS_ERROR_MESSSAGE_BIRTH_DATE
     )
