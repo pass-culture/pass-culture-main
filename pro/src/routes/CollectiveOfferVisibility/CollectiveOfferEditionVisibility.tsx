@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
-import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import Spinner from 'components/layout/Spinner'
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
@@ -22,6 +22,7 @@ const CollectiveOfferVisibility = () => {
   const [isEditable, setIsEditable] = useState<boolean>()
   const [institution, setInstitution] =
     useState<EducationalInstitution | null>()
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -34,6 +35,7 @@ const CollectiveOfferVisibility = () => {
 
       setIsEditable(stockResult.payload?.stock?.isEducationalStockEditable)
       setInstitution(offerResult.payload.institution)
+      setIsReady(true)
     })
   }, [])
 
@@ -48,17 +50,21 @@ const CollectiveOfferVisibility = () => {
       title="Editer une offre collective"
       offerId={offerId}
     >
-      <CollectiveOfferVisibilityScreen
-        getInstitutions={getEducationalInstitutionsAdapter}
-        mode={isEditable ? Mode.EDITION : Mode.READ_ONLY}
-        patchInstitution={patchEducationalInstitutionAdapter}
-        initialValues={{
-          institution: institution?.id?.toString() ?? '',
-          'search-institution': institution?.name ?? '',
-          visibility: institution ? 'one' : 'all',
-        }}
-        onSuccess={onSuccess}
-      />
+      {isReady ? (
+        <CollectiveOfferVisibilityScreen
+          getInstitutions={getEducationalInstitutionsAdapter}
+          mode={isEditable ? Mode.EDITION : Mode.READ_ONLY}
+          patchInstitution={patchEducationalInstitutionAdapter}
+          initialValues={{
+            institution: institution?.id?.toString() ?? '',
+            'search-institution': institution?.name ?? '',
+            visibility: institution ? 'one' : 'all',
+          }}
+          onSuccess={onSuccess}
+        />
+      ) : (
+        <Spinner />
+      )}
     </OfferEducationalLayout>
   )
 }
