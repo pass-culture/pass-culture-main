@@ -96,11 +96,20 @@ class IdentifierFields extends PureComponent {
         <div className="field-group">
           {isCreatedEntity && <HiddenField name="managingOffererId" />}
           {!venueIsVirtual && (
-            <SiretField
-              label={siretLabel}
-              readOnly={readOnly || initialSiret !== null}
-              siren={siren}
-            />
+            <>
+              <SiretField
+                label={siretLabel}
+                readOnly={readOnly || initialSiret !== null}
+                siren={siren}
+              />
+              <TextareaField
+                label="Commentaire (si pas de SIRET) : "
+                name="comment"
+                readOnly={readOnly}
+                rows={1}
+                validate={this.commentValidate}
+              />
+            </>
           )}
           <TextField
             label="Nom du lieu : "
@@ -130,16 +139,6 @@ class IdentifierFields extends PureComponent {
               labelAligned
               name="isEmailAppliedOnAllOffers"
               readOnly
-            />
-          )}
-
-          {!venueIsVirtual && (
-            <TextareaField
-              label="Commentaire (si pas de SIRET) : "
-              name="comment"
-              readOnly={readOnly}
-              rows={1}
-              validate={this.commentValidate}
             />
           )}
           <div
