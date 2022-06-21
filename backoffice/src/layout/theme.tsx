@@ -1,26 +1,26 @@
 import { createTheme } from '@mui/material/styles'
 
-import { colors } from './Colors'
+import { Colors } from './Colors'
 
 export const theme = createTheme({
   palette: {
     primary: {
       // light: will be calculated from palette.primary.main,
-      main: colors.PRIMARY,
-      dark: colors.PRIMARY_DARK,
+      main: Colors.PRIMARY,
+      dark: Colors.PRIMARY_DARK,
       // contrastText: will be calculated to contrast with palette.primary.main
     },
     secondary: {
-      main: colors.SECONDARY,
+      main: Colors.SECONDARY,
     },
     success: {
-      main: colors.GREEN,
+      main: Colors.GREEN,
     },
     error: {
-      main: colors.RED,
+      main: Colors.RED,
     },
     warning: {
-      main: colors.YELLOW,
+      main: Colors.YELLOW,
     },
     // Used by `getContrastText()` to maximize the contrast between
     // the background and the text.
@@ -35,12 +35,12 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           '&.MuiPaper-root': {
-            color: colors.WHITE,
+            color: Colors.WHITE,
           },
         },
         colorSecondary: {
           padding: 5,
-          background: `linear-gradient(to right, ${colors.PRIMARY}, ${colors.SECONDARY});`,
+          background: `linear-gradient(to right, ${Colors.PRIMARY}, ${Colors.SECONDARY});`,
         },
       },
     },
