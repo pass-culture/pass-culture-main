@@ -6,7 +6,11 @@ import * as useNotification from 'components/hooks/useNotification'
 import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
-import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
+import {
+  DEFAULT_VISIBILITY_FORM_VALUES,
+  EducationalInstitution,
+  Mode,
+} from 'core/OfferEducational'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { MemoryRouter } from 'react-router'
@@ -27,6 +31,27 @@ jest.mock('react-router-dom', () => ({
   }),
 }))
 
+const institutions: EducationalInstitution[] = [
+  {
+    id: 12,
+    name: 'Institution 1',
+    postalCode: '91190',
+    city: 'Gif-sur-Yvette',
+  },
+  {
+    id: 24,
+    name: 'Institution 2',
+    postalCode: '75005',
+    city: 'Paris',
+  },
+  {
+    id: 42,
+    name: 'Institution 3',
+    postalCode: '33000',
+    city: 'Bordeaux',
+  },
+]
+
 export const renderVisibilityStep = (props: CollectiveOfferVisibilityProps) => {
   render(
     <Provider store={configureTestStore()}>
@@ -42,36 +67,11 @@ describe('CollectiveOfferVisibility', () => {
 
   beforeEach(() => {
     props = {
-      getInstitutions: jest.fn().mockResolvedValue({
-        isOk: true,
-        message: null,
-        payload: {
-          institutions: [
-            {
-              id: 12,
-              name: 'Institution 1',
-              postalCode: '91190',
-              city: 'Gif-sur-Yvette',
-            },
-            {
-              id: 24,
-              name: 'Institution 2',
-              postalCode: '75005',
-              city: 'Paris',
-            },
-            {
-              id: 42,
-              name: 'Institution 3',
-              postalCode: '33000',
-              city: 'Bordeaux',
-            },
-          ],
-        },
-      }),
       mode: Mode.CREATION,
       patchInstitution: jest.fn(),
       initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
       onSuccess: jest.fn(),
+      institutions,
     }
   })
 
@@ -103,7 +103,7 @@ describe('CollectiveOfferVisibility', () => {
     expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
   })
 
-  it('should save selected institution and go to confirmation', async () => {
+  it('should save selected institution and call onSuccess props', async () => {
     const spyPatch = jest.fn().mockResolvedValue({ isOk: true })
     renderVisibilityStep({ ...props, patchInstitution: spyPatch })
     await userEvent.click(
@@ -115,9 +115,7 @@ describe('CollectiveOfferVisibility', () => {
       screen.getByRole('button', { name: /Valider et créer l’offre/ })
     )
     expect(spyPatch).toHaveBeenCalledTimes(1)
-    expect(mockHistoryPush).toHaveBeenLastCalledWith(
-      '/offre/BQ/collectif/confirmation'
-    )
+    expect(props.onSuccess).toHaveBeenCalledWith({ offerId: 'BQ', message: '' })
   })
 
   it('should display an error when the institution could not be saved', async () => {
@@ -142,15 +140,39 @@ describe('CollectiveOfferVisibility', () => {
     await waitFor(() => expect(notifyError).toHaveBeenNthCalledWith(1, 'Ooops'))
   })
 
-  it('should not save visibility and redirect to confirmation when all institution are selected', async () => {
-    const spyPatch = jest.fn()
-    renderVisibilityStep({ ...props, patchInstitution: spyPatch })
-    await userEvent.click(
-      screen.getByRole('button', { name: /Valider et créer l’offre/ })
-    )
-    expect(spyPatch).not.toHaveBeenCalled()
-    expect(mockHistoryPush).toHaveBeenLastCalledWith(
-      '/offre/BQ/collectif/confirmation'
-    )
+  describe('edition', () => {
+    it('shoud prefill form with initial values', async () => {
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+        initialValues: {
+          visibility: 'one',
+          institution: '12',
+          'search-institution': 'Institution 1',
+        },
+      })
+      expect(
+        screen.getByLabelText(/Un établissement en particulier/)
+      ).toBeChecked()
+      expect(await screen.findByText(/Institution 1/)).toBeInTheDocument()
+      expect(
+        await screen.findByText(/91190 Gif-sur-Yvette/)
+      ).toBeInTheDocument()
+    })
+
+    it('should disable form if user has not made any modifications', async () => {
+      renderVisibilityStep({
+        ...props,
+        mode: Mode.EDITION,
+        initialValues: {
+          visibility: 'one',
+          institution: '12',
+          'search-institution': 'Institution 1',
+        },
+      })
+      expect(
+        screen.getByRole('button', { name: /Valider et enregistrer l’offre/ })
+      ).toBeDisabled()
+    })
   })
 })
