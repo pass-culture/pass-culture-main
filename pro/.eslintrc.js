@@ -2,6 +2,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:react-hooks/recommended',
     'plugin:prettier/recommended',
   ],
   env: {
@@ -28,6 +29,7 @@ module.exports = {
     '@typescript-eslint/no-empty-function': 'off',
     'sort-imports': 1,
     'no-console': 1,
+    'react-hooks/exhaustive-deps': 'warn',
   },
   overrides: [
     {
