@@ -114,6 +114,7 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
 def create_educational_offer(
     body: offers_serialize.PostEducationalOfferBodyModel,
 ) -> offers_serialize.EducationalOfferResponseIdModel:
+    # FIXME DELETE UNUSED API
     try:
         (offer, collective_offer_id) = offers_api.create_educational_offer(offer_data=body, user=current_user)
 
@@ -229,6 +230,7 @@ def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> of
 def edit_educational_offer(
     offer_id: str, body: offers_serialize.PatchEducationalOfferBodyModel
 ) -> offers_serialize.GetOfferResponseModel:
+    # FIXME DELETE UNUSED API
     try:
         offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
 
@@ -310,6 +312,7 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
     api=blueprint.pro_private_schema,
 )
 def cancel_educational_offer_booking(offer_id: str) -> None:
+    # FIXME DELETE UNUSED API
     try:
         offer = (
             offers_repository.get_educational_offer_by_id_base_query(dehumanize(offer_id))  # type: ignore [arg-type]
@@ -345,6 +348,7 @@ def cancel_educational_offer_booking(offer_id: str) -> None:
 def create_shadow_stock_for_educational_showcase_offer(
     offer_id: str, body: offers_serialize.EducationalOfferShadowStockBodyModel
 ) -> None:
+    # FIXME DELETE UNUSED API
     offer_id = dehumanize(offer_id)  # type: ignore [assignment]
     try:
         offerer = get_by_offer_id(offer_id)  # type: ignore [arg-type]

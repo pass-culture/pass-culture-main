@@ -29,6 +29,7 @@ def book_educational_offer(
     body: BookEducationalOfferRequest,
     authenticated_information: AuthenticatedInformation,
 ) -> BookEducationalOfferResponse:
+    # FIXME DELETE UNUSED API
     try:
         booking = educational_api.book_educational_offer(
             redactor_informations=get_redactor_information_from_adage_authentication(authenticated_information),
