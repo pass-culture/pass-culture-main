@@ -6,10 +6,10 @@ import * as useNotification from 'components/hooks/useNotification'
 import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
+import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { MemoryRouter } from 'react-router'
-import { Mode } from 'core/OfferEducational'
 import { Provider } from 'react-redux'
 import React from 'react'
 import { configureTestStore } from 'store/testUtils'
@@ -70,6 +70,7 @@ describe('CollectiveOfferVisibility', () => {
       }),
       mode: Mode.CREATION,
       patchInstitution: jest.fn(),
+      initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
     }
   })
 

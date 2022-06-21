@@ -1,5 +1,5 @@
+import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
-import { Mode } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import React from 'react'
@@ -18,6 +18,7 @@ const CollectiveOfferVisibility = () => {
         getInstitutions={getEducationalInstitutionsAdapter}
         mode={Mode.CREATION}
         patchInstitution={patchEducationalInstitutionAdapter}
+        initialValues={DEFAULT_VISIBILITY_FORM_VALUES}
       />
       <RouteLeavingGuardOfferCreation isCollectiveFlow />
     </OfferEducationalLayout>

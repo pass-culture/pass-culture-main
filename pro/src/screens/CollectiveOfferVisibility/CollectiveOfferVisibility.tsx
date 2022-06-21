@@ -18,6 +18,7 @@ export interface CollectiveOfferVisibilityProps {
   getInstitutions: GetEducationalInstitutionsAdapter
   patchInstitution: PatchEducationalInstitutionAdapter
   mode: Mode
+  initialValues: VisibilityFormValues
 }
 interface InstitutionOption extends SelectOption {
   postalCode?: string
@@ -28,6 +29,7 @@ const CollectiveOfferVisibility = ({
   getInstitutions,
   mode,
   patchInstitution,
+  initialValues,
 }: CollectiveOfferVisibilityProps) => {
   const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
@@ -51,11 +53,7 @@ const CollectiveOfferVisibility = ({
   }
 
   const formik = useFormik<VisibilityFormValues>({
-    initialValues: {
-      visibility: 'all',
-      institution: '',
-      'search-institution': '',
-    },
+    initialValues,
     onSubmit,
     validationSchema,
   })
