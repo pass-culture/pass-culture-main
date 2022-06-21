@@ -16,6 +16,7 @@ import Spinner from 'components/layout/Spinner'
 import { computeInitialValuesFromOffer } from './utils'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useGetCategories } from 'core/Offers/adapters'
 import useNotification from 'components/hooks/useNotification'
 
@@ -38,6 +39,7 @@ const OfferDetails = ({
   const [thumbnailInfo, setThumbnailInfo] = useState({})
   const [thumbnailError, setThumbnailError] = useState(false)
   const [thumbnailMsgError, setThumbnailMsgError] = useState('')
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
   const {
     data: categoriesData,
@@ -145,12 +147,18 @@ const OfferDetails = ({
     async offerValues => {
       try {
         if (offer) {
+          // TODO: if OFFER_FORM_SUMMARY_PAGE is active
+          // and isCreatingOffer === true
+          // use patch creation route when available
           await pcapi.updateOffer(offer.id, offerValues)
           notification.success('Votre offre a bien été modifiée')
           reloadOffer()
           setFormErrors({})
           setThumbnailError(false)
           setThumbnailMsgError('')
+          if (useSummaryPage && isCreatingOffer) {
+            return Promise.resolve(() => goToStockAndPrice(offer.id))
+          }
         } else {
           const response = await pcapi.createOffer(offerValues)
           const createdOfferId = response.id
