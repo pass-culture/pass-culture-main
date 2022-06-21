@@ -12,6 +12,7 @@ import FormLayout from 'new_components/FormLayout'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import { computeOffersUrl } from 'core/Offers/utils'
+import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import styles from './CollectiveOfferVisibility.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import validationSchema from './validationSchema'
@@ -58,6 +59,9 @@ const CollectiveOfferVisibility = ({
 
     onSuccess({ offerId, message: result.message ?? '' })
     setButtonPressed(false)
+    formik.resetForm({
+      values: extractInitialVisibilityValues(result.payload.institution),
+    })
   }
 
   const formik = useFormik<VisibilityFormValues>({
