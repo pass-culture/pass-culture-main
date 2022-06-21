@@ -133,6 +133,7 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
         bookings_models.Booking.query.filter(
             bookings_models.Booking.status == bookings_models.BookingStatus.USED,
             bookings_models.Booking.dateUsed.between(*window),
+            bookings_models.Booking.educationalBookingId.is_(None),
         )
         .join(bookings_models.Booking.stock)
         .outerjoin(
@@ -165,8 +166,6 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
             ),
         )
     )
-
-    bookings = bookings.filter(bookings_models.Booking.educationalBookingId.is_(None))
 
     errorred_business_unit_ids = set()
     for booking in bookings:
@@ -475,7 +474,10 @@ def _delete_dependent_pricings(
     siret = booking.venue.siret or booking.venue.businessUnit.siret
     revenue_period_start, revenue_period_end = _get_revenue_period(booking.dateUsed)
     pricings = (
-        models.Pricing.query.filter(models.Pricing.siret == siret)
+        models.Pricing.query.filter(
+            models.Pricing.siret == siret,
+            bookings_models.Booking.educationalBookingId.is_(None),
+        )
         .join(models.Pricing.booking)
         .join(bookings_models.Booking.stock)
         .join(bookings_models.Booking.venue)
@@ -491,8 +493,6 @@ def _delete_dependent_pricings(
             sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
         )
     )
-
-    pricings = pricings.filter(bookings_models.Booking.educationalBookingId.is_(None))
 
     pricings = pricings.with_entities(
         models.Pricing.id, models.Pricing.bookingId, models.Pricing.status, bookings_models.Booking.stockId
@@ -791,7 +791,7 @@ def generate_payment_files(batch_id: int) -> None:
     logger.info("Generating business units file")
     file_paths["business_units"] = _generate_business_units_file()
     logger.info("Generating payments file")
-    file_paths["payments"] = _generate_new_payments_file(batch_id)
+    file_paths["payments"] = _generate_payments_file(batch_id)
     logger.info("Generating wallets file")
     file_paths["wallets"] = _generate_wallets_file()
     logger.info(
@@ -948,7 +948,7 @@ def _clean_for_accounting(value: str) -> str:
     return value.strip().replace('"', "").replace("\n", "")
 
 
-def _generate_new_payments_file(batch_id: int) -> pathlib.Path:
+def _generate_payments_file(batch_id: int) -> pathlib.Path:
     header = [
         "Identifiant de la BU",
         "SIRET de la BU",
@@ -1538,7 +1538,6 @@ def get_reimbursements_by_venue(
             "validated_booking_amount": -utils.to_eurocents(validated_booking_amount),
             "individual_amount": individual_amount,
         }
-
 
     for venue_pricing_info in collective_query:
         venue_id = venue_pricing_info.venue_id

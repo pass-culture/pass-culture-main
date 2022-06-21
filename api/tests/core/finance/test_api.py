@@ -1010,7 +1010,7 @@ def test_generate_business_units_file():
 
 
 @clean_temporary_files
-def test_generate_new_payments_file():
+def test_generate_payments_file():
     used_date = datetime.datetime(2020, 1, 2)
     # This pricing belong to a business unit whose venue is the same
     # as the venue of the offer.
@@ -1144,7 +1144,7 @@ def test_generate_new_payments_file():
 
     n_queries = 2  # select pricings for bookings + collective bookings
     with assert_num_queries(n_queries):
-        path = api._generate_new_payments_file(batch_id)
+        path = api._generate_payments_file(batch_id)
 
     with zipfile.ZipFile(path) as zfile:
         with zfile.open("payment_details.csv") as csv_bytefile:
