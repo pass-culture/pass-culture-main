@@ -81,11 +81,15 @@ test('je peux créer un lieu sans SIRET avec une description', async t => {
     'get_existing_pro_validated_user_with_validated_offerer_validated_user_offerer_no_physical_venue'
   )
   const newVenueButton = Selector(`a`).withText('Créer un lieu')
+  const toggleSiretOrComment = Selector(`button`).withText(
+    'Je veux créer un lieu avec SIRET'
+  )
 
   await navigateToOffererAs(user, offerer)(t)
 
   await t
     .click(newVenueButton)
+    .click(toggleSiretOrComment)
     .typeText(nameInput, 'Le lieu sympa de type sans siret')
     .typeText(commentInput, 'Test sans SIRET')
     .click(venueType)

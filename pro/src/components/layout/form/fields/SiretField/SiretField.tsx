@@ -13,36 +13,36 @@ interface ISiretFieldProps {
   label: string
   readOnly: boolean
   siren?: string
+  required?: boolean
 }
 
 const SiretField = ({
   label = 'SIRET : ',
   readOnly = true,
   siren,
+  required = false,
 }: ISiretFieldProps): JSX.Element => {
   const isEntrepriseApiDisabled: boolean = useActiveFeature(
     'DISABLE_ENTERPRISE_API'
   )
 
   const siretFormField = useField('siret', {})
-  const commentFormField = useField('comment', {})
   const haveInitialValue = ![null, undefined].includes(
     siretFormField.meta.initial
   )
   const siretValue = siretFormField.input.value
-  const commentValue = commentFormField.input.value
   const isValid = !!siretValue && siretValue.length === 14
 
   let validate: ((siret: string) => Promise<string | undefined>) | null = null
 
-  if (!(haveInitialValue || isEntrepriseApiDisabled)) {
+  if (!(haveInitialValue || isEntrepriseApiDisabled) && required) {
     validate = (siret: string) => {
       if (siren && siret && !siret.startsWith(siren)) {
         return Promise.resolve(
           'Le code SIRET doit correspondre à un établissement de votre structure'
         )
       }
-      return siretApiValidate(siret, commentValue)
+      return siretApiValidate(siret)
     }
   }
 
@@ -72,6 +72,7 @@ const SiretField = ({
       name="siret"
       parse={unhumanizeSiret}
       readOnly={readOnly}
+      required={required}
       renderTooltip={() => tooltip}
       type="siret"
       validate={validate}

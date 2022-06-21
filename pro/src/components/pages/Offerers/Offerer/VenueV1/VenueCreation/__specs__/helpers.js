@@ -7,7 +7,7 @@ export const fieldLabels = {
   siret: {
     labelCreation: 'SIRET du lieu qui accueille vos offres (si applicable) :',
     label: 'SIRET :',
-    exact: true,
+    exact: false,
     type: 'text',
   },
   name: { label: 'Nom du lieu', exact: false, type: 'text' },

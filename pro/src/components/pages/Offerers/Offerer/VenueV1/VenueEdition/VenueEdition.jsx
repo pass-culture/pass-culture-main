@@ -265,6 +265,7 @@ const VenueEdition = () => {
             formSiret={formSiret}
             initialSiret={initialSiret}
             isDirtyFieldBookingEmail={isDirtyFieldBookingEmail}
+            isToggleDisabled
             readOnly={readOnly || initialIsVirtual}
             venueIsVirtual={initialIsVirtual}
             venueLabelId={venueLabelId}

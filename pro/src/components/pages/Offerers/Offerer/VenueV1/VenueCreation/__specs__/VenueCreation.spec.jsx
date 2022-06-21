@@ -97,6 +97,10 @@ describe('venue form', () => {
       // FIXME: make cacheSelector reset on each test.
       testId += 1
       await renderVenueCreation({ props, storeOverrides })
+      const toggle = await screen.getByRole('button', {
+        name: 'Je veux créer un lieu avec SIRET',
+      })
+      await userEvent.click(toggle)
 
       formValues = {
         name: 'Librairie de test',
