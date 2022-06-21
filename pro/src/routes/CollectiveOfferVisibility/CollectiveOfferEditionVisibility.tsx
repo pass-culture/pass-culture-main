@@ -46,6 +46,7 @@ const CollectiveOfferVisibility = () => {
       activeStep={OfferBreadcrumbStep.VISIBILITY}
       isCreatingOffer={false}
       title="Editer une offre collective"
+      offerId={offerId}
     >
       <CollectiveOfferVisibilityScreen
         getInstitutions={getEducationalInstitutionsAdapter}
@@ -58,7 +59,6 @@ const CollectiveOfferVisibility = () => {
         }}
         onSuccess={onSuccess}
       />
-      <RouteLeavingGuardOfferCreation isCollectiveFlow />
     </OfferEducationalLayout>
   )
 }

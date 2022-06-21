@@ -1,4 +1,5 @@
 import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
+
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
