@@ -39,6 +39,8 @@ const OfferBreadcrumb = ({
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
+  const isTemplateId = offerId.startsWith('T-')
+
   let steps = []
 
   if (!isCreatingOffer) {
@@ -53,7 +55,9 @@ const OfferBreadcrumb = ({
         label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
         url: stockEditionUrl,
       },
-      ...(isOfferEducational && enableEducationalInstitutionAssociation
+      ...(isOfferEducational &&
+      enableEducationalInstitutionAssociation &&
+      !isTemplateId
         ? [
             {
               id: OfferBreadcrumbStep.VISIBILITY,
