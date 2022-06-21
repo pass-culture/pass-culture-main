@@ -453,6 +453,15 @@ jobs:
             RUN_ENV=tests venv/bin/flask install_data
             RUN_ENV=tests venv/bin/python tests/alembic/check_db_schema.py
           working_directory: api
+      # This step will fail ("Walked too far") if there are less than 10 migrations on each branch, for example after a squash
+      - run:
+          name: Check that downgrade scripts are correctly written
+          command: |
+            RUN_ENV=tests venv/bin/alembic downgrade post@head-10
+            RUN_ENV=tests venv/bin/alembic downgrade pre@head-10
+            RUN_ENV=tests venv/bin/alembic upgrade pre@head
+            RUN_ENV=tests venv/bin/alembic upgrade post@head
+          working_directory: api
       - run:
           name: Running tests
           command: |

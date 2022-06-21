@@ -62,10 +62,12 @@ Dans le cas d'une modification `post`
 pc alembic upgrade post@head
 ```
 
-### 5. Tester la fonction de downgrade
+### 5. Tester la fonction de downgrade (sur les migrations de chaque branche)
 
 ```bash
-pc alembic downgrade -1
+pc alembic downgrade pre@-1
+pc alembic downgrade post@-1
+
 ```
 
 ## Autres commandes utiles :

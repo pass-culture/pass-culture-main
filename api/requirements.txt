@@ -1,4 +1,4 @@
-alembic==1.4.3
+alembic==1.8.0
 algoliasearch==2.4.0
 APScheduler==3.6.3
 Authlib==0.15.5
