@@ -86,7 +86,7 @@ describe('formatPatch', () => {
       expect(result).toStrictEqual({
         address: 'RUE DIDEROT',
         bookingEmail: 'R6465373fake674654673sub@example.com',
-        comment: 'comment',
+        comment: '',
         description: 'description',
         city: 'Aulnay-sous-Bois',
         latitude: 48.92071,
