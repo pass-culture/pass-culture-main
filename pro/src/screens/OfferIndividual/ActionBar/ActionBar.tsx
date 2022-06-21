@@ -39,7 +39,7 @@ const ActionBar = ({
     {onClickNext && (
       <Button
         className={style['action']}
-        disabled={false && disableNext}
+        disabled={disableNext}
         onClick={onClickNext}
         style={{ justifySelf: 'flex-end' }}
       >
