@@ -22,19 +22,22 @@ const CollectiveOfferVisibility = () => {
   const [isEditable, setIsEditable] = useState<boolean>()
   const [institution, setInstitution] =
     useState<EducationalInstitution | null>()
+  const [institutions, setInstitutions] = useState<EducationalInstitution[]>([])
   const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
     Promise.all([
       getCollectiveStockAdapter({ offerId }),
       getCollectiveOfferAdapter(offerId),
-    ]).then(([stockResult, offerResult]) => {
-      if (!stockResult.isOk || !offerResult.isOk) {
+      getEducationalInstitutionsAdapter(),
+    ]).then(([stockResult, offerResult, institutionsResult]) => {
+      if (!stockResult.isOk || !offerResult.isOk || !institutionsResult.isOk) {
         return notify.error(stockResult.message)
       }
 
       setIsEditable(stockResult.payload?.stock?.isEducationalStockEditable)
       setInstitution(offerResult.payload.institution)
+      setInstitutions(institutionsResult.payload.institutions)
       setIsReady(true)
     })
   }, [])
@@ -52,7 +55,6 @@ const CollectiveOfferVisibility = () => {
     >
       {isReady ? (
         <CollectiveOfferVisibilityScreen
-          getInstitutions={getEducationalInstitutionsAdapter}
           mode={isEditable ? Mode.EDITION : Mode.READ_ONLY}
           patchInstitution={patchEducationalInstitutionAdapter}
           initialValues={{
@@ -61,6 +63,7 @@ const CollectiveOfferVisibility = () => {
             visibility: institution ? 'one' : 'all',
           }}
           onSuccess={onSuccess}
+          institutions={institutions}
         />
       ) : (
         <Spinner />

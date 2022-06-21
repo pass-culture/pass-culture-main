@@ -1,11 +1,14 @@
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
+import {
+  EducationalInstitution,
+  Mode,
+  VisibilityFormValues,
+} from 'core/OfferEducational'
 import { FormikProvider, useFormik } from 'formik'
 import { Link, useParams } from 'react-router-dom'
-import { Mode, VisibilityFormValues } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
-import { GetEducationalInstitutionsAdapter } from 'routes/CollectiveOfferVisibility/adapters/getEducationalInstitutionsAdapter'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import { computeOffersUrl } from 'core/Offers/utils'
@@ -14,7 +17,6 @@ import useNotification from 'components/hooks/useNotification'
 import validationSchema from './validationSchema'
 
 export interface CollectiveOfferVisibilityProps {
-  getInstitutions: GetEducationalInstitutionsAdapter
   patchInstitution: PatchEducationalInstitutionAdapter
   mode: Mode
   initialValues: VisibilityFormValues
@@ -25,6 +27,7 @@ export interface CollectiveOfferVisibilityProps {
     offerId: string
     message: string
   }) => void
+  institutions: EducationalInstitution[]
 }
 interface InstitutionOption extends SelectOption {
   postalCode?: string
@@ -32,11 +35,11 @@ interface InstitutionOption extends SelectOption {
 }
 
 const CollectiveOfferVisibility = ({
-  getInstitutions,
   mode,
   patchInstitution,
   initialValues,
   onSuccess,
+  institutions,
 }: CollectiveOfferVisibilityProps) => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
@@ -72,18 +75,15 @@ const CollectiveOfferVisibility = ({
   const [buttonPressed, setButtonPressed] = useState(false)
 
   useEffect(() => {
-    getInstitutions().then(res => {
-      if (res.isOk)
-        setInstitutionsOptions(
-          res.payload.institutions.map(({ name, id, city, postalCode }) => ({
-            label: name,
-            value: String(id),
-            city,
-            postalCode,
-          }))
-        )
-    })
-  }, [])
+    setInstitutionsOptions(
+      institutions.map(({ name, id, city, postalCode }) => ({
+        label: name,
+        value: String(id),
+        city,
+        postalCode,
+      }))
+    )
+  }, [institutions])
 
   useEffect(() => {
     if (formik.values.institution) {
