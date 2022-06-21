@@ -1,11 +1,11 @@
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import { FormikProvider, useFormik } from 'formik'
 import { Link, useHistory, useParams } from 'react-router-dom'
+import { Mode, VisibilityFormValues } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
 import { GetEducationalInstitutionsAdapter } from 'routes/CollectiveOfferVisibility/adapters/getEducationalInstitutionsAdapter'
-import { Mode } from 'core/OfferEducational'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import { computeOffersUrl } from 'core/Offers/utils'
@@ -24,18 +24,12 @@ interface InstitutionOption extends SelectOption {
   city?: string
 }
 
-type FormikValues = {
-  visibility: 'all' | 'one'
-  institution: string
-  'search-institution': string
-}
-
 const CollectiveOfferVisibility = ({
   getInstitutions,
   mode,
   patchInstitution,
 }: CollectiveOfferVisibilityProps) => {
-  const onSubmit = async (values: FormikValues) => {
+  const onSubmit = async (values: VisibilityFormValues) => {
     setButtonPressed(true)
     const successUrl = `/offre/${offerId}/collectif/confirmation`
 
@@ -56,7 +50,7 @@ const CollectiveOfferVisibility = ({
     }
   }
 
-  const formik = useFormik<FormikValues>({
+  const formik = useFormik<VisibilityFormValues>({
     initialValues: {
       visibility: 'all',
       institution: '',
