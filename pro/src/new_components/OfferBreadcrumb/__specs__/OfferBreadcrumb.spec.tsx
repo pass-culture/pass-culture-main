@@ -1,7 +1,9 @@
 import '@testing-library/jest-dom'
+
 import { History, createBrowserHistory } from 'history'
 import OfferBreadcrumb, { OfferBreadcrumbStep } from '../OfferBreadcrumb'
 import { render, screen } from '@testing-library/react'
+
 import { Provider } from 'react-redux'
 import React from 'react'
 import { Router } from 'react-router-dom'
@@ -155,7 +157,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
       expect(listItems[3]).toHaveTextContent('Confirmation')
     })
 
-    it('collective offer - should generate link with offerId when user is editing an offer', async () => {
+    it('should generate link with offerId when user is editing an offer', async () => {
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -181,6 +183,25 @@ describe('src | new_components | OfferBreadcrumb', () => {
       expect(linkItems[2].getAttribute('href')).toBe(
         '/offre/A1/collectif/visibilite/edition'
       )
+    })
+
+    it('should not display visibility step if offer is showcase', async () => {
+      render(
+        <Router history={history}>
+          <Provider store={store}>
+            <OfferBreadcrumb
+              activeStep={OfferBreadcrumbStep.DETAILS}
+              isCreatingOffer={false}
+              offerId="T-A1"
+              isOfferEducational={true}
+            />
+          </Provider>
+        </Router>
+      )
+
+      const linkItems = await screen.findAllByRole('link')
+      expect(linkItems).toHaveLength(2)
+      expect(screen.queryByText('Visibilité')).not.toBeInTheDocument()
     })
   })
 })
