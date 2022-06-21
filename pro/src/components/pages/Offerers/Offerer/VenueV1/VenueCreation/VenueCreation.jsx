@@ -35,7 +35,6 @@ import Titles from 'components/layout/Titles/Titles'
 import VenueType from '../ValueObjects/VenueType'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
-import { showNotification } from 'store/reducers/notificationReducer'
 import { sortByLabel } from 'utils/strings'
 import { unhumanizeSiret } from 'core/Venue/utils'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -52,6 +51,9 @@ const VenueCreation = () => {
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
   const isEntrepriseApiDisabled = useActiveFeature('DISABLE_ENTERPRISE_API')
+  const isNewBankInformationCreation = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
+  )
   const { offererId } = useParams()
   const history = useHistory()
   const notify = useNotification()
@@ -167,12 +169,6 @@ const VenueCreation = () => {
           venueLabels={venueLabels}
           venueTypes={venueTypes}
         />
-        <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
-        {isBankInformationWithSiretActive ? (
-          <BusinessUnitFields isCreatingVenue offerer={offerer} />
-        ) : (
-          <BankInformation offerer={offerer} />
-        )}
         <LocationFields
           fieldReadOnlyBecauseFrozenFormSiret={siretValidOnCreation}
           form={form}
@@ -187,7 +183,14 @@ const VenueCreation = () => {
           isAddressRequired={true}
         />
         <AccessibilityFields />
+        <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         <ContactInfosFields readOnly={false} />
+        {!isNewBankInformationCreation &&
+          (isBankInformationWithSiretActive ? (
+            <BusinessUnitFields isCreatingVenue offerer={offerer} />
+          ) : (
+            <BankInformation offerer={offerer} />
+          ))}
         <hr />
         <div
           className="field is-grouped is-grouped-centered"

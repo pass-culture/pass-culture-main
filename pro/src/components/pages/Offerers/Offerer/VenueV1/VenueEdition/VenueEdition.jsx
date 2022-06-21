@@ -269,12 +269,6 @@ const VenueEdition = () => {
             venueTypeCode={venueTypeCode}
             venueTypes={venueTypes}
           />
-          {!initialIsVirtual && (
-            <WithdrawalDetailsFields
-              initialWithdrawalDetails={initialWithdrawalDetails}
-              readOnly={readOnly}
-            />
-          )}
           {!!shouldDisplayImageVenueUploaderSection && (
             <ImageVenueUploaderSection
               onDeleteImage={onDeleteImage}
@@ -283,20 +277,6 @@ const VenueEdition = () => {
               venueId={venue.id}
               venueImage={venue.bannerUrl}
             />
-          )}
-          {isBankInformationWithSiretActive ? (
-            // FIXME
-            // the first response on offerers do not return  venue.BusinessUnit
-            // the second on venues does
-            venue.businessUnit !== undefined && (
-              <BusinessUnitFields
-                offerer={offerer}
-                readOnly={readOnly}
-                venue={venue}
-              />
-            )
-          ) : (
-            <BankInformation offerer={offerer} venue={venue} />
           )}
           {!initialIsVirtual && (
             <>
@@ -322,8 +302,26 @@ const VenueEdition = () => {
                 readOnly={readOnly}
                 venue={venue}
               />
+              <WithdrawalDetailsFields
+                initialWithdrawalDetails={initialWithdrawalDetails}
+                readOnly={readOnly}
+              />
               <ContactInfosFields readOnly={readOnly} />
             </>
+          )}
+          {isBankInformationWithSiretActive ? (
+            // FIXME
+            // the first response on offerers do not return  venue.BusinessUnit
+            // the second on venues does
+            venue.businessUnit !== undefined && (
+              <BusinessUnitFields
+                offerer={offerer}
+                readOnly={readOnly}
+                venue={venue}
+              />
+            )
+          ) : (
+            <BankInformation offerer={offerer} venue={venue} />
           )}
           <hr />
           <div
