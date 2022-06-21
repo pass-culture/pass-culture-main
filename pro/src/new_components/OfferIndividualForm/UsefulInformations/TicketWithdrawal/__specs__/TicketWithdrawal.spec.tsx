@@ -4,10 +4,8 @@ import * as yup from 'yup'
 
 import { Form, Formik } from 'formik'
 import TicketWithdrawal, { ITicketWithdrawalProps } from '../TicketWithdrawal'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
-import { CATEGORY_STATUS } from 'core/Offers'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import React from 'react'
 import { SubmitButton } from 'ui-kit'
 import userEvent from '@testing-library/user-event'

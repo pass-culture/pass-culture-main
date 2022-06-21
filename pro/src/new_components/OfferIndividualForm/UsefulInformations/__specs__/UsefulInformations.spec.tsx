@@ -144,26 +144,39 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(screen.getByLabelText('Rayonnement national')).toBeInTheDocument()
   })
 
-  // TODO
-  // it('should contain withdrawal ticket informations when subcategory is an event', async () => {
+  it('should contain withdrawal ticket informations when subcategory is an event', async () => {
+    initialValues.subcategoryId = 'A-A'
+    initialValues = {
+      ...initialValues,
+    }
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
 
-  // TODO
-  // it.only('should not contain withdrawal ticket informations when subcategory is not an event', async () => {
-  //   // for an event subCategory
-  //   initialValues = {
-  //     ...initialValues,
-  //     isEvent: false,
-  //   }
-  //   await renderTicketWithdrawal({
-  //     initialValues,
-  //     onSubmit,
-  //     props,
-  //   })
+    expect(
+      await screen.getByText(
+        'Comment les billets, places seront-ils transmis ?'
+      )
+    ).toBeInTheDocument()
+  })
 
-  //   expect(
-  //     await screen.queryByText(
-  //       'Comment les billets, places seront-ils transmis ?'
-  //     )
-  //   ).not.toBeInTheDocument()
-  // })
+  it('should not contain withdrawal ticket informations when subcategory is not an event', async () => {
+    initialValues.subcategoryId = 'B-A'
+    initialValues = {
+      ...initialValues,
+    }
+    renderUsefulInformations({
+      initialValues,
+      onSubmit,
+      props,
+    })
+
+    expect(
+      await screen.queryByText(
+        'Comment les billets, places seront-ils transmis ?'
+      )
+    ).not.toBeInTheDocument()
+  })
 })

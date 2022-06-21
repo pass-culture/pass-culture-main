@@ -7,10 +7,10 @@ import {
   ticketWithdrawalTypeRadios,
 } from './constants'
 
-import { FORM_DEFAULT_VALUES } from 'new_components/OfferIndividualForm'
 import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from '../../types'
 import { IOfferSubCategory } from 'core/Offers/types'
+import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
 import { useFormikContext } from 'formik'
 
 export interface ITicketWithdrawalProps {
@@ -31,12 +31,15 @@ const TicketWithdrawal = ({
       if (!subCategory?.isEvent) {
         setFieldValue(
           'ticketWithdrawal',
-          FORM_DEFAULT_VALUES['ticketWithdrawal']
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketWithdrawal']
         )
-        setFieldValue('ticketSentDate', FORM_DEFAULT_VALUES['ticketSentDate'])
+        setFieldValue(
+          'ticketSentDate',
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketSentDate']
+        )
         setFieldValue(
           'ticketWithdrawalHour',
-          FORM_DEFAULT_VALUES['ticketWithdrawalHour']
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketWithdrawalHour']
         )
       }
     },
@@ -46,11 +49,14 @@ const TicketWithdrawal = ({
   useEffect(
     function onTicketWithdrawalChange() {
       if (ticketWithdrawal !== TICKETWITHDRAWAL.emailTicket) {
-        setFieldValue('ticketSentDate', FORM_DEFAULT_VALUES['ticketSentDate'])
+        setFieldValue(
+          'ticketSentDate',
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketSentDate']
+        )
       } else if (ticketWithdrawal !== TICKETWITHDRAWAL.onPlaceTicket) {
         setFieldValue(
           'ticketWithdrawalHour',
-          FORM_DEFAULT_VALUES['ticketWithdrawalHour']
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketWithdrawalHour']
         )
       }
     },
