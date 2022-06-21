@@ -7,6 +7,7 @@ from pcapi.core.bookings.models import Booking
 from pcapi.core.offers.models import Offer
 from pcapi.routes.serialization import BaseModel
 from pcapi.utils.urls import booking_app_link
+from pcapi.utils.urls import offer_app_link
 
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ class GroupId(Enum):
     TODAY_STOCK = "Today_stock"
     OFFER_LINK = "Offer_link"
     SOON_EXPIRING_BOOKINGS = "Soon_expiring_bookings"
+    FAVORITES_NOT_BOOKED = "Favorites_not_booked"
 
 
 class TransactionalNotificationMessage(BaseModel):
@@ -91,4 +93,19 @@ def get_soon_expiring_bookings_with_offers_notification_data(booking: Booking) -
         user_ids=[booking.userId],
         message=TransactionalNotificationMessage(title="Tu n'as pas récupéré ta réservation", body=body),
         extra={"deeplink": booking_app_link(booking)},
+    )
+
+
+def get_favorites_not_booked_notification_data(
+    offer_id: int, offer_name: str, user_ids: list[int]
+) -> TransactionalNotificationData:
+    msg_title = "Ne t’arrête pas en si bon chemin 😮"
+    msg_body = f"{offer_name} t’attend sur le pass Culture !"
+    utm = "utm_campaign=favorisj%2B3&utm_source=transac&utm_medium=push"
+
+    return TransactionalNotificationData(
+        group_id=GroupId.FAVORITES_NOT_BOOKED.value,
+        user_ids=user_ids,
+        message=TransactionalNotificationMessage(title=msg_title, body=msg_body),
+        extra={"deeplink": offer_app_link(offer_id, utm=utm)},
     )
