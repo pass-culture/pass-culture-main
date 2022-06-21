@@ -2,6 +2,7 @@ import {
   EducationalOfferType,
   IOfferEducationalFormValues,
   OfferEducationalStockFormValues,
+  VisibilityFormValues,
 } from './types'
 import { OfferAddressType, StudentLevels } from 'api/v1/gen'
 
@@ -60,4 +61,10 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
   bookingLimitDatetime: null,
   priceDetail: '',
   educationalOfferType: EducationalOfferType.CLASSIC,
+}
+
+export const DEFAULT_VISIBILITY_FORM_VALUES: VisibilityFormValues = {
+  visibility: 'all',
+  institution: '',
+  'search-institution': '',
 }

@@ -270,3 +270,9 @@ export type EducationalInstitutions = {
   pages: number
   total: number
 }
+
+export type VisibilityFormValues = {
+  visibility: 'all' | 'one'
+  institution: string
+  'search-institution': string
+}
