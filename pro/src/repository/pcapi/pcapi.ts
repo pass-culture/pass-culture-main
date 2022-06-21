@@ -582,7 +582,10 @@ export const buildBookingsRecapQuery = ({
   }
   if (eventDate !== DEFAULT_PRE_FILTERS.offerEventDate) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'eventDate' does not exist on type '{ pag... Remove this comment to see the full error message
-    params.eventDate = formatBrowserTimezonedDateAsUTC(eventDate)
+    params.eventDate = formatBrowserTimezonedDateAsUTC(
+      eventDate,
+      FORMAT_ISO_DATE_ONLY
+    )
   }
   if (bookingPeriodBeginningDate) {
     // @ts-expect-error ts-migrate(2339) FIXME: Property 'bookingPeriodBeginningDate' does not exi... Remove this comment to see the full error message
