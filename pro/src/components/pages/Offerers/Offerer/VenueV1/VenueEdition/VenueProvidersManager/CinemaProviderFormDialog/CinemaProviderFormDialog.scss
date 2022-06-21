@@ -18,18 +18,30 @@
     margin-top: rem.torem(24px);
   }
 
-  .cinema-provider-form {
-    margin-top: rem.torem(32px);
+  form {
+    width: 100%;
 
-    .actions {
-      display: flex;
-      justify-content: center;
-      margin-top: rem.torem(16px);
+    .cinema-provider-form {
+      margin-top: rem.torem(32px);
 
-      button {
-        margin: 0 rem.torem(16px);
-        padding: 0 rem.torem(80px);
+      .actions {
+        display: flex;
+        justify-content: center;
+        margin-top: rem.torem(16px);
+
+        .secondary-button {
+          margin-right: rem.torem(20px);
+        }
+
+        .primary-button {
+          margin-left: rem.torem(20px);
+        }
+
+        button {
+          padding: 0 rem.torem(80px);
+        }
       }
     }
   }
+
 }
