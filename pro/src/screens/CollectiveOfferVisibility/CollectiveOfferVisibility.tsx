@@ -49,7 +49,7 @@ const CollectiveOfferVisibility = ({
     setButtonPressed(true)
     const result = await patchInstitution({
       offerId,
-      institutionId: values.institution,
+      institutionId: values.visibility === 'all' ? '' : values.institution,
     })
 
     if (!result.isOk) {
