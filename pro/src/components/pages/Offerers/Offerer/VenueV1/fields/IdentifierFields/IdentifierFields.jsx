@@ -6,7 +6,8 @@ import HiddenField from 'components/layout/form/fields/HiddenField'
 import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
 import ReactTooltip from 'react-tooltip'
-import { SiretField } from 'components/layout/form/fields/SiretField'
+
+import SiretOrCommentFields from '../SiretOrCommentFields'
 import TextField from 'components/layout/form/fields/TextField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
 import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
@@ -14,7 +15,6 @@ import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/Ve
 /*eslint no-undef: 0*/
 import classnames from 'classnames'
 import getLabelFromList from './utils/getLabelFromList'
-import { removeWhitespaces } from 'react-final-form-utils'
 
 class IdentifierFields extends PureComponent {
   componentDidUpdate() {
@@ -33,22 +33,6 @@ class IdentifierFields extends PureComponent {
       </span>
     )
 
-  commentValidate = comment => {
-    const { formSiret } = this.props
-
-    const formatedSiret = removeWhitespaces(formSiret)
-
-    if (formatedSiret && formatedSiret.length === 14) {
-      return ''
-    }
-
-    if (comment === undefined || comment === '') {
-      return 'Ce champ est obligatoire'
-    }
-
-    return ''
-  }
-
   venueTypeValidate = venueType => {
     if (venueType === undefined || venueType === '') {
       return 'Ce champ est obligatoire'
@@ -62,8 +46,10 @@ class IdentifierFields extends PureComponent {
       initialSiret,
       isCreatedEntity,
       isDirtyFieldBookingEmail,
+      isToggleDisabled,
       readOnly,
       siren,
+      updateIsSiretValued,
       venueIsVirtual,
       venueLabels,
       venueLabelId,
@@ -94,23 +80,17 @@ class IdentifierFields extends PureComponent {
           )}
         </h2>
         <div className="field-group">
-          {isCreatedEntity && <HiddenField name="managingOffererId" />}
           {!venueIsVirtual && (
-            <>
-              <SiretField
-                label={siretLabel}
-                readOnly={readOnly || initialSiret !== null}
-                siren={siren}
-              />
-              <TextareaField
-                label="Commentaire (si pas de SIRET) : "
-                name="comment"
-                readOnly={readOnly}
-                rows={1}
-                validate={this.commentValidate}
-              />
-            </>
+            <SiretOrCommentFields
+              siretLabel={siretLabel}
+              readOnly={readOnly || initialSiret !== null}
+              siren={siren}
+              isToggleDisabled={isToggleDisabled}
+              initialSiret={initialSiret}
+              updateIsSiretValued={updateIsSiretValued}
+            />
           )}
+          {isCreatedEntity && <HiddenField name="managingOffererId" />}
           <TextField
             label="Nom du lieu : "
             name="name"
@@ -248,6 +228,7 @@ IdentifierFields.defaultProps = {
   initialSiret: null,
   isCreatedEntity: false,
   isDirtyFieldBookingEmail: false,
+  isToggleDisabled: false,
   readOnly: true,
   siren: null,
   venueIsVirtual: false,
@@ -261,8 +242,10 @@ IdentifierFields.propTypes = {
   initialSiret: PropTypes.string,
   isCreatedEntity: PropTypes.bool,
   isDirtyFieldBookingEmail: PropTypes.bool,
+  isToggleDisabled: PropTypes.bool,
   readOnly: PropTypes.bool,
   siren: PropTypes.string,
+  updateIsSiretValued: PropTypes.func,
   venueIsVirtual: PropTypes.bool,
   venueLabelId: PropTypes.string,
   venueLabels: PropTypes.arrayOf(PropTypes.instanceOf(VenueLabel)).isRequired,

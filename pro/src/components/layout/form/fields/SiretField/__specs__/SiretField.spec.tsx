@@ -21,12 +21,17 @@ describe('components | SiretField', () => {
       <Provider store={store}>
         <Form initialValues={{}} name="venue" onSubmit={() => {}}>
           {() => (
-            <SiretField siren={siren} readOnly={false} label="Siret field" />
+            <SiretField
+              siren={siren}
+              readOnly={false}
+              label="Siret field"
+              required
+            />
           )}
         </Form>
       </Provider>
     )
-    const siretField = screen.getByLabelText('Siret field')
+    const siretField = screen.getByLabelText('Siret field*')
     expect(siretField).toBeInTheDocument()
 
     const wrongSiret = '11111111199999'
@@ -105,7 +110,7 @@ describe('components | SiretField', () => {
       const humanSiret = '123 456 789 01234'
 
       // when
-      await siretApiValidate(humanSiret, '')
+      await siretApiValidate(humanSiret)
 
       // then
       expect(fetch).toHaveBeenCalledTimes(1)
@@ -136,7 +141,7 @@ describe('components | SiretField', () => {
       )
 
       // when
-      const errorMessage = await siretApiValidate(siret, '')
+      const errorMessage = await siretApiValidate(siret)
 
       // then
       expect(errorMessage).toBeUndefined()
@@ -165,7 +170,7 @@ describe('components | SiretField', () => {
       )
 
       // when
-      const errorMessage = await siretApiValidate(siret, '')
+      const errorMessage = await siretApiValidate(siret)
 
       // then
       expect(errorMessage).toBeUndefined()
@@ -195,7 +200,7 @@ describe('components | SiretField', () => {
       )
 
       // when
-      const errorMessage = await siretApiValidate(siret, '')
+      const errorMessage = await siretApiValidate(siret)
 
       // then
       expect(errorMessage).toBeUndefined()
@@ -208,7 +213,7 @@ describe('components | SiretField', () => {
       })
 
       // when
-      const errorMessage = await siretApiValidate(siret, '')
+      const errorMessage = await siretApiValidate(siret)
 
       // then
       expect(errorMessage).toBe(
@@ -227,7 +232,7 @@ describe('components | SiretField', () => {
       )
 
       // when
-      const errorMessage = await siretApiValidate(siret, '')
+      const errorMessage = await siretApiValidate(siret)
 
       // then
       expect(errorMessage).toBe(
@@ -242,7 +247,7 @@ describe('components | SiretField', () => {
       })
 
       // when
-      const errorMessage = await siretApiValidate(siret, '')
+      const errorMessage = await siretApiValidate(siret)
 
       // then
       expect(errorMessage).toBe("Ce SIRET n'est pas reconnu")
@@ -255,8 +260,8 @@ describe('components | SiretField', () => {
       })
 
       // when
-      await siretApiValidate(siret, '')
-      await siretApiValidate(siret, '')
+      await siretApiValidate(siret)
+      await siretApiValidate(siret)
 
       // then
       expect(fetch).toHaveBeenCalledTimes(1)

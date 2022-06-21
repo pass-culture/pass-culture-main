@@ -52,7 +52,11 @@ const edition_authorized_input_field = [
   'contact',
 ]
 
-export const formatVenuePayload = (payload, isCreatedEntity) => {
+export const formatVenuePayload = (
+  payload,
+  isCreatedEntity,
+  isSiretValued = true
+) => {
   const requestPayload = {}
 
   const authorizedFields = isCreatedEntity
@@ -65,7 +69,14 @@ export const formatVenuePayload = (payload, isCreatedEntity) => {
       payload[inputName] = ''
     }
 
-    if (inputName === 'comment' && payload[inputName] === undefined) {
+    if (inputName === 'siret' && !isSiretValued) {
+      delete payload[inputName]
+    }
+
+    if (
+      inputName === 'comment' &&
+      (payload[inputName] === undefined || isSiretValued)
+    ) {
       payload[inputName] = ''
     }
 

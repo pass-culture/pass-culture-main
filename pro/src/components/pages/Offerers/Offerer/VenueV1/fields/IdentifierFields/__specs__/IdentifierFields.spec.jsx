@@ -86,7 +86,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         name: 'Venue name',
         publicName: 'Venue publicName',
         bookingEmail: 'booking@email.app',
-        comment: 'Venue comment',
         venueTypeCode: 'OTHER_TYPE_ID',
         venueLabelId: 'OTHER_LABEL_ID',
         description: 'Venue description',
@@ -116,7 +115,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       const bookingEmailField = await screen.findByLabelText('Mail', {
         exact: false,
       })
-      const commentField = await helpers.findVenueInputForField('comment')
       const venueTypeCodeField = await helpers.queryVenueInputForField(
         'venueTypeCode'
       )
@@ -129,7 +127,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(nameField).toBeDisabled()
       expect(publicNameField).toBeDisabled()
       expect(bookingEmailField).toBeDisabled()
-      expect(commentField).toBeDisabled()
       expect(descriptionField).toBeDisabled()
 
       // select elements are replace with spans
@@ -144,7 +141,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         name: formValues['name'],
         publicName: formValues['publicName'],
         bookingEmail: formValues['bookingEmail'],
-        comment: formValues['comment'],
         venueTypeCode: getLabelFromList(
           props.venueTypes,
           formValues['venueTypeCode']
@@ -166,9 +162,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       ).toBeInTheDocument()
       expect(
         screen.getByDisplayValue(displayedValues['bookingEmail'])
-      ).toBeInTheDocument()
-      expect(
-        screen.getByDisplayValue(displayedValues['comment'])
       ).toBeInTheDocument()
       expect(
         screen.getByDisplayValue(displayedValues['description'])
@@ -212,7 +205,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       const bookingEmailField = await helpers.findVenueInputForField(
         'bookingEmail'
       )
-      const commentField = await helpers.findVenueInputForField('comment')
       const venueTypeCodeField = await helpers.findVenueInputForField(
         'venueTypeCode'
       )
@@ -227,7 +219,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(nameField).toBeEnabled()
       expect(publicNameField).toBeEnabled()
       expect(bookingEmailField).toBeEnabled()
-      expect(commentField).toBeEnabled()
       expect(descriptionField).toBeEnabled()
       expect(venueTypeCodeField).toBeEnabled()
       expect(venueLabelIdField).toBeEnabled()
@@ -235,9 +226,8 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(nameField).toBeRequired()
       expect(venueTypeCodeField).toBeRequired()
       expect(bookingEmailField).toBeRequired()
-      expect(siretField).not.toBeRequired()
+      expect(siretField).toBeRequired()
       expect(publicNameField).not.toBeRequired()
-      expect(commentField).not.toBeRequired()
       expect(descriptionField).not.toBeRequired()
       expect(venueLabelIdField).not.toBeRequired()
 
@@ -245,7 +235,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(nameField).toHaveValue('')
       expect(publicNameField).toHaveValue('')
       expect(bookingEmailField).toHaveValue('')
-      expect(commentField).toHaveValue('')
       expect(descriptionField).toHaveValue('')
       expect(venueTypeCodeField).toHaveValue('')
       expect(venueLabelIdField).toHaveValue('')
@@ -259,7 +248,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
         name: 'Venue name',
         publicName: 'Venue publicName',
         bookingEmail: 'booking@email.app',
-        comment: 'Venue comment',
         venueTypeCode: 'OTHER_TYPE_ID',
         venueLabelId: 'OTHER_LABEL_ID',
         description: 'Venue description',
@@ -291,7 +279,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       const bookingEmailField = await helpers.findVenueInputForField(
         'bookingEmail'
       )
-      const commentField = await helpers.findVenueInputForField('comment')
       const venueTypeCodeField = await helpers.findVenueInputForField(
         'venueTypeCode'
       )
@@ -308,7 +295,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
 
       expect(publicNameField).toBeEnabled()
       expect(bookingEmailField).toBeEnabled()
-      expect(commentField).toBeEnabled()
       expect(descriptionField).toBeEnabled()
       expect(venueTypeCodeField).toBeEnabled()
       expect(venueLabelIdField).toBeEnabled()
@@ -316,9 +302,8 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(nameField).toBeRequired()
       expect(venueTypeCodeField).toBeRequired()
       expect(bookingEmailField).toBeRequired()
-      expect(siretField).not.toBeRequired()
+      expect(siretField).toBeRequired()
       expect(publicNameField).not.toBeRequired()
-      expect(commentField).not.toBeRequired()
       expect(descriptionField).not.toBeRequired()
       expect(venueLabelIdField).not.toBeRequired()
 
@@ -326,7 +311,6 @@ describe('src | components | pages | Venue | fields | IdentifierFields', () => {
       expect(nameField).toHaveValue(formValues.name)
       expect(publicNameField).toHaveValue(formValues.publicName)
       expect(bookingEmailField).toHaveValue(formValues.bookingEmail)
-      expect(commentField).toHaveValue(formValues.comment)
       expect(descriptionField).toHaveValue(formValues.description)
       expect(venueTypeCodeField).toHaveValue(formValues.venueTypeCode)
       expect(venueLabelIdField).toHaveValue(formValues.venueLabelId)

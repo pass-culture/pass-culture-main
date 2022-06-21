@@ -47,6 +47,7 @@ const VenueCreation = () => {
 
   const [venueTypes, setVenueTypes] = useState(null)
   const [venueLabels, setVenueLabels] = useState(null)
+  const [isSiretValued, setIsSiretValued] = useState(true)
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
@@ -97,7 +98,7 @@ const VenueCreation = () => {
     handleFail,
     handleSuccess,
   }) => {
-    const body = formatVenuePayload(formValues, true)
+    const body = formatVenuePayload(formValues, true, isSiretValued)
     try {
       const response = await createVenue(body)
       handleSuccess(response)
@@ -159,7 +160,7 @@ const VenueCreation = () => {
     } = values
 
     const siretValidOnCreation =
-      !!formSiret && unhumanizeSiret(formSiret).length === 14
+      !!formSiret && unhumanizeSiret(formSiret).length === 14 && isSiretValued
     return (
       <form name="venue" onSubmit={handleSubmit}>
         <IdentifierFields
@@ -168,6 +169,7 @@ const VenueCreation = () => {
           isCreatedEntity
           readOnly={readOnly}
           siren={offerer.siren}
+          updateIsSiretValued={setIsSiretValued}
           venueLabels={venueLabels}
           venueTypes={venueTypes}
         />
