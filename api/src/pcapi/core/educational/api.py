@@ -64,8 +64,8 @@ from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdi
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
-from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_csv_report
-from pcapi.routes.serialization.collective_bookings_serialize import _serialize_collective_booking_excel_report
+from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
+from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_excel_report
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
@@ -776,8 +776,8 @@ def get_collective_booking_report(
     )
 
     if export_type == BookingExportType.EXCEL:
-        return _serialize_collective_booking_excel_report(bookings_query)
-    return _serialize_collective_booking_csv_report(bookings_query)
+        return serialize_collective_booking_excel_report(bookings_query)
+    return serialize_collective_booking_csv_report(bookings_query)
 
 
 def list_collective_offers_for_pro_user(

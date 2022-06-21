@@ -9,7 +9,6 @@ from flask_sqlalchemy import BaseQuery
 from pydantic import root_validator
 import xlsxwriter
 
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.utils import convert_booking_dates_utc_to_venue_timezone
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveBookingStatusFilter
@@ -108,7 +107,7 @@ class ListCollectiveBookingsResponseModel(BaseModel):
 
 def _get_booking_status(status: CollectiveBookingStatus, is_confirmed: bool) -> str:
     cancellation_limit_date_exists_and_past = is_confirmed
-    if cancellation_limit_date_exists_and_past and status == BookingStatus.CONFIRMED:
+    if cancellation_limit_date_exists_and_past and status == CollectiveBookingStatus.CONFIRMED:
         return COLLECTIVE_BOOKING_STATUS_LABELS["confirmed"]
     return COLLECTIVE_BOOKING_STATUS_LABELS[status]
 
@@ -244,7 +243,7 @@ COLLECTIVE_BOOKING_EXPORT_HEADER = [
 ]
 
 
-def _serialize_collective_booking_csv_report(query: BaseQuery) -> str:
+def serialize_collective_booking_csv_report(query: BaseQuery) -> str:
     output = StringIO()
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(COLLECTIVE_BOOKING_EXPORT_HEADER)
@@ -269,7 +268,7 @@ def _serialize_collective_booking_csv_report(query: BaseQuery) -> str:
     return output.getvalue()
 
 
-def _serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
+def serialize_collective_booking_excel_report(query: BaseQuery) -> bytes:
     output = BytesIO()
     workbook = xlsxwriter.Workbook(output)
 
