@@ -80,6 +80,8 @@ const getSiretDataAdapter: GetSiretDataAdapter = async (humanSiret: string) => {
         message =
           'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
       }
+    } else if (e instanceof Error) {
+      message = e.message
     }
     return {
       isOk: false,

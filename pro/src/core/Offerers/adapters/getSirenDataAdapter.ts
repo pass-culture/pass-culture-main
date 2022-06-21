@@ -61,12 +61,12 @@ const getSirenDataAdapter: GetSirenDataAdapter = async (humanSiren: string) => {
       message = e.content
       if (e.statusCode === HTTP_STATUS.NOT_FOUND) {
         message = "Ce SIREN n'est pas reconnu"
-      } else if (
-        unavailableSevicesCode.includes(HTTP_STATUS.SERVICE_UNAVAILABLE)
-      ) {
+      } else if (unavailableSevicesCode.includes(e.statusCode)) {
         message =
           'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
       }
+    } else if (e instanceof Error) {
+      message = e.message
     }
     return {
       isOk: false,
