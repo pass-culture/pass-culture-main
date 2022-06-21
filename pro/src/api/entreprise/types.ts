@@ -22,6 +22,7 @@ export interface IEntrepriseSirenData {
 
 export interface IEntrepriseApiJson {
   unite_legale: {
+    statut_diffusion: string
     prenom_1: string | null
     nom: string | null
     denomination: string | null
@@ -37,6 +38,7 @@ export interface IEntrepriseApiJson {
     siren: string
   }
   etablissement: {
+    statut_diffusion: string
     enseigne_1: string | null
     geo_l4: string
     libelle_commune: string

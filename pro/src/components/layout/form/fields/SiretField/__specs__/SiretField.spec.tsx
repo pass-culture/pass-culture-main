@@ -215,6 +215,25 @@ describe('components | SiretField', () => {
         'L’Annuaire public des Entreprises est indisponible. Veuillez réessayer plus tard.'
       )
     })
+    it('should return an error when SIRET is anonymous on INSEE registry', async () => {
+      // given
+      const siret = '92341678901534'
+      fetch.mockResponseOnce(
+        JSON.stringify({
+          etablissement: {
+            statut_diffusion: 'N',
+          },
+        })
+      )
+
+      // when
+      const errorMessage = await siretApiValidate(siret, '')
+
+      // then
+      expect(errorMessage).toBe(
+        'Ce SIRET est masqué sur le répertoire de l’INSEE.'
+      )
+    })
     it('should return an error message when SIREN does not exist in INSEE registry', async () => {
       // given
       const siret = '12945678901534'
