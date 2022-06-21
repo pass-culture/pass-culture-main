@@ -96,7 +96,7 @@ const CollectiveOfferVisibility = ({
     } else {
       setSelectedInstitution(null)
     }
-  }, [formik.values.institution])
+  }, [formik.values.institution, institutionsOptions])
 
   return (
     <FormikProvider value={formik}>
