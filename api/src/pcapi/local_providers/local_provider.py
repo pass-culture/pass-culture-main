@@ -68,7 +68,7 @@ class LocalProvider(Iterator):
         return 0
 
     def get_keep_poster_ratio(self) -> bool:
-        return False
+        return True
 
     @property
     @abstractmethod
