@@ -154,6 +154,7 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
 @login_required
 @spectree_serialize(on_success_status=201, response_model=StockIdResponseModel, api=blueprint.pro_private_schema)
 def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockIdResponseModel:
+    # FIXME DELETE UNUSED API
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -187,6 +188,7 @@ def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockId
 def transform_shadow_stock_into_educational_stock(
     stock_id: str, body: EducationalStockCreationBodyModel
 ) -> stock_serialize.PatchShadowStockIntoEducationalStockResponseModel:
+    # FIXME DELETE UNUSED API
     try:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
@@ -213,6 +215,7 @@ def transform_shadow_stock_into_educational_stock(
 def edit_educational_stock(
     stock_id: str, body: EducationalStockEditionBodyModel
 ) -> stock_serialize.StockEditionResponseModel:
+    # FIXME DELETE UNUSED API
     try:
         stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))  # type: ignore [arg-type]
         offerer = offerers_repository.get_by_offer_id(stock.offerId)
@@ -269,6 +272,7 @@ def edit_educational_stock(
 def edit_shadow_stock(
     stock_id: str, body: offers_serialize.EducationalOfferShadowStockBodyModel
 ) -> stock_serialize.StockEditionResponseModel:
+    # FIXME DELETE UNUSED API
     try:
         stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))  # type: ignore [arg-type]
         offerer = offerers_repository.get_by_offer_id(stock.offerId)

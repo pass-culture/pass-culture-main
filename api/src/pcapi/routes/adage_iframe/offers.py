@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 @adage_jwt_required
 @spectree_serialize(response_model=serializers.OfferResponse, on_error_statuses=[404])
 def get_offer(authenticated_information: AuthenticatedInformation, offer_id: int) -> serializers.OfferResponse:
+    # FIXME DELETE UNUSED API
     offer = (
         offers_models.Offer.query.filter(offers_models.Offer.id == offer_id)
         .join(offers_models.Stock)
