@@ -4,8 +4,7 @@ from flask_login import current_user
 from flask_login import login_required
 import sqlalchemy.orm as sqla_orm
 
-from pcapi.connectors.api_adage import AdageException
-from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
+import pcapi.core.educational.exceptions as educational_exceptions
 from pcapi.core.offerers import api
 from pcapi.core.offerers import repository
 from pcapi.core.offerers.exceptions import ApiKeyCountMaxReached
@@ -199,9 +198,9 @@ def create_offerer(body: CreateOffererQueryModel) -> GetOffererResponseModel:
 def can_offerer_create_educational_offer(humanized_offerer_id: str):  # type: ignore [no-untyped-def]
     try:
         api.can_offerer_create_educational_offer(dehumanize(humanized_offerer_id))
-    except CulturalPartnerNotFoundException:
+    except educational_exceptions.CulturalPartnerNotFoundException:
         logger.info("This offerer has not been found in Adage", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"offerer": "not found in adage"}, 404)
-    except AdageException:
+    except educational_exceptions.AdageException:
         logger.info("Api call failed", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"adage_api": "error"}, 500)

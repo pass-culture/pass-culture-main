@@ -3,8 +3,6 @@ import logging
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.connectors.api_adage import AdageException
-from pcapi.connectors.api_adage import CulturalPartnerNotFoundException
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import repository as educational_repository
@@ -122,12 +120,12 @@ def create_collective_offer(
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    except CulturalPartnerNotFoundException:
+    except educational_exceptions.CulturalPartnerNotFoundException:
         logger.info(
             "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
         )
         raise ApiErrors({"offerer": "not found in adage"}, 403)
-    except AdageException:
+    except educational_exceptions.AdageException:
         logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
         raise ApiErrors({"adage_api": "error"}, 500)
     except offers_exceptions.UnknownOfferSubCategory as error:
