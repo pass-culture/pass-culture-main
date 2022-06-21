@@ -25,7 +25,7 @@ _Ajout de fonctionnalités, Problèmes résolus, etc_
   - PR : `(PC-XXX) Description rapide de l' US`
   - Commit(s) : `(PC-XXX)[PRO|API|…] description rapide du ticket`
 - [ ] J'ai écrit les tests nécessaires
-- [ ] J'ai vérifié les migrations (upgrade / downgrade ; locks ; édition de `alembic_version_conflict_detection.txt`)
+- [ ] J'ai relu attentivement les migrations, en particulier pour éviter les _locks_
 - [ ] J'ai mis à jour la **sandbox** afin que le développement ou la recette soient facilités
 - [ ] J'ai tenté d'améliorer la dette technique (BSR, déplacement de modèles dans `pcapi.core`, etc)
 - [ ] J'ai ajouté des screenshots pour d'éventuels changements graphiques (ex: Admin)
