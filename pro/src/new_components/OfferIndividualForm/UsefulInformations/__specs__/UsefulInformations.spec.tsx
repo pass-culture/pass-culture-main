@@ -155,10 +155,10 @@ describe('OfferIndividual section: UsefulInformations', () => {
       props,
     })
 
+    await screen.findByRole('heading', { name: 'Informations pratiques' })
+
     expect(
-      await screen.getByText(
-        'Comment les billets, places seront-ils transmis ?'
-      )
+      screen.getByText('Comment les billets, places seront-ils transmis ?')
     ).toBeInTheDocument()
   })
 
@@ -173,10 +173,10 @@ describe('OfferIndividual section: UsefulInformations', () => {
       props,
     })
 
+    await screen.findByRole('heading', { name: 'Informations pratiques' })
+
     expect(
-      await screen.queryByText(
-        'Comment les billets, places seront-ils transmis ?'
-      )
+      screen.queryByText('Comment les billets, places seront-ils transmis ?')
     ).not.toBeInTheDocument()
   })
 })
