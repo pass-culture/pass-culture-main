@@ -1,24 +1,29 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { CollectiveOfferResponseModel } from 'core/OfferEducational'
+
 export type PatchEducationalInstitutionAdapter = Adapter<
   {
     offerId: string
     institutionId: string
   },
-  null,
+  CollectiveOfferResponseModel,
   null
 >
 
 export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdapter =
   async ({ offerId, institutionId }) => {
     try {
-      await pcapi.patchEducationalInstitution(offerId, institutionId)
+      const collectiveOffer = await pcapi.patchEducationalInstitution(
+        offerId,
+        institutionId
+      )
 
       return {
         isOk: true,
         message:
           'Les paramètres de visibilité de votre offre ont bien été enregistrés',
-        payload: null,
+        payload: collectiveOffer,
       }
     } catch (e) {
       return {

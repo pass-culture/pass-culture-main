@@ -189,7 +189,7 @@ export const getEducationalInstitutions = (
 export const patchEducationalInstitution = (
   offerId: string,
   institutionId: string
-) =>
+): Promise<CollectiveOfferResponseModel> =>
   client.patch(`/collective/offers/${offerId}/educational_institution`, {
     educationalInstitutionId: parseInt(institutionId),
   })
