@@ -6,6 +6,7 @@ import click
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+import pcapi.connectors.big_query.queries as big_query_queries
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.external import booking_notifications
 from pcapi.core.bookings.external.booking_notifications import notify_users_bookings_not_retrieved
@@ -31,6 +32,8 @@ from pcapi.core.users.repository import get_newly_eligible_age_18_users
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.notifications import push
+from pcapi.notifications.push import transactional_notifications
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
@@ -424,3 +427,32 @@ def handle_deleted_dms_applications_cron() -> None:
 @log_cron_with_transaction
 def update_pending_ubble_applications_cron() -> None:
     ubble_script.update_pending_ubble_applications(dry_run=False)
+
+
+@blueprint.cli.command("send_notification_favorites_not_booked")
+@log_cron_with_transaction
+def send_notification_favorites_not_booked() -> None:
+    _send_notification_favorites_not_booked()  # avoid interference from click
+
+
+def _send_notification_favorites_not_booked() -> None:
+    """
+    Find favorites without a booking and send one notification at most
+    per user in order to encourage him to book it.
+
+    To narrow the number of calls to the Batch api, group by offer.
+    """
+    max_length = settings.BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION
+    rows = big_query_queries.FavoritesNotBooked().execute(max_length)
+
+    for row in rows:
+        try:
+            notification_data = transactional_notifications.get_favorites_not_booked_notification_data(
+                row.offer_id, row.offer_name, row.user_ids
+            )
+
+            if notification_data:
+                push.send_transactional_notification(notification_data)
+        except Exception:  # pylint: disable=broad-except
+            log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
+            logger.error("Favorites not booked: failed to send notification", extra=log_extra)

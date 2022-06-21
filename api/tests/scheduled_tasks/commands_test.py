@@ -13,6 +13,9 @@ from pcapi.core.mails.transactional.bookings.booking_event_reminder_to_beneficia
 )
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import assert_num_queries
+from pcapi.core.testing import override_settings
+import pcapi.notifications.push.testing as notifications_testing
+from pcapi.scheduled_tasks.commands import _send_notification_favorites_not_booked
 from pcapi.scheduled_tasks.commands import send_email_reminder_tomorrow_event_to_beneficiaries
 
 
@@ -91,3 +94,36 @@ class SendEmailReminderTomorrowEventToBeneficiariesTest:
             send_email_reminder_tomorrow_event_to_beneficiaries()
 
             assert len(mails_testing.outbox) == 3
+
+
+class SendNotificationFavoritesNotBookedTest:
+    def test_send(self):
+        rows = [
+            {"offer_id": 1, "offer_name": "my offer", "user_ids": [1, 2], "count": 2},
+            {"offer_id": 2, "offer_name": "another offer", "user_ids": [3], "count": 1},
+        ]
+
+        with patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
+            mock_run_query.return_value = rows
+            _send_notification_favorites_not_booked()
+
+        requests = notifications_testing.requests
+        assert len(requests) == 2
+
+        user_ids = {*requests[0]["user_ids"], *requests[1]["user_ids"]}
+        assert user_ids == {1, 2, 3}
+
+    @override_settings(BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION=2)
+    def test_send_with_split_because_too_many_users(self):
+        rows = [
+            {"offer_id": 1, "offer_name": "my offer", "user_ids": [1, 2, 3, 4, 5], "count": 5},
+        ]
+
+        with patch("pcapi.connectors.big_query.TestingBackend.run_query") as mock_run_query:
+            mock_run_query.return_value = rows
+            _send_notification_favorites_not_booked()
+
+        # one request with users 1 and 2
+        # another one with users 3 and 4
+        # and a final one with user 5
+        assert len(notifications_testing.requests) == 3
