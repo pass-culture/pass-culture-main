@@ -50,6 +50,26 @@ describe('components | SirenField', () => {
       expect(errorMessage).toBeUndefined()
     })
 
+    it('should return an error message when the unite_legal has anonymous data', async () => {
+      // given
+      const siren = '495474278'
+      fetch.mockResponseOnce(
+        JSON.stringify({
+          unite_legale: {
+            statut_diffusion: 'N',
+          },
+        })
+      )
+
+      // when
+      const errorMessage = await existsInINSEERegistry(siren)
+
+      // then
+      expect(errorMessage).toBe(
+        'Ce SIREN est masqué sur le répertoire de l’INSEE.'
+      )
+    })
+
     it('should return an error message when SIREN does not exist in INSEE registry', async () => {
       // given
       const siren = '445474278'

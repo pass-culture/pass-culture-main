@@ -28,6 +28,11 @@ export default {
     )
     const data = response.etablissement
 
+    // https://www.sirene.fr/sirene/public/variable/statutDiffusionUniteLegale
+    if (data.statut_diffusion == 'N') {
+      throw new Error('Ce SIRET est masqué sur le répertoire de l’INSEE.')
+    }
+
     const latitude =
       data.latitude || data.unite_legale.etablissement_siege.latitude
     const longitude =
@@ -58,6 +63,11 @@ export default {
     )
 
     const legalUnit = response.unite_legale
+
+    // https://www.sirene.fr/sirene/public/variable/statutDiffusionUniteLegale
+    if (legalUnit.statut_diffusion == 'N') {
+      throw new Error('Ce SIREN est masqué sur le répertoire de l’INSEE.')
+    }
 
     let name
     if (legalUnit.denomination) {
