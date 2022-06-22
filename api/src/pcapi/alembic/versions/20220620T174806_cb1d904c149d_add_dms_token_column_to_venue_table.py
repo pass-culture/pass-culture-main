@@ -1,4 +1,4 @@
-"""add dms_token column to venue table (PRE-deploy)"""
+"""add dmsToken column to venue table (PRE-deploy)"""
 
 from alembic import op
 import sqlalchemy as sa
@@ -11,9 +11,9 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column("venue", sa.Column("dms_token", sa.Text(), nullable=True))
-    op.create_unique_constraint(None, "venue", ["dms_token"])
+    op.add_column("venue", sa.Column("dmsToken", sa.Text(), nullable=True))
+    op.create_unique_constraint(None, "venue", ["dmsToken"])
 
 
 def downgrade():
-    op.drop_column("venue", "dms_token")
+    op.drop_column("venue", "dmsToken")

@@ -64,7 +64,7 @@ class CreateVenueTest:
         assert venue.managingOfferer == offerer
         assert venue.name == "La Venue"
         assert venue.bookingEmail == "venue@example.com"
-        assert venue.dms_token
+        assert venue.dmsToken
 
     def test_with_business_unit(self):
         offerer = offerers_factories.OffererFactory()
