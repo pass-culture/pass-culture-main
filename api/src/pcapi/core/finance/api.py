@@ -314,10 +314,7 @@ def price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooki
         if pricing:
             return pricing
 
-        # we do not need to delete the pricing if booking is collective
-        # because there is no degressive reimbursement rate
-        if not is_booking_collective:
-            _delete_dependent_pricings(booking, "Deleted pricings priced too early")
+        _delete_dependent_pricings(booking, "Deleted pricings priced too early")
 
         pricing = _price_booking(booking)
         db.session.add(pricing)
