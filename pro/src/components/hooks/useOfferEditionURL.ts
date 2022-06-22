@@ -4,6 +4,7 @@ const getOfferId = (offerId: string, isShowcase?: boolean) =>
 export const useOfferEditionURL = (
   isOfferEducational: boolean,
   offerId: string,
+  useSummaryPage: boolean,
   isShowcase?: boolean
 ): string => {
   if (isOfferEducational) {
@@ -11,7 +12,9 @@ export const useOfferEditionURL = (
     return `/offre/${id}/collectif/edition`
   }
 
-  return `/offre/${offerId}/individuel/edition`
+  return useSummaryPage
+    ? `/offre/${offerId}/individuel/recapitulatif`
+    : `/offre/${offerId}/individuel/edition`
 }
 
 export const useOfferStockEditionURL = (

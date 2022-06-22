@@ -1,7 +1,7 @@
 import { getPathname, goBack } from './helpers/location'
 import {
   navigateToNewOfferAs,
-  navigateToOfferAs,
+  navigateToOfferDetailsAs,
   navigateToOffersAs,
 } from './helpers/navigations'
 
@@ -406,7 +406,7 @@ test('je recherche une offre et je clique sur celle-ci pour accéder au détail'
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_visible_activated_offer'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
+  await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
 
   await t.expect(getPathname()).match(/\/offre\/([A-Z0-9]*)/)
 })
@@ -417,7 +417,7 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
+  await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
 
   const previousThumbnailSrc = await offerThumbnail().attributes['src']
   await t
@@ -436,7 +436,7 @@ test("je suis scrollé sur l'élément incorrect du formulaire d'édition d'offr
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
   )
-  await navigateToOfferAs(user, offer, createUserRole(user))(t)
+  await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
   const key_combination_to_delete_text_input = 'ctrl+a delete'
 
   await t

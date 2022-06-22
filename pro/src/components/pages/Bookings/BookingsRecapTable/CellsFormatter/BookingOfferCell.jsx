@@ -3,12 +3,15 @@ import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { format } from 'date-fns-tz'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 
 const BookingOfferCell = ({ offer }) => {
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const editionUrl = useOfferEditionURL(
     offer.offer_is_educational,
-    offer.offer_identifier
+    offer.offer_identifier,
+    useSummaryPage
   )
   const eventBeginningDatetime = offer.event_beginning_datetime
   const isbn = offer.offer_isbn
