@@ -16,8 +16,8 @@ export const BackgroundLogin = (props: SVGProps<SVGSVGElement>) => {
           y2="734.567"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#EB0055" />
-          <stop offset="1" stop-color="#320096" />
+          <stop stopColor="#EB0055" />
+          <stop offset="1" stopColor="#320096" />
         </linearGradient>
       </defs>
     </svg>
