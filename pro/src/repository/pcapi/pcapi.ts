@@ -188,10 +188,12 @@ export const getEducationalInstitutions = (
 
 export const patchEducationalInstitution = (
   offerId: string,
-  institutionId: string
+  institutionId: string,
+  isCreatingOffer: boolean
 ): Promise<CollectiveOfferResponseModel> =>
   client.patch(`/collective/offers/${offerId}/educational_institution`, {
     educationalInstitutionId: parseInt(institutionId),
+    isCreatingOffer,
   })
 
 //
