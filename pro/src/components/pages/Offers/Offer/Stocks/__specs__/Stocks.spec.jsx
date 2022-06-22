@@ -35,9 +35,10 @@ jest.mock('utils/date', () => ({
 
 const renderOffers = async (
   props,
-  store,
+  storeOverrides,
   pathname = '/offre/AG3A/individuel/stocks'
 ) => {
+  const store = configureTestStore(storeOverrides)
   return render(
     <Provider store={store}>
       <MemoryRouter initialEntries={[{ pathname: pathname }]}>
@@ -59,12 +60,12 @@ describe('stocks page', () => {
   let stockId
   let store
   beforeEach(() => {
-    store = configureTestStore({
+    store = {
       data: {
         users: [{ publicName: 'François', isAdmin: false }],
       },
       user: { initialized: true },
-    })
+    }
     props = {}
 
     defaultOffer = {

@@ -41,13 +41,17 @@ const ThingStocks = ({
     useState(false)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
-  const editionOfferLink = useOfferEditionURL(offer.isEducational, offerId)
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+  const editionOfferLink = useOfferEditionURL(
+    offer.isEducational,
+    offerId,
+    useSummaryPage
+  )
   const [stock, setStock] = useState(null)
   const displayExpirationDatetime =
     stock && stock.activationCodesExpirationDatetime !== null
   const history = useHistory()
   const location = useLocation()
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const summaryStepUrl = isOfferDraft
     ? `/offre/${offer.id}/individuel/creation/recapitulatif`
     : `/offre/${offer.id}/individuel/recapitulatif`
