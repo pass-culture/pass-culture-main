@@ -211,6 +211,7 @@ class HandleDmsApplicationTest:
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(userId=user.id).one()
         assert fraud_check.status == fraud_models.FraudCheckStatus.STARTED
+        assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_parsing_error_when_on_going(self, send_dms_message_mock):

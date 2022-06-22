@@ -87,4 +87,5 @@ def on_dms_eligibility_error(
     )
     fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]  # type: ignore [list-item]
+    fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
     repository.save(fraud_check)
