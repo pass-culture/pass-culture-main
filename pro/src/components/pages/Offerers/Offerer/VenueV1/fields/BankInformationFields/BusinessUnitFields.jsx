@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { ApplicationBanner } from './ApplicationBanner'
 import { Banner } from 'ui-kit'
@@ -17,6 +17,7 @@ const PENDING_DMS_FILE_BANNER = 'pending_dms_file_banner'
 const BankInformationWithBusinessUnit = ({
   readOnly,
   offerer,
+  scrollToSection,
   venue,
   isCreatingVenue,
 }) => {
@@ -37,6 +38,12 @@ const BankInformationWithBusinessUnit = ({
             : 'SIRET manquant'
         } - ${businessUnit.iban}`
       : ''
+
+  const scrollToBusinessUnit = useCallback(node => {
+    if (scrollToSection && node) {
+      node.scrollIntoView()
+    }
+  }, [])
 
   useEffect(() => {
     async function loadBusinessUnits(offererId) {
@@ -106,7 +113,7 @@ const BankInformationWithBusinessUnit = ({
     return (
       <div className="section vp-content-section bank-information">
         <div className="main-list-title title-actions-container">
-          <h2 className="main-list-title-text">
+          <h2 ref={scrollToBusinessUnit} className="main-list-title-text">
             Coordonnées bancaires du lieu
           </h2>
           {displayedBanners[REPLACE_DMS_FILE_BUTTON] && (
@@ -190,12 +197,14 @@ const BankInformationWithBusinessUnit = ({
 BankInformationWithBusinessUnit.defaultProps = {
   isCreatingVenue: false,
   readOnly: false,
+  scrollToSection: false,
   venue: {},
 }
 BankInformationWithBusinessUnit.propTypes = {
   isCreatingVenue: PropTypes.bool,
   offerer: PropTypes.shape().isRequired,
   readOnly: PropTypes.bool,
+  scrollToSection: PropTypes.bool,
   venue: PropTypes.shape(),
 }
 
