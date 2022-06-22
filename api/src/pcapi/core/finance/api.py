@@ -1292,7 +1292,7 @@ def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]) -
         invoice = _generate_invoice(business_unit_id=business_unit_id, cashflow_ids=cashflow_ids)
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
         invoice_html = _generate_invoice_html(invoice=invoice)
-    with log_elapsed(logger, "Generated invoice PDF", log_extra):
+    with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
         send_invoice_available_to_pro_email(invoice)
@@ -1563,10 +1563,12 @@ def _generate_invoice_html(invoice: models.Invoice) -> str:
 
 
 def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str) -> None:
-    invoice_pdf = pdf_utils.generate_pdf_from_html(html_content=invoice_html)
-    store_public_object(
-        folder="invoices", object_id=invoice_storage_id, blob=invoice_pdf, content_type="application/pdf"
-    )
+    with log_elapsed(logger, "Generated PDF invoice"):
+        invoice_pdf = pdf_utils.generate_pdf_from_html(html_content=invoice_html)
+    with log_elapsed(logger, "Stored PDF invoice in object storage"):
+        store_public_object(
+            folder="invoices", object_id=invoice_storage_id, blob=invoice_pdf, content_type="application/pdf"
+        )
 
 
 def merge_cashflow_batches(
