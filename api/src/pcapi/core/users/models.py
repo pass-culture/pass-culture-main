@@ -26,6 +26,7 @@ from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.exceptions import InvalidUserRoleException
 from pcapi.models import Model
 from pcapi.models import db
+from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.utils import crypto
@@ -184,7 +185,7 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
-class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
+class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "user"
 
     activity = sa.Column(sa.String(128), nullable=True)
@@ -206,12 +207,6 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
     hasSeenProRgs = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     idPieceNumber = sa.Column(sa.String, nullable=True, unique=True)
     ineHash = sa.Column(sa.Text, nullable=True, unique=True)
-
-    # FIXME (dbaty, 2020-12-14): once v114 has been deployed, populate
-    # existing rows, remove this field and let the User model
-    # use DeactivableMixin. We'll need to add a migration that adds a
-    # NOT NULL constraint.
-    isActive = sa.Column(sa.Boolean, nullable=True, server_default=expression.true(), default=True)
     isEmailValidated = sa.Column(sa.Boolean, nullable=True, server_default=expression.false())
     lastConnectionDate = sa.Column(sa.DateTime, nullable=True)
     lastName = sa.Column(sa.String(128), nullable=True)
@@ -304,7 +299,7 @@ class User(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, 
 
     @property
     def is_active(self) -> bool:  # required by flask-login
-        return self.isActive  # type: ignore [return-value]
+        return self.isActive
 
     @property
     def is_anonymous(self) -> bool:  # required by flask-login
