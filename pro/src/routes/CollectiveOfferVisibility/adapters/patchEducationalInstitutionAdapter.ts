@@ -6,17 +6,19 @@ export type PatchEducationalInstitutionAdapter = Adapter<
   {
     offerId: string
     institutionId: string
+    isCreatingOffer: boolean
   },
   CollectiveOfferResponseModel,
   null
 >
 
 export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdapter =
-  async ({ offerId, institutionId }) => {
+  async ({ offerId, institutionId, isCreatingOffer }) => {
     try {
       const collectiveOffer = await pcapi.patchEducationalInstitution(
         offerId,
-        institutionId
+        institutionId,
+        isCreatingOffer
       )
 
       return {
