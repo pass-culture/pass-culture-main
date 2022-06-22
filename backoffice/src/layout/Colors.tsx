@@ -1,10 +1,9 @@
-export enum Colors {
+export enum colors {
   SECONDARY = '#320096',
-  RED = '#ff4646',
-  GREEN = '#4bb478',
+  RED = '#e60039',
+  GREEN = '#15884f',
   YELLOW = '#ffea00',
   PRIMARY = '#eb0055',
   PRIMARY_DARK = '#c10046',
   WHITE = '#FFFFFF',
-  THIRD = '#870087',
 }

@@ -1,6 +1,6 @@
 {
-  "short_name": "Back-Office Team",
-  "name": "Back-Office du pass Culture",
+  "short_name": "React App",
+  "name": "Create React App Sample",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,13 +8,13 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logoBO192.jpg",
-      "type": "image/jpeg",
+      "src": "logo192.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "logoBO512.jpg",
-      "type": "image/jpeg",
+      "src": "logo512.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ],
