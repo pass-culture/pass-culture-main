@@ -4,7 +4,6 @@ import {
   CardActions,
   CardContent,
   CircularProgress,
-  createSvgIcon,
   Divider,
   Stack,
   Typography,
@@ -16,11 +15,9 @@ import {
   GoogleLoginResponseOffline,
   useGoogleLogin,
 } from 'react-google-login'
-import { GovernmentIcon } from '../Icons/GovernmentIcon'
 import { Logo } from '../../layout/Logo'
-import { red } from '@mui/material/colors'
-import { inspect } from 'util'
 import { Colors } from '../../layout/Colors'
+import { GovernmentIcon } from '../Icons/GovernmentIcon'
 
 export const LoginForm = () => {
   const [loading, setLoading] = useState(false)
