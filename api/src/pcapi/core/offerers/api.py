@@ -69,7 +69,7 @@ def create_digital_venue(offerer: Offerer) -> Venue:
     digital_venue.name = "Offre numérique"
     digital_venue.venueTypeCode = offerers_models.VenueTypeCode.DIGITAL  # type: ignore [attr-defined]
     digital_venue.managingOfferer = offerer
-    digital_venue.dms_token = generate_dms_token()
+    digital_venue.dmsToken = generate_dms_token()
     return digital_venue
 
 
@@ -176,7 +176,7 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
-    venue.dms_token = generate_dms_token()
+    venue.dmsToken = generate_dms_token()
     repository.save(venue)
 
     if venue_data.businessUnitId:
@@ -511,4 +511,4 @@ def generate_dms_token() -> str:
         dms_token = secrets.token_hex(6)
         if not dms_token_exists(dms_token):
             return dms_token
-    raise ValueError("Could not generate new dms_token for Venue")
+    raise ValueError("Could not generate new dmsToken for Venue")
