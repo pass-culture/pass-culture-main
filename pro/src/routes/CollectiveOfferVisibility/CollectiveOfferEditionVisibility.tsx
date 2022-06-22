@@ -50,7 +50,7 @@ const CollectiveOfferVisibility = () => {
     <OfferEducationalLayout
       activeStep={OfferBreadcrumbStep.VISIBILITY}
       isCreatingOffer={false}
-      title="Editer une offre collective"
+      title="Éditer une offre collective"
       offerId={offerId}
     >
       {isReady ? (
