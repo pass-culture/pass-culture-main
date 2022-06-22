@@ -1491,7 +1491,7 @@ def get_reimbursements_by_venue(
         pricing_query.with_entities(
             *common_columns,
             models.Pricing.amount.label("pricing_amount"),
-            bookings_models.Booking.amount.label("booking_amount"),
+            bookings_models.Booking.amount.label("booking_unit_amount"),
             bookings_models.Booking.quantity.label("booking_quantity"),
             bookings_models.Booking.individualBookingId,
         )
@@ -1505,10 +1505,12 @@ def get_reimbursements_by_venue(
     collective_query = (
         pricing_query.with_entities(
             *common_columns,
-            sqla_func.sum(models.Pricing.amount).label("amount_total"),
+            sqla_func.sum(models.Pricing.amount).label("reimbursed_amount"),
+            sqla_func.sum(CollectiveStock.price).label("booking_amount"),
         )
         .join(models.Pricing.collectiveBooking)
         .join(CollectiveBooking.venue)
+        .join(CollectiveBooking.collectiveStock)
         .group_by(
             offerers_models.Venue.id,
             sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name),
@@ -1526,7 +1528,7 @@ def get_reimbursements_by_venue(
         individual_amount = 0
         for booking in bookings:
             reimbursed_amount += booking.pricing_amount
-            validated_booking_amount += decimal.Decimal(booking.booking_amount) * booking.booking_quantity
+            validated_booking_amount += decimal.Decimal(booking.booking_unit_amount) * booking.booking_quantity
             if booking.individualBookingId:
                 individual_amount += booking.pricing_amount
         reimbursements_by_venue[venue_id] = {
@@ -1539,15 +1541,16 @@ def get_reimbursements_by_venue(
     for venue_pricing_info in collective_query:
         venue_id = venue_pricing_info.venue_id
         venue_name = venue_pricing_info.venue_name
-        amount_total = venue_pricing_info.amount_total
+        reimbursed_amount = venue_pricing_info.reimbursed_amount
+        booking_amount = -utils.to_eurocents(venue_pricing_info.booking_amount)
         if venue_pricing_info.venue_id in reimbursements_by_venue:
-            reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += amount_total
-            reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += amount_total
+            reimbursements_by_venue[venue_pricing_info.venue_id]["reimbursed_amount"] += reimbursed_amount
+            reimbursements_by_venue[venue_pricing_info.venue_id]["validated_booking_amount"] += booking_amount
         else:
             reimbursements_by_venue[venue_pricing_info.venue_id] = {
                 "venue_name": venue_name,
-                "reimbursed_amount": amount_total,
-                "validated_booking_amount": amount_total,
+                "reimbursed_amount": reimbursed_amount,
+                "validated_booking_amount": booking_amount,
                 "individual_amount": 0,
             }
 
