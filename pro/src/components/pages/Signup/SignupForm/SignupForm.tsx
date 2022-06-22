@@ -1,13 +1,13 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { BannerInvisibleSiren, BannerRGS } from 'new_components/Banner'
 import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { ISignupApiErrorResponse, ISignupFormValues } from './types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import { BannerRGS } from 'new_components/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { Checkbox } from 'ui-kit'
 import { Events } from 'core/FirebaseEvents/constants'
@@ -29,6 +29,7 @@ const SignupForm = (): JSX.Element => {
   const history = useHistory()
   const notification = useNotification()
   const { currentUser } = useCurrentUser()
+  const [showAnonymousBanner, setShowAnonymousBanner] = useState(false)
   const location = useLocation()
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
 
@@ -89,10 +90,17 @@ const SignupForm = (): JSX.Element => {
   })
 
   const getSirenAPIData = async (siren: string) => {
+    setShowAnonymousBanner(false)
     const response = await getSirenDataAdapter(siren)
     if (response.isOk)
       formik.setFieldValue('legalUnitValues', response.payload.values)
-    else formik.setFieldError('siren', response.message)
+    else {
+      formik.setFieldError('siren', response.message)
+      if (
+        response.message == 'Ce SIREN est masqué sur le répertoire de l’INSEE.'
+      )
+        setShowAnonymousBanner(true)
+    }
   }
 
   // Track the state of the form when the user gives up
@@ -132,7 +140,6 @@ const SignupForm = (): JSX.Element => {
       logFormAbort()
     }
   }, [])
-
   return (
     <section className="sign-up-form-page">
       <div className="content">
@@ -192,6 +199,7 @@ const SignupForm = (): JSX.Element => {
                   <span className="field-siren-value">
                     {formik.values.legalUnitValues.name}
                   </span>
+                  {showAnonymousBanner && <BannerInvisibleSiren />}
                 </div>
                 <FormLayout.Row>
                   <Checkbox
