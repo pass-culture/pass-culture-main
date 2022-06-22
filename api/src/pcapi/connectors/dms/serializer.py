@@ -7,7 +7,6 @@ from dateutil import parser as date_parser
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription.dms import models as dms_types
 from pcapi.core.users import models as users_models
 from pcapi.utils.date import FrenchParserInfo
@@ -31,7 +30,7 @@ DMS_ACTIVITY_ENUM_MAPPING = {
 
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse, procedure_id: int
-) -> fraud_models.DMSContent:
+) -> typing.Tuple[fraud_models.DMSContent, list[dms_types.DmsParsingErrorDetails]]:
 
     application_number = application_detail.number
     civility = application_detail.applicant.civility
@@ -135,9 +134,7 @@ def parse_beneficiary_information_graphql(
         state=application_detail.state.value,
     )
 
-    if parsing_errors:
-        raise subscription_exceptions.DMSParsingError(email, parsing_errors, result_content, "Error validating")
-    return result_content
+    return result_content, parsing_errors
 
 
 def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_models.GenderEnum]:
