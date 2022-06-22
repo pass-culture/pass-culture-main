@@ -58,8 +58,17 @@ const DatePicker = ({
         maxDate={maxDateTime}
         minDate={minDateTime}
         onChange={date => {
+          let newDate = date
+          if (
+            date &&
+            maxDateTime &&
+            date.toLocaleDateString() === maxDateTime.toLocaleDateString()
+          ) {
+            newDate = maxDateTime
+          }
+
           helpers.setTouched(true)
-          helpers.setValue(date, true)
+          helpers.setValue(newDate, true)
         }}
         openToDate={field.value ? field.value : openingDateTime}
         placeholderText="JJ/MM/AAAA"
