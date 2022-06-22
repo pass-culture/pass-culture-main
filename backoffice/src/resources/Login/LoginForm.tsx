@@ -15,8 +15,9 @@ import {
   GoogleLoginResponseOffline,
   useGoogleLogin,
 } from 'react-google-login'
-import { Logo } from '../../layout/Logo'
+
 import { Colors } from '../../layout/Colors'
+import { Logo } from '../../layout/Logo'
 import { GovernmentIcon } from '../Icons/GovernmentIcon'
 
 export const LoginForm = () => {
