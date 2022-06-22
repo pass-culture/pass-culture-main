@@ -118,6 +118,7 @@ class CashflowBatchFactory(BaseFactory):
         model = models.CashflowBatch
 
     cutoff = factory.LazyFunction(datetime.datetime.utcnow)
+    label = factory.Sequence("VIR{}".format)
 
 
 class CashflowFactory(BaseFactory):

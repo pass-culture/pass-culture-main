@@ -314,8 +314,7 @@ class CashflowBatch(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     creationDate = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     cutoff = sqla.Column(sqla.DateTime, nullable=False, unique=True)
-    # FIXME (dbaty, 2022-05-04): set NOT NULL once the column has been populated
-    label = sqla.Column(sqla.Text, nullable=True, unique=True)
+    label = sqla.Column(sqla.Text, nullable=False, unique=True)
 
 
 class InvoiceLine(Model):  # type: ignore [valid-type, misc]
