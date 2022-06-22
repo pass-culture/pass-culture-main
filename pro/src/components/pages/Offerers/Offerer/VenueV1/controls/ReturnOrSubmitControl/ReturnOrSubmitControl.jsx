@@ -6,6 +6,7 @@ import classnames from 'classnames'
 const ReturnOrSubmitControl = ({
   canSubmit,
   isCreatedEntity,
+  isNewBankInformationCreation,
   isRequestPending,
   offererId,
   readOnly,
@@ -28,7 +29,11 @@ const ReturnOrSubmitControl = ({
             disabled={!canSubmit || isRequestPending}
             type="submit"
           >
-            {isCreatedEntity ? 'Créer' : 'Valider'}
+            {isCreatedEntity
+              ? isNewBankInformationCreation
+                ? 'Enregistrer et continuer'
+                : 'Créer'
+              : 'Valider'}
           </button>
         )}
       </div>
@@ -38,6 +43,7 @@ const ReturnOrSubmitControl = ({
 
 ReturnOrSubmitControl.defaultProps = {
   isCreatedEntity: false,
+  isNewBankInformationCreation: false,
   isRequestPending: false,
   offererId: null,
   readOnly: true,
@@ -46,6 +52,7 @@ ReturnOrSubmitControl.defaultProps = {
 ReturnOrSubmitControl.propTypes = {
   canSubmit: PropTypes.bool.isRequired,
   isCreatedEntity: PropTypes.bool,
+  isNewBankInformationCreation: PropTypes.bool,
   isRequestPending: PropTypes.bool,
   offererId: PropTypes.string,
   readOnly: PropTypes.bool,
