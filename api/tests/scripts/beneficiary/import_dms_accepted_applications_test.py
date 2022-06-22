@@ -163,21 +163,23 @@ class RunTest:
 class ParsingErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
-        with pytest.raises(ValueError) as exc_info:
-            dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+        _, parsing_errors = dms_serializer.parse_beneficiary_information_graphql(
+            application_detail, procedure_id=123123
+        )
 
-        assert exc_info.value.errors[0].key == dms_types.DmsParsingErrorKeyEnum.postal_code
-        assert exc_info.value.errors[0].value == "Strasbourg"
+        assert parsing_errors[0].key == dms_types.DmsParsingErrorKeyEnum.postal_code
+        assert parsing_errors[0].value == "Strasbourg"
 
     @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
     def test_beneficiary_information_id_piece_number_error(self, possible_value):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
 
-        with pytest.raises(ValueError) as exc_info:
-            dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+        _, parsing_errors = dms_serializer.parse_beneficiary_information_graphql(
+            application_detail, procedure_id=123123
+        )
 
-        assert exc_info.value.errors[0].key == dms_types.DmsParsingErrorKeyEnum.id_piece_number
-        assert exc_info.value.errors[0].value == possible_value
+        assert parsing_errors[0].key == dms_types.DmsParsingErrorKeyEnum.id_piece_number
+        assert parsing_errors[0].value == possible_value
 
 
 @pytest.mark.usefixtures("db_session")

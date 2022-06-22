@@ -10,7 +10,6 @@ from pcapi.connectors.dms import exceptions as dms_exceptions
 from pcapi.connectors.dms import models as dms_models
 from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.fraud import models as fraud_models
-from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.users import utils as users_utils
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.repository import repository
@@ -106,9 +105,10 @@ def _mark_cancel_dms_fraud_check(application_number: int) -> None:
 
 
 def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationResponse, procedure_id: int) -> bool:
-    try:
-        application_content = dms_serializer.parse_beneficiary_information_graphql(dms_application, procedure_id)
-    except subscription_exceptions.DMSParsingError:
+    application_content, parsing_errors = dms_serializer.parse_beneficiary_information_graphql(
+        dms_application, procedure_id
+    )
+    if parsing_errors:
         return True
     applicant_birth_date = application_content.get_birth_date()
     applicant_postal_code = application_content.get_postal_code()
