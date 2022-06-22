@@ -39,7 +39,7 @@ const OfferBreadcrumb = ({
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId)
+  const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId, false)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
   const isTemplateId = offerId.startsWith('T-')

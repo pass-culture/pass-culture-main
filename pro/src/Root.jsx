@@ -13,6 +13,7 @@ import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import { Provider } from 'react-redux'
 import Spinner from 'components/layout/Spinner'
 import configureStore from 'store'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useSelector } from 'react-redux'
 
 const { store } = configureStore()
@@ -35,6 +36,7 @@ const AppRouter = () => {
   const activeFeatures = useSelector(selectActiveFeatures)
   const [activeRoutes, setActiveRoutes] = useState([])
   const [activeRoutesWithoutLayout, setActiveRoutesWithoutLayout] = useState([])
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
   useEffect(() => {
     setActiveRoutes(
@@ -64,7 +66,11 @@ const AppRouter = () => {
     <Switch>
       <Redirect
         from="/offres/:offerId([A-Z0-9]+)/edition"
-        to="/offre/:offerId([A-Z0-9]+)/individuel/edition"
+        to={
+          useSummaryPage
+            ? '/offre/:offerId([A-Z0-9]+)/individuel/recapitulatif'
+            : '/offre/:offerId([A-Z0-9]+)/individuel/edition'
+        }
       />
       <Redirect
         from="/offre/:offerId([A-Z0-9]+)/scolaire/edition"

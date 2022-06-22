@@ -13,7 +13,7 @@ const OfferIndividualCreation = (): JSX.Element => {
   return (
     <OfferFormLayout>
       <OfferFormLayout.TitleBlock>
-        <h1>Créer une offe</h1>
+        <h1>Créer une offre</h1>
       </OfferFormLayout.TitleBlock>
 
       <OfferFormLayout.Stepper>
