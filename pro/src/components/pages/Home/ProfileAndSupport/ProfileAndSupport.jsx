@@ -1,10 +1,13 @@
+import { Button, ButtonLink } from 'ui-kit'
 import React, { useCallback, useState } from 'react'
 
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { Events } from 'core/FirebaseEvents/constants'
 import Icon from 'components/layout/Icon'
 import ProfileInformationsModal from './ProfileInformationsModal'
 import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
 import Support from './Support'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { useSelector } from 'react-redux'
 
@@ -57,6 +60,9 @@ const ProfileAndSupport = () => {
   }, [logEvent])
 
   const hideProfileInfoModal = useCallback(() => setIsEditingProfile(false), [])
+  const enableInPageProfileForm = useActiveFeature(
+    'ENABLE_IN_PAGE_PROFILE_FORM'
+  )
 
   return (
     <>
@@ -72,14 +78,27 @@ const ProfileAndSupport = () => {
           <div className="h-card-inner">
             <div className="h-card-header-row">
               <h3 className="h-card-title">Profil</h3>
-              <button
-                className="tertiary-button"
-                onClick={showProfileInfoModal}
-                type="button"
-              >
-                <Icon svg="ico-outer-pen" />
-                Modifier
-              </button>
+
+              {!enableInPageProfileForm && (
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  onClick={showProfileInfoModal}
+                  type="button"
+                >
+                  <Icon svg="ico-outer-pen" />
+                  Modifier
+                </Button>
+              )}
+              {enableInPageProfileForm && (
+                <ButtonLink
+                  variant={ButtonVariant.TERNARY}
+                  to="/profile"
+                  type="button"
+                >
+                  <Icon svg="ico-outer-pen" />
+                  Modifier
+                </ButtonLink>
+              )}
             </div>
             <div className="h-card-content">
               <ul className="h-description-list">

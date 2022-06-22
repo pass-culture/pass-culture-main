@@ -29,6 +29,7 @@ import SignUpValidation from 'routes/SignUpValidation'
 import SignupContainer from 'components/pages/Signup/SignupContainer'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
+import { UserProfile } from 'routes/User'
 import { useLocation } from 'react-router-dom'
 
 const RedirectToConnexionComponent = () => {
@@ -286,6 +287,12 @@ const routes = [
         pageName: 'reimbursements',
       },
     },
+  },
+  {
+    component: UserProfile,
+    path: '/profile',
+    title: 'Profil',
+    featureName: 'ENABLE_IN_PAGE_PROFILE_FORM',
   },
 ]
 
