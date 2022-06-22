@@ -9,8 +9,6 @@ import dataclasses
 import datetime
 import enum
 
-import psycopg2.extras
-import pytz
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql as sqla_psql
 import sqlalchemy.orm as sqla_orm
@@ -107,14 +105,8 @@ class BusinessUnitVenueLink(Model):  # type: ignore [valid-type, misc]
     )
 
     def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
-        kwargs["timespan"] = self._make_timespan(*kwargs["timespan"])
+        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
-
-    @classmethod
-    def _make_timespan(cls, start, end=None):  # type: ignore [no-untyped-def]
-        start = start.astimezone(pytz.utc).isoformat()
-        end = end.astimezone(pytz.utc).isoformat() if end else None
-        return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
 
 class Pricing(Model):  # type: ignore [valid-type, misc]

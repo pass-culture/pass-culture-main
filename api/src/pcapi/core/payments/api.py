@@ -14,6 +14,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.repository import repository
+import pcapi.utils.db as db_utils
 
 from . import exceptions
 from . import repository as payments_repository
@@ -150,11 +151,11 @@ def edit_reimbursement_rule(rule, end_date):  # type: ignore [no-untyped-def]
         raise exceptions.WrongDateForReimbursementRule(error)
     # `rule.timespan.lower` is a naive datetime but it comes from the
     # database, and is thus UTC. We hence need to localize it so that
-    # `_make_timespan()` does not convert it again. This is not needed
+    # `make_timerange()` does not convert it again. This is not needed
     # on production (where the server timezone is UTC), but it's
     # necessary for local development and tests that may be run
     # under a different timezone.
-    rule.timespan = rule._make_timespan(pytz.utc.localize(rule.timespan.lower), end_date)
+    rule.timespan = db_utils.make_timerange(pytz.utc.localize(rule.timespan.lower), end_date)
     try:
         validation.validate_reimbursement_rule(rule, check_start_date=False)
     except exceptions.ReimbursementRuleValidationError:

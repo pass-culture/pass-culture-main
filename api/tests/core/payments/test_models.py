@@ -10,6 +10,7 @@ from pcapi.core.payments import factories
 from pcapi.core.payments import models
 from pcapi.models import db
 from pcapi.repository import repository
+import pcapi.utils.db as db_utils
 
 
 @dataclass
@@ -35,7 +36,7 @@ class CustomReimbursementRuleTest:
 
         # Test with upper bound
         end = datetime.datetime(2021, 5, 12, 0, 0)
-        rule.timespan = rule._make_timespan(start, end)
+        rule.timespan = db_utils.make_timerange(start, end)
         repository.save(rule)
         db.session.refresh(rule)
         assert rule.timespan.lower == start
