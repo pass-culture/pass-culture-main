@@ -666,7 +666,7 @@ def upsert_stocks(
                 and booking_limit_datetime
                 and stock_data.beginning_datetime > booking_limit_datetime
             ):
-                booking_limit_datetime = stock.beginningDatetime
+                booking_limit_datetime = stock_data.beginning_datetime
 
             created_stock = _create_stock(
                 offer=offer,
