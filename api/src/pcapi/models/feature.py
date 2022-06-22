@@ -119,6 +119,7 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_EDUCATIONAL_DOMAINS = "Active l'utilisation du champs domaines sur les offres collectives"
     OFFER_DRAFT_ENABLED = "Active la fonctionnalités de création d'offre en brouillon"
+    ENABLE_IN_PAGE_PROFILE_FORM = "Active le formulaire d'édition de profile dans une page séparée"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -180,6 +181,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ALLOW_ACCOUNT_UNSUSPENSION,
     FeatureToggle.ENABLE_EDUCATIONAL_DOMAINS,
     FeatureToggle.ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION,
+    FeatureToggle.ENABLE_IN_PAGE_PROFILE_FORM,
 )
 
 
