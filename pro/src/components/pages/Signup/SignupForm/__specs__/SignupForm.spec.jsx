@@ -427,6 +427,27 @@ describe('src | components | pages | Signup | SignupForm', () => {
         await userEvent.tab()
         waitFor(() => expect(submitButton).toBeEnabled())
       })
+      it('should display a Banner when SIREN is invisible', async () => {
+        jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
+          isOk: false,
+          message: 'Ce SIREN est masqué sur le répertoire de l’INSEE.',
+        })
+        renderSignUp(store)
+        expect(
+          screen.queryByText('Modifier la visibilité de mon SIREN')
+        ).not.toBeInTheDocument()
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /SIREN/,
+          }),
+          '881457238'
+        )
+        // To simulate onBlur event
+        await userEvent.tab()
+        expect(
+          screen.queryByText('Modifier la visibilité de mon SIREN')
+        ).toBeInTheDocument()
+      })
     })
   })
 })
