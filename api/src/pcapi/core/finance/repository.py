@@ -17,6 +17,7 @@ from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
+import pcapi.utils.db as db_utils
 
 from . import models
 from . import utils
@@ -115,7 +116,7 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     define a *rate*).
     """
     now = datetime.datetime.utcnow()
-    timespan = payments_models.CustomReimbursementRule._make_timespan(start=now, end=None)
+    timespan = db_utils.make_timerange(start=now, end=None)
     query = payments_models.CustomReimbursementRule.query.filter(
         payments_models.CustomReimbursementRule.offerId == offer.id,
         payments_models.CustomReimbursementRule.timespan.overlaps(timespan),  # type: ignore [attr-defined]

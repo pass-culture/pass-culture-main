@@ -45,6 +45,7 @@ from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
+import pcapi.utils.db as db_utils
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
@@ -201,7 +202,7 @@ def set_business_unit_to_venue_id(
         finance_models.BusinessUnitVenueLink.timespan.contains(timestamp),
     ).one_or_none()
     if current_link:
-        current_link.timespan = current_link._make_timespan(
+        current_link.timespan = db_utils.make_timerange(
             current_link.timespan.lower,
             timestamp,
         )

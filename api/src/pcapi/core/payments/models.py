@@ -4,8 +4,6 @@ from decimal import Decimal
 import enum
 import typing
 
-import psycopg2.extras
-import pytz
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
@@ -14,6 +12,7 @@ from sqlalchemy.sql.sqltypes import SmallInteger
 from pcapi.core.finance import conf as finance_conf
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
+import pcapi.utils.db as db_utils
 
 
 if typing.TYPE_CHECKING:
@@ -101,14 +100,8 @@ class CustomReimbursementRule(ReimbursementRule, Model):  # type: ignore [valid-
     )
 
     def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
-        kwargs["timespan"] = self._make_timespan(*kwargs["timespan"])
+        kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
-
-    @classmethod
-    def _make_timespan(cls, start, end=None):  # type: ignore [no-untyped-def]
-        start = start.astimezone(pytz.utc).isoformat()
-        end = end.astimezone(pytz.utc).isoformat() if end else None
-        return psycopg2.extras.DateTimeRange(start, end, bounds="[)")
 
     def is_active(self, booking: "Booking"):  # type: ignore [no-untyped-def]
         if booking.dateUsed < self.timespan.lower:  # type: ignore [union-attr]

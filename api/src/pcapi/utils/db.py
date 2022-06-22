@@ -1,6 +1,9 @@
+import datetime
 import enum
 import typing
 
+import psycopg2.extras
+import pytz
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql.json as sqla_json
 import sqlalchemy.ext.mutable as sqla_mutable
@@ -87,3 +90,15 @@ class MagicEnum(sqla_types.TypeDecorator):
 
 
 SafeJsonB = sqla_mutable.MutableDict.as_mutable(sqla_json.JSONB)
+
+
+def make_timerange(
+    start: datetime.datetime,
+    end: typing.Optional[datetime.datetime] = None,
+    bounds: str = "[)",
+) -> psycopg2.extras.DateTimeRange:
+    return psycopg2.extras.DateTimeRange(
+        lower=start.astimezone(pytz.utc).isoformat(),
+        upper=end.astimezone(pytz.utc).isoformat() if end else None,
+        bounds=bounds,
+    )
