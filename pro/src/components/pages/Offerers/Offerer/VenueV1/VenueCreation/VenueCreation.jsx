@@ -131,8 +131,10 @@ const VenueCreation = () => {
   const handleFormSuccess = formResolver => payload => {
     handleSubmitSuccessNotification(payload)
     formResolver()
-    const next = `/accueil?structure=${offererId}`
-    history.push(next)
+    const next = isNewBankInformationCreation
+      ? `/structures/${offererId}/lieux/${payload.id}?modification`
+      : `/accueil?structure=${offererId}`
+    history.push(next, isNewBankInformationCreation)
   }
 
   const handleOnFormSubmit = formValues => {
@@ -207,6 +209,7 @@ const VenueCreation = () => {
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
             isCreatedEntity
+            isNewBankInformationCreation={isNewBankInformationCreation}
             isRequestPending={formProps.submitting}
             offererId={offererId}
             readOnly={readOnly}

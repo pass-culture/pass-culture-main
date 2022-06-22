@@ -54,7 +54,6 @@ const VenueEdition = () => {
   const history = useHistory()
   const dispatch = useDispatch()
   const location = useLocation()
-
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
@@ -317,6 +316,7 @@ const VenueEdition = () => {
               <BusinessUnitFields
                 offerer={offerer}
                 readOnly={readOnly}
+                scrollToSection={location.state}
                 venue={venue}
               />
             )
