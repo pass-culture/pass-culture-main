@@ -192,7 +192,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         first_name=user.firstName,
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
         user_id=user.id,
-        is_active=user.isActive,  # type: ignore [arg-type]
+        is_active=user.isActive,
         is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
         is_current_beneficiary=user.is_beneficiary and not is_ex_beneficiary,
         is_former_beneficiary=is_ex_beneficiary,
