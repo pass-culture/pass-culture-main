@@ -1,8 +1,9 @@
 import { Grid } from '@mui/material'
 import React from 'react'
 
-import { BackgroundLogin } from '../Icons/BackgroundLogin'
 import { Colors } from '../../layout/Colors'
+import { BackgroundLogin } from '../Icons/BackgroundLogin'
+
 import { LoginForm } from './LoginForm'
 
 export const LoginPage = () => {
