@@ -2,8 +2,8 @@ import ExitIcon from '@mui/icons-material/PowerSettingsNew'
 import { Box, Typography, useMediaQuery, Theme, MenuItem } from '@mui/material'
 import React from 'react'
 import { AppBar, useLogout, UserMenu } from 'react-admin'
-import { Colors } from './Colors'
 
+import { Colors } from './Colors'
 import { Logo } from './Logo'
 
 function MyLogoutButton() {
