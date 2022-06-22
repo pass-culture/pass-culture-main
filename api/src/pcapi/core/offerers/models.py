@@ -222,7 +222,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     )
 
     # TODO(fseguin,2022-06-20): Make column non-nullable when column is populated on all envs
-    dms_token = Column(Text, nullable=True, unique=True)
+    dmsToken = Column(Text, nullable=True, unique=True)
 
     @property
     def is_eligible_for_search(self) -> bool:
