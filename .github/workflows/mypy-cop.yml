@@ -22,10 +22,10 @@ jobs:
         if: steps.changes.outputs.src == 'true'
         run: |
           cd api
-          this_branch_ignore_count="$(grep "type: ignore" -r src | wc -l | xargs)"
+          this_branch_ignore_count="$(grep "type: ignore" -r src | wc -l)"
           git fetch origin master:master --quiet
           git checkout master --quiet
-          master_ignore_count="$(grep "type: ignore" -r src | wc -l | xargs)"
+          master_ignore_count="$(grep "type: ignore" -r src | wc -l)"
           git checkout - --quiet
           echo "::set-output name=this_branch_ignore_count::$this_branch_ignore_count"
           echo "::set-output name=master_ignore_count::$master_ignore_count"
