@@ -106,12 +106,7 @@ def handle_dms_application(
     )
 
     if state == dms_models.GraphQLApplicationStates.draft:
-        eligibility_type = fraud_check.eligibilityType
-        if eligibility_type is None:
-            fraud_dms_api.on_dms_eligibility_error(user, fraud_check, application_scalar_id, extra_data=log_extra_data)
-        else:
-            subscription_messages.on_dms_application_received(user)
-        fraud_check.status = fraud_models.FraudCheckStatus.STARTED  # type: ignore [assignment]
+        _process_draft_application(user, fraud_check, application_scalar_id, parsing_errors, log_extra_data)
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
         subscription_messages.on_dms_application_received(user)
@@ -139,6 +134,27 @@ def _notify_parsing_error(parsing_errors: list[dms_types.DmsParsingErrorDetails]
         settings.DMS_INSTRUCTOR_ID,
         subscription_messages.build_parsing_errors_user_message(parsing_errors),
     )
+
+
+def _process_draft_application(
+    user: users_models.User,
+    current_fraud_check: fraud_models.BeneficiaryFraudCheck,
+    application_scalar_id: str,
+    parsing_errors: list[dms_types.DmsParsingErrorDetails],
+    log_extra_data: typing.Optional[dict],
+) -> None:
+    draft_status = fraud_models.FraudCheckStatus.STARTED
+    if parsing_errors:
+        subscription_messages.on_dms_application_parsing_errors(user, parsing_errors, is_application_updatable=True)
+        _notify_parsing_error(parsing_errors, application_scalar_id)
+        _update_fraud_check_with_parsing_errors(current_fraud_check, parsing_errors, fraud_check_status=draft_status)
+    elif current_fraud_check.eligibilityType is None:
+        fraud_dms_api.on_dms_eligibility_error(
+            user, current_fraud_check, application_scalar_id, extra_data=log_extra_data
+        )
+    else:
+        subscription_messages.on_dms_application_received(user)
+        current_fraud_check.status = draft_status  # type: ignore [assignment]
 
 
 def _update_fraud_check_with_parsing_errors(
