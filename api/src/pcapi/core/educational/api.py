@@ -1025,7 +1025,7 @@ def get_educational_institution_by_id(institution_id: int) -> educational_models
 
 
 def update_collective_offer_educational_institution(
-    offer_id: int, educational_institution_id: Optional[int]
+    offer_id: int, educational_institution_id: Optional[int], is_creating_offer: bool
 ) -> CollectiveOffer:
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if educational_institution_id is not None:
@@ -1033,7 +1033,7 @@ def update_collective_offer_educational_institution(
     else:
         institution = None
 
-    if offer.collectiveStock and not offer.collectiveStock.isEditable:
+    if not is_creating_offer and offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
     offer.institution = institution
     db.session.commit()
