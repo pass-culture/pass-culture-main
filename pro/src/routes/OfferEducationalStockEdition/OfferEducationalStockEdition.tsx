@@ -217,7 +217,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       activeStep={OfferBreadcrumbStep.STOCKS}
       isCreatingOffer={false}
       offerId={offerId}
-      title="Éditer une offre"
+      title="Éditer une offre collective"
     >
       {offer && isReady ? (
         <OfferEducationalStockScreen

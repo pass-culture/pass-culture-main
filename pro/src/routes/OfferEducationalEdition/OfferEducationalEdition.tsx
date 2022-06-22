@@ -195,7 +195,7 @@ const OfferEducationalEdition = (): JSX.Element => {
       activeStep={OfferBreadcrumbStep.DETAILS}
       isCreatingOffer={false}
       offerId={offerIdFromParams}
-      title="Éditer une offre"
+      title="Éditer une offre collective"
     >
       {isReady && screenProps ? (
         <OfferEducationalScreen
