@@ -28,7 +28,7 @@ const SelectSubCategory = ({
       setFieldValue('subCategoryFields', subCategoryFields)
       setFieldValue('isEvent', isEvent)
     },
-    [subcategoryId]
+    [subcategoryId, setFieldValue, subCategories]
   )
 
   const options: SelectOptions = subCategories

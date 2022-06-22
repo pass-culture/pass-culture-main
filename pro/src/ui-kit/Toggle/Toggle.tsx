@@ -25,7 +25,7 @@ const Toggle = ({
   const onClick = useCallback(() => {
     setIsActive(!isActive)
     handleClick && handleClick()
-  }, [isActive, setIsActive])
+  }, [isActive, setIsActive, handleClick])
 
   return (
     <button

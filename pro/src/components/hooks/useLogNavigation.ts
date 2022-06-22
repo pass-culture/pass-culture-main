@@ -12,7 +12,7 @@ const useLogNavigation = (): LocationListener | void => {
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
   useEffect(() => {
     if (logEvent) logEvent(Events.PAGE_VIEW, { from: location.pathname })
-  }, [logEvent])
+  }, [logEvent, location.pathname])
 
   useEffect(() => {
     if (logEvent) {

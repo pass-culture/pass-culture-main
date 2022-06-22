@@ -34,7 +34,7 @@ const SirenInput = ({
     if (!meta.error && meta.touched) {
       onValidSiren(field.value)
     }
-  }, [meta.touched, meta.error, field.value])
+  }, [meta.touched, meta.error, field.value, onValidSiren, setValue])
 
   return (
     <TextInput

@@ -66,7 +66,7 @@ const OfferDetails = ({
       setFormInitialValues(initialValues)
       setIsReady(true)
     }
-  }, [isLoadingCategories, categoriesData, offer])
+  }, [isLoadingCategories, categoriesData, offer, location])
 
   const notification = useNotification()
   const showErrorNotification = useCallback(
@@ -88,19 +88,22 @@ const OfferDetails = ({
       )
   }, [setShowThumbnailForm, offerPreviewData.subcategoryId])
 
-  const goToStockAndPrice = async offerId => {
-    let queryString = ''
+  const goToStockAndPrice = useCallback(
+    async offerId => {
+      let queryString = ''
 
-    if (formInitialValues.offererId !== undefined) {
-      queryString = `?structure=${formInitialValues.offererId}`
-    }
+      if (formInitialValues.offererId !== undefined) {
+        queryString = `?structure=${formInitialValues.offererId}`
+      }
 
-    if (formInitialValues.venueId !== undefined) {
-      queryString += `&lieu=${formInitialValues.venueId}`
-    }
+      if (formInitialValues.venueId !== undefined) {
+        queryString += `&lieu=${formInitialValues.venueId}`
+      }
 
-    history.push(`/offre/${offerId}/individuel/creation/stocks${queryString}`)
-  }
+      history.push(`/offre/${offerId}/individuel/creation/stocks${queryString}`)
+    },
+    [history, formInitialValues.offererId, formInitialValues.venueId]
+  )
 
   const postThumbnail = useCallback(
     async (offerId, thumbnailInfo) => {
@@ -140,7 +143,7 @@ const OfferDetails = ({
           })
       }
     },
-    [showErrorNotification]
+    [showErrorNotification, goToStockAndPrice, offer]
   )
 
   const handleSubmitOffer = useCallback(
@@ -189,13 +192,15 @@ const OfferDetails = ({
       return Promise.resolve(null)
     },
     [
-      history,
       offer,
       postThumbnail,
       reloadOffer,
       notification,
       showErrorNotification,
       thumbnailInfo,
+      goToStockAndPrice,
+      isCreatingOffer,
+      useSummaryPage,
     ]
   )
 

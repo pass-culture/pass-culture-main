@@ -112,6 +112,7 @@ const ActionsBar = ({
       nbSelectedOffers,
       handleClose,
       notify,
+      audience,
     ]
   )
 

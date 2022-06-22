@@ -56,7 +56,7 @@ const useAdapter = <ISuccessPayload, IFailurePayload>(
     if (hookResponse.isLoading) {
       loadData()
     }
-  }, [hookResponse.isLoading])
+  }, [hookResponse.isLoading, getData])
 
   return hookResponse
 }

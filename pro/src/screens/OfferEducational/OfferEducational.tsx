@@ -81,7 +81,7 @@ const OfferEducational = ({
       getEducationalDomainsAdapter().then(result => {
         setDomainsOptions(result.payload)
       })
-  }, [])
+  }, [getEducationalDomainsAdapter])
 
   return (
     <>

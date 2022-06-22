@@ -232,6 +232,8 @@ const EventStocks = ({
     reloadOffer,
     showSuccessNotification,
     showErrorNotification,
+    summaryStepUrl,
+    useSummaryPage,
   ])
 
   if (isLoading) {

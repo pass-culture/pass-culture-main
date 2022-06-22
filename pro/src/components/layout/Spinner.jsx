@@ -16,6 +16,8 @@ const Spinner = ({ message }) => {
     return () => {
       window.clearInterval(newTimer)
     }
+    // Here we do not want to have timer as a dependency otherwise timer is always reset
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (

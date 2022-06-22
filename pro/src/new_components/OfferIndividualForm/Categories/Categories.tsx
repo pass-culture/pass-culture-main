@@ -21,9 +21,10 @@ const Categories = ({
 }: ICategoriesProps): JSX.Element => {
   const { values: formValues, setFieldValue } =
     useFormikContext<IOfferIndividualFormValues>()
+
   useEffect(() => {
     setFieldValue('subcategoryId', FORM_DEFAULT_VALUES.subcategoryId)
-  }, [formValues.categoryId])
+  }, [formValues.categoryId, setFieldValue])
 
   const categoryOptions: SelectOptions = categories
     .map((c: IOfferCategory) => ({

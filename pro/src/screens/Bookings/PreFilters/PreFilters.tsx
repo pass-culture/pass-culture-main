@@ -113,7 +113,7 @@ const PreFilters = ({
         updateUrl(selectedPreFilters)
       }
     },
-    [applyPreFilters, selectedPreFilters]
+    [applyPreFilters, selectedPreFilters, updateUrl]
   )
 
   const isRefreshRequired =
@@ -139,7 +139,7 @@ const PreFilters = ({
 
       setIsDownloadingCSV(false)
     },
-    [notify, getBookingsCSVFileAdapter]
+    [notify, getBookingsCSVFileAdapter, getBookingsXLSFileAdapter]
   )
 
   return (

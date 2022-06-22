@@ -117,7 +117,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
 
       loadOffer()
     }
-  }, [offerId, notify, isReady])
+  }, [offerId, notify, isReady, enableIndividualAndCollectiveSeparation])
 
   return (
     <OfferEducationalLayout

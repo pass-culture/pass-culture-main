@@ -47,19 +47,23 @@ const OfferLayout = () => {
   const [offer, setOffer] = useState(null)
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
-  const loadOffer = async offerId => {
-    try {
-      const existingOffer = await apiV1.getOffersGetOffer(offerId)
-      setOffer(existingOffer)
-    } catch {
-      history.push('/404')
-    }
-  }
+  const loadOffer = useCallback(
+    async offerId => {
+      try {
+        const existingOffer = await apiV1.getOffersGetOffer(offerId)
+        setOffer(existingOffer)
+      } catch {
+        history.push('/404')
+      }
+    },
+    [history]
+  )
+
   const activeStep = getActiveStepFromLocation(location)
 
   const reloadOffer = useCallback(
     async () => (offer.id ? await loadOffer(offer.id) : false),
-    [offer?.id]
+    [offer?.id, loadOffer]
   )
 
   useEffect(() => {
@@ -67,7 +71,7 @@ const OfferLayout = () => {
       await loadOffer(match.params.offerId)
     }
     match.params.offerId && loadOfferFromQueryParam()
-  }, [match.params.offerId])
+  }, [match.params.offerId, loadOffer])
 
   let pageTitle = 'Nouvelle offre'
 

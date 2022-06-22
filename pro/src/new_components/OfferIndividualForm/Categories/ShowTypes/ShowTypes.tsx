@@ -50,7 +50,7 @@ const ShowTypes = (): JSX.Element => {
         showSubType: newShowSubTypeOptions,
       }
     })
-  }, [showType])
+  }, [showType, setFieldValue])
 
   return (
     <>

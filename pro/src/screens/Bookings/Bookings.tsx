@@ -88,30 +88,33 @@ const Bookings = ({
     setAppliedPreFilters(filters)
     loadBookingsRecap(filters)
   }
-  const loadBookingsRecap = async (preFilters: TPreFilters) => {
-    setIsTableLoading(true)
-    setBookings([])
-    setWereBookingsRequested(true)
+  const loadBookingsRecap = useCallback(
+    async (preFilters: TPreFilters) => {
+      setIsTableLoading(true)
+      setBookings([])
+      setWereBookingsRequested(true)
 
-    const { isOk, message, payload } = await getFilteredBookingsRecapAdapter({
-      ...preFilters,
-    })
+      const { isOk, message, payload } = await getFilteredBookingsRecapAdapter({
+        ...preFilters,
+      })
 
-    if (!isOk) {
-      notify.error(message)
-    }
+      if (!isOk) {
+        notify.error(message)
+      }
 
-    const { bookings, currentPage, pages } = payload
+      const { bookings, currentPage, pages } = payload
 
-    setBookings(bookings)
+      setBookings(bookings)
 
-    setIsTableLoading(false)
-    if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-      notify.information(
-        'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
-      )
-    }
-  }
+      setIsTableLoading(false)
+      if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
+        notify.information(
+          'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
+        )
+      }
+    },
+    [getFilteredBookingsRecapAdapter, notify]
+  )
 
   const checkUserHasBookings = useCallback(async () => {
     if (!user.isAdmin) {
@@ -179,7 +182,7 @@ const Bookings = ({
       loadBookingsRecap(filterToLoad)
       setAppliedPreFilters(filterToLoad)
     }
-  }, [location])
+  }, [location, loadBookingsRecap])
 
   const updateUrl = (filter: TPreFilters) => {
     const partialUrlInfo = {

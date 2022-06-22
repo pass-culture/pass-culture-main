@@ -21,10 +21,13 @@ const OfferThumbnail = ({
   const [preview, setPreview] = useState(url)
   const thumbnailButtonRef = useRef(null)
 
-  const openModal = useCallback(e => {
-    e.target.blur()
-    setThumbnailError(false), setThumbnailMsgError(''), setIsModalOpened(true)
-  }, [])
+  const openModal = useCallback(
+    e => {
+      e.target.blur()
+      setThumbnailError(false), setThumbnailMsgError(''), setIsModalOpened(true)
+    },
+    [setThumbnailError, setThumbnailMsgError, setIsModalOpened]
+  )
 
   useEffect(() => {
     setPreview(url)

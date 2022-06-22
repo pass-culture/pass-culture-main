@@ -184,7 +184,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       }
       loadStockAndOffer()
     }
-  }, [offerId, isReady, notify, history])
+  }, [offerId, isReady, notify, history, isNewModelEnabled])
 
   return (
     <OfferEducationalLayout

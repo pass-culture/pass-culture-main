@@ -1,8 +1,8 @@
 import { IApiOfferIndividual, IOfferIndividual } from 'core/Offers/types'
-import { TUseAdapterFailure, useAdapter } from 'hooks'
 
 import { apiV1 } from 'api/api'
 import { serializeOfferApi } from './serializers'
+import { useAdapter } from 'hooks'
 
 type GetOfferAdapter = Adapter<string, IOfferIndividual, null>
 
@@ -29,20 +29,18 @@ const getOfferAdapter: GetOfferAdapter = async offerId => {
 }
 
 const useGetOfferIndividual = (offerId?: string) => {
-  if (offerId === undefined) {
-    const responseFailure: TUseAdapterFailure<null> = {
-      data: undefined,
-      isLoading: false,
-      error: {
-        message:
-          'Une erreur est survenue lors de la récupération de votre offre',
-        payload: null,
-      },
-    }
-    return responseFailure
+  const responseFailure: AdapterFailure<null> = {
+    payload: null,
+    isOk: false,
+    message: 'Une erreur est survenue lors de la récupération de votre offre',
   }
 
-  return useAdapter<IOfferIndividual, null>(() => getOfferAdapter(offerId))
+  return useAdapter<IOfferIndividual, null>(() => {
+    if (offerId === undefined) {
+      return Promise.resolve(responseFailure)
+    }
+    return getOfferAdapter(offerId)
+  })
 }
 
 export default useGetOfferIndividual

@@ -5,7 +5,7 @@ import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { Form, FormikProvider, useFormik } from 'formik'
 import { ISignupApiErrorResponse, ISignupFormValues } from './types'
 import { PasswordInput, SirenInput } from 'ui-kit/form'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { ButtonVariant } from 'ui-kit/Button/types'
@@ -35,7 +35,7 @@ const SignupForm = (): JSX.Element => {
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
-  }, [currentUser])
+  }, [currentUser, history, location])
 
   useEffect(() => {
     const script = document.createElement('script')
@@ -112,7 +112,7 @@ const SignupForm = (): JSX.Element => {
     errorsRef.current = formik.errors
   }, [formik.touched, formik.errors])
 
-  const logFormAbort = () => {
+  const logFormAbort = useCallback(() => {
     const filledFields = Object.keys(touchedRef.current)
     if (filledFields.length === 0) return
     // formik.errors contains every fields with errors even if they have not been touched.
@@ -128,7 +128,7 @@ const SignupForm = (): JSX.Element => {
       filled: filledFields,
       filledWithErrors: filledWithErrors,
     })
-  }
+  }, [logEvent])
 
   // Track the form state on tab closing
   useLogEventOnUnload(() => logFormAbort())
@@ -139,7 +139,8 @@ const SignupForm = (): JSX.Element => {
       if (Object.entries(errorsRef.current).length === 0) return
       logFormAbort()
     }
-  }, [])
+  }, [logFormAbort])
+
   return (
     <section className="sign-up-form-page">
       <div className="content">

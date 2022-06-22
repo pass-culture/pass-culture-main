@@ -34,7 +34,7 @@ const CollectiveOfferConfirmation = (): JSX.Element => {
     }
 
     loadOffer()
-  }, [offerId, notify])
+  }, [offerId, notify, isShowcase])
 
   if (!offer) {
     return <Spinner />

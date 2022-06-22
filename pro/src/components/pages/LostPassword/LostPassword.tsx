@@ -31,7 +31,7 @@ const LostPassword = (): JSX.Element => {
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
-  }, [currentUser])
+  }, [currentUser, history, location])
 
   useEffect(() => {
     const gcaptchaScript = initReCaptchaScript()

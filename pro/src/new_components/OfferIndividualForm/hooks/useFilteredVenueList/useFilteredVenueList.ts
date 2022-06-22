@@ -34,7 +34,7 @@ const useFilteredVenueList = ({
         )
       }
     }
-  }, [subcategoryId])
+  }, [subcategoryId, venueList, subCategories])
 
   return filteredVenueList
 }

@@ -92,7 +92,7 @@ const OfferEducationalCreation = (): JSX.Element => {
 
       loadData()
     }
-  }, [isReady, venueId, offererId])
+  }, [isReady, venueId, offererId, enableEducationalDomains])
 
   return (
     <OfferEducationalLayout

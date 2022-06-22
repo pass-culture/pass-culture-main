@@ -73,7 +73,7 @@ const SelectAutocomplete = ({
         option => searchField.value === '' || option.label.match(regExp)
       )
     )
-  }, [searchField.value])
+  }, [searchField.value, onSearchChange, options])
 
   return (
     <FieldLayout

@@ -28,7 +28,8 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
           'Une erreur est survenue, veuillez réessayer ultérieurement.'
         )
       })
-  }, [offer, reloadOffer])
+  }, [offer, reloadOffer, notification])
+
   return (
     <button
       className="tertiary-button with-icon"

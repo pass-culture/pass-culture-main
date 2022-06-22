@@ -21,6 +21,9 @@ const FormNotifications = ({
     if (values.notifications && values.email && !values.notificationEmail) {
       setFieldValue('notificationEmail', values.email)
     }
+    // we dont want to have email and notificationEmail in the dependency
+    // array because it prevent user from entering his own email
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.notifications, setFieldValue])
 
   return (

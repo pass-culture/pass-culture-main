@@ -201,6 +201,8 @@ const ThingStocks = ({
     reloadOffer,
     showSuccessNotification,
     showErrorNotification,
+    summaryStepUrl,
+    useSummaryPage,
   ])
 
   if (isLoading) {

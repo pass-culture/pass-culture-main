@@ -52,29 +52,6 @@ const OfferEducationalEdition = (): JSX.Element => {
   >()
   const notify = useNotification()
 
-  const editOffer = useCallback(
-    async (offerFormValues: IOfferEducationalFormValues) => {
-      if (offer) {
-        const patchAdapter = isShowcase
-          ? patchCollectiveOfferTemplateAdapter
-          : patchCollectiveOfferAdapter
-        const offerResponse = await patchAdapter({
-          offerId,
-          offer: offerFormValues,
-          initialValues,
-        })
-
-        if (!offerResponse.isOk) {
-          return notify.error(offerResponse.message)
-        }
-
-        notify.success(offerResponse.message)
-        loadData(offerResponse)
-      }
-    },
-    [offer]
-  )
-
   const setIsOfferActive = async (isActive: boolean) => {
     const patchAdapter = isShowcase
       ? patchIsTemplateOfferActiveAdapter
@@ -173,6 +150,29 @@ const OfferEducationalEdition = (): JSX.Element => {
       setIsReady(true)
     },
     [notify]
+  )
+
+  const editOffer = useCallback(
+    async (offerFormValues: IOfferEducationalFormValues) => {
+      if (offer) {
+        const patchAdapter = isShowcase
+          ? patchCollectiveOfferTemplateAdapter
+          : patchCollectiveOfferAdapter
+        const offerResponse = await patchAdapter({
+          offerId,
+          offer: offerFormValues,
+          initialValues,
+        })
+
+        if (!offerResponse.isOk) {
+          return notify.error(offerResponse.message)
+        }
+
+        notify.success(offerResponse.message)
+        loadData(offerResponse)
+      }
+    },
+    [offer, initialValues, isShowcase, notify, loadData, offerId]
   )
 
   useEffect(() => {

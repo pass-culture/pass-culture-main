@@ -58,7 +58,7 @@ const MultiSelectAutocomplete = ({
   useEffect(() => {
     if (!isOpen && searchField.value !== '')
       setFieldValue(`search-${fieldName}`, '', false)
-  }, [isOpen])
+  }, [isOpen, setFieldValue, fieldName, searchField.value])
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
@@ -81,7 +81,7 @@ const MultiSelectAutocomplete = ({
         option => searchField.value === '' || option.label.match(regExp)
       )
     )
-  }, [searchField.value])
+  }, [searchField.value, options])
 
   const optionsLabelById = useMemo(
     () =>

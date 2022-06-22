@@ -51,7 +51,7 @@ const MusicTypes = (): JSX.Element => {
         musicSubType: newMusicSubTypeOptions,
       }
     })
-  }, [musicType])
+  }, [musicType, setFieldValue])
 
   return (
     <>

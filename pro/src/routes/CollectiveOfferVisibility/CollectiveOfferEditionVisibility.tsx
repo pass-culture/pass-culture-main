@@ -43,7 +43,7 @@ const CollectiveOfferVisibility = () => {
       setIsEditable(stockResult.payload?.stock?.isEducationalStockEditable)
       setIsReady(true)
     })
-  }, [])
+  }, [notify, offerId])
 
   useEffect(() => {
     getEducationalInstitutionsAdapter().then(result => {

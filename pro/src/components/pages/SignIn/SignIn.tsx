@@ -33,7 +33,7 @@ const SignIn = (): JSX.Element => {
 
   useEffect(() => {
     redirectLoggedUser(history, location, currentUser)
-  }, [currentUser])
+  }, [currentUser, history, location])
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription'
