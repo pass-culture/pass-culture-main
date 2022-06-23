@@ -228,3 +228,11 @@ class OffererTagMappingFactory(BaseFactory):
 
     offerer = factory.SubFactory(OffererFactory)
     tag = factory.SubFactory(OffererTagFactory)
+
+
+class VenueEducationalStatusFactory(BaseFactory):
+    class Meta:
+        model = models.VenueEducationalStatus
+
+    id = factory.Sequence(int)
+    name = factory.Sequence(lambda x: f"venue educational status {x}")
