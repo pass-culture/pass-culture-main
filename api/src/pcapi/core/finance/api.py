@@ -41,6 +41,7 @@ import typing
 import zipfile
 
 from flask import render_template
+from flask_sqlalchemy import BaseQuery
 import pytz
 import sqlalchemy as sqla
 from sqlalchemy import Date
@@ -53,7 +54,6 @@ import sqlalchemy.sql.functions as sqla_func
 from pcapi import settings
 from pcapi.connectors import googledrive
 import pcapi.core.bookings.models as bookings_models
-from pcapi.core.educational import repository as educational_repository
 import pcapi.core.educational.models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -129,48 +129,17 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
     # module docstring).
     threshold = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
     window = (min_date, threshold)
-    bookings = (
-        bookings_models.Booking.query.filter(
-            bookings_models.Booking.status == bookings_models.BookingStatus.USED,
-            bookings_models.Booking.dateUsed.between(*window),
-            bookings_models.Booking.educationalBookingId.is_(None),
-        )
-        .join(bookings_models.Booking.stock)
-        .outerjoin(
-            models.Pricing,
-            models.Pricing.bookingId == bookings_models.Booking.id,
-        )
-        .filter(models.Pricing.id.is_(None))
-        .join(bookings_models.Booking.venue)
-        .join(offerers_models.Venue.businessUnit)
-        # FIXME (dbaty, 2021-12-08): we can get rid of this filter
-        # once BusinessUnit.siret is set as NOT NULLable.
-        .filter(models.BusinessUnit.siret.isnot(None))
-        .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
-        .join(
-            models.BusinessUnitVenueLink,
-            sqla.and_(
-                models.BusinessUnitVenueLink.venueId == bookings_models.Booking.venueId,
-                models.BusinessUnitVenueLink.businessUnitId == models.BusinessUnit.id,
-            ),
-        )
-        .order_by(*_PRICE_BOOKINGS_ORDER_CLAUSE)
-        .options(
-            sqla_orm.load_only(bookings_models.Booking.id),
-            # Our code does not access `Venue.id` but SQLAlchemy needs
-            # it to build a `Venue` object (which we access through
-            # `booking.venue`).
-            sqla_orm.contains_eager(bookings_models.Booking.venue).load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.businessUnitId,
-            ),
+
+    errored_business_unit_ids = set()
+    bookings = itertools.chain.from_iterable(
+        (
+            _get_bookings_to_price(bookings_models.Booking, window),
+            _get_bookings_to_price(educational_models.CollectiveBooking, window),
         )
     )
-
-    errorred_business_unit_ids = set()
     for booking in bookings:
         try:
-            if booking.venue.businessUnitId in errorred_business_unit_ids:
+            if booking.venue.businessUnitId in errored_business_unit_ids:
                 continue
             extra = {
                 "booking": booking.id,
@@ -179,7 +148,7 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
             with log_elapsed(logger, "Priced booking", extra):
                 price_booking(booking)
         except Exception as exc:  # pylint: disable=broad-except
-            errorred_business_unit_ids.add(booking.venue.businessUnitId)
+            errored_business_unit_ids.add(booking.venue.businessUnitId)
             logger.info(
                 "Ignoring further bookings from business unit",
                 extra={"business_unit": booking.venue.businessUnitId},
@@ -193,31 +162,68 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
                 },
             )
 
-    collective_bookings_query = educational_repository.get_collective_bookings_query_for_pricing_generation(window)
-    for collective_booking in collective_bookings_query:
-        try:
-            if collective_booking.venue.businessUnitId in errorred_business_unit_ids:
-                continue
-            extra = {
-                "collective_booking": collective_booking.id,
-                "business_unit_id": collective_booking.venue.businessUnitId,
-            }
-            with log_elapsed(logger, "Priced collective booking", extra):
-                price_booking(collective_booking)
-        except Exception as exc:  # pylint: disable=broad-except
-            errorred_business_unit_ids.add(collective_booking.venue.businessUnitId)
-            logger.info(
-                "Ignoring further bookings from business unit",
-                extra={"business_unit": collective_booking.venue.businessUnitId},
+
+def _get_bookings_to_price(
+    model: typing.Union[
+        typing.Type[bookings_models.Booking],
+        typing.Type[educational_models.CollectiveBooking],
+    ],
+    window: tuple[datetime.datetime, datetime.datetime],
+) -> BaseQuery:
+    query = model.query
+    if model == bookings_models.Booking:
+        query = (
+            query.filter(
+                bookings_models.Booking.status == bookings_models.BookingStatus.USED,
+                bookings_models.Booking.educationalBookingId.is_(None),
             )
-            logger.exception(
-                "Could not price collective booking",
-                extra={
-                    "collective_booking": collective_booking.id,
-                    "business_unit": collective_booking.venue.businessUnitId,
-                    "exc": str(exc),
-                },
+            .join(bookings_models.Booking.stock)
+            .outerjoin(
+                models.Pricing,
+                models.Pricing.bookingId == bookings_models.Booking.id,
             )
+            .order_by(*_PRICE_BOOKINGS_ORDER_CLAUSE)
+        )
+    else:
+        query = query.outerjoin(
+            models.Pricing,
+            models.Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
+        ).order_by(
+            educational_models.CollectiveBooking.dateUsed,
+            educational_models.CollectiveBooking.id,
+        )
+
+    query = query.filter(
+        model.dateUsed.between(*window),  # type: ignore [union-attr]
+        models.Pricing.id.is_(None),
+    )
+
+    query = query.join(model.venue)
+
+    query = (
+        query.join(offerers_models.Venue.businessUnit)
+        .filter(models.BusinessUnit.siret.isnot(None))
+        .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
+        .join(
+            models.BusinessUnitVenueLink,
+            sqla.and_(
+                models.BusinessUnitVenueLink.venueId == model.venueId,
+                models.BusinessUnitVenueLink.businessUnitId == models.BusinessUnit.id,
+            ),
+        )
+        .options(
+            sqla_orm.load_only(model.id),
+            # Our code does not access `Venue.id` but SQLAlchemy needs
+            # it to build a `Venue` object (which we access through
+            # `booking.venue`).
+            sqla_orm.contains_eager(model.venue).load_only(
+                offerers_models.Venue.id,
+                offerers_models.Venue.businessUnitId,
+            ),
+        )
+    )
+
+    return query
 
 
 def _booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
