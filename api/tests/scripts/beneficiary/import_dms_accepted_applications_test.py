@@ -63,7 +63,7 @@ class RunTest:
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_all_applications_are_processed_once(
         self,
-        on_sucessful_application,
+        on_successful_application,
         get_applications_with_details,
     ):
         users_factories.UserFactory(email="email1@example.com")
@@ -94,12 +94,12 @@ class RunTest:
         ]
 
         import_dms_accepted_applications(procedure_id=6712558)
-        assert on_sucessful_application.call_count == 3
+        assert on_successful_application.call_count == 3
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_application_with_known_email_and_already_beneficiary_are_saved_as_rejected(
-        self, on_sucessful_application, get_applications_with_details
+        self, on_successful_application, get_applications_with_details
     ):
         # same user, but different
         user = users_factories.BeneficiaryGrant18Factory(email="john.doe@example.com")
@@ -121,12 +121,12 @@ class RunTest:
             "Il ne peut pas prétendre au pass culture 18 ans"
         )
 
-        on_sucessful_application.assert_not_called()
+        on_successful_application.assert_not_called()
 
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
-    def test_beneficiary_is_created_with_procedure_id(self, on_sucessful_application, get_applications_with_details):
+    def test_beneficiary_is_created_with_procedure_id(self, on_successful_application, get_applications_with_details):
         # given
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
         get_applications_with_details.return_value = [
@@ -137,7 +137,7 @@ class RunTest:
 
         import_dms_accepted_applications(procedure_id=6712558)
 
-        on_sucessful_application.assert_called_with(
+        on_successful_application.assert_called_with(
             user=applicant,
             source_data=fraud_models.DMSContent(
                 last_name="Doe",
