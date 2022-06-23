@@ -29,7 +29,10 @@ def send_today_events_notifications_metropolitan_france() -> None:
     stock_ids = find_today_event_stock_ids_metropolitan_france(today_min, today_max)
 
     for stock_id in stock_ids:
-        send_today_stock_notification.delay(stock_id)
+        try:
+            send_today_stock_notification.delay(stock_id)
+        except Exception:  # pylint: disable=broad-except
+            logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
 
 def send_today_events_notifications_overseas(utc_mean_offset: int, departments: list[str]) -> None:
