@@ -1105,7 +1105,10 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Set has_run_e2e_test_variable
-          command: HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
+          command: |
+              HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
+              echo 'export HAS_RUN_E2E="$HAS_RUN_E2E"' >> $BASH_ENV
+              source $BASH_ENV
       - run:
           name: Trigger measure workflow execution time
           command: >
