@@ -46,7 +46,7 @@ describe('screens | OfferEducational : creation offer type step', () => {
       '0/1000'
     )
 
-    const durationInput = await screen.getByLabelText(/Durée/)
+    const durationInput = screen.getByLabelText(/Durée/)
     expect(durationInput).toBeInTheDocument()
     expect(durationInput).toBeEnabled()
     expect(durationInput).toHaveValue('')
