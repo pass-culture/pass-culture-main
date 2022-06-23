@@ -1,6 +1,5 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { Link, useHistory, useLocation } from 'react-router-dom'
 import React, {
   Fragment,
   useCallback,
@@ -14,14 +13,15 @@ import {
   validateCreatedStock,
   validateUpdatedStock,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
+import { FormActions } from './FormActions'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PropTypes from 'prop-types'
 import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
-import { SubmitButton } from 'ui-kit'
 import { v4 as generateRandomUuid } from 'uuid'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
@@ -241,6 +241,11 @@ const EventStocks = ({
   const isDisabled = offer.status ? isOfferDisabled(offer.status) : false
   const hasNoStock = stocks.length === 0
   const hasAtLeastOneStock = stocks.length > 0
+  const cancelUrl = isOfferDraft
+    ? useSummaryPage
+      ? `/offre/${offerId}/individuel/creation`
+      : undefined
+    : editionOfferLink
 
   return (
     <div className="stocks-page">
@@ -334,18 +339,13 @@ const EventStocks = ({
           <div className="interval cover" />
           <div className="interval shadow" />
           <section className="actions-section">
-            {!isOfferDraft && (
-              <Link className="secondary-link" to={editionOfferLink}>
-                Annuler et quitter
-              </Link>
-            )}
-            <SubmitButton
-              disabled={isDisabled || hasNoStock}
-              isLoading={isSendingStocksOfferCreation}
-              onClick={submitStocks}
-            >
-              {isOfferDraft ? 'Valider et créer l’offre' : 'Enregistrer'}
-            </SubmitButton>
+            <FormActions
+              cancelUrl={cancelUrl}
+              canSubmit={!(isDisabled || hasNoStock)}
+              isDraft={isOfferDraft}
+              isSubmiting={isSendingStocksOfferCreation}
+              onSubmit={submitStocks}
+            />
           </section>
         </Fragment>
       )}
