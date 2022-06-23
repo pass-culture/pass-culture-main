@@ -310,34 +310,6 @@ class FindDuplicateUserTest:
         assert fraud_api.find_duplicate_id_piece_number_user(new_id_piece_number, new_user.id) == existing_user
 
 
-@pytest.mark.usefixtures("db_session")
-class DMSFraudCheckTest:
-    def test_dms_fraud_check(self):
-        user = users_factories.UserFactory()
-        content = fraud_factories.DMSContentFactory()
-        fraud_check = fraud_api.on_dms_fraud_result(user, content)
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
-
-        expected_content = fraud_check.source_data()
-        assert content == expected_content
-
-    def test_dms_update_eligibility(self):
-        birth_date = datetime.datetime.utcnow() - relativedelta(years=17, months=1)
-        user = users_factories.UserFactory(dateOfBirth=birth_date)
-        assert user.eligibility == users_models.EligibilityType.UNDERAGE
-        content = fraud_factories.DMSContentFactory(
-            birth_date=datetime.datetime.utcnow() - relativedelta(years=18, months=1)
-        )
-
-        fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            type=fraud_models.FraudCheckType.DMS,
-            eligibilityType=user.eligibility,
-            thirdPartyId=str(content.application_number),
-        )
-        fraud_api.on_dms_fraud_result(user, content)
-
-        assert fraud_check.eligibilityType == users_models.EligibilityType.AGE18
 
 
 @pytest.mark.usefixtures("db_session")

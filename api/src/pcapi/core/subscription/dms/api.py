@@ -97,7 +97,11 @@ def handle_dms_application(
     logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
 
     current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number, application_content)
+
     current_fraud_check.resultContent = application_content.dict()
+    current_fraud_check.eligibilityType = fraud_api.decide_eligibility(  # type: ignore [assignment]
+        user, application_content.get_birth_date(), application_content.get_registration_datetime()
+    )
 
     if state == dms_models.GraphQLApplicationStates.draft:
         eligibility_type = current_fraud_check.eligibilityType
@@ -114,7 +118,7 @@ def handle_dms_application(
         current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
-        _process_accepted_application(user, application_content)
+        _process_accepted_application(user, current_fraud_check)
         return current_fraud_check
 
     elif state == dms_models.GraphQLApplicationStates.refused:
@@ -266,39 +270,41 @@ def _process_user_not_found_error(
         dms_subscription_emails.send_create_account_after_dms_email(email)
 
 
-def _process_accepted_application(user: users_models.User, result_content: fraud_models.DMSContent) -> None:
+def _process_accepted_application(user: users_models.User, fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
     try:
-        fraud_check = fraud_api.on_dms_fraud_result(user, result_content)
+        fraud_api.on_dms_fraud_result(user, fraud_check)
     except Exception as exc:  # pylint: disable=broad-except
         logger.exception("Error on dms fraud check result: %s", exc)
         return
 
+    dms_content: fraud_models.DMSContent = fraud_check.source_data()  # type: ignore [assignment]
+
     if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-        _handle_validation_errors(user, fraud_check.reasonCodes, result_content)  # type: ignore [arg-type]
-        subscription_api.update_user_birth_date(user, result_content.get_birth_date())
+        _handle_validation_errors(user, fraud_check.reasonCodes, dms_content)  # type: ignore [arg-type]
+        subscription_api.update_user_birth_date(user, dms_content.get_birth_date())
         return
 
     fraud_api.create_honor_statement_fraud_check(
         user, "honor statement contained in DMS application", fraud_check.eligibilityType  # type: ignore [arg-type]
     )
     _create_profile_completion_fraud_check_from_dms(
-        user, fraud_check.eligibilityType, result_content, application_id=fraud_check.thirdPartyId  # type: ignore [arg-type]
+        user, fraud_check.eligibilityType, dms_content, application_id=fraud_check.thirdPartyId  # type: ignore [arg-type]
     )
 
     try:
-        has_completed_all_steps = subscription_api.on_successful_application(user=user, source_data=result_content)
+        has_completed_all_steps = subscription_api.on_successful_application(user=user, source_data=dms_content)
     except Exception:  # pylint: disable=broad-except
         logger.exception(
             "[DMS] Could not save application %s - Procedure %s",
-            result_content.application_number,
-            result_content.procedure_id,
+            dms_content.application_number,
+            dms_content.procedure_id,
         )
         return
 
     logger.info(
         "[DMS] Successfully imported accepted DMS application %s - Procedure %s",
-        result_content.application_number,
-        result_content.procedure_id,
+        dms_content.application_number,
+        dms_content.procedure_id,
     )
 
     if not has_completed_all_steps:
