@@ -45,11 +45,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
   ]),
-  getFeatures: jest
-    .fn()
-    .mockResolvedValue([
-      { name: 'ENABLE_EDUCATIONAL_DOMAINS', isActive: true },
-    ]),
+  getFeatures: jest.fn().mockResolvedValue([
+    { name: 'ENABLE_EDUCATIONAL_DOMAINS', isActive: true },
+    { name: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION', isActive: true },
+  ]),
 }))
 
 jest.mock('api/api', () => ({
@@ -125,6 +124,7 @@ describe('app', () => {
 
     mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
       role: AdageFrontRoles.Redactor,
+      uai: 'uai',
     })
     mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
     mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
@@ -158,7 +158,12 @@ describe('app', () => {
     await waitFor(() => expect(Configure).toHaveBeenCalledTimes(5))
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
       .calls[4][0]
-    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([])
+    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
+    ])
     expect(queryTag('01 - Ain')).not.toBeInTheDocument()
     expect(queryTag('59 - Nord')).not.toBeInTheDocument()
     expect(queryTag('Collège - 4e')).not.toBeInTheDocument()
@@ -195,10 +200,19 @@ describe('app', () => {
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01'],
       'venue.id:1436',
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
     ])
     const searchConfigurationLastCall = (Configure as jest.Mock).mock
       .calls[3][0]
-    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([])
+    expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
+    ])
     expect(queryTag('a')).not.toBeInTheDocument()
     expect(queryTag('01 - Ain')).not.toBeInTheDocument()
   })
