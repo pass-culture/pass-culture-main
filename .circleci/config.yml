@@ -1285,16 +1285,16 @@ workflows:
                - staging
                - integration
                - master
-         requires:
-           - type-checking-pro
-           - quality-pro
-           - type-checking-adage-front
-           - quality-adage-front
-           - quality-api
-           - tests-api
-           - tests-adage-front
-           - tests-pro-unit-tests
-           - tests-pro-e2e-tests
+        #  requires:
+        #    - type-checking-pro
+        #    - quality-pro
+        #    - type-checking-adage-front
+        #    - quality-adage-front
+        #    - quality-api
+        #    - tests-api
+        #    - tests-adage-front
+        #    - tests-pro-unit-tests
+        #    - tests-pro-e2e-tests
          context:
            - CI_MEASURE
   gcp-ehp:
