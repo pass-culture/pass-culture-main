@@ -105,3 +105,7 @@ class EducationalInstitutionNotFound(Exception):
 
 class CollectiveOfferNotEditable(Exception):
     pass
+
+
+class CollectiveStockNotBookableByUser(Exception):
+    pass

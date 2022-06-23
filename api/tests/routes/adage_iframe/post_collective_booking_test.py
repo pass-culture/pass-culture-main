@@ -195,3 +195,31 @@ class Returns403Test:
         assert response.json == {
             "authorization": "Des informations sur le rédacteur de projet, et nécessaires à la préréservation, sont manquantes"
         }
+
+    def test_should_not_allow_prebooking_when_uai_code_does_not_match_offer_institution_id(self, client) -> None:
+        # Given
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        educational_institution2 = educational_factories.EducationalInstitutionFactory()
+        stock = educational_factories.CollectiveStockFactory(
+            beginningDatetime=stock_date, collectiveOffer__institution=educational_institution
+        )
+        educational_redactor = educational_factories.EducationalRedactorFactory(email="professeur@example.com")
+        educational_factories.EducationalYearFactory(
+            beginningDate=educational_year_dates["start"], expirationDate=educational_year_dates["end"]
+        )
+        adage_jwt_fake_valid_token = _create_adage_valid_token_with_email(
+            email=educational_redactor.email, uai=educational_institution2.institutionId
+        )
+        client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
+
+        # When
+        response = client.post(
+            "/adage-iframe/collective/bookings",
+            json={
+                "stockId": stock.id,
+            },
+        )
+
+        # Then
+        assert response.status_code == 403
+        assert response.json == {"code": "WRONG_UAI_CODE"}
