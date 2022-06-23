@@ -92,25 +92,5 @@ describe('bookings offer cell', () => {
       expect(offer_name_link.href).toContain('offre/A2')
       expect(offer_name_link.target).toContain('_blank')
     })
-
-    it('should display educational tag when offer is educational', () => {
-      // Given
-      const props = {
-        offer: {
-          event_beginning_datetime: '2020-05-12T11:03:28.564687+04:00',
-          offer_identifier: 'A2',
-          offer_name: 'La danse des poireaux',
-          type: 'event',
-          venue_department_code: '93',
-          offer_is_educational: true,
-        },
-      }
-
-      // When
-      renderOfferCell(props, store)
-
-      // Then
-      expect(screen.getByText('Offre collective')).toBeInTheDocument()
-    })
   })
 })
