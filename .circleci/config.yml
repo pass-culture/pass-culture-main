@@ -772,6 +772,15 @@ jobs:
             cd pro
             dockerize -wait http://localhost:3001 -timeout 5m -wait-retry-interval 5s
             yarn test:cafe
+      - run:
+          name: Step for measure to know if e2e tests have been run
+          command: |
+            mkdir -p /tmp/workspace
+            echo "Has run e2e test" > /tmp/workspace/e2e-test-launched.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - e2e-test-launched.txt
       - store_artifacts:
           path: ~/pass-culture/pro/testcafe_screenshots
       - when:
@@ -1076,11 +1085,15 @@ jobs:
           password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: /tmp/workspace
       - run:
           name: Measure circle CI workflow execution time from workflow_id
           command: |
+            HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
             pip install -U datetime tzlocal
-            python3 scripts/measure_workflow_execution_time.py $CIRCLE_CI_TOKEN $METRICS_ENDPOINT << pipeline.parameters.measure_workflow_id >>
+            python3 scripts/measure_workflow_execution_time.py $CIRCLE_CI_TOKEN $METRICS_ENDPOINT << pipeline.parameters.measure_workflow_id >> $HAS_RUN_E2E
 
   trigger_measure_workflow_execution_time:
     docker:
