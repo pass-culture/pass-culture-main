@@ -125,6 +125,13 @@ def book_collective_offer(
     except offers_exceptions.StockDoesNotExist:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stockId})
         raise ApiErrors({"stock": "Stock introuvable"}, status_code=400)
+    except exceptions.CollectiveStockNotBookableByUser:
+        logger.info(
+            "Could not book offer: uai code does not match",
+            extra={"stock_id": body.stockId, "uai": authenticated_information.uai},
+        )
+        raise ApiErrors({"code": "WRONG_UAI_CODE"}, status_code=403)
+
     except exceptions.StockNotBookable:
         logger.info("Could not book offer: stock is not bookable", extra={"stock_id": body.stockId})
         raise ApiErrors({"stock": "Cette offre n'est pas disponible à la réservation"})
