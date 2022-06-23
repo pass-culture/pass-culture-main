@@ -93,7 +93,7 @@ const renderBookingsRecap = async (
     if (hasBoookings) {
       await waitFor(() => expect(displayBookingsButton).not.toBeDisabled())
     } else {
-      const loadingMessage = await screen.queryByText('Chargement en cours ...')
+      const loadingMessage = screen.queryByText('Chargement en cours ...')
       await waitFor(() => expect(loadingMessage).not.toBeInTheDocument())
     }
   }
