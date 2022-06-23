@@ -134,17 +134,13 @@ describe('screens | OfferEducational : creation offerer step', () => {
       expect(offererSelect.children).toHaveLength(1)
       expect(offererSelect).toBeDisabled()
 
-      expect(
-        await screen.queryByTestId('error-offererId')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('error-offererId')).not.toBeInTheDocument()
 
       expect(venueSelect).toBeInTheDocument()
       expect(venueSelect).toHaveValue('VENUE_ID')
       expect(venueSelect.children).toHaveLength(1)
       expect(venueSelect).toBeDisabled()
-      expect(
-        await screen.queryByTestId('error-venueId')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('error-venueId')).not.toBeInTheDocument()
 
       expect(offerTypeTitle).toBeInTheDocument()
     })
@@ -172,9 +168,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       expect(offererSelect).toHaveValue('')
       expect(offererSelect.children).toHaveLength(3)
       expect(offererSelect).toBeEnabled()
-      expect(
-        await screen.queryByTestId('error-offererId')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('error-offererId')).not.toBeInTheDocument()
 
       await userEvent.click(offererSelect)
       await userEvent.tab()
@@ -236,9 +230,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       expect(venueSelect).toHaveDisplayValue('Sélectionner un lieu')
       expect(venueSelect.children).toHaveLength(3)
       expect(venueSelect).toBeEnabled()
-      expect(
-        await screen.queryByTestId('error-venueId')
-      ).not.toBeInTheDocument()
+      expect(screen.queryByTestId('error-venueId')).not.toBeInTheDocument()
 
       expect(
         screen.queryByRole('heading', {

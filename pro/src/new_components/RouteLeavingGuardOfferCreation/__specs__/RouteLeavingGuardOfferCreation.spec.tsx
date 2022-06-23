@@ -55,7 +55,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
     renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Stocks'))
     expect(
-      await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
     ).not.toBeInTheDocument()
     expect(spyHistory).toHaveBeenLastCalledWith({ pathname: '/offres' })
   })
@@ -88,7 +88,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
     renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Stocks'))
     expect(
-      await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
     ).not.toBeInTheDocument()
   })
 
@@ -97,7 +97,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
     await renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Récapitulatif'))
     expect(
-      await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
     ).not.toBeInTheDocument()
   })
 
@@ -106,7 +106,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
     await renderRouteLeavingGuardOfferCreation(props, history)
     await userEvent.click(screen.getByText('Confirmation'))
     expect(
-      await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+      screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
     ).not.toBeInTheDocument()
   })
 
@@ -125,7 +125,7 @@ describe('new_components | RouteLeavingGuardOfferCreation', () => {
       )
       await userEvent.click(screen.getByText('Visibilité'))
       expect(
-        await screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
+        screen.queryByText(/Voulez-vous quitter la création d’offre ?/)
       ).not.toBeInTheDocument()
     })
   })
