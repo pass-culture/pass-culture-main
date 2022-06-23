@@ -487,7 +487,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "domains": [domain.id for domain in collective_offer.domains],
                 "educationalInstitutionUAICode": collective_offer.institution.institutionId
                 if collective_offer.institution
-                else None,
+                else "all",
             },
             "offerer": {
                 "name": offerer.name,
