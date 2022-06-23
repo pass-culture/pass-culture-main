@@ -10,7 +10,6 @@ import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import React from 'react'
 import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
-import { Tag } from 'ui-kit'
 import Thumb from 'components/layout/Thumb'
 import { computeVenueDisplayName } from 'repository/venuesService'
 import { formatLocalTimeDateString } from 'utils/timezone'
@@ -111,19 +110,21 @@ const OfferItem = ({
           type="checkbox"
         />
       </td>
-      <td className="thumb-column">
-        <Link
-          className="name"
-          title={`${offer.name} - éditer l'offre`}
-          to={editionOfferLink}
-        >
-          <Thumb alt={`${offer.name} - éditer l'offre`} url={offer.thumbUrl} />
-        </Link>
-      </td>
+      {audience === Audience.INDIVIDUAL && (
+        <td className="thumb-column">
+          <Link
+            className="name"
+            title={`${offer.name} - éditer l'offre`}
+            to={editionOfferLink}
+          >
+            <Thumb
+              alt={`${offer.name} - éditer l'offre`}
+              url={offer.thumbUrl}
+            />
+          </Link>
+        </td>
+      )}
       <td className="title-column">
-        {offer.isEducational && (
-          <Tag className="educational-tag" label="Offre collective" />
-        )}
         <Link
           className="name"
           title={`${offer.name} - éditer l'offre`}
