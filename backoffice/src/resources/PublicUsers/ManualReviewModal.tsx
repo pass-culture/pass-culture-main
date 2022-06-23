@@ -1,4 +1,4 @@
-import { Box, Button, Modal } from '@mui/material'
+import { Box, Button, Modal, Stack, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
 import * as React from 'react'
 import { useState } from 'react'
@@ -11,7 +11,9 @@ import {
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
+import { Colors } from '../../layout/Colors'
 import { dataProvider } from '../../providers/dataProvider'
+import { ExclamationPointIcon } from '../Icons/ExclamationPointIcon'
 
 import { UserBaseInfo, UserManualReview } from './types'
 
@@ -27,10 +29,23 @@ export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
     width: 800,
     height: 600,
     bgcolor: 'background.paper',
-    border: '1px solid #000',
+    border: `1px solid ${Colors.GREY}`,
+    borderRadius: '5px',
     boxShadow: 24,
     p: 4,
   }
+
+  const statusChoices = [
+    { id: 'OK', name: 'OK' },
+    { id: 'KO', name: 'KO' },
+    { id: 'REDIRECTED_TO_DMS', name: 'Renvoi vers DMS' },
+  ]
+  const eligibilityChoices = [
+    { id: '', name: 'Par Défaut' },
+    { id: 'UNDERAGE', name: 'Pass 15-17' },
+    { id: 'AGE18', name: 'Pass 18 ans' },
+  ]
+
   const handleOpenModal = () => setOpenModal(true)
   const handleCloseModal = () => setOpenModal(false)
 
@@ -44,7 +59,7 @@ export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
           eligibility: params.eligibility,
         }
         const response = await dataProvider.postUserManualReview(
-          'public_accounts/user',
+          'public_accounts',
           formData
         )
         const data = await response.json()
@@ -76,36 +91,67 @@ export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={styleModal}>
+          <ExclamationPointIcon
+            style={{
+              display: 'flex',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              marginBottom: '2rem',
+            }}
+          />
           <Form onSubmit={formSubmit}>
-            <SelectInput
-              source="review"
-              label={'Revue'}
-              emptyValue={null}
-              fullWidth
-              choices={[
-                { id: 'OK', name: 'OK' },
-                { id: 'KO', name: 'KO' },
-                { id: 'REDIRECTED_TO_DMS', name: 'Renvoi vers DMS' },
-              ]}
-            />
-            <SelectInput
-              source="eligibility"
-              label={'Éligibilité'}
-              fullWidth
-              choices={[
-                { id: '', name: 'Par Défaut' },
-                { id: 'UNDERAGE', name: 'Pass 15-17' },
-                { id: 'AGE18', name: 'Pass 18 ans' },
-              ]}
-            />
-            <TextInput
-              label="Raison"
-              source="reason"
-              fullWidth
-              multiline
-              rows={4}
-            />
-            <SaveButton label={'Confirmer'} />
+            <Stack spacing={2} direction={'row'}>
+              <Typography variant={'body2'} color={Colors.GREY} sx={{ mr: 6 }}>
+                Nouveau statut
+              </Typography>
+              <SelectInput
+                source="review"
+                label={'Nouveau Statut'}
+                emptyValue={null}
+                fullWidth
+                variant={'outlined'}
+                choices={statusChoices}
+              />
+            </Stack>
+            <Stack spacing={2} direction={'row'}>
+              <Typography
+                variant={'body2'}
+                sx={{ mr: 8.6 }}
+                color={Colors.GREY}
+              >
+                Éligibilité
+              </Typography>
+              <SelectInput
+                source="eligibility"
+                label={'Éligibilité'}
+                variant={'outlined'}
+                fullWidth
+                choices={eligibilityChoices}
+              />
+            </Stack>
+            <Stack spacing={2} direction={'row'}>
+              <Typography color={Colors.GREY} variant={'body2'} sx={{ mr: 1 }}>
+                Raison du changement
+              </Typography>
+              <TextInput
+                label="Raison"
+                source="reason"
+                variant={'outlined'}
+                fullWidth
+                multiline
+                rows={4}
+              />
+            </Stack>
+            <Stack direction={'row-reverse'} spacing={3} sx={{ mt: 5 }}>
+              <SaveButton label={'MODIFIER LE STATUT'} variant={'outlined'} />
+              <Button
+                variant={'outlined'}
+                onClick={handleCloseModal}
+                color={'inherit'}
+              >
+                ANNULER LA MODIFICATION
+              </Button>
+            </Stack>
           </Form>
         </Box>
       </Modal>

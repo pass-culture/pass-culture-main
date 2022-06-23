@@ -5,6 +5,11 @@ import {
   CircularProgress,
   Grid,
   LinearProgress,
+  Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Stack,
   Tab,
   Tabs,
@@ -20,6 +25,7 @@ import {
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
 
+import { Colors } from '../../layout/Colors'
 import { eventMonitoring } from '../../libs/monitoring/sentry'
 
 import { BeneficiaryBadge } from './BeneficiaryBadge'
@@ -143,24 +149,29 @@ export const UserDetail = () => {
                     {userBaseInfo.isActive && activeBadge} &nbsp;{' '}
                     {userBaseInfo.roles[0] && beneficiaryBadge}
                   </Typography>
-                  <Typography variant="body1" gutterBottom component="div">
+                  <Typography
+                    variant="body1"
+                    gutterBottom
+                    component="div"
+                    color={Colors.GREY}
+                  >
                     User ID : {userBaseInfo.id}
                   </Typography>
                 </div>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="body2" gutterBottom component="div">
-                  <strong>e-mail : </strong>
+                <Typography variant="body1" gutterBottom component="div">
+                  <strong>E-mail : </strong>
                   {userBaseInfo.email}
                 </Typography>
-                <Typography variant="body2" gutterBottom component="div">
-                  <strong>tél : </strong>
+                <Typography variant="body1" gutterBottom component="div">
+                  <strong>Tél : </strong>
                   {userBaseInfo.phoneNumber}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="body2" gutterBottom component="div">
-                  Crédité le :
+                <Typography variant="body1" gutterBottom component="div">
+                  Crédité le :{' '}
                   {userBaseInfo.userCredit &&
                     moment(userBaseInfo.userCredit.dateCreated).format(
                       'D/MM/YYYY'
@@ -185,7 +196,7 @@ export const UserDetail = () => {
       </Card>
       <Grid container spacing={1}>
         <Grid item xs={4}>
-          <Card style={cardStyle}>
+          <Card style={{ ...cardStyle, height: '9rem' }}>
             <Typography variant={'h5'}>
               {userBaseInfo.userCredit.remainingCredit}&euro;
             </Typography>
@@ -213,7 +224,7 @@ export const UserDetail = () => {
           </Card>
         </Grid>
         <Grid item xs={4}>
-          <Card style={cardStyle}>
+          <Card style={{ ...cardStyle, height: '9rem' }}>
             <Typography variant={'h5'}>
               {userBaseInfo.userCredit.remainingDigitalCredit}&euro;
             </Typography>
@@ -242,15 +253,21 @@ export const UserDetail = () => {
         </Grid>
         <Grid item xs={4}>
           {/*Carte infos dossier d'importation */}
-          <Card style={{ ...cardStyle, paddingBottom: 40 }}>
+          <Card
+            style={{
+              ...cardStyle,
+              height: '9rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
             <Typography variant={'h5'}>
               Dossier{' '}
               <strong>
                 {idsCheckHistory[0] && idsCheckHistory[0]['type']}
               </strong>{' '}
-              importé le :
-            </Typography>
-            <Typography variant={'h4'}>
+              importé le :{' '}
               {idsCheckHistory[0] &&
                 moment(idsCheckHistory[0]['dateCreated']).format(
                   'D/MM/YYYY à HH:mm'
@@ -267,9 +284,9 @@ export const UserDetail = () => {
             aria-label="basic tabs example"
             variant="fullWidth"
           >
-            <Tab label="Historique du compte" {...a11yProps(0)} />
+            <Tab label="" {...a11yProps(0)} disabled />
             <Tab label="Informations Personnelles" {...a11yProps(1)} />
-            <Tab label="Suivi des réservations" {...a11yProps(2)} />
+            <Tab label="" {...a11yProps(2)} disabled />
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
@@ -277,140 +294,168 @@ export const UserDetail = () => {
         </TabPanel>
         <TabPanel value={value} index={1}>
           <Stack spacing={3}>
-            <UserDetailsCard
-              user={userBaseInfo}
-              firstIdCheckHistory={idsCheckHistory[0]}
-            />
-
             <Card style={cardStyle}>
-              <Typography variant={'h5'}>
-                Parcours d'inscription {beneficiaryBadge}
+              <Typography variant={'body1'} sx={{ color: Colors.GREY, mb: 4 }}>
+                Accès
               </Typography>
-              {subscriptionItems.length > 0 && (
-                <>
-                  <Grid container spacing={5} sx={{ mt: 4 }}>
-                    <Grid item xs={6}>
-                      <Stack
-                        spacing={3}
-                        direction={'row'}
-                        style={{ width: '100%' }}
-                      >
-                        <Typography variant={'body1'}>
-                          Validation email
-                        </Typography>
-                        <StatusAvatar
-                          subscriptionItem={subscriptionItems.find(
-                            subscriptionItem =>
-                              subscriptionItem.type ===
-                              SubscriptionItemType.EMAIL_VALIDATION
-                          )}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack
-                        spacing={3}
-                        direction={'row'}
-                        style={{ width: '100%' }}
-                      >
-                        <Typography variant={'body1'}>
-                          Complétion Profil
-                        </Typography>
-                        <StatusAvatar
-                          subscriptionItem={subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) =>
-                              item.type ===
-                              SubscriptionItemType.PROFILE_COMPLETION
-                          )}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack
-                        spacing={3}
-                        direction={'row'}
-                        style={{ width: '100%' }}
-                      >
-                        <Typography variant={'body1'}>
-                          Validation Téléphone
-                        </Typography>
-                        <StatusAvatar
-                          subscriptionItem={subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) =>
-                              item.type ===
-                              SubscriptionItemType.PHONE_VALIDATION
-                          )}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack
-                        spacing={3}
-                        direction={'row'}
-                        style={{ width: '100%' }}
-                      >
-                        <Typography variant={'body1'}>ID Check</Typography>
-                        <StatusAvatar
-                          subscriptionItem={subscriptionItems.find(
-                            item =>
-                              item.type === SubscriptionItemType.IDENTITY_CHECK
-                          )}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack
-                        spacing={3}
-                        direction={'row'}
-                        style={{ width: '100%' }}
-                      >
-                        <Typography variant={'body1'}>
-                          Profil Utilisateur
-                        </Typography>
-                        <StatusAvatar
-                          subscriptionItem={subscriptionItems.find(
-                            item =>
-                              item.type ===
-                              SubscriptionItemType.PROFILE_COMPLETION
-                          )}
-                        />
-                      </Stack>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Stack
-                        spacing={3}
-                        direction={'row'}
-                        style={{ width: '100%' }}
-                      >
-                        <Typography variant={'body1'}>
-                          Honor Statement
-                        </Typography>
-                        <StatusAvatar
-                          subscriptionItem={subscriptionItems.find(
-                            (item: {
-                              type: string
-                              status: SubscriptionItemStatus
-                            }) =>
-                              item.type === SubscriptionItemType.HONOR_STATEMENT
-                          )}
-                        />
-                      </Stack>
-                    </Grid>
+              <Grid container spacing={5}>
+                <Grid item xs={4}>
+                  <Link
+                    role={'link'}
+                    href={'#details-user'}
+                    color={Colors.GREY}
+                    variant="body2"
+                  >
+                    DÉTAILS UTILISATEUR
+                  </Link>
+                </Grid>
+                <Grid item xs={4}>
+                  <Link
+                    role={'link'}
+                    href={'#parcours-register'}
+                    color={Colors.GREY}
+                    variant="body2"
+                  >
+                    PARCOURS D'INSCRIPTION
+                  </Link>
+                </Grid>
+                {idsCheckHistory.map(idCheckHistory => (
+                  <Grid item xs={4}>
+                    <Link
+                      role={'link'}
+                      href={`#${idCheckHistory.thirdPartyId}`}
+                      color={Colors.GREY}
+                      variant="body2"
+                    >
+                      {idCheckHistory.type.toUpperCase()}
+                    </Link>
                   </Grid>
-                </>
-              )}
+                ))}
+              </Grid>
             </Card>
-            {idsCheckHistory.map(idCheckHistory => (
-              <CheckHistoryCard
-                key={idCheckHistory.thirdPartyId}
-                idCheckHistory={idCheckHistory}
+            <div id="details-user">
+              <UserDetailsCard
+                user={userBaseInfo}
+                firstIdCheckHistory={idsCheckHistory[0]}
               />
+            </div>
+            <div id="parcours-register">
+              <Card style={cardStyle}>
+                <Typography variant={'h5'}>
+                  Parcours d'inscription{' '}
+                  <span style={{ marginLeft: '3rem' }}>{beneficiaryBadge}</span>
+                </Typography>
+                {subscriptionItems.length > 0 && (
+                  <>
+                    <Grid container spacing={5} sx={{ mt: 4 }}>
+                      <Grid item xs={6}>
+                        <List sx={{ width: '100%' }}>
+                          <ListItem>
+                            <ListItemText> Validation email</ListItemText>
+                            <ListItemAvatar>
+                              {' '}
+                              <StatusAvatar
+                                subscriptionItem={subscriptionItems.find(
+                                  subscriptionItem =>
+                                    subscriptionItem.type ===
+                                    SubscriptionItemType.EMAIL_VALIDATION
+                                )}
+                              />
+                            </ListItemAvatar>
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText>Validation Téléphone</ListItemText>
+                            <ListItemAvatar>
+                              {' '}
+                              <StatusAvatar
+                                subscriptionItem={subscriptionItems.find(
+                                  (item: {
+                                    type: string
+                                    status: SubscriptionItemStatus
+                                  }) =>
+                                    item.type ===
+                                    SubscriptionItemType.PHONE_VALIDATION
+                                )}
+                              />
+                            </ListItemAvatar>
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText>Profil Utilisateur</ListItemText>
+                            <ListItemAvatar>
+                              {' '}
+                              <StatusAvatar
+                                subscriptionItem={subscriptionItems.find(
+                                  item =>
+                                    item.type ===
+                                    SubscriptionItemType.PROFILE_COMPLETION
+                                )}
+                              />
+                            </ListItemAvatar>
+                          </ListItem>
+                        </List>
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <List sx={{ width: '100%' }}>
+                          <ListItem>
+                            <ListItemText>Complétion Profil</ListItemText>
+                            <ListItemAvatar>
+                              {' '}
+                              <StatusAvatar
+                                subscriptionItem={subscriptionItems.find(
+                                  (item: {
+                                    type: string
+                                    status: SubscriptionItemStatus
+                                  }) =>
+                                    item.type ===
+                                    SubscriptionItemType.PROFILE_COMPLETION
+                                )}
+                              />
+                            </ListItemAvatar>
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText>ID Check</ListItemText>
+                            <ListItemAvatar>
+                              {' '}
+                              <StatusAvatar
+                                subscriptionItem={subscriptionItems.find(
+                                  item =>
+                                    item.type ===
+                                    SubscriptionItemType.IDENTITY_CHECK
+                                )}
+                              />
+                            </ListItemAvatar>
+                          </ListItem>
+                          <ListItem>
+                            <ListItemText>Honor Statement</ListItemText>
+                            <ListItemAvatar>
+                              {' '}
+                              <StatusAvatar
+                                subscriptionItem={subscriptionItems.find(
+                                  (item: {
+                                    type: string
+                                    status: SubscriptionItemStatus
+                                  }) =>
+                                    item.type ===
+                                    SubscriptionItemType.HONOR_STATEMENT
+                                )}
+                              />
+                            </ListItemAvatar>
+                          </ListItem>
+                        </List>
+                      </Grid>
+                    </Grid>
+                  </>
+                )}
+              </Card>
+            </div>
+            {idsCheckHistory.map(idCheckHistory => (
+              <div id={idCheckHistory.thirdPartyId}>
+                <CheckHistoryCard
+                  key={idCheckHistory.thirdPartyId}
+                  idCheckHistory={idCheckHistory}
+                />
+              </div>
             ))}
           </Stack>
         </TabPanel>

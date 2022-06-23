@@ -7,7 +7,7 @@ type Route = {
 
 export const routes: Route[] = [
   {
-    path: '/public_accounts/user/:id',
+    path: '/public_accounts/:id',
     component: UserDetail,
   },
 ]
