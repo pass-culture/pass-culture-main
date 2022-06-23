@@ -44,11 +44,10 @@ jest.mock('repository/pcapi/pcapi', () => ({
     { id: 1, name: 'Danse' },
     { id: 2, name: 'Architecture' },
   ]),
-  getFeatures: jest
-    .fn()
-    .mockResolvedValue([
-      { name: 'ENABLE_EDUCATIONAL_DOMAINS', isActive: true },
-    ]),
+  getFeatures: jest.fn().mockResolvedValue([
+    { name: 'ENABLE_EDUCATIONAL_DOMAINS', isActive: true },
+    { name: 'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION', isActive: true },
+  ]),
 }))
 
 jest.mock('api/api', () => ({
@@ -124,6 +123,7 @@ describe('app', () => {
 
     mockedApi.getAdageIframeAuthenticate.mockResolvedValue({
       role: AdageFrontRoles.Redactor,
+      uai: 'uai',
     })
     mockedApi.getAdageIframeGetVenueBySiret.mockResolvedValue(venue)
     mockedApi.getAdageIframeGetVenueById.mockResolvedValue(venue)
@@ -156,6 +156,10 @@ describe('app', () => {
       .calls[1][0]
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01'],
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
     ])
     const searchConfigurationSecondCall = (Configure as jest.Mock).mock
       .calls[2][0]
@@ -169,6 +173,10 @@ describe('app', () => {
       ],
       ['offer.students:Collège - 4e'],
       ['offer.domains:1'],
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
     ])
 
     expect(queryTag('01 - Ain')).toBeInTheDocument()
@@ -206,16 +214,29 @@ describe('app', () => {
     expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:01', 'venue.departmentCode:59'],
       ['offer.students:Collège - 4e'],
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
     ])
     const searchConfigurationSecondCall = (Configure as jest.Mock).mock
       .calls[2][0]
     expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
       ['venue.departmentCode:59'],
       ['offer.students:Collège - 4e'],
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
     ])
     const searchConfigurationThirdCall = (Configure as jest.Mock).mock
       .calls[3][0]
-    expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([])
+    expect(searchConfigurationThirdCall.facetFilters).toStrictEqual([
+      [
+        'offer.educationalInstitutionUAICode:all',
+        'offer.educationalInstitutionUAICode:uai',
+      ],
+    ])
 
     expect(queryTag('01 - Ain')).not.toBeInTheDocument()
     expect(queryTag('59 - Nord')).not.toBeInTheDocument()
