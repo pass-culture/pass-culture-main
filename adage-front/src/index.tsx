@@ -7,7 +7,6 @@ import './index.scss'
 import {
   AlgoliaQueryContextProvider,
   FiltersContextProvider,
-  FacetFiltersContextProvider,
 } from 'app/providers'
 import { FeaturesContextProvider } from 'app/providers/FeaturesContextProvider'
 import {
@@ -36,9 +35,7 @@ ReactDOM.render(
     <FeaturesContextProvider>
       <FiltersContextProvider>
         <AlgoliaQueryContextProvider>
-          <FacetFiltersContextProvider>
-            <App />
-          </FacetFiltersContextProvider>
+          <App />
         </AlgoliaQueryContextProvider>
       </FiltersContextProvider>
     </FeaturesContextProvider>

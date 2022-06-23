@@ -16,7 +16,7 @@ export const populateFacetFilters = ({
   students: Option[]
   domains: Option<number>[]
   venueFilter: VenueResponse | null
-  uai?: string | null
+  uai?: string[] | null
 }): Facets => {
   const updatedFilters: Facets = []
   const filteredDepartments: string[] = departments.map(
@@ -55,7 +55,9 @@ export const populateFacetFilters = ({
   }
 
   if (uai) {
-    updatedFilters.push(`offer.educationalInstitutionUAICode:${uai}`)
+    updatedFilters.push(
+      uai.map(uaiCode => `offer.educationalInstitutionUAICode:${uaiCode}`)
+    )
   }
 
   return updatedFilters
