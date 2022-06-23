@@ -194,6 +194,7 @@ def book_collective_offer(redactor_informations: RedactorInformation, stock_id: 
 
         educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
         validation.check_educational_year_exists(educational_year)
+        validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
         utcnow = datetime.datetime.utcnow()
         booking = CollectiveBooking(

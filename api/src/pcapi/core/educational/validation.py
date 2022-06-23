@@ -78,3 +78,9 @@ def check_collective_offer_number_of_collective_stocks(  # type: ignore [return]
 ) -> Optional[CollectiveStockAlreadyExists]:
     if collective_offer.collectiveStock:
         raise exceptions.CollectiveStockAlreadyExists()
+
+
+def check_user_can_prebook_collective_stock(uai: str, stock: CollectiveStock) -> None:
+    offer_institution = stock.collectiveOffer.institution
+    if offer_institution is not None and offer_institution.institutionId != uai:
+        raise exceptions.CollectiveStockNotBookableByUser()
