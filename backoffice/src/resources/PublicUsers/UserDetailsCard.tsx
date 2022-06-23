@@ -31,7 +31,7 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
       user
     )
     const responseData = await response.json()
-    if (response.code !== 200) {
+    if (response.code === 400) {
       notify(Object.values(responseData)[0] as string, { type: 'error' })
     }
   }
@@ -110,33 +110,21 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
   }
 
   function toggleEditableForm() {
-    setEditable(true)
+    setEditable(!editable)
   }
 
   return (
     <>
       <Card style={cardStyle}>
         <Form onSubmit={submitForm}>
-          <Typography variant={'h5'}>
-            Détails utilisateur{' '}
-            {!editable ? (
-              <>
-                <Button type={'button'} onClick={toggleEditableForm}>
-                  Editer
-                </Button>
-              </>
-            ) : (
-              <SaveButton label={'Sauvegarder'} />
-            )}
-          </Typography>
+          <Typography variant={'h5'}>Détails utilisateur </Typography>
           <Grid container spacing={1} sx={{ mt: 4 }}>
             <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
               <Grid item xs={4}>
-                <p>Nom</p>
                 <TextInput
                   id="user-lastname"
                   type={'text'}
-                  label=""
+                  label="Nom"
                   variant="standard"
                   defaultValue={user.lastName}
                   source={'lastName'}
@@ -144,11 +132,10 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 />
               </Grid>
               <Grid item xs={4}>
-                <p>Prénom</p>
                 <TextInput
                   id="user-firstname"
                   type={'text'}
-                  label=""
+                  label="Prénom"
                   variant="standard"
                   defaultValue={user.firstName}
                   source={'firstName'}
@@ -156,13 +143,12 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 />
               </Grid>
               <Grid item xs={4}>
-                <p>Email</p>
                 {user.email && (
                   <>
                     <TextInput
                       source={'email'}
                       id="user-email"
-                      label=""
+                      label="E-mail"
                       variant="standard"
                       defaultValue={user.email}
                       disabled={!editable}
@@ -180,10 +166,17 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 )}
               </Grid>
             </Stack>
-            <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
+            <Stack
+              spacing={3}
+              direction={'row'}
+              style={{ width: '100%' }}
+              sx={{ mt: 3 }}
+            >
               <Grid item xs={4}>
-                <p>Numéro de téléphone</p>
-                <p>{user.phoneNumber ? user.phoneNumber : ''}</p>
+                <Typography variant={'body1'}>Numéro de téléphone</Typography>
+                <Typography variant={'body1'}>
+                  {user.phoneNumber ? user.phoneNumber : ''}
+                </Typography>
 
                 <Stack
                   width={'60%'}
@@ -229,11 +222,10 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 </Stack>
               </Grid>
               <Grid item xs={4}>
-                <p>Date de naissance</p>
                 <TextInput
                   id={'user-date-birth'}
                   source={'dateOfBirth'}
-                  label={''}
+                  label={'Date de naissance'}
                   defaultValue={
                     user.dateOfBirth
                       ? moment(user.dateOfBirth).format('YYYY-MM-D')
@@ -246,24 +238,30 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 />
               </Grid>
               <Grid item xs={4}>
-                <p>Date de création du compte : </p>
+                <Typography variant={'body1'}>
+                  Date de création du compte :{' '}
+                </Typography>
 
-                <p>
+                <Typography variant={'body1'}>
                   {firstIdCheckHistory && firstIdCheckHistory.dateCreated
                     ? moment(firstIdCheckHistory.dateCreated).format(
                         'D/MM/YYYY à HH:mm'
                       )
                     : 'N/A'}
-                </p>
+                </Typography>
               </Grid>
             </Stack>
-            <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
-              <Grid item xs={4}>
-                <p>N&deg; de la pièce d’identité</p>
+            <Stack
+              spacing={3}
+              direction={'row'}
+              sx={{ mt: 3 }}
+              style={{ width: '100%' }}
+            >
+              <Grid item xs={3}>
                 <TextInput
                   id={'user-id-number'}
                   type={'text'}
-                  label={''}
+                  label={'N° pièce d’identité'}
                   variant={'standard'}
                   defaultValue={
                     firstIdCheckHistory &&
@@ -277,11 +275,10 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 />
               </Grid>
               <Grid item xs={3}>
-                <p>Adresse</p>
                 <TextInput
                   id="user-address"
                   type={'text'}
-                  label=""
+                  label="Adresse"
                   variant="standard"
                   defaultValue={user.address}
                   source={'address'}
@@ -289,29 +286,47 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 />
               </Grid>
               <Grid item xs={2}>
-                <p>CP</p>
                 <TextInput
                   id="user-postal-code"
                   type={'text'}
-                  label=""
+                  label="CP"
                   variant="standard"
                   defaultValue={user.postalCode}
                   source={'postalCode'}
                   disabled={!editable}
                 />
               </Grid>
-              <Grid item xs={3}>
-                <p>Ville</p>
+              <Grid item xs={2}>
                 <TextInput
                   id="user-city"
                   type={'text'}
-                  label=""
+                  label="Ville"
                   variant="standard"
                   defaultValue={user.city}
                   source={'city'}
                   disabled={!editable}
                 />
               </Grid>
+            </Stack>
+            <Stack
+              spacing={3}
+              direction={'row-reverse'}
+              style={{ width: '100%' }}
+            >
+              {!editable ? (
+                <>
+                  <Button type={'button'} onClick={toggleEditableForm}>
+                    Modifier les informations
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <SaveButton label={'Sauvegarder'} sx={{ mr: 3 }} />
+                  <Button type={'button'} onClick={toggleEditableForm}>
+                    Annuler{' '}
+                  </Button>
+                </>
+              )}
             </Stack>
           </Grid>
         </Form>

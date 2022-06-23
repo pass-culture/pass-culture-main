@@ -1,5 +1,5 @@
 import ExitIcon from '@mui/icons-material/PowerSettingsNew'
-import { Box, Typography, useMediaQuery, Theme, MenuItem } from '@mui/material'
+import { Box, useMediaQuery, Theme, MenuItem, Stack } from '@mui/material'
 import React from 'react'
 import { AppBar, useLogout, UserMenu } from 'react-admin'
 
@@ -25,24 +25,15 @@ function CustomUserMenu() {
 
 export const CustomAppBar = (props = {}) => {
   const isLargeEnough = useMediaQuery<Theme>(theme =>
-    theme.breakpoints.up('sm')
+    theme.breakpoints.up('md')
   )
   return (
     <AppBar {...props} elevation={1} userMenu={<CustomUserMenu />}>
-      <Typography
-        variant="h6"
-        color="inherit"
-        sx={{
-          flex: 1,
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-        }}
-        id="react-admin-title"
-      />
-      {isLargeEnough && <Logo fill={Colors.WHITE} />}
-      {isLargeEnough && <span>Back Office</span>}
-      {isLargeEnough && <Box component="span" sx={{ flex: 1 }} />}
+      <Stack direction={'row'} sx={{ mx: 'auto', pl: '12rem' }}>
+        {isLargeEnough && <Logo fill={Colors.WHITE} />}
+        {isLargeEnough && <span>Back Office</span>}
+        {isLargeEnough && <Box component="span" sx={{ flex: 1 }} />}
+      </Stack>
     </AppBar>
   )
 }
