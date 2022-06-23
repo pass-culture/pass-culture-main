@@ -137,6 +137,7 @@
     "license-reporter": "^1.5.0",
     "node-env-file": "^0.1.8",
     "node-fetch": "^2.6.7",
+    "openapi-typescript-codegen": "^0.23.0",
     "pnp-webpack-plugin": "^1.7.0",
     "prepend-file": "^2.0.0",
     "prettier": "^2.5.1",
