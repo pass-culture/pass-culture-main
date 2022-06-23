@@ -118,7 +118,7 @@ def test_public_api(client, app):
             "/v2/bookings/cancel/token/{token}": {
                 "patch": {
                     "description": "Bien que, dans le cas d’un événement, l\u2019utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d\u2019annuler la réservation d\u2019un utilisateur si elle n\u2019a pas encore été validé.",
-                    "operationId": "patchBookingsPatchCancelBookingByToken",
+                    "operationId": "PatchCancelBookingByToken",
                     "parameters": [
                         {
                             "description": "",
@@ -150,7 +150,7 @@ def test_public_api(client, app):
             "/v2/bookings/keep/token/{token}": {
                 "patch": {
                     "description": "",
-                    "operationId": "patchBookingsPatchBookingKeepByToken",
+                    "operationId": "PatchBookingKeepByToken",
                     "parameters": [
                         {
                             "description": "",
@@ -182,7 +182,7 @@ def test_public_api(client, app):
             "/v2/bookings/token/{token}": {
                 "get": {
                     "description": "Le code \u201ccontremarque\u201d ou \"token\" est une cha\u00eene de caractères permettant d\u2019identifier la réservation et qui sert de preuve de réservation. Ce code unique est généré pour chaque réservation d'un utilisateur sur l'application et lui est transmis à cette occasion.",
-                    "operationId": "getBookingsGetBookingByTokenV2",
+                    "operationId": "GetBookingByTokenV2",
                     "parameters": [
                         {
                             "description": "",
@@ -220,7 +220,7 @@ def test_public_api(client, app):
             "/v2/bookings/use/token/{token}": {
                 "patch": {
                     "description": "Pour confirmer que la réservation a bien été utilisée par le jeune.",
-                    "operationId": "patchBookingsPatchBookingUseByToken",
+                    "operationId": "PatchBookingUseByToken",
                     "parameters": [
                         {
                             "description": "",
@@ -253,7 +253,7 @@ def test_public_api(client, app):
             "/v2/venue/{venue_id}/stocks": {
                 "post": {
                     "description": """Seuls les livres, préalablement présents dans le catalogue du pass Culture seront pris en compte, tous les autres stocks seront filtrés. Les stocks sont référencés par leur isbn au format EAN13. Le champ "available" représente la quantité de stocks disponible en librairie. Le champ "price" (optionnel) correspond au prix en euros. Le paramètre {venue_id} correspond à un lieu qui doit être attaché à la structure à laquelle la clé d'API utilisée est reliée.""",
-                    "operationId": "postVenueUpdateStocks",
+                    "operationId": "UpdateStocks",
                     "parameters": [
                         {
                             "description": "",

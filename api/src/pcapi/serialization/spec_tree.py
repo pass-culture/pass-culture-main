@@ -31,10 +31,8 @@ def add_security_scheme(route_function: Callable, auth_key: str, scopes: Optiona
     route_function.requires_authentication.append({auth_key: scopes or []})  # type: ignore [attr-defined]
 
 
-def build_operation_id(method, path, func):  # type: ignore [no-untyped-def]
-    path_parts = path.split("/")
-    module = path_parts[1] if path_parts[1].lower() not in ["v1", "v2"] else path_parts[2]
-    return "".join([method.lower(), module.capitalize(), *[part.capitalize() for part in func.__name__.split("_")]])
+def build_operation_id(func: Callable) -> str:
+    return "".join([*[part.capitalize() for part in func.__name__.split("_")]])
 
 
 class ExtendedSpecTree(SpecTree):
@@ -51,7 +49,7 @@ class ExtendedSpecTree(SpecTree):
                         continue
                     path_parameter_descriptions = getattr(func, "path_parameter_descriptions", None)
                     path, _parameters = self.backend.parse_path(route, path_parameter_descriptions)
-                    spec["paths"][path][method.lower()]["operationId"] = build_operation_id(method, path, func)
+                    spec["paths"][path][method.lower()]["operationId"] = build_operation_id(func)
         return spec
 
     def _add_model(self, model) -> str:  # type: ignore [no-untyped-def]
