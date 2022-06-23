@@ -26,7 +26,6 @@ from pcapi.repository.user_queries import matching
 
 from . import models
 from .common.models import IdentityCheckContent
-from .dms import api as dms_api
 from .ubble import api as ubble_api
 
 
@@ -91,32 +90,8 @@ def on_educonnect_result(
     return fraud_check
 
 
-def on_dms_fraud_result(
-    user: users_models.User,
-    dms_content: models.DMSContent,
-) -> models.BeneficiaryFraudCheck:
-    eligibility_type = decide_eligibility(user, dms_content.get_birth_date(), dms_content.get_registration_datetime())
-    fraud_check = dms_api.get_fraud_check(user, str(dms_content.application_number))  # type: ignore [arg-type]
-    if not fraud_check:
-        logger.warning("DMS fraud check from user %d not previously created", user.id)
-        fraud_check = models.BeneficiaryFraudCheck(
-            user=user,
-            type=models.FraudCheckType.DMS,
-            thirdPartyId=str(dms_content.application_number),
-            resultContent=dms_content.dict(),
-            eligibilityType=eligibility_type,
-            status=models.FraudCheckStatus.PENDING,
-        )
-    else:
-        fraud_check.resultContent = dms_content.dict()
-        if fraud_check.eligibilityType != eligibility_type:
-            logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
-            fraud_check.eligibilityType = eligibility_type  # type: ignore [assignment]
-
+def on_dms_fraud_result(user: users_models.User, fraud_check: models.BeneficiaryFraudCheck) -> None:
     on_identity_fraud_check_result(user, fraud_check)
-    repository.save(fraud_check)
-
-    return fraud_check
 
 
 def educonnect_fraud_checks(
