@@ -36,6 +36,9 @@ parameters:
   measure_workflow_id:
     type: string
     default: ''
+  has_run_e2e_test:
+    type: string
+    default: ''
 
 ###################
 #  EXECUTORS
@@ -1085,15 +1088,11 @@ jobs:
           password: $DOCKERHUB_PASSWORD
     steps:
       - checkout
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: /tmp/workspace
       - run:
           name: Measure circle CI workflow execution time from workflow_id
           command: |
-            HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
             pip install -U datetime tzlocal
-            python3 scripts/measure_workflow_execution_time.py $CIRCLE_CI_TOKEN $METRICS_ENDPOINT << pipeline.parameters.measure_workflow_id >> $HAS_RUN_E2E
+            python3 scripts/measure_workflow_execution_time.py $CIRCLE_CI_TOKEN $METRICS_ENDPOINT << pipeline.parameters.measure_workflow_id >> << pipeline.parameters.has_run_e2e_test >>
 
   trigger_measure_workflow_execution_time:
     docker:
@@ -1102,6 +1101,11 @@ jobs:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Set has_run_e2e_test_variable
+          command: HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
       - run:
           name: Trigger measure workflow execution time
           command: >
@@ -1109,7 +1113,7 @@ jobs:
               --url https://circleci.com/api/v2/project/github/pass-culture/pass-culture-main/pipeline \
               --header "Circle-Token: $CIRCLE_CI_TOKEN" \
               --header 'content-type: application/json' \
-              --data "{\"parameters\":{\"run_measurement_workflow\":true, \"measure_workflow_id\":\"$CIRCLE_WORKFLOW_ID\"}}"
+              --data "{\"parameters\":{\"run_measurement_workflow\":true, \"measure_workflow_id\":\"$CIRCLE_WORKFLOW_ID\"}, \"has_run_e2e_test\":\"$HAS_RUN_E2E\"}}"
 
 ###################
 #  WORKFLOWS
