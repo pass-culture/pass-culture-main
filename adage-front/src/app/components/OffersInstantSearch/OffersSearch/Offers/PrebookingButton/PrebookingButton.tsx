@@ -1,7 +1,6 @@
 import { format } from 'date-fns-tz'
 import React, { useCallback, useState } from 'react'
 
-import { api } from 'api/api'
 import { OfferStockResponse } from 'api/gen'
 import {
   Notification,
@@ -12,8 +11,8 @@ import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
 
 import './PrebookingButton.scss'
+import { postBookingAdapater } from './adapters/postBookingAdapter'
 import PrebookingModal from './PrebookingModal'
-import { getErrorMessage } from './utils'
 
 const PrebookingButton = ({
   className,
@@ -37,25 +36,17 @@ const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
-    const preBookRoute = (stockId: number) =>
-      api.postAdageIframeBookCollectiveOffer({ stockId })
+    const { isOk, message } = await postBookingAdapater(stock.id)
 
-    return preBookRoute(stock.id)
-      .then(() => {
-        setHasPrebookedOffer(true)
-        closeModal()
-        setNotification(
-          new Notification(
-            NotificationType.success,
-            'Votre préréservation a été effectuée avec succès.'
-          )
-        )
-      })
-      .catch(error =>
-        setNotification(
-          new Notification(NotificationType.error, getErrorMessage(error))
-        )
-      )
+    if (!isOk) {
+      return setNotification(new Notification(NotificationType.error, message))
+    }
+
+    setHasPrebookedOffer(true)
+    closeModal()
+    setNotification(
+      new Notification(NotificationType.success, message as string)
+    )
   }, [stock.id])
 
   return canPrebookOffers ? (
