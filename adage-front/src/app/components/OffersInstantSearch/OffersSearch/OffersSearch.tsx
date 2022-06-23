@@ -60,11 +60,11 @@ export const OffersSearchComponent = ({
       populateFacetFilters({
         ...currentFilters,
         venueFilter,
-        uai:
-          enableEducationalInstitutionAssociation &&
-          tab === OfferTab.ASSOCIATED_TO_INSTITUTION
+        uai: enableEducationalInstitutionAssociation
+          ? tab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
-            : uaiCodeAllInstitutionsTab,
+            : uaiCodeAllInstitutionsTab
+          : null,
       })
     )
   }
@@ -90,11 +90,11 @@ export const OffersSearchComponent = ({
       populateFacetFilters({
         ...filters,
         venueFilter,
-        uai:
-          enableEducationalInstitutionAssociation &&
-          activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
+        uai: enableEducationalInstitutionAssociation
+          ? activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
             ? uaiCodeShareWithMyInstitutionTab
-            : uaiCodeAllInstitutionsTab,
+            : uaiCodeAllInstitutionsTab
+          : null,
       })
     )
     setQueryTag(query)
