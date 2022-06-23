@@ -136,7 +136,10 @@ describe('app', () => {
       expect(contentTitle).toBeInTheDocument()
       const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
 
@@ -165,6 +168,10 @@ describe('app', () => {
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         `venue.id:${venue.id}`,
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
       ])
 
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
@@ -207,6 +214,10 @@ describe('app', () => {
       const searchConfiguration = (Configure as jest.Mock).mock.calls[1][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
         `venue.id:${venue.id}`,
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
       ])
 
       expect(queryTag(`Lieu : ${venue?.publicName}`)).toBeInTheDocument()
@@ -248,7 +259,10 @@ describe('app', () => {
       expect(contentTitle).toBeInTheDocument()
       const searchConfiguration = (Configure as jest.Mock).mock.calls[0][0]
       expect(searchConfiguration.facetFilters).toStrictEqual([
-        'offer.isEducational:true',
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
       ])
       expect(Configure).toHaveBeenCalledTimes(1)
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
@@ -279,11 +293,20 @@ describe('app', () => {
         .calls[2][0]
       expect(searchConfigurationFirstCall.facetFilters).toStrictEqual([
         `venue.id:${venue.id}`,
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
       ])
 
       const searchConfigurationLastCall = (Configure as jest.Mock).mock
         .calls[3][0]
-      expect(searchConfigurationLastCall.facetFilters).toStrictEqual([])
+      expect(searchConfigurationLastCall.facetFilters).toStrictEqual([
+        [
+          'offer.educationalInstitutionUAICode:all',
+          'offer.educationalInstitutionUAICode:uai',
+        ],
+      ])
       expect(queryTag(`Lieu : ${venue?.publicName}`)).not.toBeInTheDocument()
       expect(queryResetFiltersButton()).not.toBeInTheDocument()
     })
@@ -336,7 +359,7 @@ describe('app', () => {
 
         expect(searchConfigurationSecondCall.facetFilters).toStrictEqual([
           `venue.id:${venue.id}`,
-          'offer.educationalInstitutionUAICode:uai',
+          ['offer.educationalInstitutionUAICode:uai'],
         ])
       })
     })
