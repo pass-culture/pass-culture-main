@@ -5,7 +5,7 @@ import cx from 'classnames'
 import styles from './SubmitButton.module.scss'
 
 interface ISubmitButtonProps {
-  className: string
+  className?: string
   disabled?: boolean
   isLoading: boolean
   buttonRef?: ForwardedRef<HTMLButtonElement | null>
