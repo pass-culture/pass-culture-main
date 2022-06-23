@@ -1,5 +1,7 @@
 import logging
+from typing import Optional
 
+from pcapi.core.offers.models import Offer
 from pcapi.model_creators.specific_creators import create_stock_from_offer
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.utils.select import remove_every
@@ -14,11 +16,11 @@ from .utils import get_price_by_short_name
 THING_OFFERS_WITH_STOCK_REMOVE_MODULO = 3
 
 
-def create_industrial_thing_stocks(thing_offers_by_name):  # type: ignore [no-untyped-def]
+def create_industrial_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> None:
     logger.info("create_industrial_thing_stocks")
 
     thing_stocks_by_name = {}
-    short_names_to_increase_price = []
+    short_names_to_increase_price: list[Optional[str]] = []
 
     thing_offer_items = list(thing_offers_by_name.items())
 
