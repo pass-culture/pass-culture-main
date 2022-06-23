@@ -8,7 +8,7 @@ from pcapi.core.offers.factories import StockWithActivationCodesFactory
 logger = logging.getLogger(__name__)
 
 
-def create_industrial_offers_with_activation_codes():  # type: ignore [no-untyped-def]
+def create_industrial_offers_with_activation_codes() -> None:
     logger.info("create_industrial_offers_with_activation_codes")
 
     venue = VirtualVenueFactory()

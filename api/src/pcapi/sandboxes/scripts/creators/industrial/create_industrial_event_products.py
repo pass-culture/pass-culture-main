@@ -4,6 +4,7 @@ from pcapi.core.categories import subcategories
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
 from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
+from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_NAME
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 EVENT_COUNTS_PER_TYPE = 7
 
 
-def create_industrial_event_products():  # type: ignore [no-untyped-def]
+def create_industrial_event_products() -> dict[str, Product]:
     logger.info("create_industrial_event_products")
 
     event_products_by_name = {}
@@ -62,19 +63,19 @@ def create_industrial_event_products():  # type: ignore [no-untyped-def]
                     mock_name = "{} {}".format(mock_first_name, mock_last_name)
                     extraData[conditionalField] = mock_name
                 elif conditionalField == "musicType":
-                    music_type_index = conditional_index % len(music_types)
+                    music_type_index: int = conditional_index % len(music_types)
                     music_type = music_types[music_type_index]
-                    extraData[conditionalField] = str(music_type["code"])
-                    music_sub_type_index = conditional_index % len(music_type["children"])
-                    music_sub_type = music_type["children"][music_sub_type_index]
-                    extraData["musicSubType"] = str(music_sub_type["code"])
+                    extraData[conditionalField] = str(music_type.code)
+                    music_sub_type_index: int = conditional_index % len(music_type.children)
+                    music_sub_type = music_type.children[music_sub_type_index]
+                    extraData["musicSubType"] = str(music_sub_type.code)
                 elif conditionalField == "showType":
-                    show_type_index = conditional_index % len(show_types)
+                    show_type_index: int = conditional_index % len(show_types)
                     show_type = show_types[show_type_index]
-                    extraData[conditionalField] = str(show_type["code"])
-                    show_sub_type_index = conditional_index % len(show_type["children"])
-                    show_sub_type = show_type["children"][show_sub_type_index]
-                    extraData["showSubType"] = str(show_sub_type["code"])
+                    extraData[conditionalField] = str(show_type.code)
+                    show_sub_type_index: int = conditional_index % len(show_type.children)
+                    show_sub_type = show_type.children[show_sub_type_index]
+                    extraData["showSubType"] = str(show_sub_type.code)
                 elif conditionalField == "visa":
                     pass
                 extra_data_index += 1

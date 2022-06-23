@@ -4,6 +4,7 @@ import random
 from pcapi.core.categories import subcategories
 from pcapi.domain.music_types import music_types
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
+from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 THINGS_PER_SUBCATEGORY = 7
 
 
-def create_industrial_thing_products():  # type: ignore [no-untyped-def]
+def create_industrial_thing_products() -> dict[str, Product]:
     logger.info("create_industrial_thing_products")
 
     thing_products_by_name = {}
@@ -66,12 +67,12 @@ def create_industrial_thing_products():  # type: ignore [no-untyped-def]
                     mock_name = "{} {}".format(mock_first_name, mock_last_name)
                     extraData[conditionalField] = mock_name
                 elif conditionalField == "musicType":
-                    music_type_index = conditional_index % len(music_types)
+                    music_type_index: int = conditional_index % len(music_types)
                     music_type = music_types[music_type_index]
-                    extraData[conditionalField] = str(music_type["code"])
-                    music_sub_type_index = conditional_index % len(music_type["children"])
-                    music_sub_type = music_type["children"][music_sub_type_index]
-                    extraData["musicSubType"] = str(music_sub_type["code"])
+                    extraData[conditionalField] = str(music_type.code)
+                    music_sub_type_index: int = conditional_index % len(music_type.children)
+                    music_sub_type = music_type.children[music_sub_type_index]
+                    extraData["musicSubType"] = str(music_sub_type.code)
                 elif conditionalField == "isbn":
                     extraData[conditionalField] = "".join(random.choices("123456789-", k=13))
                 extra_data_index += 1
