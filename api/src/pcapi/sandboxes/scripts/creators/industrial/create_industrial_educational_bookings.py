@@ -205,6 +205,13 @@ ADDRESSES = [
     {"department": "974", "postalCode": "97410", "city": "Saint-Benoît"},
 ]
 
+VENUE_EDUCATIONAL_STATUS = {
+    2: "Établissement public",
+    3: "Association",
+    4: "Établissement privé",
+    5: "micro-entreprise, auto-entrepreneur",
+}
+
 
 def create_industrial_educational_bookings() -> None:
     create_educational_domains()
@@ -229,6 +236,10 @@ def create_industrial_educational_bookings() -> None:
         siren="950469494",
         name="Bonne structure pour l'EAC (siren)",
     )
+
+    for adage_id, name in VENUE_EDUCATIONAL_STATUS.items():
+        offerers_factories.VenueEducationalStatusFactory(id=adage_id, name=name)
+
     venues = []
     for i in range(0, 3):
         venues.append(
@@ -237,6 +248,7 @@ def create_industrial_educational_bookings() -> None:
                 siret=f"9504694940002{i}",
                 managingOfferer=offerer_with_right_siren,
                 adageId=None,
+                venueEducationalStatusId=(i + 2),
             )
         )
 
@@ -248,6 +260,7 @@ def create_industrial_educational_bookings() -> None:
                 managingOfferer=cnl_like_offerer,
                 name=f"[EAC] Lieux factice du CNL {i}",
                 comment="Ce lieu est un lieu fictif créé pour les tests de l'EAC",
+                venueEducationalStatusId=(i + 3) if (i + 3) in VENUE_EDUCATIONAL_STATUS else None,
             )
         )
 
