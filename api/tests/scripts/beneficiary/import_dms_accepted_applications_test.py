@@ -724,13 +724,15 @@ class RunIntegrationTest:
 
 @pytest.mark.usefixtures("db_session")
 class GraphQLSourceProcessApplicationTest:
-    def test_process_accepted_application_user_already_created(self):
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_process_accepted_application_user_already_created(self, get_applications_with_details):
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
-        application_number = 123123
-        application_details = fixture.make_parsed_graphql_application(application_number, "accepte", email=user.email)
-        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
 
-        dms_api._process_accepted_application(user, information)
+        get_applications_with_details.return_value = [
+            fixture.make_parsed_graphql_application(123, "accepte", email=user.email),
+        ]
+
+        import_dms_accepted_applications(procedure_id=6712558)
 
         assert len(user.beneficiaryFraudChecks) == 2
         dms_fraud_check = next(
@@ -748,7 +750,8 @@ class GraphQLSourceProcessApplicationTest:
         assert statement_fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert statement_fraud_check.reason == "honor statement contained in DMS application"
 
-    def test_process_accepted_application_user_registered_at_18(self):
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_process_accepted_application_user_registered_at_18(self, get_applications_with_details):
         user = users_factories.UserFactory(
             dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -758,15 +761,17 @@ class GraphQLSourceProcessApplicationTest:
             user=user, type=fraud_models.FraudCheckType.USER_PROFILING, status=fraud_models.FraudCheckStatus.OK
         )
 
-        application_number = 123123
-        application_details = fixture.make_parsed_graphql_application(application_number, "accepte", email=user.email)
-        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
-        # fixture
-        dms_api._process_accepted_application(user, information)
+        get_applications_with_details.return_value = [
+            fixture.make_parsed_graphql_application(123, "accepte", email=user.email),
+        ]
+
+        import_dms_accepted_applications(procedure_id=6712558)
+
         assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    def test_process_accepted_application_user_registered_at_18_dms_at_19(self):
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_process_accepted_application_user_registered_at_18_dms_at_19(self, get_applications_with_details):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -780,37 +785,40 @@ class GraphQLSourceProcessApplicationTest:
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        application_number = 123123
-        application_details = fixture.make_parsed_graphql_application(
-            application_number,
-            "accepte",
-            email=user.email,
-            birth_date=user.dateOfBirth,
-            construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
-        )
-        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
-        # fixture
-        dms_api._process_accepted_application(user, information)
+        get_applications_with_details.return_value = [
+            fixture.make_parsed_graphql_application(
+                123123,
+                "accepte",
+                email=user.email,
+                birth_date=user.dateOfBirth,
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+            ),
+        ]
+
+        import_dms_accepted_applications(procedure_id=6712558)
+
         assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    def test_process_accepted_application_user_not_eligible(self):
+    @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
+    def test_process_accepted_application_user_not_eligible(self, get_applications_with_details):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.utcnow() - relativedelta(years=19, months=4),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
-        application_number = 123123
-        application_details = fixture.make_parsed_graphql_application(
-            application_number,
-            "accepte",
-            email=user.email,
-            birth_date=user.dateOfBirth,
-            construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
-        )
-        information = dms_serializer.parse_beneficiary_information_graphql(application_details, 123123)
-        # fixture
-        dms_api._process_accepted_application(user, information)
+        get_applications_with_details.return_value = [
+            fixture.make_parsed_graphql_application(
+                123123,
+                "accepte",
+                email=user.email,
+                birth_date=user.dateOfBirth,
+                construction_datetime=datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S+02:00"),
+            ),
+        ]
+
+        import_dms_accepted_applications(procedure_id=6712558)
+
         assert len(user.beneficiaryFraudChecks) == 1
         dms_fraud_check = user.beneficiaryFraudChecks[0]
         assert dms_fraud_check.status == fraud_models.FraudCheckStatus.KO
