@@ -2,7 +2,6 @@ from decimal import Decimal
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
-from freezegun import freeze_time
 import pytest
 import requests_mock
 
@@ -29,8 +28,6 @@ def mock_init_provider(*arg):
 
 class SynchronizeVenueProviderTest:
     @pytest.mark.usefixtures("db_session")
-    # FIXME (jsdupuis, 2022-05-24) : freeze_time to be removed after the 1st of june
-    @freeze_time("2022-06-01 09:00:00")
     def test_synchronize_venue_provider(self, app):
         api_url = "https://example.com/provider/api"
         old_provider = providers_factories.APIProviderFactory(id=1)
@@ -173,7 +170,8 @@ class SynchronizeVenueProvidersForProviderTest:
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.provider_manager.synchronize_venue_provider")
-    def test_catch_exception_and_continue(self, mock_synchronize_venue_provider):
+    @patch("pcapi.connectors.notion.add_to_synchronization_error_database")
+    def test_catch_exception_and_continue(self, mock_add_to_synchronization_error_db, mock_synchronize_venue_provider):
         provider = providers_factories.ProviderFactory(localClass="Unknown")
         providers_factories.VenueProviderFactory(provider=provider)
         providers_factories.VenueProviderFactory(provider=provider)
@@ -182,6 +180,7 @@ class SynchronizeVenueProvidersForProviderTest:
 
         synchronize_venue_providers_for_provider(provider.id, 10)
         assert mock_synchronize_venue_provider.call_count == 2
+        assert mock_add_to_synchronization_error_db.call_count == 2
 
 
 class SynchronizeDataForProviderTest:

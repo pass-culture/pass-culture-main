@@ -33,7 +33,6 @@ from pcapi.core.users import api as users_api
 import pcapi.core.users.constants as users_constants
 from pcapi.core.users.external import user_automations
 from pcapi.core.users.repository import get_newly_eligible_age_18_users
-from pcapi.local_providers.provider_api import provider_api_stocks
 from pcapi.local_providers.provider_manager import synchronize_venue_providers_for_provider
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -73,13 +72,6 @@ def synchronize_allocine_stocks() -> None:
     """Launch AlloCine synchronization."""
     allocine_stocks_provider_id = get_provider_by_local_class("AllocineStocks").id
     synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
-
-
-@blueprint.cli.command("synchronize_provider_api")
-@log_cron_with_transaction
-def synchronize_provider_api() -> None:
-    """Launch Providers (excepts AlloCine) synchronization."""
-    provider_api_stocks.synchronize_stocks()
 
 
 # FIXME (asaunier, 2021-05-25): This clock must be removed once every application from procedure
