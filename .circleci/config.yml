@@ -1106,9 +1106,7 @@ jobs:
       - run:
           name: Set has_run_e2e_test_variable
           command: |
-              HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
-              echo 'export HAS_RUN_E2E="$HAS_RUN_E2E"' >> $BASH_ENV
-              source $BASH_ENV
+              echo 'export HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")' >> $BASH_ENV
       - run:
           name: Debug purpose only
           command: echo $HAS_RUN_E2E
