@@ -4,6 +4,7 @@ from shutil import copyfile
 
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
+from pcapi.core.offers.models import Offer
 from pcapi.repository import repository
 import pcapi.sandboxes
 from pcapi.sandboxes.scripts.utils.select import remove_every
@@ -19,7 +20,7 @@ from itertools import cycle
 from itertools import islice
 
 
-def prepare_mediations_folders():  # type: ignore [no-untyped-def]
+def prepare_mediations_folders() -> None:
     logger.info("prepare_mediations_folders")
 
     thumbs_folder_path = Path(pcapi.sandboxes.__path__[0]) / "thumbs"
@@ -39,7 +40,7 @@ def prepare_mediations_folders():  # type: ignore [no-untyped-def]
         )
 
 
-def create_industrial_mediations(offers_by_name):  # type: ignore [no-untyped-def]
+def create_industrial_mediations(offers_by_name: dict[str, Offer]) -> None:
     logger.info("create_industrial_mediations")
 
     mediations_with_asset = {}

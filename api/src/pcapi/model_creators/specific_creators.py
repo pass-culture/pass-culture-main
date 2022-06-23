@@ -261,7 +261,7 @@ def create_stock_from_event_occurrence(
 
 def create_stock_from_offer(
     offer: Offer,
-    price: float = 9.90,
+    price: Decimal = Decimal(9.90),
     quantity: Optional[int] = 10,
     soft_deleted: bool = False,
     booking_limit_datetime: datetime = None,
@@ -272,7 +272,7 @@ def create_stock_from_offer(
     stock = Stock()
     stock.id = idx  # type: ignore [assignment]
     stock.offer = offer
-    stock.price = price  # type: ignore [assignment]
+    stock.price = price
     stock.quantity = quantity
     stock.isSoftDeleted = soft_deleted
     stock.bookingLimitDatetime = booking_limit_datetime

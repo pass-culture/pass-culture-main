@@ -38,7 +38,7 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
         )
 
 
-def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType]) -> dict:
+def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType]) -> dict[str, Venue]:
     logger.info("create_industrial_venues")
 
     venue_by_name = {}

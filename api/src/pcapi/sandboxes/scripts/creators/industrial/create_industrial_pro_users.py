@@ -2,6 +2,7 @@ import logging
 
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.users import factories as users_factories
+from pcapi.core.users.models import User
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.educational_siren_mocks import MOCK_ADAGE_ELIGIBLE_SIREN
 
@@ -17,7 +18,7 @@ pro_users_config = [
 ]
 
 
-def create_industrial_pro_users(offerers_by_name: dict) -> dict:
+def create_industrial_pro_users(offerers_by_name: dict) -> dict[str, User]:
     logger.info("create_industrial_pro_users")
 
     users_by_name = {}

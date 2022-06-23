@@ -1,6 +1,10 @@
 import logging
 
+from pcapi.core.offerers.models import Offerer
+from pcapi.core.offerers.models import Venue
+from pcapi.core.offers.models import Offer
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
+from pcapi.models.product import Product
 from pcapi.repository import repository
 
 
@@ -11,10 +15,12 @@ DEACTIVATED_OFFERS_PICK_MODULO = 3
 THINGS_PER_OFFERER = 5
 
 
-def create_industrial_thing_offers(thing_products_by_name, offerers_by_name, venues_by_name):  # type: ignore [no-untyped-def]
+def create_industrial_thing_offers(
+    thing_products_by_name: dict[str, Product], offerers_by_name: dict[str, Offerer], venues_by_name: dict[str, Venue]
+) -> dict[str, Offer]:
     logger.info("create_industrial_thing_offers")
 
-    thing_offers_by_name = {}
+    thing_offers_by_name: dict[str, Offer] = {}
 
     id_at_provider = 1234
     thing_index = 0
