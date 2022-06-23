@@ -37,7 +37,7 @@ export const validationSchema = yup.object().shape({
     .string()
     .min(10, 'Veuillez renseigner au moins 10 chiffres')
     .max(20, 'Veuillez renseigner moins de 20 chiffres')
-    .required('Veuillez renseigner votre numéro de télphone')
+    .required('Veuillez renseigner votre numéro de téléphone')
     .test(
       'isPhoneValid',
       'Votre numéro de téléphone n’est pas valide',
