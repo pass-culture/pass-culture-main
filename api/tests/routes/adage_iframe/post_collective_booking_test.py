@@ -136,7 +136,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json == {"educationalInstitution": "Cet établissement n'est pas éligible au pass Culture."}
+        assert response.json == {"code": "UNKNOWN_EDUCATIONAL_INSTITUTION"}
 
     def test_should_not_allow_booking_when_stock_has_no_remaining_quantity(self, test_data, app):
         # Given

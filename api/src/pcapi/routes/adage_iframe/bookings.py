@@ -139,7 +139,7 @@ def book_collective_offer(
         logger.info(
             "Could not book offer: educational institution not found", extra={"uai_code": authenticated_information.uai}
         )
-        raise ApiErrors({"educationalInstitution": "Cet établissement n'est pas éligible au pass Culture."})
+        raise ApiErrors({"code": "UNKNOWN_EDUCATIONAL_INSTITUTION"})
     except exceptions.EducationalYearNotFound:
         logger.info("Could not book offer: associated educational year not found", extra={"stock_id": body.stockId})
         raise ApiErrors({"educationalYear": "Aucune année scolaire ne correspond à cet évènement"})
