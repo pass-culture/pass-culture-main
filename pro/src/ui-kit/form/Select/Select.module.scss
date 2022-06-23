@@ -6,6 +6,7 @@
 
 .select-input {
   @include formsM.input-theme();
+  line-height: rem.torem(36px);
   padding-right: rem.torem(forms.$input-right-icon-padding);
 
   &.has-description {
