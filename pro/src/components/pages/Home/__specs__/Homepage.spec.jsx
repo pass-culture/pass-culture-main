@@ -314,9 +314,7 @@ describe('homepage', () => {
           })
 
           // when
-          fireEvent.click(
-            await screen.getByRole('button', { name: 'Enregistrer' })
-          )
+          fireEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
 
           // then
           expect(pcapi.updateUserInformations).toHaveBeenCalledWith({

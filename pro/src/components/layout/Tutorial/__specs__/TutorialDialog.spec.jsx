@@ -54,7 +54,7 @@ describe('tutorial modal', () => {
       app: { logEvent: mockLogEvent },
     })
     renderTutorialDialog(store, {})
-    const closeButton = await screen.getByTitle('Fermer la modale')
+    const closeButton = screen.getByTitle('Fermer la modale')
     await userEvent.click(closeButton)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.TUTO_PAGE_VIEW, {
       page_number: '1',
