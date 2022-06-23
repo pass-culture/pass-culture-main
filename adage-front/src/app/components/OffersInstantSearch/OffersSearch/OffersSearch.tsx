@@ -13,6 +13,7 @@ import { Filters } from 'app/types'
 import Tabs from 'app/ui-kit/Tabs'
 import { ReactComponent as InstitutionIcon } from 'assets/institution.svg'
 import { ReactComponent as OffersIcon } from 'assets/offers.svg'
+import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
 import { populateFacetFilters } from '../utils'
 
@@ -49,6 +50,10 @@ export const OffersSearchComponent = ({
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
 
+  const userUAICode = user.uai
+  const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
+  const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null
+
   const handleTabChange = (tab: OfferTab) => {
     setActiveTab(tab)
     setFacetFilters(
@@ -58,8 +63,8 @@ export const OffersSearchComponent = ({
         uai:
           enableEducationalInstitutionAssociation &&
           tab === OfferTab.ASSOCIATED_TO_INSTITUTION
-            ? user.uai
-            : null,
+            ? uaiCodeShareWithMyInstitutionTab
+            : uaiCodeAllInstitutionsTab,
       })
     )
   }
@@ -88,8 +93,8 @@ export const OffersSearchComponent = ({
         uai:
           enableEducationalInstitutionAssociation &&
           activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
-            ? user.uai
-            : null,
+            ? uaiCodeShareWithMyInstitutionTab
+            : uaiCodeAllInstitutionsTab,
       })
     )
     setQueryTag(query)
@@ -104,16 +109,19 @@ export const OffersSearchComponent = ({
     setFacetFilters(
       activeTab === OfferTab.ASSOCIATED_TO_INSTITUTION
         ? [`offer.educationalInstitutionUAICode:${user.uai}`]
-        : []
+        : [getDefaultFacetFilterUAICodeValue(user.uai)]
     )
     refine(INITIAL_QUERY)
   }
 
   useEffect(() => {
     if (venueFilter?.id) {
-      setFacetFilters([`venue.id:${venueFilter.id}`])
+      setFacetFilters([
+        `venue.id:${venueFilter.id}`,
+        getDefaultFacetFilterUAICodeValue(user.uai),
+      ])
     }
-  }, [setFacetFilters, venueFilter])
+  }, [setFacetFilters, venueFilter, user.uai])
 
   return (
     <>
