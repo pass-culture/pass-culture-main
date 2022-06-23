@@ -8,10 +8,8 @@ import {
   NotificationComponent,
   NotificationType,
 } from 'app/components/Layout/Notification/Notification'
-import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { Button } from 'app/ui-kit'
 import { ReactComponent as HourGlassIcon } from 'assets/hourglass.svg'
-import { preBookStock } from 'repository/pcapi/pcapi'
 
 import './PrebookingButton.scss'
 import PrebookingModal from './PrebookingModal'
@@ -29,7 +27,6 @@ const PrebookingButton = ({
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [notification, setNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const newCollectiveModel = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
 
   const handleSearchButtonClick = () => {
     setIsModalOpen(true)
@@ -40,9 +37,9 @@ const PrebookingButton = ({
   }
 
   const preBookCurrentStock = useCallback(async () => {
-    const preBookRoute = newCollectiveModel
-      ? (stockId: number) => api.postAdageIframeBookCollectiveOffer({ stockId })
-      : preBookStock
+    const preBookRoute = (stockId: number) =>
+      api.postAdageIframeBookCollectiveOffer({ stockId })
+
     return preBookRoute(stock.id)
       .then(() => {
         setHasPrebookedOffer(true)
@@ -59,7 +56,7 @@ const PrebookingButton = ({
           new Notification(NotificationType.error, getErrorMessage(error))
         )
       )
-  }, [newCollectiveModel, stock.id])
+  }, [stock.id])
 
   return canPrebookOffers ? (
     <>
