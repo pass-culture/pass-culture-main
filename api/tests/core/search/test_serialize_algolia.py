@@ -219,6 +219,12 @@ def test_serialize_collective_offer():
     }
 
 
+def test_serialize_collective_offer_without_institution():
+    collective_offer = educational_factories.CollectiveOfferFactory()
+    serialized = algolia.AlgoliaBackend().serialize_collective_offer(collective_offer)
+    assert serialized["offer"]["educationalInstitutionUAICode"] == "all"
+
+
 def test_serialize_collective_offer_template():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
