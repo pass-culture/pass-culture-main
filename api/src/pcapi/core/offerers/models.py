@@ -223,6 +223,11 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     # TODO(fseguin,2022-06-20): Make column non-nullable when column is populated on all envs
     dmsToken = Column(Text, nullable=True, unique=True)
 
+    venueEducationalStatusId = Column(BigInteger, ForeignKey("venue_educational_status.id"), nullable=True)
+    venueEducationalStatus = relationship(
+        "VenueEducationalStatus", back_populates="venues", foreign_keys=[venueEducationalStatusId]
+    )
+
     @property
     def is_eligible_for_search(self) -> bool:
         not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE  # type: ignore [attr-defined]
@@ -485,6 +490,13 @@ class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
     def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
         kwargs["timespan"] = db_utils.make_timerange(*kwargs["timespan"])
         super().__init__(**kwargs)
+
+
+class VenueEducationalStatus(Model):  # type: ignore [misc, valid-type]
+    __tablename__ = "venue_educational_status"
+    id = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
+    name = Column(String(256), nullable=False)
+    venues = relationship("Venue", back_populates="venueEducationalStatus")
 
 
 class Offerer(
