@@ -18,6 +18,7 @@ import {
   NotificationType,
 } from './components/Layout/Notification/Notification'
 import { LoaderPage } from './components/LoaderPage/LoaderPage'
+import { FacetFiltersContextProvider } from './providers'
 
 export const queryCache = new QueryCache()
 export const queryClient = new QueryClient({
@@ -82,20 +83,22 @@ export const App = (): JSX.Element => {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {notification && <NotificationComponent notification={notification} />}
-      {user?.role &&
-      [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
-        user.role
-      ) ? (
-        <AppLayout
-          removeVenueFilter={removeVenueFilter}
-          user={user}
-          venueFilter={venueFilter}
-        />
-      ) : (
-        <UnauthenticatedError />
-      )}
-    </QueryClientProvider>
+    <FacetFiltersContextProvider uai={user?.uai}>
+      <QueryClientProvider client={queryClient}>
+        {notification && <NotificationComponent notification={notification} />}
+        {user?.role &&
+        [AdageFrontRoles.Readonly, AdageFrontRoles.Redactor].includes(
+          user.role
+        ) ? (
+          <AppLayout
+            removeVenueFilter={removeVenueFilter}
+            user={user}
+            venueFilter={venueFilter}
+          />
+        ) : (
+          <UnauthenticatedError />
+        )}
+      </QueryClientProvider>
+    </FacetFiltersContextProvider>
   )
 }

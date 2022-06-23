@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useMemo, useState } from 'react'
 
 import { Facets } from 'app/types'
+import { getDefaultFacetFilterUAICodeValue } from 'utils/facetFilters'
 
 export type FacetFiltersContextType = {
   facetFilters: Facets
@@ -18,10 +19,14 @@ export const FacetFiltersContext = createContext<FacetFiltersContextType>(
 
 export const FacetFiltersContextProvider = ({
   children,
+  uai,
 }: {
   children: ReactNode | ReactNode[]
+  uai?: string | null
 }): JSX.Element => {
-  const [facetFilters, setFacetFilters] = useState<Facets>([])
+  const [facetFilters, setFacetFilters] = useState<Facets>([
+    getDefaultFacetFilterUAICodeValue(uai),
+  ])
 
   const value = useMemo(
     () => ({
