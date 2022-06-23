@@ -64,7 +64,7 @@ const OffersTableHead = ({
             {areAllOffersSelected ? 'Tout désélectionner' : 'Tout sélectionner'}
           </label>
         </th>
-        <th />
+        {audience === Audience.INDIVIDUAL && <th />}
         <th>Lieu</th>
         <th>
           {audience === Audience.COLLECTIVE &&
