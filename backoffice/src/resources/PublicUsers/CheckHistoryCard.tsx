@@ -24,7 +24,9 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
     marginTop: '20px',
     padding: 30,
   }
-  const [checked, setChecked] = useState(true)
+  const gridStyle = { width: '100%', height: '100%', overflow: 'auto' }
+
+  const [checked, setChecked] = useState(false)
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked)
@@ -96,16 +98,13 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
                     name={idCheckHistory.type}
                   />
                 }
-                label="Masquer les détails techniques"
+                label="Afficher les détails techniques"
               />
             </Grid>
             <Grid item xs={6}>
               <Grid container spacing={0}>
-                <Grid
-                  item
-                  style={{ width: '100%', height: '100%', overflow: 'auto' }}
-                >
-                  <code style={{ visibility: checked ? 'hidden' : 'visible' }}>
+                <Grid item style={gridStyle}>
+                  <code style={{ visibility: !checked ? 'hidden' : 'visible' }}>
                     {idCheckHistory.technicalDetails &&
                       JSON.stringify(
                         idCheckHistory.technicalDetails,

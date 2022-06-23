@@ -1,3 +1,4 @@
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
 import {
   List,
@@ -21,7 +22,7 @@ interface Props {
 }
 
 export const SubMenu = (props: Props) => {
-  const { handleToggle, isOpen, name, icon, children, dense } = props
+  const { handleToggle, isOpen, name, children, dense } = props
   const translate = useTranslate()
 
   const [sidebarIsOpen] = useSidebarState()
@@ -29,7 +30,7 @@ export const SubMenu = (props: Props) => {
   const header = (
     <MenuItem dense={dense} onClick={handleToggle}>
       <ListItemIcon sx={{ minWidth: 5 }}>
-        {isOpen ? <ExpandMore /> : icon}
+        {!isOpen ? <ExpandMore /> : <ExpandLessIcon />}
       </ListItemIcon>
       <Typography variant="inherit" color="textSecondary">
         {translate(name)}

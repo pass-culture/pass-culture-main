@@ -13,6 +13,9 @@ export const StatusBadge = ({ active }: Props) => {
         color={'success'}
         label={'Actif'}
         icon={<CheckCircleOutlineIcon />}
+        style={{
+          fontSize: '0.95rem',
+        }}
       />
     )
   }

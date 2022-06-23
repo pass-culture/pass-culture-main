@@ -1,4 +1,4 @@
-import SearchIcon from '@mui/icons-material/Search'
+import ClearIcon from '@mui/icons-material/Clear'
 import {
   Box,
   Button,
@@ -6,21 +6,20 @@ import {
   CardActions,
   CardContent,
   Grid,
+  IconButton,
+  InputAdornment,
   List,
+  Stack,
   Typography,
 } from '@mui/material'
 import { ClassAttributes, HTMLAttributes, useState } from 'react'
-import {
-  Form,
-  ReferenceField,
-  SearchInput,
-  ShowButton,
-  useAuthenticated,
-} from 'react-admin'
+import { Form, ShowButton, TextInput, useAuthenticated } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
+import { Colors } from '../../layout/Colors'
 import { eventMonitoring } from '../../libs/monitoring/sentry'
 import { dataProvider } from '../../providers/dataProvider'
+import { CustomSearchIcon } from '../Icons/CustomSearchIcon'
 import { UserApiResponse } from '../Interfaces/UserSearchInterface'
 
 import { BeneficiaryBadge } from './BeneficiaryBadge'
@@ -52,36 +51,34 @@ const UserCard = ({ record }: { record: UserApiResponse }) => {
   return (
     <Card sx={{ minWidth: 275 }}>
       <CardContent>
-        <div>
-          <BeneficiaryBadge role={roles[0]} />
+        <Stack direction={'row'} spacing={2} sx={{ mb: 2 }}>
           <StatusBadge active={isActive} />
-        </div>
+          <BeneficiaryBadge role={roles[0]} />
+        </Stack>
         <Typography variant="subtitle1" component="h4" align="left">
           {firstName} <UpperCaseText>{lastName}</UpperCaseText>
         </Typography>
         <Typography variant="subtitle2" component="h5" align="left">
-          <ReferenceField source="id" reference="/public_accounts/users/">
-            <Typography>id user : {id}</Typography>
-          </ReferenceField>
+          <Typography color={Colors.GREY}>User ID : {id}</Typography>
         </Typography>
-        <Typography variant="body1" component="p" align="left">
-          <strong>e-mail</strong>: {email}
+        <Typography variant="body2" align="left">
+          <strong>E-mail</strong>: {email}
         </Typography>
-        <Typography variant="body1" component="p" align="left">
-          <strong>tél : </strong> {phoneNumber}
+        <Typography variant="body2" align="left">
+          <strong>Tél</strong>: {phoneNumber}
         </Typography>
       </CardContent>
       <CardActions>
         <ShowButton
           onClick={event => event.preventDefault()}
-          resource={'public_accounts/user'}
+          resource={'public_accounts'}
           label={'Consulter ce profil'}
         />
 
         <Button
-          href={`/public_accounts/user/${id}`}
+          href={`/public_accounts/${id}`}
           variant={'text'}
-          color={'secondary'}
+          color={'inherit'}
         >
           Consulter ce profil
         </Button>
@@ -101,11 +98,13 @@ function stopTypingOnSearch(event: {
 
 export const UserSearch = () => {
   const [userData, setUserData] = useState([])
+  const [emptyResults, setEmptyResults] = useState(true)
   useAuthenticated()
 
   async function formSubmit(params: FieldValues) {
     if (params && params.search) {
       setUserData([])
+      setEmptyResults(true)
       try {
         const response = await dataProvider.searchList(
           'public_accounts/search',
@@ -114,12 +113,18 @@ export const UserSearch = () => {
         console.log(response)
         if (response && response.data && response.data.length > 0) {
           setUserData(response.data)
+          setEmptyResults(false)
         }
       } catch (error) {
         console.log(error)
         eventMonitoring.captureException(error)
       }
     }
+  }
+
+  const clearSearch = () => {
+    setUserData([])
+    setEmptyResults(true)
   }
 
   return (
@@ -140,58 +145,82 @@ export const UserSearch = () => {
       >
         <CardContent>
           <Typography
-            variant="h2"
             component="div"
-            textAlign={userData.length === 0 ? 'center' : 'left'}
+            textAlign={emptyResults ? 'center' : 'left'}
+            style={{
+              display: emptyResults ? 'block' : 'none',
+              paddingTop: '7rem',
+            }}
           >
-            &nbsp;
+            <CustomSearchIcon />
           </Typography>
-
           <Typography
             variant={'subtitle1'}
-            component={'p'}
+            component={'div'}
             mb={2}
+            sx={emptyResults ? { mx: 'auto' } : { mx: 1 }}
             gutterBottom
-            textAlign={userData.length === 0 ? 'center' : 'left'}
+            textAlign={emptyResults ? 'center' : 'left'}
+            style={{
+              width: '30rem',
+              display: emptyResults ? 'block' : 'none',
+            }}
           >
-            Recherche un utilisateur à partir de son nom, mail ou numéro de
-            téléphone
+            Retrouve un utilisateur à partir de son nom, prénom, date de
+            naissance, userID, numéro de téléphone ou son adresse email.
           </Typography>
-          <Grid
-            container
-            justifyContent={userData.length === 0 ? 'center' : 'left'}
-          >
+          <Grid container justifyContent={emptyResults ? 'center' : 'left'}>
             <Box>
               <Form onSubmit={formSubmit}>
-                <div
+                <Stack
                   style={{
                     justifyContent: 'center',
+                    alignItems: 'center',
                     textAlign: 'center',
                   }}
+                  direction={emptyResults ? 'column' : 'row'}
                 >
-                  <SearchInput
+                  <TextInput
                     helperText={false}
                     source={'q'}
                     name={'search'}
                     type={'text'}
-                    fullWidth={userData.length === 0}
-                    variant={'filled'}
+                    label={emptyResults ? '' : 'Recherche'}
+                    variant={'outlined'}
                     style={{
                       marginLeft: 'auto',
                       marginRight: 5,
+                      width: emptyResults ? '20rem' : 'auto',
                     }}
                     onKeyUp={stopTypingOnSearch}
+                    InputProps={
+                      !emptyResults
+                        ? {
+                            endAdornment: (
+                              <InputAdornment position="start">
+                                <IconButton
+                                  aria-label={
+                                    'Rechercher un utilisateur public'
+                                  }
+                                  onClick={clearSearch}
+                                >
+                                  <ClearIcon />
+                                </IconButton>
+                              </InputAdornment>
+                            ),
+                          }
+                        : {}
+                    }
                   />
 
                   <Button
                     type={'submit'}
                     variant="contained"
-                    size={'small'}
-                    endIcon={<SearchIcon />}
+                    style={{ height: '2.5rem' }}
                   >
                     Chercher
                   </Button>
-                </div>
+                </Stack>
               </Form>
             </Box>
           </Grid>
@@ -200,20 +229,21 @@ export const UserSearch = () => {
       </Card>
       <List>
         <Grid container spacing={2} sx={{ marginTop: '1em', minWidth: 275 }}>
-          {userData.map(record => (
-            <Grid
-              key={record['id']}
-              sx={{ minWidth: 275 }}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={4}
-              xl={4}
-              item
-            >
-              <UserCard record={record} />
-            </Grid>
-          ))}
+          {!emptyResults &&
+            userData.map(record => (
+              <Grid
+                key={record['id']}
+                sx={{ minWidth: 275 }}
+                xs={12}
+                sm={6}
+                md={4}
+                lg={4}
+                xl={4}
+                item
+              >
+                <UserCard record={record} />
+              </Grid>
+            ))}
         </Grid>
       </List>
     </Grid>

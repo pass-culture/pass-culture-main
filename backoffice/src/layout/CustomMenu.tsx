@@ -1,6 +1,6 @@
 import AccountBoxIcon from '@mui/icons-material/AccountBox'
-import ApartmentIcon from '@mui/icons-material/Apartment'
 import ReviewsIcon from '@mui/icons-material/Reviews'
+import { Divider } from '@mui/material'
 import Box from '@mui/material/Box'
 import { useState } from 'react'
 import * as React from 'react'
@@ -36,7 +36,7 @@ export const Menu = ({ dense = false }: MenuProps) => {
         mr: 1,
         marginTop: 1,
         paddingTop: 2,
-        marginBottom: 1,
+        marginBottom: 0,
         transition: theme =>
           theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
@@ -60,61 +60,63 @@ export const Menu = ({ dense = false }: MenuProps) => {
           })}
           dense={dense}
         />
-        <MenuItemLink
-          to="/users/list"
-          state={{ _scrollToTop: true }}
-          primaryText={translate('menu.users', {
-            smart_count: 2,
-          })}
-          dense={dense}
-          disabled
-        />
-        <MenuItemLink
-          to="/users/features"
-          state={{ _scrollToTop: true }}
-          primaryText={translate('menu.features', {
-            smart_count: 2,
-          })}
-          dense={dense}
-          disabled
-        />
-        <MenuItemLink
-          to="/users/categories"
-          state={{ _scrollToTop: true }}
-          primaryText={translate('menu.categories', {
-            smart_count: 2,
-          })}
-          dense={dense}
-          disabled
-        />
+        {/*<MenuItemLink*/}
+        {/*  to="/users/list"*/}
+        {/*  state={{ _scrollToTop: true }}*/}
+        {/*  primaryText={translate('menu.users', {*/}
+        {/*    smart_count: 2,*/}
+        {/*  })}*/}
+        {/*  dense={dense}*/}
+        {/*  disabled*/}
+        {/*/>*/}
+        {/*<MenuItemLink*/}
+        {/*  to="/users/features"*/}
+        {/*  state={{ _scrollToTop: true }}*/}
+        {/*  primaryText={translate('menu.features', {*/}
+        {/*    smart_count: 2,*/}
+        {/*  })}*/}
+        {/*  dense={dense}*/}
+        {/*  disabled*/}
+        {/*/>*/}
+        {/*<MenuItemLink*/}
+        {/*  to="/users/categories"*/}
+        {/*  state={{ _scrollToTop: true }}*/}
+        {/*  primaryText={translate('menu.categories', {*/}
+        {/*    smart_count: 2,*/}
+        {/*  })}*/}
+        {/*  dense={dense}*/}
+        {/*  disabled*/}
+        {/*/>*/}
       </SubMenu>
-
-      <SubMenu
-        handleToggle={() => handleToggle('menuPros')}
-        isOpen={state.menuPros}
-        name="menu.prosTitle"
-        dense={dense}
-        icon={<ApartmentIcon />}
-      >
-        <MenuItemLink
-          to="/pros"
-          state={{ _scrollToTop: true }}
-          primaryText={translate('menu.pros', {
-            smart_count: 2,
-          })}
-          dense={dense}
-          disabled
-        />
-        <MenuItemLink
-          to="/pros/categories"
-          state={{ _scrollToTop: true }}
-          primaryText={translate('menu.categories', {
-            smart_count: 2,
-          })}
-          dense={dense}
-          disabled
-        />
-      </SubMenu>
+      <Divider />
+      {/*<SubMenu*/}
+      {/*  handleToggle={() => handleToggle('menuPros')}*/}
+      {/*  isOpen={state.menuPros}*/}
+      {/*  name="menu.prosTitle"*/}
+      {/*  dense={dense}*/}
+      {/*  icon={<ApartmentIcon />}*/}
+      {/*  */}
+      {/*>*/}
+      {/*  <MenuItemLink*/}
+      {/*    to="/pros"*/}
+      {/*    state={{ _scrollToTop: true }}*/}
+      {/*    primaryText={translate('menu.pros', {*/}
+      {/*      smart_count: 2,*/}
+      {/*    })}*/}
+      {/*    dense={dense}*/}
+      {/*    disabled*/}
+      {/*  />*/}
+      {/*  <MenuItemLink*/}
+      {/*    to="/pros/categories"*/}
+      {/*    state={{ _scrollToTop: true }}*/}
+      {/*    primaryText={translate('menu.categories', {*/}
+      {/*      smart_count: 2,*/}
+      {/*    })}*/}
+      {/*    dense={dense}*/}
+      {/*    disabled*/}
+      {/*  />*/}
+      {/*</SubMenu>*/}
+      {/*<Divider />*/}
 
       <MenuItemLink
         to="/reviews"
