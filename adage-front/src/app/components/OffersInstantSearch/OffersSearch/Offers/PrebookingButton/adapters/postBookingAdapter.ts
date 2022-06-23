@@ -11,10 +11,18 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-const NOT_BOOKABLE_BY_USER_FAILING_RESPONSE: AdapterFailure<null> = {
-  isOk: false,
-  message: 'Cette offre n’est pas préréservable par votre établissement',
-  payload: null,
+const ERROR_RESPONSE = {
+  WRONG_UAI_CODE: {
+    isOk: false,
+    message: 'Cette offre n’est pas préréservable par votre établissement',
+    payload: null,
+  },
+  UNKNOWN_EDUCATIONAL_INSTITUTION: {
+    isOk: false,
+    message:
+      'Votre établissement scolaire n’est pas recensé dans le dispositif pass culture',
+    payload: null,
+  },
 }
 
 export const postBookingAdapater: PostBookingAdapter = async stockId => {
@@ -27,8 +35,8 @@ export const postBookingAdapater: PostBookingAdapter = async stockId => {
       payload: null,
     }
   } catch (error) {
-    if (hasErrorCode(error) && error.content.code === 'WRONG_UAI_CODE') {
-      return NOT_BOOKABLE_BY_USER_FAILING_RESPONSE
+    if (hasErrorCode(error)) {
+      return ERROR_RESPONSE[error.content.code]
     }
 
     return FAILING_RESPONSE
