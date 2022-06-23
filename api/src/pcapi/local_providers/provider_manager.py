@@ -2,6 +2,7 @@ import logging
 from typing import Callable
 from typing import Optional
 
+import pcapi.connectors.notion as notion_connector
 from pcapi.core.providers.models import VenueProvider
 import pcapi.core.providers.repository as providers_repository
 import pcapi.local_providers
@@ -30,6 +31,12 @@ def synchronize_venue_providers_for_provider(provider_id: int, limit: Optional[i
             with transaction():
                 synchronize_venue_provider(venue_provider, limit)
         except Exception as exc:  # pylint: disable=broad-except
+            notion_connector.add_to_synchronization_error_database(
+                exception=exc,
+                provider_name=venue_provider.provider.name,
+                venue_id=venue_provider.venueId,
+                venue_id_at_offer_provider=venue_provider.venueIdAtOfferProvider,
+            )
             logger.exception(
                 "Could not synchronize venue provider",
                 extra={
@@ -45,7 +52,7 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
     return getattr(pcapi.local_providers, class_name)
 
 
-def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None):  # type: ignore [no-untyped-def]
+def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None) -> None:
     if venue_provider.provider.implements_provider_api and not venue_provider.provider.isCinemaProvider:
         synchronize_provider_api.synchronize_venue_provider(venue_provider)
 

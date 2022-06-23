@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 PROVIDER_API_ERRORS_DATABASE_ID = "e7bd2f6ddedf43f7a7bc87849caaa3ed"
 
 
-def add_to_synchronization_error_database(  # type: ignore [no-untyped-def]
+def add_to_synchronization_error_database(
     exception: Exception,
     provider_name: str,
     venue_id: int,
     venue_id_at_offer_provider: str,
-):
+) -> None:
     if settings.IS_DEV:
         return
 

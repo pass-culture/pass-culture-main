@@ -53,5 +53,5 @@ def update_providables(provider_name: str, venue_provider_id: int, limit: int): 
 @click.option(
     "-l", "--limit", help="Limit update to n items per venue provider" + " (for test purposes)", type=int, default=None
 )
-def update_providables_by_provider_id(provider_id: int, limit: int):  # type: ignore [no-untyped-def]
+def update_providables_by_provider_id(provider_id: int, limit: int) -> None:
     synchronize_venue_providers_for_provider(provider_id, limit)
