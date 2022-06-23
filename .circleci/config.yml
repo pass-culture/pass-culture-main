@@ -1110,6 +1110,9 @@ jobs:
               echo 'export HAS_RUN_E2E="$HAS_RUN_E2E"' >> $BASH_ENV
               source $BASH_ENV
       - run:
+          name: Debug purpose only
+          command: echo $HAS_RUN_E2E
+      - run:
           name: Trigger measure workflow execution time
           command: >
             curl --request POST \
