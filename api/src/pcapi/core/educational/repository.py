@@ -11,10 +11,8 @@ from typing import Union
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
 from sqlalchemy import Date
-from sqlalchemy import and_
 from sqlalchemy import cast
 from sqlalchemy import func
-from sqlalchemy import or_
 from sqlalchemy.orm import Query
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.orm import joinedload
@@ -753,12 +751,7 @@ def get_collective_bookings_query_for_pricing_generation(window: Tuple[datetime,
         )
         .outerjoin(
             Pricing,
-            or_(
-                Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
-                and_(
-                    Pricing.bookingId.isnot(None), Pricing.bookingId == educational_models.CollectiveBooking.bookingId
-                ),
-            ),
+            Pricing.collectiveBookingId == educational_models.CollectiveBooking.id,
         )
         .filter(Pricing.id.is_(None))
         .join(educational_models.CollectiveBooking.venue)
