@@ -96,42 +96,40 @@ def handle_dms_application(
 
     logger.info("[DMS] Application received with state %s", state, extra=log_extra_data)
 
-    current_fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number, application_content)
+    fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number, application_content)
 
-    current_fraud_check.resultContent = application_content.dict()
-    current_fraud_check.eligibilityType = fraud_api.decide_eligibility(  # type: ignore [assignment]
+    fraud_check.resultContent = application_content.dict()
+    fraud_check.eligibilityType = fraud_api.decide_eligibility(  # type: ignore [assignment]
         user, application_content.get_birth_date(), application_content.get_registration_datetime()
     )
 
     if state == dms_models.GraphQLApplicationStates.draft:
-        eligibility_type = current_fraud_check.eligibilityType
+        eligibility_type = fraud_check.eligibilityType
         if eligibility_type is None:
-            fraud_dms_api.on_dms_eligibility_error(
-                user, current_fraud_check, application_scalar_id, extra_data=log_extra_data
-            )
+            fraud_dms_api.on_dms_eligibility_error(user, fraud_check, application_scalar_id, extra_data=log_extra_data)
         else:
             subscription_messages.on_dms_application_received(user)
-        current_fraud_check.status = fraud_models.FraudCheckStatus.STARTED  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.STARTED  # type: ignore [assignment]
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
         subscription_messages.on_dms_application_received(user)
-        current_fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
-        _process_accepted_application(user, current_fraud_check)
-        return current_fraud_check
+        _process_accepted_application(user, fraud_check)
+        return fraud_check
 
     elif state == dms_models.GraphQLApplicationStates.refused:
-        current_fraud_check.status = fraud_models.FraudCheckStatus.KO  # type: ignore [assignment]
-        current_fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]  # type: ignore [list-item]
+        fraud_check.status = fraud_models.FraudCheckStatus.KO  # type: ignore [assignment]
+        fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]  # type: ignore [list-item]
 
         subscription_messages.on_dms_application_refused(user)
 
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
-        current_fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
 
-    pcapi_repository.repository.save(current_fraud_check)
-    return current_fraud_check
+    pcapi_repository.repository.save(fraud_check)
+    return fraud_check
 
 
 def _notify_parsing_error(parsing_errors: dict[str, typing.Optional[str]], application_scalar_id: str) -> None:
