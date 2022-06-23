@@ -2679,7 +2679,7 @@ describe('stocks page', () => {
         )
 
         // Then
-        const successMessage = await screen.queryByText(
+        const successMessage = screen.queryByText(
           'Votre offre a bien été créée et vos stocks sauvegardés.'
         )
         expect(successMessage).toBeInTheDocument()
