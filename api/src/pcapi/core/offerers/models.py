@@ -4,38 +4,20 @@ import typing
 from typing import Optional
 
 import sqlalchemy as sa
-from sqlalchemy import BigInteger
-from sqlalchemy import Boolean
-from sqlalchemy import CheckConstraint
-from sqlalchemy import Column
-from sqlalchemy import DateTime
-from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
-from sqlalchemy import Numeric
-from sqlalchemy import String
-from sqlalchemy import TEXT
-from sqlalchemy import Text
-from sqlalchemy import UniqueConstraint
-from sqlalchemy import case
-from sqlalchemy import cast
 from sqlalchemy import func
+from sqlalchemy import orm
 import sqlalchemy.dialects.postgresql as sa_psql
 from sqlalchemy.dialects.postgresql.json import JSONB
 from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
-from sqlalchemy.orm import aliased
-from sqlalchemy.orm import backref
-from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
-from sqlalchemy.sql.sqltypes import CHAR
-from sqlalchemy.sql.sqltypes import LargeBinary
+from sqlalchemy.sql import sqltypes
 from werkzeug.utils import cached_property
 
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
-from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
-from pcapi.domain.postal_code.postal_code import PostalCode
+from pcapi.domain.postal_code import postal_code
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
 from pcapi.models import Model
 from pcapi.models import db
@@ -48,11 +30,8 @@ from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 from pcapi.utils import crypto
-from pcapi.utils.date import CUSTOM_TIMEZONES
-from pcapi.utils.date import METROPOLE_TIMEZONE
-from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import get_postal_code_timezone
-import pcapi.utils.db as db_utils
+from pcapi.utils import date as utils_date
+from pcapi.utils import db as db_utils
 from pcapi.utils.human_ids import humanize
 
 
@@ -130,98 +109,98 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
-    id = Column(BigInteger, primary_key=True)
+    id = sa.Column(sa.BigInteger, primary_key=True)
 
-    name = Column(String(140), nullable=False)
+    name = sa.Column(sa.String(140), nullable=False)
 
-    siret = Column(String(14), nullable=True, unique=True)
+    siret = sa.Column(sa.String(14), nullable=True, unique=True)
 
-    departementCode = Column(String(3), nullable=True)
+    departementCode = sa.Column(sa.String(3), nullable=True)
 
-    latitude = Column(Numeric(8, 5), nullable=True)
+    latitude = sa.Column(sa.Numeric(8, 5), nullable=True)
 
-    longitude = Column(Numeric(8, 5), nullable=True)
+    longitude = sa.Column(sa.Numeric(8, 5), nullable=True)
 
-    venueProviders = relationship("VenueProvider", back_populates="venue")  # type: ignore [misc]
+    venueProviders = orm.relationship("VenueProvider", back_populates="venue")  # type: ignore [misc]
 
-    managingOffererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
+    managingOffererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=False, index=True)
 
-    managingOfferer = relationship("Offerer", foreign_keys=[managingOffererId], backref="managedVenues")
+    managingOfferer = orm.relationship("Offerer", foreign_keys=[managingOffererId], backref="managedVenues")
 
-    bookingEmail = Column(String(120), nullable=True)
+    bookingEmail = sa.Column(sa.String(120), nullable=True)
 
-    address = Column(String(200), nullable=True)
+    address = sa.Column(sa.String(200), nullable=True)
 
-    postalCode = Column(String(6), nullable=True)
+    postalCode = sa.Column(sa.String(6), nullable=True)
 
-    city = Column(String(50), nullable=True)
+    city = sa.Column(sa.String(50), nullable=True)
 
-    publicName = Column(String(255), nullable=True)
+    publicName = sa.Column(sa.String(255), nullable=True)
 
-    isVirtual = Column(
-        Boolean,
-        CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address"),
+    isVirtual = sa.Column(
+        sa.Boolean,
+        sa.CheckConstraint(CONSTRAINT_CHECK_IS_VIRTUAL_XOR_HAS_ADDRESS, name="check_is_virtual_xor_has_address"),
         nullable=False,
         default=False,
         server_default=expression.false(),
     )
 
-    isPermanent = Column(
-        Boolean,
+    isPermanent = sa.Column(
+        sa.Boolean,
         nullable=True,
         default=False,
     )
 
-    comment = Column(
-        TEXT,
-        CheckConstraint(
+    comment = sa.Column(
+        sa.TEXT,
+        sa.CheckConstraint(
             CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL, name="check_has_siret_xor_comment_xor_isVirtual"
         ),
         nullable=True,
     )
 
-    collectiveOffers = relationship("CollectiveOffer", back_populates="venue")  # type: ignore [misc]
+    collectiveOffers = orm.relationship("CollectiveOffer", back_populates="venue")  # type: ignore [misc]
 
-    collectiveOfferTemplates = relationship("CollectiveOfferTemplate", back_populates="venue")  # type: ignore [misc]
+    collectiveOfferTemplates = orm.relationship("CollectiveOfferTemplate", back_populates="venue")  # type: ignore [misc]
 
-    venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
+    venueTypeId = sa.Column(sa.Integer, sa.ForeignKey("venue_type.id"), nullable=True)
 
-    venueType = relationship("VenueType", foreign_keys=[venueTypeId])
+    venueType = orm.relationship("VenueType", foreign_keys=[venueTypeId])
 
-    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)  # type: ignore [attr-defined]
+    venueTypeCode = sa.Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)  # type: ignore [attr-defined]
 
-    venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
+    venueLabelId = sa.Column(sa.Integer, sa.ForeignKey("venue_label.id"), nullable=True)
 
-    venueLabel = relationship("VenueLabel", foreign_keys=[venueLabelId])
+    venueLabel = orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    withdrawalDetails = Column(Text, nullable=True)
+    withdrawalDetails = sa.Column(sa.Text, nullable=True)
 
-    description = Column(Text, nullable=True)
+    description = sa.Column(sa.Text, nullable=True)
 
-    contact = relationship("VenueContact", back_populates="venue", uselist=False)
+    contact = orm.relationship("VenueContact", back_populates="venue", uselist=False)
 
-    businessUnitId = Column(Integer, ForeignKey("business_unit.id"), nullable=True)
-    businessUnit = relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venues")  # type: ignore [misc]
+    businessUnitId = sa.Column(sa.Integer, sa.ForeignKey("business_unit.id"), nullable=True)
+    businessUnit = orm.relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venues")  # type: ignore [misc]
 
     # bannerUrl should provide a safe way to retrieve the banner,
     # whereas bannerMeta should provide extra information that might be
     # helpful like image type, author, etc. that can change over time.
-    bannerUrl = Column(Text, nullable=True)
+    bannerUrl = sa.Column(sa.Text, nullable=True)
 
-    bannerMeta = Column(MutableDict.as_mutable(JSONB), nullable=True)
+    bannerMeta = sa.Column(MutableDict.as_mutable(JSONB), nullable=True)
 
-    adageId = Column(Text, nullable=True)
+    adageId = sa.Column(sa.Text, nullable=True)
 
     thumb_path_component = "venues"
 
-    criteria = sa.orm.relationship(  # type: ignore [misc]
+    criteria = orm.relationship(  # type: ignore [misc]
         "Criterion", backref=db.backref("venue_criteria", lazy="dynamic"), secondary="venue_criterion"
     )
 
     # TODO(fseguin,2022-06-20): Make column non-nullable when column is populated on all envs
-    dmsToken = Column(Text, nullable=True, unique=True)
+    dmsToken = sa.Column(sa.Text, nullable=True, unique=True)
 
     @property
     def is_eligible_for_search(self) -> bool:
@@ -231,7 +210,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     def store_departement_code(self) -> None:
         if not self.postalCode:
             return
-        self.departementCode = PostalCode(self.postalCode).get_departement_code()
+        self.departementCode = postal_code.PostalCode(self.postalCode).get_departement_code()
 
     @property
     def bic(self) -> Optional[str]:
@@ -299,26 +278,26 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     @hybrid_property
     def timezone(self) -> str:
         if self.departementCode is None:
-            return get_postal_code_timezone(self.managingOfferer.postalCode)
-        return get_department_timezone(self.departementCode)
+            return utils_date.get_postal_code_timezone(self.managingOfferer.postalCode)
+        return utils_date.get_department_timezone(self.departementCode)
 
     @timezone.expression  # type: ignore [no-redef]
     def timezone(cls):  # pylint: disable=no-self-argument
-        offerer_alias = aliased(Offerer)
-        return case(
+        offerer_alias = orm.aliased(Offerer)
+        return sa.case(
             [
                 (
                     cls.departementCode.is_(None),
-                    case(
-                        CUSTOM_TIMEZONES,
+                    sa.case(
+                        utils_date.CUSTOM_TIMEZONES,
                         value=db.session.query(offerer_alias.departementCode)
                         .filter(cls.managingOffererId == offerer_alias.id)
                         .as_scalar(),
-                        else_=METROPOLE_TIMEZONE,
+                        else_=utils_date.METROPOLE_TIMEZONE,
                     ),
                 )
             ],
-            else_=case(CUSTOM_TIMEZONES, value=cls.departementCode, else_=METROPOLE_TIMEZONE),
+            else_=sa.case(utils_date.CUSTOM_TIMEZONES, value=cls.departementCode, else_=utils_date.METROPOLE_TIMEZONE),
         )
 
     def field_exists_and_has_changed(self, field: str, value: typing.Any) -> typing.Any:
@@ -330,33 +309,35 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 class VenueLabel(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_label"
 
-    label = Column(String(100), nullable=False)
+    label = sa.Column(sa.String(100), nullable=False)
 
-    venue = relationship("Venue", back_populates="venueLabel")
+    venue = orm.relationship("Venue", back_populates="venueLabel")
 
 
 class VenueType(PcObject, Model):  # type: ignore [valid-type, misc]
-    label = Column(String(100), nullable=False)
+    label = sa.Column(sa.String(100), nullable=False)
 
-    venue = relationship("Venue", back_populates="venueType")
+    venue = orm.relationship("Venue", back_populates="venueType")
 
 
 class VenueContact(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_contact"
 
-    id = Column(BigInteger, primary_key=True)
+    id = sa.Column(sa.BigInteger, primary_key=True)
 
-    venueId = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True)
+    venueId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True
+    )
 
-    venue = relationship("Venue", foreign_keys=[venueId], back_populates="contact")
+    venue = orm.relationship("Venue", foreign_keys=[venueId], back_populates="contact")
 
-    email = Column(String(256), nullable=True)
+    email = sa.Column(sa.String(256), nullable=True)
 
-    website = Column(String(256), nullable=True)
+    website = sa.Column(sa.String(256), nullable=True)
 
-    phone_number = Column(String(64), nullable=True)
+    phone_number = sa.Column(sa.String(64), nullable=True)
 
-    social_medias = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")
+    social_medias = sa.Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")
 
     def __repr__(self) -> str:
         return (
@@ -412,17 +393,17 @@ class VenuePricingPointLink(Model):  # type: ignore [misc, valid-type]
     period during which this link is active.
     """
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId])
-    pricingPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    pricingPoint = relationship(Venue, foreign_keys=[pricingPointId])
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    venue = orm.relationship(Venue, foreign_keys=[venueId])
+    pricingPointId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    pricingPoint = orm.relationship(Venue, foreign_keys=[pricingPointId])
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the pricing point. For links
     # that existed before this table was introduced, the lower bound
     # is set to the Epoch.
-    timespan = Column(sa_psql.TSRANGE, nullable=False)
+    timespan = sa.Column(sa_psql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # A venue cannot be linked to multiple pricing points at the
@@ -442,17 +423,17 @@ class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
     any other venue (that has a related bank account) of the same offerer.
     """
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-    venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId])
-    reimbursementPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    venue = orm.relationship(Venue, foreign_keys=[venueId])
+    reimbursementPointId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False)
+    reimbursementPoint = orm.relationship(Venue, foreign_keys=[reimbursementPointId])
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the pricing point. For links
     # that existed before this table was introduced, the lower bound
     # is set to the Epoch.
-    timespan = Column(sa_psql.TSRANGE, nullable=False)
+    timespan = sa.Column(sa_psql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # A venue cannot be linked to multiple reimbursement points at
@@ -474,21 +455,21 @@ class Offerer(
     NeedsValidationMixin,
     DeactivableMixin,
 ):
-    id = Column(BigInteger, primary_key=True)
+    id = sa.Column(sa.BigInteger, primary_key=True)
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
 
-    name = Column(String(140), nullable=False)
+    name = sa.Column(sa.String(140), nullable=False)
 
-    users = relationship("User", secondary="user_offerer")  # type: ignore [misc]
+    users = orm.relationship("User", secondary="user_offerer")  # type: ignore [misc]
 
-    siren = Column(
-        String(9), nullable=True, unique=True
+    siren = sa.Column(
+        sa.String(9), nullable=True, unique=True
     )  # FIXME: should not be nullable, is until we have all SIRENs filled in the DB
 
-    dateValidated = Column(DateTime, nullable=True, default=None)
+    dateValidated = sa.Column(sa.DateTime, nullable=True, default=None)
 
-    tags = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
+    tags = orm.relationship("OffererTag", secondary="offerer_tag_mapping")
 
     thumb_path_component = "offerers"
 
@@ -515,14 +496,15 @@ class Offerer(
 
     @hybrid_property
     def departementCode(self):
-        return PostalCode(self.postalCode).get_departement_code()
+        return postal_code.PostalCode(self.postalCode).get_departement_code()
 
     @departementCode.expression  # type: ignore [no-redef]
     def departementCode(cls):  # pylint: disable=no-self-argument
-        return case(
+        return sa.case(
             [
                 (
-                    cast(func.substring(cls.postalCode, 1, 2), Integer) >= OVERSEAS_DEPARTEMENT_CODE_START,
+                    sa.cast(func.substring(cls.postalCode, 1, 2), sa.Integer)
+                    >= postal_code.OVERSEAS_DEPARTEMENT_CODE_START,
                     func.substring(cls.postalCode, 1, 3),
                 )
             ],
@@ -544,13 +526,13 @@ offerer_ts_indexes = [
 
 
 class UserOfferer(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
-    userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
-    user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))  # type: ignore [misc]
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))
+    userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), primary_key=True)
+    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("UserOfferers"))  # type: ignore [misc]
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, primary_key=True)
+    offerer = orm.relationship("Offerer", foreign_keys=[offererId], backref=orm.backref("UserOfferers"))
 
     __table_args__ = (
-        UniqueConstraint(
+        sa.UniqueConstraint(
             "userId",
             "offererId",
             name="unique_user_offerer",
@@ -560,17 +542,17 @@ class UserOfferer(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid
 
 class ApiKey(PcObject, Model):  # type: ignore [valid-type, misc]
     # TODO: remove value colum when legacy keys are migrated
-    value = Column(CHAR(64), index=True, nullable=True)
+    value = sa.Column(sqltypes.CHAR(64), index=True, nullable=True)
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
+    offerer = orm.relationship("Offerer", foreign_keys=[offererId], backref=orm.backref("apiKeys"))
 
-    dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
+    dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
-    prefix = Column(Text, nullable=True, unique=True)
+    prefix = sa.Column(sa.Text, nullable=True, unique=True)
 
-    secret = Column(LargeBinary, nullable=True)
+    secret = sa.Column(sqltypes.LargeBinary, nullable=True)
 
     def check_secret(self, clear_text: str) -> bool:
         return crypto.check_password(clear_text, self.secret)  # type: ignore [arg-type]
@@ -584,7 +566,7 @@ class OffererTag(PcObject, Model):  # type: ignore [valid-type, misc]
 
     __tablename__ = "offerer_tag"
 
-    name = Column(String(140), nullable=False, unique=True)
+    name = sa.Column(sa.String(140), nullable=False, unique=True)
 
     def __repr__(self):  # type: ignore [no-untyped-def]
         return "%s" % self.name
@@ -593,16 +575,16 @@ class OffererTag(PcObject, Model):  # type: ignore [valid-type, misc]
 class OffererTagMapping(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offerer_tag_mapping"
 
-    offererId = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
+    offererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId])
+    offerer = orm.relationship("Offerer", foreign_keys=[offererId])
 
-    tagId = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
+    tagId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    tag = relationship("OffererTag", foreign_keys=[tagId])
+    tag = orm.relationship("OffererTag", foreign_keys=[tagId])
 
     __table_args__ = (
-        UniqueConstraint(
+        sa.UniqueConstraint(
             "offererId",
             "tagId",
             name="unique_offerer_tag",

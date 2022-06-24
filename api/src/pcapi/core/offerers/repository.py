@@ -2,30 +2,24 @@ from typing import Iterable
 from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
-import sqlalchemy as sqla
-import sqlalchemy.orm as sqla_orm
+import sqlalchemy as sa
+from sqlalchemy import orm
 
-import pcapi.core.bookings.repository as bookings_repository
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.offers.models import Offer
-import pcapi.core.offers.repository as offers_repository
+from pcapi.core.bookings import repository as bookings_repository
+from pcapi.core.educational import models as educational_models
+from pcapi.core.offerers import exceptions as offerers_exceptions
+from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import repository as offers_repository
 from pcapi.core.users.models import User
-from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
-from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
+from pcapi.domain import ts_vector
+from pcapi.models import bank_information
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
-from pcapi.models.offer_mixin import OfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
-
-from . import exceptions
-from . import models
+from pcapi.models import offer_mixin
 
 
-def get_all_venue_labels() -> list[models.VenueLabel]:
-    return models.VenueLabel.query.all()
+def get_all_venue_labels() -> list[offerers_models.VenueLabel]:
+    return offerers_models.VenueLabel.query.all()
 
 
 def get_all_offerers_for_user(
@@ -33,7 +27,7 @@ def get_all_offerers_for_user(
     validated: bool = None,
     keywords: str = None,
     include_non_validated_user_offerers: bool = False,
-) -> sqla_orm.Query:
+) -> orm.Query:
     """Return a query of matching, accessible offerers.
 
     **WARNING:** this function may return more than one row per
@@ -47,20 +41,20 @@ def get_all_offerers_for_user(
     be used to return very restrictive informations (that the
     requesting user already knows), such as the name of the offerer.
     """
-    query = models.Offerer.query.filter(models.Offerer.isActive.is_(True))
+    query = offerers_models.Offerer.query.filter(offerers_models.Offerer.isActive.is_(True))
 
     if not user.has_admin_role:
-        user_offerer_filters = [models.UserOfferer.userId == user.id]
+        user_offerer_filters = [offerers_models.UserOfferer.userId == user.id]
         if not include_non_validated_user_offerers:
-            user_offerer_filters.append(models.UserOfferer.isValidated)
-        query = query.join(models.Offerer.UserOfferers).filter(*user_offerer_filters)
+            user_offerer_filters.append(offerers_models.UserOfferer.isValidated)
+        query = query.join(offerers_models.Offerer.UserOfferers).filter(*user_offerer_filters)
 
     if validated is not None:
         if validated:
-            query = query.filter(models.Offerer.isValidated)
+            query = query.filter(offerers_models.Offerer.isValidated)
         else:
             query = query.filter(
-                ~models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
+                ~offerers_models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
             )
 
     if keywords:
@@ -77,37 +71,39 @@ def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
     returned dictionary.
     """
 
-    offer_query = Offer.query.filter(
-        Offer.validation != OfferValidationStatus.DRAFT,
-        Offer.venueId.in_(venue_ids),
+    offer_query = offers_models.Offer.query.filter(
+        offers_models.Offer.validation != offer_mixin.OfferValidationStatus.DRAFT,
+        offers_models.Offer.venueId.in_(venue_ids),
     )
 
-    offer_query = offer_query.filter(Offer.isEducational.is_(False))
+    offer_query = offer_query.filter(offers_models.Offer.isEducational.is_(False))
 
     individual_offers_count = dict(
-        offer_query.with_entities(Offer.venueId, sqla.func.count()).group_by(Offer.venueId).all()
+        offer_query.with_entities(offers_models.Offer.venueId, sa.func.count())
+        .group_by(offers_models.Offer.venueId)
+        .all()
     )
 
     collective_offers_count = {}
     collective_offers_template_count = {}
 
     collective_offers_count = dict(
-        CollectiveOffer.query.filter(
-            CollectiveOffer.validation != OfferValidationStatus.DRAFT,
-            CollectiveOffer.venueId.in_(venue_ids),
+        educational_models.CollectiveOffer.query.filter(
+            educational_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT,
+            educational_models.CollectiveOffer.venueId.in_(venue_ids),
         )
-        .with_entities(CollectiveOffer.venueId, sqla.func.count())
-        .group_by(CollectiveOffer.venueId)
+        .with_entities(educational_models.CollectiveOffer.venueId, sa.func.count())
+        .group_by(educational_models.CollectiveOffer.venueId)
         .all()
     )
 
     collective_offers_template_count = dict(
-        CollectiveOfferTemplate.query.filter(
-            CollectiveOfferTemplate.validation != OfferValidationStatus.DRAFT,
-            CollectiveOfferTemplate.venueId.in_(venue_ids),
+        educational_models.CollectiveOfferTemplate.query.filter(
+            educational_models.CollectiveOfferTemplate.validation != offer_mixin.OfferValidationStatus.DRAFT,
+            educational_models.CollectiveOfferTemplate.venueId.in_(venue_ids),
         )
-        .with_entities(CollectiveOfferTemplate.venueId, sqla.func.count())
-        .group_by(CollectiveOfferTemplate.venueId)
+        .with_entities(educational_models.CollectiveOfferTemplate.venueId, sa.func.count())
+        .group_by(educational_models.CollectiveOfferTemplate.venueId)
         .all()
     )
 
@@ -127,34 +123,36 @@ def get_filtered_venues(
     active_offerers_only: Optional[bool] = False,
     offerer_id: Optional[int] = None,
     validated_offerer: Optional[bool] = None,
-) -> list[models.Venue]:
+) -> list[offerers_models.Venue]:
     query = (
-        models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
-        .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
-        .options(sqla_orm.joinedload(models.Venue.managingOfferer))
-        .options(sqla_orm.joinedload(models.Venue.businessUnit))
+        offerers_models.Venue.query.join(
+            offerers_models.Offerer, offerers_models.Offerer.id == offerers_models.Venue.managingOffererId
+        )
+        .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .options(orm.joinedload(offerers_models.Venue.managingOfferer))
+        .options(orm.joinedload(offerers_models.Venue.businessUnit))
     )
     if not user_is_admin:
         query = query.filter(
-            models.UserOfferer.userId == pro_user_id,
-            models.UserOfferer.isValidated,
+            offerers_models.UserOfferer.userId == pro_user_id,
+            offerers_models.UserOfferer.isValidated,
         )
 
     if validated_offerer is not None:
         if validated_offerer:
-            query = query.filter(models.Offerer.isValidated)
+            query = query.filter(offerers_models.Offerer.isValidated)
         else:
             query = query.filter(
-                ~models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
+                ~offerers_models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
             )
 
     if active_offerers_only:
-        query = query.filter(models.Offerer.isActive.is_(True))
+        query = query.filter(offerers_models.Offerer.isActive.is_(True))
 
     if offerer_id:
-        query = query.filter(models.Venue.managingOffererId == offerer_id)
+        query = query.filter(offerers_models.Venue.managingOffererId == offerer_id)
 
-    return query.order_by(models.Venue.name).all()
+    return query.order_by(offerers_models.Venue.name).all()
 
 
 def get_venue_stats(venue_id: int) -> tuple[int, int, int, int]:
@@ -174,67 +172,69 @@ def get_venue_stats(venue_id: int) -> tuple[int, int, int, int]:
 def get_api_key_prefixes(offerer_id: int) -> list[str]:
     return [
         prefix or value[:8]
-        for prefix, value in models.ApiKey.query.filter_by(offererId=offerer_id)
-        .with_entities(models.ApiKey.prefix, models.ApiKey.value)
+        for prefix, value in offerers_models.ApiKey.query.filter_by(offererId=offerer_id)
+        .with_entities(offerers_models.ApiKey.prefix, offerers_models.ApiKey.value)
         .all()
         if prefix or value
     ]
 
 
-def find_offerer_by_siren(siren: str) -> Optional[models.Offerer]:
-    return models.Offerer.query.filter_by(siren=siren).one_or_none()
+def find_offerer_by_siren(siren: str) -> Optional[offerers_models.Offerer]:
+    return offerers_models.Offerer.query.filter_by(siren=siren).one_or_none()
 
 
-def find_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
-    return models.Offerer.query.filter_by(validationToken=token).one_or_none()
+def find_offerer_by_validation_token(token: str) -> Optional[offerers_models.UserOfferer]:
+    return offerers_models.Offerer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_user_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
-    return models.UserOfferer.query.filter_by(validationToken=token).one_or_none()
+def find_user_offerer_by_validation_token(token: str) -> Optional[offerers_models.UserOfferer]:
+    return offerers_models.UserOfferer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_all_user_offerers_by_offerer_id(offerer_id: int) -> list[models.UserOfferer]:
-    return models.UserOfferer.query.filter_by(offererId=offerer_id).all()
+def find_all_user_offerers_by_offerer_id(offerer_id: int) -> list[offerers_models.UserOfferer]:
+    return offerers_models.UserOfferer.query.filter_by(offererId=offerer_id).all()
 
 
 def filter_query_where_user_is_user_offerer_and_is_validated(query, user):  # type: ignore [no-untyped-def]
-    return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.isValidated)
+    return query.join(offerers_models.UserOfferer).filter_by(user=user).filter(offerers_models.UserOfferer.isValidated)
 
 
-def find_venue_by_id(venue_id: int) -> Optional[models.Venue]:
-    return models.Venue.query.filter_by(id=venue_id).one_or_none()
+def find_venue_by_id(venue_id: int) -> Optional[offerers_models.Venue]:
+    return offerers_models.Venue.query.filter_by(id=venue_id).one_or_none()
 
 
-def find_venue_by_siret(siret: str) -> Optional[models.Venue]:
-    return models.Venue.query.filter_by(siret=siret).one_or_none()
+def find_venue_by_siret(siret: str) -> Optional[offerers_models.Venue]:
+    return offerers_models.Venue.query.filter_by(siret=siret).one_or_none()
 
 
-def find_venue_by_managing_offerer_id(offerer_id: int) -> Optional[models.Venue]:
-    return models.Venue.query.filter_by(managingOffererId=offerer_id).first()
+def find_venue_by_managing_offerer_id(offerer_id: int) -> Optional[offerers_models.Venue]:
+    return offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).first()
 
 
-def find_virtual_venue_by_offerer_id(offerer_id: int) -> Optional[models.Venue]:
-    return models.Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()
+def find_virtual_venue_by_offerer_id(offerer_id: int) -> Optional[offerers_models.Venue]:
+    return offerers_models.Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()
 
 
-def find_active_venues_by_booking_email(email: str) -> list[models.Venue]:
+def find_active_venues_by_booking_email(email: str) -> list[offerers_models.Venue]:
     return (
-        models.Venue.query.filter_by(bookingEmail=email)
-        .join(models.Offerer)
-        .filter(models.Offerer.isActive == True)
+        offerers_models.Venue.query.filter_by(bookingEmail=email)
+        .join(offerers_models.Offerer)
+        .filter(offerers_models.Offerer.isActive == True)
         .all()
     )
 
 
 def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: int) -> bool:
     return db.session.query(
-        models.Venue.query.outerjoin(BankInformation)
-        .filter(models.Venue.managingOffererId == offerer_id)
-        .filter(models.Venue.isVirtual.is_(False))
+        offerers_models.Venue.query.outerjoin(bank_information.BankInformation)
+        .filter(offerers_models.Venue.managingOffererId == offerer_id)
+        .filter(offerers_models.Venue.isVirtual.is_(False))
         .filter(
-            sqla.or_(
-                BankInformation.status.notin_((BankInformationStatus.DRAFT, BankInformationStatus.ACCEPTED)),
-                models.Venue.bankInformation == None,
+            sa.or_(
+                bank_information.BankInformation.status.notin_(
+                    (bank_information.BankInformationStatus.DRAFT, bank_information.BankInformationStatus.ACCEPTED)
+                ),
+                offerers_models.Venue.bankInformation == None,
             )
         )
         .exists()
@@ -243,123 +243,135 @@ def has_physical_venue_without_draft_or_accepted_bank_information(offerer_id: in
 
 def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
     return db.session.query(
-        models.Venue.query.join(Offer, models.Venue.id == Offer.venueId)
-        .filter(models.Venue.managingOffererId == offerer_id)
-        .filter(models.Venue.isVirtual.is_(True))
+        offerers_models.Venue.query.join(offers_models.Offer, offerers_models.Venue.id == offers_models.Offer.venueId)
+        .filter(offerers_models.Venue.managingOffererId == offerer_id)
+        .filter(offerers_models.Venue.isVirtual.is_(True))
         .exists()
     ).scalar()
 
 
-get_filter_matching_ts_query_for_offerer = create_get_filter_matching_ts_query_in_any_model(
-    models.Offerer, models.Venue
+get_filter_matching_ts_query_for_offerer = ts_vector.create_get_filter_matching_ts_query_in_any_model(
+    offerers_models.Offerer, offerers_models.Venue
 )
 
 
-def get_by_offer_id(offer_id: int) -> models.Offerer:
-    offerer = models.Offerer.query.join(models.Venue).join(Offer).filter_by(id=offer_id).one_or_none()
-    if not offerer:
-        raise exceptions.CannotFindOffererForOfferId()
-    return offerer
-
-
-def get_by_collective_offer_id(collective_offer_id: int) -> models.Offerer:
+def get_by_offer_id(offer_id: int) -> offerers_models.Offerer:
     offerer = (
-        models.Offerer.query.join(models.Venue)
-        .join(CollectiveOffer)
-        .filter(CollectiveOffer.id == collective_offer_id)
+        offerers_models.Offerer.query.join(offerers_models.Venue)
+        .join(offers_models.Offer)
+        .filter_by(id=offer_id)
         .one_or_none()
     )
     if not offerer:
-        raise exceptions.CannotFindOffererForOfferId()
+        raise offerers_exceptions.CannotFindOffererForOfferId()
     return offerer
 
 
-def get_by_collective_offer_template_id(collective_offer_id: int) -> models.Offerer:
+def get_by_collective_offer_id(collective_offer_id: int) -> offerers_models.Offerer:
     offerer = (
-        models.Offerer.query.join(models.Venue)
-        .join(CollectiveOfferTemplate)
-        .filter(CollectiveOfferTemplate.id == collective_offer_id)
+        offerers_models.Offerer.query.join(offerers_models.Venue)
+        .join(educational_models.CollectiveOffer)
+        .filter(educational_models.CollectiveOffer.id == collective_offer_id)
         .one_or_none()
     )
     if not offerer:
-        raise exceptions.CannotFindOffererForOfferId()
+        raise offerers_exceptions.CannotFindOffererForOfferId()
     return offerer
 
 
-def get_by_collective_stock_id(collective_stock_id: int) -> models.Offerer:
+def get_by_collective_offer_template_id(collective_offer_id: int) -> offerers_models.Offerer:
     offerer = (
-        models.Offerer.query.join(models.Venue)
-        .join(CollectiveOffer)
-        .join(CollectiveStock)
-        .filter(CollectiveStock.id == collective_stock_id)
+        offerers_models.Offerer.query.join(offerers_models.Venue)
+        .join(educational_models.CollectiveOfferTemplate)
+        .filter(educational_models.CollectiveOfferTemplate.id == collective_offer_id)
         .one_or_none()
     )
     if not offerer:
-        raise exceptions.CannotFindOffererForOfferId()
+        raise offerers_exceptions.CannotFindOffererForOfferId()
+    return offerer
+
+
+def get_by_collective_stock_id(collective_stock_id: int) -> offerers_models.Offerer:
+    offerer = (
+        offerers_models.Offerer.query.join(offerers_models.Venue)
+        .join(educational_models.CollectiveOffer)
+        .join(educational_models.CollectiveStock)
+        .filter(educational_models.CollectiveStock.id == collective_stock_id)
+        .one_or_none()
+    )
+    if not offerer:
+        raise offerers_exceptions.CannotFindOffererForOfferId()
     return offerer
 
 
 def find_new_offerer_user_email(offerer_id: int) -> str:
-    result_tuple = models.UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()
+    result_tuple = (
+        offerers_models.UserOfferer.query.filter_by(offererId=offerer_id).join(User).with_entities(User.email).first()
+    )
     if result_tuple:
         return result_tuple[0]
-    raise exceptions.CannotFindOffererUserEmail()
+    raise offerers_exceptions.CannotFindOffererUserEmail()
 
 
 def filter_offerers_with_keywords_string(query: BaseQuery, keywords_string: str) -> BaseQuery:
-    keywords_filter = create_filter_matching_all_keywords_in_any_model(
+    keywords_filter = ts_vector.create_filter_matching_all_keywords_in_any_model(
         get_filter_matching_ts_query_for_offerer, keywords_string
     )
     subquery = (
-        models.Offerer.query.outerjoin(models.Offerer.managedVenues)
+        offerers_models.Offerer.query.outerjoin(offerers_models.Offerer.managedVenues)
         .filter(keywords_filter)
-        .with_entities(models.Offerer.id)
+        .with_entities(offerers_models.Offerer.id)
         .subquery()
     )
-    query = query.filter(models.Offerer.id.in_(subquery))
+    query = query.filter(offerers_models.Offerer.id.in_(subquery))
     return query
 
 
 def check_if_siren_already_exists(siren: str) -> bool:
-    return db.session.query(db.session.query(models.Offerer.id).filter(models.Offerer.siren == siren).exists())
+    return db.session.query(
+        db.session.query(offerers_models.Offerer.id).filter(offerers_models.Offerer.siren == siren).exists()
+    )
 
 
 def find_siren_by_offerer_id(offerer_id: int) -> str:
-    siren = models.Offerer.query.filter_by(id=offerer_id).with_entities(models.Offerer.siren).scalar()
+    siren = offerers_models.Offerer.query.filter_by(id=offerer_id).with_entities(offerers_models.Offerer.siren).scalar()
 
     if siren:
         return siren
 
-    raise exceptions.CannotFindOffererSiren
+    raise offerers_exceptions.CannotFindOffererSiren
 
 
-def venues_have_offers(*venues: models.Venue) -> bool:
+def venues_have_offers(*venues: offerers_models.Venue) -> bool:
     """At least one venue which has email as bookingEmail has at least one active offer"""
     return db.session.query(
-        Offer.query.filter(
-            Offer.venueId.in_([venue.id for venue in venues]), Offer.status == OfferStatus.ACTIVE.name
+        offers_models.Offer.query.filter(
+            offers_models.Offer.venueId.in_([venue.id for venue in venues]),
+            offers_models.Offer.status == offer_mixin.OfferStatus.ACTIVE.name,
         ).exists()
     ).scalar()
 
 
-def find_venues_by_managing_offerer_id(offerer_id: int) -> list[models.Venue]:
-    return models.Venue.query.filter_by(managingOffererId=offerer_id).all()
+def find_venues_by_managing_offerer_id(offerer_id: int) -> list[offerers_models.Venue]:
+    return offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).all()
 
 
-def find_venues_by_offerers(*offerers: models.Offerer) -> list[models.Venue]:
+def find_venues_by_offerers(*offerers: offerers_models.Offerer) -> list[offerers_models.Venue]:
     """Get all venues managed by any offerer given in arguments"""
-    return models.Venue.query.filter(models.Venue.managingOffererId.in_([offerer.id for offerer in offerers])).all()
+    return offerers_models.Venue.query.filter(
+        offerers_models.Venue.managingOffererId.in_([offerer.id for offerer in offerers])
+    ).all()
 
 
 def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
-    query = db.session.query(models.Venue.id)
-    query = query.join(models.Offerer, models.Venue.managingOfferer)
+    query = db.session.query(offerers_models.Venue.id)
+    query = query.join(offerers_models.Offerer, offerers_models.Venue.managingOfferer)
     query = query.filter(
-        models.Venue.adageId != None,
-        models.Offerer.id == offerer_id,
+        offerers_models.Venue.adageId != None,
+        offerers_models.Offerer.id == offerer_id,
     )
     return bool(query.count())
 
 
 def dms_token_exists(dms_token: str) -> bool:
-    return db.session.query(models.Venue.query.filter_by(dmsToken=dms_token).exists()).scalar()
+    return db.session.query(offerers_models.Venue.query.filter_by(dmsToken=dms_token).exists()).scalar()

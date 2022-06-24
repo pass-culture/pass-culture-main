@@ -2,12 +2,11 @@ import datetime
 
 import factory
 
+from pcapi.core.offerers import api
+from pcapi.core.offerers import models
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.utils import crypto
-
-from . import api
-from . import models
 
 
 class OffererFactory(BaseFactory):

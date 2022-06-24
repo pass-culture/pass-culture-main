@@ -2,12 +2,12 @@ from datetime import datetime
 import logging
 import secrets
 import typing
-from typing import Optional
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
+from pcapi.connectors import api_adage
 from pcapi.connectors import thumb_storage as storage
 from pcapi.core import search
 import pcapi.core.educational.exceptions as educational_exceptions
@@ -16,22 +16,10 @@ from pcapi.core.mails.transactional.pro.new_offerer_validation import send_new_o
 from pcapi.core.mails.transactional.pro.offerer_attachment_validation import (
     send_offerer_attachment_validation_email_to_pro,
 )
+from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.exceptions import MissingOffererIdQueryParameter
-from pcapi.core.offerers.models import ApiKey
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import UserOfferer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offerers.models import VenueContact
-from pcapi.core.offerers.repository import dms_token_exists
-from pcapi.core.offerers.repository import find_offerer_by_siren
-from pcapi.core.offerers.repository import find_offerer_by_validation_token
-from pcapi.core.offerers.repository import find_siren_by_offerer_id
-from pcapi.core.offerers.repository import find_user_offerer_by_validation_token
-from pcapi.core.offerers.repository import get_all_offerers_for_user
-from pcapi.core.offerers.repository import get_by_collective_offer_id
-from pcapi.core.offerers.repository import get_by_collective_offer_template_id
-from pcapi.core.offerers.repository import offerer_has_venue_with_adage_id
+from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import validation as offerers_validation
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users.external import update_external_pro
 from pcapi.core.users.models import User
@@ -44,16 +32,9 @@ from pcapi.routes.serialization import base as serialize_base
 from pcapi.routes.serialization.offerers_serialize import CreateOffererQueryModel
 from pcapi.routes.serialization.venues_serialize import PostVenueBodyModel
 from pcapi.utils import crypto
-import pcapi.utils.db as db_utils
+from pcapi.utils import db as db_utils
+from pcapi.utils import image_conversion
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.image_conversion import CropParams
-from pcapi.utils.image_conversion import ImageRatio
-
-from . import validation
-from .exceptions import ApiKeyCountMaxReached
-from .exceptions import ApiKeyDeletionDenied
-from .exceptions import ApiKeyPrefixGenerationError
-from .exceptions import ValidationTokenNotFoundError
 
 
 logger = logging.getLogger(__name__)
@@ -63,8 +44,8 @@ VENUE_ALGOLIA_INDEXED_FIELDS = ["name", "publicName", "postalCode", "city", "lat
 API_KEY_SEPARATOR = "_"
 
 
-def create_digital_venue(offerer: Offerer) -> Venue:
-    digital_venue = Venue()
+def create_digital_venue(offerer: offerers_models.Offerer) -> offerers_models.Venue:
+    digital_venue = offerers_models.Venue()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
     digital_venue.venueTypeCode = offerers_models.VenueTypeCode.DIGITAL  # type: ignore [attr-defined]
@@ -74,14 +55,14 @@ def create_digital_venue(offerer: Offerer) -> Venue:
 
 
 def update_venue(
-    venue: Venue,
+    venue: offerers_models.Venue,
     contact_data: serialize_base.VenueContactModel = None,
     **attrs: typing.Any,
-) -> Venue:
-    validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
+) -> offerers_models.Venue:
+    offerers_validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
-    validation.check_venue_edition(modifications, venue)
+    offerers_validation.check_venue_edition(modifications, venue)
 
     if contact_data:
         upsert_venue_contact(venue, contact_data)
@@ -132,7 +113,7 @@ def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
         },
         synchronize_session=False,
     )
-    Venue.query.filter(Venue.businessUnitId == business_unit.id).update(
+    offerers_models.Venue.query.filter(offerers_models.Venue.businessUnitId == business_unit.id).update(
         {"businessUnitId": None}, synchronize_session=False
     )
 
@@ -142,14 +123,16 @@ def delete_business_unit(business_unit: finance_models.BusinessUnit) -> None:
     logger.info("Set BusinessUnit.status as DELETED", extra={"business_unit_id": business_unit.id})
 
 
-def upsert_venue_contact(venue: Venue, contact_data: serialize_base.VenueContactModel) -> Venue:
+def upsert_venue_contact(
+    venue: offerers_models.Venue, contact_data: serialize_base.VenueContactModel
+) -> offerers_models.Venue:
     """
     Create and attach a VenueContact to a Venue if it has none.
     Update (replace) an existing VenueContact otherwise.
     """
     venue_contact = venue.contact
     if not venue_contact:
-        venue_contact = VenueContact(venue=venue)
+        venue_contact = offerers_models.VenueContact(venue=venue)
 
     modifications = {
         field: value
@@ -168,10 +151,10 @@ def upsert_venue_contact(venue: Venue, contact_data: serialize_base.VenueContact
     return venue
 
 
-def create_venue(venue_data: PostVenueBodyModel) -> Venue:
+def create_venue(venue_data: PostVenueBodyModel) -> offerers_models.Venue:
     data = venue_data.dict(by_alias=True)
-    validation.check_venue_creation(data)
-    venue = Venue()
+    offerers_validation.check_venue_creation(data)
+    venue = offerers_models.Venue()
     venue.populate_from_dict(data)
 
     if venue_data.contact:
@@ -190,9 +173,9 @@ def create_venue(venue_data: PostVenueBodyModel) -> Venue:
 
 
 def set_business_unit_to_venue_id(
-    business_unit_id: Optional[int],
+    business_unit_id: typing.Optional[int],
     venue_id: int,
-    timestamp: Optional[datetime] = None,
+    timestamp: typing.Optional[datetime] = None,
 ) -> None:
     if not timestamp:
         timestamp = datetime.utcnow()
@@ -211,22 +194,24 @@ def set_business_unit_to_venue_id(
             businessUnitId=business_unit_id, venueId=venue_id, timespan=(timestamp, None)
         )
         db.session.add(new_link)
-    Venue.query.filter(Venue.id == venue_id).update({"businessUnitId": business_unit_id})
+    offerers_models.Venue.query.filter(offerers_models.Venue.id == venue_id).update(
+        {"businessUnitId": business_unit_id}
+    )
     db.session.commit()
 
 
 def generate_and_save_api_key(offerer_id: int) -> str:
-    if ApiKey.query.filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
-        raise ApiKeyCountMaxReached()
+    if offerers_models.ApiKey.query.filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
+        raise offerers_exceptions.ApiKeyCountMaxReached()
     model_api_key, clear_api_key = generate_api_key(offerer_id)
     repository.save(model_api_key)
     return clear_api_key
 
 
-def generate_api_key(offerer_id: int) -> tuple[ApiKey, str]:
+def generate_api_key(offerer_id: int) -> tuple[offerers_models.ApiKey, str]:
     clear_secret = secrets.token_hex(32)
     prefix = _generate_api_key_prefix()
-    key = ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
+    key = offerers_models.ApiKey(offererId=offerer_id, prefix=prefix, secret=crypto.hash_password(clear_secret))
 
     return key, f"{prefix}{API_KEY_SEPARATOR}{clear_secret}"
 
@@ -235,20 +220,20 @@ def _generate_api_key_prefix() -> str:
     for _ in range(100):
         prefix_identifier = secrets.token_hex(6)
         prefix = _create_prefix(settings.ENV, prefix_identifier)
-        if not db.session.query(ApiKey.query.filter_by(prefix=prefix).exists()).scalar():
+        if not db.session.query(offerers_models.ApiKey.query.filter_by(prefix=prefix).exists()).scalar():
             return prefix
-    raise ApiKeyPrefixGenerationError()
+    raise offerers_exceptions.ApiKeyPrefixGenerationError()
 
 
-def find_api_key(key: str) -> Optional[ApiKey]:
+def find_api_key(key: str) -> typing.Optional[offerers_models.ApiKey]:
     try:
         env, prefix_identifier, clear_secret = key.split(API_KEY_SEPARATOR)
         prefix = _create_prefix(env, prefix_identifier)
     except ValueError:
         # TODO: remove this legacy behaviour once we forbid old keys
-        return ApiKey.query.filter_by(value=key).one_or_none()
+        return offerers_models.ApiKey.query.filter_by(value=key).one_or_none()
 
-    api_key = ApiKey.query.filter_by(prefix=prefix).one_or_none()
+    api_key = offerers_models.ApiKey.query.filter_by(prefix=prefix).one_or_none()
 
     if not api_key:
         return None
@@ -261,16 +246,16 @@ def _create_prefix(env: str, prefix_identifier: str) -> str:
 
 
 def delete_api_key_by_user(user: User, api_key_prefix: str) -> None:
-    api_key = ApiKey.query.filter_by(prefix=api_key_prefix).one()
+    api_key = offerers_models.ApiKey.query.filter_by(prefix=api_key_prefix).one()
 
     if not user.has_access(api_key.offererId):
-        raise ApiKeyDeletionDenied()
+        raise offerers_exceptions.ApiKeyDeletionDenied()
 
     db.session.delete(api_key)
 
 
 def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):  # type: ignore [no-untyped-def]
-    offerer = find_offerer_by_siren(offerer_informations.siren)
+    offerer = offerers_repository.find_offerer_by_siren(offerer_informations.siren)
 
     if offerer is not None:
         user_offerer = grant_user_offerer_access(offerer, user)
@@ -278,7 +263,7 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):  
         repository.save(user_offerer)
 
     else:
-        offerer = Offerer()
+        offerer = offerers_models.Offerer()
         offerer.address = offerer_informations.address
         offerer.city = offerer_informations.city
         offerer.name = offerer_informations.name
@@ -300,14 +285,14 @@ def create_offerer(user: User, offerer_informations: CreateOffererQueryModel):  
     return user_offerer
 
 
-def grant_user_offerer_access(offerer: Offerer, user: User) -> UserOfferer:
-    return UserOfferer(offerer=offerer, user=user)
+def grant_user_offerer_access(offerer: offerers_models.Offerer, user: User) -> offerers_models.UserOfferer:
+    return offerers_models.UserOfferer(offerer=offerer, user=user)
 
 
 def validate_offerer_attachment(token: str) -> None:
-    user_offerer = find_user_offerer_by_validation_token(token)
+    user_offerer = offerers_repository.find_user_offerer_by_validation_token(token)
     if user_offerer is None:
-        raise ValidationTokenNotFoundError()
+        raise offerers_exceptions.ValidationTokenNotFoundError()
 
     user_offerer.validationToken = None
     user_offerer.user.add_pro_role()
@@ -323,9 +308,9 @@ def validate_offerer_attachment(token: str) -> None:
 
 
 def validate_offerer(token: str) -> None:
-    offerer = find_offerer_by_validation_token(token)
+    offerer = offerers_repository.find_offerer_by_validation_token(token)
     if offerer is None:
-        raise ValidationTokenNotFoundError()
+        raise offerers_exceptions.ValidationTokenNotFoundError()
 
     applicants = get_users_with_validated_attachment_by_offerer(offerer)
     offerer.validationToken = None
@@ -351,7 +336,7 @@ def get_timestamp_from_url(image_url: str) -> str:
     return int(image_url.split("_")[-1])  # type: ignore [return-value]
 
 
-def rm_previous_venue_thumbs(venue: Venue) -> None:
+def rm_previous_venue_thumbs(venue: offerers_models.Venue) -> None:
     if not venue.bannerUrl:
         return
 
@@ -371,10 +356,10 @@ def rm_previous_venue_thumbs(venue: Venue) -> None:
 
 def save_venue_banner(
     user: User,
-    venue: Venue,
+    venue: offerers_models.Venue,
     content: bytes,
     image_credit: str,
-    crop_params: Optional[CropParams] = None,
+    crop_params: typing.Optional[image_conversion.CropParams] = None,
 ) -> None:
     """
     Save the new venue's new banner: crop it and resize it if asked
@@ -394,7 +379,7 @@ def save_venue_banner(
         image_as_bytes=content,
         image_index=banner_timestamp,
         crop_params=crop_params,
-        ratio=ImageRatio.LANDSCAPE,
+        ratio=image_conversion.ImageRatio.LANDSCAPE,
     )
 
     original_image_timestamp = banner_timestamp + 1
@@ -415,22 +400,22 @@ def save_venue_banner(
     search.async_index_venue_ids([venue.id])
 
 
-def delete_venue_banner(venue: Venue) -> None:
+def delete_venue_banner(venue: offerers_models.Venue) -> None:
     rm_previous_venue_thumbs(venue)
     repository.save(venue)
     search.async_index_venue_ids([venue.id])
 
 
-def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:
+def can_offerer_create_educational_offer(offerer_id: typing.Optional[int]) -> None:
     import pcapi.core.educational.adage_backends as adage_client
 
     if offerer_id is None:
         return
 
-    if offerer_has_venue_with_adage_id(offerer_id):
+    if offerers_repository.offerer_has_venue_with_adage_id(offerer_id):
         return
 
-    siren = find_siren_by_offerer_id(offerer_id)
+    siren = offerers_repository.find_siren_by_offerer_id(offerer_id)
     try:
         response = adage_client.get_adage_offerer(siren)
         if len(response) == 0:
@@ -444,30 +429,34 @@ def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:
         raise exception
 
 
-def get_educational_offerers(offerer_id: Optional[str], current_user: User) -> list[Offerer]:
+def get_educational_offerers(offerer_id: typing.Optional[str], current_user: User) -> list[offerers_models.Offerer]:
     if current_user.has_admin_role and offerer_id is None:
         logger.info("Admin user must provide offerer_id as a query parameter")
-        raise MissingOffererIdQueryParameter
+        raise offerers_exceptions.MissingOffererIdQueryParameter
 
     if offerer_id and current_user.has_admin_role:
-        offerers = Offerer.query.filter(
-            Offerer.isValidated, Offerer.isActive.is_(True), Offerer.id == dehumanize(offerer_id)
+        offerers = offerers_models.Offerer.query.filter(
+            offerers_models.Offerer.isValidated,
+            offerers_models.Offerer.isActive.is_(True),
+            offerers_models.Offerer.id == dehumanize(offerer_id),
         ).all()
 
     else:
         offerers = (
-            get_all_offerers_for_user(
+            offerers_repository.get_all_offerers_for_user(
                 user=current_user,
                 validated=True,
             )
-            .distinct(Offerer.id)
+            .distinct(offerers_models.Offerer.id)
             .all()
         )
     return offerers
 
 
-def get_eligible_for_search_venues(max_venues: typing.Optional[int] = None) -> typing.Generator[Venue, None, None]:
-    query = Venue.query.options(
+def get_eligible_for_search_venues(
+    max_venues: typing.Optional[int] = None,
+) -> typing.Generator[offerers_models.Venue, None, None]:
+    query = offerers_models.Venue.query.options(
         # needed by is_eligible_for_search
         sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
             offerers_models.Offerer.isActive,
@@ -482,12 +471,12 @@ def get_eligible_for_search_venues(max_venues: typing.Optional[int] = None) -> t
             yield venue
 
 
-def get_offerer_by_collective_offer_id(collective_offer_id: int) -> Offerer:
-    return get_by_collective_offer_id(collective_offer_id)
+def get_offerer_by_collective_offer_id(collective_offer_id: int) -> offerers_models.Offerer:
+    return offerers_repository.get_by_collective_offer_id(collective_offer_id)
 
 
-def get_offerer_by_collective_offer_template_id(collective_offer_id: int) -> Offerer:
-    return get_by_collective_offer_template_id(collective_offer_id)
+def get_offerer_by_collective_offer_template_id(collective_offer_id: int) -> offerers_models.Offerer:
+    return offerers_repository.get_by_collective_offer_template_id(collective_offer_id)
 
 
 def has_venue_at_least_one_bookable_offer(venue: offerers_models.Venue) -> bool:
@@ -514,6 +503,6 @@ def generate_dms_token() -> str:
     """
     for _i in range(10):
         dms_token = secrets.token_hex(6)
-        if not dms_token_exists(dms_token):
+        if not offerers_repository.dms_token_exists(dms_token):
             return dms_token
     raise ValueError("Could not generate new dmsToken for Venue")
