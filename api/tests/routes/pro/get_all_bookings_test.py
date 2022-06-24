@@ -119,8 +119,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        fetch_ff_queries = 1
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2 + fetch_ff_queries):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
 
         expected_bookings_recap = [
@@ -179,8 +178,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        fetch_ff_queries = 1
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2 + fetch_ff_queries):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
             response = client.get(
                 f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&eventDate={requested_date_iso_format}"
             )
@@ -202,8 +200,7 @@ class Returns200Test:
         offerers_factories.UserOffererFactory(user=pro_user, offerer=booking.offerer)
 
         client = TestClient(app.test_client()).with_session_auth(pro_user.email)
-        fetch_ff_queries = 1
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2 + fetch_ff_queries):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + 2):
             response = client.get(
                 "/bookings/pro?bookingPeriodBeginningDate=%s&bookingPeriodEndingDate=%s&bookingStatusFilter=booked"
                 % (booking_period_beginning_date_iso, booking_period_ending_date_iso)
