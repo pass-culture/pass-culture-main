@@ -98,6 +98,10 @@ def handle_dms_application(
 
     fraud_check = fraud_dms_api.get_or_create_fraud_check(user, application_number, application_content)
 
+    if fraud_check.status == fraud_models.FraudCheckStatus.OK:
+        logger.warning("[DMS] Skipping because FraudCheck already has OK status", extra=log_extra_data)
+        return fraud_check
+
     fraud_check.resultContent = application_content.dict()
     fraud_check.eligibilityType = fraud_api.decide_eligibility(  # type: ignore [assignment]
         user, application_content.get_birth_date(), application_content.get_registration_datetime()
