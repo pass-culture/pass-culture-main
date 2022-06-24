@@ -24,7 +24,6 @@ def get_settings() -> serializers.SettingsResponse:
     features = _get_features(
         FeatureToggle.DISPLAY_DMS_REDIRECTION,
         FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING,
-        FeatureToggle.ENABLE_ID_CHECK_RETENTION,
         FeatureToggle.ENABLE_NATIVE_APP_RECAPTCHA,
         FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY,
         FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING,
@@ -46,7 +45,6 @@ def get_settings() -> serializers.SettingsResponse:
         app_enable_search_homepage_rework=features[FeatureToggle.APP_ENABLE_SEARCH_HOMEPAGE_REWORK],
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
-        enable_id_check_retention=features[FeatureToggle.ENABLE_ID_CHECK_RETENTION],
         # TODO: lixxday: remove after the next forced app release (forced release > 1.176.0)
         enable_native_eac_individual=True,
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],
