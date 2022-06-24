@@ -55,7 +55,7 @@ class SerializeTest:
         serialized_list = serialize(offer.dateRange)
 
         # Then
-        for dt in serialized_list:  # pylint: disable=not-an-iterable
+        for dt in serialized_list:
             self._assert_is_in_ISO_8601_format(dt)
 
     def test_on_enum_returns_dict_with_enum_value(self):
