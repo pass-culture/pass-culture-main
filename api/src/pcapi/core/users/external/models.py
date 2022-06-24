@@ -67,6 +67,7 @@ class ProAttributes:
     last_name: Optional[str] = None
     user_is_attached: Optional[bool] = None  # User is attached to at least one active offerer, he is not the creator
     user_is_creator: Optional[bool] = None  # User is the creator of at least one active offerer
+    is_eac: Optional[bool] = None
 
     # Attributes set when is_booking_email is True,
     # which only take venues in which contact email is set as bookingEmail into account:
