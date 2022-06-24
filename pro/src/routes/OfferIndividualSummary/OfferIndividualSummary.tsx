@@ -1,20 +1,24 @@
-import { matchPath, useHistory, useLocation, useParams } from 'react-router-dom'
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { matchPath, useLocation } from 'react-router-dom'
 
+import { IOfferIndividual } from 'core/Offers/types'
 import React from 'react'
-import Spinner from 'components/layout/Spinner'
 import { Summary as SummaryScreen } from 'screens/OfferIndividual/Summary'
-import { useGetOffer } from 'core/Offers/adapters'
-import useNotification from 'components/hooks/useNotification'
+import { serializePropsFromOfferIndividual } from '.'
 
 interface IOfferIndividualSummaryProps {
   formOfferV2?: boolean
+  offer: IOfferIndividual
+  categories: IOfferCategory[]
+  subCategories: IOfferSubCategory[]
 }
 
 const OfferIndividualSummary = ({
   formOfferV2 = false,
+  offer,
+  categories,
+  subCategories,
 }: IOfferIndividualSummaryProps): JSX.Element | null => {
-  const notify = useNotification()
-  const history = useHistory()
   const location = useLocation()
   const isCreation =
     matchPath(
@@ -22,27 +26,23 @@ const OfferIndividualSummary = ({
       '/offre/:offer_id/individuel/creation/recapitulatif'
     ) !== null
 
-  const { offerId } = useParams<{ offerId: string }>()
-  const { data: offer, isLoading, error } = useGetOffer(offerId)
-
-  if (error !== undefined) {
-    notify.error(error.message)
-    history.push('/offres')
-    return null
-  }
-
-  if (isLoading) {
-    return <Spinner />
-  }
+  const {
+    offer: offerData,
+    stockThing,
+    stockEventList,
+    preview,
+  } = serializePropsFromOfferIndividual(offer, categories, subCategories)
 
   return (
-    <div>
-      <SummaryScreen
-        formOfferV2={formOfferV2}
-        isCreation={isCreation}
-        offer={offer}
-      />
-    </div>
+    <SummaryScreen
+      offerId={offer.id}
+      formOfferV2={formOfferV2}
+      isCreation={isCreation}
+      offer={offerData}
+      stockThing={stockThing}
+      stockEventList={stockEventList}
+      preview={preview}
+    />
   )
 }
 
