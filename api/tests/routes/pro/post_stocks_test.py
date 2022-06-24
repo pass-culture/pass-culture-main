@@ -23,7 +23,7 @@ class Returns201Test:
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_one_stock_with_summury(self, mocked_async_index_offer_ids, app):
         # Given
-        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.ThingOfferFactory(isActive=False, isDraft=True, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -47,6 +47,7 @@ class Returns201Test:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive == False
+        assert offer.isDraft == True
         assert offer.validation == OfferValidationStatus.DRAFT
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_not_called()
@@ -54,7 +55,7 @@ class Returns201Test:
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_one_stock(self, mocked_async_index_offer_ids, app):
         # Given
-        offer = offers_factories.ThingOfferFactory(validation=OfferValidationStatus.DRAFT)
+        offer = offers_factories.ThingOfferFactory(isDraft=True, validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -80,6 +81,7 @@ class Returns201Test:
         assert offer.id == created_stock.offerId
         assert created_stock.price == 20
         assert offer.isActive == True
+        assert offer.isDraft == False
         assert offer.validation == OfferValidationStatus.APPROVED
         assert len(mails_testing.outbox) == 2  # Mail for fraud validation and first offer of venue
         mocked_async_index_offer_ids.assert_called_once_with([offer.id])

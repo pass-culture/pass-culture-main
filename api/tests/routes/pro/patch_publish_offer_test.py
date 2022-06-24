@@ -54,5 +54,6 @@ class Returns204Test:
         assert response.status_code == 204
         offer = offers_models.Offer.query.get(stock.offer.id)
         assert offer.isActive == True
+        assert offer.isDraft == False
         assert offer.validation == OfferValidationStatus.APPROVED
         mock_async_index_offer_ids.assert_called_once()

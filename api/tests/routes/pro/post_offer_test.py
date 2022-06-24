@@ -17,7 +17,7 @@ from pcapi.utils.human_ids import humanize
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     @override_features(OFFER_FORM_SUMMARY_PAGE=True)
-    def test_created_offer_should_be_inactive(self, client):
+    def test_created_offer_should_be_inactive_and_draft(self, client):
         venue = offerers_factories.VenueFactory()
         offerer = venue.managingOfferer
         offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
@@ -33,6 +33,7 @@ class Returns200Test:
         offer_id = dehumanize(response.json["id"])
         offer = Offer.query.get(offer_id)
         assert offer.isActive == False
+        assert offer.isDraft == True
 
     def test_create_event_offer(self, client):
         # Given
@@ -73,6 +74,7 @@ class Returns200Test:
         assert offer.audioDisabilityCompliant == False
         assert offer.mentalDisabilityCompliant == True
         assert offer.isActive == True
+        assert offer.isDraft == True
 
     def when_creating_new_thing_offer(self, client):
         # Given

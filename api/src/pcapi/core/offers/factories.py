@@ -58,6 +58,7 @@ class OfferFactory(BaseFactory):
     name = factory.SelfAttribute("product.name")
     description = factory.SelfAttribute("product.description")
     url = factory.SelfAttribute("product.url")
+    isDraft = False
     audioDisabilityCompliant = False
     mentalDisabilityCompliant = False
     motorDisabilityCompliant = False

@@ -616,6 +616,7 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 class GetIndividualOfferResponseModel(GetOfferResponseModel):
     withdrawalType: Optional[WithdrawalTypeEnum]
     withdrawalDelay: Optional[int]
+    isDraft: bool
 
 
 class ImageBodyModel(BaseModel):

@@ -692,6 +692,7 @@ def upsert_stocks(
     repository.save(*stocks, *activation_codes)
     logger.info("Stock has been created or updated", extra={"offer": offer_id})
     if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active():
+        offer.isDraft = False
         if offer.validation == OfferValidationStatus.DRAFT:
             update_offer_fraud_information(offer, user)
 
@@ -711,6 +712,7 @@ def upsert_stocks(
 def publish_offer(offer_id: int, user: User) -> Offer:
     offer = offers_repository.get_offer_by_id(offer_id)
     offer.isActive = True
+    offer.isDraft = False
     update_offer_fraud_information(offer, user)
     search.async_index_offer_ids([offer.id])
     return offer
