@@ -250,6 +250,7 @@ def test_serialize_collective_offer_template():
             "students": ["CAP - 1re année", "CAP - 2e année"],
             "subcategoryId": subcategories.LIVRE_PAPIER.id,
             "domains": [domain1.id, domain2.id],
+            "educationalInstitutionUAICode": "all",
         },
         "offerer": {
             "name": "Les Librairies Associées",
