@@ -126,12 +126,12 @@ class Pricing(Model):  # type: ignore [valid-type, misc]
 
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` and `siret`
     # columns once we have fully switched to `pricingPointId`
-    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
+    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
     businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
     # `siret` is either the SIRET of the venue if it has one, or the
     # SIRET of its business unit (at the time of the creation of the
     # pricing).
-    siret = sqla.Column(sqla.String(14), nullable=False, index=True)
+    siret = sqla.Column(sqla.String(14), nullable=True, index=True)
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once pricing code
     # has been updated and old data has been migrated.
     pricingPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)

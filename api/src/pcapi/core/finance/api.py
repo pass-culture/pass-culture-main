@@ -30,6 +30,7 @@ from collections import defaultdict
 import csv
 import datetime
 import decimal
+import hashlib
 import itertools
 import logging
 from operator import attrgetter
@@ -48,7 +49,6 @@ from sqlalchemy import Date
 from sqlalchemy import and_
 from sqlalchemy import cast
 import sqlalchemy.orm as sqla_orm
-from sqlalchemy.orm import joinedload
 import sqlalchemy.sql.functions as sqla_func
 
 from pcapi import settings
@@ -71,6 +71,7 @@ from pcapi.domain import reimbursement
 from pcapi.models import db
 from pcapi.models.bank_information import BankInformation
 from pcapi.models.bank_information import BankInformationStatus
+from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.utils import date as date_utils
 from pcapi.utils import human_ids
@@ -95,6 +96,30 @@ MIN_DATE_TO_PRICE = datetime.datetime(2021, 12, 31, 23, 0)  # UTC
 # stable order. If you change this, you MUST update
 # `_booking_comparison_tuple()` below.
 _PRICE_BOOKINGS_ORDER_CLAUSE = (
+    sqla.func.greatest(
+        sqla.func.lower(offerers_models.VenuePricingPointLink.timespan),
+        sqla.func.greatest(
+            offers_models.Stock.beginningDatetime,
+            bookings_models.Booking.dateUsed,
+        ),
+    ),
+    sqla.func.greatest(
+        offers_models.Stock.beginningDatetime,
+        bookings_models.Booking.dateUsed,
+    ),
+    # If an event (or multiple events) have the same date _after_ the
+    # used date, fallback on the used date.
+    bookings_models.Booking.dateUsed,
+    # Some bookings are marked as used in a batch, hence with the same
+    # datetime value. In that case, we order by their id.
+    bookings_models.Booking.id,
+)
+
+# The ORDER BY clause to be used to price bookings in a specific,
+# stable order. If you change this, you MUST update
+# `_legacy_booking_comparison_tuple()` below. This is legacy and
+# can be removed when business units are deleted.
+_LEGACY_PRICE_BOOKINGS_ORDER_CLAUSE = (
     sqla.func.greatest(
         sqla.func.lower(models.BusinessUnitVenueLink.timespan),
         sqla.func.greatest(
@@ -130,37 +155,78 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
     threshold = datetime.datetime.utcnow() - datetime.timedelta(minutes=1)
     window = (min_date, threshold)
 
+    use_pricing_point = FeatureToggle.USE_PRICING_POINT_FOR_PRICING.is_active()
     errored_business_unit_ids = set()
+    errored_pricing_point_ids = set()
     bookings = itertools.chain.from_iterable(
         (
-            _get_bookings_to_price(bookings_models.Booking, window),
-            _get_bookings_to_price(educational_models.CollectiveBooking, window),
+            _get_bookings_to_price(bookings_models.Booking, window, use_pricing_point),
+            _get_bookings_to_price(educational_models.CollectiveBooking, window, use_pricing_point),
         )
     )
     for booking in bookings:
         try:
-            if booking.venue.businessUnitId in errored_business_unit_ids:
-                continue
+            business_unit_id = pricing_point_id = None
+            if use_pricing_point:
+                pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+                if pricing_point_id in errored_pricing_point_ids:
+                    continue
+            else:
+                business_unit_id = booking.venue.businessUnitId
+                if business_unit_id in errored_business_unit_ids:
+                    continue
             extra = {
                 "booking": booking.id,
-                "business_unit_id": booking.venue.businessUnitId,
+                "business_unit": business_unit_id,
+                "pricing_point": pricing_point_id,
             }
             with log_elapsed(logger, "Priced booking", extra):
-                price_booking(booking)
+                price_booking(booking, use_pricing_point)
         except Exception as exc:  # pylint: disable=broad-except
-            errored_business_unit_ids.add(booking.venue.businessUnitId)
-            logger.info(
-                "Ignoring further bookings from business unit",
-                extra={"business_unit": booking.venue.businessUnitId},
-            )
+            if use_pricing_point:
+                errored_pricing_point_ids.add(pricing_point_id)
+                logger.info(
+                    "Ignoring further bookings from pricing point",
+                    extra={"pricing_point": pricing_point_id},
+                )
+            else:
+                errored_business_unit_ids.add(business_unit_id)
+                logger.info(
+                    "Ignoring further bookings from business unit",
+                    extra={"business_unit": business_unit_id},
+                )
             logger.exception(
                 "Could not price booking",
                 extra={
                     "booking": booking.id,
-                    "business_unit": booking.venue.businessUnitId,
+                    "business_unit": business_unit_id,
+                    "pricing_point": pricing_point_id,
                     "exc": str(exc),
                 },
             )
+
+
+def _get_pricing_point_link(
+    booking: typing.Union[bookings_models.Booking, educational_models.CollectiveBooking]
+) -> offerers_models.VenuePricingPointLink:
+    """Return the venue-pricing point link to use at the requested
+    datetime.
+    """
+    timestamp = booking.dateUsed
+    links = booking.venue.pricing_point_links
+    # Look for a link that was active at the requested date.
+    for link in links:
+        if timestamp < link.timespan.lower:
+            continue
+        if not link.timespan.upper or timestamp < link.timespan.upper:
+            return link
+    # If a (single) link was added after and it's still active, we can
+    # use it.
+    if len(links) == 1 and links[0].timespan.upper is None:
+        return links[0]
+    # Otherwise, we just cannot know what to do. Raise an error so
+    # that we can investigate such cases.
+    raise ValueError(f"Could not find pricing point for booking {booking.id}")
 
 
 def _get_bookings_to_price(
@@ -169,6 +235,7 @@ def _get_bookings_to_price(
         typing.Type[educational_models.CollectiveBooking],
     ],
     window: tuple[datetime.datetime, datetime.datetime],
+    use_pricing_point: bool,
 ) -> BaseQuery:
     query = model.query
     if model == bookings_models.Booking:
@@ -182,7 +249,7 @@ def _get_bookings_to_price(
                 models.Pricing,
                 models.Pricing.bookingId == bookings_models.Booking.id,
             )
-            .order_by(*_PRICE_BOOKINGS_ORDER_CLAUSE)
+            .order_by(*(_PRICE_BOOKINGS_ORDER_CLAUSE if use_pricing_point else _LEGACY_PRICE_BOOKINGS_ORDER_CLAUSE))
         )
     else:
         query = query.outerjoin(
@@ -200,28 +267,40 @@ def _get_bookings_to_price(
 
     query = query.join(model.venue)
 
-    query = (
-        query.join(offerers_models.Venue.businessUnit)
-        .filter(models.BusinessUnit.siret.isnot(None))
-        .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
-        .join(
-            models.BusinessUnitVenueLink,
-            sqla.and_(
-                models.BusinessUnitVenueLink.venueId == model.venueId,
-                models.BusinessUnitVenueLink.businessUnitId == models.BusinessUnit.id,
-            ),
+    if use_pricing_point:
+        query = query.join(offerers_models.Venue.pricing_point_links)
+    else:
+        query = (
+            query.join(offerers_models.Venue.businessUnit)
+            .filter(models.BusinessUnit.siret.isnot(None))
+            .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
+            .join(
+                models.BusinessUnitVenueLink,
+                sqla.and_(
+                    models.BusinessUnitVenueLink.venueId == model.venueId,
+                    models.BusinessUnitVenueLink.businessUnitId == models.BusinessUnit.id,
+                ),
+            )
         )
-        .options(
-            sqla_orm.load_only(model.id),
-            # Our code does not access `Venue.id` but SQLAlchemy needs
-            # it to build a `Venue` object (which we access through
-            # `booking.venue`).
-            sqla_orm.contains_eager(model.venue).load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.businessUnitId,
-            ),
-        )
+
+    query = query.options(
+        sqla_orm.load_only(model.id),
+        sqla_orm.load_only(model.dateUsed),
+        # Our code does not access `Venue.id` but SQLAlchemy needs
+        # it to build a `Venue` object (which we access through
+        # `booking.venue`).
+        sqla_orm.contains_eager(model.venue).load_only(
+            offerers_models.Venue.id,
+            offerers_models.Venue.businessUnitId,
+        ),
     )
+
+    if use_pricing_point:
+        query = query.options(
+            sqla_orm.joinedload(model.venue, innerjoin=True).joinedload(
+                offerers_models.Venue.pricing_point_links, innerjoin=True
+            )
+        )
 
     return query
 
@@ -229,6 +308,25 @@ def _get_bookings_to_price(
 def _booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
     """Return a tuple of values, for a particular booking, that can be
     compared to `_PRICE_BOOKINGS_ORDER_CLAUSE`.
+    """
+    assert booking.dateUsed is not None  # helps mypy for `max()` below
+    tupl = (
+        max(
+            _get_pricing_point_link(booking).timespan.lower,
+            max((booking.stock.beginningDatetime or booking.dateUsed, booking.dateUsed)),
+        ),
+        max((booking.stock.beginningDatetime or booking.dateUsed, booking.dateUsed)),
+        booking.dateUsed,
+        booking.id,
+    )
+    if len(tupl) != len(_PRICE_BOOKINGS_ORDER_CLAUSE):
+        raise RuntimeError("_booking_comparison_tuple has a wrong length.")
+    return tupl
+
+
+def _legacy_booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
+    """Return a tuple of values, for a particular booking, that can be
+    compared to `_LEGACY_PRICE_BOOKINGS_ORDER_CLAUSE`.
     """
     assert booking.dateUsed is not None  # helps mypy for `max()` below
     business_unit_venue_links = [
@@ -243,9 +341,28 @@ def _booking_comparison_tuple(booking: bookings_models.Booking) -> tuple:
         booking.dateUsed,
         booking.id,
     )
-    if len(tupl) != len(_PRICE_BOOKINGS_ORDER_CLAUSE):
-        raise RuntimeError("_booking_comparison_tuple has a wrong length.")
+    if len(tupl) != len(_LEGACY_PRICE_BOOKINGS_ORDER_CLAUSE):
+        raise RuntimeError("_legacy_booking_comparison_tuple has a wrong length.")
     return tupl
+
+
+def lock_pricing_point(pricing_point_id: int) -> None:
+    """Lock a pricing point (a venue) while we are doing some work that
+    cannot be done while there are other running operations on the
+    same pricing point.
+
+    IMPORTANT: This must only be used within a transaction.
+
+    The lock is automatically released at the end of the transaction.
+    """
+    # We want a numeric lock identifier. Using `pricing_point_id`
+    # would not be unique enough, so we add a prefix, hash the
+    # resulting string, keep only the first 14 characters to avoid
+    # collisions (and still stay within the range of PostgreSQL big
+    # int type), and turn it back into an integer.
+    lock_bytestring = f"pricing-point-{pricing_point_id}".encode()
+    lock_id = int(hashlib.sha256(lock_bytestring).hexdigest()[:14], 16)
+    db.session.execute(sqla.select([sqla.func.pg_advisory_xact_lock(lock_id)]))
 
 
 def lock_business_unit(business_unit_id: int) -> None:
@@ -278,23 +395,34 @@ def get_non_cancelled_pricing_from_booking(
     return pricing_query.filter(models.Pricing.status != models.PricingStatus.CANCELLED).one_or_none()
 
 
-def price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooking]) -> typing.Optional[models.Pricing]:
-    business_unit_id = booking.venue.businessUnitId
-    if not business_unit_id:
-        return None
+def price_booking(
+    booking: typing.Union[bookings_models.Booking, CollectiveBooking],
+    use_pricing_point: bool,
+) -> typing.Optional[models.Pricing]:
+    if use_pricing_point:
+        if not booking.venue.pricing_point_links:
+            return None
+        pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+    else:
+        business_unit_id = booking.venue.businessUnitId
+        if not business_unit_id:
+            return None
 
     is_booking_collective = isinstance(booking, educational_models.CollectiveBooking)
 
     with transaction():
-        lock_business_unit(business_unit_id)
+        if use_pricing_point:
+            lock_pricing_point(pricing_point_id)
+        else:
+            lock_business_unit(business_unit_id)  # type: ignore[arg-type]
 
         # Now that we have acquired a lock, fetch the booking from the
         # database again so that we can make some final checks before
         # actually pricing the booking.
         booking = (
-            reload_collective_booking_for_pricing(booking.id)
+            reload_collective_booking_for_pricing(booking.id, use_pricing_point)
             if is_booking_collective
-            else reload_booking_for_pricing(booking.id)
+            else reload_booking_for_pricing(booking.id, use_pricing_point)
         )
 
         # Perhaps the booking has been marked as unused since we
@@ -306,18 +434,28 @@ def price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooki
         ):
             return None
 
-        business_unit = booking.venue.businessUnit
-        if not business_unit:
-            return None
-        if business_unit.id != business_unit_id:
-            # The business unit has changed since the beginning of the
-            # function. We should stop now, and let the booking be
-            # priced later (when we can lock the new business unit).
-            return None
-        if not business_unit.siret:
-            return None
-        if business_unit.status != models.BusinessUnitStatus.ACTIVE:
-            return None
+        if use_pricing_point:
+            if not booking.venue.pricing_point_links:
+                return None
+            pricing_point = _get_pricing_point_link(booking).pricingPoint
+            if pricing_point.id != pricing_point_id:
+                # The pricing point has changed since the beginning of the
+                # function. We should stop now, and let the booking be
+                # priced later (when we can lock the right pricing point).
+                return None
+        else:
+            business_unit = booking.venue.businessUnit
+            if not business_unit:
+                return None
+            if business_unit.id != business_unit_id:
+                # The business unit has changed since the beginning of the
+                # function. We should stop now, and let the booking be
+                # priced later (when we can lock the new business unit).
+                return None
+            if not business_unit.siret:
+                return None
+            if business_unit.status != models.BusinessUnitStatus.ACTIVE:
+                return None
 
         # Pricing the same booking twice is not allowed (and would be
         # rejected by a database constraint, anyway).
@@ -325,9 +463,9 @@ def price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooki
         if pricing:
             return pricing
 
-        _delete_dependent_pricings(booking, "Deleted pricings priced too early")
+        _delete_dependent_pricings(booking, "Deleted pricings priced too early", use_pricing_point)
 
-        pricing = _price_booking(booking)
+        pricing = _price_booking(booking, use_pricing_point)
         db.session.add(pricing)
 
         db.session.commit()
@@ -399,8 +537,52 @@ def _get_siret_and_current_revenue(booking: bookings_models.Booking) -> typing.T
     return siret, utils.to_eurocents(current_revenue or 0)
 
 
-def _price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooking]) -> models.Pricing:
-    siret, current_revenue = _get_siret_and_current_revenue(booking)
+def _get_pricing_point_id_and_current_revenue(
+    booking: bookings_models.Booking,
+) -> typing.Tuple[int, int]:
+    """Return the id of the pricing point to use for the requested
+    booking, and the current year revenue for this pricing point, NOT
+    including the requested booking.
+    """
+    assert booking.dateUsed is not None  # helps mypy for `_get_revenue_period()`
+    pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+    revenue_period = _get_revenue_period(booking.dateUsed)
+    current_revenue = (
+        bookings_models.Booking.query.join(models.Pricing)
+        # Collective bookings must not be included in revenue.
+        .filter(bookings_models.Booking.individualBookingId.isnot(None))
+        .filter(
+            models.Pricing.pricingPointId == pricing_point_id,
+            # The following filter is not strictly necessary, because
+            # this function is called when the booking is being priced
+            # (so there is no Pricing yet).
+            models.Pricing.bookingId != booking.id,
+            models.Pricing.valueDate.between(*revenue_period),
+            models.Pricing.status.notin_(
+                (
+                    models.PricingStatus.CANCELLED,
+                    models.PricingStatus.REJECTED,
+                )
+            ),
+        )
+        .with_entities(sqla.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
+        .scalar()
+    )
+    return pricing_point_id, utils.to_eurocents(current_revenue or 0)
+
+
+def _price_booking(
+    booking: typing.Union[bookings_models.Booking, CollectiveBooking],
+    use_pricing_point: bool,
+) -> models.Pricing:
+    if use_pricing_point:
+        pricing_point_id, current_revenue = _get_pricing_point_id_and_current_revenue(booking)
+        siret = None
+        business_unit_id = None
+    else:
+        siret, current_revenue = _get_siret_and_current_revenue(booking)
+        business_unit_id = booking.venue.businessUnitId
+        pricing_point_id = None
     new_revenue = current_revenue
     is_booking_collective = isinstance(booking, CollectiveBooking)
     # Collective bookings must not be included in revenue.
@@ -431,27 +613,20 @@ def _price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBook
 
     pricing_data = {
         "status": _get_initial_pricing_status(booking),
-        "businessUnitId": booking.venue.businessUnitId,
+        "businessUnitId": business_unit_id,
         "siret": siret,
+        "pricingPointId": pricing_point_id,
         "valueDate": booking.dateUsed,
         "amount": amount,
         "standardRule": rule.description if not isinstance(rule, payments_models.CustomReimbursementRule) else "",
         "customRuleId": rule.id if isinstance(rule, payments_models.CustomReimbursementRule) else None,
         "revenue": new_revenue,
         "lines": lines,
+        "bookingId": booking.id if not is_booking_collective else None,
+        "collectiveBookingId": booking.id if is_booking_collective else None,
     }
-    if isinstance(booking, bookings_models.Booking):
-        pricing = models.Pricing(
-            **pricing_data,
-            bookingId=booking.id,
-        )
-    else:
-        pricing = models.Pricing(
-            **pricing_data,
-            collectiveBookingId=booking.id,
-        )
 
-    return pricing
+    return models.Pricing(**pricing_data)
 
 
 def _get_initial_pricing_status(
@@ -465,7 +640,9 @@ def _get_initial_pricing_status(
 
 
 def _delete_dependent_pricings(
-    booking: typing.Union[bookings_models.Booking, CollectiveBooking], log_message: str
+    booking: typing.Union[bookings_models.Booking, CollectiveBooking],
+    log_message: str,
+    use_pricing_point: bool,
 ) -> None:
     """Delete pricings for bookings that should be priced after the
     requested ``booking``.
@@ -479,28 +656,39 @@ def _delete_dependent_pricings(
         return
 
     assert booking.dateUsed is not None  # helps mypy for `_get_revenue_period()`
-    siret = booking.venue.siret or booking.venue.businessUnit.siret
     revenue_period_start, revenue_period_end = _get_revenue_period(booking.dateUsed)
+    pricings = models.Pricing.query.filter(bookings_models.Booking.educationalBookingId.is_(None))
+    if use_pricing_point:
+        pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+        pricings = pricings.filter_by(pricingPointId=pricing_point_id)
+    else:
+        siret = booking.venue.siret or booking.venue.businessUnit.siret
+        pricings = pricings.filter(models.Pricing.siret == siret)
+
     pricings = (
-        models.Pricing.query.filter(
-            models.Pricing.siret == siret,
-            bookings_models.Booking.educationalBookingId.is_(None),
-        )
-        .join(models.Pricing.booking)
-        .join(bookings_models.Booking.stock)
-        .join(bookings_models.Booking.venue)
-        .join(
+        pricings.join(models.Pricing.booking).join(bookings_models.Booking.stock).join(bookings_models.Booking.venue)
+    )
+
+    if use_pricing_point:
+        pricings = pricings.join(offerers_models.Venue.pricing_point_links)
+    else:
+        pricings = pricings.join(
             models.BusinessUnitVenueLink,
             sqla.and_(
                 models.BusinessUnitVenueLink.venueId == bookings_models.Booking.venueId,
                 models.BusinessUnitVenueLink.businessUnitId == models.Pricing.businessUnitId,
             ),
         )
-        .filter(
-            models.Pricing.valueDate.between(revenue_period_start, revenue_period_end),
-            sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking)),
+
+    pricings = pricings.filter(models.Pricing.valueDate.between(revenue_period_start, revenue_period_end))
+
+    if use_pricing_point:
+        clause = sqla.func.ROW(*_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(*_booking_comparison_tuple(booking))
+    else:
+        clause = sqla.func.ROW(*_LEGACY_PRICE_BOOKINGS_ORDER_CLAUSE) > sqla.func.ROW(
+            *_legacy_booking_comparison_tuple(booking)
         )
-    )
+    pricings = pricings.filter(clause)
 
     pricings = pricings.with_entities(
         models.Pricing.id, models.Pricing.bookingId, models.Pricing.status, bookings_models.Booking.stockId
@@ -556,7 +744,6 @@ def _delete_dependent_pricings(
                 logger.info(
                     "Found non-deletable pricing for a SIRET that has an older booking to price or cancel (special case for prematurely reimbursed event bookings)",
                     extra={
-                        "siret": siret,
                         "booking_being_priced_or_cancelled": booking.id,
                         "older_pricing": pricing.id,
                         "older_pricing_status": pricing.status,
@@ -566,7 +753,6 @@ def _delete_dependent_pricings(
                 logger.error(
                     "Found non-deletable pricing for a SIRET that has an older booking to price or cancel",
                     extra={
-                        "siret": siret,
                         "booking_being_priced_or_cancelled": booking.id,
                         "older_pricing": pricing.id,
                         "older_pricing_status": pricing.status,
@@ -589,7 +775,6 @@ def _delete_dependent_pricings(
         extra={
             "booking_being_priced_or_cancelled": booking.id,
             "bookings_already_priced": bookings_already_priced,
-            "siret": siret,
         },
     )
 
@@ -597,23 +782,33 @@ def _delete_dependent_pricings(
 def cancel_pricing(
     booking: typing.Union[bookings_models.Booking, CollectiveBooking], reason: models.PricingLogReason
 ) -> typing.Optional[models.Pricing]:
-    business_unit_id = booking.venue.businessUnitId
-    if not business_unit_id:
-        return None
+    use_pricing_point = FeatureToggle.USE_PRICING_POINT_FOR_PRICING.is_active()
+
+    if use_pricing_point:
+        if not booking.venue.pricing_point_links:
+            return None
+        if not booking.dateUsed:
+            return None
+        pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+    else:
+        business_unit_id = booking.venue.businessUnitId
+        if not business_unit_id:
+            return None
 
     with transaction():
-        lock_business_unit(business_unit_id)
+        if use_pricing_point:
+            lock_pricing_point(pricing_point_id)
+        else:
+            lock_business_unit(business_unit_id)  # type: ignore[arg-type]
 
         if isinstance(booking, CollectiveBooking):
-            pricing = models.Pricing.query.filter(
-                models.Pricing.collectiveBooking == booking,
-                models.Pricing.status != models.PricingStatus.CANCELLED,
-            ).one_or_none()
+            booking_attribute = models.Pricing.collectiveBooking
         else:
-            pricing = models.Pricing.query.filter(
-                models.Pricing.booking == booking,
-                models.Pricing.status != models.PricingStatus.CANCELLED,
-            ).one_or_none()
+            booking_attribute = models.Pricing.booking
+        pricing = models.Pricing.query.filter(
+            booking_attribute == booking,
+            models.Pricing.status != models.PricingStatus.CANCELLED,
+        ).one_or_none()
 
         if not pricing:
             return None
@@ -626,7 +821,7 @@ def cancel_pricing(
         # *delete* all pricings that depended on it (i.e. all pricings
         # for bookings used after that booking), so that we can price
         # them again.
-        _delete_dependent_pricings(booking, "Deleted pricings that depended on cancelled pricing")
+        _delete_dependent_pricings(booking, "Deleted pricings that depended on cancelled pricing", use_pricing_point)
 
         db.session.add(
             models.PricingLog(
@@ -1675,31 +1870,43 @@ def merge_cashflow_batches(
         db.session.commit()
 
 
-def reload_booking_for_pricing(booking_id: int) -> bookings_models.Booking:
-    return (
-        bookings_models.Booking.query.filter_by(id=booking_id)
-        .options(
-            joinedload(bookings_models.Booking.venue, innerjoin=True)
+def reload_booking_for_pricing(booking_id: int, use_pricing_point: bool) -> bookings_models.Booking:
+    query = bookings_models.Booking.query.filter_by(id=booking_id).options(
+        sqla_orm.joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
+            offers_models.Stock.offer, innerjoin=True
+        ),
+    )
+    if use_pricing_point:
+        query = query.options(
+            sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
+            .joinedload(offerers_models.Venue.pricing_point_links, innerjoin=True)
+            .joinedload(offerers_models.VenuePricingPointLink.venue, innerjoin=True)
+        )
+    else:
+        query = query.options(
+            sqla_orm.joinedload(bookings_models.Booking.venue, innerjoin=True)
             .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
             .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
-            joinedload(bookings_models.Booking.stock, innerjoin=True).joinedload(
-                offers_models.Stock.offer, innerjoin=True
-            ),
         )
-        .one()
+    return query.one()
+
+
+def reload_collective_booking_for_pricing(booking_id: int, use_pricing_point: bool) -> CollectiveBooking:
+    query = CollectiveBooking.query.filter_by(id=booking_id).options(
+        sqla_orm.joinedload(CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
+            CollectiveStock.collectiveOffer, innerjoin=True
+        ),
     )
-
-
-def reload_collective_booking_for_pricing(booking_id: int) -> CollectiveBooking:
-    return (
-        CollectiveBooking.query.filter_by(id=booking_id)
-        .options(
-            joinedload(CollectiveBooking.venue, innerjoin=True)
+    if use_pricing_point:
+        query = query.options(
+            sqla_orm.joinedload(CollectiveBooking.venue, innerjoin=True)
+            .joinedload(offerers_models.Venue.pricing_point_links, innerjoin=True)
+            .joinedload(offerers_models.VenuePricingPointLink.venue, innerjoin=True)
+        )
+    else:
+        query = query.options(
+            sqla_orm.joinedload(CollectiveBooking.venue, innerjoin=True)
             .joinedload(offerers_models.Venue.businessUnit, innerjoin=True)
             .joinedload(models.BusinessUnit.venue_links, innerjoin=True),
-            joinedload(CollectiveBooking.collectiveStock, innerjoin=True).joinedload(
-                CollectiveStock.collectiveOffer, innerjoin=True
-            ),
         )
-        .one()
-    )
+    return query.one()
