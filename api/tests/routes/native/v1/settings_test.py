@@ -12,7 +12,6 @@ class SettingsTest:
     @override_features(
         DISPLAY_DMS_REDIRECTION=True,
         ENABLE_FRONT_IMAGE_RESIZING=True,
-        ENABLE_ID_CHECK_RETENTION=False,
         ENABLE_NATIVE_APP_RECAPTCHA=True,
         ENABLE_NATIVE_CULTURAL_SURVEY=True,
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=False,
@@ -52,7 +51,6 @@ class SettingsTest:
     @override_features(
         DISPLAY_DMS_REDIRECTION=False,
         ENABLE_FRONT_IMAGE_RESIZING=False,
-        ENABLE_ID_CHECK_RETENTION=True,
         ENABLE_NATIVE_APP_RECAPTCHA=False,
         ENABLE_NATIVE_CULTURAL_SURVEY=False,
         ENABLE_NATIVE_ID_CHECK_VERBOSE_DEBUGGING=True,
