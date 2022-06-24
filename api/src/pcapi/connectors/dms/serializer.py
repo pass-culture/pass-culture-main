@@ -83,12 +83,13 @@ def parse_beneficiary_information_graphql(
             dms_models.FieldLabel.POSTAL_CODE_OLD.value,
         ):
             space_free_value = str(value).strip().replace(" ", "")
-            try:
-                postal_code = re.search("^[0-9]{5}", space_free).group(0)  # type: ignore [union-attr]
-            except Exception:  # pylint: disable=broad-except
+            match = re.search("^[0-9]{5}", space_free_value)
+            if match is None:
                 parsing_errors.append(
                     dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.postal_code, value=value)
                 )
+                continue
+            postal_code = match.group(0)
 
         elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
             activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
