@@ -72,6 +72,7 @@ describe('CollectiveOfferVisibility', () => {
       initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
       onSuccess: jest.fn(),
       institutions,
+      isLoadingInstitutions: false,
     }
   })
 
