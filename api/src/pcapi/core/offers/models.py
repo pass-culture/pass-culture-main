@@ -335,7 +335,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     fieldsUpdated = sa.Column(sa.ARRAY(sa.String(100)), nullable=False, default=[], server_default="{}")
 
-    isDraft = sa.Column(sa.Boolean, nullable=True)
+    isDraft = sa.Column(sa.Boolean, server_default=sa.true(), default=True, nullable=False)
 
     # FIXME: We shoud be able to remove the index on `venueId`, since this composite index
     #  can be used by PostgreSQL when filtering on the `venueId` column only.
