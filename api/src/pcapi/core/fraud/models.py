@@ -175,14 +175,6 @@ class JouveContent(common_models.IdentityCheckContent):
         return self.bodyPieceNumber
 
 
-def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_models.GenderEnum]:
-    if civility == dms_models.Civility.M:
-        return users_models.GenderEnum.M
-    if civility == dms_models.Civility.MME:
-        return users_models.GenderEnum.F
-    return None
-
-
 class DMSContent(common_models.IdentityCheckContent):
     activity: typing.Optional[str]
     address: typing.Optional[str]
@@ -202,8 +194,6 @@ class DMSContent(common_models.IdentityCheckContent):
     processed_datetime: typing.Optional[datetime.datetime]
     registration_datetime: typing.Optional[datetime.datetime]
     state: typing.Optional[str]
-
-    _parse_civility = pydantic.validator("civility", pre=True, allow_reuse=True)(_parse_dms_civility)
 
     class Config:
         allow_population_by_field_name = True
