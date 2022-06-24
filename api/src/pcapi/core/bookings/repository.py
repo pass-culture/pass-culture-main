@@ -52,7 +52,6 @@ from pcapi.domain.booking_recap.booking_recap import BookingRecap
 from pcapi.domain.booking_recap.bookings_recap_paginated import BookingsRecapPaginated
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
-from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.bookings_recap_serialize import OfferType
 from pcapi.utils.token import random_token
 
@@ -460,7 +459,6 @@ def _get_filtered_bookings_query(
     offer_type: Optional[OfferType] = None,
     extra_joins: Optional[Iterable[Column]] = None,
 ) -> BaseQuery:
-    remove_educational_bookings = FeatureToggle.ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION.is_active()
     extra_joins = extra_joins or tuple()
 
     bookings_query = (
@@ -475,10 +473,7 @@ def _get_filtered_bookings_query(
     if not pro_user.has_admin_role:
         bookings_query = bookings_query.filter(UserOfferer.user == pro_user)
 
-    bookings_query = bookings_query.filter(UserOfferer.isValidated)
-
-    if remove_educational_bookings:
-        bookings_query = bookings_query.filter(Booking.educationalBookingId.is_(None))
+    bookings_query = bookings_query.filter(UserOfferer.isValidated, Booking.educationalBookingId.is_(None))
 
     if period:
         period_attribut_filter = (
