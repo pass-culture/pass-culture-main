@@ -248,7 +248,7 @@ def create_industrial_educational_bookings() -> None:
                 siret=f"9504694940002{i}",
                 managingOfferer=offerer_with_right_siren,
                 adageId=None,
-                venueEducationalStatusId=(i + 2),
+                venueEducationalStatusId=(i % len(VENUE_EDUCATIONAL_STATUS)) + 2,
             )
         )
 
