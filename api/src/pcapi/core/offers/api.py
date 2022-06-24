@@ -908,6 +908,7 @@ def create_mediation(
     credit: str,
     image_as_bytes: bytes,
     crop_params: Optional[image_conversion.CropParams] = None,
+    keep_ratio: bool = False,
 ) -> Mediation:
     # checks image type, min dimensions
     validation.check_image(image_as_bytes)
@@ -921,7 +922,7 @@ def create_mediation(
     repository.save(mediation)
 
     try:
-        create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params)
+        create_thumb(mediation, image_as_bytes, image_index=0, crop_params=crop_params, keep_ratio=keep_ratio)
     except image_conversion.ImageRatioError:
         raise
     except Exception as exception:
