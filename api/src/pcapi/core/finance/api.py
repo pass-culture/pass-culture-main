@@ -307,8 +307,13 @@ def price_booking(booking: typing.Union[bookings_models.Booking, CollectiveBooki
             return None
 
         business_unit = booking.venue.businessUnit
-        # FIXME (dbaty, 2021-12-08): we can get rid of this condition
-        # once BusinessUnit.siret is set as NOT NULLable.
+        if not business_unit:
+            return None
+        if business_unit.id != business_unit_id:
+            # The business unit has changed since the beginning of the
+            # function. We should stop now, and let the booking be
+            # priced later (when we can lock the new business unit).
+            return None
         if not business_unit.siret:
             return None
         if business_unit.status != models.BusinessUnitStatus.ACTIVE:
