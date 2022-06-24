@@ -2,8 +2,34 @@ import {
   IApiOfferIndividual,
   IApiOfferIndividualStock,
   IOfferIndividual,
+  IOfferIndividualOfferer,
   IOfferIndividualStock,
+  IOfferIndividualVenue,
 } from 'core/Offers/types'
+
+export const serializeOffererApi = (
+  apiOffer: IApiOfferIndividual
+): IOfferIndividualOfferer => {
+  return {
+    id: apiOffer.venue.managingOfferer.id,
+    name: apiOffer.venue.managingOfferer.name,
+  }
+}
+
+export const serializeVenueApi = (
+  apiOffer: IApiOfferIndividual
+): IOfferIndividualVenue => {
+  return {
+    id: apiOffer.venue.id,
+    name: apiOffer.venue.name,
+    publicName: apiOffer.venue.publicName || '',
+    isVirtual: apiOffer.venue.isVirtual,
+    address: apiOffer.venue.address || '',
+    postalCode: apiOffer.venue.postalCode || '',
+    city: apiOffer.venue.city || '',
+    offerer: serializeOffererApi(apiOffer),
+  }
+}
 
 export const serializeStockApi = (
   apiStock: IApiOfferIndividualStock
@@ -26,55 +52,59 @@ export const serializeStockApi = (
 }
 
 export const serializeOfferApi = (
-  offerApi: IApiOfferIndividual
+  apiOffer: IApiOfferIndividual
 ): IOfferIndividual => {
   const offer: IOfferIndividual = {
-    id: offerApi.id,
-    bookingEmail: offerApi.bookingEmail || '',
-    description: offerApi.description || '',
-    durationMinutes: offerApi.durationMinutes || null,
-    isDuo: offerApi.isDuo,
-    isEducational: offerApi.isEducational,
+    id: apiOffer.id,
+    bookingEmail: apiOffer.bookingEmail || '',
+    description: apiOffer.description || '',
+    durationMinutes: apiOffer.durationMinutes || null,
+    isDuo: apiOffer.isDuo,
+    isEvent: apiOffer.isEvent,
+    isEducational: apiOffer.isEducational,
     noDisabilityCompliant: false,
-    audioDisabilityCompliant: offerApi.audioDisabilityCompliant || false,
-    mentalDisabilityCompliant: offerApi.mentalDisabilityCompliant || false,
-    motorDisabilityCompliant: offerApi.motorDisabilityCompliant || false,
-    visualDisabilityCompliant: offerApi.visualDisabilityCompliant || false,
-    isNational: offerApi.isNational,
-    name: offerApi.name,
-    offererId: offerApi.venue.managingOffererId,
-    subcategoryId: offerApi.subcategoryId,
-    url: offerApi.url || '',
-    externalTicketOfficeUrl: offerApi.externalTicketOfficeUrl || '',
-    venueId: offerApi.venueId,
-    withdrawalDetails: offerApi.withdrawalDetails || '',
-    withdrawalDelay: offerApi.withdrawalDelay || null,
+    audioDisabilityCompliant: apiOffer.audioDisabilityCompliant || false,
+    mentalDisabilityCompliant: apiOffer.mentalDisabilityCompliant || false,
+    motorDisabilityCompliant: apiOffer.motorDisabilityCompliant || false,
+    visualDisabilityCompliant: apiOffer.visualDisabilityCompliant || false,
+    isNational: apiOffer.isNational,
+    name: apiOffer.name,
+    offererId: apiOffer.venue.managingOffererId,
+    subcategoryId: apiOffer.subcategoryId,
+    url: apiOffer.url || '',
+    externalTicketOfficeUrl: apiOffer.externalTicketOfficeUrl || '',
+    venueId: apiOffer.venueId,
+    venue: serializeVenueApi(apiOffer),
+    withdrawalDetails: apiOffer.withdrawalDetails || '',
+    withdrawalDelay: apiOffer.withdrawalDelay || null,
+    withdrawalType: apiOffer.withdrawalType || null,
+    thumbUrl: apiOffer.thumbUrl || '',
     // extraData values
-    author: offerApi.extraData?.author || '',
-    isbn: offerApi.extraData?.isbn || '',
-    musicType: offerApi.extraData?.musicType || '',
-    musicSubType: offerApi.extraData?.musicSubType || '',
-    performer: offerApi.extraData?.performer || '',
-    showType: offerApi.extraData?.showType || '',
-    showSubType: offerApi.extraData?.showSubType || '',
-    speaker: offerApi.extraData?.speaker || '',
-    stageDirector: offerApi.extraData?.stageDirector || '',
-    visa: offerApi.extraData?.visa || '',
-    stocks: offerApi.stocks.map(serializeStockApi),
+    author: apiOffer.extraData?.author || '',
+    isbn: apiOffer.extraData?.isbn || '',
+    musicType: apiOffer.extraData?.musicType || '',
+    musicSubType: apiOffer.extraData?.musicSubType || '',
+    performer: apiOffer.extraData?.performer || '',
+    showType: apiOffer.extraData?.showType || '',
+    showSubType: apiOffer.extraData?.showSubType || '',
+    speaker: apiOffer.extraData?.speaker || '',
+    stageDirector: apiOffer.extraData?.stageDirector || '',
+    visa: apiOffer.extraData?.visa || '',
+    stocks: apiOffer.stocks.map(serializeStockApi),
   }
 
   if (
     [
-      offerApi.audioDisabilityCompliant,
-      offerApi.mentalDisabilityCompliant,
-      offerApi.motorDisabilityCompliant,
-      offerApi.visualDisabilityCompliant,
+      apiOffer.audioDisabilityCompliant,
+      apiOffer.mentalDisabilityCompliant,
+      apiOffer.motorDisabilityCompliant,
+      apiOffer.visualDisabilityCompliant,
     ].includes(undefined) ||
     [
-      offerApi.audioDisabilityCompliant,
-      offerApi.mentalDisabilityCompliant,
-      offerApi.motorDisabilityCompliant,
-      offerApi.visualDisabilityCompliant,
+      apiOffer.audioDisabilityCompliant,
+      apiOffer.mentalDisabilityCompliant,
+      apiOffer.motorDisabilityCompliant,
+      apiOffer.visualDisabilityCompliant,
     ].includes(true)
   ) {
     offer.noDisabilityCompliant = false

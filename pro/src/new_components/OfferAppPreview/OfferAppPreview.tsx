@@ -15,7 +15,7 @@ interface IOfferPreviewOfferData {
   isDuo: boolean
 }
 
-interface IOfferAppPreview {
+export interface IOfferAppPreviewProps {
   imageSrc?: string
   offerData: IOfferPreviewOfferData
   venueData?: IOfferPreviewVenueData
@@ -25,7 +25,7 @@ const OfferAppPreview = ({
   imageSrc,
   offerData,
   venueData,
-}: IOfferAppPreview): JSX.Element => {
+}: IOfferAppPreviewProps): JSX.Element => {
   const cropPreviewText = (text: string, maxLength = 300): string => {
     if (text.trim().length > maxLength) {
       return `${text.slice(0, maxLength)}...`

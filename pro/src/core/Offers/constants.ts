@@ -17,6 +17,13 @@ export enum OFFER_WITHDRAWAL_TYPE_OPTIONS {
   BY_EMAIL = 'by_email',
 }
 
+export const OFFER_WITHDRAWAL_TYPE_LABELS = {
+  [OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE]: 'Évènement sans billet',
+  [OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET]:
+    'Retrait sur place (guichet, comptoir ...)',
+  [OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL]: 'Envoi par e-mail',
+}
+
 export const OFFER_STATUS_ACTIVE = 'ACTIVE'
 export const OFFER_STATUS_INACTIVE = 'INACTIVE'
 export const OFFER_STATUS_SOLD_OUT = 'SOLD_OUT'
