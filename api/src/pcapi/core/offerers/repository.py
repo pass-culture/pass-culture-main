@@ -363,3 +363,7 @@ def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
 
 def dms_token_exists(dms_token: str) -> bool:
     return db.session.query(models.Venue.query.filter_by(dmsToken=dms_token).exists()).scalar()
+
+
+def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
+    return db.session.query(models.VenueEducationalStatus).order_by(models.VenueEducationalStatus.name).all()
