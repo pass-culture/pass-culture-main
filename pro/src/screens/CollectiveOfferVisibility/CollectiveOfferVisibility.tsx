@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react'
 import FormLayout from 'new_components/FormLayout'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
+import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import styles from './CollectiveOfferVisibility.module.scss'
@@ -29,6 +30,7 @@ export interface CollectiveOfferVisibilityProps {
     message: string
   }) => void
   institutions: EducationalInstitution[]
+  isLoadingInstitutions: boolean
 }
 interface InstitutionOption extends SelectOption {
   postalCode?: string
@@ -41,6 +43,7 @@ const CollectiveOfferVisibility = ({
   initialValues,
   onSuccess,
   institutions,
+  isLoadingInstitutions,
 }: CollectiveOfferVisibilityProps) => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
@@ -101,6 +104,12 @@ const CollectiveOfferVisibility = ({
     }
   }, [formik.values.institution, institutionsOptions])
 
+  useEffect(() => {
+    formik.resetForm({
+      values: initialValues,
+    })
+  }, [initialValues])
+
   const noInstitutionSelected =
     formik.values.visibility === 'one' && formik.values.institution.length === 0
   const userHasNotUpdatedForm =
@@ -147,20 +156,26 @@ const CollectiveOfferVisibility = ({
                 <fieldset className={styles['legend']}>
                   2. Choix de l’établissement
                 </fieldset>
-                <SelectAutocomplete
-                  fieldName="institution"
-                  options={institutionsOptions}
-                  label="Établissement scolaire"
-                  maxDisplayOptions={20}
-                  maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
-                  maxHeight={100}
-                />
-                {selectedInstitution && (
-                  <Banner type="light" className={styles['institution']}>
-                    {selectedInstitution.label}
-                    <br />
-                    {`${selectedInstitution.postalCode} ${selectedInstitution.city}`}
-                  </Banner>
+                {isLoadingInstitutions ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <SelectAutocomplete
+                      fieldName="institution"
+                      options={institutionsOptions}
+                      label="Établissement scolaire"
+                      maxDisplayOptions={20}
+                      maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
+                      maxHeight={100}
+                    />
+                    {selectedInstitution && (
+                      <Banner type="light" className={styles['institution']}>
+                        {selectedInstitution.label}
+                        <br />
+                        {`${selectedInstitution.postalCode} ${selectedInstitution.city}`}
+                      </Banner>
+                    )}
+                  </>
                 )}
               </FormLayout.Row>
             )}
