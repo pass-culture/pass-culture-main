@@ -2,6 +2,7 @@ import logging
 
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
+from pcapi.core.fraud.models import FraudCheckStatus
 from pcapi.core.fraud.ubble import api as ubble_fraud_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
@@ -34,19 +35,22 @@ def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest
 def ubble_webhook_update_application_status(
     body: ubble_validation.WebhookRequest,
 ) -> ubble_validation.WebhookDummyReponse:
-    logger.info("Ubble webhook called", extra={"identification_id": body.identification_id, "status": str(body.status)})
+    log_extra_data = {"identification_id": body.identification_id, "status": str(body.status)}
+    logger.info("Ubble webhook called", extra=log_extra_data)
 
     fraud_check = ubble_fraud_api.get_ubble_fraud_check(body.identification_id)
     if not fraud_check:
         raise ValueError(f"no Ubble fraud check found with identification_id {body.identification_id}")
 
+    finished_status = [FraudCheckStatus.OK, FraudCheckStatus.KO, FraudCheckStatus.CANCELED, FraudCheckStatus.SUSPICIOUS]
+    if fraud_check.status in finished_status:
+        logger.warning("Ubble fraud check already has finished status", extra=log_extra_data)
+        return ubble_validation.WebhookDummyReponse()
+
     try:
         ubble_subscription_api.update_ubble_workflow(fraud_check)
     except Exception:
-        logger.exception(
-            "Could not update Ubble workflow",
-            extra={"identitfication_id": body.identification_id, "user_id": fraud_check.userId},
-        )
+        logger.exception("Could not update Ubble workflow", extra=log_extra_data)
         raise ApiErrors({"msg": "an error occured during workflow update"}, status_code=500)
 
     return ubble_validation.WebhookDummyReponse()

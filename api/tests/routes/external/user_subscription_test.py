@@ -1111,6 +1111,24 @@ class UbbleWebhookTest:
             content.identification_url == f"{settings.UBBLE_API_URL}/identifications/{str(content.identification_id)}"
         )
 
+    def test_fraud_check_already_finished(self, client, ubble_mocker):
+        current_identification_state = test_factories.IdentificationState.VALID
+        notified_identification_state = test_factories.IdentificationState.VALID
+        _, request_data, ubble_identification_response = self._init_test(
+            current_identification_state, notified_identification_state
+        )
+        fraud_check = ubble_fraud_api.get_ubble_fraud_check(
+            ubble_identification_response.data.attributes.identification_id
+        )
+        fraud_check.status = fraud_models.FraudCheckStatus.OK
+        fraud_check.user.roles = [users_models.UserRole.BENEFICIARY]
+        repository.save(fraud_check)
+
+        response = self._post_webhook(client, ubble_mocker, request_data, ubble_identification_response)
+
+        assert response.status_code == 200
+        assert fraud_check.status == fraud_models.FraudCheckStatus.OK
+
     def test_birth_date_overrided_with_ubble_test_emails(self, client, ubble_mocker, mocker):
         email = "whatever+ubble_test@example.com"
         subscription_birth_date = datetime.datetime.combine(
