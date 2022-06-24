@@ -12,10 +12,11 @@ export const getEducationalInstitutionsAdapter: GetEducationalInstitutionsAdapte
   async () => {
     try {
       let allInstitutions: EducationalInstitution[] = []
-      let currentPage = 1
+      let currentPage = 0
       let totalPages = 1
 
       do {
+        currentPage += 1
         const institutions = await pcapi.getEducationalInstitutions(currentPage)
         currentPage = institutions.page
         totalPages = institutions.pages
