@@ -4,6 +4,8 @@ Revision ID: 58df8264fe50
 Revises: c2e2425fbac6
 Create Date: 2021-05-06 15:14:21.619714
 
+This migration previously added the FF ENABLE_NATIVE_ID_CHECK_VERSION that was later deleted as it's obsolete
+
 """
 from pcapi.models import feature
 
@@ -15,12 +17,9 @@ branch_labels = None
 depends_on = None
 
 
-FLAG = feature.FeatureToggle.ENABLE_NATIVE_ID_CHECK_VERSION
-
-
 def upgrade():
-    feature.legacy_add_feature_to_database(FLAG)
+    pass
 
 
 def downgrade():
-    feature.remove_feature_from_database(FLAG)
+    pass
