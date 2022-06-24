@@ -310,8 +310,6 @@ class FindDuplicateUserTest:
         assert fraud_api.find_duplicate_id_piece_number_user(new_id_piece_number, new_user.id) == existing_user
 
 
-
-
 @pytest.mark.usefixtures("db_session")
 class EduconnectFraudTest:
     def test_on_educonnect_result(self):

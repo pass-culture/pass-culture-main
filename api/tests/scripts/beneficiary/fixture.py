@@ -26,7 +26,6 @@ def make_graphql_application(
     city: Optional[str] = None,
     construction_datetime: str = "2020-05-13T09:09:46+02:00",
     last_modification_date: str = "2020-05-13T10:41:23+02:00",
-    department_code: str = "67 - Bas-Rhin",
     email: Optional[str] = "young.individual@example.com",
     first_name: str = "John",
     full_graphql_response: bool = False,

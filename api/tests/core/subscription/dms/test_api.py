@@ -134,6 +134,28 @@ class DMSOrphanSubsriptionTest:
 
 @pytest.mark.usefixtures("db_session")
 class HandleDmsApplicationTest:
+    def test_concurrent_accepted_calls(self):
+        user = users_factories.UserFactory(
+            dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
+        )
+        application_number = 1234
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            thirdPartyId=str(application_number),
+            status=fraud_models.FraudCheckStatus.OK,
+            type=fraud_models.FraudCheckType.DMS,
+        )
+        dms_response = make_parsed_graphql_application(
+            application_number=application_number,
+            state=dms_models.GraphQLApplicationStates.accepted,
+            email=user.email,
+            birth_date=datetime.datetime(2016, 1, 1),
+        )
+
+        dms_subscription_api.handle_dms_application(dms_response, 123)
+
+        assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
+
     @patch("pcapi.connectors.dms.serializer.parse_beneficiary_information_graphql")
     def test_parsing_failure(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()
