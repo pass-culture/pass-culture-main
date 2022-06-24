@@ -64,24 +64,25 @@ def parse_beneficiary_information_graphql(
 
     for field in application_detail.fields:
         label = field.label
-        value = field.value
+        value = field.value or ""
 
         if label in (dms_models.FieldLabel.BIRTH_DATE_ET.value, dms_models.FieldLabel.BIRTH_DATE_FR.value):
             try:
-                birth_date = date_parser.parse(value, FrenchParserInfo())  # type: ignore [arg-type]
-            except Exception:  # pylint: disable=broad-except
+                birth_date = date_parser.parse(value, FrenchParserInfo())
+            except date_parser.ParserError:
                 parsing_errors.append(
                     dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.birth_date, value=value)
                 )
+                logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
         elif label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
-            phone = value.replace(" ", "")  # type: ignore [union-attr]
+            phone = value.replace(" ", "")
         elif label in (
             dms_models.FieldLabel.POSTAL_CODE_ET.value,
             dms_models.FieldLabel.POSTAL_CODE_FR.value,
             dms_models.FieldLabel.POSTAL_CODE_OLD.value,
         ):
-            space_free = str(value).strip().replace(" ", "")
+            space_free_value = str(value).strip().replace(" ", "")
             try:
                 postal_code = re.search("^[0-9]{5}", space_free).group(0)  # type: ignore [union-attr]
             except Exception:  # pylint: disable=broad-except
@@ -104,7 +105,7 @@ def parse_beneficiary_information_graphql(
             dms_models.FieldLabel.ID_PIECE_NUMBER_ET.value,
             dms_models.FieldLabel.ID_PIECE_NUMBER_PROCEDURE_4765.value,
         ):
-            value = value.strip()  # type: ignore [union-attr]
+            value = value.strip()
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
                 parsing_errors.append(
                     dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.id_piece_number, value=value)
