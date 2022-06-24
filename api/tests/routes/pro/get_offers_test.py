@@ -35,10 +35,9 @@ class Returns200Test:
         client = TestClient(app.test_client()).with_session_auth(email=admin.email)
         path = f"/offers?venueId={humanize(requested_venue.id)}"
         select_offers_nb_queries = 1
-        select_feature_nb_queries = 1
 
         # when
-        with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_offers_nb_queries + select_feature_nb_queries):
+        with assert_num_queries(testing.AUTHENTICATION_QUERIES + select_offers_nb_queries):
             response = client.get(path)
 
         # then

@@ -38,7 +38,6 @@ from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.product import Product
 from pcapi.utils.custom_keys import compute_venue_reference
@@ -61,8 +60,6 @@ def get_capped_offers_for_filters(
     period_beginning_date: Optional[str] = None,
     period_ending_date: Optional[str] = None,
 ) -> OffersRecap:
-    remove_educational_offers = FeatureToggle.ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION.is_active()
-
     query = get_offers_by_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
@@ -76,8 +73,7 @@ def get_capped_offers_for_filters(
         period_ending_date=period_ending_date,  # type: ignore [arg-type]
     )
 
-    if remove_educational_offers:
-        query = query.filter(Offer.isEducational == False)
+    query = query.filter(Offer.isEducational == False)
 
     offers = (
         query.options(joinedload(Offer.venue).joinedload(Venue.managingOfferer))
