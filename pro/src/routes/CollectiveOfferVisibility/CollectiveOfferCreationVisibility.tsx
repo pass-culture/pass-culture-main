@@ -17,6 +17,7 @@ const CollectiveOfferVisibility = () => {
   const history = useHistory()
 
   const [institutions, setInstitutions] = useState<EducationalInstitution[]>([])
+  const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
 
   const onSuccess = ({ offerId }: { offerId: string }) => {
     const successUrl = `/offre/${offerId}/collectif/confirmation`
@@ -27,6 +28,7 @@ const CollectiveOfferVisibility = () => {
     getEducationalInstitutionsAdapter().then(result => {
       if (result.isOk) {
         setInstitutions(result.payload.institutions)
+        setIsLoadingInstitutions(false)
       }
     })
   }, [])
@@ -43,6 +45,7 @@ const CollectiveOfferVisibility = () => {
         initialValues={DEFAULT_VISIBILITY_FORM_VALUES}
         onSuccess={onSuccess}
         institutions={institutions}
+        isLoadingInstitutions={isLoadingInstitutions}
       />
       <RouteLeavingGuardOfferCreation isCollectiveFlow />
     </OfferEducationalLayout>

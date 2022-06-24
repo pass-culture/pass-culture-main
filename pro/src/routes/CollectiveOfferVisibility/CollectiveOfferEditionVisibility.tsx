@@ -24,21 +24,31 @@ const CollectiveOfferVisibility = () => {
     useState<EducationalInstitution | null>()
   const [institutions, setInstitutions] = useState<EducationalInstitution[]>([])
   const [isReady, setIsReady] = useState(false)
+  const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
 
   useEffect(() => {
     Promise.all([
       getCollectiveStockAdapter({ offerId }),
       getCollectiveOfferAdapter(offerId),
-      getEducationalInstitutionsAdapter(),
-    ]).then(([stockResult, offerResult, institutionsResult]) => {
-      if (!stockResult.isOk || !offerResult.isOk || !institutionsResult.isOk) {
+    ]).then(([stockResult, offerResult]) => {
+      if (!stockResult.isOk || !offerResult.isOk) {
         return notify.error(stockResult.message)
       }
 
-      setIsEditable(stockResult.payload?.stock?.isEducationalStockEditable)
       setInstitution(offerResult.payload.institution)
-      setInstitutions(institutionsResult.payload.institutions)
+      setIsEditable(stockResult.payload?.stock?.isEducationalStockEditable)
       setIsReady(true)
+    })
+  }, [])
+
+  useEffect(() => {
+    getEducationalInstitutionsAdapter().then(result => {
+      if (!result.isOk) {
+        return notify.error(result.message)
+      }
+
+      setInstitutions(result.payload.institutions)
+      setIsLoadingInstitutions(false)
     })
   }, [])
 
@@ -64,6 +74,7 @@ const CollectiveOfferVisibility = () => {
           }}
           onSuccess={onSuccess}
           institutions={institutions}
+          isLoadingInstitutions={isLoadingInstitutions}
         />
       ) : (
         <Spinner />
