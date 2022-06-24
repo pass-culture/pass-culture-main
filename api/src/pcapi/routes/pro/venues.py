@@ -197,3 +197,13 @@ def get_venue_stats(humanized_venue_id: str) -> venues_serialize.VenueStatsRespo
         activeOffersCount=active_offers_count,
         soldOutOffersCount=sold_out_offers_count,
     )
+
+
+@private_api.route("/venues-educational-statuses", methods=["GET"])
+@login_required
+@spectree_serialize(
+    on_success_status=200, response_model=venues_serialize.VenuesEducationalStatusesResponseModel, api=blueprint.pro_private_schema
+)
+def get_venues_educational_statuses() -> venues_serialize.VenuesEducationalStatusesResponseModel:
+    venues = offerers_api.get_venues_educational_statuses()
+    return venues_serialize.VenuesEducationalStatusesResponseModel(statuses=venues)

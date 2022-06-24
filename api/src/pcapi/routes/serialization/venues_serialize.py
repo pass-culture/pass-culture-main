@@ -358,3 +358,15 @@ class LinkVenueToPricingPointBodyModel(BaseModel):
 
     class Config:
         extra = "forbid"
+
+class VenuesEducationalStatusResponseModel(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+        extra = pydantic.Extra.forbid
+
+
+class VenuesEducationalStatusesResponseModel(BaseModel):
+    statuses: list[VenuesEducationalStatusResponseModel]

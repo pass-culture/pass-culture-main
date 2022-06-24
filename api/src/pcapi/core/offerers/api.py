@@ -13,6 +13,7 @@ import pcapi.core.educational.exceptions as educational_exceptions
 import pcapi.core.finance.models as finance_models
 from pcapi.core.mails.transactional.pro import new_offerer_validation
 from pcapi.core.mails.transactional.pro import offerer_attachment_validation
+from pcapi.core.offerers import models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.users.external as users_external
 import pcapi.core.users.models as users_models
@@ -586,3 +587,7 @@ def generate_dms_token() -> str:
         if not offerers_repository.dms_token_exists(dms_token):
             return dms_token
     raise ValueError("Could not generate new dmsToken for Venue")
+
+
+def get_venues_educational_statuses() -> list[offerers_models.VenueEducationalStatus]:
+    return offerers_repository.get_venues_educational_statuses()
