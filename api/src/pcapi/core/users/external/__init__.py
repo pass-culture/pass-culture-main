@@ -17,6 +17,7 @@ from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.repository import find_active_venues_by_booking_email
 from pcapi.core.offerers.repository import find_venues_by_offerers
+from pcapi.core.offerers.repository import offerer_has_venue_with_adage_id
 from pcapi.core.offerers.repository import venues_have_offers
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -103,6 +104,8 @@ def get_pro_attributes(email: str) -> ProAttributes:
         # to get that information
         user_is_creator = False
         user_is_attached = False
+        # A pro user is flagged EAC when at least one venue of his offerer has an adageId
+        is_eac = False
         if user and offerers:
             offerer_ids = [offerer.id for offerer in offerers]
             user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
@@ -112,6 +115,8 @@ def get_pro_attributes(email: str) -> ProAttributes:
                     user_is_creator = True
                 else:
                     user_is_attached = True
+                if not is_eac and offerer_has_venue_with_adage_id(offerer_id):
+                    is_eac = True
 
         attributes.update(
             {
@@ -120,6 +125,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
                 "last_name": user.lastName,
                 "user_is_attached": user_is_attached,
                 "user_is_creator": user_is_creator,
+                "is_eac": is_eac,
             }
         )
 

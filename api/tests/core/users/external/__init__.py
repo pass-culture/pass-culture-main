@@ -74,4 +74,5 @@ common_pro_attributes = ProAttributes(
     isPermanent=True,
     has_offers=True,
     has_bookings=True,
+    is_eac=False,
 )

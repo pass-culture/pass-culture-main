@@ -85,6 +85,7 @@ class SendinblueAttributes(Enum):
     VENUE_LABEL = "VENUE_LABEL"
     VENUE_NAME = "VENUE_NAME"
     VENUE_TYPE = "VENUE_TYPE"
+    IS_EAC = "IS_EAC"
 
     @classmethod
     def list(cls):  # type: ignore [no-untyped-def]
@@ -186,6 +187,7 @@ def format_user_attributes(attributes: Union[UserAttributes, ProAttributes]) -> 
         SendinblueAttributes.VENUE_LABEL.value: _get_attr(attributes, "venues_labels", format_list),
         SendinblueAttributes.VENUE_NAME.value: _get_attr(attributes, "venues_names", format_list),
         SendinblueAttributes.VENUE_TYPE.value: _get_attr(attributes, "venues_types", format_list),
+        SendinblueAttributes.IS_EAC.value: _get_attr(attributes, "is_eac"),
     }
 
 

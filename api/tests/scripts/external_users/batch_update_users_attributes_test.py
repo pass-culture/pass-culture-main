@@ -131,6 +131,7 @@ def test_format_sendinblue_user():
         "IS_BENEFICIARY_18": True,
         "IS_BOOKING_EMAIL": None,
         "IS_CURRENT_BENEFICIARY": True,
+        "IS_EAC": None,
         "IS_FORMER_BENEFICIARY": False,
         "IS_ELIGIBLE": user.is_eligible,
         "IS_EMAIL_VALIDATED": user.isEmailValidated,
