@@ -19,7 +19,6 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.payments.models import Deposit
 from pcapi.core.payments.models import DepositType
 import pcapi.core.subscription.api as subscription_api
-from pcapi.core.subscription.dms import api as dms_api
 import pcapi.core.subscription.models as subscription_models
 from pcapi.core.testing import override_features
 from pcapi.core.users import factories as users_factories
@@ -142,7 +141,7 @@ class RunTest:
             source_data=fraud_models.DMSContent(
                 last_name="Doe",
                 first_name="John",
-                civility=dms_models.Civility.MME,
+                civility=users_models.GenderEnum.F,
                 email="john.doe@test.com",
                 application_number=123,
                 procedure_id=6712558,
