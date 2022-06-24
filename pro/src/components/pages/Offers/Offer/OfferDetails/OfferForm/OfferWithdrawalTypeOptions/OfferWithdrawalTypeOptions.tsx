@@ -1,5 +1,9 @@
+import {
+  OFFER_WITHDRAWAL_TYPE_LABELS,
+  OFFER_WITHDRAWAL_TYPE_OPTIONS,
+} from 'core/Offers'
+
 import InputError from 'components/layout/inputs/Errors/InputError'
-import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import React from 'react'
 import styles from './OfferWithdrawalTypeOptions.module.scss'
@@ -32,7 +36,11 @@ export const OfferWithdrawalTypeOptions = ({
           checked={withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET}
           disabled={false}
           error={error}
-          label="Évènement sans billet"
+          label={
+            OFFER_WITHDRAWAL_TYPE_LABELS[
+              OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET
+            ]
+          }
           name="withdrawalType"
           onChange={handleRadioInputChange}
           value={OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET}
@@ -43,7 +51,9 @@ export const OfferWithdrawalTypeOptions = ({
           checked={withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL}
           disabled={false}
           error={error}
-          label="Envoi par e-mail"
+          label={
+            OFFER_WITHDRAWAL_TYPE_LABELS[OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE]
+          }
           name="withdrawalType"
           onChange={handleRadioInputChange}
           value={OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL}
@@ -54,7 +64,9 @@ export const OfferWithdrawalTypeOptions = ({
           checked={withdrawalType === OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE}
           disabled={false}
           error={error}
-          label="Retrait sur place (guichet, comptoir ...)"
+          label={
+            OFFER_WITHDRAWAL_TYPE_LABELS[OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE]
+          }
           name="withdrawalType"
           onChange={handleRadioInputChange}
           value={OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE}

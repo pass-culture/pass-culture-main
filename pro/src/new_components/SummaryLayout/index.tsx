@@ -1,1 +1,1 @@
-export { default } from './SummaryLayout'
+export { default as SummaryLayout } from './SummaryLayout'

@@ -1,5 +1,5 @@
 import React from 'react'
-import SummaryLayout from './SummaryLayout'
+import { SummaryLayout } from '.'
 
 export default {
   title: 'components/SummaryLayout',

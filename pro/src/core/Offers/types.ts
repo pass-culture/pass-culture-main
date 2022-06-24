@@ -4,6 +4,7 @@ import {
 } from 'api/v1/gen/'
 
 import { CATEGORY_STATUS } from '.'
+import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from '.'
 
 export type TSearchFilters = {
   nameOrIsbn: string
@@ -126,7 +127,7 @@ export interface IOfferIndividualStock {
 export interface IApiOfferIndividual extends GetOfferResponseModel {
   stocks: IApiOfferIndividualStock[]
   withdrawalDelay: number | null
-  withdrawalType: string | null
+  withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS | null
   extraData?: {
     author?: string
     isbn?: string
@@ -141,6 +142,22 @@ export interface IApiOfferIndividual extends GetOfferResponseModel {
   } | null
 }
 
+export interface IOfferIndividualOfferer {
+  id: string
+  name: string
+}
+
+export interface IOfferIndividualVenue {
+  id: string
+  name: string
+  publicName: string
+  isVirtual: boolean
+  address: string
+  postalCode: string
+  city: string
+  offerer: IOfferIndividualOfferer
+}
+
 export interface IOfferIndividual {
   id: string
   author: string
@@ -150,6 +167,7 @@ export interface IOfferIndividual {
   isbn: string
   isDuo: boolean
   isEducational: boolean
+  isEvent: boolean
   noDisabilityCompliant: boolean
   audioDisabilityCompliant: boolean
   mentalDisabilityCompliant: boolean
@@ -166,11 +184,14 @@ export interface IOfferIndividual {
   stageDirector: string
   speaker: string
   subcategoryId: string
+  thumbUrl?: string
   url: string
   externalTicketOfficeUrl: string
   venueId: string
+  venue: IOfferIndividualVenue
   visa: string
   withdrawalDetails: string | null
   withdrawalDelay?: number | null
+  withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS | null
   stocks: IOfferIndividualStock[]
 }

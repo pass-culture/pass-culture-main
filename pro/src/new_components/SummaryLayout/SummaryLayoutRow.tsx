@@ -4,7 +4,7 @@ import style from './SummaryLayout.module.scss'
 
 interface ISummaryLayoutRowProps {
   className?: string
-  description: string
+  description: string | number
   title?: string
 }
 

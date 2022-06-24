@@ -7,7 +7,8 @@
   border-radius: 4px;
   box-shadow: 0 0 rem.torem(20px) 0 colors.$black-shadow;
   height: fit-content;
-  width: rem.torem(256px);
+  width: 100%;
+  max-width: rem.torem(256px);
 }
 
 .offer-img-container {

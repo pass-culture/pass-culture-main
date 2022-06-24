@@ -13,7 +13,6 @@ import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import React from 'react'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
-import { fakeOffer } from '../constants'
 import { filterCategories } from './utils'
 import { useHistory } from 'react-router-dom'
 
@@ -45,9 +44,9 @@ const Informations = ({
   const handleNextStep = async () => formik.handleSubmit()
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
-    await createOfferAdapter(formValues)
+    const createdOfferId = await createOfferAdapter(formValues)
     // TODO get a real id after offer creation form submit
-    history.push(`/offre/${fakeOffer.id}/v3/creation/individuelle/stocks`)
+    history.push(`/offre/${createdOfferId}/v3/creation/individuelle/stocks`)
   }
 
   const { resetForm, ...formik } = useFormik({

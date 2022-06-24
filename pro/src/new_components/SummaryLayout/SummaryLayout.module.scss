@@ -2,6 +2,17 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .summary-layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+  &-content {
+    width: rem.torem(485px);
+  }
+  &-side {
+    width: rem.torem(231px);
+  }
+
   &-section {
     margin-bottom: rem.torem(32px);
 
