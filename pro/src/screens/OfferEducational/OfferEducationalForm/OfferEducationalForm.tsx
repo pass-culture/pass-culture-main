@@ -140,7 +140,7 @@ const OfferEducationalForm = ({
         </Link>
         <SubmitButton
           className="primary-button"
-          disabled={!isEligible}
+          disabled={!isEligible || mode === Mode.READ_ONLY}
           isLoading={isLoading}
         >
           {mode === Mode.CREATION ? 'Étape suivante' : 'Enregistrer'}
