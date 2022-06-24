@@ -268,7 +268,7 @@ class DmsWebhookApplicationTest:
         assert content.application_number == 7654321
         assert content.birth_date == datetime.date(2003, 5, 5)
         assert content.city == None
-        assert content.civility == None
+        assert content.civility == users_models.GenderEnum.F
         assert content.department == None
         assert content.email == "young@example.com"
         assert content.first_name == "Young"

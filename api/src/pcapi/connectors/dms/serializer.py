@@ -110,7 +110,7 @@ def parse_beneficiary_information_graphql(
         application_number=application_number,
         birth_date=birth_date,
         city=city,
-        civility=civility,
+        civility=_parse_dms_civility(civility),
         department=department,
         email=email,
         first_name=first_name,
@@ -127,3 +127,11 @@ def parse_beneficiary_information_graphql(
     if parsing_errors:
         raise subscription_exceptions.DMSParsingError(email, parsing_errors, result_content, "Error validating")
     return result_content
+
+
+def _parse_dms_civility(civility: dms_models.Civility) -> Optional[users_models.GenderEnum]:
+    if civility == dms_models.Civility.M:
+        return users_models.GenderEnum.M
+    if civility == dms_models.Civility.MME:
+        return users_models.GenderEnum.F
+    return None

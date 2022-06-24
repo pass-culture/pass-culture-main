@@ -7,7 +7,6 @@ from freezegun import freeze_time
 import pytest
 import requests_mock
 
-from pcapi.connectors.dms import models as dms_models
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
@@ -705,7 +704,7 @@ class BeneficiaryInformationUpdateTest:
             last_name="Doe",
             first_name="Jane",
             activity="Lycéen",
-            civility=dms_models.Civility.MME,
+            civility=users_models.GenderEnum.F,
             birth_date=datetime.date(2000, 5, 1),
             email="jane.doe@test.com",
             phone="0612345678",

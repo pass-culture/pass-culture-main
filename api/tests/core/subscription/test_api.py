@@ -10,7 +10,6 @@ from freezegun import freeze_time
 import pytest
 
 from pcapi import settings
-from pcapi.connectors.dms import models as dms_models
 from pcapi.core.fraud import factories as fraud_factories
 from pcapi.core.fraud import models as fraud_models
 import pcapi.core.mails.testing as mails_testing
@@ -641,7 +640,7 @@ class OnSuccessfulDMSApplicationTest:
             address="11 Rue du Test",
             application_number=123,
             procedure_id=123456,
-            civility=dms_models.Civility.MME,
+            civility=users_models.GenderEnum.F,
             activity="Étudiant",
             registration_datetime=datetime.today(),
         )
@@ -677,7 +676,7 @@ class OnSuccessfulDMSApplicationTest:
             address="11 Rue du Test",
             application_number=123,
             procedure_id=123456,
-            civility=dms_models.Civility.MME,
+            civility=users_models.GenderEnum.F,
             activity="Étudiant",
             registration_datetime=datetime.today(),
         )
