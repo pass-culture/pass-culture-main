@@ -48,6 +48,11 @@ describe('screens | OfferEducational', () => {
       screen.findByLabelText(NOTIFICATIONS_LABEL),
       screen.findByLabelText(NOTIFICATIONS_EMAIL_LABEL),
     ])
+    const submitButton = await screen.findByRole('button', {
+      name: 'Enregistrer',
+    })
+
     inputs.forEach(input => expect(input).toBeDisabled())
+    expect(submitButton).toBeDisabled()
   })
 })
