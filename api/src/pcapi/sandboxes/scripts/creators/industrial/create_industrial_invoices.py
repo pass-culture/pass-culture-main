@@ -11,6 +11,7 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 
 
 logger = logging.getLogger(__name__)
@@ -94,11 +95,12 @@ def create_specific_invoice() -> None:
             user__deposit__source="create_specific_invoice() in industrial sandbox",
         )
         bookings.append(booking)
+    use_pricing_point = FeatureToggle.USE_PRICING_POINT_FOR_PRICING.is_active()
     for booking in bookings[:3]:
-        finance_api.price_booking(booking)
+        finance_api.price_booking(booking, use_pricing_point)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     for booking in bookings[3:]:
-        finance_api.price_booking(booking)
+        finance_api.price_booking(booking, use_pricing_point)
     finance_api.generate_cashflows_and_payment_files(cutoff=datetime.utcnow())
     cashflows = (
         finance_models.Cashflow.query.join(finance_models.Cashflow.pricings)

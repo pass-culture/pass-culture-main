@@ -432,7 +432,7 @@ ts_indexes = [
 
 
 class VenuePricingPointLink(Model):  # type: ignore [misc, valid-type]
-    """At any given time, the booking of a venue are priced against a
+    """At any given time, the bookings of a venue are priced against a
     particular venue that we call the "pricing point" of the venue.
     There should only ever be one pricing point for each venue, but
     for flexibility's sake we store the link in a table with the
@@ -441,7 +441,7 @@ class VenuePricingPointLink(Model):  # type: ignore [misc, valid-type]
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId])
+    venue = relationship(Venue, foreign_keys=[venueId], backref="pricing_point_links")
     pricingPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     pricingPoint = relationship(Venue, foreign_keys=[pricingPointId])
     # The lower bound is inclusive and required. The upper bound is

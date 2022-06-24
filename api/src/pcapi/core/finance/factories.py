@@ -50,6 +50,7 @@ class PricingFactory(BaseFactory):
     siret = factory.LazyAttribute(
         lambda pricing: pricing.booking.venue.siret or pricing.booking.venue.businessUnit.siret
     )
+    pricingPointId = factory.SelfAttribute("booking.venue.current_pricing_point_id")
     valueDate = factory.SelfAttribute("booking.dateUsed")
     amount = LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
     standardRule = "Remboursement total pour les offres physiques"
