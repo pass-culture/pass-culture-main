@@ -9,7 +9,7 @@ import pcapi.core.users.factories as users_factories
 
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
-    def test_when_user_offerer_does_not_exist(self, client: typing.Any):
+    def test_when_user_not_logged_in(self, client: typing.Any):
         response = client.get("/venues-educational-statuses")
         assert response.status_code == 401
 

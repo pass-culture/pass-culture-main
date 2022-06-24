@@ -359,6 +359,7 @@ class LinkVenueToPricingPointBodyModel(BaseModel):
     class Config:
         extra = "forbid"
 
+
 class VenuesEducationalStatusResponseModel(BaseModel):
     id: int
     name: str
