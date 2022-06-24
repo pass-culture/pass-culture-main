@@ -28,6 +28,7 @@ import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenu
 import LocationFields from '../fields/LocationFields/LocationFields'
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
+import ReimbursementFields from '../fields/ReimbursementFields/ReimbursementFields'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import Titles from 'components/layout/Titles/Titles'
 import VenueProvidersManager from './VenueProvidersManager'
@@ -56,6 +57,9 @@ const VenueEdition = () => {
   const location = useLocation()
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
+  const isNewBankInformationCreation = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
 
   const onImageUpload = useCallback(
@@ -308,7 +312,14 @@ const VenueEdition = () => {
               <ContactInfosFields readOnly={readOnly} />
             </>
           )}
-          {isBankInformationWithSiretActive ? (
+          {isNewBankInformationCreation ? (
+            <ReimbursementFields
+              offerer={offerer}
+              readOnly={readOnly}
+              scrollToSection={location.state}
+              venue={venue}
+            />
+          ) : isBankInformationWithSiretActive ? (
             // FIXME
             // the first response on offerers do not return  venue.BusinessUnit
             // the second on venues does
