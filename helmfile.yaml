@@ -9,28 +9,38 @@ releases:
     namespace: {{ .Environment.Name }}
     chart: passCulture/pass-culture-artifact-registry/pcapi-chart
     version: {{ .Values.chartVersion }}
+    hooks:
+      - events: ["prepare"]
+        showlogs: true
+        command: ./set_clustersecretstorename.sh
     values:
       - {{ requiredEnv "PCAPI_VALUES_FILE" }}
       - api/helm/pcapi/values.{{ .Environment.Name }}.yaml
+      - clustersecretstorename: {{ .Values.clustersecretstorename}}
 
 environments:
   testing:
     values:
       - chartVersion: 0.11.9
+      - clustersecretstorename: $CLUSTERSECRETSTORENAME_EHP
   staging:
     values:
       - chartVersion: 0.11.9
+      - clustersecretstorename: $CLUSTERSECRETSTORENAME_EHP
   integration:
     values:
       - chartVersion: 0.11.9
+      - clustersecretstorename: $CLUSTERSECRETSTORENAME_EHP
   production:
     values:
       - chartVersion: 0.11.9
+      - clustersecretstorename: $CLUSTERSECRETSTORENAME_PROD
   ops:
     values:
       - chartVersion: 0.9.0
+      - clustersecretstorename: $CLUSTERSECRETSTORENAME_OPS
   perf:
     values:
       - chartVersion: 0.8.3
-
+      - clustersecretstorename: $CLUSTERSECRETSTORENAME_EHP
 
