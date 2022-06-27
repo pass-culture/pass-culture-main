@@ -92,6 +92,8 @@ const MultiSelectAutocomplete = ({
     [options]
   )
 
+  console.log('test')
+
   const toggleField = () => {
     if (isOpen) {
       setIsOpen(false)
