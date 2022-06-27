@@ -273,7 +273,10 @@ def request_email_confirmation(user: models.User) -> None:
 
 
 def request_password_reset(user: models.User) -> None:
-    if not user or not user.isActive:
+    if not user:
+        return
+
+    if not user.isActive and not user.is_account_suspended_upon_user_request:
         return
 
     is_email_sent = reset_password.send_reset_password_email_to_user(user)
