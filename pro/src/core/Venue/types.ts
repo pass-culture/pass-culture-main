@@ -24,10 +24,17 @@ export interface IAPIVenue {
   managingOffererId: string
   mentalDisabilityCompliant: boolean
   motorDisabilityCompliant: boolean
+  nonHumanizedId: number
   nOffers: number
   name: string
   postalCode: string
   publicName: string
+  pricingPoint: {
+    id: number
+    siret: string
+    venueName: string
+  }
+  pricingPointId: number | null
   siret: string
   thumbCount: number
   venueLabelId: string | null

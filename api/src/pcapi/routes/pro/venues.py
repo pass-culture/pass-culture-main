@@ -138,7 +138,7 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
-@private_api.route("/venues/<venue_id>/pricing_point", methods=["POST"])
+@private_api.route("/venues/<venue_id>/pricing-point", methods=["POST"])
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def link_venue_to_pricing_point(venue_id: str, body: venues_serialize.LinkVenueToPricingPointBodyModel) -> None:
