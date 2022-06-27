@@ -18,7 +18,7 @@ class Returns201Test:
         data = {"pricingPointId": pricing_point.id}
 
         response = client.with_session_auth("user@example.com").post(
-            f"/venues/{human_ids.humanize(venue.id)}/pricing_point", json=data
+            f"/venues/{human_ids.humanize(venue.id)}/pricing-point", json=data
         )
 
         assert response.status_code == 204
@@ -40,7 +40,7 @@ class Returns400Test:
         data = {"pricingPointId": pricing_point_2.id}
 
         response = client.with_session_auth("user@example.com").post(
-            f"/venues/{human_ids.humanize(venue.id)}/pricing_point", json=data
+            f"/venues/{human_ids.humanize(venue.id)}/pricing-point", json=data
         )
         assert response.status_code == 400
         assert response.json["code"] == "CANNOT_LINK_VENUE_TO_PRICING_POINT"

@@ -1533,7 +1533,7 @@ export class DefaultService {
   ): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/venues/{venue_id}/pricing_point',
+      url: '/venues/{venue_id}/pricing-point',
       path: {
         'venue_id': venueId,
       },
