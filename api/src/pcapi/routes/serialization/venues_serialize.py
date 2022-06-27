@@ -77,6 +77,13 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
                 raise ValueError("La longitude doit être comprise entre -180.0 et +180.0")
         return raw_longitude
 
+    @validator("siret", always=True)
+    def requires_siret_xor_comment(cls, siret, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+        """siret is defined after comment, so the validator can access the previously validated value of comment"""
+        comment = values.get("comment")
+        if (comment and siret) or (not comment and not siret):
+            raise ValueError("Veuillez saisir soit un SIRET soit un commentaire")
+        return siret
 
 
 # FUTURE-NEW-BANK-DETAILS: delete when new bank details journey is complete
