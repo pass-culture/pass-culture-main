@@ -1,16 +1,16 @@
-import { Offerer, Venue } from 'core/Offers/types'
+import { IAPIOfferer } from 'core/Offerers/types'
+import { IAPIVenue } from 'core/Venue/types'
 import Icon from 'components/layout/Icon'
 import PricingPoint from '../PricingPoint/PricingPoint'
 import React from 'react'
 import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
-
 import styles from './ReimbursementFields.module.scss'
 
 export interface ReimbursementInterface {
-  offerer: Offerer
+  offerer: IAPIOfferer
   readOnly: boolean
   scrollToSection?: boolean
-  venue: Venue
+  venue: IAPIVenue
 }
 
 const ReimbursementFields = ({
@@ -19,6 +19,8 @@ const ReimbursementFields = ({
   scrollToSection,
   venue,
 }: ReimbursementInterface) => {
+  const venueHaveSiret = !!venue.siret
+  const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
   return (
     <>
       <div className="section">
@@ -34,7 +36,9 @@ const ReimbursementFields = ({
             En savoir plus sur les remboursements
           </a>
         </h2>
-        <PricingPoint />
+        {!venueHaveSiret && offererHaveVenueWithSiret && (
+          <PricingPoint readOnly={readOnly} offerer={offerer} venue={venue} />
+        )}
         <ReimbursementPoint
           offerer={offerer}
           readOnly={readOnly}

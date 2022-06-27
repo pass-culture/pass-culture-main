@@ -397,7 +397,7 @@ const VenueEdition = () => {
   const getVirtualVenueName = () => `${offerer.name} (Offre numérique)`
 
   const getInitialValues = venue => {
-    let initialValues = { ...venue }
+    let initialValues = { ...venue, venueSiret: venue.pricingPoint?.id }
     const accessibilityFieldNames = [
       'audioDisabilityCompliant',
       'mentalDisabilityCompliant',
