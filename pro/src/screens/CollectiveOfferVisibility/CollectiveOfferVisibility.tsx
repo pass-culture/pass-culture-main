@@ -1,5 +1,6 @@
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import {
+  CollectiveOfferResponseModel,
   EducationalInstitution,
   Mode,
   VisibilityFormValues,
@@ -25,9 +26,11 @@ export interface CollectiveOfferVisibilityProps {
   onSuccess: ({
     offerId,
     message,
+    payload,
   }: {
     offerId: string
     message: string
+    payload: CollectiveOfferResponseModel
   }) => void
   institutions: EducationalInstitution[]
   isLoadingInstitutions: boolean
@@ -61,7 +64,11 @@ const CollectiveOfferVisibility = ({
       return notify.error(result.message)
     }
 
-    onSuccess({ offerId, message: result.message ?? '' })
+    onSuccess({
+      offerId,
+      message: result.message ?? '',
+      payload: result.payload,
+    })
     setButtonPressed(false)
     formik.resetForm({
       values: extractInitialVisibilityValues(result.payload.institution),
@@ -103,12 +110,6 @@ const CollectiveOfferVisibility = ({
       setSelectedInstitution(null)
     }
   }, [formik.values.institution, institutionsOptions])
-
-  useEffect(() => {
-    formik.resetForm({
-      values: initialValues,
-    })
-  }, [initialValues])
 
   const noInstitutionSelected =
     formik.values.visibility === 'one' && formik.values.institution.length === 0
