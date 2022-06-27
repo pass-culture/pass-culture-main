@@ -2,8 +2,11 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_features
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.human_ids import humanize
 
@@ -15,7 +18,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_create_valid_stock_for_collective_offer(self, client):
         # Given
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
@@ -38,9 +41,37 @@ class Return200Test:
         assert response.status_code == 201
         response_dict = response.json
         created_stock: CollectiveStock = CollectiveStock.query.get(dehumanize(response_dict["id"]))
+        offer = CollectiveOffer.query.get(offer.id)
         assert offer.id == created_stock.collectiveOfferId
         assert created_stock.price == 1500
         assert created_stock.priceDetail == "Détail du prix"
+        assert offer.validation == OfferValidationStatus.APPROVED
+
+    @override_features(ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION=True)
+    def test_should_not_update_offer_validation(self, client):
+        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_payload = {
+            "offerId": humanize(offer.id),
+            "beginningDatetime": "2022-01-17T22:00:00Z",
+            "bookingLimitDatetime": "2021-12-31T20:00:00Z",
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
+        }
+
+        client.with_session_auth("user@example.com")
+        response = client.post("/collective/stocks/", json=stock_payload)
+        offer = CollectiveOffer.query.get(offer.id)
+
+        # Then
+        assert response.status_code == 201
+        assert offer.validation == OfferValidationStatus.DRAFT
 
 
 @freeze_time("2020-11-17 15:00:00")

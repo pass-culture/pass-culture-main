@@ -54,6 +54,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.users.models import User
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
@@ -705,9 +706,11 @@ def create_collective_stock(
         extra={"collective_offer": collective_offer.id, "collective_stock_id": collective_stock.id},
     )
 
-    if collective_offer.validation == OfferValidationStatus.DRAFT:
+    if (
+        not FeatureToggle.ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION.is_active()
+        and collective_offer.validation == OfferValidationStatus.DRAFT
+    ):
         update_offer_fraud_information(collective_offer, user)
-
     search.async_index_collective_offer_ids([collective_offer.id])
 
     return collective_stock
@@ -1031,8 +1034,10 @@ def get_educational_institution_by_id(institution_id: int) -> educational_models
 
 
 def update_collective_offer_educational_institution(
-    offer_id: int, educational_institution_id: Optional[int], is_creating_offer: bool
+    offer_id: int, educational_institution_id: Optional[int], is_creating_offer: bool, user: User
 ) -> CollectiveOffer:
+    from pcapi.core.offers.api import update_offer_fraud_information
+
     offer = educational_repository.get_collective_offer_by_id(offer_id)
     if educational_institution_id is not None:
         institution = get_educational_institution_by_id(educational_institution_id)
@@ -1043,6 +1048,9 @@ def update_collective_offer_educational_institution(
         raise exceptions.CollectiveOfferNotEditable()
     offer.institution = institution
     db.session.commit()
+
+    if is_creating_offer and offer.validation == OfferValidationStatus.DRAFT:
+        update_offer_fraud_information(offer, user)
 
     search.async_index_collective_offer_ids([offer_id])
 
