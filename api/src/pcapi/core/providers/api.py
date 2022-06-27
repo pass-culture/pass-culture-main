@@ -414,6 +414,7 @@ def _build_new_offer(
         venueId=venue.id,
         subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,
+        isDraft=False,
     )
 
 

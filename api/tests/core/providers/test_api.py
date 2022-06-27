@@ -197,6 +197,7 @@ class SynchronizeStocksTest:
         assert created_offer.venueId == venue.id
         assert created_offer.idAtProvider == spec[2]["ref"]
         assert created_offer.lastProviderId == provider.id
+        assert created_offer.isDraft == False
 
         # Test offer reindexation
         mock_async_index_offer_ids.assert_called_with(
@@ -269,6 +270,7 @@ class SynchronizeStocksTest:
         assert new_offer.venueId == venue.id
         assert new_offer.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert new_offer.withdrawalDetails == venue.withdrawalDetails
+        assert new_offer.isDraft == False
 
     def test_get_stocks_to_upsert(self):
         # Given
