@@ -16,7 +16,7 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import Spinner from 'components/layout/Spinner'
-import { getIsOffererEligibleAdapter } from './adapters'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import postCollectiveOfferAdapter from './adapters/postCollectiveOfferAdapter'
 // @debt deprecated "Mathilde: should not import utility from legacy page"
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
@@ -104,7 +104,7 @@ const OfferEducationalCreation = (): JSX.Element => {
         <>
           <OfferEducationalScreen
             {...screenProps}
-            getIsOffererEligible={getIsOffererEligibleAdapter}
+            getIsOffererEligible={canOffererCreateCollectiveOfferAdapter}
             initialValues={initialValues}
             mode={Mode.CREATION}
             notify={notify}

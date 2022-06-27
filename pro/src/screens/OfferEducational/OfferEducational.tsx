@@ -1,13 +1,13 @@
-import { FormikProvider, useFormik } from 'formik'
 import {
+  CanOffererCreateCollectiveOffer,
   GetEducationalDomainsAdapter,
-  GetIsOffererEligible,
   IEducationalCategory,
   IEducationalSubCategory,
   IOfferEducationalFormValues,
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
+import { FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
 import {
   validationSchema,
@@ -25,7 +25,7 @@ export interface IOfferEducationalProps {
   initialValues: IOfferEducationalFormValues
   onSubmit(values: IOfferEducationalFormValues): void
   userOfferers: IUserOfferer[]
-  getIsOffererEligible?: GetIsOffererEligible
+  getIsOffererEligible?: CanOffererCreateCollectiveOffer
   notify: {
     success: (msg: string | null) => void
     error: (msg: string | null) => void
