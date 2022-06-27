@@ -1104,16 +1104,10 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run:
-          name: Set has_run_e2e_test_variable
-          command: HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
-      - run:
           name: Trigger measure workflow execution time
-          command: >
-            curl --request POST \
-              --url https://circleci.com/api/v2/project/github/pass-culture/pass-culture-main/pipeline \
-              --header "Circle-Token: $CIRCLE_CI_TOKEN" \
-              --header 'content-type: application/json' \
-              --data "{\"parameters\":{\"run_measurement_workflow\":true, \"measure_workflow_id\":\"$CIRCLE_WORKFLOW_ID\"}, \"has_run_e2e_test\":\"$HAS_RUN_E2E\"}}"
+          command: |
+            HAS_RUN_E2E=$([[ -f "/tmp/workspace/e2e-test-launched.txt" ]] && echo "True" || echo "False")
+            curl --request POST --url https://circleci.com/api/v2/project/github/pass-culture/pass-culture-main/pipeline --header "Circle-Token: $CIRCLE_CI_TOKEN" --header 'content-type: application/json' --data "{\"parameters\":{\"run_measurement_workflow\":true, \"measure_workflow_id\":\"$CIRCLE_WORKFLOW_ID\", \"has_run_e2e_test\":\"$HAS_RUN_E2E\"}}"
 
 ###################
 #  WORKFLOWS
