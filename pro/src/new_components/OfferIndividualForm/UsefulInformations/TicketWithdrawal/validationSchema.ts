@@ -1,24 +1,21 @@
 import * as yup from 'yup'
-import { TICKETWITHDRAWAL } from './constants'
+import { WITHDRAWAL_TYPE } from './constants'
 
 const validationSchema = {
-  ticketWithdrawal: yup.string().when('isEvent', {
+  withdrawalType: yup.string().when('isEvent', {
     is: (isEvent: string) => isEvent,
     then: yup
       .string()
       .required('Vous devez cocher l’une des options ci-dessus'),
     otherwise: yup.string(),
   }),
-  ticketSentDate: yup.string().when('ticketWithdrawal', {
-    is: (ticketWithdrawal: string) =>
-      ticketWithdrawal === TICKETWITHDRAWAL.emailTicket,
-    then: yup.string().required('Vous devez choisir une date d’envoi'),
-    otherwise: yup.string(),
-  }),
-  ticketWithdrawalHour: yup.string().when('ticketWithdrawal', {
-    is: (ticketWithdrawal: string) =>
-      ticketWithdrawal === TICKETWITHDRAWAL.onPlaceTicket,
-    then: yup.string().required('Vous devez choisir une heure de retrait'),
+  withdrawalDelay: yup.string().when('withdrawalType', {
+    is: (withdrawalType: string) =>
+      withdrawalType === WITHDRAWAL_TYPE.emailTicket ||
+      withdrawalType === WITHDRAWAL_TYPE.onPlaceTicket,
+    then: yup
+      .string()
+      .required('Vous devez choisir l’une des options ci-dessus'),
     otherwise: yup.string(),
   }),
 }
