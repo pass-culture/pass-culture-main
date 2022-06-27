@@ -21,14 +21,14 @@
 }
 
 .ToggleDisplay {
-  --offset: 0.2em;
-  --diameter: 1.8em;
+  --offset: 2px;
+  --diameter: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: space-around;
   box-sizing: content-box;
-  width: calc(var(--diameter) * 2 + var(--offset) * 2);
-  height: calc(var(--diameter) + var(--offset) * 2);
+  width: rem.torem(56px);
+  height: rem.torem(32px);
   position: relative;
   border-radius: 100vw;
   background-color: #90949D;
@@ -67,6 +67,7 @@
 .Toggle[aria-pressed="true"] .ToggleDisplay::before {
   background: center / contain no-repeat url("./assets/check.png") white;
   background-size: rem.torem(16px);
+  left: -2px;
   transform: translate(100%, -50%);
 }
 
