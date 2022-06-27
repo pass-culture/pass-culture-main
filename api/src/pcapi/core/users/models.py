@@ -454,6 +454,10 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
     def is_account_deleted(self) -> bool:
         return self.account_state == AccountState.DELETED
 
+    @property
+    def is_account_suspended_upon_user_request(self) -> bool:
+        return self.account_state == AccountState.SUSPENDED_UPON_USER_REQUEST
+
     @hybrid_property
     def is_beneficiary(self) -> bool:
         return self.has_beneficiary_role or self.has_underage_beneficiary_role
