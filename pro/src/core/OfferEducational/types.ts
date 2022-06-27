@@ -77,7 +77,7 @@ export type IOfferEducationalFormValues = {
   'search-domains'?: string
 }
 
-export type GetIsOffererEligible = Adapter<
+export type CanOffererCreateCollectiveOffer = Adapter<
   string,
   { isOffererEligibleToEducationalOffer: boolean },
   { isOffererEligibleToEducationalOffer: false }
