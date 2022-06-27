@@ -280,6 +280,10 @@ class VenueView(BaseAdminView):
         }
 
         if str(new_venue_form.adageId.data) != venue.adageId:
+            emails = _get_emails_by_venue(venue)
+            for email in emails:
+                update_external_pro(email)
+
             old_adage_id = venue.adageId or ""
             new_adage_id = new_venue_form.adageId.data or ""
             logger.info(
