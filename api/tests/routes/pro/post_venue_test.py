@@ -189,11 +189,27 @@ class Returns400Test:
         assert response.status_code == 400
         assert key in response.json
 
+    def test_no_siret_nor_comment(self, client):
+        user = ProFactory()
+        client = client.with_session_auth(email=user.email)
+        venue_data = create_valid_venue_data(user)
+        venue_data.pop("siret")
 
+        response = client.post("/venues", json=venue_data)
 
+        assert response.status_code == 400
+        assert response.json["siret"] == ["Veuillez saisir soit un SIRET soit un commentaire"]
 
+    def test_both_siret_and_comment(self, client):
+        user = ProFactory()
+        client = client.with_session_auth(email=user.email)
+        venue_data = create_valid_venue_data(user)
+        venue_data["comment"] = "J'ai déjà saisi un SIRET"
 
+        response = client.post("/venues", json=venue_data)
 
+        assert response.status_code == 400
+        assert response.json["siret"] == ["Veuillez saisir soit un SIRET soit un commentaire"]
 
 
 class Returns403Test:
