@@ -18,9 +18,8 @@ interface IInitialValues {
   venueId: string
   subcategoryId: string
   withdrawalDetails: string
-  ticketWithdrawal: string
-  ticketSentDate: string
-  ticketWithdrawalHour: string
+  withdrawalType: string
+  withdrawalDelay: string
 }
 
 const renderUsefulInformations = ({
@@ -107,9 +106,8 @@ describe('OfferIndividual section: UsefulInformations', () => {
       venueId: '',
       subcategoryId: '',
       withdrawalDetails: '',
-      ticketWithdrawal: '',
-      ticketSentDate: '',
-      ticketWithdrawalHour: '',
+      withdrawalType: '',
+      withdrawalDelay: '',
     }
     props = {
       offererNames,
