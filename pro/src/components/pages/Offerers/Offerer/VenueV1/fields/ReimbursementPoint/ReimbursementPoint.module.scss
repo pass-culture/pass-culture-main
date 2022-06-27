@@ -1,0 +1,68 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+.sub-title-text {
+  @include fonts.title4();
+}
+
+.section-description,
+.or-separator {
+  margin-top: rem.torem(24px);
+  margin-bottom: rem.torem(24px);
+}
+.select-description {
+  margin-bottom: rem.torem(16px);
+}
+
+.field-select {
+  padding: 0;
+  width: initial;
+  margin-bottom: rem.torem(60px);
+}
+
+.label-reimbursment-point {
+  @include fonts.body();
+  margin-bottom: rem.torem(8px);
+}
+
+.add-reimbursement-point-section {
+  button {
+    margin-bottom: rem.torem(24px);
+  }
+}
+
+.select {
+  position: relative;
+  width: fit-content;
+
+  select {
+    @include fonts.body-important();
+
+    appearance: none;
+    background-color: colors.$white;
+    border: rem.torem(1px) solid colors.$grey-medium;
+    border-radius: rem.torem(18px);
+    height: rem.torem(36px);
+    max-width: 100%;
+    outline: none;
+    padding: rem.torem(4px) rem.torem(46px) rem.torem(4px) rem.torem(16px);
+  }
+
+  &::after {
+    border: rem.torem(3px) solid colors.$black;
+    border-radius: rem.torem(2px);
+    border-right: 0;
+    border-top: 0;
+    content: '';
+    height: rem.torem(10px);
+    margin-top: rem.torem(-19px);
+    pointer-events: none;
+    position: absolute;
+    right: rem.torem(20px);
+    top: 75%;
+    transform: rotate(-45deg);
+    transform-origin: center;
+    width: rem.torem(10px);
+  }
+}
