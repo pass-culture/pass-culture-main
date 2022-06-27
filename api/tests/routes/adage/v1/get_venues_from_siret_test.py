@@ -6,7 +6,13 @@ from pcapi.core.offerers import factories as offerer_factories
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def test_get_venues_from_siret(self, client) -> None:
-        venue = offerer_factories.VenueFactory(siret="12345678912345")
+        venue = offerer_factories.VenueFactory(
+            siret="12345678912345",
+            audioDisabilityCompliant=None,
+            mentalDisabilityCompliant=None,
+            motorDisabilityCompliant=None,
+            visualDisabilityCompliant=None,
+        )
 
         client.with_eac_token()
         response = client.get("/adage/v1/venues/12345678912345")
@@ -28,10 +34,10 @@ class Returns200Test:
                     "phoneNumber": venue.contact.phone_number,
                     "email": venue.contact.email,
                     "website": venue.contact.website,
-                    "audioDisabilityCompliant": False,
-                    "mentalDisabilityCompliant": False,
-                    "motorDisabilityCompliant": False,
-                    "visualDisabilityCompliant": False,
+                    "audioDisabilityCompliant": None,
+                    "mentalDisabilityCompliant": None,
+                    "motorDisabilityCompliant": None,
+                    "visualDisabilityCompliant": None,
                 }
             ]
         }
