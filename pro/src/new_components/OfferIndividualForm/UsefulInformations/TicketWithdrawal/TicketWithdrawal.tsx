@@ -1,7 +1,7 @@
 import { RadioGroup, Select } from 'ui-kit'
 import React, { useEffect } from 'react'
 import {
-  TICKETWITHDRAWAL,
+  WITHDRAWAL_TYPE,
   ticketSentDateOptions,
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
@@ -21,7 +21,7 @@ const TicketWithdrawal = ({
   subCategories,
 }: ITicketWithdrawalProps): JSX.Element => {
   const {
-    values: { subcategoryId, ticketWithdrawal },
+    values: { subcategoryId, withdrawalType },
     setFieldValue,
   } = useFormikContext<IOfferIndividualFormValues>()
 
@@ -30,16 +30,12 @@ const TicketWithdrawal = ({
       const subCategory = subCategories.find(s => s.id === subcategoryId)
       if (!subCategory?.isEvent) {
         setFieldValue(
-          'ticketWithdrawal',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketWithdrawal']
+          'withdrawalType',
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalType']
         )
         setFieldValue(
-          'ticketSentDate',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketSentDate']
-        )
-        setFieldValue(
-          'ticketWithdrawalHour',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketWithdrawalHour']
+          'withdrawalDelay',
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
         )
       }
     },
@@ -47,20 +43,20 @@ const TicketWithdrawal = ({
   )
 
   useEffect(
-    function onTicketWithdrawalChange() {
-      if (ticketWithdrawal !== TICKETWITHDRAWAL.emailTicket) {
+    function onWithdrawalTypeChange() {
+      if (withdrawalType !== WITHDRAWAL_TYPE.emailTicket) {
         setFieldValue(
-          'ticketSentDate',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketSentDate']
+          'withdrawalDelay',
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
         )
-      } else if (ticketWithdrawal !== TICKETWITHDRAWAL.onPlaceTicket) {
+      } else if (withdrawalType !== WITHDRAWAL_TYPE.onPlaceTicket) {
         setFieldValue(
-          'ticketWithdrawalHour',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['ticketWithdrawalHour']
+          'withdrawalDelay',
+          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
         )
       }
     },
-    [ticketWithdrawal]
+    [withdrawalType]
   )
 
   return (
@@ -69,27 +65,27 @@ const TicketWithdrawal = ({
         <RadioGroup
           group={ticketWithdrawalTypeRadios}
           legend="Comment les billets, places seront-ils transmis ?"
-          name="ticketWithdrawal"
+          name="withdrawalType"
         />
       </FormLayout.Row>
 
-      {ticketWithdrawal === TICKETWITHDRAWAL.emailTicket && (
+      {withdrawalType === WITHDRAWAL_TYPE.emailTicket && (
         <FormLayout.Row>
           <Select
             label="Date d’envoi"
             description="avant le début de l'événement"
-            name="ticketSentDate"
+            name="withdrawalDelay"
             options={ticketSentDateOptions}
           />
         </FormLayout.Row>
       )}
 
-      {ticketWithdrawal === TICKETWITHDRAWAL.onPlaceTicket && (
+      {withdrawalType === WITHDRAWAL_TYPE.onPlaceTicket && (
         <FormLayout.Row>
           <Select
             label="Heure de retrait"
             description="avant le début de l'événement"
-            name="ticketWithdrawalHour"
+            name="withdrawalDelay"
             options={ticketWithdrawalHourOptions}
           />
         </FormLayout.Row>

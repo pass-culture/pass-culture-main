@@ -1,97 +1,96 @@
 export const TICKET_WITHDRAWAL_DEFAULT_VALUES = {
   withdrawalDetails: '',
-  ticketWithdrawal: '',
-  ticketSentDate: '',
-  ticketWithdrawalHour: '',
+  withdrawalType: '',
+  withdrawalDelay: '',
 }
 
-export const TICKETWITHDRAWAL = {
-  withoutTicket: 'withoutTicket',
-  emailTicket: 'emailTicket',
-  onPlaceTicket: 'onPlaceTicket',
+export const WITHDRAWAL_TYPE = {
+  withoutTicket: 'no_ticket',
+  emailTicket: 'by_email',
+  onPlaceTicket: 'on_site',
 }
 
 export const ticketWithdrawalTypeRadios = [
   {
     label: 'Événement sans billet',
-    value: TICKETWITHDRAWAL.withoutTicket,
+    value: WITHDRAWAL_TYPE.withoutTicket,
   },
   {
     label: 'Envoi par e-mail',
-    value: TICKETWITHDRAWAL.emailTicket,
+    value: WITHDRAWAL_TYPE.emailTicket,
   },
   {
     label: 'Retrait sur place (guichet, comptoir ...)',
-    value: TICKETWITHDRAWAL.onPlaceTicket,
+    value: WITHDRAWAL_TYPE.onPlaceTicket,
   },
 ]
 
 export const ticketSentDateOptions = [
   {
     label: 'Date indéterminée',
-    value: 'undeterminedDate',
+    value: (0).toString(),
   },
   {
     label: '24 heures',
-    value: '24Hours',
+    value: (60 * 60 * 24).toString(),
   },
   {
     label: '48 heures',
-    value: '48Hours',
+    value: (60 * 60 * 24 * 2).toString(),
   },
   {
     label: '3 jours',
-    value: '3Days',
+    value: (60 * 60 * 24 * 3).toString(),
   },
   {
     label: '4 jours',
-    value: '4Days',
+    value: (60 * 60 * 24 * 4).toString(),
   },
   {
     label: '5 jours',
-    value: '5Days',
+    value: (60 * 60 * 24 * 5).toString(),
   },
   {
     label: '6 jours',
-    value: '6Days',
+    value: (60 * 60 * 24 * 6).toString(),
   },
   {
     label: '1 semaine',
-    value: '1Week',
+    value: (60 * 60 * 24 * 7).toString(),
   },
 ]
 
 export const ticketWithdrawalHourOptions = [
   {
     label: 'À tout moment',
-    value: 'anytime',
+    value: (0).toString(),
   },
   {
     label: '15 minutes',
-    value: '15Minutes',
+    value: (60 * 15).toString(),
   },
   {
     label: '30 minutes',
-    value: '30Minutes',
+    value: (60 * 30).toString(),
   },
   {
     label: '1 heure',
-    value: '1Hour',
+    value: (60 * 60).toString(),
   },
   {
     label: '2 heures',
-    value: '2Hours',
+    value: (60 * 60 * 2).toString(),
   },
   {
     label: '4 heures',
-    value: '4Hours',
+    value: (60 * 60 * 4).toString(),
   },
   {
     label: '24 heures',
-    value: '24Hours',
+    value: (60 * 60 * 24).toString(),
   },
   {
     label: '48 heures',
-    value: '48Hours',
+    value: (60 * 60 * 48).toString(),
   },
 ]
