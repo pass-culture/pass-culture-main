@@ -379,6 +379,7 @@ def patch_collective_offers_educational_institution(
             offer_id=dehumanized_id,
             educational_institution_id=body.educational_institution_id,
             is_creating_offer=body.is_creating_offer,
+            user=current_user,
         )
     except educational_exceptions.EducationalInstitutionNotFound:
         raise ApiErrors({"educationalInstitution": ["Aucune institution trouvée à partir de cet id"]}, status_code=404)
