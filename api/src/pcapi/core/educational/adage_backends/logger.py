@@ -6,9 +6,9 @@ from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.models import AdageApiResult
-from pcapi.routes.adage.v1.serialization import venue as venue_serialization
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
+from pcapi.routes.serialization import venues_serialize
 
 
 logger = logging.getLogger(__name__)
@@ -37,62 +37,62 @@ class AdageLoggerClient(AdageClient):
         )
         return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
-    def get_cultural_partners(self) -> venue_serialization.AdageCulturalPartners:
+    def get_cultural_partners(self) -> venues_serialize.AdageCulturalPartners:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/partenaire-culturel")
         data = [
             {
-                "id": 0,
-                "venueId": 0,
-                "siret": 0,
-                "regionId": 0,
-                "academieId": "string",
-                "statutId": 0,
-                "labelId": 0,
-                "typeId": 0,
-                "communeId": "string",
-                "libelle": "string",
-                "adresse": "string",
+                "id": 1,
+                "venueId": 12,
+                "siret": 51234567900017,
+                "regionId": 2,
+                "academieId": "ac-versaille",
+                "statutId": 2,
+                "labelId": 3,
+                "typeId": 1,
+                "communeId": "Paris",
+                "libelle": "a cultural partner",
+                "adresse": "10 rue de la ville d'à coté",
                 "siteWeb": 0,
                 "latitude": 0,
                 "longitude": 0,
-                "statutLibelle": "string",
-                "labelLibelle": "string",
-                "typeIcone": "string",
-                "typeLibelle": "string",
-                "communeLibelle": "string",
-                "communeDepartement": "string",
-                "academieLibelle": "string",
-                "regionLibelle": "string",
-                "domaines": "string",
+                "statutLibelle": "Association",
+                "labelLibelle": "pouet",
+                "typeIcone": "image",
+                "typeLibelle": "a type",
+                "communeLibelle": "Paris",
+                "communeDepartement": "Paris",
+                "academieLibelle": "versaille",
+                "regionLibelle": "ile de france",
+                "domaines": "des domaines",
                 "actif": 0,
                 "dateModification": "2022-06-27T08:52:27.597Z",
             },
             {
-                "id": 1,
-                "venueId": 0,
-                "siret": 0,
-                "regionId": 0,
-                "academieId": "string",
-                "statutId": 0,
-                "labelId": 0,
-                "typeId": 0,
-                "communeId": "string",
-                "libelle": "string",
-                "adresse": "string",
+                "id": 2,
+                "venueId": 13,
+                "siret": 65498732000011,
+                "regionId": 3,
+                "academieId": "un id d'academie",
+                "statutId": 3,
+                "labelId": 1,
+                "typeId": 1,
+                "communeId": "une comune",
+                "libelle": "un libelle",
+                "adresse": "1 impasse d'une ville lointaine",
                 "siteWeb": 0,
                 "latitude": 0,
                 "longitude": 0,
-                "statutLibelle": "string",
-                "labelLibelle": "string",
-                "typeIcone": "string",
-                "typeLibelle": "string",
-                "communeLibelle": "string",
-                "communeDepartement": "string",
-                "academieLibelle": "string",
-                "regionLibelle": "string",
-                "domaines": "string",
+                "statutLibelle": "entreprise privée",
+                "labelLibelle": "sans label",
+                "typeIcone": "film",
+                "typeLibelle": "maison",
+                "communeLibelle": "une commune libelle",
+                "communeDepartement": "corse du sud",
+                "academieLibelle": "Lille",
+                "regionLibelle": "Corse",
+                "domaines": "d'autres domaines",
                 "actif": 0,
                 "dateModification": "2022-06-27T08:52:27.597Z",
             },
         ]
-        return parse_obj_as(venue_serialization.AdageCulturalPartners, {"partners": data})
+        return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": data})

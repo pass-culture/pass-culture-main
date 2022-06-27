@@ -3,8 +3,8 @@ from pydantic import parse_obj_as
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.models import AdageApiResult
-from pcapi.routes.adage.v1.serialization import venue as venue_serialization
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
+from pcapi.routes.serialization import venues_serialize
 
 from .. import testing
 
@@ -25,7 +25,7 @@ class AdageSpyClient(AdageClient):
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-annule", "sent_data": data})
         return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
-    def get_cultural_partners(self) -> venue_serialization.AdageCulturalPartners:
+    def get_cultural_partners(self) -> venues_serialize.AdageCulturalPartners:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel", "sent_data": ""})
         data = [
             {
@@ -83,4 +83,4 @@ class AdageSpyClient(AdageClient):
                 "dateModification": "2021-06-27T08:52:27.597Z",
             },
         ]
-        return parse_obj_as(venue_serialization.AdageCulturalPartners, {"partners": data})
+        return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": data})

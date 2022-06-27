@@ -6,9 +6,9 @@ from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.models import AdageApiResult
-from pcapi.routes.adage.v1.serialization import venue as venue_serialization
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
+from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import requests
 
 
@@ -82,7 +82,7 @@ class AdageHttpClient(AdageClient):
 
         return AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
 
-    def get_cultural_partners(self) -> venue_serialization.AdageCulturalPartners:
+    def get_cultural_partners(self) -> venues_serialize.AdageCulturalPartners:
         api_url = f"{self.base_url}/v1/partenaire-culturel"
         api_response = requests.get(
             api_url,
@@ -94,4 +94,4 @@ class AdageHttpClient(AdageClient):
         if api_response.status_code != 200:
             raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
-        return parse_obj_as(venue_serialization.AdageCulturalPartners, {"partners": api_response.json()})
+        return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": api_response.json()})
