@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any
 from typing import Optional
 
@@ -59,3 +60,35 @@ class GetVenuesWithOptionalSiretResponseModel(BaseModel):
 class GetAllVenuesQueryModel(BaseModel):
     page: Optional[PositiveInt]
     per_page: Optional[PositiveInt]
+
+
+class AdageCulturalPartner(BaseModel):
+    id: int
+    venueId: int
+    siret: int
+    regionId: int
+    academieId: str
+    statutId: int
+    labelId: int
+    typeId: int
+    communeId: str
+    libelle: str
+    adresse: str
+    siteWeb: int
+    latitude: float
+    longitude: float
+    statutLibelle: str
+    labelLibelle: str
+    typeIcone: str
+    typeLibelle: str
+    communeLibelle: str
+    communeDepartement: str
+    academieLibelle: str
+    regionLibelle: str
+    domaines: str
+    actif: int
+    dateModification: datetime
+
+
+class AdageCulturalPartners(BaseModel):
+    parteners: list[AdageCulturalPartner]

@@ -1,6 +1,7 @@
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.models import AdageApiResult
+from pcapi.routes.adage.v1.serialization import venue as venue_serialization
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 
@@ -19,4 +20,7 @@ class AdageClient:
         raise NotImplementedError()
 
     def notify_booking_cancellation_by_offerer(self, data: EducationalBookingResponse) -> AdageApiResult:
+        raise NotImplementedError()
+
+    def get_cultural_partners(self) -> venue_serialization.AdageCulturalPartners:
         raise NotImplementedError()
