@@ -1,4 +1,8 @@
-import { EducationalInstitution, Mode } from 'core/OfferEducational'
+import {
+  CollectiveOfferResponseModel,
+  EducationalInstitution,
+  Mode,
+} from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
@@ -52,7 +56,14 @@ const CollectiveOfferVisibility = () => {
     })
   }, [])
 
-  const onSuccess = ({ message }: { message: string }) => {
+  const onSuccess = ({
+    message,
+    payload,
+  }: {
+    message: string
+    payload: CollectiveOfferResponseModel
+  }) => {
+    setInstitution(payload.institution)
     notify.success(message)
   }
 
