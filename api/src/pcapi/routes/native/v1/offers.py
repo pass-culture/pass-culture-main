@@ -1,6 +1,7 @@
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2
 from pcapi.core.mails.transactional.users.offer_link_to_ios_user import send_offer_link_to_ios_user_email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -18,6 +19,7 @@ from pcapi.workers.push_notification_job import send_offer_link_by_push_job
 
 from . import blueprint
 from .serialization import offers as serializers
+from .serialization import subcategories_v2 as subcategories_v2_serializers
 
 
 # It will break the WebApp v2 proxy in case of endpoint modification. Read https://github.com/pass-culture/pass-culture-app-native/pull/2808/files#r844891000
@@ -107,5 +109,24 @@ def get_subcategories() -> serializers.SubcategoriesResponseModel:
         homepageLabels=[
             serializers.HomepageLabelResponseModel.from_orm(homepage_label_name)
             for homepage_label_name in subcategories.HomepageLabels
+        ],
+    )
+
+
+@blueprint.native_v1.route("/subcategories/v2", methods=["GET"])
+@spectree_serialize(api=blueprint.api, response_model=subcategories_v2_serializers.SubcategoriesResponseModelv2)
+def get_subcategories_v2() -> subcategories_v2_serializers.SubcategoriesResponseModelv2:
+    return subcategories_v2_serializers.SubcategoriesResponseModelv2(
+        subcategories=[
+            subcategories_v2_serializers.SubcategoryResponseModelv2.from_orm(subcategory)
+            for subcategory in subcategories_v2.ALL_SUBCATEGORIES
+        ],
+        searchGroups=[
+            subcategories_v2_serializers.SearchGroupResponseModelv2.from_orm(search_group_name)
+            for search_group_name in subcategories_v2.SearchGroups
+        ],
+        homepageLabels=[
+            subcategories_v2_serializers.HomepageLabelResponseModelv2.from_orm(homepage_label_name)
+            for homepage_label_name in subcategories_v2.HomepageLabels
         ],
     )

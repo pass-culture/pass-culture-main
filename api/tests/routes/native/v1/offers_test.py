@@ -7,6 +7,7 @@ import pytest
 from pcapi import settings
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.categories import subcategories_v2
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.offers.factories import EventStockFactory
 from pcapi.core.offers.factories import MediationFactory
@@ -581,3 +582,23 @@ class SubcategoriesTest:
             ]
             for homepage_label_dict in response.json["homepageLabels"]
         )
+
+    def test_get_subcategories_v2(self, client):
+        with assert_num_queries(0):
+            response = client.get("/native/v1/subcategories/v2")
+
+        assert response.status_code == 200
+
+        assert set(response.json.keys()) == {"subcategories", "searchGroups", "homepageLabels"}
+
+        found_subcategory_ids = {x["id"] for x in response.json["subcategories"]}
+        expected_subcategory_ids = {x.id for x in subcategories_v2.ALL_SUBCATEGORIES}
+        assert found_subcategory_ids == expected_subcategory_ids
+
+        found_search_group_names = {x["name"] for x in response.json["searchGroups"]}
+        expected_search_group_names = {x.search_group_name for x in subcategories_v2.ALL_SUBCATEGORIES}
+        assert found_search_group_names == expected_search_group_names
+
+        found_home_labels = {x["name"] for x in response.json["homepageLabels"]}
+        expected_home_labels = {x.homepage_label_name for x in subcategories_v2.ALL_SUBCATEGORIES}
+        assert found_home_labels == expected_home_labels
