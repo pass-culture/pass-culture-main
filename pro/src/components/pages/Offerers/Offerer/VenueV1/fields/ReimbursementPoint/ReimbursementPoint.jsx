@@ -1,18 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { ApplicationBanner } from '../BankInformationFields/ApplicationBanner'
-import { Banner } from 'ui-kit'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import { Field } from 'react-final-form'
-import Icon from 'components/layout/Icon'
+
 import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
+import { Title } from 'ui-kit'
+
 import { getBusinessUnits } from 'repository/pcapi/pcapi'
 import { humanizeSiret } from 'core/Venue/utils'
 
-const CREATE_DMS_FILE_BANNER = 'create_dms_file_banner'
-const REPLACE_DMS_FILE_BUTTON = 'replace_dms_file_button'
-const PENDING_DMS_FILE_BANNER = 'pending_dms_file_banner'
+import styles from './ReimbursementPoint.module.scss'
 
 const ReimbursementPoint = ({
   readOnly,
@@ -21,13 +19,8 @@ const ReimbursementPoint = ({
   venue,
   isCreatingVenue,
 }) => {
-  const [businessUnitOptions, setBusinessUnitOptions] = useState([])
-  const [venueBusinessUnit, setVenueBusinessUnit] = useState(null)
-  const [displayedBanners, setDisplayedBanners] = useState({
-    [CREATE_DMS_FILE_BANNER]: false,
-    [REPLACE_DMS_FILE_BUTTON]: false,
-    [PENDING_DMS_FILE_BANNER]: false,
-  })
+  const [reimbursementPointOptions, setReimbursementPointOptions] = useState([])
+  const [venueReimbursementPoint, setVenueReimbursementPoint] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const businessUnitDisplayName = businessUnit =>
@@ -39,11 +32,18 @@ const ReimbursementPoint = ({
         } - ${businessUnit.iban}`
       : ''
 
-  const scrollToBusinessUnit = useCallback(node => {
-    if (scrollToSection && node) {
-      node.scrollIntoView()
+  const scrollToReimbursementPoint = useCallback(reimbursementPoint => {
+    if (scrollToSection && reimbursementPoint) {
+      reimbursementPoint.scrollIntoView()
     }
   }, [])
+
+  const openDMSApplication = useCallback(() => {
+    window.open(
+      DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
+      '_blank'
+    )
+  })
 
   useEffect(() => {
     async function loadBusinessUnits(offererId) {
@@ -63,8 +63,8 @@ const ReimbursementPoint = ({
           }
         }
       }
-      setVenueBusinessUnit(venueBusinessUnitResponse)
-      setBusinessUnitOptions(
+      setVenueReimbursementPoint(venueBusinessUnitResponse)
+      setReimbursementPointOptions(
         businessUnitsResponse
           .filter(
             businessUnit =>
@@ -77,26 +77,13 @@ const ReimbursementPoint = ({
             id: businessUnit.id,
           }))
       )
-
-      setDisplayedBanners({
-        [CREATE_DMS_FILE_BANNER]: isCreatingVenue
-          ? true
-          : venue.id && !venue.isBusinessUnitMainVenue && !venue.isVirtual,
-        [REPLACE_DMS_FILE_BUTTON]: venue.id && venue.isBusinessUnitMainVenue,
-        [PENDING_DMS_FILE_BANNER]:
-          venue.id &&
-          !venue.iban &&
-          !venue.bic &&
-          venue.demarchesSimplifieesApplicationId &&
-          !venue.isVirtual,
-      })
       setIsLoading(false)
     }
     loadBusinessUnits(offerer.id)
   }, [
     isCreatingVenue,
     offerer.id,
-    setDisplayedBanners,
+    readOnly,
     venue.bic,
     venue.businessUnit,
     venue.businessUnitId,
@@ -109,86 +96,73 @@ const ReimbursementPoint = ({
   ])
 
   if (isLoading) return <Spinner />
-  if (!venue.isVirtual || !!businessUnitOptions.length)
+  if (!venue.isVirtual)
     return (
-      <div className="section vp-content-section bank-information">
-        <div className="main-list-title title-actions-container">
-          <h2 ref={scrollToBusinessUnit} className="main-list-title-text">
+      <div className="section reimbursement-point-section">
+        <div className="main-list-title">
+          <Title
+            as="h2"
+            level={4}
+            ref={scrollToReimbursementPoint}
+            className={styles['sub-title-text']}
+          >
             Coordonnées bancaires
-          </h2>
-          {displayedBanners[REPLACE_DMS_FILE_BUTTON] && (
-            <a
-              className="tertiary-link"
-              href={
-                DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL
-              }
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <Icon alt="lien externe, nouvel onglet" svg="ico-external-site" />
-              Modifier
-            </a>
-          )}
+          </Title>
         </div>
-        <p className="bi-subtitle">
+        <p className={styles['section-description']}>
           Ces coordonnées bancaires seront utilisées pour les remboursements des
           offres éligibles de ce lieu.
         </p>
-        {!!businessUnitOptions.length && (
-          <div className="field field-select">
-            <div className="field-label">
-              <label htmlFor="venue-business-unit">
-                Coordonnées bancaires pour vos remboursements :
+        {!venueReimbursementPoint && (
+          <div className={styles['add-reimbursement-point-section']}>
+            <button
+              className="secondary-button"
+              id="add-new-reimbursement-point"
+              onClick={openDMSApplication}
+              type="button"
+              disabled={readOnly}
+            >
+              Ajouter des coordonnées bancaires
+            </button>
+          </div>
+        )}
+        {!venueReimbursementPoint && !!reimbursementPointOptions.length && (
+          <p className={styles['or-separator']}>ou</p>
+        )}
+        {!!reimbursementPointOptions.length && (
+          <div className={styles['field-select']}>
+            <p className={styles['select-description']}>
+              <b>Sélectionner</b> des coordonnées bancaires parmi celles déjà
+              existantes dans votre structure :
+            </p>
+            <div className={styles['label-reimbursment-point']}>
+              <label htmlFor="venue-reimbursement-point">
+                Coordonnées bancaires
               </label>
             </div>
-            {readOnly ? (
-              businessUnitDisplayName(venueBusinessUnit)
+            {readOnly && venueReimbursementPoint ? (
+              businessUnitDisplayName(venueReimbursementPoint)
             ) : (
-              <div className="control control-select">
-                <div className="select">
-                  <Field
-                    component="select"
-                    id="venue-business-unit"
-                    name="businessUnitId"
-                    readOnly={readOnly}
-                  >
-                    <option disabled value="">
-                      Sélectionner des coordonnées dans la liste
+              <div className={styles['select']}>
+                <Field
+                  component="select"
+                  id="venue-reimbursement-point"
+                  name="businessUnitId"
+                  disabled={readOnly}
+                >
+                  <option disabled value="">
+                    Sélectionner des coordonnées dans la liste
+                  </option>
+                  {reimbursementPointOptions.map(option => (
+                    <option key={option.key} value={option.id}>
+                      {option.displayName}
                     </option>
-                    {businessUnitOptions.map(option => (
-                      <option key={option.key} value={option.id}>
-                        {option.displayName}
-                      </option>
-                    ))}
-                  </Field>
-                </div>
+                  ))}
+                </Field>
               </div>
             )}
           </div>
         )}
-        <div className="banners">
-          {displayedBanners[PENDING_DMS_FILE_BANNER] && (
-            <ApplicationBanner
-              applicationId={venue.demarchesSimplifieesApplicationId}
-            />
-          )}
-          {displayedBanners[CREATE_DMS_FILE_BANNER] && (
-            <Banner
-              href={
-                DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL
-              }
-              linkTitle="Ajouter des coordonnées bancaires"
-            >
-              Pour ajouter de nouvelles coordonnées bancaires, rendez-vous sur
-              Démarches Simplifiées.
-            </Banner>
-          )}
-          <Banner
-            href="https://passculture.zendesk.com/hc/fr/articles/4411992051601"
-            linkTitle="En savoir plus sur les remboursements"
-            type="notification-info"
-          />
-        </div>
       </div>
     )
   return null

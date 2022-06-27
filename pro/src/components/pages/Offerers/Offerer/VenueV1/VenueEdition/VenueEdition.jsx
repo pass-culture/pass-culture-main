@@ -80,7 +80,7 @@ const VenueEdition = () => {
   }) => {
     const body = formValues.isVirtual
       ? { businessUnitId: formValues.businessUnitId }
-      : formatVenuePayload(formValues, false)
+      : formatVenuePayload(formValues, false, venue.siret !== null)
     try {
       const response = await pcapi.editVenue(venueId, body)
       handleSuccess(response)
