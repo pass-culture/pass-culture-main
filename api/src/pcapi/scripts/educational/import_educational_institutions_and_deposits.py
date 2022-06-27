@@ -1,6 +1,7 @@
 import csv
 from datetime import datetime
 import logging
+import pathlib
 from typing import Iterable
 from typing import Optional
 
@@ -90,3 +91,43 @@ def _process_educational_csv(
                 "ministry": ministry,
             },
         )
+
+
+def merge_budget_and_data_csv(
+    budgets_csv_filename: str, data_csv_filename: str, path: str = DEFAULT_FILEPATH
+) -> pathlib.Path:
+    if path is not None and path != DEFAULT_FILEPATH and not path.endswith("/"):
+        path += "/"
+
+    budget_by_uai = {}
+    rows = []
+
+    with open(f"./{budgets_csv_filename}", "r", encoding="utf-8") as budgets_file:
+        budgets_rows = csv.DictReader(budgets_file, delimiter=";")
+        for row in budgets_rows:
+            budget_by_uai[row["UAICode"]] = row["budget"]
+
+    with open(f"./{data_csv_filename}", "r", encoding="utf-8") as data_file:
+        data_row = csv.DictReader(data_file, delimiter=";")
+        for row in data_row:
+            rows.append(
+                (
+                    row["UAICode"],
+                    budget_by_uai[row["UAICode"]],
+                    row["city"],
+                    row["postalCode"],
+                    row["email"],
+                    row["phoneNumber"],
+                    row["name"],
+                )
+            )
+
+    header = ["UAICode", "depositAmount", "city", "postalCode", "email", "phoneNumber", "name"]
+    csv_path: pathlib.Path = pathlib.Path() / "budgets.csv"
+
+    with open(csv_path, "w+", encoding="utf-8") as fp:
+        writer = csv.writer(fp, quoting=csv.QUOTE_NONNUMERIC, delimiter=";")
+        writer.writerow(header)
+        writer.writerows(row for row in rows)
+
+    return csv_path
