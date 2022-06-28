@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 
-import { ApplicationBanner } from './ApplicationBanner'
+import ApplicationBanner from '../ApplicationBanner'
 import { Banner } from 'ui-kit'
 import { BicIbanFields } from './BicIbanFields'
 import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
