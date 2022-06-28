@@ -36,6 +36,7 @@ import VenueType from '../ValueObjects/VenueType'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { sortByLabel } from 'utils/strings'
@@ -50,6 +51,8 @@ const VenueEdition = () => {
   const [venue, setVenue] = useState(null)
   const [venueTypes, setVenueTypes] = useState(null)
   const [venueLabels, setVenueLabels] = useState(null)
+  const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
+    useState(false)
   const deleteBusinessUnitConfirmed = useRef(false)
   const { offererId, venueId } = useParams()
   const history = useHistory()
@@ -60,6 +63,9 @@ const VenueEdition = () => {
   )
   const isNewBankInformationCreation = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
+  )
+  const enableAdageVenueInformation = useActiveFeature(
+    'ENABLE_ADAGE_VENUE_INFORMATION'
   )
 
   const onImageUpload = useCallback(
@@ -135,12 +141,22 @@ const VenueEdition = () => {
       const venueLabelsRequest = pcapi
         .getVenueLabels()
         .then(labels => sortByLabel(labels))
+      const canOffererCreateCollectiveOfferRequest = enableAdageVenueInformation
+        ? canOffererCreateCollectiveOfferAdapter()
+        : () => Promise.resolve({ payload: false, isOk: true, message: null })
 
-      const [offerer, venue, venueTypes, venueLabels] = await Promise.all([
+      const [
+        offerer,
+        venue,
+        venueTypes,
+        venueLabels,
+        canOffererCreateCollectiveOfferResponse,
+      ] = await Promise.all([
         offererRequest,
         venueRequest,
         venueTypesRequest,
         venueLabelsRequest,
+        canOffererCreateCollectiveOfferRequest,
       ])
 
       return {
@@ -148,15 +164,24 @@ const VenueEdition = () => {
         venue,
         venueTypes,
         venueLabels,
+        canOffererCreateCollectiveOffer:
+          canOffererCreateCollectiveOfferResponse.payload,
       }
     }
     handleInitialRequest().then(
-      ({ offerer, venue, venueTypes, venueLabels }) => {
+      ({
+        offerer,
+        venue,
+        venueTypes,
+        venueLabels,
+        canOffererCreateCollectiveOffer,
+      }) => {
         setOfferer(offerer)
         setVenue(venue)
         setVenueTypes(venueTypes)
         setVenueLabels(venueLabels)
         setIsReady(true)
+        setCanOffererCreateCollectiveOffer(canOffererCreateCollectiveOffer)
       }
     )
   }, [offererId, venueId])
@@ -281,6 +306,9 @@ const VenueEdition = () => {
               venueId={venue.id}
               venueImage={venue.bannerUrl}
             />
+          )}
+          {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
+            <div></div>
           )}
           {!initialIsVirtual && (
             <>
