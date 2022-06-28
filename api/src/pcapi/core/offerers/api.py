@@ -58,6 +58,9 @@ def update_venue(
     **attrs: typing.Any,
 ) -> models.Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
+    # FUTURE-NEW-BANK-DETAILS: clean up when new bank details journey is complete
+    update_reimbursement_point_id = "reimbursementPointId" in attrs
+    reimbursement_point_id = attrs.pop("reimbursementPointId", None)
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
     validation.check_venue_edition(modifications, venue)
@@ -68,6 +71,7 @@ def update_venue(
     if not modifications:
         return venue
 
+    # FUTURE-NEW-BANK-DETAILS: clean up when new bank details journey is complete
     business_unit_id = modifications.get("businessUnitId")
     if business_unit_id and venue.isBusinessUnitMainVenue:
         delete_business_unit(venue.businessUnit)
@@ -77,6 +81,12 @@ def update_venue(
         )
     if "businessUnitId" in modifications:
         set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)
+
+    if update_reimbursement_point_id:
+        if feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+            link_venue_to_reimbursement_point(venue, reimbursement_point_id)
+        else:
+            raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
@@ -240,6 +250,33 @@ def link_venue_to_pricing_point(
             },
         )
 
+
+def link_venue_to_reimbursement_point(
+    venue: models.Venue,
+    reimbursement_point_id: Optional[int],
+    timestamp: Optional[datetime] = None,
+) -> None:
+    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+        raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
+    if reimbursement_point_id:
+        validation.check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
+    if not timestamp:
+        timestamp = datetime.utcnow()
+    current_link = models.VenueReimbursementPointLink.query.filter(
+        models.VenueReimbursementPointLink.venueId == venue.id,
+        models.VenueReimbursementPointLink.timespan.contains(timestamp),
+    ).one_or_none()
+    if current_link:
+        current_link.timespan = db_utils.make_timerange(
+            current_link.timespan.lower,
+            timestamp,
+        )
+        db.session.add(current_link)
+    if reimbursement_point_id:
+        new_link = models.VenueReimbursementPointLink(
+            reimbursementPointId=reimbursement_point_id, venueId=venue.id, timespan=(timestamp, None)
+        )
+        db.session.add(new_link)
     db.session.commit()
 
 

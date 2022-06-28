@@ -336,6 +336,19 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
             .scalar()
         )
 
+    @property
+    def current_reimbursement_point_id(self) -> Optional[int]:
+        now = datetime.utcnow()
+        timespan = db_utils.make_timerange(start=now, end=None)
+        return (
+            db.session.query(VenueReimbursementPointLink.reimbursementPointId)
+            .filter(
+                VenueReimbursementPointLink.venueId == self.id, VenueReimbursementPointLink.timespan.overlaps(timespan)  # type: ignore [attr-defined]
+            )
+            .scalar()
+        )
+
+
 class VenueLabel(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_label"
 
@@ -458,7 +471,7 @@ class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
     reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
-    # that the venue is still linked to the pricing point. For links
+    # that the venue is still linked to the reimbursement point. For links
     # that existed before this table was introduced, the lower bound
     # is set to the Epoch.
     timespan = Column(sa_psql.TSRANGE, nullable=False)
