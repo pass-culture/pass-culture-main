@@ -30,7 +30,7 @@ DMS_ACTIVITY_ENUM_MAPPING = {
 
 def parse_beneficiary_information_graphql(
     application_detail: dms_models.DmsApplicationResponse, procedure_id: int
-) -> typing.Tuple[fraud_models.DMSContent, list[dms_types.DmsParsingErrorDetails]]:
+) -> typing.Tuple[fraud_models.DMSContent, list[dms_types.DmsFieldErrorDetails]]:
 
     application_number = application_detail.number
     civility = application_detail.applicant.civility
@@ -50,16 +50,16 @@ def parse_beneficiary_information_graphql(
     phone = None
     postal_code = None
 
-    parsing_errors: list[dms_types.DmsParsingErrorDetails] = []
+    field_errors: list[dms_types.DmsFieldErrorDetails] = []
 
     if not fraud_api.is_subscription_name_valid(first_name):
-        parsing_errors.append(
-            dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.first_name, value=first_name)
+        field_errors.append(
+            dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.first_name, value=first_name)
         )
 
     if not fraud_api.is_subscription_name_valid(last_name):
-        parsing_errors.append(
-            dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.last_name, value=last_name)
+        field_errors.append(
+            dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.last_name, value=last_name)
         )
 
     for field in application_detail.fields:
@@ -70,8 +70,8 @@ def parse_beneficiary_information_graphql(
             try:
                 birth_date = date_parser.parse(value, FrenchParserInfo())
             except date_parser.ParserError:
-                parsing_errors.append(
-                    dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.birth_date, value=value)
+                field_errors.append(
+                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.birth_date, value=value)
                 )
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
@@ -85,8 +85,8 @@ def parse_beneficiary_information_graphql(
             space_free_value = str(value).strip().replace(" ", "")
             match = re.search("^[0-9]{5}", space_free_value)
             if match is None:
-                parsing_errors.append(
-                    dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.postal_code, value=value)
+                field_errors.append(
+                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.postal_code, value=value)
                 )
                 continue
             postal_code = match.group(0)
@@ -108,8 +108,8 @@ def parse_beneficiary_information_graphql(
         ):
             value = value.strip()
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
-                parsing_errors.append(
-                    dms_types.DmsParsingErrorDetails(key=dms_types.DmsParsingErrorKeyEnum.id_piece_number, value=value)
+                field_errors.append(
+                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.id_piece_number, value=value)
                 )
             else:
                 id_piece_number = value
@@ -136,7 +136,7 @@ def parse_beneficiary_information_graphql(
         state=application_detail.state.value,
     )
 
-    return result_content, parsing_errors
+    return result_content, field_errors
 
 
 def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_models.GenderEnum]:
