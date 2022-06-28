@@ -38,6 +38,7 @@
   }
 
   .h-card-title {
+    overflow: hidden;
     .tertiary-button {
       .h-card-title-ico {
         margin-left: 0;
@@ -54,6 +55,8 @@
     .title-text {
       display: block;
       margin-right: rem.torem(16px);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 }
