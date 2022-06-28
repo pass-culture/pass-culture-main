@@ -51,6 +51,28 @@ class Returns201Test:
         assert len(mails_testing.outbox) == 0  # Mail sent during fraud validation
         mocked_async_index_offer_ids.assert_not_called()
 
+    @override_features(OFFER_FORM_SUMMARY_PAGE=True)
+    @patch("pcapi.core.search.async_index_offer_ids")
+    def test_edit_one_stock_with_summury(self, mocked_async_index_offer_ids, client):
+        offer = offers_factories.ThingOfferFactory(isActive=False, validation=OfferValidationStatus.DRAFT)
+        existing_stock = offers_factories.StockFactory(offer=offer, price=10)
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        # When
+        stock_data = {
+            "offerId": humanize(offer.id),
+            "stocks": [{"id": humanize(existing_stock.id), "price": 20}],
+        }
+        response = client.with_session_auth("user@example.com").post("/stocks/bulk/", json=stock_data)
+        created_stock = Stock.query.get(dehumanize(response.json["stockIds"][0]["id"]))
+        assert offer.id == created_stock.offerId
+        assert created_stock.price == 20
+        assert len(Stock.query.all()) == 1
+        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
+
     @patch("pcapi.core.search.async_index_offer_ids")
     def test_create_one_stock(self, mocked_async_index_offer_ids, app):
         # Given

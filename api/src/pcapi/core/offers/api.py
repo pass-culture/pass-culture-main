@@ -702,7 +702,7 @@ def upsert_stocks(
             _notify_pro_upon_stock_edit_for_event_offer(stock, bookings)
             _notify_beneficiaries_upon_stock_edit(stock, bookings)
 
-    if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active():
+    if not FeatureToggle.OFFER_FORM_SUMMARY_PAGE.is_active() or edited_stocks:
         search.async_index_offer_ids([offer.id])
 
     return stocks
