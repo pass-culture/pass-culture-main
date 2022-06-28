@@ -168,6 +168,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     isBusinessUnitMainVenue: Optional[bool]
     lastProviderId: Optional[str]
     managingOfferer: GetVenueManagingOffererResponseModel
+    pricingPointId: Optional[int]
     siret: Optional[str]
     venueLabelId: Optional[str]
     venueTypeCode: Optional[offerers_models.VenueTypeCode]
@@ -202,6 +203,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         # does not work when passing directly an enum instance.
         venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None  # type: ignore [attr-defined]
         venue.nonHumanizedId = venue.id
+        venue.pricingPointId = venue.current_pricing_point_id
         return super().from_orm(venue)
 
 
@@ -346,3 +348,10 @@ class VenueBannerContentModel(BaseModel):
             height_crop_percent=self.height_crop_percent,
             width_crop_percent=self.width_crop_percent,
         )
+
+
+class LinkVenueToPricingPointBodyModel(BaseModel):
+    pricingPointId: int
+
+    class Config:
+        extra = "forbid"

@@ -36,3 +36,7 @@ class InvalidVenueBannerContent(Exception):
 
 class VenueBannerTooBig(Exception):
     pass
+
+
+class CannotLinkVenueToPricingPoint(Exception):
+    pass
