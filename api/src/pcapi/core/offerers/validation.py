@@ -1,11 +1,11 @@
-from decimal import Decimal
-from decimal import InvalidOperation
+import decimal
 
-from pcapi.core.finance.models import BusinessUnit
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import Venue
+import pcapi.core.finance.models as finance_models
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils.human_ids import dehumanize
+
+from . import models
 
 
 MAX_LONGITUDE = 180
@@ -14,8 +14,8 @@ MAX_LATITUDE = 90
 VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
-def check_existing_business_unit(business_unit_id: int, offerer: Offerer):  # type: ignore [no-untyped-def]
-    business_unit = BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
+def check_existing_business_unit(business_unit_id: int, offerer: models.Offerer):  # type: ignore [no-untyped-def]
+    business_unit = finance_models.BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
     if not business_unit:
         raise ApiErrors(errors={"businessUnitId": ["Ce point de facturation n'existe pas."]})
 
@@ -40,7 +40,7 @@ def check_venue_creation(data):  # type: ignore [no-untyped-def]
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
         raise ApiErrors(errors={"managingOffererId": ["Vous devez choisir une structure pour votre lieu."]})
-    offerer = Offerer.query.filter(Offerer.id == offerer_id).one_or_none()
+    offerer = models.Offerer.query.filter(models.Offerer.id == offerer_id).one_or_none()
     if not offerer:
         raise ApiErrors(errors={"managingOffererId": ["La structure que vous avez choisie n'existe pas."]})
 
@@ -80,7 +80,7 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
     if siret and venue.siret and siret != venue.siret:
         raise ApiErrors(errors={"siret": ["Vous ne pouvez pas modifier le siret d'un lieu"]})
     if siret:
-        venue_with_same_siret = Venue.query.filter_by(siret=siret).one_or_none()
+        venue_with_same_siret = models.Venue.query.filter_by(siret=siret).one_or_none()
         if venue_with_same_siret:
             raise ApiErrors(errors={"siret": ["Un lieu avec le même siret existe déjà"]})
     if not venue.isVirtual and None in venue_disability_compliance and None in modifications_disability_compliance:
@@ -92,8 +92,8 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
 
 def _validate_longitude(api_errors, raw_longitude):  # type: ignore [no-untyped-def]
     try:
-        longitude = Decimal(raw_longitude)
-    except InvalidOperation:
+        longitude = decimal.Decimal(raw_longitude)
+    except decimal.InvalidOperation:
         api_errors.add_error("longitude", "Format incorrect")
     else:
         if longitude > MAX_LONGITUDE or longitude < -MAX_LONGITUDE:
@@ -102,8 +102,8 @@ def _validate_longitude(api_errors, raw_longitude):  # type: ignore [no-untyped-
 
 def _validate_latitude(api_errors, raw_latitude):  # type: ignore [no-untyped-def]
     try:
-        latitude = Decimal(raw_latitude)
-    except InvalidOperation:
+        latitude = decimal.Decimal(raw_latitude)
+    except decimal.InvalidOperation:
         api_errors.add_error("latitude", "Format incorrect")
     else:
         if latitude > MAX_LATITUDE or latitude < -MAX_LATITUDE:
