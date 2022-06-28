@@ -61,6 +61,7 @@ describe('useOffererNames', () => {
         isVirtual: apiVenue.isVirtual,
         managingOffererId: apiVenue.managingOffererId,
         name: apiVenue.publicName,
+        withdrawalDetails: apiVenue.withdrawalDetails,
       },
     ]
 

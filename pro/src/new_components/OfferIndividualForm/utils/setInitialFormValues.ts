@@ -25,6 +25,7 @@ const setInitialFormValues = (
   }
 
   let initialVenueId = FORM_DEFAULT_VALUES.venueId
+  let initialWithdrawalDetails = FORM_DEFAULT_VALUES.withdrawalDetails
   if (initialOffererId !== FORM_DEFAULT_VALUES.offererId) {
     const offererVenues = venueList.filter(
       (venue: TOfferIndividualVenue) =>
@@ -34,14 +35,20 @@ const setInitialFormValues = (
       initialVenueId = offererVenues[0].id
     }
   }
-  if (venueId && venueList.find(venue => venue.id === venueId)) {
+  const venue = venueList.find(venue => venue.id === venueId)
+  if (venueId && venue) {
     initialVenueId = venueId
+
+    if (venue.withdrawalDetails) {
+      initialWithdrawalDetails = venue.withdrawalDetails
+    }
   }
 
   return {
     ...values,
     offererId: initialOffererId,
     venueId: initialVenueId,
+    withdrawalDetails: initialWithdrawalDetails,
   }
 }
 

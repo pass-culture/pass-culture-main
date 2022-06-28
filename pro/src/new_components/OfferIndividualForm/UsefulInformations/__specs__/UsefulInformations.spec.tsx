@@ -61,6 +61,7 @@ describe('OfferIndividual section: UsefulInformations', () => {
         name: 'Venue AAAA',
         managingOffererId: 'AA',
         isVirtual: false,
+        withdrawalDetails: '',
       },
     ]
     const subCategories = [

@@ -16,6 +16,7 @@ describe('filterCategories', () => {
       managingOffererId: 'A',
       name: 'Lieu A de la structure A',
       isVirtual: true,
+      withdrawalDetails: '',
     }
     categories = [
       {

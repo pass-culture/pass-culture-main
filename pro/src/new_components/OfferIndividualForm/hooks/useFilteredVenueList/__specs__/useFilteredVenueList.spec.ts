@@ -17,6 +17,7 @@ describe('useFilteredVenueList', () => {
       name: 'Lieu online CC',
       managingOffererId: 'A',
       isVirtual: true,
+      withdrawalDetails: '',
     }
     const venueList = [
       {
@@ -24,12 +25,14 @@ describe('useFilteredVenueList', () => {
         name: 'Lieu offline AA',
         managingOffererId: 'A',
         isVirtual: false,
+        withdrawalDetails: '',
       },
       {
         id: 'BB',
         name: 'Lieu offline BB',
         managingOffererId: 'A',
         isVirtual: false,
+        withdrawalDetails: '',
       },
     ]
     const subCategories = [

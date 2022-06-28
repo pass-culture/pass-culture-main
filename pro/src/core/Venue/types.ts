@@ -33,7 +33,7 @@ export interface IAPIVenue {
   venueLabelId: string | null
   venueTypeCode: string
   visualDisabilityCompliant: boolean
-  withdrawalDetails: null
+  withdrawalDetails: string | null
 }
 
 export type TOfferIndividualVenue = {
@@ -41,4 +41,5 @@ export type TOfferIndividualVenue = {
   managingOffererId: string
   name: string
   isVirtual: boolean
+  withdrawalDetails: string | null
 }
