@@ -168,6 +168,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     return venue
 
 
+# TODO(fseguin, 2022-06-26, FUTURE-NEW-BANK-DETAILS): remove when new bank details journey is complete
 def set_business_unit_to_venue_id(
     business_unit_id: Optional[int],
     venue_id: int,

@@ -14,6 +14,7 @@ MAX_LATITUDE = 90
 VENUE_BANNER_MAX_SIZE = 10_000_000
 
 
+# FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
 def check_existing_business_unit(business_unit_id: int, offerer: models.Offerer):  # type: ignore [no-untyped-def]
     business_unit = finance_models.BusinessUnit.query.filter_by(id=business_unit_id).one_or_none()
     if not business_unit:
@@ -36,6 +37,7 @@ def validate_coordinates(raw_latitude, raw_longitude):  # type: ignore [no-untyp
         raise api_errors
 
 
+# FUTURE-NEW-BANK-DETAILS: cleanup ifs when new bank details journey is complete
 def check_venue_creation(data):  # type: ignore [no-untyped-def]
     offerer_id = dehumanize(data.get("managingOffererId"))
     if not offerer_id:
@@ -51,10 +53,10 @@ def check_venue_creation(data):  # type: ignore [no-untyped-def]
         data.get("visualDisabilityCompliant"),
     ]:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit être définie."]})
-
-    business_unit_id = data.get("businessUnitId")
-    if business_unit_id:
-        check_existing_business_unit(business_unit_id, offerer)
+    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+        business_unit_id = data.get("businessUnitId")
+        if business_unit_id:
+            check_existing_business_unit(business_unit_id, offerer)
 
 
 def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
