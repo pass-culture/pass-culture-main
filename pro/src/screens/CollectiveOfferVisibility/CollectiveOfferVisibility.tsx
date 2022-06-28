@@ -38,6 +38,7 @@ export interface CollectiveOfferVisibilityProps {
 interface InstitutionOption extends SelectOption {
   postalCode?: string
   city?: string
+  name: string
 }
 
 const CollectiveOfferVisibility = ({
@@ -92,10 +93,11 @@ const CollectiveOfferVisibility = ({
   useEffect(() => {
     setInstitutionsOptions(
       institutions.map(({ name, id, city, postalCode }) => ({
-        label: name,
+        label: `${name} - ${city}`,
         value: String(id),
         city,
         postalCode,
+        name,
       }))
     )
   }, [institutions])
@@ -171,7 +173,7 @@ const CollectiveOfferVisibility = ({
                     />
                     {selectedInstitution && (
                       <Banner type="light" className={styles['institution']}>
-                        {selectedInstitution.label}
+                        {selectedInstitution.name}
                         <br />
                         {`${selectedInstitution.postalCode} ${selectedInstitution.city}`}
                       </Banner>

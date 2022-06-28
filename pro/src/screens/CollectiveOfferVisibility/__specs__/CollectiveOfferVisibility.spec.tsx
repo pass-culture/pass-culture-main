@@ -141,6 +141,17 @@ describe('CollectiveOfferVisibility', () => {
     await waitFor(() => expect(notifyError).toHaveBeenNthCalledWith(1, 'Ooops'))
   })
 
+  it('should display institution name and city in select options', async () => {
+    renderVisibilityStep(props)
+    await userEvent.click(
+      screen.getByLabelText(/Un établissement en particulier/)
+    )
+    await userEvent.click(await screen.findByAltText(/Afficher les options/))
+    expect(
+      await screen.findByLabelText(/Institution 1 - Gif-sur-Yvette/)
+    ).toBeInTheDocument()
+  })
+
   describe('edition', () => {
     it('shoud prefill form with initial values', async () => {
       renderVisibilityStep({
