@@ -326,6 +326,15 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         return getattr(self, field) != value
 
+    @property
+    def current_pricing_point_id(self) -> Optional[int]:
+        now = datetime.utcnow()
+        timespan = db_utils.make_timerange(start=now, end=None)
+        return (
+            db.session.query(VenuePricingPointLink.pricingPointId)
+            .filter(VenuePricingPointLink.venueId == self.id, VenuePricingPointLink.timespan.overlaps(timespan))  # type: ignore [attr-defined]
+            .scalar()
+        )
 
 class VenueLabel(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_label"

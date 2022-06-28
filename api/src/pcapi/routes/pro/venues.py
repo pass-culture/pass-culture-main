@@ -121,6 +121,18 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 
+@private_api.route("/venues/<venue_id>/pricing_point", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def link_venue_to_pricing_point(venue_id: str, body: venues_serialize.LinkVenueToPricingPointBodyModel) -> None:
+    venue = load_or_404(Venue, venue_id)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+    try:
+        offerers_api.link_venue_to_pricing_point(venue, body.pricingPointId)
+    except exceptions.CannotLinkVenueToPricingPoint as exc:
+        raise ApiErrors({"code": "CANNOT_LINK_VENUE_TO_PRICING_POINT", "message": str(exc)}, status_code=400)
+
+
 @private_api.route("/venues/<venue_id>/banner", methods=["POST"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, on_success_status=201)

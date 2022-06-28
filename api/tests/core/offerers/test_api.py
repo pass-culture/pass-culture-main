@@ -11,7 +11,7 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers.exceptions import ValidationTokenNotFoundError
+import pcapi.core.offerers.exceptions as offerers_exceptions
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import factories as offers_factories
@@ -539,7 +539,7 @@ class ValidateOffererAttachmentTest:
         user_offerer = offerers_factories.UserOffererFactory(user=applicant, validationToken="TOKEN")
 
         # When
-        with pytest.raises(ValidationTokenNotFoundError):
+        with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
             offerers_api.validate_offerer_attachment("OTHER TOKEN")
 
         # Then
@@ -618,7 +618,7 @@ class ValidateOffererTest:
         user_offerer = offerers_factories.UserOffererFactory(user=applicant, offerer__validationToken="TOKEN")
 
         # When
-        with pytest.raises(ValidationTokenNotFoundError):
+        with pytest.raises(offerers_exceptions.ValidationTokenNotFoundError):
             offerers_api.validate_offerer("OTHER TOKEN")
 
         # Then
@@ -811,6 +811,33 @@ def test_delete_business_unit():
     assert previous_link.timespan.upper == previous_link_initial_start_date
     assert other_link.timespan.lower == other_link_initial_start_date
     assert other_link.timespan.upper is None  # unchanged
+
+
+class LinkVenueToPricingPointTest:
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_no_pre_existing_link(self):
+        venue = offerers_factories.VenueFactory()
+        pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        assert offerers_models.VenuePricingPointLink.query.count() == 0
+
+        offerers_api.link_venue_to_pricing_point(venue, pricing_point.id)
+
+        new_link = offerers_models.VenuePricingPointLink.query.one()
+        assert new_link.venue == venue
+        assert new_link.pricingPoint == pricing_point
+        assert new_link.timespan.upper is None
+
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_raises_if_pre_existing_link(self):
+        venue = offerers_factories.VenueFactory()
+        pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point_1)
+        pre_existing_link = offerers_models.VenuePricingPointLink.query.one()
+        pricing_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        with pytest.raises(offerers_exceptions.CannotLinkVenueToPricingPoint):
+            offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
+        assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
 
 
 class HasVenueAtLeastOneBookableOfferTest:

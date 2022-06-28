@@ -195,6 +195,54 @@ def set_business_unit_to_venue_id(
     db.session.commit()
 
 
+def link_venue_to_pricing_point(
+    venue: models.Venue,
+    pricing_point_id: int,
+    timestamp: Optional[datetime] = None,
+    force_link: bool = False,
+) -> None:
+    """
+    Creates a VenuePricingPointLink if the venue had not been previously linked to a pricing point.
+    If it had, then it will raise an error, unless the force_link parameter is True, in exceptional circumstances.
+    """
+    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+        raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
+    validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
+    if not timestamp:
+        timestamp = datetime.utcnow()
+    current_link = models.VenuePricingPointLink.query.filter(
+        models.VenuePricingPointLink.venueId == venue.id,
+        models.VenuePricingPointLink.timespan.contains(timestamp),
+    ).one_or_none()
+    if current_link:
+        if force_link:
+            current_link.timespan = db_utils.make_timerange(
+                current_link.timespan.lower,
+                timestamp,
+            )
+            db.session.add(current_link)
+        else:
+            raise exceptions.CannotLinkVenueToPricingPoint(
+                f"This Venue is already linked to Venue #{current_link.pricingPointId} for pricing"
+            )
+    new_link = models.VenuePricingPointLink(
+        pricingPointId=pricing_point_id, venueId=venue.id, timespan=(timestamp, None)
+    )
+    db.session.add(new_link)
+    db.session.commit()
+    if current_link and force_link:
+        logger.info(
+            "Venue was previously linked to another Venue for pricing, and has been linked to a new pricing point",
+            extra={
+                "venue_id": venue.id,
+                "previous_pricing_point_id": current_link.pricingPointId,
+                "new_pricing_point_id": pricing_point_id,
+            },
+        )
+
+    db.session.commit()
+
+
 def generate_and_save_api_key(offerer_id: int) -> str:
     if models.ApiKey.query.filter_by(offererId=offerer_id).count() >= settings.MAX_API_KEY_PER_OFFERER:
         raise exceptions.ApiKeyCountMaxReached()
