@@ -49,6 +49,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     withdrawalDetails: Optional[str]
     description: Optional[base.VenueDescription]  # type: ignore
     contact: Optional[base.VenueContactModel]
+    # FUTURE-NEW-BANK-DETAILS: remove businessUnitId when new bank details journey is complete
     businessUnitId: Optional[int]
 
     class Config:
@@ -77,6 +78,8 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
         return raw_longitude
 
 
+
+# FUTURE-NEW-BANK-DETAILS: delete when new bank details journey is complete
 class VenueResponseModel(BaseModel):
     id: str
 

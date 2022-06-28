@@ -743,6 +743,7 @@ class GetEligibleForSearchVenuesTest:
         assert {venue.id for venue in venues} == {venue.id for venue in eligible_venues}
 
 
+# FUTURE-NEW-BANK-DETAILS: remove when new bank details journey is complete
 def test_set_business_unit_to_venue_id():
     venue = offerers_factories.VenueFactory()
     current_link = finance_models.BusinessUnitVenueLink.query.one()
