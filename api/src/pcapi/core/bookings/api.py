@@ -47,6 +47,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import repository
 from pcapi.repository import transaction
+from pcapi.utils.cds import get_cds_show_id_from_uuid
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 from pcapi.workers.user_emails_job import send_booking_cancellation_emails_to_user_and_offerer_job
 
@@ -172,12 +173,13 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
         and is_active_venue_booking_provider
     ):
-
-        if stock.idAtProviders and stock.idAtProviders.isdigit():
-            show_id = int(stock.idAtProviders)
+        if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():
+            show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))
         else:
-            logger.error('Stock %d has invalid (non-digit) idAtProviders "%s"', stock.id, stock.idAtProviders)
-            raise TypeError("Only digit is allowed for stock.idAtProviders ")
+            logger.error(
+                'Stock %d has invalid (non-digit) show_id in idAtProviders "%s"', stock.id, stock.idAtProviders
+            )
+            raise TypeError("Only digit is allowed for show_id in stock.idAtProviders ")
 
         tickets = booking_providers_api.book_ticket(
             venue_id=stock.offer.venueId,

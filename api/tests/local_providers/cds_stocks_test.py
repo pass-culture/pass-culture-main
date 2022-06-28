@@ -17,6 +17,8 @@ from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
 from pcapi.models.product import Product
+from pcapi.repository import repository
+from pcapi.utils.cds import get_cds_show_id_from_uuid
 from pcapi.utils.human_ids import humanize
 
 import tests
@@ -492,3 +494,85 @@ class CDSStocksTest:
             == f"http://localhost/storage/thumbs/products/{humanize(created_products[1].id)}"
         )
         assert created_products[1].thumbCount == 1
+
+
+@pytest.mark.usefixtures("db_session")
+class CDSStocksQuantityTest:
+    @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
+    @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
+    def should_update_cds_stock_with_correct_stock_quantity(self, mock_get_venue_movies, mock_get_shows):
+        # Given
+        cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
+        cds_venue_provider = VenueProviderFactory(provider=cds_provider)
+        cinema_provider_pivot = CinemaProviderPivotFactory(
+            venue=cds_venue_provider.venue, idAtProvider=cds_venue_provider.venueIdAtOfferProvider
+        )
+        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+
+        mocked_movies = [
+            Movie(
+                id="123",
+                title="Coupez !",
+                duration=120,
+                description="Ca tourne mal",
+                visa="123456",
+                posterpath="fakeUrl/coupez.png",
+            ),
+        ]
+        mock_get_venue_movies.return_value = mocked_movies
+        mocked_shows = [
+            {
+                "show_information": ShowCDS(
+                    id=1,
+                    is_cancelled=False,
+                    is_deleted=False,
+                    is_disabled_seatmap=False,
+                    internet_remaining_place=10,
+                    showtime=datetime(2022, 6, 20, 11, 00, 00),
+                    shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
+                    screen=IdObjectCDS(id=1),
+                    media=IdObjectCDS(id=123),
+                ),
+                "price": 5,
+            }
+        ]
+        mock_get_shows.return_value = mocked_shows
+        # When
+        cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
+        cds_stocks_provider.updateObjects()
+
+        created_stocks = Stock.query.order_by(Stock.beginningDatetime).all()
+
+        first_stock = created_stocks[0]
+        first_stock.fieldsUpdated = ["price"]
+        first_stock.quantity = 100
+        first_stock.dnBookedQuantity = 1
+
+        repository.save(first_stock)
+
+        # When
+        cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
+        cds_stocks_provider.updateObjects()
+
+        # Then
+        assert len(created_stocks) == 1
+        print(first_stock)
+        assert first_stock.quantity == 11
+        assert first_stock.dnBookedQuantity == 1
+
+
+class GetShowIdFromUuidTest:
+    def test_get_cds_show_id_from_uuid(self):
+        # Given
+        uuid = "movie_id%%siret#show_id/showtime"
+        uuid2 = "123%12345678912345#111/2022-12-12 11:00:00"
+        uuid3 = None
+        # When
+        result = get_cds_show_id_from_uuid(uuid=uuid)
+        result2 = get_cds_show_id_from_uuid(uuid=uuid2)
+        result3 = get_cds_show_id_from_uuid(uuid=uuid3)
+        # Then
+        assert result == "show_id"
+        assert result2 == "111"
+        assert result3 == ""

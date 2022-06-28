@@ -406,7 +406,7 @@ class BookOfferTest:
             offer_solo = offers_factories.EventOfferFactory(
                 name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
             )
-            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
 
             # When
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
@@ -431,7 +431,7 @@ class BookOfferTest:
                 venue=venue_provider.venue,
                 subcategoryId=subcategories.SEANCE_CINE.id,
             )
-            stock_duo = offers_factories.EventStockFactory(offer=offer_duo, idAtProviders="1111")
+            stock_duo = offers_factories.EventStockFactory(offer=offer_duo, idAtProviders="1111%4444#111/datetime")
 
             # When
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_duo.id, quantity=1)
@@ -457,7 +457,7 @@ class BookOfferTest:
             offer_solo = offers_factories.EventOfferFactory(
                 name="Séance ciné solo", venue=venue_provider.venue, subcategoryId=subcategories.SEANCE_CINE.id
             )
-            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111")
+            stock_solo = offers_factories.EventStockFactory(offer=offer_solo, idAtProviders="1111%4444#111/datetime")
 
             # When
             booking = api.book_offer(beneficiary=beneficiary, stock_id=stock_solo.id, quantity=1)
