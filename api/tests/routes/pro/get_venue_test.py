@@ -39,6 +39,7 @@ class Returns200Test:
                 "socialMedias": venue.contact.social_medias,
             },
             "comment": venue.comment,
+            "pricingPointId": None,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
             "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,

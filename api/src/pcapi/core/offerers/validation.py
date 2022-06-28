@@ -110,3 +110,18 @@ def _validate_latitude(api_errors, raw_latitude):  # type: ignore [no-untyped-de
     else:
         if latitude > MAX_LATITUDE or latitude < -MAX_LATITUDE:
             api_errors.add_error("latitude", "La latitude doit être comprise entre -90.0 et +90.0")
+
+
+def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_point_id: int) -> None:
+    pricing_point = models.Venue.query.filter_by(id=pricing_point_id).one_or_none()
+    if not pricing_point:
+        raise ApiErrors(errors={"pricingPointId": ["Ce lieu n'existe pas."]})
+    if pricing_point.managingOffererId != venue.managingOffererId:
+        raise ApiErrors(
+            errors={
+                "pricingPointId": [
+                    f"Le SIRET {pricing_point.siret} ne peut pas être utilisé pour calculer"
+                    f" le barème de remboursement de ce lieu."
+                ]
+            }
+        )
