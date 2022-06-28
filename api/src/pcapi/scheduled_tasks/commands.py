@@ -74,6 +74,15 @@ def synchronize_allocine_stocks() -> None:
     synchronize_venue_providers_for_provider(allocine_stocks_provider_id)
 
 
+@blueprint.cli.command("synchronize_cine_office_stocks")
+@log_cron_with_transaction
+@cron_require_feature(FeatureToggle.ENABLE_CDS_IMPLEMENTATION)
+def synchronize_cine_office_stocks() -> None:
+    """Launch Cine Office synchronization."""
+    cine_office_stocks_provider_id = get_provider_by_local_class("CDSStocks").id
+    synchronize_venue_providers_for_provider(cine_office_stocks_provider_id)
+
+
 # FIXME (asaunier, 2021-05-25): This clock must be removed once every application from procedure
 #  defined in DMS_NEW_ENROLLMENT_PROCEDURE_ID has been treated
 @blueprint.cli.command("import_dms_users_beneficiaries")

@@ -69,7 +69,7 @@ class CDSStocks(LocalProvider):
 
         return providable_information_list
 
-    def fill_object_attributes(self, pc_object: Model) -> None:
+    def fill_object_attributes(self, pc_object: Model) -> None:  # type: ignore [valid-type]
         if isinstance(pc_object, Product):
             self.fill_product_attributes(pc_object)
 
@@ -139,6 +139,9 @@ class CDSStocks(LocalProvider):
 
         if "price" not in cds_stock.fieldsUpdated:
             cds_stock.price = show_price
+
+        if not is_new_stock_to_insert:
+            cds_stock.quantity = show.internet_remaining_place + cds_stock.dnBookedQuantity
 
     def update_from_movie_information(self, obj: Union[Offer, Product], movie_information: Movie) -> None:
         if movie_information.description:

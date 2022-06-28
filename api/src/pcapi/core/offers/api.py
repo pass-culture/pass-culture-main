@@ -1,7 +1,6 @@
 import copy
 import datetime
 import logging
-from re import search as re_search
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -104,6 +103,7 @@ from pcapi.routes.serialization.stock_serialize import EducationalStockCreationB
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import image_conversion
+from pcapi.utils.cds import get_cds_show_id_from_uuid
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
@@ -1527,7 +1527,9 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
     if not booking_provider:
         return
 
-    shows_id = [int(_get_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders]
+    shows_id = [
+        int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders
+    ]
 
     if not shows_id:
         return
@@ -1539,15 +1541,8 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
     shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
 
     for show_id, remaining_places in shows_remaining_places.items():
-        stock = next((s for s in offer.activeStocks if _get_show_id_from_uuid(s.idAtProviders) == str(show_id)))
+        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))
         if stock:
             if remaining_places <= 0:
                 stock.quantity = stock.dnBookedQuantity
                 repository.save(stock)
-
-
-def _get_show_id_from_uuid(uuid: Optional[str]) -> str:
-    """uuid pattern: "<movie.id>%<venue.siret>#<show.id>/<showtime>" return show_id"""
-    if not uuid:
-        return ""
-    return re_search(r"\#(.*?)\/", uuid).group(1)  # type: ignore [union-attr]
