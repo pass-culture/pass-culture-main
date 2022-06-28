@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from freezegun import freeze_time
 import pytest
+import sqlalchemy as sa
 
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
@@ -838,6 +839,77 @@ class LinkVenueToPricingPointTest:
         with pytest.raises(offerers_exceptions.CannotLinkVenueToPricingPoint):
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
         assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
+
+
+class LinkVenueToReimbursementPointTest:
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_no_pre_existing_link(self):
+        venue = offerers_factories.VenueFactory()
+        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        assert offerers_models.VenueReimbursementPointLink.query.count() == 0
+
+        offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
+
+        new_link = offerers_models.VenueReimbursementPointLink.query.one()
+        assert new_link.venue == venue
+        assert new_link.reimbursementPoint == reimbursement_point
+        assert new_link.timespan.upper is None
+
+    @freeze_time()
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_end_pre_existing_link(self):
+        now = datetime.datetime.utcnow()
+        venue = offerers_factories.VenueFactory()
+        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offerers_factories.VenueReimbursementPointLinkFactory(
+            venue=venue,
+            reimbursementPoint=reimbursement_point,
+            timespan=[
+                now - datetime.timedelta(days=10),
+                None,
+            ],
+        )
+
+        offerers_api.link_venue_to_reimbursement_point(venue, None)
+
+        former_link = offerers_models.VenueReimbursementPointLink.query.one()
+        assert former_link.venue == venue
+        assert former_link.reimbursementPoint == reimbursement_point
+        assert former_link.timespan.upper == now
+
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_pre_existing_links(self):
+        now = datetime.datetime.utcnow()
+        venue = offerers_factories.VenueFactory()
+        reimbursement_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offerers_factories.VenueReimbursementPointLinkFactory(
+            venue=venue,
+            reimbursementPoint=reimbursement_point_1,
+            timespan=[
+                now - datetime.timedelta(days=10),
+                now - datetime.timedelta(days=3),
+            ],
+        )
+        reimbursement_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offerers_factories.VenueReimbursementPointLinkFactory(
+            venue=venue,
+            reimbursementPoint=reimbursement_point_2,
+            timespan=[
+                now - datetime.timedelta(days=1),
+                None,
+            ],
+        )
+        current_link = offerers_models.VenueReimbursementPointLink.query.order_by(sa.desc("id")).first()
+        reimbursement_point_3 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point_3.id)
+
+        assert offerers_models.VenueReimbursementPointLink.query.count() == 3
+        new_link = offerers_models.VenueReimbursementPointLink.query.order_by(sa.desc("id")).first()
+        assert new_link.venue == venue
+        assert new_link.reimbursementPoint == reimbursement_point_3
+        assert new_link.timespan.lower == current_link.timespan.upper
+        assert new_link.timespan.upper is None
 
 
 class HasVenueAtLeastOneBookableOfferTest:

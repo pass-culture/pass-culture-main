@@ -40,6 +40,7 @@ class Returns200Test:
             },
             "comment": venue.comment,
             "pricingPointId": None,
+            "reimbursementPointId": None,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
             "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,

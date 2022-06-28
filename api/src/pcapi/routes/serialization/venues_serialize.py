@@ -169,6 +169,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     lastProviderId: Optional[str]
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPointId: Optional[int]
+    reimbursementPointId: Optional[int]
     siret: Optional[str]
     venueLabelId: Optional[str]
     venueTypeCode: Optional[offerers_models.VenueTypeCode]
@@ -204,6 +205,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None  # type: ignore [attr-defined]
         venue.nonHumanizedId = venue.id
         venue.pricingPointId = venue.current_pricing_point_id
+        venue.reimbursementPointId = venue.current_reimbursement_point_id
         return super().from_orm(venue)
 
 
@@ -227,6 +229,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     description: Optional[base.VenueDescription]  # type: ignore
     contact: Optional[base.VenueContactModel]
     businessUnitId: Optional[int]
+    reimbursementPointId: Optional[int]
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
 
