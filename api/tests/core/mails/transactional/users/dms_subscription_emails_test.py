@@ -18,14 +18,12 @@ class PreSubscriptionDmsErrorEmailSendinblueTest:
         postal_code = "75"
         id_card_number = "1122"
 
-        parsing_errors = [
-            dms_models.DmsParsingErrorDetails(key=dms_models.DmsParsingErrorKeyEnum.postal_code, value=postal_code),
-            dms_models.DmsParsingErrorDetails(
-                key=dms_models.DmsParsingErrorKeyEnum.id_piece_number, value=id_card_number
-            ),
+        field_errors = [
+            dms_models.DmsFieldErrorDetails(key=dms_models.DmsFieldErrorKeyEnum.postal_code, value=postal_code),
+            dms_models.DmsFieldErrorDetails(key=dms_models.DmsFieldErrorKeyEnum.id_piece_number, value=id_card_number),
         ]
         # When
-        send_pre_subscription_from_dms_error_email_to_beneficiary(user_mail, parsing_errors)
+        send_pre_subscription_from_dms_error_email_to_beneficiary(user_mail, field_errors)
         # Then
         assert mails_testing.outbox[0].sent_data["To"] == user_mail
         assert (

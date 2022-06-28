@@ -109,7 +109,7 @@ class DMSOrphanSubsriptionTest:
         assert dms_orphan is None
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
-    def test_dms_orphan_corresponding_user_with_parsing_error(self, execute_query):
+    def test_dms_orphan_corresponding_user_with_field_error(self, execute_query):
         application_number = 1234
         procedure_id = 4321
         email = "dms_orphan@example.com"
@@ -173,7 +173,7 @@ class HandleDmsApplicationTest:
         assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
 
     @patch("pcapi.connectors.dms.serializer.parse_beneficiary_information_graphql")
-    def test_parsing_failure(self, mocked_parse_beneficiary_information):
+    def test_field_error(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
             application_number=1, state=dms_models.GraphQLApplicationStates.draft, email=user.email
@@ -186,7 +186,7 @@ class HandleDmsApplicationTest:
         assert fraud_models.BeneficiaryFraudCheck.query.first() is None
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_parsing_error_when_draft(self, send_dms_message_mock):
+    def test_field_error_when_draft(self, send_dms_message_mock):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
             application_number=1,
@@ -214,7 +214,7 @@ class HandleDmsApplicationTest:
         assert fraud_check.reasonCodes == [fraud_models.FraudReasonCode.ERROR_IN_DATA]
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_parsing_error_when_on_going(self, send_dms_message_mock):
+    def test_field_error_when_on_going(self, send_dms_message_mock):
         application_number = 1
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -246,7 +246,7 @@ class HandleDmsApplicationTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.PENDING
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_parsing_error_when_accepted(self, send_dms_message_mock):
+    def test_field_error_when_accepted(self, send_dms_message_mock):
         application_number = 1
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -279,7 +279,7 @@ class HandleDmsApplicationTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
 
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_parsing_error_when_refused(self, send_dms_message_mock):
+    def test_field_error_when_refused(self, send_dms_message_mock):
         application_number = 1
         user = users_factories.UserFactory()
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -311,7 +311,7 @@ class HandleDmsApplicationTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.KO
 
     @override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
-    def test_parsing_error_allows_fraud_check_content(self):
+    def test_field_error_allows_fraud_check_content(self):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
             application_number=1,

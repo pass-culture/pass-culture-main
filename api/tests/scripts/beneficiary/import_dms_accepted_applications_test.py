@@ -160,26 +160,22 @@ class RunTest:
         )
 
 
-class ParsingErrorsTest:
+class FieldErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
-        _, parsing_errors = dms_serializer.parse_beneficiary_information_graphql(
-            application_detail, procedure_id=123123
-        )
+        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
-        assert parsing_errors[0].key == dms_types.DmsParsingErrorKeyEnum.postal_code
-        assert parsing_errors[0].value == "Strasbourg"
+        assert field_errors[0].key == dms_types.DmsFieldErrorKeyEnum.postal_code
+        assert field_errors[0].value == "Strasbourg"
 
     @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
     def test_beneficiary_information_id_piece_number_error(self, possible_value):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
 
-        _, parsing_errors = dms_serializer.parse_beneficiary_information_graphql(
-            application_detail, procedure_id=123123
-        )
+        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
 
-        assert parsing_errors[0].key == dms_types.DmsParsingErrorKeyEnum.id_piece_number
-        assert parsing_errors[0].value == possible_value
+        assert field_errors[0].key == dms_types.DmsFieldErrorKeyEnum.id_piece_number
+        assert field_errors[0].value == possible_value
 
 
 @pytest.mark.usefixtures("db_session")
