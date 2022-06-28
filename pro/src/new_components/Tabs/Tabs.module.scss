@@ -8,10 +8,8 @@
 
   &-tab {
     background-color: transparent;
-    padding-bottom: rem.torem(8px);
     font-size: rem.torem(16px);
     font-weight: 600;
-    cursor: pointer;
     border-bottom: 2px solid transparent;
 
     &-icon {
@@ -25,6 +23,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      padding-bottom: rem.torem(8px);
     }
 
     &.is-selected {
