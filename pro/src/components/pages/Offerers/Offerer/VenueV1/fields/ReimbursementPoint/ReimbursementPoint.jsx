@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
+import ApplicationBanner from '../ApplicationBanner'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import { Field } from 'react-final-form'
-
 import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
@@ -22,6 +22,8 @@ const ReimbursementPoint = ({
   const [reimbursementPointOptions, setReimbursementPointOptions] = useState([])
   const [venueReimbursementPoint, setVenueReimbursementPoint] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [hasPendingDmsApplication, setHasPendingDmsApplication] =
+    useState(false)
 
   const businessUnitDisplayName = businessUnit =>
     businessUnit
@@ -77,6 +79,13 @@ const ReimbursementPoint = ({
             id: businessUnit.id,
           }))
       )
+      setHasPendingDmsApplication(
+        venue.id &&
+          !venue.iban &&
+          !venue.bic &&
+          venue.demarchesSimplifieesApplicationId &&
+          !venue.isVirtual
+      )
       setIsLoading(false)
     }
     loadBusinessUnits(offerer.id)
@@ -99,69 +108,72 @@ const ReimbursementPoint = ({
   if (!venue.isVirtual)
     return (
       <div className="section reimbursement-point-section">
-        <div className="main-list-title">
-          <Title
-            as="h2"
-            level={4}
-            ref={scrollToReimbursementPoint}
-            className={styles['sub-title-text']}
-          >
+        <div className="main-list-title" ref={scrollToReimbursementPoint}>
+          <Title as="h2" level={4} className={styles['sub-title-text']}>
             Coordonnées bancaires
           </Title>
         </div>
-        <p className={styles['section-description']}>
-          Ces coordonnées bancaires seront utilisées pour les remboursements des
-          offres éligibles de ce lieu.
-        </p>
-        {!venueReimbursementPoint && (
-          <div className={styles['add-reimbursement-point-section']}>
-            <button
-              className="secondary-button"
-              id="add-new-reimbursement-point"
-              onClick={openDMSApplication}
-              type="button"
-              disabled={readOnly}
-            >
-              Ajouter des coordonnées bancaires
-            </button>
-          </div>
-        )}
-        {!venueReimbursementPoint && !!reimbursementPointOptions.length && (
-          <p className={styles['or-separator']}>ou</p>
-        )}
-        {!!reimbursementPointOptions.length && (
-          <div className={styles['field-select']}>
-            <p className={styles['select-description']}>
-              <b>Sélectionner</b> des coordonnées bancaires parmi celles déjà
-              existantes dans votre structure :
+        {hasPendingDmsApplication ? (
+          <ApplicationBanner
+            applicationId={venue.demarchesSimplifieesApplicationId}
+          />
+        ) : (
+          <>
+            <p className={styles['section-description']}>
+              Ces coordonnées bancaires seront utilisées pour les remboursements
+              des offres éligibles de ce lieu.
             </p>
-            <div className={styles['label-reimbursment-point']}>
-              <label htmlFor="venue-reimbursement-point">
-                Coordonnées bancaires
-              </label>
-            </div>
-            {readOnly && venueReimbursementPoint ? (
-              businessUnitDisplayName(venueReimbursementPoint)
-            ) : (
-              <div className={styles['select']}>
-                <Field
-                  component="select"
-                  id="venue-reimbursement-point"
-                  name="businessUnitId"
+            {!venueReimbursementPoint && (
+              <div className={styles['add-reimbursement-point-section']}>
+                <button
+                  className="secondary-button"
+                  id="add-new-reimbursement-point"
+                  onClick={openDMSApplication}
+                  type="button"
                   disabled={readOnly}
                 >
-                  <option disabled value="">
-                    Sélectionner des coordonnées dans la liste
-                  </option>
-                  {reimbursementPointOptions.map(option => (
-                    <option key={option.key} value={option.id}>
-                      {option.displayName}
-                    </option>
-                  ))}
-                </Field>
+                  Ajouter des coordonnées bancaires
+                </button>
               </div>
             )}
-          </div>
+            {!venueReimbursementPoint && !!reimbursementPointOptions.length && (
+              <p className={styles['or-separator']}>ou</p>
+            )}
+            {!!reimbursementPointOptions.length && (
+              <div className={styles['field-select']}>
+                <p className={styles['select-description']}>
+                  <b>Sélectionner</b> des coordonnées bancaires parmi celles
+                  déjà existantes dans votre structure :
+                </p>
+                <div className={styles['label-reimbursment-point']}>
+                  <label htmlFor="venue-reimbursement-point">
+                    Coordonnées bancaires
+                  </label>
+                </div>
+                {readOnly && venueReimbursementPoint ? (
+                  businessUnitDisplayName(venueReimbursementPoint)
+                ) : (
+                  <div className={styles['select']}>
+                    <Field
+                      component="select"
+                      id="venue-reimbursement-point"
+                      name="businessUnitId"
+                      disabled={readOnly}
+                    >
+                      <option disabled value="">
+                        Sélectionner des coordonnées dans la liste
+                      </option>
+                      {reimbursementPointOptions.map(option => (
+                        <option key={option.key} value={option.id}>
+                          {option.displayName}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
     )

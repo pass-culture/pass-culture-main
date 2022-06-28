@@ -1,4 +1,4 @@
-import { ApplicationBanner } from '../ApplicationBanner'
+import ApplicationBanner from '../ApplicationBanner'
 import React from 'react'
 import { shallow } from 'enzyme'
 

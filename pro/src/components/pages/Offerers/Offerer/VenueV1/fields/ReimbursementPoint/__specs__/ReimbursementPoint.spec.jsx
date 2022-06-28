@@ -121,4 +121,28 @@ describe('src | Venue | ReimbursementPoint', () => {
       })
     ).toBeInTheDocument()
   })
+
+  it('should display banner when venue has dms application pending', async () => {
+    // Given
+    const venueWithPendingApplication = {
+      id: 'AA',
+      name: 'fake venue name',
+      bix: null,
+      iban: null,
+      demarchesSimplifieesApplicationId: '2',
+    }
+
+    props.venue = venueWithPendingApplication
+    pcapi.getBusinessUnits.mockResolvedValue([])
+
+    // When
+    await renderReimbursementPoint(props)
+
+    // Then
+    expect(
+      screen.queryByText(
+        'Les coordonnées bancaires de votre lieu sont en cours de validation par notre service financier.'
+      )
+    ).toBeInTheDocument()
+  })
 })
