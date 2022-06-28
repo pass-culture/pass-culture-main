@@ -1,0 +1,34 @@
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+
+.profile-form {
+  border-radius: rem.torem(10px);
+  border: 1px solid colors.$grey-medium;
+  margin: rem.torem(16px) 0;
+}
+.profile-form-description {
+    margin: rem.torem(16px);
+    display: flex;
+    justify-content: space-between;
+}
+.profile-form-description-banner {
+    margin: rem.torem(16px);
+}
+.profile-form-description-title {
+    margin-bottom: rem.torem(8px);
+}
+
+.profile-form-description-value {
+    color: colors.$grey-dark;
+}
+
+.profile-form-content {
+    margin: rem.torem(16px);
+}
+
+.buttons-field {
+    & > button:nth-child(2) {
+        margin-left: rem.torem(16px);
+    }
+}
