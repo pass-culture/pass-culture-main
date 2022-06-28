@@ -19,7 +19,6 @@ class BookingOfferType(Enum):
 class BookingFormula(Enum):
     PLACE = "PLACE"
     ABO = "ABO"
-    VOID = ""  # avoid breaking legacy value "" returned for void formula
 
 
 class LegacyBookingResponse(BaseModel):
@@ -38,7 +37,7 @@ class GetBookingResponse(BaseModel):
     datetime: str  # avoid breaking legacy value "" returned for void date
     ean13: typing.Optional[str]
     email: str
-    formula: BookingFormula
+    formula: typing.Optional[BookingFormula]
     isUsed: bool
     offerId: int
     publicOfferId: str
@@ -67,7 +66,7 @@ def get_booking_response(booking: Booking) -> GetBookingResponse:
     ):
         formula = BookingFormula.ABO
     else:
-        formula = BookingFormula.VOID
+        formula = None
 
     extra_data = booking.stock.offer.extraData or {}
 
