@@ -6,7 +6,7 @@ def test_public_api(client, app):
             "schemas": {
                 "BookingFormula": {
                     "description": "An enumeration.",
-                    "enum": ["PLACE", "ABO", ""],
+                    "enum": ["PLACE", "ABO"],
                     "title": "BookingFormula",
                 },
                 "BookingOfferType": {
@@ -39,7 +39,7 @@ def test_public_api(client, app):
                         "datetime": {"title": "Datetime", "type": "string"},
                         "ean13": {"nullable": True, "title": "Ean13", "type": "string"},
                         "email": {"title": "Email", "type": "string"},
-                        "formula": {"$ref": "#/components/schemas/BookingFormula"},
+                        "formula": {"nullable": True, "anyOf": [{"$ref": "#/components/schemas/BookingFormula"}]},
                         "isUsed": {"title": "Isused", "type": "boolean"},
                         "offerId": {"title": "Offerid", "type": "integer"},
                         "offerName": {"title": "Offername", "type": "string"},
@@ -59,7 +59,6 @@ def test_public_api(client, app):
                         "dateOfBirth",
                         "datetime",
                         "email",
-                        "formula",
                         "isUsed",
                         "offerId",
                         "publicOfferId",
