@@ -696,15 +696,21 @@ jobs:
             - restore_cache:
                 name: Restore Yarn Package Cache
                 key: << pipeline.parameters.pro_cache_key >>
+      - run:
+          name: Install packages
+          command: yarn install
+          working_directory: pro
       - restore_cache:
           name: Restore Jest Cache
           key: node-14.18-jest-cache-
-      - run:
-          name: Run Unit Test PRO
-          command: |
-            yarn install
-            yarn test:unit:ci
-          working_directory: pro
+      - when:
+          condition:
+            equal: ["master", << pipeline.git.branch >>]
+          steps:
+            - run:
+                name: Run Unit Test PRO
+                command: yarn test:unit:ci
+                working_directory: pro
       - run:
           name: Coverage Unit Test PRO
           command: yarn test:unit:ci --coverage --changedSince=master --coverageThreshold='{"global":{"statements":"100","branches":"100","functions":"100","lines":"100"}}'
