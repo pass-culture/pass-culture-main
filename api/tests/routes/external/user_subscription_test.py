@@ -390,7 +390,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
-    def test_dms_double_parsing_error(self, send_user_message, execute_query, client):
+    def test_dms_double_field_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         form_data = {
             "procedure_id": 48860,
@@ -794,7 +794,7 @@ class DmsWebhookApplicationTest:
         assert fraud_api.has_user_performed_identity_check(user)
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
-    def test_dms_parsing_error_then_corrected(self, execute_query, client):
+    def test_dms_field_error_then_corrected(self, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
             12,

@@ -82,10 +82,10 @@ def handle_dms_application(
         _process_user_not_found_error(user_email, application_number, procedure_id, state, application_scalar_id)
         return None
 
-    application_content, parsing_errors = dms_serializer.parse_beneficiary_information_graphql(
+    application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(
         dms_application, procedure_id
     )
-    if not parsing_errors:
+    if not field_errors:
         core_logging.log_for_supervision(
             logger=logger,
             log_level=logging.INFO,
@@ -106,14 +106,14 @@ def handle_dms_application(
     )
 
     if state == dms_models.GraphQLApplicationStates.draft:
-        _process_draft_application(user, fraud_check, application_scalar_id, parsing_errors, log_extra_data)
+        _process_draft_application(user, fraud_check, application_scalar_id, field_errors, log_extra_data)
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
         subscription_messages.on_dms_application_received(user)
         fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
-        _process_accepted_application(user, fraud_check, parsing_errors)
+        _process_accepted_application(user, fraud_check, field_errors)
 
     elif state == dms_models.GraphQLApplicationStates.refused:
         fraud_check.status = fraud_models.FraudCheckStatus.KO  # type: ignore [assignment]
@@ -127,12 +127,12 @@ def handle_dms_application(
     return fraud_check
 
 
-def _notify_parsing_error(parsing_errors: list[dms_types.DmsParsingErrorDetails], application_scalar_id: str) -> None:
+def _notify_field_error(field_errors: list[dms_types.DmsFieldErrorDetails], application_scalar_id: str) -> None:
     client = dms_connector_api.DMSGraphQLClient()
     client.send_user_message(
         application_scalar_id,
         settings.DMS_INSTRUCTOR_ID,
-        subscription_messages.build_parsing_errors_user_message(parsing_errors),
+        subscription_messages.build_field_errors_user_message(field_errors),
     )
 
 
@@ -140,14 +140,14 @@ def _process_draft_application(
     user: users_models.User,
     current_fraud_check: fraud_models.BeneficiaryFraudCheck,
     application_scalar_id: str,
-    parsing_errors: list[dms_types.DmsParsingErrorDetails],
+    field_errors: list[dms_types.DmsFieldErrorDetails],
     log_extra_data: typing.Optional[dict],
 ) -> None:
     draft_status = fraud_models.FraudCheckStatus.STARTED
-    if parsing_errors:
-        subscription_messages.on_dms_application_parsing_errors(user, parsing_errors, is_application_updatable=True)
-        _notify_parsing_error(parsing_errors, application_scalar_id)
-        _update_fraud_check_with_parsing_errors(current_fraud_check, parsing_errors, fraud_check_status=draft_status)
+    if field_errors:
+        subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=True)
+        _notify_field_error(field_errors, application_scalar_id)
+        _update_fraud_check_with_field_errors(current_fraud_check, field_errors, fraud_check_status=draft_status)
     elif current_fraud_check.eligibilityType is None:
         fraud_dms_api.on_dms_eligibility_error(
             user, current_fraud_check, application_scalar_id, extra_data=log_extra_data
@@ -157,12 +157,12 @@ def _process_draft_application(
         current_fraud_check.status = draft_status  # type: ignore [assignment]
 
 
-def _update_fraud_check_with_parsing_errors(
+def _update_fraud_check_with_field_errors(
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    parsing_errors: list[dms_types.DmsParsingErrorDetails],
+    field_errors: list[dms_types.DmsFieldErrorDetails],
     fraud_check_status: fraud_models.FraudCheckStatus,
 ) -> None:
-    errors = ",".join([f"'{parsing_error.key.value}' ({parsing_error.value})" for parsing_error in parsing_errors])
+    errors = ",".join([f"'{field_error.key.value}' ({field_error.value})" for field_error in field_errors])
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
     fraud_check.status = fraud_check_status  # type: ignore [assignment]
@@ -220,15 +220,15 @@ def _process_user_not_found_error(
 def _process_accepted_application(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    parsing_errors: list[dms_types.DmsParsingErrorDetails],
+    field_errors: list[dms_types.DmsFieldErrorDetails],
 ) -> None:
-    if parsing_errors:
-        subscription_messages.on_dms_application_parsing_errors(user, parsing_errors, is_application_updatable=False)
+    if field_errors:
+        subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=False)
         dms_subscription_emails.send_pre_subscription_from_dms_error_email_to_beneficiary(
             user.email,
-            parsing_errors,
+            field_errors,
         )
-        _update_fraud_check_with_parsing_errors(fraud_check, parsing_errors, fraud_models.FraudCheckStatus.ERROR)
+        _update_fraud_check_with_field_errors(fraud_check, field_errors, fraud_models.FraudCheckStatus.ERROR)
         return
 
     dms_content: fraud_models.DMSContent = fraud_check.source_data()  # type: ignore [assignment]

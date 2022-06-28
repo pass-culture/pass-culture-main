@@ -72,18 +72,18 @@ def on_dms_eligibility_error(
     )
     fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
     birth_date = fraud_check_content.get_birth_date()
-    birth_date_parsing_error = dms_models.DmsParsingErrorDetails(
-        key=dms_models.DmsParsingErrorKeyEnum.birth_date, value=birth_date.isoformat() if birth_date else None
+    birth_date_field_error = dms_models.DmsFieldErrorDetails(
+        key=dms_models.DmsFieldErrorKeyEnum.birth_date, value=birth_date.isoformat() if birth_date else None
     )
-    subscription_messages.on_dms_application_parsing_errors(
+    subscription_messages.on_dms_application_field_errors(
         user,
-        [birth_date_parsing_error],
+        [birth_date_field_error],
         is_application_updatable=True,
     )
     dms_client.send_user_message(
         application_scalar_id,
         settings.DMS_INSTRUCTOR_ID,
-        subscription_messages.build_parsing_errors_user_message([birth_date_parsing_error]),
+        subscription_messages.build_field_errors_user_message([birth_date_field_error]),
     )
     fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]  # type: ignore [list-item]
