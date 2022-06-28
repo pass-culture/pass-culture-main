@@ -173,7 +173,7 @@ class IdentifierFields extends PureComponent {
             >
               <div className="field-label">
                 <label htmlFor="venue-label">
-                  Label du Ministère de la Culture ou du CNC
+                  Label du Ministère de la Culture ou du CNC :
                 </label>
               </div>
 

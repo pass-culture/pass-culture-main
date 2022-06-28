@@ -216,7 +216,7 @@ describe('test page : VenueEdition', () => {
         screen.queryByText('Commentaire (si pas de SIRET) :')
       ).not.toBeInTheDocument()
       expect(
-        screen.queryByText('Label du Ministère de la Culture ou du CNC')
+        screen.queryByText('Label du Ministère de la Culture ou du CNC :')
       ).not.toBeInTheDocument()
       expect(screen.queryByText('Description :')).not.toBeInTheDocument()
 
