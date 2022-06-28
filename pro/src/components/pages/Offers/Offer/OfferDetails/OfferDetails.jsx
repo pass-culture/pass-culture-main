@@ -223,7 +223,7 @@ const OfferDetails = ({
 
       <div className="sidebar-container">
         <div className="content">
-          {offer && !isCreatingOffer ? (
+          {offer ? (
             <>
               {isDisabled && <OfferStatusBanner status={offerStatus} />}
               <OfferEdition
@@ -232,6 +232,7 @@ const OfferDetails = ({
                 isDisabled={isDisabled}
                 isUserAdmin={isUserAdmin}
                 offer={offer}
+                isCreatingOffer={isCreatingOffer}
                 onSubmit={handleSubmitOffer}
                 setOfferPreviewData={setOfferPreviewData}
                 showErrorNotification={showErrorNotification}

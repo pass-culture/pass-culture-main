@@ -283,18 +283,18 @@ describe('offerCreation - navigate backward', () => {
     expect(await getOfferInputForField('venueId')).toHaveValue(offer.venue.id)
   })
 
-  it('creation route with offer id should allow all fields edition', async () => {
+  it('creation route with offer id should not allow all fields edition', async () => {
     await renderOfferCreation(props)
     await getOfferInputForField('categoryId')
 
-    expect(await getOfferInputForField('categoryId')).not.toBeDisabled()
-    expect(await getOfferInputForField('subcategoryId')).not.toBeDisabled()
-    expect(await getOfferInputForField('musicType')).not.toBeDisabled()
-    expect(await getOfferInputForField('musicSubType')).not.toBeDisabled()
+    expect(await getOfferInputForField('categoryId')).toBeDisabled()
+    expect(await getOfferInputForField('subcategoryId')).toBeDisabled()
+    expect(await getOfferInputForField('musicType')).toBeDisabled()
+    expect(await getOfferInputForField('musicSubType')).toBeDisabled()
     expect(await getOfferInputForField('name')).not.toBeDisabled()
     expect(await getOfferInputForField('description')).not.toBeDisabled()
-    expect(await getOfferInputForField('offererId')).not.toBeDisabled()
-    expect(await getOfferInputForField('venueId')).not.toBeDisabled()
+    expect(await getOfferInputForField('offererId')).toBeDisabled()
+    expect(await getOfferInputForField('venueId')).toBeDisabled()
   })
 
   it('creation route with offer id submit should redirect to stock form', async () => {
