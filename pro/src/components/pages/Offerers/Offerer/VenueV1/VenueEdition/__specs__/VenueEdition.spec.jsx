@@ -43,6 +43,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getVenueTypes: jest.fn().mockResolvedValue([]),
   getVenueLabels: jest.fn().mockResolvedValue([]),
   editVenue: jest.fn(),
+  canOffererCreateEducationalOffer: jest.fn(),
 }))
 
 jest.mock('utils/config', () => ({
@@ -141,6 +142,7 @@ describe('test page : VenueEdition', () => {
       },
     ])
     pcapi.getBusinessUnits.mockResolvedValue([{}])
+    pcapi.canOffererCreateEducationalOffer.mockResolvedValue()
     window.history.pushState(
       {},
       'Test page',
@@ -554,6 +556,47 @@ describe('test page : VenueEdition', () => {
         expect(
           await screen.findByTestId('image-venue-uploader-section')
         ).toBeInTheDocument()
+      })
+    })
+
+    describe('EAC Information', () => {
+      const storeOverrides = {
+        features: {
+          list: [
+            {
+              nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
+              isActive: true,
+            },
+          ],
+        },
+      }
+
+      it('should display EAC Information block when FF is enabled and offerer can create collective offer', async () => {
+        await renderVenueEdition({ props, storeOverrides })
+
+        const eacSection = await screen.findByText('Mes informations EAC', {
+          selector: 'h2',
+        })
+        expect(eacSection).toBeInTheDocument()
+      })
+
+      it('should not display EAC Information block when FF is enabled but offerer cannot create collective offer', async () => {
+        pcapi.canOffererCreateEducationalOffer.mockRejectedValueOnce()
+        await renderVenueEdition({ props, storeOverrides })
+
+        const eacSection = screen.queryByText('Mes informations EAC', {
+          selector: 'h2',
+        })
+        expect(eacSection).not.toBeInTheDocument()
+      })
+
+      it('should not display EAC Information block when FF is disabled', async () => {
+        await renderVenueEdition({ props })
+
+        const eacSection = screen.queryByText('Mes informations EAC', {
+          selector: 'h2',
+        })
+        expect(eacSection).not.toBeInTheDocument()
       })
     })
   })
