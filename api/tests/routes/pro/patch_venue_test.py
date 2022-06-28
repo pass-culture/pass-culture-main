@@ -6,11 +6,15 @@ from pcapi.core.finance.factories import BusinessUnitFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
+from pcapi.core.testing import override_features
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.utils.human_ids import humanize
 
 from tests.conftest import TestClient
 from tests.routes.pro.post_venue_test import venue_malformed_test_data
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:
@@ -34,7 +38,6 @@ def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Ve
 
 
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
     def test_should_update_venue(self, app) -> None:
         # given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -69,7 +72,6 @@ class Returns200Test:
 
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_email_job.delay")
     def test_edit_venue_booking_email_with_applied_on_all_offers(self, mocked_update_all_venue_offers_email_job, app):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -116,7 +118,6 @@ class Returns200Test:
             "new.venue@email.com",
         }
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_withdrawal_details_job.delay")
     def test_edit_venue_withdrawal_details_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_withdrawal_details_job, app
@@ -149,7 +150,6 @@ class Returns200Test:
 
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
-    @pytest.mark.usefixtures("db_session")
     @patch("pcapi.routes.pro.venues.update_all_venue_offers_accessibility_job.delay")
     def test_edit_venue_accessibility_with_applied_on_all_offers(
         self, mocked_update_all_venue_offers_accessibility_job, app
@@ -186,7 +186,6 @@ class Returns200Test:
             },
         )
 
-    @pytest.mark.usefixtures("db_session")
     def when_siret_does_not_change(self, app) -> None:
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
@@ -203,7 +202,6 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["siret"] == venue.siret
 
-    @pytest.mark.usefixtures("db_session")
     def test_add_business_unit_id(self, app) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
@@ -224,7 +222,6 @@ class Returns200Test:
 
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
-    @pytest.mark.usefixtures("db_session")
     def test_remove_business_unit_id(self, app) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
@@ -242,7 +239,53 @@ class Returns200Test:
 
         assert len(sendinblue_testing.sendinblue_requests) == 1
 
-    @pytest.mark.usefixtures("db_session")
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_add_reimbursement_point(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+
+        new_reimbursement_point = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+        venue_data = populate_missing_data_from_venue(
+            {"reimbursementPointId": new_reimbursement_point.id},
+            venue,
+        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/venues/{humanize(venue.id)}", json=venue_data
+        )
+
+        assert response.status_code == 200
+        assert response.json["reimbursementPointId"] == new_reimbursement_point.id
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_remove_reimbursement_point_id(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+        current_reimbursement_point = offerers_factories.VenueFactory()
+        offerers_factories.VenueReimbursementPointLinkFactory(
+            venue=venue, reimbursementPoint=current_reimbursement_point
+        )
+
+        venue_data = populate_missing_data_from_venue(
+            {"reimbursementPointId": None},
+            venue,
+        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/venues/{humanize(venue.id)}", json=venue_data
+        )
+
+        assert response.status_code == 200
+        assert response.json["reimbursementPointId"] is None
+        assert len(sendinblue_testing.sendinblue_requests) == 1
+
+
+class Returns400Test:
     def test_error_add_business_unit_id(self, app) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
@@ -261,18 +304,38 @@ class Returns200Test:
         assert response.status_code == 400
         assert response.json["businessUnitId"] == ["Ce point de facturation n'est pas un choix valide pour ce lieu."]
 
+    @pytest.mark.parametrize("data, key", venue_malformed_test_data)
+    def test_update_venue_malformed(self, client, data, key):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
 
-@pytest.mark.usefixtures("db_session")
-@pytest.mark.parametrize("data, key", venue_malformed_test_data)
-def test_update_venue_malformed(app, client, data, key):
-    user_offerer = offerers_factories.UserOffererFactory()
-    venue = offerers_factories.VenueFactory(
-        managingOfferer=user_offerer.offerer,
-    )
+        client = client.with_session_auth(user_offerer.user.email)
+        venue_id = humanize(venue.id)
+        response = client.patch(f"/venues/{venue_id}", json=data)
 
-    client = client.with_session_auth(user_offerer.user.email)
-    venue_id = humanize(venue.id)
-    response = client.patch(f"/venues/{venue_id}", json=data)
+        assert response.status_code == 400
+        assert key in response.json
 
-    assert response.status_code == 400
-    assert key in response.json
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_raises_if_different_offerer(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+        )
+        another_offerer = offerers_factories.OffererFactory()
+        new_reimbursement_point = offerers_factories.VenueFactory(managingOfferer=another_offerer)
+
+        venue_data = populate_missing_data_from_venue(
+            {"reimbursementPointId": new_reimbursement_point.id},
+            venue,
+        )
+        response = client.with_session_auth(email=user_offerer.user.email).patch(
+            f"/venues/{humanize(venue.id)}", json=venue_data
+        )
+
+        assert response.status_code == 400
+        assert response.json["reimbursementPointId"] == [
+            f"Le SIRET {new_reimbursement_point.siret} ne peut pas être utilisé pour les remboursements de ce lieu."
+        ]

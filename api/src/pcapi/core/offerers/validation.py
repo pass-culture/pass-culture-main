@@ -63,6 +63,7 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
     managing_offerer_id = modifications.get("managingOffererId")
     siret = modifications.get("siret")
     business_unit_id = modifications.get("businessUnitId")
+    reimbursement_point_id = modifications.get("reimbursementPointId")
 
     venue_disability_compliance = [
         venue.audioDisabilityCompliant,
@@ -88,7 +89,9 @@ def check_venue_edition(modifications, venue):  # type: ignore [no-untyped-def]
     if not venue.isVirtual and None in venue_disability_compliance and None in modifications_disability_compliance:
         raise ApiErrors(errors={"global": ["L'accessibilité du lieu doit etre définie."]})
 
-    if business_unit_id:
+    if reimbursement_point_id:
+        check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
+    elif business_unit_id:
         check_existing_business_unit(business_unit_id, offerer=venue.managingOfferer)
 
 
@@ -122,6 +125,20 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
                 "pricingPointId": [
                     f"Le SIRET {pricing_point.siret} ne peut pas être utilisé pour calculer"
                     f" le barème de remboursement de ce lieu."
+                ]
+            }
+        )
+
+
+def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbursement_point_id: int) -> None:
+    reimbursement_point = models.Venue.query.filter_by(id=reimbursement_point_id).one_or_none()
+    if not reimbursement_point:
+        raise ApiErrors(errors={"reimbursementPointId": ["Ce lieu n'existe pas."]})
+    if reimbursement_point.managingOffererId != venue.managingOffererId:
+        raise ApiErrors(
+            errors={
+                "reimbursementPointId": [
+                    f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements de ce lieu."
                 ]
             }
         )
