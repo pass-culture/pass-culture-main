@@ -223,6 +223,7 @@ class Returns200Test:
         assert offer.venue == venue
         assert offer.product.name == "La pièce de théâtre"
         assert offer.product.owningOfferer == offerer
+        assert offer.isDraft == False
         assert offer.audioDisabilityCompliant == False
         assert offer.mentalDisabilityCompliant == True
         assert offer.motorDisabilityCompliant == False

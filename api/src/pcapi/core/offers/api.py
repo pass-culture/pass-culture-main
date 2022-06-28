@@ -153,6 +153,7 @@ def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: Us
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
     offer = create_offer(completed_data, user)
+    offer.isDraft = False
     collective_offer = educational_api.create_collective_offer(offer_data, user, offer.id)
     return (offer, collective_offer.id)
 
