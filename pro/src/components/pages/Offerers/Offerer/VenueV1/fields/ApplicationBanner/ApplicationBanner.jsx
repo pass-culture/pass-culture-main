@@ -2,7 +2,7 @@ import { Banner } from 'ui-kit'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-export const ApplicationBanner = ({ applicationId }) => (
+const ApplicationBanner = ({ applicationId }) => (
   <Banner
     href={`https://www.demarches-simplifiees.fr/dossiers/${applicationId}`}
     linkTitle="Voir le dossier en cours"
@@ -16,3 +16,5 @@ export const ApplicationBanner = ({ applicationId }) => (
 ApplicationBanner.propTypes = {
   applicationId: PropTypes.string.isRequired,
 }
+
+export default ApplicationBanner

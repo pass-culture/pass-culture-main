@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
-import { ApplicationBanner } from './ApplicationBanner'
+import ApplicationBanner from '../ApplicationBanner'
 import { Banner } from 'ui-kit'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import { Field } from 'react-final-form'
