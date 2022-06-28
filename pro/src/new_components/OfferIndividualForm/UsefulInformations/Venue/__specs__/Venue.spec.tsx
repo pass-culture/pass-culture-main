@@ -64,24 +64,28 @@ describe('OfferIndividual section: venue', () => {
         name: 'Venue AAAA',
         managingOffererId: 'AA',
         isVirtual: false,
+        withdrawalDetails: '',
       },
       {
         id: 'BBAA',
         name: 'Venue BBAA',
         managingOffererId: 'BB',
         isVirtual: false,
+        withdrawalDetails: '',
       },
       {
         id: 'CCAA',
         name: 'Venue CCAA',
         managingOffererId: 'CC',
         isVirtual: false,
+        withdrawalDetails: '',
       },
       {
         id: 'CCBB',
         name: 'Venue CCBB',
         managingOffererId: 'CC',
         isVirtual: false,
+        withdrawalDetails: '',
       },
     ]
 

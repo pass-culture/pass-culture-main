@@ -126,6 +126,7 @@ describe('screens:OfferCreation::Informations', () => {
       name: 'Lieu AA',
       managingOffererId: 'A',
       isVirtual: false,
+      withdrawalDetails: '',
     }
     props.initialValues.venueId = venue.id
     props.venueList = [
@@ -135,6 +136,7 @@ describe('screens:OfferCreation::Informations', () => {
         name: 'Lieu BB',
         managingOffererId: 'A',
         isVirtual: false,
+        withdrawalDetails: '',
       },
     ]
 
@@ -154,6 +156,7 @@ describe('screens:OfferCreation::Informations', () => {
         name: 'Lieu offline AA',
         managingOffererId: 'A',
         isVirtual: false,
+        withdrawalDetails: '',
       }
       props.initialValues.venueId = venue.id
       props.venueList = [
@@ -163,6 +166,7 @@ describe('screens:OfferCreation::Informations', () => {
           name: 'Lieu offline BB',
           managingOffererId: 'A',
           isVirtual: false,
+          withdrawalDetails: '',
         },
       ]
     })
