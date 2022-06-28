@@ -20,6 +20,7 @@ import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFiel
 import ContactInfosFields from '../fields/ContactInfosFields'
 import DeleteBusinessUnitConfirmationDialog from './DeleteBusinessUnitConfirmationDialog/DeleteBusinessUnitConfirmationDialog'
 import { DisplayVenueInAppLink } from './DisplayVenueInAppLink'
+import EACInformation from './EACInformation'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import { Form } from 'react-final-form'
 import Icon from 'components/layout/Icon'
@@ -308,7 +309,7 @@ const VenueEdition = () => {
             />
           )}
           {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
-            <div></div>
+            <EACInformation />
           )}
           {!initialIsVirtual && (
             <>
