@@ -405,7 +405,6 @@ const OfferForm = ({
       offerSubCategory,
       handleFormUpdate,
       userEmail,
-      isEdition,
     ]
   )
 

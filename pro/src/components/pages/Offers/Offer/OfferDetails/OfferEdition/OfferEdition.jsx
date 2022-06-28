@@ -16,6 +16,7 @@ import { computeOffersUrl } from 'core/Offers/utils'
 const OfferEdition = ({
   categories,
   initialValues,
+  isCreatingOffer,
   isDisabled,
   isUserAdmin,
   offer,
@@ -46,12 +47,14 @@ const OfferEdition = ({
           offer?.extraData?.showType
         ) {
           readOnlyFields.push('showType')
+          readOnlyFields.push('showSubType')
         }
         if (
           !readOnlyFields.includes('musicType') &&
           offer?.extraData?.musicType
         ) {
           readOnlyFields.push('musicType')
+          readOnlyFields.push('musicSubType')
         }
         return readOnlyFields
       }
@@ -77,7 +80,7 @@ const OfferEdition = ({
       categories={categories}
       initialValues={initialValues}
       isDisabled={isDisabled}
-      isEdition
+      isEdition={!isCreatingOffer}
       isUserAdmin={isUserAdmin}
       offerersNames={[
         {
@@ -103,11 +106,13 @@ OfferEdition.defaultProps = {
   isDisabled: false,
   isUserAdmin: false,
   offer: null,
+  isCreatingOffer: false,
 }
 
 OfferEdition.propTypes = {
   categories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   initialValues: PropTypes.shape().isRequired,
+  isCreatingOffer: PropTypes.bool,
   isDisabled: PropTypes.bool,
   isUserAdmin: PropTypes.bool,
   offer: PropTypes.shape(),
