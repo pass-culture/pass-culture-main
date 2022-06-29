@@ -4,22 +4,17 @@ from typing import List
 from flask_login import current_user
 from flask_login import login_required
 
-from pcapi.core.educational import api as educational_api
-from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.offers import exceptions as offers_exceptions
-from pcapi.core.offers import repository as offers_repository
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.repository import get_stocks_for_offer
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
-from pcapi.routes.serialization import offers_serialize
-from pcapi.routes.serialization import stock_serialize
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
@@ -141,35 +136,3 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
         }
 
     return list(stock_details.values())
-
-
-@private_api.route("/stocks/shadow/<stock_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422])
-def edit_shadow_stock(
-    stock_id: str, body: offers_serialize.EducationalOfferShadowStockBodyModel
-) -> stock_serialize.StockEditionResponseModel:
-    # FIXME DELETE UNUSED API
-    try:
-        stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))  # type: ignore [arg-type]
-        offerer = offerers_repository.get_by_offer_id(stock.offerId)
-        check_user_has_access_to_offerer(current_user, offerer.id)
-        stock = offers_api.edit_shadow_stock(stock, body.dict(exclude_unset=True))
-        educational_api.edit_collective_offer_template_from_stock(stock, body.dict(exclude_unset=True))
-
-        return stock_serialize.StockEditionResponseModel.from_orm(stock)
-
-    except offers_exceptions.StockDoesNotExist:
-        raise ApiErrors({"code": "STOCK_NOT_FOUND"}, status_code=404)
-
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"code": "OFFERER_NOT_FOUND"}, status_code=404)
-
-    except educational_exceptions.OfferIsNotEducational:
-        raise ApiErrors({"code": "OFFER_IS_NOT_EDUCATIONAL"}, status_code=400)
-
-    except educational_exceptions.OfferIsNotShowcase:
-        raise ApiErrors({"code": "OFFER_IS_NOT_SHOWCASE"}, status_code=400)
-
-    except educational_exceptions.CollectiveOfferTemplateNotFound:
-        raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
