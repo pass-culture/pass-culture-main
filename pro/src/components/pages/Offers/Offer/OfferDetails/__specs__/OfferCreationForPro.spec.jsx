@@ -1871,10 +1871,9 @@ describe('offerDetails - Creation - pro user', () => {
 
       // When
       await userEvent.click(submitButton)
-      await screen.findByText('Nouvelle offre')
 
       // Then
-      expect(submitButton).toBeDisabled()
+      expect(pcapi.createOffer).toHaveBeenCalledTimes(1)
     })
 
     it('should submit externalTicketOfficeUrl as null when no value was provided', async () => {

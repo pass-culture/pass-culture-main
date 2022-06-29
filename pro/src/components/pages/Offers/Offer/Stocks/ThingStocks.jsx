@@ -34,6 +34,7 @@ const ThingStocks = ({
   showSuccessNotification,
   showHtmlErrorNotification,
   reloadOffer,
+  setSubmitStepForm,
 }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
@@ -42,7 +43,7 @@ const ThingStocks = ({
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
   const editionOfferLink = useOfferEditionURL(offer.isEducational, offerId)
-  const [stock, setStock] = useState(null)
+  const [stock, setStock] = useState([])
   const displayExpirationDatetime =
     stock && stock.activationCodesExpirationDatetime !== null
   const history = useHistory()
@@ -126,7 +127,7 @@ const ThingStocks = ({
     return !stockHasErrors
   }
 
-  const submitStocks = useCallback(() => {
+  const submitStocks = async onSuccessRedirectUrl => {
     if (checkStockIsValid(stock, offer.isEvent, offer.isEducational)) {
       setEnableSubmitButtonSpinner(true)
       const stockToCreateOrEdit = {
@@ -134,7 +135,7 @@ const ThingStocks = ({
         id: stock.id,
       }
       const quantityOfActivationCodes = (stock.activationCodes || []).length
-      pcapi
+      await pcapi
         .bulkCreateOrEditStock(offer.id, [stockToCreateOrEdit])
         .then(() => {
           if (isOfferDraft) {
@@ -164,11 +165,12 @@ const ThingStocks = ({
               queryString += `&lieu=${queryParams.lieu}`
             }
 
-            history.push(
-              useSummaryPage
+            if (!onSuccessRedirectUrl) {
+              onSuccessRedirectUrl = useSummaryPage
                 ? `${summaryStepUrl}${queryString}`
                 : `/offre/${offer.id}/individuel/creation/confirmation${queryString}`
-            )
+            }
+            history.push(onSuccessRedirectUrl)
           } else {
             loadStocks()
             reloadOffer()
@@ -188,20 +190,14 @@ const ThingStocks = ({
         .catch(() => showErrorNotification())
         .finally(() => setEnableSubmitButtonSpinner(false))
     }
-  }, [
-    stock,
-    history,
-    location,
-    offer.id,
-    offer.isEducational,
-    offer.isEvent,
-    isOfferDraft,
-    offer.venue.departementCode,
-    loadStocks,
-    reloadOffer,
-    showSuccessNotification,
-    showErrorNotification,
-  ])
+  }
+
+  const handleSubmitStock = event => {
+    event.preventDefault()
+    submitStocks()
+  }
+
+  setSubmitStepForm(submitStocks)
 
   if (isLoading) {
     return null
@@ -307,7 +303,7 @@ const ThingStocks = ({
               canSubmit={!(isDisabled || hasNoStock)}
               isDraft={isOfferDraft}
               isSubmiting={enableSubmitButtonSpinner}
-              onSubmit={submitStocks}
+              onSubmit={handleSubmitStock}
             />
           </section>
         </Fragment>
@@ -322,6 +318,7 @@ ThingStocks.propTypes = {
   showErrorNotification: PropTypes.func.isRequired,
   showHtmlErrorNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
+  setSubmitStepForm: PropTypes.func.isRequired,
 }
 
 export default ThingStocks

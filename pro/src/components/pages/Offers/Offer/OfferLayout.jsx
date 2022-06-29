@@ -111,7 +111,7 @@ const OfferLayout = () => {
         isOfferEducational={offer?.isEducational}
         offerId={offer?.id}
         haveStock={offerHaveStock}
-        submitStepForm={submitStepForm.current}
+        submitStepForm={submitStepForm.current || undefined}
       />
 
       <div className="offer-content">
@@ -148,6 +148,7 @@ const OfferLayout = () => {
               location={location}
               offer={offer}
               reloadOffer={reloadOffer}
+              setSubmitStepForm={setSubmitStepForm}
             />
           </Route>
           <Route

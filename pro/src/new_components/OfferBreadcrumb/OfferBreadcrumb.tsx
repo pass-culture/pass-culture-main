@@ -25,7 +25,7 @@ interface IOfferBreadcrumb {
   isOfferEducational?: boolean
   className?: string
   haveStock?: boolean
-  submitStepForm?: (onSuccessRedirectUrl: string) => void
+  submitStepForm?: (onSuccessRedirectUrl: string) => Promise<void>
 }
 
 const OfferBreadcrumb = ({
@@ -131,9 +131,9 @@ const OfferBreadcrumb = ({
         Object.keys(stepList).forEach((stepId: string) => {
           const step = stepList[stepId]
           if (step.url) {
-            stepList[stepId].onClick = (e: React.MouseEvent) => {
+            stepList[stepId].onClick = async (e: React.MouseEvent) => {
               e.preventDefault()
-              step.url && submitStepForm(step.url)
+              step.url && submitStepForm && (await submitStepForm(step.url))
             }
           }
         })

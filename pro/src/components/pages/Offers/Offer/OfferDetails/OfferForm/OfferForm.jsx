@@ -477,50 +477,41 @@ const OfferForm = ({
     [formValues.offererId, handleFormUpdate, setSelectedOfferer]
   )
 
-  const submitForm = useCallback(
-    async (onSuccessRedirectUrl = null) => {
-      setIsSubmitLoading(true)
+  const submitForm = async (onSuccessRedirectUrl = null) => {
+    setIsSubmitLoading(true)
 
-      const newFormErrors = isFormValid(
+    const newFormErrors = isFormValid(
+      formValues,
+      offerFormFields,
+      mandatoryFields
+    )
+    if (Object.keys(newFormErrors).length > 0) {
+      setFormErrors(newFormErrors)
+      showErrorNotification()
+      setIsSubmitLoading(false)
+      return
+    } else {
+      const submittedValues = serializeSubmitValues(
         formValues,
         offerFormFields,
-        mandatoryFields
+        readOnlyFields,
+        receiveNotificationEmails
       )
-      if (Object.keys(newFormErrors).length > 0) {
-        setFormErrors(newFormErrors)
-        showErrorNotification()
-        setIsSubmitLoading(false)
+
+      const nextStepRedirect = await onSubmit(
+        submittedValues,
+        onSuccessRedirectUrl
+      )
+
+      setIsSubmitLoading(false)
+
+      if (nextStepRedirect !== null) {
+        await nextStepRedirect()
         return
-      } else {
-        const submittedValues = serializeSubmitValues(
-          formValues,
-          offerFormFields,
-          readOnlyFields,
-          receiveNotificationEmails
-        )
-
-        const nextStepRedirect = await onSubmit(
-          submittedValues,
-          onSuccessRedirectUrl
-        )
-
-        setIsSubmitLoading(false)
-
-        if (nextStepRedirect !== null) {
-          await nextStepRedirect()
-          return
-        }
       }
-    },
-    [
-      offerFormFields,
-      formValues,
-      onSubmit,
-      readOnlyFields,
-      receiveNotificationEmails,
-      showErrorNotification,
-    ]
-  )
+    }
+  }
+
   setSubmitStepForm(submitForm)
 
   const handleFormSubmit = async event => {

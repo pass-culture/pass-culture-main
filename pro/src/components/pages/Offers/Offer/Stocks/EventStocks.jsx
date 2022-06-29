@@ -35,6 +35,7 @@ const EventStocks = ({
   showErrorNotification,
   showSuccessNotification,
   reloadOffer,
+  setSubmitStepForm,
 }) => {
   const offerId = offer.id
   const [isLoading, setIsLoading] = useState(true)
@@ -160,7 +161,7 @@ const EventStocks = ({
     return !hasErrors
   }
 
-  const submitStocks = useCallback(() => {
+  const submitStocks = () => {
     const updatedStocks = existingStocks.filter(stock => stock.updated)
     if (
       areValid(
@@ -218,21 +219,8 @@ const EventStocks = ({
           setIsSendingStocksOfferCreation(false)
         })
     }
-  }, [
-    existingStocks,
-    history,
-    location,
-    stocksInCreation,
-    offer.id,
-    offer.isEducational,
-    offer.isEvent,
-    isOfferDraft,
-    offer.venue.departementCode,
-    loadStocks,
-    reloadOffer,
-    showSuccessNotification,
-    showErrorNotification,
-  ])
+  }
+  setSubmitStepForm(submitStocks)
 
   if (isLoading) {
     return null
@@ -358,6 +346,7 @@ EventStocks.propTypes = {
   reloadOffer: PropTypes.func.isRequired,
   showErrorNotification: PropTypes.func.isRequired,
   showSuccessNotification: PropTypes.func.isRequired,
+  setSubmitStepForm: PropTypes.func.isRequired,
 }
 
 export default EventStocks
