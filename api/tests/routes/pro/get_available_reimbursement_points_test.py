@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.models.bank_information import BankInformationStatus
@@ -26,7 +27,13 @@ class Returns200Test:
         )
 
         client = client.with_session_auth("user.pro@example.com")
-        response = client.get(f"/offerers/{offerer.id}/reimbursement-points")
+        n_queries = (
+            testing.AUTHENTICATION_QUERIES
+            + 1  # check_user_has_access_to_offerer
+            + 1  # eligible Venues with their eagerly loaded BankInformation
+        )
+        with testing.assert_num_queries(n_queries):
+            response = client.get(f"/offerers/{offerer.id}/reimbursement-points")
 
         assert response.status_code == 200
         assert response.json == [
