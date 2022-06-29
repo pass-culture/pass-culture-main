@@ -4,8 +4,6 @@ from flask import abort
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
-from sqlalchemy.orm import exc as orm_exc
-from sqlalchemy.orm import joinedload
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
@@ -16,7 +14,6 @@ from pcapi.core.offerers.repository import get_by_offer_id
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.models.api_errors import ApiErrors
@@ -224,44 +221,6 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
     )
-
-
-@private_api.route("/offers/<offer_id>/cancel_booking", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    on_success_status=204,
-    on_error_statuses=[400, 403, 404],
-    api=blueprint.pro_private_schema,
-)
-def cancel_educational_offer_booking(offer_id: str) -> None:
-    # FIXME DELETE UNUSED API
-    try:
-        offer = (
-            offers_repository.get_educational_offer_by_id_base_query(dehumanize(offer_id))  # type: ignore [arg-type]
-            .options(joinedload(Offer.stocks).joinedload(Stock.bookings))
-            .options(joinedload(Offer.venue).load_only("id", "managingOffererId"))
-            .one()
-        )
-    except orm_exc.NoResultFound:
-        raise ApiErrors(
-            {"code": "NO_EDUCATIONAL_OFFER_FOUND", "message": "No educational offer has been found with this id"}, 404
-        )
-
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    try:
-        offers_api.cancel_educational_offer_booking(offer)
-        offers_api.cancel_collective_offer_booking(offer.id, legacy=True)
-    except exceptions.StockNotFound:
-        raise ApiErrors(
-            {"code": "NO_ACTIVE_STOCK_FOUND", "message": "No active stock has been found with this id"}, 404
-        )
-    except exceptions.EducationalOfferHasMultipleStocks:
-        raise ApiErrors(
-            {"code": "MULTIPLE_STOCKS", "message": "This educational offer has multiple active stocks"}, 400
-        )
-    except exceptions.NoBookingToCancel:
-        raise ApiErrors({"code": "NO_BOOKING", "message": "This educational offer has no booking to cancel"}, 400)
-    return
 
 
 @private_api.route("/offers/educational/<offer_id>/shadow-stock", methods=["POST"])
