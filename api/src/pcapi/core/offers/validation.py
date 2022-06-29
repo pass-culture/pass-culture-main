@@ -8,8 +8,6 @@ from typing import Union
 from PIL import Image
 
 from pcapi import settings
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES_DICT
 from pcapi.core.categories.subcategories import WITHDRAWABLE_SUBCATEGORIES
@@ -198,11 +196,6 @@ def check_shadow_stock_is_editable(stock: Stock) -> None:
     check_validation_status(stock.offer)
 
 
-def check_educational_stock_is_editable(stock: Stock) -> None:
-    check_validation_status(stock.offer)
-    check_event_expiration(stock)
-
-
 def check_stock_is_deletable(stock: Stock) -> None:
     check_offer_existing_stocks_are_editable(stock.offer)
     if not stock.isEventDeletable:
@@ -359,11 +352,6 @@ def check_offer_subcategory_is_valid(offer_subcategory_id):  # type: ignore [no-
         raise exceptions.UnknownOfferSubCategory()
     if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:
         raise exceptions.SubCategoryIsInactive()
-
-
-def check_stock_booking_status(booking: Booking) -> Union[None, Exception]:
-    if booking.status is not BookingStatus.PENDING:
-        raise exceptions.EducationalOfferStockBookedAndBookingNotPending(booking.status, booking.id)
 
 
 def check_booking_limit_datetime(

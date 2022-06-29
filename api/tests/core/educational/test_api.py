@@ -24,7 +24,7 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.serialization import stock_serialize
+from pcapi.routes.serialization import collective_stock_serialize
 
 
 SIMPLE_OFFER_VALIDATION_CONFIG = """
@@ -73,9 +73,11 @@ class EditCollectiveOfferStocksTest:
             numberOfTickets=30,
             bookingLimitDatetime=initial_booking_limit_date,
         )
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7, hours=5),
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=5, hours=16),
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=7, hours=5),
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=5, hours=16),
             totalPrice=1500,
             numberOfTickets=35,
         )
@@ -87,8 +89,8 @@ class EditCollectiveOfferStocksTest:
 
         # Then
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.beginningDatetime == new_stock_data.beginningDatetime
-        assert stock.bookingLimitDatetime == new_stock_data.bookingLimitDatetime
+        assert stock.beginningDatetime == new_stock_data.beginningDatetime.replace(tzinfo=None)
+        assert stock.bookingLimitDatetime == new_stock_data.bookingLimitDatetime.replace(tzinfo=None)
         assert stock.price == 1500
         assert stock.numberOfTickets == 35
 
@@ -102,8 +104,9 @@ class EditCollectiveOfferStocksTest:
             numberOfTickets=30,
             bookingLimitDatetime=initial_booking_limit_date,
         )
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7, hours=5),
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=7, hours=5),
             numberOfTickets=35,
         )
 
@@ -114,7 +117,7 @@ class EditCollectiveOfferStocksTest:
 
         # Then
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.beginningDatetime == new_stock_data.beginningDatetime
+        assert stock.beginningDatetime == new_stock_data.beginningDatetime.replace(tzinfo=None)
         assert stock.bookingLimitDatetime == initial_booking_limit_date
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
@@ -127,8 +130,10 @@ class EditCollectiveOfferStocksTest:
             beginningDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
         )
-        new_event_datetime = datetime.datetime.utcnow() + datetime.timedelta(days=7, hours=5)
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+        new_event_datetime = datetime.datetime.now(  # pylint: disable=datetime-now
+            datetime.timezone.utc
+        ) + datetime.timedelta(days=7, hours=5)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             beginningDatetime=new_event_datetime,
             bookingLimitDatetime=None,
         )
@@ -140,7 +145,7 @@ class EditCollectiveOfferStocksTest:
 
         # Then
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.bookingLimitDatetime == new_event_datetime
+        assert stock.bookingLimitDatetime == new_event_datetime.replace(tzinfo=None)
 
     def test_should_replace_bookingLimitDatetime_with_old_event_datetime_if_provided_but_none_and_event_date_unchanged(
         self,
@@ -152,7 +157,7 @@ class EditCollectiveOfferStocksTest:
             beginningDatetime=initial_event_date,
             bookingLimitDatetime=initial_booking_limit_date,
         )
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             bookingLimitDatetime=None,
         )
 
@@ -199,7 +204,7 @@ class EditCollectiveOfferStocksTest:
             collectiveStock=stock_to_be_updated,
         )
 
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             totalPrice=1500,
         )
 
@@ -230,8 +235,10 @@ class EditCollectiveOfferStocksTest:
             educationalYear=educational_year,
         )
 
-        new_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=25, hours=5)
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+        new_event_date = datetime.datetime.now(  # pylint: disable=datetime-now
+            datetime.timezone.utc
+        ) + datetime.timedelta(days=25, hours=5)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             beginningDatetime=new_event_date,
         )
 
@@ -242,7 +249,9 @@ class EditCollectiveOfferStocksTest:
 
         # Then
         booking_updated = CollectiveBooking.query.filter_by(id=booking.id).one()
-        assert booking_updated.cancellationLimitDate == new_event_date - datetime.timedelta(days=15)
+        assert booking_updated.cancellationLimitDate == new_event_date.replace(tzinfo=None) - datetime.timedelta(
+            days=15
+        )
 
     @freeze_time("2020-11-17 15:00:00")
     def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self):
@@ -261,10 +270,13 @@ class EditCollectiveOfferStocksTest:
             educationalYear=educational_year,
         )
 
-        new_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5, hours=5)
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+        new_event_date = datetime.datetime.now(  # pylint: disable=datetime-now
+            datetime.timezone.utc
+        ) + datetime.timedelta(days=5, hours=5)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             beginningDatetime=new_event_date,
-            bookingLimitDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=3, hours=5),
+            bookingLimitDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=3, hours=5),
         )
 
         # When
@@ -291,8 +303,10 @@ class EditCollectiveOfferStocksTest:
             confirmationLimitDate=datetime.datetime.utcnow() + datetime.timedelta(days=30),
         )
 
-        new_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=25, hours=5)
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+        new_event_date = datetime.datetime.now(  # pylint: disable=datetime-now
+            datetime.timezone.utc
+        ) + datetime.timedelta(days=25, hours=5)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             beginningDatetime=new_event_date,
         )
 
@@ -305,7 +319,7 @@ class EditCollectiveOfferStocksTest:
         booking = CollectiveBooking.query.filter_by(id=booking.id).one()
         assert booking.cancellationLimitDate == cancellation_limit_date
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
-        assert stock.beginningDatetime == new_event_date
+        assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
     def test_does_not_allow_edition_of_an_expired_event_stock(self):
         # Given
@@ -317,8 +331,9 @@ class EditCollectiveOfferStocksTest:
             numberOfTickets=30,
             bookingLimitDatetime=initial_booking_limit_date,
         )
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.datetime.utcnow() + datetime.timedelta(days=7, hours=5),
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            beginningDatetime=datetime.datetime.now(datetime.timezone.utc)  # pylint: disable=datetime-now
+            + datetime.timedelta(days=7, hours=5),
             numberOfTickets=35,
         )
 
@@ -341,7 +356,7 @@ class EditCollectiveOfferStocksTest:
             price=1200,
             numberOfTickets=30,
         )
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
             numberOfTickets=35,
         )
 
@@ -366,8 +381,8 @@ class EditCollectiveOfferStocksTest:
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.datetime(2021, 12, 10), bookingLimitDatetime=datetime.datetime(2021, 12, 5)
         )
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            bookingLimitDatetime=datetime.datetime(2021, 12, 20)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            bookingLimitDatetime=datetime.datetime(2021, 12, 20, tzinfo=datetime.timezone.utc)
         )
 
         # When
@@ -388,8 +403,8 @@ class EditCollectiveOfferStocksTest:
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.datetime(2021, 12, 10), bookingLimitDatetime=datetime.datetime(2021, 12, 5)
         )
-        new_stock_data = stock_serialize.EducationalStockEditionBodyModel(
-            beginningDatetime=datetime.datetime(2021, 12, 4)
+        new_stock_data = collective_stock_serialize.CollectiveStockEditionBodyModel(
+            beginningDatetime=datetime.datetime(2021, 12, 4, tzinfo=datetime.timezone.utc)
         )
 
         # When
@@ -410,7 +425,7 @@ class CreateCollectiveOfferStocksTest:
         # Given
         user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
-        new_stock = stock_serialize.EducationalStockCreationBodyModel(
+        new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
             bookingLimitDatetime=dateutil.parser.parse("2021-12-05T00:00:00Z"),
@@ -436,7 +451,7 @@ class CreateCollectiveOfferStocksTest:
         # Given
         user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
-        new_stock = stock_serialize.EducationalStockCreationBodyModel(
+        new_stock = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
             totalPrice=1200,
@@ -450,11 +465,48 @@ class CreateCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
+==== BASE ====
+    def test_create_stock_triggers_draft_offer_validation(self):
+        # Given
+        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
+        user_pro = users_factories.ProFactory()
+        draft_approvable_offer = educational_factories.CollectiveOfferFactory(
+            name="a great offer", validation=OfferValidationStatus.DRAFT
+        )
+        draft_suspicious_offer = educational_factories.CollectiveOfferFactory(
+            name="a suspicious offer", validation=OfferValidationStatus.DRAFT
+        )
+        common_created_stock_data = {
+            "beginningDatetime": dateutil.parser.parse("2022-01-17T22:00:00Z"),
+            "bookingLimitDatetime": dateutil.parser.parse("2021-12-31T20:00:00Z"),
+            "totalPrice": 1500,
+            "numberOfTickets": 38,
+        }
+        created_stock_data_approvable = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=draft_approvable_offer.id, **common_created_stock_data
+        )
+        created_stock_data_suspicious = stock_serialize.EducationalStockCreationBodyModel(
+            offerId=draft_suspicious_offer.id, **common_created_stock_data
+        )
+
+        # When
+        educational_api.create_collective_stock(stock_data=created_stock_data_approvable, user=user_pro)
+        educational_api.create_collective_stock(stock_data=created_stock_data_suspicious, user=user_pro)
+
+        # Then
+        assert draft_approvable_offer.validation == OfferValidationStatus.APPROVED
+        assert draft_approvable_offer.isActive
+        assert draft_approvable_offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15, 0)
+        assert draft_suspicious_offer.validation == OfferValidationStatus.PENDING
+        assert not draft_suspicious_offer.isActive
+        assert draft_suspicious_offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15, 0)
+
+==== BASE ====
     def test_create_stock_for_non_approved_offer_fails(self):
         # Given
         user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
-        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+        created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
             bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
@@ -480,7 +532,7 @@ class CreateCollectiveOfferStocksTest:
         # Given
         user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
-        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
+        created_stock_data = collective_stock_serialize.CollectiveStockCreationBodyModel(
             offerId=offer.id,
             beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
             bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),

@@ -3,11 +3,9 @@ from typing import List
 
 from flask_login import current_user
 from flask_login import login_required
-from sqlalchemy.orm.exc import MultipleResultsFound as SQLAMultipleResultsFound
 
 from pcapi.core.educational import api as educational_api
 from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import repository as educational_repository
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -22,7 +20,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
-from pcapi.routes.serialization.stock_serialize import EducationalStockEditionBodyModel
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
 from pcapi.routes.serialization.stock_serialize import StockResponseModel
@@ -144,63 +141,6 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
         }
 
     return list(stock_details.values())
-
-
-@private_api.route("/stocks/educational/<stock_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422], api=blueprint.pro_private_schema)
-def edit_educational_stock(
-    stock_id: str, body: EducationalStockEditionBodyModel
-) -> stock_serialize.StockEditionResponseModel:
-    # FIXME DELETE UNUSED API
-    try:
-        stock = offers_repository.get_non_deleted_stock_by_id(dehumanize(stock_id))  # type: ignore [arg-type]
-        offerer = offerers_repository.get_by_offer_id(stock.offerId)
-    except offers_exceptions.StockDoesNotExist:
-        raise ApiErrors({"educationalStock": ["Le stock n'existe pas"]}, status_code=404)
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-
-    collective_stock = educational_repository.get_collective_stock_from_stock_id(stock.id)
-
-    try:
-        stock = offers_api.edit_educational_stock(stock, body.dict(exclude_unset=True))
-        if collective_stock:
-            # FIXME (rpaoloni, 2022-03-09): raise exception if not collective_stock after the migration
-            educational_api.edit_collective_stock(collective_stock, body.dict(exclude_unset=True))
-        return stock_serialize.StockEditionResponseModel.from_orm(stock)
-    except educational_exceptions.OfferIsNotEducational:
-        raise ApiErrors(
-            {"educationalStock": ["L'offre associée au stock n'est pas une offre éducationnelle"]}, status_code=422
-        )
-    except offers_exceptions.BookingLimitDatetimeTooLate:
-        raise ApiErrors(
-            {"educationalStock": ["La date limite de confirmation ne peut être fixée après la date de l évènement"]},
-            status_code=400,
-        )
-    except offers_exceptions.EducationalOfferStockBookedAndBookingNotPending as error:
-        raise ApiErrors(
-            {
-                "educationalStockEdition": [
-                    f"Un stock lié à une offre éducationnelle, dont la réservation associée a le statut {error.booking_status.value}, ne peut être édité "
-                ]
-            },
-            status_code=400,
-        )
-    except SQLAMultipleResultsFound:
-        logger.exception(
-            "Several non cancelled bookings found while trying to edit related educational stock",
-            extra={"stock_id": stock_id},
-        )
-        raise ApiErrors(
-            {
-                "educationalStockEdition": [
-                    "Plusieurs réservations non annulées portent sur ce stock d'une offre éducationnelle"
-                ]
-            },
-            status_code=400,
-        )
 
 
 @private_api.route("/stocks/shadow/<stock_id>", methods=["PATCH"])
