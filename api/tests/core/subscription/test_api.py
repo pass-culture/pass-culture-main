@@ -191,6 +191,7 @@ class NextSubscriptionStepTest:
         )
         assert subscription_api.get_next_subscription_step(user) == None
 
+    @override_features(ENABLE_USER_PROFILING=True)
     def test_next_subscription_step_user_profiling(self):
         user = users_factories.UserFactory(
             dateOfBirth=self.eighteen_years_ago,

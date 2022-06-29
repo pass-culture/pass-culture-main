@@ -1366,6 +1366,7 @@ class ProfilingFraudScoreTest:
         "session_id_value", ["b0c9ab58-cdfb-4461-a771-a00683b85bd2", "09cb5fa1c9894252b147de4a37d01f30"]
     )
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @override_features(ENABLE_USER_PROFILING=True)
     def test_profiling_fraud_score_call(self, client, requests_mock, session_id_key, session_id_value):
         user = users_factories.UserFactory(
             subscriptionState=users_models.SubscriptionState.phone_validated,
@@ -1394,6 +1395,7 @@ class ProfilingFraudScoreTest:
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @override_features(ENABLE_USER_PROFILING=True)
     def test_profiling_fraud_score_call_error(self, client, requests_mock, caplog):
         user = users_factories.UserFactory(
             subscriptionState=users_models.SubscriptionState.phone_validated,
@@ -1416,6 +1418,7 @@ class ProfilingFraudScoreTest:
         ]
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @override_features(ENABLE_USER_PROFILING=True)
     def test_profiling_fraud_score_user_without_birth_date(self, client, requests_mock, caplog):
         user = users_factories.UserFactory(
             dateOfBirth=None,
@@ -1464,6 +1467,7 @@ class ProfilingFraudScoreTest:
         assert matcher.call_count == 0
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @override_features(ENABLE_USER_PROFILING=True)
     @pytest.mark.parametrize(
         "risk_rating,expected_check_status",
         (
@@ -1505,6 +1509,7 @@ class ProfilingFraudScoreTest:
         assert fraud_check.status == expected_check_status
 
     @override_settings(USER_PROFILING_URL=USER_PROFILING_URL)
+    @override_features(ENABLE_USER_PROFILING=True)
     @pytest.mark.parametrize(
         "risk_rating",
         (

@@ -330,7 +330,7 @@ class RunIntegrationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 679  # complete subscription
 
-    @override_features(FORCE_PHONE_VALIDATION=True)
+    @override_features(FORCE_PHONE_VALIDATION=True, ENABLE_USER_PROFILING=True)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user_requires_userprofiling(self, get_applications_with_details):
         user = users_factories.UserFactory(

@@ -581,6 +581,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    @testing.override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
     def test_dms_first_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
@@ -622,6 +623,7 @@ class DmsWebhookApplicationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
+    @testing.override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
     def test_dms_full_name_error(self, send_user_message, execute_query, client):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
