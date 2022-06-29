@@ -3,7 +3,13 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import React from 'react'
 import styles from './EACInformation.module.scss'
 
-const EACInformation = (): JSX.Element => {
+const EACInformation = ({
+  venueId,
+  offererId,
+}: {
+  venueId: string
+  offererId: string
+}): JSX.Element => {
   return (
     <div className="section">
       <h2 className="main-list-title">Mes informations EAC</h2>
@@ -13,7 +19,10 @@ const EACInformation = (): JSX.Element => {
         chefs d'établissement sur Adage (Application dédiée à la
         généralisation....)
       </p>
-      <ButtonLink to="#" variant={ButtonVariant.SECONDARY}>
+      <ButtonLink
+        to={`/structures/${offererId}/lieux/${venueId}/eac`}
+        variant={ButtonVariant.SECONDARY}
+      >
         Renseigner mes informations EAC
       </ButtonLink>
     </div>
