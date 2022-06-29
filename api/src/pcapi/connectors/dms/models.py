@@ -102,6 +102,12 @@ class DMSMessage(pydantic.BaseModel):
     _format_created_at = pydantic.validator("created_at", allow_reuse=True)(parse_dms_datetime)
 
 
+class DemarcheDescriptor(pydantic.BaseModel):
+    """https://demarches-simplifiees-graphql.netlify.app/demarchedescriptor.doc.html"""
+
+    id: int = pydantic.Field(alias="number")
+
+
 class DmsApplicationResponse(pydantic.BaseModel):
     """Response from DMS API.
     https://demarches-simplifiees-graphql.netlify.app/dossier.doc.html
@@ -117,6 +123,7 @@ class DmsApplicationResponse(pydantic.BaseModel):
     messages: list[DMSMessage]
     number: int
     on_going_date: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="datePassageEnInstruction")
+    procedure: DemarcheDescriptor = pydantic.Field(alias="demarche")
     profile: Profile = pydantic.Field(alias="usager")
     state: GraphQLApplicationStates
 
