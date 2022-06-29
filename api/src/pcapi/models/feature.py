@@ -80,6 +80,7 @@ class FeatureToggle(enum.Enum):
     )
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
     ENABLE_PRO_BOOKINGS_V2 = "Activer l'affichage de la page booking avec la nouvelle architecture."
+    ENABLE_PRO_NEW_VENUE_PROVIDER_UI = "Activer le nouveau affichage de la section synchronisation sur la page lieu"
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_USER_PROFILING = "Active l'étape USER_PROFILING dans le parcours d'inscription des jeunes de 18 ans"
@@ -169,6 +170,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION,
     FeatureToggle.ENABLE_NEW_VENUE_PAGES,
     FeatureToggle.ENABLE_PRO_BOOKINGS_V2,
+    FeatureToggle.ENABLE_PRO_NEW_VENUE_PROVIDER_UI,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_USER_PROFILING,
     FeatureToggle.FORCE_PHONE_VALIDATION,
