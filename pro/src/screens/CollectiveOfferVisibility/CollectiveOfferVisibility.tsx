@@ -121,7 +121,10 @@ const CollectiveOfferVisibility = ({
       key => formik.values[key] !== formik.initialValues[key]
     )
   const nextStepDisabled =
-    buttonPressed || noInstitutionSelected || userHasNotUpdatedForm
+    buttonPressed ||
+    noInstitutionSelected ||
+    userHasNotUpdatedForm ||
+    mode === Mode.READ_ONLY
 
   return (
     <FormikProvider value={formik}>
