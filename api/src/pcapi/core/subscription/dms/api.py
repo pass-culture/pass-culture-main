@@ -67,7 +67,7 @@ def handle_dms_application(
     application_number = dms_application.number
     user_email = users_utils.sanitize_email(dms_application.profile.email)
     application_scalar_id = dms_application.id
-    state = dms_models.GraphQLApplicationStates(dms_application.state)
+    state = dms_application.state
     procedure_id = dms_application.procedure.number
 
     log_extra_data = {
