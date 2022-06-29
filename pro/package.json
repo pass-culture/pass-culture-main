@@ -18,8 +18,6 @@
     "lint:scss": "stylelint '**/*.scss'",
     "lint:scss:fix": "yarn lint:scss --fix",
     "prettier:js:changed:fix": "./scripts/lint_diff.sh",
-    "qa:diff": "scripts/compare-screenshots.sh",
-    "qa:test": "yarn testcafe quality_assurance",
     "start": "PORT=3001 react-scripts start",
     "test:cafe": "yarn testcafe testcafe",
     "test:eslint": "jest eslint-plugin-pass-culture/tests",
