@@ -29,6 +29,7 @@ class DMSGraphQLTest:
             ),
             datePassageEnInstruction=None,
             dateTraitement=None,
+            demarche=dms_models.DemarcheDescriptor(id="demarche_id", number=1),
             demandeur=dms_models.Applicant(
                 dateDeNaissance=datetime.date(2020, 3, 25),
                 civilite=dms_models.Civility.M,

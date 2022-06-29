@@ -28,6 +28,10 @@ fragment DossierFragment on Dossier {
   datePassageEnConstruction
   datePassageEnInstruction
   dateTraitement
+  demarche {
+    id
+    number
+  }
   messages {
     ...MessageFragment
   }

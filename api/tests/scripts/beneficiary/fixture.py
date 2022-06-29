@@ -36,6 +36,7 @@ def make_graphql_application(
     processed_datetime: Optional[str] = "2020-05-13T10:41:21+02:00",
     messages: Optional[list] = None,
     application_techid: Optional[str] = None,
+    procedure_id: Optional[int] = 8888,
 ) -> dict:
     if messages is None:
         messages = DEFAULT_MESSAGES
@@ -50,6 +51,10 @@ def make_graphql_application(
         "datePassageEnConstruction": construction_datetime,
         "datePassageEnInstruction": "2020-05-13T10:37:31+02:00",
         "dateTraitement": processed_datetime,
+        "demarche": {
+            "id": "PROCEDURE_ID_AT_DMS",
+            "number": procedure_id,
+        },
         "messages": messages,
         "motivation": "",
         "motivationAttachment": None,
@@ -156,7 +161,6 @@ def make_graphql_application(
 
 
 def make_new_application():
-
     response = {
         "id": "RG9zc2llci01NzE4MzAz",
         "number": 5718303,
@@ -174,7 +178,7 @@ def make_new_application():
             "url": "https://example.com/some/path/to/application.pdf",
         },
         "instructeurs": [],
-        "demarche": {"id": "UHJvY2VkdXJlLTQ3NDgw", "number": 47480},
+        "demarche": {"id": "UHJvY2VkdXJlLTQ3NDgw", "number": 32},
         "groupeInstructeur": {"id": "R3JvdXBlSW5zdHJ1Y3RldXItNjE0NjU=", "number": 61465, "label": "défaut"},
         "revision": {
             "id": "UHJvY2VkdXJlUmV2aXNpb24tNTc4MTU=",
@@ -433,6 +437,10 @@ def make_new_stranger_application():
         "datePassageEnConstruction": "2021-09-15T15:19:20+02:00",
         "datePassageEnInstruction": None,
         "dateTraitement": None,
+        "demarche": {
+            "id": "RG9zc2llci01NzQyOTk0",
+            "number": 32,
+        },
         "messages": [],
         "motivation": None,
         "motivationAttachment": None,
