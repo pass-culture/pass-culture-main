@@ -106,65 +106,6 @@ def post_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.Of
     return offers_serialize.OfferResponseIdModel.from_orm(offer)
 
 
-@private_api.route("/offers/educational", methods=["POST"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.EducationalOfferResponseIdModel,
-    on_success_status=201,
-    api=blueprint.pro_private_schema,
-)
-def create_educational_offer(
-    body: offers_serialize.PostEducationalOfferBodyModel,
-) -> offers_serialize.EducationalOfferResponseIdModel:
-    # FIXME DELETE UNUSED API
-    try:
-        (offer, collective_offer_id) = offers_api.create_educational_offer(offer_data=body, user=current_user)
-
-        # FIXME (cgaunet, 2022-01-26): This log is to investigate a bug causing extraData to be json_typeof 'null'
-        if offer.extraData is None:
-            logger.error(
-                "Offer extraData is None after create_educational_offer call",
-                extra={"offer_id": offer.id, "offer_name": offer.name, "payload": body.json()},
-            )
-    except educational_exceptions.CulturalPartnerNotFoundException:
-        logger.info(
-            "Could not create offer: This offerer has not been found in Adage", extra={"offerer_id": body.offerer_id}
-        )
-        raise ApiErrors({"offerer: not found in adage"}, 403)  # type: ignore [arg-type]
-    except educational_exceptions.AdageException:
-        logger.info("Could not create offer: Adage api call failed", extra={"offerer_id": body.offerer_id})
-        raise ApiErrors({"adage_api: error"}, 500)  # type: ignore [arg-type]
-    except exceptions.UnknownOfferSubCategory as error:
-        logger.info(
-            "Could not create offer: selected subcategory is unknown.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-    except exceptions.SubCategoryIsInactive as error:
-        logger.info(
-            "Could not create offer: subcategory cannot be selected.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-    except exceptions.SubcategoryNotEligibleForEducationalOffer as error:
-        logger.info(
-            "Could not create offer: subcategory is not eligible for educational offer.",
-            extra={"offer_name": body.name, "venue_id": body.venue_id},
-        )
-        raise ApiErrors(
-            error.errors,
-            status_code=400,
-        )
-
-    return offers_serialize.EducationalOfferResponseIdModel(id=offer.id, collectiveOfferId=collective_offer_id)
-
-
 @private_api.route("/offers/publish", methods=["PATCH"])
 @login_required
 @spectree_serialize(
