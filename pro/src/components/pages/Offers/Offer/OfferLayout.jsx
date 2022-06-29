@@ -51,6 +51,13 @@ const OfferLayout = () => {
     submitStepForm.current = onStepSubmit
   }
 
+  // in order to only submit when leaving a step with
+  // a configured `submitStepForm`:
+  // reset step submit each time the route change
+  useEffect(() => {
+    setSubmitStepForm()
+  }, [location.pathname])
+
   const loadOffer = async offerId => {
     try {
       const existingOffer = await apiV1.getOffersGetOffer(offerId)
