@@ -88,7 +88,7 @@ const OfferDetails = ({
       )
   }, [setShowThumbnailForm, offerPreviewData.subcategoryId])
 
-  const goToStockAndPrice = async offerId => {
+  const addQueryParams = async url => {
     let queryString = ''
 
     if (formInitialValues.offererId !== undefined) {
@@ -99,7 +99,7 @@ const OfferDetails = ({
       queryString += `&lieu=${formInitialValues.venueId}`
     }
 
-    history.push(`/offre/${offerId}/individuel/creation/stocks${queryString}`)
+    return `${url}${queryString}`
   }
 
   const postThumbnail = useCallback(
@@ -125,7 +125,9 @@ const OfferDetails = ({
             setThumbnailMsgError('')
 
             if (!offer) {
-              goToStockAndPrice(offerId)
+              history.push(
+                addQueryParams(`/offre/${offerId}/individuel/creation/stocks`)
+              )
             }
           })
           .catch(error => {
@@ -144,7 +146,7 @@ const OfferDetails = ({
   )
 
   const handleSubmitOffer = useCallback(
-    async offerValues => {
+    async (offerValues, onSuccessRedirectUrl = null) => {
       try {
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
@@ -154,7 +156,9 @@ const OfferDetails = ({
           setThumbnailError(false)
           setThumbnailMsgError('')
           if (useSummaryPage && isCreatingOffer) {
-            return Promise.resolve(() => goToStockAndPrice(offer.id))
+            onSuccessRedirectUrl =
+              onSuccessRedirectUrl ||
+              `/offre/${offer.id}/individuel/creation/stocks`
           }
         } else {
           const response = await pcapi.createOffer(offerValues)
@@ -162,8 +166,15 @@ const OfferDetails = ({
           await postThumbnail(createdOfferId, thumbnailInfo)
 
           if (Object.keys(thumbnailInfo).length === 0) {
-            return Promise.resolve(() => goToStockAndPrice(createdOfferId))
+            onSuccessRedirectUrl =
+              onSuccessRedirectUrl ||
+              `/offre/${createdOfferId}/individuel/creation/stocks`
           }
+        }
+        if (onSuccessRedirectUrl !== null) {
+          return Promise.resolve(() =>
+            history.push(addQueryParams(onSuccessRedirectUrl))
+          )
         }
       } catch (error) {
         if (error && 'errors' in error) {

@@ -477,8 +477,7 @@ const OfferForm = ({
   )
 
   const submitForm = useCallback(
-    async event => {
-      event.preventDefault()
+    async (onSuccessRedirectUrl = null) => {
       setIsSubmitLoading(true)
 
       const newFormErrors = isFormValid(
@@ -497,7 +496,10 @@ const OfferForm = ({
           receiveNotificationEmails
         )
 
-        const nextStepRedirect = await onSubmit(submittedValues)
+        const nextStepRedirect = await onSubmit(
+          submittedValues,
+          onSuccessRedirectUrl
+        )
         if (nextStepRedirect !== null) {
           await nextStepRedirect()
           return
@@ -514,6 +516,11 @@ const OfferForm = ({
       showErrorNotification,
     ]
   )
+
+  const handleFormSubmit = event => {
+    event.preventDefault()
+    submitForm()
+  }
 
   const handleChangeVenue = useCallback(
     event => {
@@ -1086,7 +1093,7 @@ const OfferForm = ({
           className="primary-button"
           disabled={isDisabled}
           isLoading={isSubmitLoading}
-          onClick={submitForm}
+          onClick={handleFormSubmit}
         >
           {isEdition ? 'Enregistrer' : 'Étape suivante'}
         </SubmitButton>
