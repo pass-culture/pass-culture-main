@@ -56,7 +56,6 @@ from pcapi.core.mails.transactional.pro.first_venue_approved_offer_to_pro import
     send_first_venue_approved_offer_email_to_pro,
 )
 from pcapi.core.mails.transactional.users.reported_offer_by_user import send_email_reported_offer_by_user
-from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import validation
@@ -97,14 +96,12 @@ from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import EducationalOfferShadowStockBodyModel
-from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import image_conversion
 from pcapi.utils.cds import get_cds_show_id_from_uuid
-from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
@@ -147,14 +144,6 @@ def list_offers_for_pro_user(
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
     )
-
-
-def create_educational_offer(offer_data: PostEducationalOfferBodyModel, user: User) -> Tuple[Offer, int]:
-    offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
-    completed_data = CompletedEducationalOfferModel(**offer_data.dict(by_alias=True))
-    offer = create_offer(completed_data, user)
-    collective_offer = educational_api.create_collective_offer(offer_data, user, offer.id)
-    return (offer, collective_offer.id)
 
 
 def create_offer(
