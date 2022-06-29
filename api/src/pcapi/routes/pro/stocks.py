@@ -22,7 +22,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
-from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockEditionBodyModel
 from pcapi.routes.serialization.stock_serialize import StockIdResponseModel
 from pcapi.routes.serialization.stock_serialize import StockIdsResponseModel
@@ -33,7 +32,6 @@ from pcapi.routes.serialization.stock_serialize import UpdateVenueStockBodyModel
 from pcapi.routes.serialization.stock_serialize import UpdateVenueStocksBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.human_ids import humanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
@@ -146,35 +144,6 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
         }
 
     return list(stock_details.values())
-
-
-@private_api.route("/stocks/shadow-to-educational/<stock_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    on_success_status=201, response_model=stock_serialize.PatchShadowStockIntoEducationalStockResponseModel
-)
-def transform_shadow_stock_into_educational_stock(
-    stock_id: str, body: EducationalStockCreationBodyModel
-) -> stock_serialize.PatchShadowStockIntoEducationalStockResponseModel:
-    # FIXME DELETE UNUSED API
-    try:
-        offerer = offerers_repository.get_by_offer_id(body.offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-
-    try:
-        stock = offers_api.transform_shadow_stock_into_educational_stock_and_create_collective_offer(
-            dehumanize(stock_id), body, current_user  # type: ignore [arg-type]
-        )
-        collective_offer_id = educational_api.get_collective_offer_id_from_educational_stock(stock)
-        serialized_stock = stock_serialize.PatchShadowStockIntoEducationalStockResponseModel.from_orm(stock)
-        serialized_stock.offerId = humanize(collective_offer_id)
-
-    except educational_exceptions.OfferIsNotShowcase:
-        raise ApiErrors({"code": "OFFER_IS_NOT_SHOWCASE"}, status_code=400)
-
-    return serialized_stock
 
 
 @private_api.route("/stocks/educational/<stock_id>", methods=["PATCH"])
