@@ -204,3 +204,30 @@ def can_offerer_create_educational_offer(humanized_offerer_id: str):  # type: ig
     except educational_exceptions.AdageException:
         logger.info("Api call failed", extra={"offerer_id": humanized_offerer_id})
         raise ApiErrors({"adage_api": "error"}, 500)
+
+
+@private_api.route("/offerers/<int:offerer_id>/reimbursement-points", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=offerers_serialize.ReimbursementPointListResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def get_available_reimbursement_points(
+    offerer_id: int,
+) -> offerers_serialize.ReimbursementPointListResponseModel:
+    offerers_models.Offerer.query.get_or_404(offerer_id)
+    check_user_has_access_to_offerer(current_user, offerer_id)
+
+    reimbursement_points = repository.find_available_reimbursement_points_for_offerer(offerer_id)
+    return offerers_serialize.ReimbursementPointListResponseModel(
+        __root__=[
+            offerers_serialize.ReimbursementPointResponseModel(
+                venueId=reimbursement_point.id,
+                venueName=reimbursement_point.publicName or reimbursement_point.name,
+                siret=reimbursement_point.siret,
+                iban=reimbursement_point.iban,
+                bic=reimbursement_point.bic,
+            )
+            for reimbursement_point in reimbursement_points
+        ],
+    )
