@@ -23,7 +23,7 @@ def import_dms_accepted_applications(procedure_id: int) -> None:
             continue
         processed_count += 1
         try:
-            dms_api.handle_dms_application(application_details, procedure_id)
+            dms_api.handle_dms_application(application_details)
         except Exception:  # pylint: disable=broad-except
             logger.exception("[DMS] Error in script while importing application %s", application_details.number)
 

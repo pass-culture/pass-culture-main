@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(on_success_status=204, json_format=False)
 def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest) -> None:
     dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(form.dossier_id)
-    dms_subscription_api.handle_dms_application(dms_application, form.procedure_id)
+    dms_subscription_api.handle_dms_application(dms_application)
 
 
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])

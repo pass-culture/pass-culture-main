@@ -29,7 +29,7 @@ DMS_ACTIVITY_ENUM_MAPPING = {
 
 
 def parse_beneficiary_information_graphql(
-    application_detail: dms_models.DmsApplicationResponse, procedure_id: int
+    application_detail: dms_models.DmsApplicationResponse,
 ) -> typing.Tuple[fraud_models.DMSContent, list[dms_types.DmsFieldErrorDetails]]:
 
     application_number = application_detail.number
@@ -130,7 +130,7 @@ def parse_beneficiary_information_graphql(
         last_name=last_name,
         phone=phone,
         postal_code=postal_code,
-        procedure_id=procedure_id,
+        procedure_id=application_detail.procedure.number,
         processed_datetime=processed_datetime,
         registration_datetime=registration_datetime,
         state=application_detail.state.value,
