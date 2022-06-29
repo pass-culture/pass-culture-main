@@ -1,5 +1,6 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { string } from 'yup'
+import { urlRegex } from 'core/shared'
 
 export const validatePhone = phone => {
   if (!phone) {
@@ -23,12 +24,6 @@ export const validateEmail = async val => {
 }
 
 export const validateUrl = async url => {
-  const IGNORE_CASE_FLAG = 'i'
-  const urlRegex = new RegExp(
-    // eslint-disable-next-line no-useless-escape
-    /^(?:http(s)?:\/\/)?[\w.-\.-\.@]+(?:\.[\w\.-\.@]+)+[\w\-\._~:\/?#[\]@%!\$&'\(\)\*\+,;=.]+$/,
-    IGNORE_CASE_FLAG
-  )
   if (!url) {
     return
   }
