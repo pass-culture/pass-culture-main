@@ -1,13 +1,17 @@
+import collections.abc
 import contextlib
 import functools
 import math
 import pathlib
 import shutil
 import tempfile
+import types
+import typing
 from unittest import mock
 
 import factory.alchemy
 import flask
+import flask_sqlalchemy
 import pytest
 import sqlalchemy.engine
 import sqlalchemy.event
@@ -71,7 +75,7 @@ class BaseFactory(factory.alchemy.SQLAlchemyModelFactory):
 
 
 @contextlib.contextmanager
-def assert_num_queries(expected_n_queries):  # type: ignore [no-untyped-def]
+def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[None, None, None]:
     """A context manager that verifies that we do not perform unexpected
     SQL queries.
 
@@ -86,18 +90,18 @@ def assert_num_queries(expected_n_queries):  # type: ignore [no-untyped-def]
     """
     # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
     # the same purpose. Let's do the same.
-    flask._app_ctx_stack._assert_num_queries = []
+    flask._app_ctx_stack._assert_num_queries = []  # type: ignore [attr-defined]
     yield
-    queries = flask._app_ctx_stack._assert_num_queries
+    queries = flask._app_ctx_stack._assert_num_queries  # type: ignore [attr-defined]
     if len(queries) != expected_n_queries:
         details = "\n".join(_format_sql_query(query, i, len(queries)) for i, query in enumerate(queries, start=1))
         pytest.fail(
             f"{len(queries)} queries executed, {expected_n_queries} expected\n" f"Captured queries were:\n{details}"
         )
-    del flask._app_ctx_stack._assert_num_queries
+    del flask._app_ctx_stack._assert_num_queries  # type: ignore [attr-defined]
 
 
-def _format_sql_query(query, i, total):  # type: ignore [no-untyped-def]
+def _format_sql_query(query: dict, i: int, total: int) -> str:
     # SQLAlchemy inserts '\n' into the generated SQL. We add padding
     # so that the whole query is properly aligned.
     prefix_length = 3 + int(math.log(total, 10))
@@ -110,7 +114,7 @@ def _format_sql_query(query, i, total):  # type: ignore [no-untyped-def]
     return f"{i}. {sql}"
 
 
-def _record_end_of_query(statement, parameters, **kwargs):  # type: ignore [no-untyped-def]
+def _record_end_of_query(statement: str, parameters: dict, **kwargs: dict) -> None:
     """Event handler that records SQL queries for assert_num_queries
     fixture.
     """
@@ -123,7 +127,7 @@ def _record_end_of_query(statement, parameters, **kwargs):  # type: ignore [no-u
     # assert_num_queries context manager.
     if not hasattr(flask._app_ctx_stack, "_assert_num_queries"):
         return
-    flask._app_ctx_stack._assert_num_queries.append(
+    flask._app_ctx_stack._assert_num_queries.append(  # type: ignore [attr-defined]
         {
             "statement": statement,
             "parameters": parameters,
@@ -131,13 +135,16 @@ def _record_end_of_query(statement, parameters, **kwargs):  # type: ignore [no-u
     )
 
 
-def register_event_for_assert_num_queries():  # type: ignore [no-untyped-def]
+def register_event_for_assert_num_queries() -> None:
     sqlalchemy.event.listen(
         sqlalchemy.engine.Engine,
         "after_cursor_execute",
         _record_end_of_query,
         named=True,
     )
+
+
+DecoratedClass = typing.TypeVar("DecoratedClass")
 
 
 class TestContextDecorator:
@@ -147,45 +154,50 @@ class TestContextDecorator:
     Taken from Django and slightly adapted and simplified.
     """
 
-    def enable(self):  # type: ignore [no-untyped-def]
+    def enable(self) -> None:
         raise NotImplementedError()
 
-    def disable(self):  # type: ignore [no-untyped-def]
+    def disable(self) -> None:
         raise NotImplementedError()
 
-    def __enter__(self):  # type: ignore [no-untyped-def]
+    def __enter__(self) -> None:
         return self.enable()
 
-    def __exit__(self, exc_type, exc_value, traceback):  # type: ignore [no-untyped-def]
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: types.TracebackType,
+    ) -> None:
         self.disable()
 
-    def decorate_class(self, cls):  # type: ignore [no-untyped-def]
+    def decorate_class(self, cls: type[DecoratedClass]) -> type[DecoratedClass]:
         decorated_setup_method = getattr(cls, "setup_method", None)
         decorated_teardown_method = getattr(cls, "teardown_method", None)
 
-        def setup_method(inner_self):  # type: ignore [no-untyped-def]
+        def setup_method(inner_self: DecoratedClass) -> None:
             self.enable()
             if decorated_setup_method:
                 decorated_setup_method(inner_self)
 
-        def teardown_method(inner_self):  # type: ignore [no-untyped-def]
+        def teardown_method(inner_self: DecoratedClass) -> None:
             self.disable()
             if decorated_teardown_method:
                 decorated_teardown_method(inner_self)
 
-        cls.setup_method = setup_method
-        cls.teardown_method = teardown_method
+        cls.setup_method = setup_method  # type: ignore [attr-defined]
+        cls.teardown_method = teardown_method  # type: ignore [attr-defined]
         return cls
 
-    def decorate_callable(self, func):  # type: ignore [no-untyped-def]
+    def decorate_callable(self, func: typing.Callable) -> typing.Callable:
         @functools.wraps(func)
-        def inner(*args, **kwargs):  # type: ignore [no-untyped-def]
+        def inner(*args: typing.Any, **kwargs: typing.Any) -> typing.Callable:
             with self:
                 return func(*args, **kwargs)
 
         return inner
 
-    def __call__(self, decorated):  # type: ignore [no-untyped-def]
+    def __call__(self, decorated: typing.Callable) -> typing.Callable:
         if isinstance(decorated, type):
             if not getattr(self, "CAN_BE_USED_ON_CLASSES", True):
                 raise TypeError(f"{self.__class__.__name__} cannot be used to decorate a class")
@@ -212,15 +224,15 @@ class override_settings(TestContextDecorator):
             pass  # [...]
     """
 
-    def __init__(self, **overrides):  # type: ignore [no-untyped-def]
+    def __init__(self, **overrides: dict[str, typing.Any]) -> None:
         self.overrides = overrides
 
-    def enable(self):  # type: ignore [no-untyped-def]
+    def enable(self) -> None:
         self.initial_state = {name: getattr(settings, name) for name in self.overrides}
         for name, new_value in self.overrides.items():
             setattr(settings, name, new_value)
 
-    def disable(self):  # type: ignore [no-untyped-def]
+    def disable(self) -> None:
         for name, initial_value in self.initial_state.items():
             setattr(settings, name, initial_value)
 
@@ -246,10 +258,10 @@ class override_features(TestContextDecorator):
     # seen when in the tests. I should try to fix that.
     CAN_BE_USED_ON_CLASSES = False
 
-    def __init__(self, **overrides):  # type: ignore [no-untyped-def]
+    def __init__(self, **overrides: dict[str, typing.Any]) -> None:
         self.overrides = overrides
 
-    def enable(self):  # type: ignore [no-untyped-def]
+    def enable(self) -> None:
         state = dict(
             Feature.query.filter(Feature.name.in_(self.overrides)).with_entities(Feature.name, Feature.isActive).all()
         )
@@ -263,18 +275,18 @@ class override_features(TestContextDecorator):
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
-                flask.request._cached_features = {}
+                flask.request._cached_features = {}  # type: ignore [attr-defined]
 
-    def disable(self):  # type: ignore [no-untyped-def]
+    def disable(self) -> None:
         for name, status in self.apply_to_revert.items():
             Feature.query.filter_by(name=name).update({"isActive": status})
         # Clear the feature cache on request if any
         if flask.has_request_context():
             if hasattr(flask.request, "_cached_features"):
-                flask.request._cached_features = {}
+                flask.request._cached_features = {}  # type: ignore [attr-defined]
 
 
-def clean_temporary_files(test_function):  # type: ignore [no-untyped-def]
+def clean_temporary_files(test_function: typing.Callable) -> typing.Callable:
     """A decorator to be used around tests that use `tempfile.mkdtemp()`
     and `mkstemp()`. It deletes temporary directories and files upon test
     completion.
@@ -284,17 +296,17 @@ def clean_temporary_files(test_function):  # type: ignore [no-untyped-def]
     original_mkdtemp = tempfile.mkdtemp
     original_mkstemp = tempfile.mkstemp
 
-    def patched_mkdtemp(*args, **kwargs):  # type: ignore [no-untyped-def]
+    def patched_mkdtemp(*args: typing.Any, **kwargs: typing.Any) -> str:
         path = original_mkdtemp(*args, **kwargs)
         paths.append(pathlib.Path(path))
         return path
 
-    def patched_mkstemp(*args, **kwargs):  # type: ignore [no-untyped-def]
+    def patched_mkstemp(*args: typing.Any, **kwargs: typing.Any) -> tuple[int, str]:
         res = original_mkstemp(*args, **kwargs)
         paths.append(pathlib.Path(res[1]))
         return res
 
-    def cleanup():  # type: ignore [no-untyped-def]
+    def cleanup() -> None:
         tempdir = pathlib.Path(tempfile.gettempdir())
         for path in paths:
             if not path.exists():
@@ -309,7 +321,7 @@ def clean_temporary_files(test_function):  # type: ignore [no-untyped-def]
             else:
                 path.unlink()
 
-    def wrapper():  # type: ignore [no-untyped-def]
+    def wrapper() -> None:
         try:
             with mock.patch.multiple(tempfile, mkdtemp=patched_mkdtemp, mkstemp=patched_mkstemp):
                 test_function()
@@ -320,7 +332,10 @@ def clean_temporary_files(test_function):  # type: ignore [no-untyped-def]
 
 
 @contextlib.contextmanager
-def assert_model_count_delta(model, delta):  # type: ignore [no-untyped-def]
+def assert_model_count_delta(
+    model: flask_sqlalchemy.Model,
+    delta: int,
+) -> collections.abc.Generator[None, None, None]:
     start_count = model.query.count()
     expected_count = start_count + delta
 
