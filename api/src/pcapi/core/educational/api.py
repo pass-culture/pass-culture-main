@@ -17,7 +17,6 @@ from pcapi import settings
 from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings import repository as bookings_repository
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
@@ -33,7 +32,6 @@ from pcapi.core.educational.models import CollectiveBookingStatusFilter
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.repository import get_and_lock_collective_stock
 from pcapi.core.educational.repository import get_collective_offers_for_filters
 from pcapi.core.educational.repository import get_collective_offers_template_for_filters
@@ -44,11 +42,9 @@ from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import se
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import (
     send_eac_new_collective_prebooking_email_to_pro,
 )
-from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import send_eac_new_prebooking_email_to_pro
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import repository as offers_repository
 from pcapi.core.offers import validation as offer_validation
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.utils import as_utc_without_timezone
@@ -87,96 +83,6 @@ def _create_redactor(redactor_informations: RedactorInformation) -> educational_
     )
     repository.save(redactor)
     return redactor
-
-
-def book_educational_offer(redactor_informations: RedactorInformation, stock_id: int) -> EducationalBooking:
-    redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
-    if not redactor:
-        redactor = _create_redactor(redactor_informations)
-
-    educational_institution = educational_repository.find_educational_institution_by_uai_code(redactor_informations.uai)
-    validation.check_institution_exists(educational_institution)
-
-    # The call to transaction here ensures we free the FOR UPDATE lock
-    # on the stock if validation issues an exception
-    with transaction():
-        stock = offers_repository.get_and_lock_stock(stock_id=stock_id)
-        validation.check_stock_is_bookable(stock)
-
-        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)  # type: ignore [arg-type]
-        validation.check_educational_year_exists(educational_year)
-
-        educational_booking = EducationalBooking(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            educationalRedactor=redactor,
-            confirmationLimitDate=stock.bookingLimitDatetime,
-        )
-
-        booking = bookings_models.Booking(
-            educationalBooking=educational_booking,
-            stockId=stock.id,
-            amount=stock.price,
-            quantity=1,
-            token=bookings_repository.generate_booking_token(),
-            venueId=stock.offer.venueId,
-            offererId=stock.offer.venue.managingOffererId,
-            status=bookings_models.BookingStatus.PENDING,
-        )
-
-        booking.dateCreated = datetime.datetime.utcnow()
-        booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
-            stock.beginningDatetime, booking.dateCreated  # type: ignore [arg-type]
-        )
-        stock.dnBookedQuantity += booking.quantity
-
-        repository.save(booking)
-
-        collective_stock = db.session.query(CollectiveStock.id).filter_by(stockId=stock_id).one_or_none()
-        if collective_stock:
-            create_collective_booking_with_collective_stock(
-                collective_stock.id, booking.id, educational_institution, educational_year, redactor  # type: ignore [arg-type]
-            )
-
-    logger.info(
-        "Redactor booked an educational offer",
-        extra={
-            "redactor": redactor_informations.email,
-            "offerId": stock.offerId,
-            "stockId": stock.id,
-            "bookingId": booking.id,
-        },
-    )
-
-    if not send_eac_new_prebooking_email_to_pro(stock, booking):
-        logger.warning(
-            "Could not send new prebooking email to pro",
-            extra={"booking": booking.id},
-        )
-
-    search.async_index_offer_ids([stock.offerId])
-
-    try:
-        adage_client.notify_prebooking(data=serialize_educational_booking(booking.educationalBooking))  # type: ignore [arg-type]
-    except AdageException as adage_error:
-        logger.error(
-            "%s Educational institution will not receive a confirmation email.",
-            adage_error.message,
-            extra={
-                "bookingId": booking.id,
-                "adage status code": adage_error.status_code,
-                "adage response text": adage_error.response_text,
-            },
-        )
-    except ValidationError:
-        logger.exception(
-            "Coulf not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
-            extra={
-                "bookingId": booking.id,
-            },
-        )
-
-    return booking
 
 
 def book_collective_offer(redactor_informations: RedactorInformation, stock_id: int) -> CollectiveBooking:
@@ -251,41 +157,6 @@ def book_collective_offer(redactor_informations: RedactorInformation, stock_id: 
         )
 
     return booking
-
-
-def create_collective_booking_with_collective_stock(
-    stock_id: Union[int, str],
-    booking_id: str,
-    educational_institution: educational_models.EducationalInstitution,
-    educational_year: educational_models.EducationalYear,
-    redactor: educational_models.EducationalRedactor,
-) -> Optional[CollectiveBooking]:
-    with transaction():
-        collective_stock = get_and_lock_collective_stock(stock_id=stock_id)  # type: ignore [arg-type]
-
-        validation.check_collective_stock_is_bookable(collective_stock)
-
-        collective_booking = CollectiveBooking(
-            collectiveStockId=collective_stock.id,
-            venueId=collective_stock.collectiveOffer.venueId,
-            offererId=collective_stock.collectiveOffer.venue.managingOffererId,
-            status=CollectiveBookingStatus.PENDING,
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
-            confirmationLimitDate=collective_stock.bookingLimitDatetime,
-            educationalRedactor=redactor,
-        )
-
-        collective_booking.dateCreated = datetime.datetime.utcnow()
-        collective_booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
-            collective_stock.beginningDatetime, collective_booking.dateCreated
-        )
-        collective_booking.bookingId = booking_id  # type: ignore [assignment]
-
-        db.session.add(collective_booking)
-        db.session.commit()
-
-        return collective_booking
 
 
 def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking:
