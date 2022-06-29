@@ -158,54 +158,6 @@ class EducationalStockCreationBodyModel(BaseModel):
         return educational_price_detail
 
 
-class EducationalStockEditionBodyModel(BaseModel):
-    beginningDatetime: Optional[datetime]
-    bookingLimitDatetime: Optional[datetime]
-    price: Optional[float] = Field(alias="totalPrice")
-    numberOfTickets: Optional[int]
-    educationalPriceDetail: Optional[str]
-
-    class Config:
-        extra = "forbid"
-
-    @validator("beginningDatetime", pre=True)
-    def validate_beginning_datetime(cls, beginning_datetime):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        if beginning_datetime is None:
-            raise ValueError("La date d’évènement ne peut être nulle")
-        return beginning_datetime
-
-    @validator("numberOfTickets", pre=True)
-    def validate_number_of_tickets(cls, number_of_tickets):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        if number_of_tickets is None:
-            raise ValueError("Le nombre de places ne peut être nul")
-        if number_of_tickets < 0:
-            raise ValueError("Le nombre de places ne peut pas être négatif.")
-        return number_of_tickets
-
-    @validator("price", pre=True)
-    def validate_price(cls, price):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        if price is None:
-            raise ValueError("Le prix ne peut être nul")
-        if price < 0:
-            raise ValueError("Le prix ne peut pas être négatif.")
-        return price
-
-    @validator("bookingLimitDatetime")
-    def validate_booking_limit_datetime(cls, booking_limit_datetime, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        if (
-            all([booking_limit_datetime, values["beginningDatetime"]])
-            and booking_limit_datetime > values["beginningDatetime"]
-        ):
-            raise ValueError("La date limite de réservation ne peut être postérieure à la date de début de l'évènement")
-        return booking_limit_datetime
-
-    @validator("educationalPriceDetail")
-    def validate_educational_price_detail(cls, educational_price_detail):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
-        if len(educational_price_detail) > 1000:
-            raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
-        return educational_price_detail
-
-
 class StockEditionBodyModel(BaseModel):
     beginning_datetime: Optional[datetime]
     booking_limit_datetime: Optional[datetime]

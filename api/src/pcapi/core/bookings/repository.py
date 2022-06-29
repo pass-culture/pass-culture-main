@@ -167,12 +167,6 @@ def find_by_pro_user(
     )
 
 
-def find_unique_eac_booking_if_any(stock_id: int) -> Optional[Booking]:
-    return Booking.query.filter(
-        Booking.stockId == stock_id, not_(Booking.status == BookingStatus.CANCELLED)
-    ).one_or_none()
-
-
 def find_ongoing_bookings_by_stock(stock_id: int) -> list[Booking]:
     return Booking.query.filter(
         Booking.stockId == stock_id,
