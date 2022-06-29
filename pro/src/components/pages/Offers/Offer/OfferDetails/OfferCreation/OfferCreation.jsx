@@ -17,6 +17,7 @@ const OfferCreation = ({
   showErrorNotification,
   subCategories,
   submitErrors,
+  setSubmitStepForm,
 }) => {
   const venues = useRef([])
   const offerersNames = useRef([])
@@ -113,6 +114,7 @@ const OfferCreation = ({
       submitErrors={submitErrors}
       userEmail={userEmail}
       venues={displayedVenues}
+      setSubmitStepForm={setSubmitStepForm}
     />
   )
 }
@@ -132,6 +134,7 @@ OfferCreation.propTypes = {
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,
+  setSubmitStepForm: PropTypes.func.isRequired,
 }
 
 export default OfferCreation

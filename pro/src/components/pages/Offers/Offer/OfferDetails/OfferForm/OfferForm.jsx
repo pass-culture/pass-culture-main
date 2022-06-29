@@ -109,6 +109,7 @@ const OfferForm = ({
   submitErrors,
   userEmail,
   venues,
+  setSubmitStepForm,
 }) => {
   const [offerSubCategory, setOfferSubCategory] = useState(null)
   const [receiveNotificationEmails, setReceiveNotificationEmails] =
@@ -488,6 +489,8 @@ const OfferForm = ({
       if (Object.keys(newFormErrors).length > 0) {
         setFormErrors(newFormErrors)
         showErrorNotification()
+        setIsSubmitLoading(false)
+        return
       } else {
         const submittedValues = serializeSubmitValues(
           formValues,
@@ -500,12 +503,14 @@ const OfferForm = ({
           submittedValues,
           onSuccessRedirectUrl
         )
+
+        setIsSubmitLoading(false)
+
         if (nextStepRedirect !== null) {
           await nextStepRedirect()
           return
         }
       }
-      setIsSubmitLoading(false)
     },
     [
       offerFormFields,
@@ -516,10 +521,11 @@ const OfferForm = ({
       showErrorNotification,
     ]
   )
+  setSubmitStepForm(submitForm)
 
-  const handleFormSubmit = event => {
+  const handleFormSubmit = async event => {
     event.preventDefault()
-    submitForm()
+    await submitForm()
   }
 
   const handleChangeVenue = useCallback(
@@ -1138,6 +1144,7 @@ OfferForm.propTypes = {
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,
   venues: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  setSubmitStepForm: PropTypes.func.isRequired,
 }
 
 export default OfferForm

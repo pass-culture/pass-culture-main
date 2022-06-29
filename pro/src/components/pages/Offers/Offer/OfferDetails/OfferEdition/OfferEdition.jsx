@@ -28,6 +28,7 @@ const OfferEdition = ({
   submitErrors,
   subCategories,
   userEmail,
+  setSubmitStepForm,
 }) => {
   const [isLoading, setIsLoading] = useState(true)
   const [readOnlyFields, setReadOnlyFields] = useState([])
@@ -98,6 +99,7 @@ const OfferEdition = ({
       submitErrors={submitErrors}
       userEmail={userEmail}
       venues={[offer.venue]}
+      setSubmitStepForm={setSubmitStepForm}
     />
   )
 }
@@ -134,6 +136,7 @@ OfferEdition.propTypes = {
   subCategories: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   submitErrors: PropTypes.shape().isRequired,
   userEmail: PropTypes.string.isRequired,
+  setSubmitStepForm: PropTypes.func.isRequired,
 }
 
 export default OfferEdition

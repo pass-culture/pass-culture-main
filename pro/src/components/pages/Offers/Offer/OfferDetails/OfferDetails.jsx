@@ -26,6 +26,7 @@ const OfferDetails = ({
   offer,
   reloadOffer,
   userEmail,
+  setSubmitStepForm,
 }) => {
   const history = useHistory()
   const location = useLocation()
@@ -88,7 +89,7 @@ const OfferDetails = ({
       )
   }, [setShowThumbnailForm, offerPreviewData.subcategoryId])
 
-  const addQueryParams = async url => {
+  const addQueryParams = url => {
     let queryString = ''
 
     if (formInitialValues.offererId !== undefined) {
@@ -247,6 +248,7 @@ const OfferDetails = ({
                 subCategories={categoriesData.subCategories}
                 submitErrors={formErrors}
                 userEmail={userEmail}
+                setSubmitStepForm={setSubmitStepForm}
               />
             </>
           ) : (
@@ -260,6 +262,7 @@ const OfferDetails = ({
               subCategories={categoriesData.subCategories}
               submitErrors={formErrors}
               userEmail={userEmail}
+              setSubmitStepForm={setSubmitStepForm}
             />
           )}
         </div>
@@ -302,6 +305,7 @@ OfferDetails.propTypes = {
   reloadOffer: PropTypes.func,
   userEmail: PropTypes.string.isRequired,
   isCreatingOffer: PropTypes.bool,
+  setSubmitStepForm: PropTypes.func.isRequired,
 }
 
 export default OfferDetails

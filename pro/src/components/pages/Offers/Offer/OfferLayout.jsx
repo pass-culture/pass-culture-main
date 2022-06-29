@@ -1,5 +1,5 @@
 import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Route,
   Switch,
@@ -46,6 +46,10 @@ const OfferLayout = () => {
   const isCreatingOffer = location.pathname.includes('creation')
   const [offer, setOffer] = useState(null)
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+  const submitStepForm = useRef(null)
+  const setSubmitStepForm = onStepSubmit => {
+    submitStepForm.current = onStepSubmit
+  }
 
   const loadOffer = async offerId => {
     try {
@@ -107,6 +111,7 @@ const OfferLayout = () => {
         isOfferEducational={offer?.isEducational}
         offerId={offer?.id}
         haveStock={offerHaveStock}
+        submitStepForm={submitStepForm.current}
       />
 
       <div className="offer-content">
@@ -125,10 +130,15 @@ const OfferLayout = () => {
               isCreatingOffer={isCreatingOffer}
               offer={offer}
               reloadOffer={reloadOffer}
+              setSubmitStepForm={setSubmitStepForm}
             />
           </Route>
           <Route exact path={`${match.url}/edition`}>
-            <OfferDetails offer={offer} reloadOffer={reloadOffer} />
+            <OfferDetails
+              offer={offer}
+              reloadOffer={reloadOffer}
+              setSubmitStepForm={setSubmitStepForm}
+            />
           </Route>
           <Route
             exact

@@ -25,6 +25,7 @@ interface IOfferBreadcrumb {
   isOfferEducational?: boolean
   className?: string
   haveStock?: boolean
+  submitStepForm?: (onSuccessRedirectUrl: string) => void
 }
 
 const OfferBreadcrumb = ({
@@ -34,6 +35,7 @@ const OfferBreadcrumb = ({
   isOfferEducational = false,
   className,
   haveStock = false,
+  submitStepForm,
 }: IOfferBreadcrumb): JSX.Element => {
   const enableEducationalInstitutionAssociation = useActiveFeature(
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
@@ -123,6 +125,18 @@ const OfferBreadcrumb = ({
         stepList[
           OfferBreadcrumbStep.SUMMARY
         ].url = `/offre/${offerId}/individuel/creation/recapitulatif`
+      }
+
+      if (submitStepForm) {
+        Object.keys(stepList).forEach((stepId: string) => {
+          const step = stepList[stepId]
+          if (step.url) {
+            stepList[stepId].onClick = (e: React.MouseEvent) => {
+              e.preventDefault()
+              step.url && submitStepForm(step.url)
+            }
+          }
+        })
       }
     }
 
