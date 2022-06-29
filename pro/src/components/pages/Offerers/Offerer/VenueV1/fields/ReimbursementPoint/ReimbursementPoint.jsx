@@ -7,9 +7,7 @@ import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
 
-import { getBusinessUnits } from 'repository/pcapi/pcapi'
-import { humanizeSiret } from 'core/Venue/utils'
-
+import { api } from 'apiClient/api'
 import styles from './ReimbursementPoint.module.scss'
 
 const ReimbursementPoint = ({
@@ -24,21 +22,19 @@ const ReimbursementPoint = ({
   const [isLoading, setIsLoading] = useState(true)
   const [hasPendingDmsApplication, setHasPendingDmsApplication] =
     useState(false)
+  const [hasAlreadyAddReimbursementPoint, setHasAlreadyAddReimbursementPoint] =
+    useState(false)
 
-  const businessUnitDisplayName = businessUnit =>
-    businessUnit
-      ? `${
-          businessUnit.siret
-            ? humanizeSiret(businessUnit.siret)
-            : 'SIRET manquant'
-        } - ${businessUnit.iban}`
+  const reimbursementPointDisplayName = reimbursementPoint =>
+    reimbursementPoint
+      ? `${reimbursementPoint.venueName} - ${reimbursementPoint.iban}`
       : ''
 
   const modifyReimbursementPointLabel = useCallback(() => {
-    return venue.isBusinessUnitMainVenue
+    return hasAlreadyAddReimbursementPoint
       ? 'Modifier mes coordonnées bancaires'
       : 'Ajouter des coordonnées bancaires'
-  }, [venue.isBusinessUnitMainVenue, venueReimbursementPoint])
+  }, [hasAlreadyAddReimbursementPoint])
 
   const scrollToReimbursementPoint = useCallback(reimbursementPoint => {
     if (scrollToSection && reimbursementPoint) {
@@ -54,36 +50,30 @@ const ReimbursementPoint = ({
   })
 
   useEffect(() => {
-    async function loadBusinessUnits(offererId) {
-      const businessUnitsResponse = await getBusinessUnits(offererId)
-
-      let venueBusinessUnitResponse = null
-      if (venue.businessUnit) {
-        if (venue.businessUnit.siret) {
-          venueBusinessUnitResponse = businessUnitsResponse.find(
-            businessUnit => businessUnit.id === venue.businessUnitId
-          )
-        } else {
-          venueBusinessUnitResponse = {
-            iban: venue.businessUnit.iban,
-            siret: '',
-            id: venue.businessUnit.id,
-          }
-        }
+    async function loadReimbursementPoints(offererId) {
+      const reimbursementPointsResponse =
+        await api.getAvailableReimbursementPoints(offererId)
+      let venueReimbursementPointResponse = null
+      if (venue.reimbursementPointId) {
+        venueReimbursementPointResponse = reimbursementPointsResponse.find(
+          reimbursementPoint =>
+            reimbursementPoint.venueId === venue.reimbursementPointId
+        )
       }
-      setVenueReimbursementPoint(venueBusinessUnitResponse)
+      setHasAlreadyAddReimbursementPoint(
+        reimbursementPointsResponse.find(
+          reimbursementPoint =>
+            reimbursementPoint.venueId === venue.nonHumanizedId
+        )
+      )
+
+      setVenueReimbursementPoint(venueReimbursementPointResponse)
       setReimbursementPointOptions(
-        businessUnitsResponse
-          .filter(
-            businessUnit =>
-              businessUnit.siret !== null ||
-              businessUnit.id === venue.businessUnitId
-          )
-          .map(businessUnit => ({
-            key: `venue-business-unit-${businessUnit.id}`,
-            displayName: businessUnitDisplayName(businessUnit),
-            id: businessUnit.id,
-          }))
+        reimbursementPointsResponse.map(reimbursementPoint => ({
+          key: `venue-reimbursement-point-${reimbursementPoint.venueId}`,
+          displayName: reimbursementPointDisplayName(reimbursementPoint),
+          id: reimbursementPoint.venueId,
+        }))
       )
       setHasPendingDmsApplication(
         venue.id &&
@@ -94,18 +84,16 @@ const ReimbursementPoint = ({
       )
       setIsLoading(false)
     }
-    loadBusinessUnits(offerer.id)
+    loadReimbursementPoints(offerer.nonHumanizedId)
   }, [
     isCreatingVenue,
     offerer.id,
     readOnly,
     venue.bic,
-    venue.businessUnit,
-    venue.businessUnitId,
+    venue.reimbursementPointId,
     venue.demarchesSimplifieesApplicationId,
     venue.iban,
     venue.id,
-    venue.isBusinessUnitMainVenue,
     venue.isVirtual,
     venue.siret,
   ])
@@ -162,7 +150,7 @@ const ReimbursementPoint = ({
                   <Field
                     component="select"
                     id="venue-reimbursement-point"
-                    name="businessUnitId"
+                    name="reimbursementPointId"
                     disabled={readOnly}
                   >
                     <option disabled value="">
@@ -175,7 +163,7 @@ const ReimbursementPoint = ({
                     ))}
                   </Field>
                 </div>
-                {(venueReimbursementPoint || venue.isBusinessUnitMainVenue) && (
+                {venueReimbursementPoint && (
                   <div className={styles['modify-reimbursement-point-section']}>
                     <button
                       className="secondary-button"

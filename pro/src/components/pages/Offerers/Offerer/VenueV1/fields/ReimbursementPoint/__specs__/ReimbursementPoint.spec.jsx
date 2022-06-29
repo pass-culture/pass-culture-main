@@ -1,15 +1,17 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { render, screen, waitFor } from '@testing-library/react'
+
 import { Form } from 'react-final-form'
 
 import React from 'react'
 import ReimbursementPoint from '../ReimbursementPoint'
+import { api } from 'apiClient/api'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getBusinessUnits: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: {
+    getAvailableReimbursementPoints: jest.fn(),
+  },
 }))
 
 const renderReimbursementPoint = async props => {
@@ -26,10 +28,12 @@ const renderReimbursementPoint = async props => {
 describe('src | Venue | ReimbursementPoint', () => {
   const venue = {
     id: 'AA',
+    nonHumanizedId: 1,
     name: 'fake venue name',
   }
   const offerer = {
     id: 'BB',
+    nonHumanizedId: 2,
     name: 'fake offerer name',
   }
   let props
@@ -39,11 +43,11 @@ describe('src | Venue | ReimbursementPoint', () => {
 
   it('should display reimbursement point secion  when offerer has at least one', async () => {
     // Given
-    pcapi.getBusinessUnits.mockResolvedValue([
+    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([
       {
-        name: 'Reimbursement Point #1',
+        venueName: 'Venue #1',
         siret: '111222333',
-        id: 1,
+        venueId: 1,
         bic: 'BDFEFRPP',
         iban: 'FR9410010000000000000000022',
       },
@@ -60,11 +64,11 @@ describe('src | Venue | ReimbursementPoint', () => {
 
   it('should display reimbursement point with the correct name ', async () => {
     // Given
-    pcapi.getBusinessUnits.mockResolvedValue([
+    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([
       {
-        name: 'Reimbursement Point #1',
+        venueName: 'Venue #1',
         siret: '111222333',
-        id: 1,
+        venueId: 1,
         bic: 'BDFEFRPP',
         iban: 'FR9410010000000000000000022',
       },
@@ -75,13 +79,13 @@ describe('src | Venue | ReimbursementPoint', () => {
 
     // Then
     expect(
-      screen.queryByText('111 222 333 - FR9410010000000000000000022')
+      screen.queryByText('Venue #1 - FR9410010000000000000000022')
     ).toBeInTheDocument()
   })
 
   it('should not display reimbursement point selection  when offerer has not one', async () => {
     // Given
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
     // When
     await renderReimbursementPoint(props)
@@ -94,7 +98,7 @@ describe('src | Venue | ReimbursementPoint', () => {
 
   it('should display add cb button when venue does not have reimbursement point', async () => {
     // Given
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
     // When
     await renderReimbursementPoint(props)
@@ -109,22 +113,22 @@ describe('src | Venue | ReimbursementPoint', () => {
 
   it('should display modify button when venue has already add dms cb', async () => {
     // Given
-    const venueWithCb = {
+    const venueWithReimbursementPoint = {
       id: 'AA',
+      nonHumanizedId: 1,
+      reimbursementPointId: 1,
       name: 'fake venue name',
-      isBusinessUnitMainVenue: true,
     }
-
-    props.venue = venueWithCb
-    pcapi.getBusinessUnits.mockResolvedValue([
+    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([
       {
-        name: 'Reimbursement Point #1',
+        venueName: 'fake venue name',
         siret: '111222333',
-        id: 1,
+        venueId: 1,
         bic: 'BDFEFRPP',
         iban: 'FR9410010000000000000000022',
       },
     ])
+    props.venue = venueWithReimbursementPoint
 
     // When
     await renderReimbursementPoint(props)
@@ -142,13 +146,13 @@ describe('src | Venue | ReimbursementPoint', () => {
     const venueWithPendingApplication = {
       id: 'AA',
       name: 'fake venue name',
-      bix: null,
+      bic: null,
       iban: null,
       demarchesSimplifieesApplicationId: '2',
     }
 
     props.venue = venueWithPendingApplication
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
     // When
     await renderReimbursementPoint(props)
