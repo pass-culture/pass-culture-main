@@ -16,7 +16,6 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.routes.serialization import serialize
 from pcapi.utils.human_ids import humanize
 
 
@@ -116,33 +115,6 @@ class Returns200Test:
 
 
 class Returns400Test:
-    def when_trying_to_patch_forbidden_attributes(self, app, client):
-        # Given
-        offer = CollectiveOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-
-        # When
-        data = {
-            "dateCreated": serialize(datetime(2019, 1, 1)),
-            "id": 1,
-        }
-        response = client.with_session_auth("user@example.com").patch(
-            f"offers/educational/{humanize(offer.id)}", json=data
-        )
-
-        # Then
-        assert response.status_code == 400
-        assert response.json["dateCreated"] == ["Vous ne pouvez pas changer cette information"]
-        forbidden_keys = {
-            "dateCreated",
-            "id",
-        }
-        for key in forbidden_keys:
-            assert key in response.json
-
     def test_patch_non_approved_offer_fails(self, app, client):
         offer = CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         offerers_factories.UserOffererFactory(
