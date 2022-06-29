@@ -52,6 +52,7 @@ class CommonTest:
         item = fraud_api.validate_id_piece_number_format_fraud_item(id_piece_number)
         assert item.status == fraud_models.FraudStatus.OK
 
+    @override_features(DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING=False)
     @pytest.mark.parametrize(
         "name,is_valid",
         [
