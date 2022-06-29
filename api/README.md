@@ -27,7 +27,7 @@ Spectree:
 Avec `venv` (vous pouvez aussi utiliser `virtualenv` si vous préférez, voire `virtualenvwrapper`):
 
 ```shell
-python3.9.10 -m venv ./venv
+python3.10 -m venv ./venv
 source venv/bin/activate
 pip install -e .
 pip install -r requirements.txt

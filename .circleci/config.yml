@@ -291,7 +291,7 @@ jobs:
         default: false
     working_directory: ~/pass-culture
     docker:
-      - image: cimg/python:3.9.10
+      - image: cimg/python:3.10
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -382,7 +382,7 @@ jobs:
         type: string
     working_directory: ~/pass-culture
     docker:
-      - image: cimg/python:3.9.10
+      - image: cimg/python:3.10
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -1091,7 +1091,7 @@ jobs:
 
   measure_workflow_execution_time:
     docker:
-      - image: cimg/python:3.9.7
+      - image: cimg/python:3.10
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
