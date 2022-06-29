@@ -223,3 +223,15 @@ class GetOffererListQueryModel(BaseModel):
     keywords: Optional[str]
     page: Optional[int] = 1
     paginate: Optional[int] = 10
+
+
+class ReimbursementPointResponseModel(BaseModel):
+    venueId: int
+    venueName: str
+    siret: str
+    iban: str
+    bic: str
+
+
+class ReimbursementPointListResponseModel(BaseModel):
+    __root__: list[ReimbursementPointResponseModel]

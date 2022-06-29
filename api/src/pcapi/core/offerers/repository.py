@@ -367,3 +367,19 @@ def dms_token_exists(dms_token: str) -> bool:
 
 def get_venues_educational_statuses() -> list[models.VenueEducationalStatus]:
     return db.session.query(models.VenueEducationalStatus).order_by(models.VenueEducationalStatus.name).all()
+
+
+def find_available_reimbursement_points_for_offerer(offerer_id: int) -> list[models.Venue]:
+    """
+    Returns a list of Venues whose SIRETs can be used to reimburse bookings, and their bank info,
+    ordered by `publicName` or name if `publicName` is null
+    """
+    return (
+        models.Venue.query.join(BankInformation)
+        .filter(
+            BankInformation.status == BankInformationStatus.ACCEPTED,
+            models.Venue.managingOffererId == offerer_id,
+        )
+        .order_by(sqla.func.coalesce(models.Venue.publicName, models.Venue.name))
+        .all()
+    )
