@@ -93,7 +93,6 @@ from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_educational_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import EducationalOfferShadowStockBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
@@ -1198,54 +1197,6 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
-def cancel_educational_offer_booking(offer: Offer) -> None:
-    if offer.activeStocks is None or len(offer.activeStocks) == 0:
-        raise offers_exceptions.StockNotFound()
-
-    if len(offer.activeStocks) > 1:
-        raise offers_exceptions.EducationalOfferHasMultipleStocks()
-
-    stock = offer.activeStocks[0]
-
-    # Offer is reindexed in the end of this function
-    cancelled_bookings = cancel_bookings_from_stock_by_offerer(stock)
-
-    if len(cancelled_bookings) == 0:
-        raise offers_exceptions.NoBookingToCancel()
-
-    logger.info(
-        "Deleted stock and cancelled its bookings",
-        extra={"stock": stock.id, "bookings": [b.id for b in cancelled_bookings]},
-    )
-    for booking in cancelled_bookings:
-        try:
-            adage_client.notify_booking_cancellation_by_offerer(
-                data=serialize_educational_booking(booking.educationalBooking)  # type: ignore [arg-type]
-            )
-        except educational_exceptions.AdageException as adage_error:
-            logger.error(
-                "%s Could not notify adage of educational booking cancellation by offerer. Educational institution won't be notified.",
-                adage_error.message,
-                extra={
-                    "bookingId": booking.id,
-                    "adage status code": adage_error.status_code,
-                    "adage response text": adage_error.response_text,
-                },
-            )
-        except ValidationError:
-            logger.exception(
-                "Could not notify adage of prebooking, hence send confirmation email to educational institution, as educationalBooking serialization failed.",
-                extra={
-                    "bookingId": booking.id,
-                },
-            )
-    if not send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings):
-        logger.warning(
-            "Could not notify offerer about deletion of stock",
-            extra={"stock": stock.id},
-        )
-
-
 def create_collective_shadow_offer(
     stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str
 ) -> Tuple[Stock, int]:
@@ -1282,21 +1233,10 @@ def create_collective_offer_template_and_delete_collective_offer(
     return collective_offer_template
 
 
-def cancel_collective_offer_booking(offer_id: int, *, legacy: bool = False) -> None:
-    search_field = CollectiveOffer.offerId if legacy else CollectiveOffer.id
-    collective_offer = CollectiveOffer.query.filter(search_field == offer_id).first()
-
-    if collective_offer is None:
-        # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
-        # and all data has been migrated to the new models
-        # NOTE (Raphael Paoloni - 2022-04-28): this case cannot append outside of legacy mode
-        return
+def cancel_collective_offer_booking(offer_id: int) -> None:
+    collective_offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer_id).first()
 
     if collective_offer.collectiveStock is None:
-        if legacy:
-            # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
-            # and all data has been migrated to the new models
-            return
         raise offers_exceptions.StockNotFound()
 
     collective_stock = collective_offer.collectiveStock
@@ -1305,10 +1245,6 @@ def cancel_collective_offer_booking(offer_id: int, *, legacy: bool = False) -> N
     cancelled_booking = cancel_collective_booking_from_stock_by_offerer(collective_stock)
 
     if cancelled_booking is None:
-        if legacy:
-            # FIXME (MathildeDuboille - 2022-03-03): raise an error once this code is on production
-            # and all data has been migrated to the new models
-            return
         raise offers_exceptions.NoBookingToCancel()
 
     search.async_index_collective_offer_ids([offer_id])

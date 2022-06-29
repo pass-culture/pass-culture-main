@@ -607,11 +607,7 @@ def get_available_activation_code(stock: Stock) -> Optional[ActivationCode]:
 
 
 def get_educational_offer_by_id(offer_id: str) -> Offer:
-    return get_educational_offer_by_id_base_query(offer_id).one()
-
-
-def get_educational_offer_by_id_base_query(offer_id: str) -> Offer:
-    return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id)
+    return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id).one()
 
 
 def get_non_deleted_stock_by_id(stock_id: int):  # type: ignore [no-untyped-def]
