@@ -34,6 +34,12 @@ const ReimbursementPoint = ({
         } - ${businessUnit.iban}`
       : ''
 
+  const modifyReimbursementPointLabel = useCallback(() => {
+    return venue.isBusinessUnitMainVenue
+      ? 'Modifier mes coordonnées bancaires'
+      : 'Ajouter des coordonnées bancaires'
+  }, [venue.isBusinessUnitMainVenue, venueReimbursementPoint])
+
   const scrollToReimbursementPoint = useCallback(reimbursementPoint => {
     if (scrollToSection && reimbursementPoint) {
       reimbursementPoint.scrollIntoView()
@@ -130,7 +136,6 @@ const ReimbursementPoint = ({
                   id="add-new-reimbursement-point"
                   onClick={openDMSApplication}
                   type="button"
-                  disabled={readOnly}
                 >
                   Ajouter des coordonnées bancaires
                 </button>
@@ -141,34 +146,45 @@ const ReimbursementPoint = ({
             )}
             {!!reimbursementPointOptions.length && (
               <div className={styles['field-select']}>
-                <p className={styles['select-description']}>
-                  <b>Sélectionner</b> des coordonnées bancaires parmi celles
-                  déjà existantes dans votre structure :
-                </p>
+                {!venueReimbursementPoint && (
+                  <p className={styles['select-description']}>
+                    <b>Sélectionner</b> des coordonnées bancaires parmi celles
+                    déjà existantes dans votre structure :
+                  </p>
+                )}
                 <div className={styles['label-reimbursment-point']}>
                   <label htmlFor="venue-reimbursement-point">
                     Coordonnées bancaires
                   </label>
                 </div>
-                {readOnly && venueReimbursementPoint ? (
-                  businessUnitDisplayName(venueReimbursementPoint)
-                ) : (
-                  <div className={styles['select']}>
-                    <Field
-                      component="select"
-                      id="venue-reimbursement-point"
-                      name="businessUnitId"
-                      disabled={readOnly}
-                    >
-                      <option disabled value="">
-                        Sélectionner des coordonnées dans la liste
+
+                <div className={styles['select']}>
+                  <Field
+                    component="select"
+                    id="venue-reimbursement-point"
+                    name="businessUnitId"
+                    disabled={readOnly}
+                  >
+                    <option disabled value="">
+                      Sélectionner des coordonnées dans la liste
+                    </option>
+                    {reimbursementPointOptions.map(option => (
+                      <option key={option.key} value={option.id}>
+                        {option.displayName}
                       </option>
-                      {reimbursementPointOptions.map(option => (
-                        <option key={option.key} value={option.id}>
-                          {option.displayName}
-                        </option>
-                      ))}
-                    </Field>
+                    ))}
+                  </Field>
+                </div>
+                {(venueReimbursementPoint || venue.isBusinessUnitMainVenue) && (
+                  <div className={styles['modify-reimbursement-point-section']}>
+                    <button
+                      className="secondary-button"
+                      id="modify-new-reimbursement-point"
+                      onClick={openDMSApplication}
+                      type="button"
+                    >
+                      {modifyReimbursementPointLabel()}
+                    </button>
                   </div>
                 )}
               </div>

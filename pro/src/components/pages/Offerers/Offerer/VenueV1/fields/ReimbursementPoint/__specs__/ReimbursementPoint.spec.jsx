@@ -107,9 +107,24 @@ describe('src | Venue | ReimbursementPoint', () => {
     ).toBeInTheDocument()
   })
 
-  it('should open dms application on click add cb button', async () => {
+  it('should display modify button when venue has already add dms cb', async () => {
     // Given
-    pcapi.getBusinessUnits.mockResolvedValue([])
+    const venueWithCb = {
+      id: 'AA',
+      name: 'fake venue name',
+      isBusinessUnitMainVenue: true,
+    }
+
+    props.venue = venueWithCb
+    pcapi.getBusinessUnits.mockResolvedValue([
+      {
+        name: 'Reimbursement Point #1',
+        siret: '111222333',
+        id: 1,
+        bic: 'BDFEFRPP',
+        iban: 'FR9410010000000000000000022',
+      },
+    ])
 
     // When
     await renderReimbursementPoint(props)
@@ -117,7 +132,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     // Then
     expect(
       screen.getByRole('button', {
-        name: 'Ajouter des coordonnées bancaires',
+        name: 'Modifier mes coordonnées bancaires',
       })
     ).toBeInTheDocument()
   })
