@@ -1,4 +1,5 @@
 import { Selector } from 'testcafe'
+import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getPathname } from './helpers/location'
 import { navigateToHomeAs } from './helpers/navigations'
@@ -16,7 +17,7 @@ test('si j’ai une structure validée, je clique sur celle-ci afin d’accéder
   const offererOption = offererSelect.find('option')
   const offererDetailLink = Selector(`a[href="/structures/${offerer.id}"]`)
 
-  await navigateToHomeAs(user)(t)
+  await navigateToHomeAs(user, createUserRole(user))(t)
 
   await t
     .click(offererSelect)

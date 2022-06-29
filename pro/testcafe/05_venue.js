@@ -4,6 +4,7 @@ import {
 } from './helpers/navigations'
 
 import { Selector } from 'testcafe'
+import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getSiretRequestMockAs } from './helpers/sirenes'
 
@@ -50,15 +51,15 @@ test('je peux créer un lieu avec un SIRET valide', async t => {
   const description =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id risus lorem. Curabitur elementum auctor interdum. In quis risus nibh. Ut gravida leo sit amet purus aliquam elementum. Aliquam erat volutpat. Sed mi ligula, porttitor at mi a, sollicitudin blandit diam. Quisque malesuada, ante lobortis luctus luctus, nisi elit porta diam, at imperdiet ex velit nec erat.'
 
-  await navigateToOffererAs(user, offerer)(t)
+  await navigateToOffererAs(user, offerer, createUserRole(user))(t)
 
   await t
     .addRequestHooks(getSiretRequestMockAs(venue))
     .click(newVenueButton)
     .click(venueType)
     .click(venueTypeOption.withText('Festival'))
-    .typeText(siretInput, siret)
-    .typeText(descriptionInput, description)
+    .typeText(siretInput, siret, { paste: true })
+    .typeText(descriptionInput, description, { paste: true })
     .click(audioDisabilityCompliant)
     .expect(nameInput.value)
     .eql(venueName)
@@ -85,16 +86,16 @@ test('je peux créer un lieu sans SIRET avec une description', async t => {
     'Je veux créer un lieu avec SIRET'
   )
 
-  await navigateToOffererAs(user, offerer)(t)
+  await navigateToOffererAs(user, offerer, createUserRole(user))(t)
 
   await t
     .click(newVenueButton)
     .click(toggleSiretOrComment)
-    .typeText(nameInput, 'Le lieu sympa de type sans siret')
-    .typeText(commentInput, 'Test sans SIRET')
+    .typeText(nameInput, 'Le lieu sympa de type sans siret', { paste: true })
+    .typeText(commentInput, 'Test sans SIRET', { paste: true })
     .click(venueType)
     .click(venueTypeOption.withText('Festival'))
-    .typeText(addressInput, '1 place du trocadéro Paris')
+    .typeText(addressInput, '1 place du trocadéro Paris', { paste: true })
     .click(addressSuggestion)
     .click(audioDisabilityCompliant)
     .expect(postalCodeInput.value)

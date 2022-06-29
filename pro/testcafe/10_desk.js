@@ -21,7 +21,7 @@ test('je peux valider une contremarque', async t => {
     .click(deskLink)
     .expect(pageTitleHeader.innerText)
     .eql('Guichet')
-    .typeText(codeInput, booking.token)
+    .typeText(codeInput, booking.token, { paste: true })
     .expect(deskMessage.innerText)
     .eql('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
     .click(registerButton)

@@ -40,7 +40,7 @@ test('en étant sur la page de création d’une structure', async t => {
 
   await t
     .addRequestHooks(getSirenRequestMockAs(offererWithAddress))
-    .typeText(sirenInput, offererWithAddress.siren)
+    .typeText(sirenInput, offererWithAddress.siren, { paste: true })
     .expect(getFormContent())
     .contains('NOUVEAU THEATRE DE MONTREUIL')
     .expect(getFormContent())
@@ -64,7 +64,7 @@ test('en étant sur la page de création d’une structure', async t => {
 
   await t
     .addRequestHooks(getSirenRequestMockAs(offererWithoutAddress))
-    .typeText(sirenInput, offererWithoutAddress.siren)
+    .typeText(sirenInput, offererWithoutAddress.siren, { paste: true })
     .click(submitButton)
     .expect(getPathname())
     .eql(HOME_URL)
@@ -74,7 +74,7 @@ test('en étant sur la page de création d’une structure', async t => {
 
   await t
     .addRequestHooks(getSirenRequestMockWithNoResult())
-    .typeText(sirenInput, '000000000')
+    .typeText(sirenInput, '000000000', { paste: true })
     .click(submitButton)
     .expect(sirenErrorInput.innerText)
     .contains("Ce SIREN n'est pas reconnu")
