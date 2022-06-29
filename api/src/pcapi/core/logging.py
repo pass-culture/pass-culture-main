@@ -1,3 +1,4 @@
+import collections.abc
 import contextlib
 import datetime
 import decimal
@@ -6,6 +7,7 @@ import json
 import logging
 import sys
 import time
+import typing
 import uuid
 
 import flask
@@ -14,7 +16,7 @@ from flask_login import current_user
 from pcapi import settings
 
 
-def _is_within_app_context():  # type: ignore [no-untyped-def]
+def _is_within_app_context() -> bool:
     # If we are called before setting up an application context,
     # accessing Flask global objects raise a RuntimeError.
     try:
@@ -28,7 +30,7 @@ def _is_within_app_context():  # type: ignore [no-untyped-def]
         return True
 
 
-def get_or_set_correlation_id():  # type: ignore [no-untyped-def]
+def get_or_set_correlation_id() -> str:
     """Get a correlation id (set by Nginx upstream) if we are in the
     context of an HTTP request, or get/set one from/in Flask global
     object otherwise.
@@ -46,7 +48,7 @@ def get_or_set_correlation_id():  # type: ignore [no-untyped-def]
         return flask.g.correlation_id
 
 
-def get_logged_in_user_id():  # type: ignore [no-untyped-def]
+def get_logged_in_user_id() -> int | None:
     if not _is_within_app_context():
         return None
     try:
@@ -64,7 +66,7 @@ def get_logged_in_user_id():  # type: ignore [no-untyped-def]
         return None
 
 
-def get_api_key_offerer_id():  # type: ignore [no-untyped-def]
+def get_api_key_offerer_id() -> int | None:
     return (
         flask.g.current_api_key.offererId
         if _is_within_app_context() and hasattr(flask.g, "current_api_key") and flask.g.current_api_key
@@ -72,7 +74,7 @@ def get_api_key_offerer_id():  # type: ignore [no-untyped-def]
     )
 
 
-def monkey_patch_logger_makeRecord():  # type: ignore [no-untyped-def]
+def monkey_patch_logger_makeRecord() -> None:
     def makeRecord(self, name, level, fn, lno, msg, args, exc_info, func=None, extra=None, sinfo=None):  # type: ignore [no-untyped-def]
         """Make a record but store ``extra`` arguments in an ``extra``
         attribute (not only as direct attributes of the object itself,
@@ -97,11 +99,11 @@ def monkey_patch_logger_makeRecord():  # type: ignore [no-untyped-def]
         record.extra = _extra
         return record
 
-    logging.Logger.__original_makeRecord = logging.Logger.makeRecord
-    logging.Logger.makeRecord = makeRecord
+    logging.Logger.__original_makeRecord = logging.Logger.makeRecord  # type: ignore [attr-defined]
+    logging.Logger.makeRecord = makeRecord  # type: ignore [assignment]
 
 
-def monkey_patch_logger_log():  # type: ignore [no-untyped-def]
+def monkey_patch_logger_log() -> None:
     def _log(  # type: ignore [no-untyped-def]
         self,
         level,
@@ -129,12 +131,12 @@ def monkey_patch_logger_log():  # type: ignore [no-untyped-def]
             stacklevel=stacklevel,
         )
 
-    logging.Logger.__original_log = logging.Logger._log
-    logging.Logger._log = _log
+    logging.Logger.__original_log = logging.Logger._log  # type: ignore [attr-defined]
+    logging.Logger._log = _log  # type: ignore [assignment]
 
 
 class JsonLogEncoder(json.JSONEncoder):
-    def default(self, obj):  # type: ignore [no-untyped-def]
+    def default(self, obj: typing.Any) -> str | float | list[str | float]:
         if isinstance(obj, decimal.Decimal):
             return float(obj)
         if isinstance(obj, enum.Enum):
@@ -155,7 +157,7 @@ class JsonLogEncoder(json.JSONEncoder):
 
 
 class JsonFormatter(logging.Formatter):
-    def format(self, record):  # type: ignore [no-untyped-def]
+    def format(self, record: logging.LogRecord) -> str:
         # `getattr()` is necessary for log records that have not
         # been created by our `Logger.makeRecord()` defined above.
         # It should not happen, but let's be defensive.
@@ -181,22 +183,26 @@ class JsonFormatter(logging.Formatter):
         except TypeError:
             # Perhaps the `extra` arguments were not serializable?
             # Let's try by dumping them as a string.
+            assert _internal_logger is not None  # tell mypy it's been set
             try:
-                json_record["extra"] = {"unserializable": str(record.extra)}
+                json_record["extra"] = {"unserializable": str(extra)}
                 serialized = json.dumps(json_record)
             except TypeError:
                 # I don't think we can end up here. Let's be defensive, though.
-                _internal_logger.exception("Could not serialize log in JSON", extra={"log": str(json_record)})
+                _internal_logger.exception(
+                    "Could not serialize log in JSON",
+                    extra={"log": str(json_record)},
+                )
                 return ""
             else:
                 _internal_logger.exception(
                     "Could not serialize extra log arguments in JSON",
-                    extra={"record": json_record, "extra": str(record.extra)},
+                    extra={"record": json_record, "extra": str(extra)},
                 )
                 return serialized
 
 
-def install_logging():  # type: ignore [no-untyped-def]
+def install_logging() -> None:
     monkey_patch_logger_makeRecord()
     monkey_patch_logger_log()
     if settings.IS_DEV and not settings.IS_RUNNING_TESTS:
@@ -228,7 +234,7 @@ def install_logging():  # type: ignore [no-untyped-def]
         # pylint: disable=consider-using-with
         handler2 = logging.StreamHandler(stream=open("/proc/1/fd/1", "w", encoding="utf-8"))
         handler2.setFormatter(JsonFormatter())
-        handlers.append(handler2)
+        handlers.append(handler2)  # type: ignore [arg-type]
     logging.basicConfig(level=settings.LOG_LEVEL, handlers=handlers, force=True)
 
     _internal_logger = logging.getLogger(__name__)
@@ -236,7 +242,7 @@ def install_logging():  # type: ignore [no-untyped-def]
     _silence_noisy_loggers()
 
 
-def _silence_noisy_loggers():  # type: ignore [no-untyped-def]
+def _silence_noisy_loggers() -> None:
     logging.getLogger("spectree.config").setLevel(logging.WARNING)
     logging.getLogger("xmlschema").setLevel(logging.WARNING)
     logging.getLogger("saml2").setLevel(logging.WARNING)
@@ -251,12 +257,22 @@ def _silence_noisy_loggers():  # type: ignore [no-untyped-def]
     logging.getLogger("rq.worker").setLevel(logging.CRITICAL)
 
 
-def log_for_supervision(logger: logging.Logger, log_level: int, log_message: str, *args, **kwargs) -> None:  # type: ignore [no-untyped-def]
+def log_for_supervision(
+    logger: logging.Logger,
+    log_level: int,
+    log_message: str,
+    *args: typing.Any,
+    **kwargs: typing.Any,
+) -> None:
     logger.log(log_level, log_message, *args, **kwargs)
 
 
 @contextlib.contextmanager
-def log_elapsed(logger, message, extra=None):  # type: ignore [no-untyped-def]
+def log_elapsed(
+    logger: logging.Logger,
+    message: str,
+    extra: dict | None = None,
+) -> collections.abc.Generator[None, None, None]:
     """A context manager that logs ``message`` with an additional
     ``elapsed`` key in "extra" that is the execution time (in seconds)
     of the block.
@@ -269,4 +285,4 @@ def log_elapsed(logger, message, extra=None):  # type: ignore [no-untyped-def]
 
 # Do NOT use this logger outside of this module. It is used only to
 # report errors from this module.
-_internal_logger = None
+_internal_logger: typing.Optional[logging.Logger] = None
