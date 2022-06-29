@@ -279,34 +279,12 @@ class PriceCollectiveBookingTest:
         assert models.Pricing.query.count() == 1
         assert pricing.amount == 0
 
-    def test_accrue_revenue(self):
+    def test_do_not_accrue_revenue(self):
         booking = UsedCollectiveBookingFactory(
             collectiveStock__price=10,
         )
         pricing = api.price_booking(booking)
         assert pricing.revenue == 0
-
-    def test_price_booking_that_is_already_priced(self):
-        existing = factories.CollectivePricingFactory()
-        pricing = api.price_booking(existing.collectiveBooking)
-        assert pricing == existing
-
-    def test_price_booking_that_is_not_used(self):
-        booking = CollectiveBookingFactory()
-        pricing = api.price_booking(booking)
-        assert pricing is None
-
-    def test_price_booking_checks_business_unit(self):
-        booking = UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue__businessUnit__siret=None)
-        pricing = api.price_booking(booking)
-        assert pricing is None
-
-    def test_price_booking_ignores_missing_bank_information(self):
-        booking = UsedCollectiveBookingFactory(
-            collectiveStock__collectiveOffer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
-        )
-        pricing = api.price_booking(booking)
-        assert pricing
 
 
 class GetRevenuePeriodTest:
@@ -628,8 +606,12 @@ class PriceBookingsTest:
 
     def test_basics(self):
         booking = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
+        educational_booking = bookings_factories.UsedEducationalBookingFactory(dateUsed=self.few_minutes_ago)
+        collective_booking = UsedCollectiveBookingFactory(dateUsed=self.few_minutes_ago)
         api.price_bookings(min_date=self.few_minutes_ago)
         assert len(booking.pricings) == 1
+        assert len(educational_booking.pricings) == 0
+        assert len(collective_booking.pricings) == 1
 
     @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
     def test_num_queries(self):
@@ -720,43 +702,6 @@ class PriceBookingsTest:
 
         pricings = models.Pricing.query.all()
         assert {pricing.booking for pricing in pricings} == {booking1, booking2}
-
-
-class PriceBookingsWithNewCollectiveModelsTest:
-    few_minutes_ago = datetime.datetime.utcnow() - datetime.timedelta(minutes=5)
-
-    def test_basics(self):
-        booking = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
-        educational_booking = bookings_factories.UsedEducationalBookingFactory(dateUsed=self.few_minutes_ago)
-        collective_booking = UsedCollectiveBookingFactory(dateUsed=self.few_minutes_ago)
-        api.price_bookings(min_date=self.few_minutes_ago)
-        assert len(booking.pricings) == 1
-        assert len(educational_booking.pricings) == 0
-        assert len(collective_booking.pricings) == 1
-
-    def test_error_on_a_booking_does_not_block_other_bookings(self):
-        booking1 = create_booking_with_undeletable_dependent(date_used=self.few_minutes_ago)
-        booking2 = bookings_factories.UsedBookingFactory(dateUsed=self.few_minutes_ago)
-        collective_booking1 = UsedCollectiveBookingFactory(dateUsed=self.few_minutes_ago)
-
-        api.price_bookings(self.few_minutes_ago)
-
-        assert not booking1.pricings
-        assert len(booking2.pricings) == 1
-        assert len(collective_booking1.pricings) == 1
-
-    def test_price_even_without_accepted_bank_info(self):
-        booking = bookings_factories.UsedBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
-        )
-        collective_booking = UsedCollectiveBookingFactory(
-            dateUsed=self.few_minutes_ago,
-            collectiveStock__collectiveOffer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
-        )
-        api.price_bookings(min_date=self.few_minutes_ago)
-        assert len(booking.pricings) == 1
-        assert len(collective_booking.pricings) == 1
 
 
 def _get_next_cashflow_batch_label():
