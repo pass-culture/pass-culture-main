@@ -9,6 +9,7 @@ import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import Spinner from 'components/layout/Spinner'
+import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { extractOfferIdAndOfferTypeFromRouteParams } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
@@ -78,11 +79,7 @@ const CollectiveOfferVisibility = () => {
         <CollectiveOfferVisibilityScreen
           mode={isEditable ? Mode.EDITION : Mode.READ_ONLY}
           patchInstitution={patchEducationalInstitutionAdapter}
-          initialValues={{
-            institution: institution?.id?.toString() ?? '',
-            'search-institution': institution?.name ?? '',
-            visibility: institution ? 'one' : 'all',
-          }}
+          initialValues={extractInitialVisibilityValues(institution)}
           onSuccess={onSuccess}
           institutions={institutions}
           isLoadingInstitutions={isLoadingInstitutions}
