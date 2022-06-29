@@ -50,6 +50,7 @@ const edition_authorized_input_field = [
   'motorDisabilityCompliant',
   'visualDisabilityCompliant',
   'contact',
+  'reimbursementPointId',
 ]
 
 export const formatVenuePayload = (
