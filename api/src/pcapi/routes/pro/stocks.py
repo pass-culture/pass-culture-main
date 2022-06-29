@@ -3,7 +3,6 @@ from typing import List
 
 from flask_login import current_user
 from flask_login import login_required
-from sqlalchemy import exc
 from sqlalchemy.orm.exc import MultipleResultsFound as SQLAMultipleResultsFound
 
 from pcapi.core.educational import api as educational_api
@@ -41,7 +40,6 @@ from pcapi.validation.routes.users_authentifications import current_api_key
 from pcapi.workers.synchronize_stocks_job import synchronize_stocks_job
 
 from . import blueprint
-from ...models import db
 
 
 logger = logging.getLogger(__name__)
@@ -148,36 +146,6 @@ def _build_stock_details_from_body(raw_stocks: List[UpdateVenueStockBodyModel], 
         }
 
     return list(stock_details.values())
-
-
-@private_api.route("/stocks/educational", methods=["POST"])
-@login_required
-@spectree_serialize(on_success_status=201, response_model=StockIdResponseModel, api=blueprint.pro_private_schema)
-def create_educational_stock(body: EducationalStockCreationBodyModel) -> StockIdResponseModel:
-    # FIXME DELETE UNUSED API
-    try:
-        offerer = offerers_repository.get_by_offer_id(body.offer_id)
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-
-    try:
-        stock = offers_api.create_educational_stock(body, current_user)
-    except educational_exceptions.EducationalStockAlreadyExists:
-        raise ApiErrors(
-            {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
-            status_code=400,
-        )
-
-    try:
-        educational_api.create_collective_stock(body, current_user, legacy_id=stock.id)
-    except exc.IntegrityError:
-        logger.error(
-            "Concurrent request trying to create educational stock for same offer", extra={"offerId": body.offer_id}
-        )
-        db.session.rollback()
-
-    return StockIdResponseModel.from_orm(stock)
 
 
 @private_api.route("/stocks/shadow-to-educational/<stock_id>", methods=["PATCH"])
