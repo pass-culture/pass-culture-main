@@ -5,6 +5,7 @@ import FormLayout from 'new_components/FormLayout'
 import React from 'react'
 import { StudentLevels } from 'api/v1/gen'
 import styles from './CollectiveDataEdition.module.scss'
+import { validationSchema } from './validationSchema'
 
 type CollectiveDataFormValues = {
   collectiveDescription: string
@@ -32,6 +33,7 @@ const CollectiveDataEdition = (): JSX.Element => {
   const formik = useFormik<CollectiveDataFormValues>({
     initialValues,
     onSubmit: () => {},
+    validationSchema,
   })
 
   return (
