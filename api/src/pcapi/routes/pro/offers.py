@@ -7,10 +7,8 @@ from flask_login import login_required
 
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
-from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers.repository import get_by_offer_id
 from pcapi.core.offers import exceptions
 import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.models import Offer
@@ -22,7 +20,6 @@ from pcapi.repository.offer_queries import get_offer_by_id
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization.offers_recap_serialize import serialize_offers_recap_paginated
-from pcapi.routes.serialization.stock_serialize import EducationalStockIdResponseModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailResponseModel
 from pcapi.serialization.decorator import spectree_serialize
@@ -221,33 +218,3 @@ def get_categories() -> offers_serialize.CategoriesResponseModel:
             for subcategory in subcategories.ALL_SUBCATEGORIES
         ],
     )
-
-
-@private_api.route("/offers/educational/<offer_id>/shadow-stock", methods=["POST"])
-@login_required
-@spectree_serialize(on_success_status=201, on_error_statuses=[400, 403, 404])
-def create_shadow_stock_for_educational_showcase_offer(
-    offer_id: str, body: offers_serialize.EducationalOfferShadowStockBodyModel
-) -> None:
-    # FIXME DELETE UNUSED API
-    offer_id = dehumanize(offer_id)  # type: ignore [assignment]
-    try:
-        offerer = get_by_offer_id(offer_id)  # type: ignore [arg-type]
-    except offerers_exceptions.CannotFindOffererForOfferId:
-        raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
-
-    try:
-        (stock, collective_offer_template_id) = offers_api.create_collective_shadow_offer(body, current_user, offer_id)
-    except educational_exceptions.EducationalStockAlreadyExists:
-        raise ApiErrors(
-            {"code": "EDUCATIONAL_STOCK_ALREADY_EXISTS"},
-            status_code=400,
-        )
-    except exceptions.CollectiveOfferNotFound:
-        raise ApiErrors(
-            {"code": "COLLECTIVE_OFFER_NOT_FOUND"},
-            status_code=404,
-        )
-
-    return EducationalStockIdResponseModel(id=stock.id, collectiveOfferTemplateId=collective_offer_template_id)  # type: ignore [return-value]
