@@ -18,6 +18,7 @@ interface ITextInputProps
   smallLabel?: boolean
   rightButton?: () => JSX.Element
   step?: number | string
+  inline?: boolean
 }
 
 const TextInput = ({
@@ -34,6 +35,7 @@ const TextInput = ({
   isOptional = false,
   rightButton,
   step,
+  inline = false,
   ...props
 }: ITextInputProps): JSX.Element => {
   const [field, meta] = useField({
@@ -53,6 +55,7 @@ const TextInput = ({
       name={name}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
+      inline={inline}
     >
       <BaseInput
         disabled={disabled}

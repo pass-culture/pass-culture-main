@@ -25,6 +25,8 @@ export interface MultiSelectAutocompleteProps {
   pluralLabel: string
   smallLabel?: boolean
   disabled?: boolean
+  placeholder?: string
+  inline?: boolean
 }
 
 const MultiSelectAutocomplete = ({
@@ -41,6 +43,8 @@ const MultiSelectAutocomplete = ({
   pluralLabel,
   smallLabel = false,
   disabled = false,
+  placeholder,
+  inline,
 }: MultiSelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, handleChange, setFieldTouched } =
     useFormikContext<any>()
@@ -106,12 +110,13 @@ const MultiSelectAutocomplete = ({
     <FieldLayout
       className={className}
       error={meta.error}
-      hideFooter={meta.touched && !meta.error ? true : hideFooter}
+      hideFooter={!hideTags && field.value.length > 0 ? true : hideFooter}
       isOptional={isOptional}
       label={label}
       name={`search-${fieldName}`}
       showError={meta.touched && !!meta.error}
       smallLabel={smallLabel}
+      inline={inline}
     >
       <div
         className={cx(styles['multi-select-autocomplete-container'], className)}
@@ -124,7 +129,9 @@ const MultiSelectAutocomplete = ({
             }
             setFieldTouched(fieldName, true)
           }}
-          placeholder={field.value.length > 1 ? pluralLabel : label}
+          placeholder={
+            placeholder ?? (field.value.length > 1 ? pluralLabel : label)
+          }
           style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
           className={cx({
             [styles['multi-select-autocomplete-placeholder-input']]:

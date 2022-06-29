@@ -15,6 +15,7 @@ interface IFieldLayoutProps {
   isOptional?: boolean
   smallLabel?: boolean
   hideFooter?: boolean
+  inline?: boolean
 }
 
 const FieldLayout = ({
@@ -29,10 +30,12 @@ const FieldLayout = ({
   isOptional = false,
   smallLabel,
   hideFooter = false,
+  inline = false,
 }: IFieldLayoutProps): JSX.Element => (
   <div
     className={cn(styles['field-layout'], className, {
       [styles['field-layout-small-label']]: smallLabel,
+      [styles['field-layout-inline']]: inline,
     })}
     data-testid={`wrapper-${name}`}
   >
@@ -43,25 +46,27 @@ const FieldLayout = ({
       )}
     </label>
 
-    <div>{children}</div>
+    <div className={styles['field-layout-content']}>
+      <div>{children}</div>
 
-    {!hideFooter && (
-      <div className={styles['field-layout-footer']}>
-        {showError && !!error && (
-          <div className={styles['field-layout-error']}>
-            <FieldError name={name}>{error}</FieldError>
-          </div>
-        )}
-        {count !== undefined && maxLength !== undefined && (
-          <span
-            className={styles['field-layout-counter']}
-            data-testid={`counter-${name}`}
-          >
-            {count}/{maxLength}
-          </span>
-        )}
-      </div>
-    )}
+      {!hideFooter && (
+        <div className={styles['field-layout-footer']}>
+          {showError && !!error && (
+            <div className={styles['field-layout-error']}>
+              <FieldError name={name}>{error}</FieldError>
+            </div>
+          )}
+          {count !== undefined && maxLength !== undefined && (
+            <span
+              className={styles['field-layout-counter']}
+              data-testid={`counter-${name}`}
+            >
+              {count}/{maxLength}
+            </span>
+          )}
+        </div>
+      )}
+    </div>
   </div>
 )
 

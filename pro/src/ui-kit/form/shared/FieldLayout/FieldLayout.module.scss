@@ -18,6 +18,15 @@
     @include fonts.caption();
   }
 
+  &-inline {
+    display: flex;
+    align-items: baseline;
+
+    .field-layout-content {
+      width: 100%
+    }
+  }
+
   &-optional {
     @include fonts.caption();
     color: colors.$grey-dark;
