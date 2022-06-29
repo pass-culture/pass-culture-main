@@ -158,7 +158,7 @@ class IdCheckItemModel(BaseModel):
 
 class EligibilitySubscriptionHistoryModel(BaseModel):
     subscriptionItems: list[SubscriptionItemModel]
-    idCheckHistory: list[typing.Union[IdCheckItemModel]]
+    idCheckHistory: list[IdCheckItemModel]
 
 
 class GetUserSubscriptionHistoryResponseModel(BaseModel):
