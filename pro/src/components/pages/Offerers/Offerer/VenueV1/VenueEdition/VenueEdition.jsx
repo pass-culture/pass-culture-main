@@ -340,7 +340,7 @@ const VenueEdition = () => {
             </>
           )}
           {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
-            <EACInformation />
+            <EACInformation venueId={venueId} offererId={offererId} />
           )}
           {isNewBankInformationCreation ? (
             <ReimbursementFields

@@ -1,5 +1,6 @@
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
+import CollectiveDataEdition from './VenueEdition/CollectiveDataEdition'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import React from 'react'
 import VenueCreation from './VenueCreation/VenueCreation'
@@ -14,6 +15,9 @@ const VenueLayout = () => {
       </Route>
       <Route exact path={`${match.path}/:venueId([A-Z0-9]+)`}>
         <VenueEdition />
+      </Route>
+      <Route exact path={`${match.path}/:venueId([A-Z0-9]+)/eac`}>
+        <CollectiveDataEdition />
       </Route>
       <Route>
         <NotFound />
