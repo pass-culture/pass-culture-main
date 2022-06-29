@@ -168,7 +168,7 @@ class HandleDmsApplicationTest:
             birth_date=datetime.datetime(2016, 1, 1),
         )
 
-        dms_subscription_api.handle_dms_application(dms_response, 123)
+        dms_subscription_api.handle_dms_application(dms_response)
 
         assert fraud_models.BeneficiaryFraudCheck.query.first().status == fraud_models.FraudCheckStatus.OK
 
@@ -181,7 +181,7 @@ class HandleDmsApplicationTest:
         mocked_parse_beneficiary_information.side_effect = [Exception()]
 
         with pytest.raises(Exception):
-            dms_subscription_api.handle_dms_application(dms_response, 123)
+            dms_subscription_api.handle_dms_application(dms_response)
 
         assert fraud_models.BeneficiaryFraudCheck.query.first() is None
 
@@ -196,7 +196,7 @@ class HandleDmsApplicationTest:
             application_techid="XYZQVM",
         )
 
-        dms_subscription_api.handle_dms_application(dms_response, 123)
+        dms_subscription_api.handle_dms_application(dms_response)
 
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
@@ -231,7 +231,7 @@ class HandleDmsApplicationTest:
             application_techid="XYZQVM",
         )
 
-        dms_subscription_api.handle_dms_application(dms_response, 123)
+        dms_subscription_api.handle_dms_application(dms_response)
 
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
@@ -263,7 +263,7 @@ class HandleDmsApplicationTest:
             application_techid="XYZQVM",
         )
 
-        dms_subscription_api.handle_dms_application(dms_response, 123)
+        dms_subscription_api.handle_dms_application(dms_response)
 
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
@@ -296,7 +296,7 @@ class HandleDmsApplicationTest:
             application_techid="XYZQVM",
         )
 
-        dms_subscription_api.handle_dms_application(dms_response, 123)
+        dms_subscription_api.handle_dms_application(dms_response)
 
         subscription_message = subscription_models.SubscriptionMessage.query.filter_by(userId=user.id).one()
         assert (
@@ -321,7 +321,7 @@ class HandleDmsApplicationTest:
             first_name="",
             application_techid="XYZQVM",
         )
-        dms_subscription_api.handle_dms_application(dms_response, 123)
+        dms_subscription_api.handle_dms_application(dms_response)
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter_by(
             userId=user.id, type=fraud_models.FraudCheckType.DMS

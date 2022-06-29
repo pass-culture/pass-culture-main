@@ -105,7 +105,7 @@ class DMSMessage(pydantic.BaseModel):
 class DemarcheDescriptor(pydantic.BaseModel):
     """https://demarches-simplifiees-graphql.netlify.app/demarchedescriptor.doc.html"""
 
-    id: int = pydantic.Field(alias="number")
+    number: int
 
 
 class DmsApplicationResponse(pydantic.BaseModel):

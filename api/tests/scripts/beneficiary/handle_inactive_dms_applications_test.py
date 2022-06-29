@@ -97,7 +97,7 @@ class IsNeverEligibleTest:
             birth_date=datetime.datetime(2002, 1, 1),
             postal_code="12400",
         )
-        assert _is_never_eligible_applicant(inactive_application, 1)
+        assert _is_never_eligible_applicant(inactive_application)
 
     @freezegun.freeze_time("2022-04-27")
     def test_19_yo_at_generalisation_from_test_department(self):
@@ -107,7 +107,7 @@ class IsNeverEligibleTest:
             birth_date=datetime.datetime(2002, 1, 1),
             postal_code="56510",
         )
-        assert not _is_never_eligible_applicant(inactive_application, 1)
+        assert not _is_never_eligible_applicant(inactive_application)
 
     @freezegun.freeze_time("2022-04-27")
     def test_still_18_yo_after_generalisation(self):
@@ -117,7 +117,7 @@ class IsNeverEligibleTest:
             birth_date=datetime.datetime(2002, 6, 1),
             postal_code="12400",
         )
-        assert not _is_never_eligible_applicant(inactive_application, 1)
+        assert not _is_never_eligible_applicant(inactive_application)
 
 
 class HasInactivityDelayExpiredTest:

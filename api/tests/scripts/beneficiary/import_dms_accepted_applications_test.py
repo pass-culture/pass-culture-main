@@ -131,7 +131,12 @@ class RunTest:
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                123, "accepte", id_piece_number="123123121", email=applicant.email, birth_date=AGE18_ELIGIBLE_BIRTH_DATE
+                123,
+                "accepte",
+                id_piece_number="123123121",
+                email=applicant.email,
+                birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
+                procedure_id=6712558,
             )
         ]
 
@@ -163,7 +168,7 @@ class RunTest:
 class FieldErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
-        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
         assert field_errors[0].key == dms_types.DmsFieldErrorKeyEnum.postal_code
         assert field_errors[0].value == "Strasbourg"
@@ -172,7 +177,7 @@ class FieldErrorsTest:
     def test_beneficiary_information_id_piece_number_error(self, possible_value):
         application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
 
-        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail, procedure_id=123123)
+        _, field_errors = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
         assert field_errors[0].key == dms_types.DmsFieldErrorKeyEnum.id_piece_number
         assert field_errors[0].value == possible_value
@@ -269,7 +274,7 @@ class RunIntegrationTest:
         # when
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_number=123, state="accepte", email="nonexistant@example.com"
+                application_number=123, state="accepte", email="nonexistant@example.com", procedure_id=6712558
             )
         ]
 
