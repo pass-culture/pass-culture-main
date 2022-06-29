@@ -10,7 +10,6 @@ from pydantic.class_validators import validator
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import StudentLevels
-from pcapi.core.offers.models import Offer
 from pcapi.routes.native.utils import convert_to_cent
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceStrictMixin
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
@@ -65,34 +64,6 @@ class OfferVenueResponse(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
-
-
-class OfferResponse(BaseModel, AccessibilityComplianceStrictMixin):
-    @classmethod
-    def from_orm(cls: Any, offer: Offer):  # type: ignore
-        offer.subcategoryLabel = offer.subcategory.app_label
-        offer.isExpired = offer.hasBookingLimitDatetimesPassed
-
-        result = super().from_orm(offer)
-
-        return result
-
-    id: int
-    subcategoryLabel: str
-    description: Optional[str]
-    isExpired: bool
-    isSoldOut: bool
-    name: str
-    stocks: list[OfferStockResponse]
-    venue: OfferVenueResponse
-    extraData: Any
-    durationMinutes: Optional[int]
-
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class CategoryResponseModel(BaseModel):
