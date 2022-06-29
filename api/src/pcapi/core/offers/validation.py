@@ -192,10 +192,6 @@ def check_event_expiration(stock: Union[CollectiveStock, Stock]):  # type: ignor
         raise api_errors
 
 
-def check_shadow_stock_is_editable(stock: Stock) -> None:
-    check_validation_status(stock.offer)
-
-
 def check_stock_is_deletable(stock: Stock) -> None:
     check_offer_existing_stocks_are_editable(stock.offer)
     if not stock.isEventDeletable:

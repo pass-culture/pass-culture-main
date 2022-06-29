@@ -7,7 +7,6 @@ import os
 import pathlib
 from unittest import mock
 
-import dateutil
 from freezegun import freeze_time
 import pytest
 
@@ -17,7 +16,6 @@ from pcapi.core.bookings.models import BookingCancellationReasons
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
-from pcapi.core.educational import exceptions as educational_exceptions
 import pcapi.core.mails.testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 import pcapi.core.offerers.factories as offerers_factories
@@ -696,160 +694,6 @@ class UpsertStocksTest:
 
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[created_stock_data], user=user)
 
-        assert not mocked_offer_creation_notification_to_admin.called
-        assert not mocked_send_first_venue_approved_offer_email_to_pro.called
-
-
-@freeze_time("2020-11-17 15:00:00")
-class CreateEducationalOfferStocksTest:
-    @mock.patch("pcapi.core.search.async_index_offer_ids")
-    def should_create_one_stock_on_educational_offer_stock_creation(self, mocked_async_index_offer_ids):
-        # Given
-        user_pro = users_factories.ProFactory()
-        offer = factories.EducationalEventOfferFactory()
-        new_stock = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
-            bookingLimitDatetime=dateutil.parser.parse("2021-12-05T00:00:00Z"),
-            totalPrice=1200,
-            numberOfTickets=35,
-        )
-
-        # When
-        stock_created = api.create_educational_stock(stock_data=new_stock, user=user_pro)
-
-        # Then
-        stock = models.Stock.query.filter_by(id=stock_created.id).one()
-        assert stock.beginningDatetime == datetime.fromisoformat("2021-12-15T20:00:00")
-        assert stock.bookingLimitDatetime == datetime.fromisoformat("2021-12-05T00:00:00")
-        assert stock.price == 1200
-        assert stock.quantity == 1
-        assert stock.numberOfTickets == 35
-        mocked_async_index_offer_ids.assert_called_once_with([offer.id])
-
-    def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self):
-        # Given
-        user_pro = users_factories.ProFactory()
-        offer = factories.EducationalEventOfferFactory()
-        new_stock = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2021-12-15T20:00:00Z"),
-            totalPrice=1200,
-            numberOfTickets=35,
-        )
-
-        # When
-        stock_created = api.create_educational_stock(stock_data=new_stock, user=user_pro)
-
-        # Then
-        stock = models.Stock.query.filter_by(id=stock_created.id).one()
-        assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
-
-    def should_not_allow_educational_stock_creation_when_offer_not_educational(self):
-        # Given
-        user_pro = users_factories.ProFactory()
-        offer = factories.EventOfferFactory()
-        new_stock = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
-            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            totalPrice=1500,
-            numberOfTickets=38,
-        )
-
-        # When
-        with pytest.raises(educational_exceptions.OfferIsNotEducational) as error:
-            api.create_educational_stock(stock_data=new_stock, user=user_pro)
-
-        # Then
-        assert error.value.errors == {"offer": [f"L'offre {offer.id} n'est pas une offre éducationnelle"]}
-        saved_stocks = models.Stock.query.all()
-        assert len(saved_stocks) == 0
-
-    def test_create_stock_triggers_draft_offer_validation(self):
-        # Given
-        api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
-        user_pro = users_factories.ProFactory()
-        draft_approvable_offer = factories.EducationalEventOfferFactory(
-            name="a great offer", validation=models.OfferValidationStatus.DRAFT
-        )
-        draft_suspicious_offer = factories.EducationalEventOfferFactory(
-            name="a suspicious offer", validation=models.OfferValidationStatus.DRAFT
-        )
-        common_created_stock_data = {
-            "beginningDatetime": dateutil.parser.parse("2022-01-17T22:00:00Z"),
-            "bookingLimitDatetime": dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            "totalPrice": 1500,
-            "numberOfTickets": 38,
-        }
-        created_stock_data_approvable = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=draft_approvable_offer.id, **common_created_stock_data
-        )
-        created_stock_data_suspicious = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=draft_suspicious_offer.id, **common_created_stock_data
-        )
-
-        # When
-        api.create_educational_stock(stock_data=created_stock_data_approvable, user=user_pro)
-        api.create_educational_stock(stock_data=created_stock_data_suspicious, user=user_pro)
-
-        # Then
-        assert draft_approvable_offer.validation == models.OfferValidationStatus.APPROVED
-        assert draft_approvable_offer.isActive
-        assert draft_approvable_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
-        assert draft_approvable_offer.lastValidationType == OfferValidationType.AUTO
-        assert draft_suspicious_offer.validation == models.OfferValidationStatus.PENDING
-        assert not draft_suspicious_offer.isActive
-        assert draft_suspicious_offer.lastValidationDate == datetime(2020, 11, 17, 15, 0)
-        assert draft_suspicious_offer.lastValidationType == OfferValidationType.AUTO
-
-    def test_create_stock_for_non_approved_offer_fails(self):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.EducationalEventOfferFactory(validation=models.OfferValidationStatus.PENDING)
-        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
-            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            totalPrice=1500,
-            numberOfTickets=38,
-        )
-
-        # When
-        with pytest.raises(api_errors.ApiErrors) as error:
-            api.create_educational_stock(stock_data=created_stock_data, user=user)
-
-        # Then
-        assert error.value.errors == {
-            "global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]
-        }
-        assert models.Stock.query.count() == 0
-
-    @mock.patch("pcapi.domain.admin_emails.send_offer_creation_notification_to_administration")
-    @mock.patch("pcapi.core.offers.api.send_first_venue_approved_offer_email_to_pro")
-    @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
-    def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
-        self,
-        mocked_set_offer_status_based_on_fraud_criteria,
-        mocked_send_first_venue_approved_offer_email_to_pro,
-        mocked_offer_creation_notification_to_admin,
-    ):
-        # Given
-        user = users_factories.ProFactory()
-        offer = factories.EducationalEventOfferFactory(validation=models.OfferValidationStatus.DRAFT)
-        created_stock_data = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=offer.id,
-            beginningDatetime=dateutil.parser.parse("2022-01-17T22:00:00Z"),
-            bookingLimitDatetime=dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            totalPrice=1500,
-            numberOfTickets=38,
-        )
-        mocked_set_offer_status_based_on_fraud_criteria.return_value = models.OfferValidationStatus.PENDING
-
-        # When
-        api.create_educational_stock(stock_data=created_stock_data, user=user)
-
-        # Then
         assert not mocked_offer_creation_notification_to_admin.called
         assert not mocked_send_first_venue_approved_offer_email_to_pro.called
 
