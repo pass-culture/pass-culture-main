@@ -11,6 +11,7 @@ from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.providers import factories as providers_factories
+from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
 
 
@@ -129,23 +130,46 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             managingOfferer=offerer, name=virtual_venue_name.format(venue_name), businessUnit__name=offerer.name
         )
 
+    # Venue Allocine
     venue_synchronized_with_allocine = offerers_factories.VenueFactory(
-        name="Lieu synchro allociné", siret="87654321", businessUnit__name="Business Unit du Lieu synchro allociné"
+        name="Lieu synchro allociné",
+        siret="21070034000016",
+        businessUnit__name="Business Unit du Lieu synchro allociné",
     )
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
     theater = providers_factories.AllocineTheaterFactory(siret=venue_synchronized_with_allocine.siret)
     pivot = providers_factories.AllocinePivotFactory(
         venue=venue_synchronized_with_allocine, theaterId=theater.theaterId, internalId=theater.internalId
     )
-    venue_provider = providers_factories.AllocineVenueProviderFactory(
+    allocine_venue_provider = providers_factories.AllocineVenueProviderFactory(
         venue=venue_synchronized_with_allocine, provider=allocine_provider, venueIdAtOfferProvider=pivot.theaterId
     )
-    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider)
+    providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=allocine_venue_provider)
     venue_by_name[venue_synchronized_with_allocine.name] = venue_synchronized_with_allocine
 
     # FIXME (viconnex): understand why these properties are not set with right values in factories
     allocine_provider.isActive = True
     allocine_provider.enabledForPro = True
+
+    # Venue Cine Office (CDS)
+    venue_synchronized_with_cds = offerers_factories.VenueFactory(
+        comment="Salle de cinéma",
+        name="Lieu synchro Ciné Office",
+        siret="21070034000018",
+        businessUnit__name="Business Unit du Lieu synchro Ciné Office",
+    )
+
+    cds_provider = get_provider_by_local_class("CDSStocks")
+    cds_provider.isActive = True
+    cds_provider.enabledForPro = True
+
+    cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
+        venue=venue_synchronized_with_cds, provider=cds_provider, idAtProvider="cdsdemorc1"
+    )
+    providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+    providers_factories.VenueProviderFactory(venue=venue_synchronized_with_cds, provider=cds_provider)
+
+    venue_by_name[venue_synchronized_with_cds.name] = venue_synchronized_with_cds
 
     logger.info("created %d venues", len(venue_by_name))
 

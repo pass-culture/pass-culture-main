@@ -42,11 +42,11 @@ def save_allocine_sandbox() -> None:
     venue = offerers_factories.VenueFactory(
         managingOfferer=offerer,
         address=offerer.address,
-        booking_email="fake@email.com",
+        bookingEmail="fake@email.com",
         city=offerer.city,
         comment="Salle de cinéma",
         name=offerer.name + " - Salle 1",
-        postal_code=offerer.postalCode,
+        postalCode=offerer.postalCode,
         siret=sirene.siret,
     )
 
