@@ -147,9 +147,6 @@ const OfferDetails = ({
     async offerValues => {
       try {
         if (offer) {
-          // TODO: if OFFER_FORM_SUMMARY_PAGE is active
-          // and isCreatingOffer === true
-          // use patch creation route when available
           await pcapi.updateOffer(offer.id, offerValues)
           notification.success('Votre offre a bien été modifiée')
           reloadOffer()

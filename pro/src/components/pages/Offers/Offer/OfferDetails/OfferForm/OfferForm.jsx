@@ -5,11 +5,9 @@ import {
   BASE_OFFER_FIELDS,
   CAN_CREATE_FROM_ISBN_SUBCATEGORIES,
   DEFAULT_FORM_VALUES,
-  EXTRA_DATA_FIELDS,
   MANDATORY_FIELDS,
   NOT_REIMBURSED,
   PLATFORM,
-  TEXT_INPUT_DEFAULT_VALUE,
   WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS,
   WITHDRAWAL_ON_SITE_DELAY_OPTIONS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
@@ -41,7 +39,8 @@ import TextareaInput from 'components/layout/inputs/TextareaInput'
 import WithdrawalReminder from './Messages/WithdrawalReminder'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 import isEqual from 'lodash.isequal'
-import { isUrlValid } from './validators'
+import { isFormValid } from './validators'
+import { serializeSubmitValues } from './serializers'
 import { sortByDisplayName } from 'utils/strings'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 
@@ -477,125 +476,38 @@ const OfferForm = ({
     [formValues.offererId, handleFormUpdate, setSelectedOfferer]
   )
 
-  const isValid = useCallback(() => {
-    let newFormErrors = {}
-    const formFields = [...offerFormFields, 'offererId']
-
-    mandatoryFields.forEach(fieldName => {
-      if (
-        formFields.includes(fieldName) &&
-        formValues[fieldName] === DEFAULT_FORM_VALUES[fieldName]
-      ) {
-        newFormErrors[fieldName] = 'Ce champ est obligatoire.'
-      }
-    })
-
-    if (
-      ![
-        formValues.noDisabilityCompliant,
-        formValues.audioDisabilityCompliant,
-        formValues.mentalDisabilityCompliant,
-        formValues.motorDisabilityCompliant,
-        formValues.visualDisabilityCompliant,
-      ].includes(true)
-    ) {
-      newFormErrors['disabilityCompliant'] = 'Ce champ est obligatoire.'
-    }
-
-    if (!isUrlValid(formValues.url)) {
-      newFormErrors['url'] = 'Veuillez renseigner une URL valide'
-    }
-
-    if (!isUrlValid(formValues.externalTicketOfficeUrl)) {
-      newFormErrors['externalTicketOfficeUrl'] =
-        'Veuillez renseigner une URL valide'
-    }
-
-    if (
-      WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(
-        formValues.subcategoryId
-      ) &&
-      !formValues.withdrawalType
-    ) {
-      newFormErrors[
-        'withdrawalType'
-      ] = `Vous devez cocher l'une des options ci-dessus`
-    }
-
-    setFormErrors(newFormErrors)
-    return Object.keys(newFormErrors).length === 0
-  }, [offerFormFields, mandatoryFields, formValues])
-
   const submitForm = useCallback(
     async event => {
       event.preventDefault()
       setIsSubmitLoading(true)
 
-      if (isValid()) {
-        const editableFields = offerFormFields.filter(
-          field => !readOnlyFields.includes(field)
+      const newFormErrors = isFormValid(
+        formValues,
+        offerFormFields,
+        mandatoryFields
+      )
+      if (Object.keys(newFormErrors).length > 0) {
+        setFormErrors(newFormErrors)
+        showErrorNotification()
+      } else {
+        const submittedValues = serializeSubmitValues(
+          formValues,
+          offerFormFields,
+          readOnlyFields,
+          receiveNotificationEmails
         )
-
-        const submittedValuesAccumulator = editableFields.some(editableField =>
-          EXTRA_DATA_FIELDS.includes(editableField)
-        )
-          ? { extraData: null }
-          : {}
-
-        const submittedValues = editableFields.reduce(
-          (submittedValues, fieldName) => {
-            if (!EXTRA_DATA_FIELDS.includes(fieldName)) {
-              const fieldValue =
-                formValues[fieldName] === TEXT_INPUT_DEFAULT_VALUE
-                  ? null
-                  : formValues[fieldName]
-              submittedValues = {
-                ...submittedValues,
-                [fieldName]: fieldValue,
-              }
-            } else if (
-              formValues[fieldName] !== DEFAULT_FORM_VALUES[fieldName]
-            ) {
-              submittedValues.extraData = {
-                ...submittedValues.extraData,
-                [fieldName]: formValues[fieldName],
-              }
-            }
-
-            return submittedValues
-          },
-          submittedValuesAccumulator
-        )
-
-        // front should check categoryId but do not send to backend
-        delete submittedValues.categoryId
-
-        if (!receiveNotificationEmails) {
-          submittedValues.bookingEmail = null
-        }
-
-        if (
-          submittedValues.withdrawalType &&
-          submittedValues.withdrawalType ===
-            OFFER_WITHDRAWAL_TYPE_OPTIONS.NO_TICKET
-        ) {
-          submittedValues.withdrawalDelay = null
-        }
 
         const nextStepRedirect = await onSubmit(submittedValues)
         if (nextStepRedirect !== null) {
           await nextStepRedirect()
           return
         }
-      } else {
-        showErrorNotification()
       }
       setIsSubmitLoading(false)
     },
     [
       offerFormFields,
       formValues,
-      isValid,
       onSubmit,
       readOnlyFields,
       receiveNotificationEmails,
