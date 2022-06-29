@@ -1,24 +1,18 @@
 import { Selector } from 'testcafe'
 
-import { createUserRole } from './roles'
-
 export const HOME_URL = '/accueil'
 
 export const navigateToHomeAs = (user, userRole) => async t => {
   const homepageNavItem = Selector('.nav-item').withText('Accueil')
 
-  if (!userRole) {
-    await t.useRole(createUserRole(user))
-  } else {
-    await t.useRole(userRole)
-  }
+  await t.useRole(userRole)
   await t.click(homepageNavItem)
 }
 
-export const navigateToOffersAs = user => async t => {
+export const navigateToOffersAs = userRole => async t => {
   const offersMenuItem = Selector("a[role='menuitem']").withText('Offres')
 
-  await t.useRole(createUserRole(user))
+  await t.useRole(userRole)
   await t.click(offersMenuItem)
 }
 
@@ -105,11 +99,7 @@ export const navigateToNewOfferAs =
 
       await navigateToHomeAs(user, userRole)
 
-      if (userRole) {
-        await t.useRole(userRole).click(newOfferAnchor)
-      } else {
-        await t.useRole(createUserRole(user)).click(newOfferAnchor)
-      }
+      await t.useRole(userRole).click(newOfferAnchor)
       await t.click(nextStepAnchor)
     }
   }
@@ -121,16 +111,12 @@ export const navigateToOfferAs = (user, offer, userRole) => async t => {
     `a[href^="/offre/${offer.id}/individuel/edition"]`
   ).withText(offer.name)
 
-  if (!userRole) {
-    await t.useRole(createUserRole(user))
-  } else {
-    await t.useRole(userRole)
-  }
+  await t.useRole(userRole)
 
   await t.navigateTo('/offres')
 
   await t
-    .typeText(searchInput, offer.name)
+    .typeText(searchInput, offer.name, { paste: true })
     .click(submitButton)
     .click(offerAnchor)
 }
@@ -142,16 +128,12 @@ export const navigateToStocksAs = (user, offer, userRole) => async t => {
     `a[href^="/offre/${offer.id}/individuel/stocks"]`
   ).withText('Stocks')
 
-  if (!userRole) {
-    await t.useRole(createUserRole(user))
-  } else {
-    await t.useRole(userRole)
-  }
+  await t.useRole(userRole)
 
   await t.navigateTo('/offres')
 
   await t
-    .typeText(searchInput, offer.name)
+    .typeText(searchInput, offer.name, { paste: true })
     .click(submitButton)
     .click(stocksAnchor)
 }
