@@ -1,4 +1,3 @@
-import copy
 import datetime
 import logging
 from typing import List
@@ -75,7 +74,6 @@ from pcapi.core.offers.validation import check_booking_limit_datetime
 from pcapi.core.offers.validation import check_offer_is_eligible_for_educational
 from pcapi.core.offers.validation import check_offer_subcategory_is_valid
 from pcapi.core.offers.validation import check_offer_withdrawal
-from pcapi.core.offers.validation import check_shadow_stock_is_editable
 from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.payments import conf as deposit_conf
 from pcapi.core.users.external import update_external_pro
@@ -94,7 +92,6 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
-from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockEditionBodyModel
 from pcapi.utils import image_conversion
@@ -690,44 +687,6 @@ def update_offer_fraud_information(
             logger.warning("Could not send first venue approved offer email", extra={"offer_id": offer.id})
 
 
-def create_educational_stock(stock_data: EducationalStockCreationBodyModel, user: User) -> Stock:
-    offer_id = stock_data.offer_id
-    beginning = stock_data.beginning_datetime
-    booking_limit_datetime = stock_data.booking_limit_datetime
-    total_price = stock_data.total_price
-    number_of_tickets = stock_data.number_of_tickets
-    educational_price_detail = stock_data.educational_price_detail
-
-    offer = Offer.query.filter_by(id=offer_id).options(sqla_orm.joinedload(Offer.stocks)).one()
-    if len(offer.activeStocks) > 0:
-        raise educational_exceptions.EducationalStockAlreadyExists()
-
-    if not offer.isEducational:
-        raise educational_exceptions.OfferIsNotEducational(offer_id)
-    validation.check_validation_status(offer)
-    if booking_limit_datetime is None:
-        booking_limit_datetime = beginning
-
-    stock = Stock(
-        offer=offer,
-        beginningDatetime=beginning,
-        bookingLimitDatetime=booking_limit_datetime,
-        price=total_price,
-        numberOfTickets=number_of_tickets,
-        educationalPriceDetail=educational_price_detail,
-        quantity=1,
-    )
-    repository.save(stock)
-    logger.info("Educational stock has been created", extra={"offer": offer_id})
-
-    if offer.validation == OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(offer, user, silent=True)
-
-    search.async_index_offer_ids([offer.id])
-
-    return stock
-
-
 def _update_educational_booking_cancellation_limit_date(
     booking: Union[Booking, educational_models.CollectiveBooking], new_beginning_datetime: datetime.datetime
 ) -> None:
@@ -1164,52 +1123,6 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
             "Could not notify offerer about deletion of stock",
             extra={"collectiveStock": collective_stock.id},
         )
-
-
-def transform_shadow_stock_into_educational_stock(
-    stock_id: str, stock_data: EducationalStockCreationBodyModel, offer: Offer, user: User
-) -> Stock:
-    if offer.extraData.get("isShowcase") is not True:  # type: ignore [union-attr]
-        raise educational_exceptions.OfferIsNotShowcase()
-
-    shadow_stock = offers_repository.get_non_deleted_stock_by_id(stock_id)  # type: ignore [arg-type]
-    validation.check_stock_is_deletable(shadow_stock)
-    shadow_stock.isSoftDeleted = True
-    db.session.add(shadow_stock)
-
-    stock = create_educational_stock(stock_data, user)
-    # commit the changes on shadow_stock once the new stock is created
-    db.session.commit()
-
-    extra_data = copy.deepcopy(offer.extraData)
-    extra_data["isShowcase"] = False  # type: ignore [index, call-overload]
-    offer.extraData = extra_data
-    repository.save(offer)
-
-    return stock
-
-
-def edit_shadow_stock(stock: Stock, stock_data: dict) -> Stock:
-    if not stock.offer.isEducational:
-        raise educational_exceptions.OfferIsNotEducational(stock.offerId)
-
-    if stock.offer.extraData.get("isShowcase") is not True:  # type: ignore [union-attr]
-        raise educational_exceptions.OfferIsNotShowcase()
-
-    check_shadow_stock_is_editable(stock)
-
-    with transaction():
-        stock = offers_repository.get_and_lock_stock(stock.id)
-        if stock_data.get("educational_price_detail") is not None:
-            stock.educationalPriceDetail = stock_data["educational_price_detail"]
-        db.session.add(stock)
-        db.session.commit()
-
-    logger.info("Stock has been updated", extra={"stock": stock.id})
-
-    search.async_index_offer_ids([stock.offerId])
-
-    return stock
 
 
 def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer) -> None:

@@ -62,7 +62,6 @@ from pcapi.routes.serialization.collective_bookings_serialize import serialize_c
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
-from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.human_ids import dehumanize
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -496,10 +495,7 @@ def _extract_updatable_fields_from_stock_data(
 
 
 def create_collective_stock(
-    stock_data: Union[
-        CollectiveStockCreationBodyModel,
-        EducationalStockCreationBodyModel,
-    ],
+    stock_data: CollectiveStockCreationBodyModel,
     user: User,
     *,
     legacy_id: Optional[int] = None,
@@ -782,28 +778,6 @@ def create_collective_offer_template_from_collective_offer(
 def get_collective_offer_id_from_educational_stock(stock: Stock) -> int:
     collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)
     return collective_offer.id
-
-
-def edit_collective_offer_template_from_stock(stock: Stock, stock_data: dict) -> None:
-    if stock_data.get("educational_price_detail") is None:
-        return
-
-    collective_offer_template = CollectiveOfferTemplate.query.filter_by(offerId=stock.offerId).one_or_none()
-
-    if collective_offer_template is None:
-        raise exceptions.CollectiveOfferTemplateNotFound()
-
-    offer_validation.check_validation_status(collective_offer_template)
-
-    collective_offer_template.priceDetail = stock_data["educational_price_detail"]
-    db.session.add(stock)
-    db.session.commit()
-
-    logger.info(
-        "Collective offer template has been updated", extra={"collective_offer_template": collective_offer_template.id}
-    )
-
-    search.async_index_collective_offer_template_ids([collective_offer_template.id])
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:

@@ -610,13 +610,6 @@ def get_educational_offer_by_id(offer_id: str) -> Offer:
     return Offer.query.filter(Offer.isEducational == True, Offer.id == offer_id).one()
 
 
-def get_non_deleted_stock_by_id(stock_id: int):  # type: ignore [no-untyped-def]
-    stock = Stock.queryNotSoftDeleted().filter_by(id=stock_id).first()
-    if stock is None:
-        raise StockDoesNotExist()
-    return stock
-
-
 def get_offer_by_id(offer_id: int) -> Offer:
     try:
         return (
