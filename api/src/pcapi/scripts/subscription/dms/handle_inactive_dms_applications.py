@@ -31,7 +31,7 @@ def handle_inactive_dms_applications(procedure_id: int, with_never_eligible_appl
         try:
             if not _has_inactivity_delay_expired(draft_application):
                 continue
-            if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application, procedure_id):
+            if with_never_eligible_applicant_rule and _is_never_eligible_applicant(draft_application):
                 continue
             _mark_without_continuation_a_draft_application(draft_application)
             _mark_cancel_dms_fraud_check(draft_application.number)
@@ -104,10 +104,8 @@ def _mark_cancel_dms_fraud_check(application_number: int) -> None:
         repository.save(fraud_check)
 
 
-def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationResponse, procedure_id: int) -> bool:
-    application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(
-        dms_application, procedure_id
-    )
+def _is_never_eligible_applicant(dms_application: dms_models.DmsApplicationResponse) -> bool:
+    application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(dms_application)
     if field_errors:
         return True
     applicant_birth_date = application_content.get_birth_date()

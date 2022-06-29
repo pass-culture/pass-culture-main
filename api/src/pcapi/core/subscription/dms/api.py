@@ -55,19 +55,20 @@ def try_dms_orphan_adoption(user: users_models.User) -> None:
         return
 
     dms_application = dms_connector_api.DMSGraphQLClient().get_single_application_details(dms_orphan.application_id)
-    fraud_check = handle_dms_application(dms_application, dms_orphan.process_id)
+    fraud_check = handle_dms_application(dms_application)
 
     if fraud_check is not None:
         pcapi_repository.repository.delete(dms_orphan)
 
 
 def handle_dms_application(
-    dms_application: dms_models.DmsApplicationResponse, procedure_id: int
+    dms_application: dms_models.DmsApplicationResponse,
 ) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
     application_number = dms_application.number
     user_email = users_utils.sanitize_email(dms_application.profile.email)
     application_scalar_id = dms_application.id
     state = dms_models.GraphQLApplicationStates(dms_application.state)
+    procedure_id = dms_application.procedure.number
 
     log_extra_data = {
         "application_number": application_number,
@@ -82,9 +83,7 @@ def handle_dms_application(
         _process_user_not_found_error(user_email, application_number, procedure_id, state, application_scalar_id)
         return None
 
-    application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(
-        dms_application, procedure_id
-    )
+    application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(dms_application)
     if not field_errors:
         core_logging.log_for_supervision(
             logger=logger,
