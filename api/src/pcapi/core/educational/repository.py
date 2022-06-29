@@ -20,7 +20,6 @@ from sqlalchemy.orm import load_only
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import extract
 
-from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
 from pcapi.core.bookings.repository import field_to_venue_timezone
@@ -45,8 +44,6 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import repository as offers_repository
-from pcapi.core.offers.models import Offer
-from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models import db
 
@@ -224,26 +221,6 @@ def find_redactor_by_email(redactor_email: str) -> Optional[educational_models.E
     return educational_models.EducationalRedactor.query.filter(
         educational_models.EducationalRedactor.email == redactor_email
     ).one_or_none()
-
-
-def find_active_educational_booking_by_offer_id(
-    offer_id: Union[int, str]
-) -> Optional[educational_models.EducationalBooking]:
-    return (
-        educational_models.EducationalBooking.query.join(Booking)
-        .filter(Booking.status.in_([BookingStatus.CONFIRMED, BookingStatus.PENDING]))
-        .join(Stock)
-        .filter(Stock.offerId == offer_id, Stock.isSoftDeleted.is_(False))
-        .options(
-            contains_eager(educational_models.EducationalBooking.booking)
-            .contains_eager(Booking.stock)
-            .joinedload(Stock.offer, innerjoin=True)
-            .joinedload(Offer.venue, innerjoin=True)
-        )
-        .options(joinedload(educational_models.EducationalBooking.educationalInstitution, innerjoin=True))
-        .options(joinedload(educational_models.EducationalBooking.educationalRedactor, innerjoin=True))
-        .one_or_none()
-    )
 
 
 def find_active_collective_booking_by_offer_id(

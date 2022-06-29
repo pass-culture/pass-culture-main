@@ -11,10 +11,8 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingCancellationReasons
 from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalBookingStatus
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers import models as offers_models
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
@@ -154,58 +152,6 @@ def serialize_collective_bookings(educational_bookings: list[CollectiveBooking])
     return serialized_educational_bookings
 
 
-def serialize_educational_booking(educational_booking: EducationalBooking) -> EducationalBookingResponse:
-    booking = educational_booking.booking
-    stock = booking.stock
-    offer = stock.offer
-    venue = offer.venue
-    return EducationalBookingResponse(
-        accessibility=_get_educational_offer_accessibility(offer),
-        address=_get_educational_offer_address(offer),
-        beginningDatetime=stock.beginningDatetime,
-        cancellationDate=booking.cancellationDate,
-        cancellationLimitDate=booking.cancellationLimitDate,
-        city=venue.city,
-        confirmationDate=educational_booking.confirmationDate,
-        confirmationLimitDate=educational_booking.confirmationLimitDate,
-        contact=_get_educational_offer_contact(offer),
-        coordinates={
-            "latitude": venue.latitude,
-            "longitude": venue.longitude,
-        },
-        creationDate=booking.dateCreated,
-        description=offer.description,
-        durationMinutes=offer.durationMinutes,
-        expirationDate=booking.expirationDate,
-        id=educational_booking.id,
-        isDigital=offer.isDigital,
-        venueName=venue.name,
-        name=offer.name,
-        numberOfTickets=stock.numberOfTickets,
-        participants=offer.extraData.get("students", []) if offer.extraData is not None else [],
-        priceDetail=stock.educationalPriceDetail,
-        postalCode=venue.postalCode,
-        price=booking.amount,
-        quantity=booking.quantity,
-        redactor={
-            "email": educational_booking.educationalRedactor.email,
-            "redactorFirstName": educational_booking.educationalRedactor.firstName,
-            "redactorLastName": educational_booking.educationalRedactor.lastName,
-            "redactorCivility": educational_booking.educationalRedactor.civility,
-        },
-        UAICode=educational_booking.educationalInstitution.institutionId,
-        yearId=educational_booking.educationalYearId,
-        status=get_educational_booking_status(educational_booking),
-        venueTimezone=venue.timezone,
-        subcategoryLabel=offer.subcategory.app_label,
-        totalAmount=booking.total_amount,
-        url=offer_app_link(offer),
-        withdrawalDetails=offer.withdrawalDetails,
-        domain_ids=[],
-        domain_labels=[],
-    )
-
-
 def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
     stock: educational_models.CollectiveStock = collective_booking.collectiveStock
     offer: educational_models.CollectiveOffer = stock.collectiveOffer
@@ -258,22 +204,6 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
     )
 
 
-def get_educational_booking_status(
-    educational_booking: EducationalBooking,
-) -> Union[EducationalBookingStatus, BookingStatus]:
-    if educational_booking.booking.status in (
-        BookingStatus.USED,
-        BookingStatus.REIMBURSED,
-    ):
-        return BookingStatus.USED.value  # type: ignore [return-value]
-
-    # This is to return REFUSED instead of CANCELLED if educational booking is REFUSED
-    if educational_booking.status is not None:
-        return educational_booking.status.value  # type: ignore [attr-defined]
-
-    return educational_booking.booking.status.value  # type: ignore [attr-defined]
-
-
 def get_collective_booking_status(
     collective_booking: CollectiveBooking,
 ) -> CollectiveBookingStatus:
@@ -289,43 +219,11 @@ def get_collective_booking_status(
     return collective_booking.status.value  # type: ignore [attr-defined]
 
 
-def _get_educational_offer_contact(offer: offers_models.Offer) -> Contact:
-    if offer.extraData is None:
-        return Contact(email=None, phone=None)
-
-    return Contact(
-        email=offer.extraData.get("contactEmail", None),  # type: ignore [union-attr]
-        phone=offer.extraData.get("contactPhone", None),  # type: ignore [union-attr]
-    )
-
-
 def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> Contact:
     return Contact(
         email=offer.contactEmail,
         phone=offer.contactPhone,
     )
-
-
-# FIXME (cgaunet, 2022-04-28): Remove this method once cleaning old model is done
-def _get_educational_offer_address(offer: offers_models.Offer) -> str:
-    default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
-
-    if offer.extraData is None or offer.extraData.get("offerVenue", None) is None:  # type: ignore [union-attr]
-        return default_address
-    offer_venue = offer.extraData["offerVenue"]  # type: ignore [call-overload]
-
-    address_type = offer_venue["addressType"]
-
-    if address_type == "offererVenue":
-        return default_address
-
-    if address_type == "other":
-        return offer_venue["otherAddress"]
-
-    if address_type == "school":
-        return "Dans l’établissement scolaire"
-
-    return default_address
 
 
 def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> str:
@@ -348,12 +246,7 @@ def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> 
     return default_address
 
 
-def _get_educational_offer_accessibility(
-    offer: Union[
-        educational_models.CollectiveOffer,
-        offers_models.Offer,
-    ]
-) -> str:
+def _get_educational_offer_accessibility(offer: educational_models.CollectiveOffer) -> str:
     disability_compliance = []
     if offer.audioDisabilityCompliant:
         disability_compliance.append("Auditif")
