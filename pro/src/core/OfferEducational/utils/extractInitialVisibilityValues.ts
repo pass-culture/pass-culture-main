@@ -4,6 +4,8 @@ export const extractInitialVisibilityValues = (
   institution?: EducationalInstitution | null
 ): VisibilityFormValues => ({
   institution: institution?.id?.toString() ?? '',
-  'search-institution': institution?.name ?? '',
+  'search-institution': institution
+    ? `${institution.name} - ${institution.city}`
+    : '',
   visibility: institution ? 'one' : 'all',
 })
