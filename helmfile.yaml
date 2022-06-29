@@ -16,10 +16,10 @@ releases:
 environments:
   testing:
     values:
-      - chartVersion: 0.11.9
+      - chartVersion: 0.12.0
   staging:
     values:
-      - chartVersion: 0.11.9
+      - chartVersion: 0.12.0
   integration:
     values:
       - chartVersion: 0.11.9
