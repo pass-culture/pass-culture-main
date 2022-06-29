@@ -184,47 +184,6 @@ def patch_offer(offer_id: str, body: offers_serialize.PatchOfferBodyModel) -> of
     return offers_serialize.OfferResponseIdModel.from_orm(offer)
 
 
-@private_api.route("/offers/educational/<offer_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.OfferResponseIdModel,
-    api=blueprint.pro_private_schema,
-)
-def edit_educational_offer(
-    offer_id: str, body: offers_serialize.PatchEducationalOfferBodyModel
-) -> offers_serialize.GetOfferResponseModel:
-    # FIXME DELETE UNUSED API
-    try:
-        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
-
-        check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-        offers_api.update_educational_offer(offer, body.dict(exclude_unset=True))
-        offer_is_showcase = offer.extraData.get("isShowcase")  # type: ignore [union-attr]
-        offers_api.update_collective_offer(
-            offer.id,
-            offer_is_showcase,  # type: ignore [arg-type]
-            body.dict(exclude_unset=True),
-            legacy=True,
-        )
-
-        offer = offers_repository.get_educational_offer_by_id(dehumanize(offer_id))  # type: ignore [arg-type]
-
-        # FIXME (cgaunet, 2022-01-26): This log is to investigate a bug causing extraData to be json_typeof 'null'
-        if offer.extraData is None:
-            logger.error(
-                "Offer extraData is None after edit_educational_offer call",
-                extra={"offer_id": offer.id, "offer_name": offer.name, "payload": body.json()},
-            )
-
-        return offers_serialize.GetOfferResponseModel.from_orm(offer)
-
-    except orm_exc.NoResultFound:
-        raise ApiErrors({"offerId": "no educational offer has been found with this id"}, 404)
-    except exceptions.SubcategoryNotEligibleForEducationalOffer:
-        raise ApiErrors({"subcategoryId": "this subcategory is not educational"}, 400)
-
-
 @private_api.route("/offers/thumbnails/", methods=["POST"])
 @login_required
 @spectree_serialize(

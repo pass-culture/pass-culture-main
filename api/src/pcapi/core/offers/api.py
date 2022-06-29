@@ -327,54 +327,14 @@ def update_offer(
     return offer
 
 
-def update_educational_offer(  # type: ignore [return]
-    offer: Offer,
-    new_values: dict,
-) -> Offer:
-    validation.check_validation_status(offer)
-    # This variable is meant for Adage mailing
-    updated_fields = []
-    for key, value in new_values.items():
-        if key == "extraData":
-            extra_data = copy.deepcopy(offer.extraData)
-
-            for extra_data_key, extra_data_value in value.items():
-                # We denormalize extra_data for Adage mailing
-                updated_fields.append(extra_data_key)
-                extra_data[extra_data_key] = extra_data_value  # type: ignore [index]
-
-            offer.extraData = extra_data
-            continue
-
-        updated_fields.append(key)
-
-        if key == "subcategoryId":
-            validation.check_offer_is_eligible_for_educational(value.name, True)
-            offer.subcategoryId = value.name
-            continue
-
-        setattr(offer, key, value)
-
-    repository.save(offer)
-
-    search.async_index_offer_ids([offer.id])
-
-    educational_api.notify_educational_redactor_on_educational_offer_or_stock_edit(
-        offer.id,  # type: ignore [arg-type]
-        updated_fields,
-    )
-
-
 def update_collective_offer(
     offer_id: int,
     is_offer_showcase: bool,
     new_values: dict,
-    legacy: bool = False,
 ) -> None:
     cls = educational_models.CollectiveOfferTemplate if is_offer_showcase else educational_models.CollectiveOffer
-    id_column = cls.offerId if legacy else cls.id  # type: ignore [attr-defined]
 
-    offer_to_update = cls.query.filter(id_column == offer_id).first()  # type: ignore [attr-defined]
+    offer_to_update = cls.query.filter(cls.id == offer_id).first()  # type: ignore [attr-defined]
 
     if offer_to_update is None:
         # FIXME (MathildeDuboille - 2022-03-07): raise an error once all data has been migrated (PC-13427)
