@@ -186,7 +186,6 @@ def test_public_api(client):
                         },
                         "displayDmsRedirection": {"title": "Displaydmsredirection", "type": "boolean"},
                         "enableFrontImageResizing": {"title": "Enablefrontimageresizing", "type": "boolean"},
-                        "enableIdCheckRetention": {"title": "Enableidcheckretention", "type": "boolean"},
                         "enableNativeCulturalSurvey": {"title": "Enablenativeculturalsurvey", "type": "boolean"},
                         "enableNativeEacIndividual": {"title": "Enablenativeeacindividual", "type": "boolean"},
                         "enableNativeIdCheckVerboseDebugging": {
@@ -211,7 +210,6 @@ def test_public_api(client):
                         "autoActivateDigitalBookings",
                         "displayDmsRedirection",
                         "enableFrontImageResizing",
-                        "enableIdCheckRetention",
                         "enableNativeCulturalSurvey",
                         "enableNativeEacIndividual",
                         "enableNativeIdCheckVerboseDebugging",

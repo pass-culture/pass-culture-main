@@ -7,7 +7,6 @@ Create Date: 2021-05-06 15:14:21.619714
 This migration previously added the FF ENABLE_NATIVE_ID_CHECK_VERSION that was later deleted as it's obsolete
 
 """
-from pcapi.models import feature
 
 
 # revision identifiers, used by Alembic.

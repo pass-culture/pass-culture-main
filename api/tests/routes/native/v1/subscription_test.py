@@ -19,6 +19,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class NextStepTest:
+    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription_test(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -38,6 +39,7 @@ class NextStepTest:
             "stepperIncludesPhoneValidation": False,
         }
 
+    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_next_subscription_test_profile_completion(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
@@ -97,6 +99,7 @@ class NextStepTest:
             "stepperIncludesPhoneValidation": False,
         }
 
+    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
     @pytest.mark.parametrize(
         "fraud_check_status,reason_code,ubble_status,next_step,pending_idcheck",
         [
@@ -224,6 +227,12 @@ class NextStepTest:
             "stepperIncludesPhoneValidation": False,
         }
 
+    @override_features(
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
+        ENABLE_UBBLE=True,
+        ENABLE_PHONE_VALIDATION_IN_STEPPER=False,
+        ENABLE_USER_PROFILING=True,
+    )
     @pytest.mark.parametrize(
         "underage_fraud_check_status,underage_ubble_status",
         [
@@ -236,7 +245,6 @@ class NextStepTest:
             (None, ubble_fraud_models.UbbleIdentificationStatus.PROCESSED),
         ],
     )
-    @override_features(ENABLE_UBBLE=True)
     def test_next_subscription_full_ubble_turned_18(self, client, underage_fraud_check_status, underage_ubble_status):
         # User has already performed id check with Ubble for underage credit (successfully or not), 2 years ago
         with freeze_time(datetime.datetime.utcnow() - relativedelta(years=2)):
@@ -397,6 +405,8 @@ class NextStepTest:
         ENABLE_UBBLE=True,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18=False,
         ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE=False,
+        ENABLE_PHONE_VALIDATION_IN_STEPPER=False,
+        ENABLE_EDUCONNECT_AUTHENTICATION=False,
     )
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
     def test_ubble_subcription_limited(self, client, age):
@@ -478,6 +488,7 @@ class NextStepTest:
         }
 
     @override_features(ENABLE_UBBLE=True)
+    @override_features(ENABLE_PHONE_VALIDATION_IN_STEPPER=False, ENABLE_EDUCONNECT_AUTHENTICATION=False)
     def test_ubble_restart_workflow(self, client):
         user = users_factories.UserFactory(
             dateOfBirth=datetime.datetime.combine(datetime.date.today(), datetime.time(0, 0))
