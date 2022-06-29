@@ -18,8 +18,8 @@ test("je me connecte avec un compte valide, et je suis redirigé·e vers la page
 
   await t
     .navigateTo(`${ROOT_PATH}connexion`)
-    .typeText(inputUserIdentifier, user.email)
-    .typeText(inputUserPassword, user.password)
+    .typeText(inputUserIdentifier, user.email, { paste: true })
+    .typeText(inputUserPassword, user.password, { paste: true })
     .click(signInButton)
     .expect(getPathname())
     .eql(HOME_URL)

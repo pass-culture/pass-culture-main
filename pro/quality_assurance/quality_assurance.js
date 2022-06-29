@@ -27,18 +27,22 @@ test('captures d’écran de toutes les pages du site', async () => {
   const token = Selector('label').withText('Contremarque')
   await t
     .navigateTo('/guichet')
-    .typeText(token, 'FAAKEE', { replace: true })
+    .typeText(token, 'FAAKEE', { replace: true, paste: true })
     .takeScreenshot(optionsOfScreenshot('guichet-FAAKEE'))
   await t
     .navigateTo('/guichet')
-    .typeText(token, '100004', { replace: true })
+    .typeText(token, '100004', { replace: true, paste: true })
     .takeScreenshot(optionsOfScreenshot('guichet'))
   await t
     .navigateTo('/offres')
     .click(Selector('input[type="checkbox"]'))
     .click(Selector('.field-date-end .period-filter-input'))
     .takeScreenshot(optionsOfScreenshot('offres'))
-    .typeText(Selector('label').withText('Nom de l’offre ou ISBN'), 'search without result')
+    .typeText(
+      Selector('label').withText('Nom de l’offre ou ISBN'),
+      'search without result',
+      { paste: true }
+    )
     .click(Selector('button').withText('Lancer la recherche'))
     .takeScreenshot(optionsOfScreenshot('offres-search-without-result'))
   await t
@@ -52,7 +56,8 @@ test('captures d’écran de toutes les pages du site', async () => {
     .takeScreenshot(optionsOfScreenshot('thumbnail-upload-from-url'))
     .typeText(
       Selector('.thumbnail-dialog .tnf-form input[name="url"]'),
-      'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png'
+      'https://pass.culture.fr/wp-content/uploads/2020/11/N_PASS_CULTURE_HD.png',
+      { paste: true }
     )
     .click(Selector('.thumbnail-dialog .tnf-url-button'))
     .takeScreenshot(optionsOfScreenshot('image-credit-input'))
@@ -67,12 +72,20 @@ test('captures d’écran de toutes les pages du site', async () => {
     .navigateTo('/offres/creation')
     .click(Selector('select').withText('Choisir un type'))
     .click(Selector('select option').withText('Jeux - abonnements'))
-    .typeText(Selector('label').withText("Titre de l'offre"), 'Un titre d’offre')
+    .typeText(
+      Selector('label').withText("Titre de l'offre"),
+      'Un titre d’offre',
+      { paste: true }
+    )
     .click(Selector('select').withText('Sélectionnez une structure'))
     .click(Selector('select option').withText('Club Dorothy'))
     .click(Selector('select').withText('Sélectionnez un lieu'))
     .click(Selector('select option').withText('Maison de la Brique'))
-    .typeText(Selector('label').withText('URL d’accès à l’offre'), 'https://example.com')
+    .typeText(
+      Selector('label').withText('URL d’accès à l’offre'),
+      'https://example.com',
+      { paste: true }
+    )
     .click(Selector('input[name="noDisabilityCompliant"]'))
     .takeScreenshot(optionsOfScreenshot('offre-creation'))
     .click(Selector('button').withText('Enregistrer et passer aux stocks'))
@@ -84,7 +97,11 @@ test('captures d’écran de toutes les pages du site', async () => {
     .navigateTo('/reservations')
     .click(Selector('img[alt="Filtrer par statut"]'))
     .takeScreenshot(optionsOfScreenshot('reservations'))
-    .typeText(Selector(`input[placeholder="Rechercher par nom d'offre"]`), 'search without result')
+    .typeText(
+      Selector(`input[placeholder="Rechercher par nom d'offre"]`),
+      'search without result',
+      { paste: true }
+    )
     .takeScreenshot(optionsOfScreenshot('reservations-search-without-result'))
   await t
     .navigateTo('/profil')

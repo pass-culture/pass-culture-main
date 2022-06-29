@@ -27,7 +27,7 @@
     "test:unit": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --coverage",
     "test:unit:ci": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --max-workers=2",
     "test:unit:one": "NODE_ICU_DATA=node_modules/full-icu TZ=UTC jest --bail",
-    "testcafe": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chrome:headless'",
+    "testcafe": "testcafe --cache --assertion-timeout 1000 --selector-timeout 5000 -S -s testcafe_screenshots 'chrome:headless'",
     "testcafe-firefox": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'firefox:headless'",
     "testcafe-chromium": "testcafe --assertion-timeout 5000 --selector-timeout 15000 -S -s testcafe_screenshots 'chromium:headless'",
     "storybook": "NODE_PATH=src start-storybook -p 6006",

@@ -41,7 +41,7 @@ test("je peux créer un stock pour un événement en passant par la page de l'of
     .click(datePickerLastDay)
     .click(hourInput)
     .click(hourPickerLastHour)
-    .typeText(priceInput, '15')
+    .typeText(priceInput, '15', { paste: true })
     .click(submitButton)
 
   await t.expect(submitSuccess.exists).ok().expect(stockItem.count).eql(1)
@@ -95,7 +95,7 @@ test('je peux modifier un stock pour un événement', async t => {
     .click(hourPickerLastHour)
     .expect(datePickerPopin.exists)
     .notOk()
-    .typeText(priceInput, '15')
+    .typeText(priceInput, '15', { paste: true })
     .click(submitButton)
 
   await t

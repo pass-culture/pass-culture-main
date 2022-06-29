@@ -1,6 +1,7 @@
 import { HOME_URL, navigateToHomeAs } from './helpers/navigations'
 
 import { Selector } from 'testcafe'
+import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getPathname } from './helpers/location'
 
@@ -15,7 +16,7 @@ test('j’ai accès aux informations de mon profil', async t => {
   const userEmail = Selector('span').withText(user.email)
   const userPhoneNumber = Selector('span').withText(user.phoneNumber)
 
-  await navigateToHomeAs(user)(t)
+  await navigateToHomeAs(user, createUserRole(user))(t)
   await t
     .expect(getPathname())
     .eql(HOME_URL)
@@ -59,7 +60,7 @@ test('je peux modifier mon profil avec de nouvelles données valides.', async t 
   )
   const errorMessages = Selector('.it-errors')
 
-  await navigateToHomeAs(user)(t)
+  await navigateToHomeAs(user, createUserRole(user))(t)
   await t
     .click(modifyProfileButton)
 
@@ -76,13 +77,13 @@ test('je peux modifier mon profil avec de nouvelles données valides.', async t 
     .eql(0)
 
     .selectText(inputFirstname)
-    .typeText(inputFirstname, editData.firstname)
+    .typeText(inputFirstname, editData.firstname, { paste: true })
     .selectText(inputLastname)
-    .typeText(inputLastname, editData.lastname)
+    .typeText(inputLastname, editData.lastname, { paste: true })
     .selectText(inputEmail)
-    .typeText(inputEmail, editData.email)
+    .typeText(inputEmail, editData.email, { paste: true })
     .selectText(inputPhoneNumber)
-    .typeText(inputPhoneNumber, editData.phoneNumber)
+    .typeText(inputPhoneNumber, editData.phoneNumber, { paste: true })
     .click(submitProfileButton)
 
     .expect(errorMessages.count)
