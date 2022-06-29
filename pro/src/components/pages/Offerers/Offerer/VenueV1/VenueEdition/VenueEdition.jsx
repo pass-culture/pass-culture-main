@@ -308,9 +308,6 @@ const VenueEdition = () => {
               venueImage={venue.bannerUrl}
             />
           )}
-          {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
-            <EACInformation />
-          )}
           {!initialIsVirtual && (
             <>
               <LocationFields
@@ -341,6 +338,9 @@ const VenueEdition = () => {
               />
               <ContactInfosFields readOnly={readOnly} />
             </>
+          )}
+          {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
+            <EACInformation />
           )}
           {isNewBankInformationCreation ? (
             <ReimbursementFields
