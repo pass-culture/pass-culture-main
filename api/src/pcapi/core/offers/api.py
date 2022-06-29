@@ -3,7 +3,6 @@ import datetime
 import logging
 from typing import List
 from typing import Optional
-from typing import Tuple
 from typing import Union
 
 from psycopg2.errorcodes import CHECK_VIOLATION
@@ -94,7 +93,6 @@ from pcapi.repository import repository
 from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.serialization.offers_serialize import CompletedEducationalOfferModel
-from pcapi.routes.serialization.offers_serialize import EducationalOfferShadowStockBodyModel
 from pcapi.routes.serialization.offers_serialize import PostOfferBodyModel
 from pcapi.routes.serialization.stock_serialize import EducationalStockCreationBodyModel
 from pcapi.routes.serialization.stock_serialize import StockCreationBodyModel
@@ -1197,42 +1195,6 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[
         logger.warning("Could not send email reported offer by user", extra={"user_id": user.id})
 
 
-def create_collective_shadow_offer(
-    stock_data: EducationalOfferShadowStockBodyModel, user: User, offer_id: str
-) -> Tuple[Stock, int]:
-    offer = Offer.query.filter_by(id=offer_id).options(sqla_orm.joinedload(Offer.stocks)).one()
-    stock = create_educational_shadow_stock_and_set_offer_showcase(stock_data, user, offer)
-    collective_offer_template = create_collective_offer_template_and_delete_collective_offer(offer, stock, user)
-    return (stock, collective_offer_template.id)
-
-
-def create_collective_offer_template_and_delete_collective_offer(
-    offer: Offer, stock: Stock, user: User
-) -> CollectiveOfferTemplate:
-    collective_offer = educational_models.CollectiveOffer.query.filter_by(offerId=offer.id).one_or_none()
-    if collective_offer is None:
-        raise offers_exceptions.CollectiveOfferNotFound()
-
-    collective_offer_template = educational_models.CollectiveOfferTemplate.create_from_collective_offer(
-        collective_offer, price_detail=stock.educationalPriceDetail
-    )
-    db.session.delete(collective_offer)
-    db.session.add(collective_offer_template)
-    db.session.commit()
-
-    if offer.validation == OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(collective_offer_template, user)
-    search.unindex_collective_offer_ids([collective_offer.id])
-    search.async_index_collective_offer_template_ids([collective_offer_template.id])
-
-    logger.info(
-        "Collective offer template has been created and regular collective offer deleted if applicable",
-        extra={"collectiveOfferTemplate": collective_offer_template.id, "offer": offer.id},
-    )
-
-    return collective_offer_template
-
-
 def cancel_collective_offer_booking(offer_id: int) -> None:
     collective_offer = CollectiveOffer.query.filter(CollectiveOffer.id == offer_id).first()
 
@@ -1278,50 +1240,6 @@ def cancel_collective_offer_booking(offer_id: int) -> None:
             "Could not notify offerer about deletion of stock",
             extra={"collectiveStock": collective_stock.id},
         )
-
-
-def create_educational_shadow_stock_and_set_offer_showcase(
-    stock_data: EducationalOfferShadowStockBodyModel, user: User, offer: Offer
-) -> Stock:
-    # When creating a showcase offer we need to create a shadow stock.
-    # We prefill the stock information with false data.
-    # This code will disappear when the new collective offer model is implemented
-    beginning = datetime.datetime(2030, 1, 1)
-    booking_limit_datetime = datetime.datetime(2030, 1, 1)
-    total_price = 1
-    number_of_tickets = 1
-    educational_price_detail = stock_data.educational_price_detail
-
-    if len(offer.activeStocks) > 0:
-        raise educational_exceptions.EducationalStockAlreadyExists()
-
-    if not offer.isEducational:
-        raise educational_exceptions.OfferIsNotEducational(offer.id)
-    validation.check_validation_status(offer)
-
-    stock = Stock(
-        offer=offer,
-        beginningDatetime=beginning,
-        bookingLimitDatetime=booking_limit_datetime,
-        price=total_price,
-        numberOfTickets=number_of_tickets,
-        educationalPriceDetail=educational_price_detail,
-        quantity=1,
-    )
-    repository.save(stock)
-    logger.info("Educational shadow stock has been created", extra={"offer": offer.id})
-
-    extra_data = copy.deepcopy(offer.extraData)
-    extra_data["isShowcase"] = True  # type: ignore [index, call-overload]
-    offer.extraData = extra_data
-    repository.save(offer)
-
-    if offer.validation == OfferValidationStatus.DRAFT:
-        update_offer_fraud_information(offer, user)
-
-    search.async_index_offer_ids([offer.id])
-
-    return stock
 
 
 def transform_shadow_stock_into_educational_stock_and_create_collective_offer(
