@@ -5,6 +5,8 @@ import {
   computeDeactivationSuccessMessage,
 } from './utils'
 
+import { api } from 'apiClient/api'
+
 type UpdateCollectiveOffersActiveStatusAdapter = Adapter<
   {
     ids: string[]
@@ -36,7 +38,11 @@ export const updateCollectiveOffersActiveStatusAdapter: UpdateCollectiveOffersAc
     try {
       await Promise.all([
         pcapi.patchIsCollectiveOfferActive(collectiveOfferIds, isActive),
-        pcapi.patchIsTemplateOfferActive(collectiveOfferTemplateIds, isActive),
+        api.patchCollectiveOffersTemplateActiveStatus({
+          // @ts-expect-error string[] is not assignable to type number[]
+          ids: collectiveOfferTemplateIds,
+          isActive,
+        }),
       ])
 
       return {

@@ -20,7 +20,7 @@ describe('patchIsOfferActiveTemplateAdapter', () => {
   it('should return an error when the update has failed', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
+    jest.spyOn(window, 'fetch').mockRejectedValueOnce({
       status: 422,
     })
 
