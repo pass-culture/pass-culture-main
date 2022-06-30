@@ -4,19 +4,12 @@ import {
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
-  StockResponse,
   cancelActiveBookingsAdapter,
   extractInitialStockValues,
   extractOfferIdAndOfferTypeFromRouteParams,
-  patchIsOfferActiveAdapter,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
-import {
-  getEducationalStockAdapter,
-  patchShadowStockAdapter,
-  patchShadowStockIntoEducationalStockAdapter,
-} from 'core/OfferEducational/adapters'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { GetCollectiveOfferTemplateSuccessPayload } from './types'
@@ -27,39 +20,23 @@ import Spinner from 'components/layout/Spinner'
 import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 
-const getAdapter = (
-  educationalOfferType: EducationalOfferType,
-  isNewModelEnabled: boolean
-) => {
+const getAdapter = (educationalOfferType: EducationalOfferType) => {
   if (educationalOfferType === EducationalOfferType.CLASSIC) {
-    if (isNewModelEnabled) {
-      return patchCollectiveOfferTemplateIntoCollectiveOfferAdapter
-    }
-
-    return patchShadowStockIntoEducationalStockAdapter
+    return patchCollectiveOfferTemplateIntoCollectiveOfferAdapter
   }
 
-  if (isNewModelEnabled) {
-    return patchCollectiveOfferTemplateAdapter
-  }
-
-  return patchShadowStockAdapter
+  return patchCollectiveOfferTemplateAdapter
 }
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
-  const isNewModelEnabled = useActiveFeature('ENABLE_NEW_COLLECTIVE_MODEL')
-  const enableIndividualAndCollectiveSeparation = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
+
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
   const [offer, setOffer] =
     useState<GetCollectiveOfferTemplateSuccessPayload | null>(null)
-  const [stock, setStock] = useState<StockResponse | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()
   const { offerId } =
@@ -70,18 +47,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     offer: GetStockOfferSuccessPayload,
     values: OfferEducationalStockFormValues
   ) => {
-    if (!stock && !isNewModelEnabled) {
-      return notify.error('Impossible de mettre à jour le stock.')
-    }
-
-    const adapter = getAdapter(values.educationalOfferType, isNewModelEnabled)
+    const adapter = getAdapter(values.educationalOfferType)
 
     const stockResponse = await adapter({
       offer,
-      stockId: stock?.id || '',
       values,
-      enableIndividualAndCollectiveSeparation: true,
-      initialValues,
     })
 
     if (
@@ -115,16 +85,9 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchOfferId =
-      enableIndividualAndCollectiveSeparation && !isNewModelEnabled
-        ? (offer as GetCollectiveOfferTemplateSuccessPayload).offerId || ''
-        : offerId
+    const patchOfferId = offerId
 
-    const patchAdapter = isNewModelEnabled
-      ? patchIsTemplateOfferActiveAdapter
-      : patchIsOfferActiveAdapter
-
-    const { isOk, message } = await patchAdapter({
+    const { isOk, message } = await patchIsTemplateOfferActiveAdapter({
       isActive,
       offerId: patchOfferId,
     })
@@ -157,20 +120,6 @@ const OfferEducationalStockEdition = (): JSX.Element => {
 
         if (!offerResponse.isOk) {
           return notify.error(offerResponse.message)
-        }
-
-        // a template offer does not have any stocks but to keep data duplication
-        // we must fetch the stock of the associated offer if we still use both models
-        if (!isNewModelEnabled) {
-          const stockResponse = await getEducationalStockAdapter(
-            offerResponse.payload.offerId || ''
-          )
-
-          if (!stockResponse.isOk) {
-            return notify.error(stockResponse.message)
-          }
-
-          setStock(stockResponse.payload.stock)
         }
 
         setOffer(offerResponse.payload)
