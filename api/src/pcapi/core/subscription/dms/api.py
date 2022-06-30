@@ -1,3 +1,4 @@
+from datetime import date
 import logging
 import typing
 
@@ -135,6 +136,25 @@ def _notify_field_error(field_errors: list[dms_types.DmsFieldErrorDetails], appl
     )
 
 
+def _notify_eligibility_error(
+    birth_date: typing.Optional[date],
+    application_scalar_id: str,
+    application_number: int,
+    extra_data: typing.Optional[dict] = None,
+) -> None:
+    if not birth_date:
+        logger.warning(
+            "[DMS] No birth date found when trying to notify eligibility error",
+            extra=extra_data,
+        )
+        return
+    client = dms_connector_api.DMSGraphQLClient()
+    client.send_user_message(
+        application_scalar_id,
+        settings.DMS_INSTRUCTOR_ID,
+        subscription_messages.build_dms_error_message_user_not_eligible(birth_date, application_number),
+    )
+
 
 def _on_dms_eligibility_error(
     user: users_models.User,
@@ -170,17 +190,23 @@ def _process_draft_application(
     log_extra_data: typing.Optional[dict],
 ) -> None:
     draft_status = fraud_models.FraudCheckStatus.STARTED
-    if field_errors:
-        subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=True)
-        _notify_field_error(field_errors, application_scalar_id)
-        _update_fraud_check_with_field_errors(current_fraud_check, field_errors, fraud_check_status=draft_status)
-    elif current_fraud_check.eligibilityType is None:
-        fraud_dms_api.on_dms_eligibility_error(
-            user, current_fraud_check, application_scalar_id, extra_data=log_extra_data
-        )
-    else:
+    fraud_check_content = typing.cast(fraud_models.DMSContent, current_fraud_check.source_data())
+    birth_date = fraud_check_content.get_birth_date()
+
+    if not field_errors and current_fraud_check.eligibilityType is not None:
         subscription_messages.on_dms_application_received(user)
         current_fraud_check.status = draft_status  # type: ignore [assignment]
+        return
+
+    if current_fraud_check.eligibilityType is None:
+        _notify_eligibility_error(
+            birth_date, application_scalar_id, fraud_check_content.application_number, extra_data=log_extra_data
+        )
+        _on_dms_eligibility_error(user, current_fraud_check, birth_date, extra_data=log_extra_data)
+    if field_errors:
+        _notify_field_error(field_errors, application_scalar_id)
+        subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=True)
+        _update_fraud_check_with_field_errors(current_fraud_check, field_errors, fraud_check_status=draft_status)
 
 
 def _update_fraud_check_with_field_errors(
