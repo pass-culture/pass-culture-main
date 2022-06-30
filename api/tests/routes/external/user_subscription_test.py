@@ -730,7 +730,7 @@ class DmsWebhookApplicationTest:
     def test_dms_birth_date_error(self, send_user_message, execute_query, client, birthday_date):
         user = users_factories.UserFactory()
         execute_query.return_value = make_single_application(
-            12, state=dms_models.GraphQLApplicationStates.draft.value, email=user.email, birth_date=birthday_date
+            6044787, state=dms_models.GraphQLApplicationStates.draft.value, email=user.email, birth_date=birthday_date
         )
 
         form_data = {
@@ -751,12 +751,12 @@ class DmsWebhookApplicationTest:
         assert send_user_message.call_args[0][2] == (
             "Bonjour,\n"
             "\n"
-            "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ta date de naissance, inscrit sur le formulaire en ligne:\n"
-            "Merci de corriger ton dossier.\n"
+            f"Nous avons bien reçu ton dossier, mais la date de naissance que tu as renseignée ({birthday_date}) indique que tu n’as pas l’âge requis pour profiter du pass Culture (tu dois avoir entre 15 et 18 ans).\n"
+            f'S’il s’agit d’une erreur, tu peux corriger ton dossier depuis démarches-simplifiées: <a target="_blank" rel="noopener" href="https://www.demarches-simplifiees.fr/dossiers/6044787">https://www.demarches-simplifiees.fr/dossiers/6044787</a>\n'
             "\n"
-            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>'
             "\n"
-            "Nous te souhaitons une belle journée.\n"
+            "Bonne journée,\n"
             "\n"
             "L’équipe du pass Culture"
         )
