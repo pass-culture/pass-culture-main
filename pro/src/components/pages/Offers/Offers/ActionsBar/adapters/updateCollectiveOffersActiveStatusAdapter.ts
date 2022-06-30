@@ -1,5 +1,3 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   computeActivationSuccessMessage,
   computeDeactivationSuccessMessage,
@@ -37,7 +35,11 @@ export const updateCollectiveOffersActiveStatusAdapter: UpdateCollectiveOffersAc
 
     try {
       await Promise.all([
-        pcapi.patchIsCollectiveOfferActive(collectiveOfferIds, isActive),
+        api.patchCollectiveOffersActiveStatus({
+          // @ts-expect-error string[] is not assignable to type number[]
+          ids: collectiveOfferIds,
+          isActive,
+        }),
         api.patchCollectiveOffersTemplateActiveStatus({
           // @ts-expect-error string[] is not assignable to type number[]
           ids: collectiveOfferTemplateIds,
