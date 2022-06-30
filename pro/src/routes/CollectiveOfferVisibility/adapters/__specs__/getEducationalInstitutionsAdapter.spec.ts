@@ -1,10 +1,9 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { EducationalInstitutions } from 'core/OfferEducational'
+import { EducationalInstitutionsResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { getEducationalInstitutionsAdapter } from '../getEducationalInstitutionsAdapter'
 
 describe('getEducationalInstitutionsAdapter', () => {
-  let institutionsPaginated: EducationalInstitutions
+  let institutionsPaginated: EducationalInstitutionsResponseModel
   beforeEach(() => {
     institutionsPaginated = {
       pages: 3,
@@ -34,7 +33,7 @@ describe('getEducationalInstitutionsAdapter', () => {
   })
 
   it('should return an error when the institutions could not be retrieved', async () => {
-    jest.spyOn(pcapi, 'getEducationalInstitutions').mockRejectedValue(null)
+    jest.spyOn(api, 'getEducationalInstitutions').mockRejectedValue(null)
     const response = await getEducationalInstitutionsAdapter()
     expect(response.isOk).toBe(false)
     expect(response.message).toBe(
@@ -43,7 +42,7 @@ describe('getEducationalInstitutionsAdapter', () => {
   })
   it('should return an error if any page returns an error', async () => {
     jest
-      .spyOn(pcapi, 'getEducationalInstitutions')
+      .spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockRejectedValueOnce(null)
@@ -55,7 +54,7 @@ describe('getEducationalInstitutionsAdapter', () => {
   })
   it('should return a confirmation when all results are retrieved', async () => {
     jest
-      .spyOn(pcapi, 'getEducationalInstitutions')
+      .spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 3 })

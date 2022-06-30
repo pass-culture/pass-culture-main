@@ -1,8 +1,11 @@
-import { EducationalInstitution, Mode } from 'core/OfferEducational'
+import {
+  EducationalInstitutionResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import React, { useEffect, useState } from 'react'
 
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { Mode } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import Spinner from 'components/layout/Spinner'
@@ -23,8 +26,10 @@ const CollectiveOfferVisibility = () => {
 
   const [isEditable, setIsEditable] = useState<boolean>()
   const [institution, setInstitution] =
-    useState<EducationalInstitution | null>()
-  const [institutions, setInstitutions] = useState<EducationalInstitution[]>([])
+    useState<EducationalInstitutionResponseModel | null>()
+  const [institutions, setInstitutions] = useState<
+    EducationalInstitutionResponseModel[]
+  >([])
   const [isReady, setIsReady] = useState(false)
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
 

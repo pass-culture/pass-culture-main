@@ -1,15 +1,14 @@
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import {
-  EducationalInstitution,
-  Mode,
-  VisibilityFormValues,
-} from 'core/OfferEducational'
+  EducationalInstitutionResponseModel,
+  GetCollectiveOfferResponseModel,
+} from 'apiClient/v1'
 import { FormikProvider, useFormik } from 'formik'
 import { Link, useParams } from 'react-router-dom'
+import { Mode, VisibilityFormValues } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import Spinner from 'components/layout/Spinner'
@@ -32,7 +31,7 @@ export interface CollectiveOfferVisibilityProps {
     message: string
     payload: GetCollectiveOfferResponseModel
   }) => void
-  institutions: EducationalInstitution[]
+  institutions: EducationalInstitutionResponseModel[]
   isLoadingInstitutions: boolean
 }
 interface InstitutionOption extends SelectOption {
