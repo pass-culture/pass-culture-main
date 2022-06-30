@@ -47,8 +47,3 @@ const BOOOKING_STATUS_OPTIONS = [
 
 export const [DEFAULT_BOOKING_FILTER, ...BOOOKING_STATUS_FILTER] =
   BOOOKING_STATUS_OPTIONS
-
-export const ALL_OFFER_TYPE_OPTION = {
-  displayName: 'Toutes les offres',
-  id: ALL_OFFER_TYPE,
-}
