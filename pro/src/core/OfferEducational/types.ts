@@ -1,4 +1,5 @@
 import {
+  EducationalInstitutionResponseModel,
   OfferAddressType,
   OfferStatus,
   StudentLevels,
@@ -135,7 +136,7 @@ export type GetStockOfferSuccessPayload = {
   isEducational: boolean
   isShowcase: boolean
   offerId?: string | null
-  institution?: EducationalInstitution | null
+  institution?: EducationalInstitutionResponseModel | null
 }
 
 export enum EducationalOfferType {
@@ -171,7 +172,7 @@ type CollectiveOfferBaseResponseModel = {
   status: OfferStatus
   offerId?: string | null
   domains: EducationalDomain[]
-  institution?: EducationalInstitution | null
+  institution?: EducationalInstitutionResponseModel | null
   isEditable: boolean
 }
 
@@ -190,20 +191,6 @@ export type CollectiveOffer = CollectiveOfferResponseModel & {
 export type EducationalDomain = {
   id: number
   name: string
-}
-
-export type EducationalInstitution = {
-  id: number
-  name: string
-  postalCode: string
-  city: string
-}
-
-export type EducationalInstitutions = {
-  educationalInstitutions: EducationalInstitution[]
-  page: number
-  pages: number
-  total: number
 }
 
 export type VisibilityFormValues = {

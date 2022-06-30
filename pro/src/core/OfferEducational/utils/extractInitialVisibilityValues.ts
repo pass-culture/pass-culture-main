@@ -1,7 +1,8 @@
-import { EducationalInstitution, VisibilityFormValues } from '../types'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import { VisibilityFormValues } from '../types'
 
 export const extractInitialVisibilityValues = (
-  institution?: EducationalInstitution | null
+  institution?: EducationalInstitutionResponseModel | null
 ): VisibilityFormValues => ({
   institution: institution?.id?.toString() ?? '',
   'search-institution': institution

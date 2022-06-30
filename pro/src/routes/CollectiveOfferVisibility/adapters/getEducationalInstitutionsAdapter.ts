@@ -1,23 +1,22 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { EducationalInstitution } from 'core/OfferEducational'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 
 export type GetEducationalInstitutionsAdapter = Adapter<
   void,
-  { institutions: EducationalInstitution[] },
+  { institutions: EducationalInstitutionResponseModel[] },
   null
 >
 
 export const getEducationalInstitutionsAdapter: GetEducationalInstitutionsAdapter =
   async () => {
     try {
-      let allInstitutions: EducationalInstitution[] = []
+      let allInstitutions: EducationalInstitutionResponseModel[] = []
       let currentPage = 0
       let totalPages = 1
 
       do {
         currentPage += 1
-        const institutions = await pcapi.getEducationalInstitutions(currentPage)
+        const institutions = await api.getEducationalInstitutions(currentPage)
         currentPage = institutions.page
         totalPages = institutions.pages
         allInstitutions = [

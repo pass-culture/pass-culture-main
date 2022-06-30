@@ -1,11 +1,8 @@
-import {
-  DEFAULT_VISIBILITY_FORM_VALUES,
-  EducationalInstitution,
-  Mode,
-} from 'core/OfferEducational'
+import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
@@ -16,7 +13,9 @@ import { useHistory } from 'react-router'
 const CollectiveOfferVisibility = () => {
   const history = useHistory()
 
-  const [institutions, setInstitutions] = useState<EducationalInstitution[]>([])
+  const [institutions, setInstitutions] = useState<
+    EducationalInstitutionResponseModel[]
+  >([])
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
 
   const onSuccess = ({ offerId }: { offerId: string }) => {
