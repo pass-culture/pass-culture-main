@@ -1,11 +1,11 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { NavLink, useParams } from 'react-router-dom'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import ApiKey from './ApiKey/ApiKey'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import Icon from 'components/layout/Icon'
-import { NavLink } from 'react-router-dom'
 import { Offerer } from './Offerer'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PropTypes from 'prop-types'
@@ -13,7 +13,8 @@ import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import VenuesContainer from './Venues/VenuesContainer'
 
-const OffererDetails = ({ offererId }) => {
+const OffererDetails = () => {
+  const { offererId } = useParams()
   const [offerer, setOfferer] = useState(null)
   const [physicalVenues, setPhysicalVenues] = useState([])
   const [isLoading, setIsLoading] = useState(true)

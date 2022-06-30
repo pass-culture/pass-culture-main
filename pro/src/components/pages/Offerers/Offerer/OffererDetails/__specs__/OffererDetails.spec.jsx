@@ -27,13 +27,17 @@ const renderOffererDetails = async ({ props, store }) => {
   })
 }
 
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({
+    offererId: 'AA',
+  }),
+}))
+
 describe('src | components | pages | Offerer | OffererDetails', () => {
   let props
   let store
   beforeEach(() => {
-    props = {
-      offererId: 'AA',
-    }
     store = configureTestStore()
   })
 
