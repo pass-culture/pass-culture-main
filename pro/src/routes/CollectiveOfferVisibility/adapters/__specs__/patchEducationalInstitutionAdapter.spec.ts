@@ -1,11 +1,12 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { CollectiveOfferResponseModel } from 'core/OfferEducational'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { patchEducationalInstitutionAdapter } from '../patchEducationalInstitutionAdapter'
 
 describe('patchEducationalInstitutionAdapter', () => {
   it('should return an error when the institutions could not be saved', async () => {
-    jest.spyOn(pcapi, 'patchEducationalInstitution').mockRejectedValue(null)
+    jest
+      .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
+      .mockRejectedValue(null)
     const response = await patchEducationalInstitutionAdapter({
       offerId: '12',
       institutionId: '24',
@@ -19,8 +20,8 @@ describe('patchEducationalInstitutionAdapter', () => {
 
   it('should return a confirmation when the institutions is saved', async () => {
     jest
-      .spyOn(pcapi, 'patchEducationalInstitution')
-      .mockResolvedValueOnce({} as CollectiveOfferResponseModel) // we do not test the content
+      .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
+      .mockResolvedValueOnce({} as GetCollectiveOfferResponseModel) // we do not test the content
     const response = await patchEducationalInstitutionAdapter({
       offerId: '12',
       institutionId: '24',
