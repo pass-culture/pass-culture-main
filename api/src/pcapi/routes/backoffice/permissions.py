@@ -38,7 +38,12 @@ def list_roles() -> ListRoleResponseModel:
 )
 def list_permissions() -> ListPermissionResponseModel:
     permissions = perm_api.list_permissions()
-    return ListPermissionResponseModel(permissions=[Permission.from_orm(perm) for perm in permissions])
+    return ListPermissionResponseModel(
+        permissions=[
+            Permission(id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category)
+            for perm in permissions
+        ]
+    )
 
 
 @blueprint.backoffice_blueprint.route("roles", methods=["POST"])
