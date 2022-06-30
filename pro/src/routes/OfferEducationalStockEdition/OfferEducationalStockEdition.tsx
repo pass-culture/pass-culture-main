@@ -6,20 +6,13 @@ import {
   Mode,
   OfferEducationalStockFormValues,
   StockResponse,
-  cancelActiveBookingsAdapter,
   cancelCollectiveBookingAdapter,
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
   getStockOfferAdapter,
   patchIsCollectiveOfferActiveAdapter,
-  patchIsOfferActiveAdapter,
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
-import {
-  getEducationalStockAdapter,
-  patchShadowStockAdapter,
-  patchShadowStockIntoEducationalStockAdapter,
-} from 'core/OfferEducational/adapters'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
@@ -27,26 +20,10 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 import Spinner from 'components/layout/Spinner'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
+import { getEducationalStockAdapter } from 'core/OfferEducational/adapters'
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
-import patchEducationalStockAdapter from './adapters/patchEducationalStockAdapter'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
-
-const getAdapter = (
-  offer: GetStockOfferSuccessPayload,
-  educationalOfferType: EducationalOfferType,
-  isNewCollectiveModelEnabled: boolean
-) => {
-  if (offer.isShowcase) {
-    return educationalOfferType === EducationalOfferType.CLASSIC
-      ? patchShadowStockIntoEducationalStockAdapter
-      : patchShadowStockAdapter
-  }
-
-  return isNewCollectiveModelEnabled
-    ? patchCollectiveStockAdapter
-    : patchEducationalStockAdapter
-}
 
 const getGetOfferAdapter = (enableIndividualAndCollectiveSeparation: boolean) =>
   enableIndividualAndCollectiveSeparation
@@ -57,9 +34,6 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
   const enableIndividualAndCollectiveSeparation = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
-  const isNewCollectiveModelEnabled = useActiveFeature(
-    'ENABLE_NEW_COLLECTIVE_MODEL'
   )
 
   const [initialValues, setInitialValues] =
@@ -80,18 +54,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       return notify.error('Impossible de mettre à jour le stock.')
     }
 
-    const adapter = getAdapter(
-      offer,
-      values.educationalOfferType,
-      isNewCollectiveModelEnabled
-    )
-
-    const stockResponse = await adapter({
+    const stockResponse = await patchCollectiveStockAdapter({
       offer,
       stockId: stock.id,
       values,
       initialValues,
-      enableIndividualAndCollectiveSeparation,
     })
     const offerResponse = await getGetOfferAdapter(
       enableIndividualAndCollectiveSeparation
@@ -118,15 +85,9 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const setIsOfferActive = async (isActive: boolean) => {
-    const patchOfferId =
-      enableIndividualAndCollectiveSeparation && !isNewCollectiveModelEnabled
-        ? (offer as GetStockOfferSuccessPayload).offerId || ''
-        : offerId
-    const patchAdapter = isNewCollectiveModelEnabled
-      ? patchIsCollectiveOfferActiveAdapter
-      : patchIsOfferActiveAdapter
+    const patchOfferId = offerId
 
-    const { isOk, message } = await patchAdapter({
+    const { isOk, message } = await patchIsCollectiveOfferActiveAdapter({
       isActive,
       offerId: patchOfferId,
     })
@@ -140,14 +101,8 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   }
 
   const cancelActiveBookings = async () => {
-    const patchOfferId =
-      enableIndividualAndCollectiveSeparation && !isNewCollectiveModelEnabled
-        ? offer?.offerId || ''
-        : offerId
-    const cancelAdapter = isNewCollectiveModelEnabled
-      ? cancelCollectiveBookingAdapter
-      : cancelActiveBookingsAdapter
-    const { isOk, message } = await cancelAdapter({
+    const patchOfferId = offerId
+    const { isOk, message } = await cancelCollectiveBookingAdapter({
       offerId: patchOfferId,
     })
 

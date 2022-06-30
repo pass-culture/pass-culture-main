@@ -16,8 +16,6 @@ import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOffe
 import Spinner from 'components/layout/Spinner'
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
-import postEducationalShadowStockAdapter from './adapters/postEducationalShadowStock'
-import postEducationalStockAdapter from './adapters/postEducationalStock'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useHistory } from 'react-router-dom'
 import useNotification from 'components/hooks/useNotification'
@@ -29,9 +27,6 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
   const history = useHistory()
-  const isNewCollectiveModelEnabled = useActiveFeature(
-    'ENABLE_NEW_COLLECTIVE_MODEL'
-  )
   const enableIndividualAndCollectiveSeparation = useActiveFeature(
     'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
   )
@@ -51,28 +46,17 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       values.educationalOfferType === EducationalOfferType.SHOWCASE
 
     if (isTemplate) {
-      const adapter = isNewCollectiveModelEnabled
-        ? postCollectiveOfferTemplateAdapter
-        : postEducationalShadowStockAdapter
-      const response = await adapter({
-        offerId:
-          enableIndividualAndCollectiveSeparation &&
-          !isNewCollectiveModelEnabled
-            ? offer.offerId ?? ''
-            : offer.id,
+      const response = await postCollectiveOfferTemplateAdapter({
+        offerId: offer.id,
         values,
       })
       isOk = response.isOk
       message = response.message
       payload = response.payload
     } else {
-      const adapter = isNewCollectiveModelEnabled
-        ? postCollectiveStockAdapter
-        : postEducationalStockAdapter
-      const response = await adapter({
+      const response = await postCollectiveStockAdapter({
         offer,
         values,
-        enableIndividualAndCollectiveSeparation,
       })
       isOk = response.isOk
       message = response.message
