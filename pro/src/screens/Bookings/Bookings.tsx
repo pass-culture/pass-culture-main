@@ -61,9 +61,7 @@ const Bookings = ({
   const { currentUser: user } = useCurrentUser()
   const notify = useNotification()
   const isBookingFiltersActive = useActiveFeature('ENABLE_NEW_BOOKING_FILTERS')
-  const separateIndividualAndCollectiveOffers = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
+
   const [appliedPreFilters, setAppliedPreFilters] = useState<TPreFilters>({
     ...DEFAULT_PRE_FILTERS,
   })
@@ -229,25 +227,23 @@ const Bookings = ({
     <div className="bookings-page">
       <PageTitle title="Vos réservations" />
       <Titles title="Réservations" />
-      {separateIndividualAndCollectiveOffers && (
-        <Tabs
-          selectedKey={audience}
-          tabs={[
-            {
-              label: 'Réservations individuelles',
-              url: '/reservations',
-              key: 'individual',
-              Icon: UserIcon,
-            },
-            {
-              label: 'Réservations collectives',
-              url: '/reservations/collectives',
-              key: 'collective',
-              Icon: LibraryIcon,
-            },
-          ]}
-        />
-      )}
+      <Tabs
+        selectedKey={audience}
+        tabs={[
+          {
+            label: 'Réservations individuelles',
+            url: '/reservations',
+            key: 'individual',
+            Icon: UserIcon,
+          },
+          {
+            label: 'Réservations collectives',
+            url: '/reservations/collectives',
+            key: 'collective',
+            Icon: LibraryIcon,
+          },
+        ]}
+      />
       <PreFilters
         appliedPreFilters={appliedPreFilters}
         applyPreFilters={applyPreFilters}

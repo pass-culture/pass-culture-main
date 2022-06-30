@@ -11,7 +11,6 @@ import { Events } from '../../../core/FirebaseEvents/constants'
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate'
-import FilterByOfferType from 'new_components/FilterByOfferType'
 import FilterByVenue from './FilterByVenue'
 import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { ReactComponent as ResetIcon } from 'icons/reset.svg'
@@ -55,9 +54,7 @@ const PreFilters = ({
   getBookingsXLSFileAdapter,
 }: IPreFiltersProps): JSX.Element => {
   const notify = useNotification()
-  const separateIndividualAndCollectiveOffers = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
+
   const isCsvMultiDownloadFiltersActive = useActiveFeature(
     'ENABLE_CSV_MULTI_DOWNLOAD_BUTTON'
   )
@@ -161,15 +158,6 @@ const PreFilters = ({
                 venuesFormattedAndOrdered={venues}
               />
             </div>
-            {!separateIndividualAndCollectiveOffers && (
-              <div className="pre-filters-offer-type">
-                <FilterByOfferType
-                  isDisabled={isFiltersDisabled}
-                  selectedOfferType={selectedPreFilters.offerType}
-                  updateFilters={updateSelectedFilters}
-                />
-              </div>
-            )}
             <FilterByEventDate
               isDisabled={isFiltersDisabled}
               selectedOfferDate={selectedPreFilters.offerEventDate}
