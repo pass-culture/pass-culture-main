@@ -60,15 +60,6 @@ export const patchIsCollectiveOfferActive = (
     isActive,
   })
 }
-export const patchIsTemplateOfferActive = (
-  offerIds: string[],
-  isActive: boolean
-) => {
-  return client.patch(`/collective/offers-template/active-status`, {
-    ids: offerIds,
-    isActive,
-  })
-}
 
 export const updateEducationalOffer = (
   offerId: string,
