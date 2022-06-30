@@ -1,11 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   computeAllActivationSuccessMessage,
   computeAllDeactivationSuccessMessage,
 } from './utils'
 
 import { TSearchFilters } from 'core/Offers/types'
+import { api } from 'apiClient/api'
 import { serializeApiFilters } from 'core/Offers/utils'
 
 type UpdateAllCollectiveOffersActiveStatusAdapter = Adapter<
@@ -30,7 +29,7 @@ export const updateAllCollectiveOffersActiveStatusAdapter: UpdateAllCollectiveOf
     try {
       const payload = serializeApiFilters(filters)
 
-      await pcapi.updateAllCollectiveOffersActiveStatus({
+      await api.patchAllCollectiveOffersActiveStatus({
         ...payload,
         isActive,
       })
