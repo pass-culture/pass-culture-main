@@ -12,7 +12,6 @@ import {
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { ListOffersQueryModel } from 'api/v1/gen'
-import { Offer } from 'custom_types/offer'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
 
