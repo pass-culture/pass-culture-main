@@ -1,9 +1,11 @@
 import {
-  GetOfferVenueResponseModel,
   OfferAddressType,
   OfferStatus,
   StudentLevels,
-} from 'api/v1/gen'
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
+
+import { GetOfferVenueResponseModel } from 'api/v1/gen'
 
 export type IUserVenue = {
   id: string
@@ -42,7 +44,7 @@ export type IEducationalSubCategory = {
 
 export type IOfferEducationalFormValues = {
   category: string
-  subCategory: string
+  subCategory: SubcategoryIdEnum
   title: string
   description: string
   duration: string
@@ -123,35 +125,6 @@ export type OfferEducationalStockFormValues = {
   educationalOfferType: EducationalOfferType
 }
 
-export type StockPayload = {
-  beginningDatetime: Date
-  bookingLimitDatetime: Date | null
-  totalPrice: number
-  numberOfTickets: number
-  educationalPriceDetail: string
-}
-
-export type CreateCollectiveStockPayload = {
-  offerId: string
-  beginningDatetime: Date
-  bookingLimitDatetime: Date | null
-  totalPrice: number
-  numberOfTickets: number
-  educationalPriceDetail: string
-}
-
-export type EditCollectiveStockPayload = {
-  beginningDatetime: Date | undefined | null
-  bookingLimitDatetime: Date | undefined | null
-  totalPrice: number | undefined | null
-  numberOfTickets: number | undefined | null
-  educationalPriceDetail: string | undefined | null
-}
-
-export type CreateCollectiveOfferTemplatePayload = {
-  educationalPriceDetail: string
-}
-
 export type GetStockOfferSuccessPayload = {
   id: string
   isActive: boolean
@@ -168,17 +141,6 @@ export type GetStockOfferSuccessPayload = {
 export enum EducationalOfferType {
   SHOWCASE = 'SHOWCASE',
   CLASSIC = 'CLASSIC',
-}
-
-export type CollectiveStockResponseModel = {
-  id: string
-  beginningDatetime?: string
-  bookingLimitDatetime?: string
-  price: number
-  numberOfTickets?: number
-  isEducationalStockEditable?: boolean
-  educationalPriceDetail?: string
-  stockId?: string
 }
 
 type CollectiveOfferBaseResponseModel = {
@@ -223,33 +185,6 @@ export type CollectiveOfferResponseModel = CollectiveOfferBaseResponseModel & {
 
 export type CollectiveOffer = CollectiveOfferResponseModel & {
   isBooked: boolean
-}
-
-export type CollectiveOfferTemplateResponseModel =
-  CollectiveOfferBaseResponseModel & {
-    educationalPriceDetail: string
-  }
-
-export type CollectiveOfferTemplate = CollectiveOfferTemplateResponseModel & {
-  isBooked: boolean
-}
-
-export type StockResponse = {
-  id: string
-  beginningDatetime?: string
-  bookingLimitDatetime?: string
-  price: number
-  numberOfTickets?: number
-  isEducationalStockEditable?: boolean
-  educationalPriceDetail?: string
-  offerId?: string
-}
-
-export type EditEducationalOfferPayload = Omit<
-  Partial<EducationalOfferModelPayload>,
-  'extraData'
-> & {
-  extraData?: Partial<EducationalOfferModelPayload['extraData']>
 }
 
 export type EducationalDomain = {

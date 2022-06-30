@@ -1,8 +1,8 @@
 import { DEFAULT_EAC_FORM_VALUES, Mode } from 'core/OfferEducational'
+import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
 import { categoriesFactory, subCategoriesFactory } from './categoryFactory'
 
 import { IOfferEducationalProps } from '../OfferEducational'
-import { OfferAddressType } from 'api/v1/gen'
 import { userOfferersFactory } from './userOfferersFactory'
 
 const mockEducationalCategories = categoriesFactory([
@@ -58,14 +58,14 @@ export const defaultCreationProps: IOfferEducationalProps = {
 
 const editionFormValues = {
   category: 'MUSEE',
-  subCategory: 'VISITE_GUIDEE',
+  subCategory: SubcategoryIdEnum.VISITE_GUIDEE,
   title: 'offer title',
   description: 'offer description',
   duration: '',
   offererId: 'OFFERER_ID',
   venueId: 'VENUE_ID',
   eventAddress: {
-    addressType: OfferAddressType.Other,
+    addressType: OfferAddressType.OTHER,
     otherAddress: 'other adress string',
     venueId: '',
   },

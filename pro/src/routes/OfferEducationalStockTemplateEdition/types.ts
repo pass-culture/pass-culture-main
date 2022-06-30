@@ -1,4 +1,4 @@
-import { OfferStatus } from 'api/v1/gen'
+import { OfferStatus } from 'apiClient/v1'
 
 export type GetCollectiveOfferTemplateSuccessPayload = {
   id: string

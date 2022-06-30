@@ -1,13 +1,16 @@
-import { OfferEducationalStockFormValues, StockPayload } from '..'
 import {
   buildBeginningDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
 
+import { CollectiveStockCreationBodyModel } from 'apiClient/v1'
+import { OfferEducationalStockFormValues } from '..'
+
 export const createStockDataPayload = (
   values: OfferEducationalStockFormValues,
-  departmentCode: string
-): StockPayload => {
+  departmentCode: string,
+  offerId: string
+): CollectiveStockCreationBodyModel => {
   if (
     !values.eventDate ||
     !values.eventTime ||
@@ -32,5 +35,7 @@ export const createStockDataPayload = (
     totalPrice: values.totalPrice,
     numberOfTickets: values.numberOfPlaces,
     educationalPriceDetail: values.priceDetail,
+    // @ts-expect-error string is not assignable to number
+    offerId,
   }
 }

@@ -5,7 +5,7 @@ import {
   serializeParticipants,
 } from 'core/OfferEducational'
 
-import { PostCollectiveOfferBodyModel } from 'api/v1/gen'
+import { PostCollectiveOfferBodyModel } from 'apiClient/v1'
 
 const disabilityCompliances = (
   accessibility: IOfferEducationalFormValues['accessibility']

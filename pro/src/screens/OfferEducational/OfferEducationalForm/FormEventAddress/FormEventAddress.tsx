@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Banner } from 'ui-kit'
 import FormLayout from 'new_components/FormLayout'
-import { OfferAddressType } from 'api/v1/gen'
+import { OfferAddressType } from 'apiClient/v1'
 import styles from '../OfferEducationalForm.module.scss'
 import { useFormikContext } from 'formik'
 
@@ -29,15 +29,15 @@ interface IFormEventAddressProps {
 const adressTypeRadios = [
   {
     label: EVENT_ADDRESS_OFFERER_LABEL,
-    value: OfferAddressType.OffererVenue,
+    value: OfferAddressType.OFFERER_VENUE,
   },
   {
     label: EVENT_ADDRESS_SCHOOL_LABEL,
-    value: OfferAddressType.School,
+    value: OfferAddressType.SCHOOL,
   },
   {
     label: EVENT_ADDRESS_OTHER_LABEL,
-    value: OfferAddressType.Other,
+    value: OfferAddressType.OTHER,
   },
 ]
 
@@ -52,7 +52,7 @@ const FormEventAddress = ({
 
   useEffect(() => {
     if (
-      values.eventAddress.addressType !== OfferAddressType.OffererVenue &&
+      values.eventAddress.addressType !== OfferAddressType.OFFERER_VENUE &&
       values.eventAddress.venueId
     ) {
       setFieldValue(
@@ -63,7 +63,7 @@ const FormEventAddress = ({
     }
 
     if (
-      values.eventAddress.addressType !== OfferAddressType.Other &&
+      values.eventAddress.addressType !== OfferAddressType.OTHER &&
       values.eventAddress.otherAddress
     ) {
       setFieldValue(
@@ -75,7 +75,7 @@ const FormEventAddress = ({
 
   useEffect(() => {
     if (
-      values.eventAddress.addressType === OfferAddressType.OffererVenue &&
+      values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE &&
       values.eventAddress.venueId
     ) {
       if (currentOfferer) {
@@ -106,7 +106,7 @@ const FormEventAddress = ({
         />
       </FormLayout.Row>
 
-      {values.eventAddress.addressType === OfferAddressType.OffererVenue && (
+      {values.eventAddress.addressType === OfferAddressType.OFFERER_VENUE && (
         <FormLayout.Row>
           <Select
             disabled={venuesOptions.length === 1 || disableForm}
@@ -128,7 +128,7 @@ const FormEventAddress = ({
         </FormLayout.Row>
       )}
 
-      {values.eventAddress.addressType === OfferAddressType.Other && (
+      {values.eventAddress.addressType === OfferAddressType.OTHER && (
         <FormLayout.Row>
           <TextArea
             countCharacters

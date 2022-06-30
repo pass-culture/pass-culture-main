@@ -27,7 +27,11 @@ describe('getStockCollectiveOfferTemplateAdapter', () => {
       // @ts-ignore
       jest.spyOn(window, 'fetch').mockResolvedValueOnce({
         ok: true,
-        status: 201,
+        status: 200,
+        headers: new Headers({
+          // @ts-ignore
+          'Content-Type': 'application/json',
+        }),
         json: () =>
           Promise.resolve({
             id: 'A1',

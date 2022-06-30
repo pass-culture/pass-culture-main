@@ -1,9 +1,10 @@
-import { OfferEducationalStockFormValues, StockPayload } from '../types'
 import {
   buildBeginningDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
 
+import { CollectiveStockEditionBodyModel } from 'apiClient/v1'
+import { OfferEducationalStockFormValues } from '../types'
 import isEqual from 'lodash.isequal'
 
 type OfferEducationalStockFormValuesForSerializer = {
@@ -18,7 +19,7 @@ type OfferEducationalStockFormValuesForSerializer = {
 const serializer = {
   eventDate: (
     values: OfferEducationalStockFormValuesForSerializer,
-    changedValues: Partial<StockPayload>,
+    changedValues: CollectiveStockEditionBodyModel,
     departmentCode: string
   ) => ({
     ...changedValues,
@@ -30,7 +31,7 @@ const serializer = {
   }),
   eventTime: (
     values: OfferEducationalStockFormValuesForSerializer,
-    changedValues: Partial<StockPayload>,
+    changedValues: CollectiveStockEditionBodyModel,
     departmentCode: string
   ) => ({
     ...changedValues,
@@ -42,21 +43,21 @@ const serializer = {
   }),
   numberOfPlaces: (
     values: OfferEducationalStockFormValuesForSerializer,
-    changedValues: Partial<StockPayload>
+    changedValues: CollectiveStockEditionBodyModel
   ) => ({
     ...changedValues,
     numberOfTickets: values.numberOfPlaces,
   }),
   totalPrice: (
     values: OfferEducationalStockFormValuesForSerializer,
-    changedValues: Partial<StockPayload>
+    changedValues: CollectiveStockEditionBodyModel
   ) => ({
     ...changedValues,
     totalPrice: values.totalPrice,
   }),
   bookingLimitDatetime: (
     values: OfferEducationalStockFormValuesForSerializer,
-    changedValues: Partial<StockPayload>,
+    changedValues: CollectiveStockEditionBodyModel,
     departmentCode: string
   ) => ({
     ...changedValues,
@@ -69,7 +70,7 @@ const serializer = {
   }),
   priceDetail: (
     values: OfferEducationalStockFormValuesForSerializer,
-    changedValues: Partial<StockPayload>
+    changedValues: CollectiveStockEditionBodyModel
   ) => ({
     ...changedValues,
     educationalPriceDetail: values.priceDetail,
@@ -107,8 +108,8 @@ export const createPatchStockDataPayload = (
   values: OfferEducationalStockFormValues,
   departmentCode: string,
   initialValues: OfferEducationalStockFormValues
-): Partial<StockPayload> => {
-  let changedValues: Partial<StockPayload> = {}
+): CollectiveStockEditionBodyModel => {
+  let changedValues: CollectiveStockEditionBodyModel = {}
 
   const valuesWithoutEducationalOfferType =
     getValuesWithoutEducationalOfferTypeAttribute(values)
