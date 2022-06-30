@@ -325,10 +325,6 @@ export const cancelEducationalBooking = offerId => {
   return client.patch(`/offers/${offerId}/cancel_booking`)
 }
 
-export const cancelCollectiveOfferBooking = (offerId: string) => {
-  return client.patch(`/collective/offers/${offerId}/cancel_booking`)
-}
-
 //
 // thumbnail
 //
