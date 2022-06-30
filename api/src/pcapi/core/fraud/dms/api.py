@@ -2,12 +2,8 @@ import logging
 import typing
 from typing import Optional
 
-from pcapi import settings
-from pcapi.connectors.dms.api import DMSGraphQLClient
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
-from pcapi.core.subscription import messages as subscription_messages
-from pcapi.core.subscription.dms import models as dms_models
 import pcapi.core.users.models as users_models
 from pcapi.repository import repository
 
@@ -56,36 +52,3 @@ def get_or_create_fraud_check(
     if fraud_check is None:
         return create_fraud_check(user, application_number, result_content)
     return fraud_check
-
-
-def on_dms_eligibility_error(
-    user: users_models.User,
-    fraud_check: fraud_models.BeneficiaryFraudCheck,
-    application_scalar_id: str,
-    extra_data: Optional[dict] = None,
-) -> None:
-    dms_client = DMSGraphQLClient()
-    logger.info(
-        "Birthdate of DMS application %d shows that user is not eligible",
-        fraud_check.thirdPartyId,
-        extra=extra_data,
-    )
-    fraud_check_content = typing.cast(fraud_models.DMSContent, fraud_check.source_data())
-    birth_date = fraud_check_content.get_birth_date()
-    birth_date_field_error = dms_models.DmsFieldErrorDetails(
-        key=dms_models.DmsFieldErrorKeyEnum.birth_date, value=birth_date.isoformat() if birth_date else None
-    )
-    subscription_messages.on_dms_application_field_errors(
-        user,
-        [birth_date_field_error],
-        is_application_updatable=True,
-    )
-    dms_client.send_user_message(
-        application_scalar_id,
-        settings.DMS_INSTRUCTOR_ID,
-        subscription_messages.build_field_errors_user_message([birth_date_field_error]),
-    )
-    fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
-    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]  # type: ignore [list-item]
-    fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
-    repository.save(fraud_check)
