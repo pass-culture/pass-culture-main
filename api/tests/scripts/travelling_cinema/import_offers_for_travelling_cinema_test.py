@@ -1,21 +1,24 @@
 import datetime
 from unittest.mock import patch
 
+import pytest
+
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import factories as users_factories
-from pcapi.scripts.travelling_cinema.import_offers_for_travelling_cinema import import_offres_for_travelling_cinema
+from pcapi.scripts.travelling_cinema.import_offers_for_travelling_cinema import import_offers_for_travelling_cinema
 
 
-@patch("pcapi.scripts.travelling_cinema.import_offers_for_travelling_cinema.get_longitude_and_latitude_from_address")
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.scripts.travelling_cinema.import_offers_for_travelling_cinema._get_longitude_and_latitude_from_address")
 def test_import_offers_for_travelling_cinema(mocked_get_longitude_and_latitude_from_address, db_session):
     mocked_get_longitude_and_latitude_from_address.return_value = [12, 24]
     users_factories.AdminFactory(email="admin@example.com")
 
     offerers_factories.OffererFactory(siren="555555555")
 
-    import_offres_for_travelling_cinema(
+    import_offers_for_travelling_cinema(
         "admin@example.com", "travelling_cinema_offers.csv", "tests/scripts/travelling_cinema/fixtures/"
     )
 
@@ -25,15 +28,16 @@ def test_import_offers_for_travelling_cinema(mocked_get_longitude_and_latitude_f
     assert len(venues) == 2
 
 
-@patch("pcapi.scripts.travelling_cinema.import_offers_for_travelling_cinema.get_longitude_and_latitude_from_address")
-def test_import_one_offer_fro_travelling_cinema(mocked_get_longitude_and_latitude_from_address, db_session):
+@pytest.mark.usefixtures("db_session")
+@patch("pcapi.scripts.travelling_cinema.import_offers_for_travelling_cinema._get_longitude_and_latitude_from_address")
+def test_import_one_offer_for_travelling_cinema(mocked_get_longitude_and_latitude_from_address, db_session):
     mocked_get_longitude_and_latitude_from_address.return_value = [12, 24]
 
     users_factories.AdminFactory(email="admin@example.com")
 
     offerers_factories.OffererFactory(siren="555555555")
 
-    import_offres_for_travelling_cinema(
+    import_offers_for_travelling_cinema(
         "admin@example.com", "travelling_cinema_one_offer.csv", "tests/scripts/travelling_cinema/fixtures/"
     )
 
