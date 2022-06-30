@@ -1,5 +1,6 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { api } from 'apiClient/api'
 import { updateCollectiveOffersActiveStatusAdapter } from '../updateCollectiveOffersActiveStatusAdapter'
 
 describe('updateCollectiveOffersActiveStatusAdapter', () => {
@@ -9,7 +10,8 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
       .spyOn(pcapi, 'patchIsCollectiveOfferActive')
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
     jest
-      .spyOn(pcapi, 'patchIsTemplateOfferActive')
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      // @ts-ignore
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateCollectiveOffersActiveStatusAdapter({
@@ -24,7 +26,10 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
       ['A1'],
       false
     )
-    expect(pcapi.patchIsTemplateOfferActive).toHaveBeenCalledWith(['A1'], false)
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledWith({
+      ids: ['A1'],
+      isActive: false,
+    })
   })
 
   it('should activate all offers and confirm', async () => {
@@ -33,7 +38,8 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
       .spyOn(pcapi, 'patchIsCollectiveOfferActive')
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
     jest
-      .spyOn(pcapi, 'patchIsTemplateOfferActive')
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      // @ts-ignore
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     const response = await updateCollectiveOffersActiveStatusAdapter({
@@ -48,7 +54,10 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
       ['A1'],
       true
     )
-    expect(pcapi.patchIsTemplateOfferActive).toHaveBeenCalledWith(['A1'], true)
+    expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledWith({
+      ids: ['A1'],
+      isActive: true,
+    })
   })
 
   it('should return an error when the update has failed', async () => {
@@ -57,7 +66,8 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
       status: 422,
     })
     jest
-      .spyOn(pcapi, 'patchIsTemplateOfferActive')
+      .spyOn(api, 'patchCollectiveOffersTemplateActiveStatus')
+      // @ts-ignore
       .mockResolvedValueOnce(new Response(new Blob(), { status: 204 }))
 
     // when
