@@ -68,7 +68,7 @@ class BookingStatusHistoryResponseModel(BaseModel):
     date: str
 
 
-class CollectiveStockResponseModel(BaseModel):
+class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_name: str
     offer_identifier: str
     event_beginning_datetime: str
@@ -84,7 +84,7 @@ class EducationalRedactorResponseModel(BaseModel):
 
 
 class CollectiveBookingResponseModel(BaseModel):
-    stock: CollectiveStockResponseModel
+    stock: CollectiveBookingCollectiveStockResponseModel
     beneficiary: EducationalRedactorResponseModel
     booking_token: Optional[str]
     booking_date: str
@@ -174,8 +174,10 @@ def _serialize_collective_booking_status_info(
     )
 
 
-def serialize_collective_booking_stock(collective_booking: CollectiveBookingNamedTuple) -> CollectiveStockResponseModel:
-    return CollectiveStockResponseModel(
+def serialize_collective_booking_stock(
+    collective_booking: CollectiveBookingNamedTuple,
+) -> CollectiveBookingCollectiveStockResponseModel:
+    return CollectiveBookingCollectiveStockResponseModel(
         offer_name=collective_booking.offerName,
         offer_identifier=humanize(collective_booking.offerId),
         event_beginning_datetime=collective_booking.stockBeginningDatetime.isoformat(),
