@@ -7,11 +7,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
-from .serialization import ListPermissionResponseModel
-from .serialization import ListRoleResponseModel
-from .serialization import Permission
-from .serialization import Role
-from .serialization import RoleRequestModel
+from . import serialization
 
 
 logger = logging.getLogger(__name__)
@@ -20,27 +16,27 @@ logger = logging.getLogger(__name__)
 @blueprint.backoffice_blueprint.route("roles", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 @spectree_serialize(
-    response_model=ListRoleResponseModel,
+    response_model=serialization.ListRoleResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
-def list_roles() -> ListRoleResponseModel:
+def list_roles() -> serialization.ListRoleResponseModel:
     roles = perm_api.list_roles()
-    return ListRoleResponseModel(roles=[Role.from_orm(role) for role in roles])
+    return serialization.ListRoleResponseModel(roles=[serialization.Role.from_orm(role) for role in roles])
 
 
 @blueprint.backoffice_blueprint.route("permissions", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 @spectree_serialize(
-    response_model=ListPermissionResponseModel,
+    response_model=serialization.ListPermissionResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
-def list_permissions() -> ListPermissionResponseModel:
+def list_permissions() -> serialization.ListPermissionResponseModel:
     permissions = perm_api.list_permissions()
-    return ListPermissionResponseModel(
+    return serialization.ListPermissionResponseModel(
         permissions=[
-            Permission(id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category)
+            serialization.Permission(id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category)
             for perm in permissions
         ]
     )
@@ -49,38 +45,38 @@ def list_permissions() -> ListPermissionResponseModel:
 @blueprint.backoffice_blueprint.route("roles", methods=["POST"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 @spectree_serialize(
-    response_model=Role,
+    response_model=serialization.Role,
     on_success_status=200,
     api=blueprint.api,
 )
-def create_role(body: RoleRequestModel) -> Role:
+def create_role(body: serialization.RoleRequestModel) -> serialization.Role:
     new_role = perm_api.create_role(name=body.name, permission_ids=body.permissionIds)
-    return Role.from_orm(new_role)
+    return serialization.Role.from_orm(new_role)
 
 
 @blueprint.backoffice_blueprint.route("roles/<int:id_>", methods=["PUT"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 @spectree_serialize(
-    response_model=Role,
+    response_model=serialization.Role,
     on_success_status=200,
     api=blueprint.api,
 )
-def update_role(id_: int, body: RoleRequestModel) -> Role:
+def update_role(id_: int, body: serialization.RoleRequestModel) -> serialization.Role:
     updated_role = perm_api.update_role(id_=id_, name=body.name, permission_ids=body.permissionIds)
-    return Role.from_orm(updated_role)
+    return serialization.Role.from_orm(updated_role)
 
 
 @blueprint.backoffice_blueprint.route("roles/<int:id_>", methods=["DELETE"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 @spectree_serialize(
-    response_model=Role,
+    response_model=serialization.Role,
     on_success_status=200,
     api=blueprint.api,
 )
-def delete_role(id_: int) -> Role:
+def delete_role(id_: int) -> serialization.Role:
     try:
-        deleted = perm_api.delete_role(id_=id_)
+        deleted_id, deleted_name, deleted_permissions = perm_api.delete_role(id_=id_)
     except ValueError as err:
         raise ApiErrors(errors={"id": str(err)})
 
-    return Role.from_orm(deleted)
+    return serialization.Role(id=deleted_id, name=deleted_name, permissions=deleted_permissions)
