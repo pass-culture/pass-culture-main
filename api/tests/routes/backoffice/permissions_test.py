@@ -79,8 +79,6 @@ class PermissionListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_list_permissions(self, client):
         # given
-        PermissionFactory(name="test_permission_1")
-        PermissionFactory(name="test_permission_2")
         user = UserFactory()
         auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
 
@@ -92,17 +90,11 @@ class PermissionListTest:
         # then
         assert response.status_code == 200
         permissions = response.json["permissions"]
-        assert set(perm["name"] for perm in permissions) == {
-            *[p.name for p in Permissions],
-            "test_permission_1",
-            "test_permission_2",
-        }
+        assert set(perm["name"] for perm in permissions) == {p.value for p in Permissions}
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_permissions_without_permission(self, client):
         # given
-        PermissionFactory(name="test_permission_1")
-        PermissionFactory(name="test_permission_2")
         user = UserFactory()
         auth_token = generate_token(user, [])
 
