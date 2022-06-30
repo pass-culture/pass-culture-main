@@ -225,7 +225,6 @@ const routes = [
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/edition',
     title: 'Edition d’une offre collective',
-    featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: OfferEducationalStockEdition,
@@ -238,7 +237,6 @@ const routes = [
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/stocks/edition',
     title: 'Edition d’un stock d’une offre collective',
-    featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: CollectiveOfferEditionVisibility,
