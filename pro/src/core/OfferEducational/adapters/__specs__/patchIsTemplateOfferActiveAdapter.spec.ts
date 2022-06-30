@@ -1,6 +1,6 @@
 import { patchIsTemplateOfferActiveAdapter } from '../patchIsTemplateOfferActiveAdapter'
 
-describe('patchIsOfferActiveTemplateAdapter', () => {
+describe('patchIsTemplateOfferActiveAdapter', () => {
   it('should return an error when the offer id is not valid', async () => {
     // given
 
