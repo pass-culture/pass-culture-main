@@ -6,13 +6,10 @@ import * as useNotification from 'components/hooks/useNotification'
 import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
-import {
-  DEFAULT_VISIBILITY_FORM_VALUES,
-  EducationalInstitution,
-  Mode,
-} from 'core/OfferEducational'
+import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import { render, screen, waitFor } from '@testing-library/react'
 
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import React from 'react'
@@ -31,7 +28,7 @@ jest.mock('react-router-dom', () => ({
   }),
 }))
 
-const institutions: EducationalInstitution[] = [
+const institutions: EducationalInstitutionResponseModel[] = [
   {
     id: 12,
     name: 'Institution 1',

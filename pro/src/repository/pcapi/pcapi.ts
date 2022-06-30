@@ -1,15 +1,12 @@
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import {
-  EducationalDomain,
-  EducationalInstitutions,
-} from 'core/OfferEducational'
-import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
 
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { EducationalDomain } from 'core/OfferEducational'
 import { ListOffersQueryModel } from 'api/v1/gen'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
@@ -118,13 +115,6 @@ const createRequestBody = searchFilters => {
   }
 
   return body
-}
-
-export const getEducationalInstitutions = (
-  page?: number
-): Promise<EducationalInstitutions> => {
-  const queryParams = page ? `?page=${page}` : ''
-  return client.get(`/educational_institutions${queryParams}`)
 }
 
 //

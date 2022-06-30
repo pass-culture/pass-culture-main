@@ -1,4 +1,4 @@
-import { EducationalInstitution } from 'core/OfferEducational/types'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { extractInitialVisibilityValues } from '../extractInitialVisibilityValues'
 
 describe('extractInitialVisibilityValues', () => {
@@ -11,7 +11,7 @@ describe('extractInitialVisibilityValues', () => {
   })
 
   it('when institution is defined', () => {
-    const institution: EducationalInstitution = {
+    const institution: EducationalInstitutionResponseModel = {
       id: 1,
       name: 'Collège Bellevue',
       city: 'Alès',
