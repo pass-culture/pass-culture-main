@@ -11,11 +11,14 @@ import {
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
-import { Colors } from '../../layout/Colors'
-import { dataProvider } from '../../providers/dataProvider'
-import { ExclamationPointIcon } from '../Icons/ExclamationPointIcon'
-
-import { UserBaseInfo, UserManualReview } from './types'
+import { Colors } from '../../../layout/Colors'
+import {
+  getHttpApiErrorMessage,
+  PcApiHttpError,
+} from '../../../providers/apiHelpers'
+import { dataProvider } from '../../../providers/dataProvider'
+import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
+import { UserBaseInfo, UserManualReview } from '../types'
 
 export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
   const [openModal, setOpenModal] = useState(false)
@@ -50,32 +53,29 @@ export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
   const handleCloseModal = () => setOpenModal(false)
 
   const formSubmit = async (params: FieldValues) => {
-    if (params && user) {
-      try {
-        const formData: UserManualReview = {
-          id: Number(user.id),
-          review: params.review,
-          reason: params.reason,
-          eligibility: params.eligibility,
-        }
-        const response = await dataProvider.postUserManualReview(
-          'public_accounts',
-          formData
-        )
-        const data = await response.json()
-        if (response && response.status === 200) {
-          notify('La revue a été envoyée avec succès !', { type: 'success' })
-          handleCloseModal()
-        } else if (
-          response &&
-          (response.status === 412 || response.status === 500)
-        ) {
-          notify(JSON.stringify(data.global), { type: 'error' })
-          handleCloseModal()
-        }
-      } catch (error) {
-        captureException(error)
+    try {
+      const formData: UserManualReview = {
+        id: Number(user.id),
+        review: params.review,
+        reason: params.reason,
+        eligibility: params.eligibility,
       }
+      const response = await dataProvider.postUserManualReview(
+        'public_accounts',
+        formData
+      )
+      if (response && response.status === 200) {
+        notify('La revue a été envoyée avec succès !', { type: 'success' })
+        handleCloseModal()
+      }
+    } catch (error) {
+      if (error instanceof PcApiHttpError) {
+        notify(getHttpApiErrorMessage(error), { type: 'error' })
+      } else {
+        notify('Une erreur est survenue !', { type: 'error' })
+      }
+      handleCloseModal()
+      captureException(error)
     }
   }
 

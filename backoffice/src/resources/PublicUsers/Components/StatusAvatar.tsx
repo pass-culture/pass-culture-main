@@ -4,7 +4,11 @@ import { Avatar, Tooltip } from '@mui/material'
 import { green, red, yellow } from '@mui/material/colors'
 import React from 'react'
 
-import { CheckHistory, SubscriptionItem, SubscriptionItemStatus } from './types'
+import {
+  CheckHistory,
+  SubscriptionItem,
+  SubscriptionItemStatus,
+} from '../types'
 
 type Props = {
   subscriptionItem: SubscriptionItem | CheckHistory | undefined

@@ -1,19 +1,18 @@
-import { DataProvider } from 'react-admin'
+import { CreateParams, DataProvider } from 'react-admin'
 
 import { env } from '../libs/environment/env'
 import { eventMonitoring } from '../libs/monitoring/sentry'
 import {
   UserSearchResponse,
   UserApiResponse,
-} from '../resources/Interfaces/UserSearchInterface'
-import { UserManualReview } from '../resources/PublicUsers/types'
+  UserManualReview,
+} from '../resources/PublicUsers/types'
 
 import { safeFetch } from './apiHelpers'
 
-let assets: UserApiResponse[] = []
-
 export const dataProvider: DataProvider = {
   async searchList(resource: string, params: string) {
+    let assets: UserApiResponse[] = []
     switch (resource) {
       case 'public_accounts/search': {
         const response = await safeFetch(
@@ -40,58 +39,68 @@ export const dataProvider: DataProvider = {
     }
   },
 
+  //TODO: (akarki) - Implement ${params} when API is ready for it
+  //
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getList(resource, params) {
+    const response = await safeFetch(`${env.API_URL}/${resource}`)
+    const rolesResponse = response.json
+    let resourceResponse
+    switch (resource) {
+      case 'roles':
+        resourceResponse = rolesResponse.roles
+        break
+      case 'permissions':
+        resourceResponse = rolesResponse.permissions
+        break
+      default:
+        break
+    }
     return {
-      data: [],
-      total: 0,
+      data: resourceResponse,
+      total: resourceResponse.length,
     }
   },
+
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore TODO: (akarki) reformatter le typage de la réponse
+  //@ts-ignore TODO: (akarki) - reformat ${response} when API is ready for it
   async getOne(resource, params) {
     switch (resource) {
       case 'public_accounts': {
-        try {
-          const response = await safeFetch(
-            `${env.API_URL}/${resource}/${params.id}`
-          )
-          const user: UserApiResponse = response.json
+        const response = await safeFetch(
+          `${env.API_URL}/${resource}/${params.id}`
+        )
+        const user: UserApiResponse = response.json
 
-          const creditInfo = async () => {
-            try {
-              return safeFetch(`${env.API_URL}/${resource}/${params.id}/credit`)
-            } catch (error) {
-              eventMonitoring.captureException(error)
-              throw error
-            }
+        const creditInfo = async () => {
+          try {
+            return safeFetch(`${env.API_URL}/${resource}/${params.id}/credit`)
+          } catch (error) {
+            eventMonitoring.captureException(error)
+            throw error
           }
-
-          const historyInfo = async () => {
-            try {
-              return safeFetch(
-                `${env.API_URL}/${resource}/${params.id}/history`
-              )
-            } catch (error) {
-              eventMonitoring.captureException(error)
-              throw error
-            }
-          }
-          const [userCreditResponse, userHistoryResponse] = await Promise.all([
-            creditInfo(),
-            historyInfo(),
-          ])
-
-          const dataUser = {
-            ...user,
-            userCredit: userCreditResponse.json,
-            userHistory: userHistoryResponse.json,
-          }
-          return { data: dataUser }
-        } catch (error) {
-          eventMonitoring.captureException(error)
-          throw error
         }
+
+        const historyInfo = async () => {
+          try {
+            return safeFetch(`${env.API_URL}/${resource}/${params.id}/history`)
+          } catch (error) {
+            eventMonitoring.captureException(error)
+            throw error
+          }
+        }
+
+        const [userCreditResponse, userHistoryResponse] = await Promise.all([
+          creditInfo(),
+          historyInfo(),
+        ])
+
+        const dataUser = {
+          ...user,
+          userCredit: userCreditResponse.json,
+          userHistory: userHistoryResponse.json,
+        }
+        return { data: dataUser }
       }
       default:
         break
@@ -114,45 +123,41 @@ export const dataProvider: DataProvider = {
     }
   },
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore 12356
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async create(resource, params) {
-    return {
-      data: {
-        id: 0,
-      },
+  async create(resource: string, params: CreateParams) {
+    const requestParams = {
+      method: 'POST',
+      body: JSON.stringify(params.data),
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
     }
+
+    const response = await safeFetch(
+      `${env.API_URL}/${resource}`,
+      requestParams
+    )
+
+    const responseData = await response.json
+
+    return { data: responseData }
   },
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore 12356
+
   async update(resource, params) {
-    switch (resource) {
-      case 'public_accounts': {
-        try {
-          const bodyString = JSON.stringify(params.data, null, 4)
-          const body = {
-            method: 'POST',
-            body: bodyString,
-            headers: new Headers({
-              'Content-Type': 'application/json',
-            }),
-          }
-          const response = await safeFetch(
-            `${env.API_URL}/${resource}/${params.id}`,
-            body
-          )
-          const responseData = await response.json()
-          return {
-            data: responseData,
-          }
-        } catch (error) {
-          eventMonitoring.captureException(error)
-          throw error
-        }
-      }
-      default:
-        break
+    const bodyString = JSON.stringify(params.data, null, 4)
+    const body = {
+      method: 'PUT',
+      body: bodyString,
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
+    }
+    const response = await safeFetch(
+      `${env.API_URL}/${resource}/${params.id}`,
+      body
+    )
+    const responseData = response.json
+    return {
+      data: responseData,
     }
   },
 
@@ -162,15 +167,21 @@ export const dataProvider: DataProvider = {
       data: [],
     }
   },
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore 12356
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   async delete(resource, params) {
-    return {
-      data: {
-        id: 1,
-      },
+    const requestParams = {
+      method: 'DELETE',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
     }
+    const response = await safeFetch(
+      `${env.API_URL}/${resource}/${params.id}`,
+      requestParams
+    )
+    const responseData = await response.json
+
+    return { data: responseData }
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -179,81 +190,60 @@ export const dataProvider: DataProvider = {
       data: [],
     }
   },
+
+  //TODO: (akarki) - To export to a dedicated file for custom operation on public_users
   async postUserManualReview(resource: string, params: UserManualReview) {
-    try {
-      const bodyString = JSON.stringify({
-        eligibility: params.eligibility,
-        reason: params.reason,
-        review: params.review,
-      })
-      const requestParams = {
-        method: 'POST',
-        body: bodyString,
-        headers: new Headers({
-          'Content-Type': 'application/json',
-        }),
-      }
-
-      console.log(requestParams)
-
-      return await safeFetch(
-        `${env.API_URL}/${resource}/${params.id}/review`,
-        requestParams
-      )
-    } catch (error) {
-      eventMonitoring.captureException(error)
-      throw error
+    const bodyString = JSON.stringify({
+      eligibility: params.eligibility,
+      reason: params.reason,
+      review: params.review,
+    })
+    const requestParams = {
+      method: 'POST',
+      body: bodyString,
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
     }
+    return await safeFetch(
+      `${env.API_URL}/${resource}/${params.id}/review`,
+      requestParams
+    )
   },
   async postResendValidationEmail(resource: string, params: UserApiResponse) {
-    try {
-      const requestParams = {
-        method: 'POST',
-        headers: new Headers({
-          'Content-Type': 'application/json',
-        }),
-      }
-      return safeFetch(
-        `${env.API_URL}/${resource}/${params.id}/resend-validation-email`,
-        requestParams
-      )
-    } catch (error) {
-      eventMonitoring.captureException(error)
-      throw error
+    const requestParams = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
     }
+    return await safeFetch(
+      `${env.API_URL}/${resource}/${params.id}/resend-validation-email`,
+      requestParams
+    )
   },
   async postSkipPhoneValidation(resource: string, params: UserApiResponse) {
-    try {
-      const requestParams = {
-        method: 'POST',
-        headers: new Headers({
-          'Content-Type': 'application/json',
-        }),
-      }
-      return safeFetch(
-        `${env.API_URL}/${resource}/${params.id}/skip-phone-validation`,
-        requestParams
-      )
-    } catch (error) {
-      eventMonitoring.captureException(error)
-      throw error
+    const requestParams = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
     }
+    return await safeFetch(
+      `${env.API_URL}/${resource}/${params.id}/skip-phone-validation`,
+      requestParams
+    )
   },
   async postPhoneValidationCode(resource: string, params: UserApiResponse) {
-    try {
-      const requestParams = {
-        method: 'POST',
-        headers: new Headers({
-          'Content-Type': 'application/json',
-        }),
-      }
-      return safeFetch(
-        `${env.API_URL}/${resource}/${params.id}/send-phone-validation-code`,
-        requestParams
-      )
-    } catch (error) {
-      eventMonitoring.captureException(error)
-      throw error
+    const requestParams = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json',
+      }),
     }
+    return await safeFetch(
+      `${env.API_URL}/${resource}/${params.id}/send-phone-validation-code`,
+      requestParams
+    )
   },
 }

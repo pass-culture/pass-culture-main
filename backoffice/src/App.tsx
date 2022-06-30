@@ -38,6 +38,7 @@ export function App() {
               name={resource.name}
               list={resource.list}
               edit={resource.edit}
+              create={resource.create}
             />
           ))}
           <CustomRoutes>

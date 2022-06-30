@@ -12,9 +12,12 @@ import {
 } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
-import { dataProvider } from '../../providers/dataProvider'
-
-import { CheckHistory, UserBaseInfo } from './types'
+import {
+  getHttpApiErrorMessage,
+  PcApiHttpError,
+} from '../../../providers/apiHelpers'
+import { dataProvider } from '../../../providers/dataProvider'
+import { CheckHistory, UserBaseInfo } from '../types'
 
 type Props = {
   user: UserBaseInfo
@@ -26,46 +29,64 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
   const [editable, setEditable] = useState(false)
 
   async function resendValidationEmail() {
-    const response = await dataProvider.postResendValidationEmail(
-      'public_accounts',
-      user
-    )
-    const responseData = await response.json()
-    if (response.code === 400) {
-      notify(Object.values(responseData)[0] as string, { type: 'error' })
+    try {
+      const response = await dataProvider.postResendValidationEmail(
+        'public_accounts',
+        user
+      )
+      const responseData = await response.json()
+      if (response.code === 400) {
+        notify(Object.values(responseData)[0] as string, { type: 'error' })
+      }
+    } catch (error) {
+      if (error instanceof PcApiHttpError) {
+        notify(getHttpApiErrorMessage(error), { type: 'error' })
+      } else {
+        notify('Une erreur est survenue !', { type: 'error' })
+      }
+      captureException(error)
     }
   }
 
   async function skipPhoneValidation() {
-    const response = await dataProvider.postSkipPhoneValidation(
-      'public_accounts',
-      user
-    )
-    let responseData
-    if (response.body) {
-      responseData = await response.json()
-    }
-    if (response.code !== 204 && responseData) {
-      notify(Object.values(responseData)[0] as string, { type: 'error' })
-    } else if (response.code === 204 || response.ok) {
-      notify('Le numéro de téléphone a été confirmé avec succès', {
-        type: 'success',
-      })
+    try {
+      const response = await dataProvider.postSkipPhoneValidation(
+        'public_accounts',
+        user
+      )
+      if (response.status >= 200 && response.status < 300) {
+        notify('Le numéro de téléphone a été confirmé avec succès', {
+          type: 'success',
+        })
+      }
+    } catch (error) {
+      if (error instanceof PcApiHttpError) {
+        notify(getHttpApiErrorMessage(error), { type: 'error' })
+      } else {
+        notify('Une erreur est survenue !', { type: 'error' })
+      }
+      captureException(error)
     }
   }
 
   async function sendPhoneValidationCode() {
-    const response = await dataProvider.postPhoneValidationCode(
-      'public_accounts',
-      user
-    )
-    const responseData = await response.json()
-    if (response.code !== 200) {
-      notify(Object.values(responseData)[0] as string, { type: 'error' })
-    } else if (response.code === 204) {
-      notify('Un code a été envoyé au numéro de téléphone indiqué', {
-        type: 'success',
-      })
+    try {
+      const response = await dataProvider.postPhoneValidationCode(
+        'public_accounts',
+        user
+      )
+      if (response.status >= 200 && response.status < 300) {
+        notify('Le code de validation du téléphone a été envoyé avec succès', {
+          type: 'success',
+        })
+      }
+    } catch (error) {
+      if (error instanceof PcApiHttpError) {
+        notify(getHttpApiErrorMessage(error), { type: 'error' })
+      } else {
+        notify('Une erreur est survenue !', { type: 'error' })
+      }
+      captureException(error)
     }
   }
 
@@ -84,7 +105,8 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
           dateOfBirth: moment(params.dateOfBirth).format(),
           email: params.email,
           firstName: params.firstName,
-          idPieceNumber: params.idPieceNumber,
+          idPieceNumber:
+            params.idPieceNumber !== '' ? params.idPieceNumber : null,
           lastName: params.lastName,
           postalCode: params.postalCode,
         }
@@ -93,17 +115,24 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
           data: formData,
           previousData: user,
         }
+        setEditable(false)
+
         const response = await dataProvider.update(
           'public_accounts',
           formParams
         )
+
         if (response.data) {
           notify('Les modifications ont été appliquées avec succès', {
             type: 'success',
           })
         }
-        setEditable(false)
       } catch (error) {
+        if (error instanceof PcApiHttpError) {
+          notify(getHttpApiErrorMessage(error), { type: 'error' })
+        } else {
+          notify('Une erreur est survenue !', { type: 'error' })
+        }
         captureException(error)
       }
     }
@@ -118,7 +147,7 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
       <Card style={cardStyle}>
         <Form onSubmit={submitForm}>
           <Typography variant={'h5'}>Détails utilisateur </Typography>
-          <Grid container spacing={1} sx={{ mt: 4 }}>
+          <Grid container sx={{ mt: 4 }}>
             <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
               <Grid item xs={4}>
                 <TextInput
