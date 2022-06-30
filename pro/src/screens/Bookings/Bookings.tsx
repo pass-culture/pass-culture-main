@@ -1,5 +1,12 @@
 import {
+  BookingRecapResponseModel,
   CollectiveBookingResponseModel,
+} from 'apiClient/v1'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
+} from '../../utils/date'
+import {
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
   GetFilteredBookingsRecapAdapter,
@@ -8,15 +15,10 @@ import {
   GetVenuesAdapter,
   TPreFilters,
 } from 'core/Bookings'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-} from '../../utils/date'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { Audience } from 'core/shared/types'
-import { BookingRecapResponseModel } from 'api/v1/gen'
 import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
 import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
