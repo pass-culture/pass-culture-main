@@ -1,6 +1,5 @@
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import {
-  CollectiveOfferResponseModel,
   EducationalDomain,
   EducationalInstitutions,
 } from 'core/OfferEducational'
@@ -127,16 +126,6 @@ export const getEducationalInstitutions = (
   const queryParams = page ? `?page=${page}` : ''
   return client.get(`/educational_institutions${queryParams}`)
 }
-
-export const patchEducationalInstitution = (
-  offerId: string,
-  institutionId: string,
-  isCreatingOffer: boolean
-): Promise<CollectiveOfferResponseModel> =>
-  client.patch(`/collective/offers/${offerId}/educational_institution`, {
-    educationalInstitutionId: parseInt(institutionId),
-    isCreatingOffer,
-  })
 
 //
 // offerers
