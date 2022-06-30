@@ -282,7 +282,9 @@ def edit_collective_offer_template(
 @private_api.route("/collective/offers-template/<offer_id>/to-collective-offer", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=collective_offers_serialize.CollectiveOfferFromTemplateResponseModel
+    on_success_status=201,
+    response_model=collective_offers_serialize.CollectiveOfferFromTemplateResponseModel,
+    api=blueprint.pro_private_schema,
 )
 def transform_collective_offer_template_into_collective_offer(
     offer_id: str, body: collective_stock_serialize.CollectiveStockCreationBodyModel
