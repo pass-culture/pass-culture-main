@@ -5,7 +5,6 @@ import {
   Mode,
   OfferEducationalStockFormValues,
   getStockCollectiveOfferAdapter,
-  getStockOfferAdapter,
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
@@ -27,9 +26,7 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
   const history = useHistory()
-  const enableIndividualAndCollectiveSeparation = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
+
   const enableEducationalInstitutionAssociation = useActiveFeature(
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
@@ -67,12 +64,8 @@ const OfferEducationalStockCreation = (): JSX.Element => {
       return notify.error(message)
     }
 
-    const successPayload = payload
-    const shouldUseNewTemplateIds =
-      isTemplate && enableIndividualAndCollectiveSeparation
-
-    let url = `/offre/${shouldUseNewTemplateIds ? 'T-' : ''}${
-      shouldUseNewTemplateIds ? successPayload?.id : offer.id
+    let url = `/offre/${isTemplate ? 'T-' : ''}${
+      isTemplate ? payload?.id : offer.id
     }/collectif`
 
     if (enableEducationalInstitutionAssociation && !isTemplate) {
@@ -86,10 +79,9 @@ const OfferEducationalStockCreation = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadOffer = async () => {
-        const getOfferAdapter = enableIndividualAndCollectiveSeparation
-          ? getStockCollectiveOfferAdapter
-          : getStockOfferAdapter
-        const { payload, message, isOk } = await getOfferAdapter(offerId)
+        const { payload, message, isOk } = await getStockCollectiveOfferAdapter(
+          offerId
+        )
 
         if (!isOk) {
           return notify.error(message)
