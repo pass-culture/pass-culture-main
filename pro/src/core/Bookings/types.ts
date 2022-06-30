@@ -1,4 +1,9 @@
-import { BookingRecapResponseModel, BookingStatusFilter } from 'api/v1/gen'
+import {
+  BookingRecapResponseModel,
+  CollectiveBookingResponseModel,
+} from 'apiClient/v1'
+
+import { BookingStatusFilter } from 'api/v1/gen'
 
 export type TPreFilters = {
   offerVenueId: string
@@ -59,41 +64,3 @@ export type GetUserHasBookingsAdapter = Adapter<void, boolean, boolean>
 
 export type VenuesPayload = { venues: { id: string; displayName: string }[] }
 export type GetVenuesAdapter = Adapter<void, VenuesPayload, VenuesPayload>
-
-type EducationalRedactorResponseModel = {
-  email: string
-  firstname: string
-  lastname: string
-  phonenumber?: string | null
-}
-
-type BookingStatusHistoryResponseModel = {
-  date: string
-  status: string
-}
-
-type CollectiveStockResponseModel = {
-  eventBeginningDatetime: string
-  offerIdentifier: string
-  offerIsEducational?: boolean
-  offerIsbn?: string | null
-  offerName: string
-}
-
-export type CollectiveBookingResponseModel = {
-  beneficiary: EducationalRedactorResponseModel
-  bookingAmount: number
-  bookingDate: string
-  bookingIsDuo?: boolean
-  bookingStatus: string
-  bookingStatusHistory: BookingStatusHistoryResponseModel[]
-  bookingToken?: string | null
-  stock: CollectiveStockResponseModel
-}
-
-export type CollectiveBookingsResponseModel = {
-  bookingsRecap: CollectiveBookingResponseModel[]
-  page: number
-  pages: number
-  total: number
-}
