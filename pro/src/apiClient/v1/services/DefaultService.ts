@@ -165,7 +165,7 @@ export class DefaultService {
   }
 
   /**
-   * list_collective_offers <GET>
+   * get_collective_offers <GET>
    * @param nameOrIsbn
    * @param offererId
    * @param status
@@ -177,7 +177,7 @@ export class DefaultService {
    * @returns ListCollectiveOffersResponseModel OK
    * @throws ApiError
    */
-  public listCollectiveOffers(
+  public getCollectiveOffers(
     nameOrIsbn?: string | null,
     offererId?: number | null,
     status?: string | null,
