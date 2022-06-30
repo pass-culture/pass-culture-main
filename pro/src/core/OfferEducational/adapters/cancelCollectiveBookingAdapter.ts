@@ -1,5 +1,4 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
+import { api } from 'apiClient/api'
 import { hasStatusCodeAndErrorsCode } from '../utils'
 
 type IPayloadSuccess = null
@@ -16,7 +15,7 @@ export const cancelCollectiveBookingAdapter: cancelCollectiveBookingAdapter =
       // the api returns no understandable error when the id is not valid, so we deal before calling the api
       if (!offerId || offerId === '')
         throw new Error('L’identifiant de l’offre n’est pas valide.')
-      await pcapi.cancelCollectiveOfferBooking(offerId)
+      await api.cancelCollectiveOfferBooking(offerId)
       return {
         isOk: true,
         message:
