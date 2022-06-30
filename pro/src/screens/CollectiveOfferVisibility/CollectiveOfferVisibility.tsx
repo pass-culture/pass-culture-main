@@ -1,6 +1,5 @@
 import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import {
-  CollectiveOfferResponseModel,
   EducationalInstitution,
   Mode,
   VisibilityFormValues,
@@ -10,6 +9,7 @@ import { Link, useParams } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
 import RadioGroup from 'ui-kit/form/RadioGroup'
 import Spinner from 'components/layout/Spinner'
@@ -30,7 +30,7 @@ export interface CollectiveOfferVisibilityProps {
   }: {
     offerId: string
     message: string
-    payload: CollectiveOfferResponseModel
+    payload: GetCollectiveOfferResponseModel
   }) => void
   institutions: EducationalInstitution[]
   isLoadingInstitutions: boolean

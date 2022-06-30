@@ -1,11 +1,8 @@
-import {
-  CollectiveOfferResponseModel,
-  EducationalInstitution,
-  Mode,
-} from 'core/OfferEducational'
+import { EducationalInstitution, Mode } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
 
 import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import Spinner from 'components/layout/Spinner'
@@ -62,7 +59,7 @@ const CollectiveOfferVisibility = () => {
     payload,
   }: {
     message: string
-    payload: CollectiveOfferResponseModel
+    payload: GetCollectiveOfferResponseModel
   }) => {
     setInstitution(payload.institution)
     notify.success(message)

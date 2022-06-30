@@ -1,6 +1,5 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { CollectiveOfferResponseModel } from 'core/OfferEducational'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 
 export type PatchEducationalInstitutionAdapter = Adapter<
   {
@@ -8,18 +7,19 @@ export type PatchEducationalInstitutionAdapter = Adapter<
     institutionId: string
     isCreatingOffer: boolean
   },
-  CollectiveOfferResponseModel,
+  GetCollectiveOfferResponseModel,
   null
 >
 
 export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdapter =
   async ({ offerId, institutionId, isCreatingOffer }) => {
     try {
-      const collectiveOffer = await pcapi.patchEducationalInstitution(
-        offerId,
-        institutionId,
-        isCreatingOffer
-      )
+      const collectiveOffer =
+        await api.patchCollectiveOffersEducationalInstitution(offerId, {
+          // @ts-expect-error string is not assignable to type number
+          educationalInstitutionId: institutionId,
+          isCreatingOffer,
+        })
 
       return {
         isOk: true,
