@@ -2,22 +2,20 @@ from flask import url_for
 import pytest
 
 from pcapi.core.auth.api import generate_token
-from pcapi.core.permissions.factories import PermissionFactory
-from pcapi.core.permissions.factories import RoleFactory
-from pcapi.core.permissions.models import Permission
-from pcapi.core.permissions.models import Permissions
-from pcapi.core.permissions.models import Role
+from pcapi.core.permissions import factories as perm_factories
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.testing import override_features
 from pcapi.core.users.factories import UserFactory
 from pcapi.repository import repository
+from pcapi.routes.backoffice import serialization
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def create_admin_role():
-    permission = Permission.query.filter_by(name=Permissions.MANAGE_PERMISSIONS.name).first()
-    role = RoleFactory(name="admin")
+    permission = perm_models.Permission.query.filter_by(name=perm_models.Permissions.MANAGE_PERMISSIONS.name).first()
+    role = perm_factories.RoleFactory(name="admin")
     role.permissions.append(permission)
     repository.save(role)
 
@@ -28,10 +26,10 @@ class RoleListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_list_roles(self, client):
         # given
-        RoleFactory(name="test_role_1")
-        RoleFactory(name="test_role_2")
+        perm_factories.RoleFactory(name="test_role_1")
+        perm_factories.RoleFactory(name="test_role_2")
         user = UserFactory()
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -46,8 +44,8 @@ class RoleListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_roles_without_permission(self, client):
         # given
-        RoleFactory(name="test_role_1")
-        RoleFactory(name="test_role_2")
+        perm_factories.RoleFactory(name="test_role_1")
+        perm_factories.RoleFactory(name="test_role_2")
         user = UserFactory()
         auth_token = generate_token(user, [])
 
@@ -63,7 +61,7 @@ class RoleListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_roles_as_anonymous(self, client):
         # given
-        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(UserFactory.build(), [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.get(
@@ -80,7 +78,7 @@ class PermissionListTest:
     def test_can_list_permissions(self, client):
         # given
         user = UserFactory()
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).get(
@@ -90,7 +88,7 @@ class PermissionListTest:
         # then
         assert response.status_code == 200
         permissions = response.json["permissions"]
-        assert set(perm["name"] for perm in permissions) == {p.value for p in Permissions}
+        assert set(perm["name"] for perm in permissions) == {p.value for p in perm_models.Permissions}
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_permissions_without_permission(self, client):
@@ -110,7 +108,7 @@ class PermissionListTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_list_permissions_as_anonymous(self, client):
         # given
-        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(UserFactory.build(), [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.get(
@@ -127,9 +125,9 @@ class NewRoleTest:
     def test_can_create_new_role_with_non_empty_permissions(self, client):
         # given
         user = UserFactory()
-        permissions = (PermissionFactory(), PermissionFactory())
+        permissions = (perm_factories.PermissionFactory(), perm_factories.PermissionFactory())
         new_role_data = {"name": "dummy_role", "permissionIds": [p.id for p in permissions]}
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -141,7 +139,7 @@ class NewRoleTest:
         assert response.status_code == 200
         assert response.json["name"] == new_role_data["name"]
         assert {p["id"] for p in response.json["permissions"]} == set(new_role_data["permissionIds"])
-        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        new_role_query = perm_models.Role.query.filter_by(name=new_role_data["name"])
         assert new_role_query.count() == 1
         inserted_role = new_role_query[0]
         assert inserted_role.name == new_role_data["name"]
@@ -152,7 +150,7 @@ class NewRoleTest:
         # given
         user = UserFactory()
         new_role_data = {"name": "dummy_role", "permissionIds": []}
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -164,7 +162,7 @@ class NewRoleTest:
         assert response.status_code == 200
         assert response.json["name"] == new_role_data["name"]
         assert response.json["permissions"] == []
-        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        new_role_query = perm_models.Role.query.filter_by(name=new_role_data["name"])
         assert new_role_query.count() == 1
         inserted_role = new_role_query[0]
         assert inserted_role.name == new_role_data["name"]
@@ -175,7 +173,7 @@ class NewRoleTest:
         # given
         user = UserFactory()
         new_role_data = {"name": "", "permissionIds": []}
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).post(
@@ -205,7 +203,7 @@ class NewRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_create_new_role_as_anonymous(self, client):
         # given
-        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(UserFactory.build(), [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.post(
@@ -223,10 +221,10 @@ class UpdateRoleTest:
     def test_can_update_role_with_non_empty_permissions(self, client):
         # given
         user = UserFactory()
-        permissions = (PermissionFactory(), PermissionFactory())
-        existing_role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
+        permissions = (perm_factories.PermissionFactory(), perm_factories.PermissionFactory())
+        existing_role = perm_factories.RoleFactory(name="dummy_role", permissions=[permissions[0]])
         new_role_data = {"name": "updated_role", "permissionIds": [p.id for p in permissions]}
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).put(
@@ -238,7 +236,7 @@ class UpdateRoleTest:
         assert response.status_code == 200
         assert response.json["name"] == new_role_data["name"]
         assert {p["id"] for p in response.json["permissions"]} == set(new_role_data["permissionIds"])
-        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        new_role_query = perm_models.Role.query.filter_by(name=new_role_data["name"])
         assert new_role_query.count() == 1
         inserted_role = new_role_query[0]
         assert inserted_role.name == new_role_data["name"]
@@ -248,9 +246,9 @@ class UpdateRoleTest:
     def test_can_update_role_with_empty_permissions(self, client):
         # given
         user = UserFactory()
-        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+        existing_role = perm_factories.RoleFactory(name="dummy_role", permissions=[perm_factories.PermissionFactory()])
         new_role_data = {"name": "updated_role", "permissionIds": []}
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).put(
@@ -262,7 +260,7 @@ class UpdateRoleTest:
         assert response.status_code == 200
         assert response.json["name"] == new_role_data["name"]
         assert response.json["permissions"] == []
-        new_role_query = Role.query.filter_by(name=new_role_data["name"])
+        new_role_query = perm_models.Role.query.filter_by(name=new_role_data["name"])
         assert new_role_query.count() == 1
         inserted_role = new_role_query[0]
         assert inserted_role.name == new_role_data["name"]
@@ -272,9 +270,9 @@ class UpdateRoleTest:
     def test_cannot_update_role_with_empty_name(self, client):
         # given
         user = UserFactory()
-        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+        existing_role = perm_factories.RoleFactory(name="dummy_role", permissions=[perm_factories.PermissionFactory()])
         new_role_data = {"name": "", "permissionIds": []}
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).put(
@@ -288,7 +286,7 @@ class UpdateRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_update_role_without_permission(self, client):
         # given
-        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
+        existing_role = perm_factories.RoleFactory(name="dummy_role", permissions=[perm_factories.PermissionFactory()])
         user = UserFactory()
         auth_token = generate_token(user, [])
 
@@ -305,8 +303,8 @@ class UpdateRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_update_role_as_anonymous(self, client):
         # given
-        existing_role = RoleFactory(name="dummy_role", permissions=[PermissionFactory()])
-        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
+        existing_role = perm_factories.RoleFactory(name="dummy_role", permissions=[perm_factories.PermissionFactory()])
+        auth_token = generate_token(UserFactory.build(), [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.put(
@@ -323,10 +321,11 @@ class DeleteRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_delete_role_with_non_empty_permissions(self, client):
         # given
-        permissions = (PermissionFactory(), PermissionFactory())
-        role = RoleFactory(name="dummy_role", permissions=[permissions[0]])
+        permissions = (perm_factories.PermissionFactory(), perm_factories.PermissionFactory())
+        role = perm_factories.RoleFactory(name="dummy_role", permissions=[permissions[0]])
         user = UserFactory()
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
+        role_id, role_name, role_permissions = role.id, role.name, role.permissions
 
         # when
         response = client.with_explicit_token(auth_token).delete(
@@ -335,17 +334,19 @@ class DeleteRoleTest:
 
         # then
         assert response.status_code == 200
-        assert Role.query.filter_by(id=role.id).count() == 0
+        assert perm_models.Role.query.filter_by(id=role_id).count() == 0
         deleted_role = response.json
-        assert deleted_role["id"] == role.id
-        assert deleted_role["name"] == role.name
+        assert deleted_role["id"] == role_id
+        assert deleted_role["name"] == role_name
+        assert deleted_role["permissions"] == [serialization.Permission.from_orm(p) for p in role_permissions]
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_delete_role_with_empty_permissions(self, client):
         # given
-        role = RoleFactory(name="dummy_role")
+        role = perm_factories.RoleFactory(name="dummy_role")
         user = UserFactory()
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
+        role_id, role_name, role_permissions = role.id, role.name, role.permissions
 
         # when
         response = client.with_explicit_token(auth_token).delete(
@@ -354,17 +355,18 @@ class DeleteRoleTest:
 
         # then
         assert response.status_code == 200
-        assert Role.query.filter_by(id=role.id).count() == 0
+        assert perm_models.Role.query.filter_by(id=role_id).count() == 0
         deleted_role = response.json
-        assert deleted_role["id"] == role.id
-        assert deleted_role["name"] == role.name
+        assert deleted_role["id"] == role_id
+        assert deleted_role["name"] == role_name
+        assert deleted_role["permissions"] == [serialization.Permission.from_orm(p) for p in role_permissions]
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_delete_admin_role(self, client):
         # given
         admin_role = create_admin_role()
         user = UserFactory()
-        auth_token = generate_token(user, [Permissions.MANAGE_PERMISSIONS])
+        auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.with_explicit_token(auth_token).delete(
@@ -379,7 +381,7 @@ class DeleteRoleTest:
     def test_cannot_delete_role_without_permission(self, client):
         # given
         create_admin_role()
-        role = RoleFactory(name="dummy_role")
+        role = perm_factories.RoleFactory(name="dummy_role")
         user = UserFactory()
         auth_token = generate_token(user, [])
 
@@ -395,8 +397,8 @@ class DeleteRoleTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_delete_role_as_anonymous(self, client):
         # given
-        role = RoleFactory(name="dummy_role")
-        auth_token = generate_token(UserFactory.build(), [Permissions.MANAGE_PERMISSIONS])
+        role = perm_factories.RoleFactory(name="dummy_role")
+        auth_token = generate_token(UserFactory.build(), [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.delete(
