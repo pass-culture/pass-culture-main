@@ -1,11 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
-  CollectiveBookingResponseModel,
   GetFilteredCollectiveBookingsRecapAdapter,
   GetFilteredCollectiveBookingsRecapAdapterPayload,
 } from 'core/Bookings'
 
+import { CollectiveBookingResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
 
 const MAX_LOADED_PAGES = 5
@@ -44,8 +43,9 @@ export const getFilteredCollectiveBookingsRecapAdapter: GetFilteredCollectiveBoo
           page,
         } = buildBookingsRecapQuery(nextPageFilters)
 
-        const bookings = await pcapi.getCollectiveBookings(
+        const bookings = await api.getCollectiveBookingsPro(
           page,
+          // @ts-expect-error type string is not assignable to type number
           venueId,
           eventDate,
           bookingStatusFilter,
