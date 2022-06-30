@@ -12,18 +12,22 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import { captureException } from '@sentry/react'
 import { ClassAttributes, HTMLAttributes, useState } from 'react'
-import { Form, ShowButton, TextInput, useAuthenticated } from 'react-admin'
+import { Form, TextInput, useAuthenticated, useNotify } from 'react-admin'
 import { FieldValues } from 'react-hook-form'
 
 import { Colors } from '../../layout/Colors'
-import { eventMonitoring } from '../../libs/monitoring/sentry'
+import {
+  getHttpApiErrorMessage,
+  PcApiHttpError,
+} from '../../providers/apiHelpers'
 import { dataProvider } from '../../providers/dataProvider'
 import { CustomSearchIcon } from '../Icons/CustomSearchIcon'
-import { UserApiResponse } from '../Interfaces/UserSearchInterface'
+import { UserApiResponse } from '../PublicUsers/types'
 
-import { BeneficiaryBadge } from './BeneficiaryBadge'
-import { StatusBadge } from './StatusBadge'
+import { BeneficiaryBadge } from './Components/BeneficiaryBadge'
+import { StatusBadge } from './Components/StatusBadge'
 
 const UpperCaseText = (
   props: JSX.IntrinsicAttributes &
@@ -69,12 +73,6 @@ const UserCard = ({ record }: { record: UserApiResponse }) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <ShowButton
-          onClick={event => event.preventDefault()}
-          resource={'public_accounts'}
-          label={'Consulter ce profil'}
-        />
-
         <Button
           href={`/public_accounts/${id}`}
           variant={'text'}
@@ -100,6 +98,7 @@ export const UserSearch = () => {
   const [userData, setUserData] = useState([])
   const [emptyResults, setEmptyResults] = useState(true)
   useAuthenticated()
+  const notify = useNotify()
 
   async function formSubmit(params: FieldValues) {
     if (params && params.search) {
@@ -110,14 +109,17 @@ export const UserSearch = () => {
           'public_accounts/search',
           String(params.search)
         )
-        console.log(response)
         if (response && response.data && response.data.length > 0) {
           setUserData(response.data)
           setEmptyResults(false)
         }
       } catch (error) {
-        console.log(error)
-        eventMonitoring.captureException(error)
+        if (error instanceof PcApiHttpError) {
+          notify(getHttpApiErrorMessage(error), { type: 'error' })
+        } else {
+          notify('Une erreur est survenue !', { type: 'error' })
+        }
+        captureException(error)
       }
     }
   }
@@ -224,15 +226,15 @@ export const UserSearch = () => {
               </Form>
             </Box>
           </Grid>
-          {userData.length > 0 && <div>{userData.length} résultat(s)</div>}
+          {!emptyResults && <div>{userData.length} résultat(s)</div>}
         </CardContent>
       </Card>
       <List>
         <Grid container spacing={2} sx={{ marginTop: '1em', minWidth: 275 }}>
           {!emptyResults &&
-            userData.map(record => (
+            userData.map(user => (
               <Grid
-                key={record['id']}
+                key={user['id']}
                 sx={{ minWidth: 275 }}
                 xs={12}
                 sm={6}
@@ -241,7 +243,7 @@ export const UserSearch = () => {
                 xl={4}
                 item
               >
-                <UserCard record={record} />
+                <UserCard record={user} />
               </Grid>
             ))}
         </Grid>

@@ -1,4 +1,5 @@
 import { UserSearch } from './resources/PublicUsers/UserSearch'
+import { RolesList } from './resources/Roles/RolesList'
 
 type ResourceType = {
   name: string
@@ -12,5 +13,9 @@ export const resources: ResourceType[] = [
   {
     name: '/public_users/search',
     list: UserSearch,
+  },
+  {
+    name: '/roles',
+    list: RolesList,
   },
 ]
