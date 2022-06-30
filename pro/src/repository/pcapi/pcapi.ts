@@ -1,9 +1,4 @@
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import { BookingStatusFilter, ListOffersQueryModel } from 'api/v1/gen'
-import {
-  CollectiveBookingsResponseModel,
-  DEFAULT_PRE_FILTERS,
-} from 'core/Bookings'
 import {
   CollectiveOfferResponseModel,
   CollectiveOfferTemplate,
@@ -23,9 +18,10 @@ import {
 } from 'utils/date'
 
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import { ListOffersQueryModel } from 'api/v1/gen'
 import { Offer } from 'custom_types/offer'
 import { client } from 'repository/pcapi/pcapiClient'
-import { stringify as queryStringStringify } from 'query-string'
 import { stringify } from 'utils/query-string'
 
 export const loadFeatures = async () => {
@@ -647,25 +643,6 @@ export const getFilteredCollectiveBookingsCSV = async filters => {
 export const getFilteredCollectiveBookingsXLS = async filters => {
   const queryParams = buildBookingsRecapQuery(filters)
   return client.getExcelFile(`/collective/bookings/excel?${queryParams}`)
-}
-
-export const getCollectiveBookings = async (
-  page?: number,
-  venueId?: string | null,
-  eventDate?: string | null,
-  bookingStatusFilter?: BookingStatusFilter,
-  bookingPeriodBeginningDate?: string | null,
-  bookingPeriodEndingDate?: string | null
-): Promise<CollectiveBookingsResponseModel> => {
-  const queryParams = queryStringStringify({
-    page,
-    venueId,
-    eventDate,
-    bookingStatusFilter,
-    bookingPeriodBeginningDate,
-    bookingPeriodEndingDate,
-  })
-  return client.get(`/collective/bookings/pro?${queryParams}`)
 }
 
 //
