@@ -334,8 +334,11 @@ class DeleteRoleTest:
         )
 
         # then
-        assert response.status_code == 204
+        assert response.status_code == 200
         assert Role.query.filter_by(id=role.id).count() == 0
+        deleted_role = response.json
+        assert deleted_role["id"] == role.id
+        assert deleted_role["name"] == role.name
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_delete_role_with_empty_permissions(self, client):
@@ -350,8 +353,11 @@ class DeleteRoleTest:
         )
 
         # then
-        assert response.status_code == 204
+        assert response.status_code == 200
         assert Role.query.filter_by(id=role.id).count() == 0
+        deleted_role = response.json
+        assert deleted_role["id"] == role.id
+        assert deleted_role["name"] == role.name
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_delete_admin_role(self, client):

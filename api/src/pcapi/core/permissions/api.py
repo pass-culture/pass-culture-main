@@ -41,10 +41,11 @@ def update_role(id_: int, name: str, permission_ids: typing.Iterable[int]) -> Ro
     return role
 
 
-def delete_role(id_: int) -> None:
+def delete_role(id_: int) -> Role:
     role = Role.query.get(id_)
     if role.name == "admin":
         raise ValueError("Cannot delete admin role")
     role.permissions = []
-    repository.save()
+    repository.save(role)
     db.session.delete(role)
+    return role
