@@ -1,6 +1,5 @@
 import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import React, { useCallback, useEffect, useState } from 'react'
-import { Redirect, useHistory } from 'react-router-dom'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
@@ -18,9 +17,9 @@ import { getFilteredCollectiveOffersAdapter } from './adapters'
 import { getOffererAdapter } from 'core/Offers/adapters'
 import { hasSearchFilters } from 'core/Offers/utils'
 import { sortByDisplayName } from 'utils/strings'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 import useNotification from 'components/hooks/useNotification'
 import { useQuerySearchFilters } from 'core/Offers/hooks'
 
@@ -38,10 +37,6 @@ const CollectiveOffers = (): JSX.Element => {
     useState<TSearchFilters | null>(null)
   const [venues, setVenues] = useState<Option[]>([])
   const [categories, setCategories] = useState<Option[]>([])
-
-  const separateIndividualAndCollectiveOffers = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
 
   useEffect(() => {
     const loadOfferer = async () => {
@@ -164,10 +159,6 @@ const CollectiveOffers = (): JSX.Element => {
     dispatch(savePageNumber(urlPageNumber))
   }, [dispatch, urlPageNumber, urlSearchFilters])
 
-  if (!separateIndividualAndCollectiveOffers) {
-    return <Redirect to="/offres" />
-  }
-
   if (!initialSearchFilters) {
     return <Spinner />
   }
@@ -184,9 +175,6 @@ const CollectiveOffers = (): JSX.Element => {
       offerer={offerer}
       offers={offers}
       redirectWithUrlFilters={redirectWithUrlFilters}
-      separateIndividualAndCollectiveOffers={
-        separateIndividualAndCollectiveOffers
-      }
       setOfferer={setOfferer}
       urlSearchFilters={urlSearchFilters}
       venues={venues}
