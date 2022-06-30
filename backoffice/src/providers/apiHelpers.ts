@@ -1,4 +1,10 @@
-import { fetchUtils } from 'react-admin'
+import { fetchUtils, HttpError } from 'react-admin'
+
+export class PcApiHttpError extends HttpError {
+  readonly message!: string
+  readonly status!: number
+  readonly body!: string
+}
 
 export async function safeFetch(url: string, options: RequestInit = {}) {
   if (!options.headers) {
@@ -13,4 +19,8 @@ export async function safeFetch(url: string, options: RequestInit = {}) {
   }
 
   return fetchUtils.fetchJson(url, options)
+}
+
+export function getHttpApiErrorMessage(error: PcApiHttpError) {
+  return Object.values(error.body)[0]
 }

@@ -9,10 +9,10 @@ import {
 import moment from 'moment'
 import React, { useState } from 'react'
 
-import { snakeCaseToTitleCase } from '../../tools/textTools'
+import { snakeCaseToTitleCase } from '../../../tools/textTools'
+import { CheckHistory } from '../types'
 
 import { StatusAvatar } from './StatusAvatar'
-import { CheckHistory } from './types'
 
 type Props = {
   idCheckHistory: CheckHistory
@@ -38,7 +38,7 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
         <Typography variant={'h5'}>
           {snakeCaseToTitleCase(idCheckHistory.type as string)}
         </Typography>
-        <Grid spacing={1} sx={{ mt: 4 }}>
+        <Grid container spacing={1} sx={{ mt: 4 }}>
           <Stack spacing={2} direction={'row'} style={{ width: '100%' }}>
             <Grid item xs={6}>
               <p>Date de création</p>

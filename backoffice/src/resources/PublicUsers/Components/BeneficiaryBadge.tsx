@@ -1,6 +1,6 @@
 import { Chip } from '@mui/material'
 
-import { PublicUserRolesEnum } from '../Interfaces/UserSearchInterface'
+import { PublicUserRolesEnum } from '../types'
 
 type Props = {
   role: PublicUserRolesEnum

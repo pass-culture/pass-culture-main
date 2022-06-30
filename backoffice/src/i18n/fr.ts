@@ -23,6 +23,13 @@ const messages: TranslationMessages = {
     name: 'rechercher',
     placeholder: 'Rechercher par nom, prénom, e-mail, téléphone',
   },
+  errors: {
+    token: {
+      expired: 'Votre token a expiré !',
+      api: 'Il semblerait que le token API ne soit pas renseigné...',
+      notFound: 'Votre token semble absent !',
+    },
+  },
 }
 
 export default messages

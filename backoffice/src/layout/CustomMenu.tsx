@@ -119,14 +119,13 @@ export const Menu = ({ dense = false }: MenuProps) => {
       {/*<Divider />*/}
 
       <MenuItemLink
-        to="/reviews"
+        to="/roles"
         state={{ _scrollToTop: true }}
         primaryText={translate('menu.roleManagement', {
           smart_count: 2,
         })}
         leftIcon={<ReviewsIcon />}
         dense={dense}
-        disabled
       />
     </Box>
   )

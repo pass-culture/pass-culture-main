@@ -1,5 +1,5 @@
 import { UserManager } from 'oidc-client'
-import { AuthProvider } from 'react-admin'
+import { AuthProvider, useTranslate } from 'react-admin'
 
 import { env } from '../libs/environment/env'
 import { eventMonitoring } from '../libs/monitoring/sentry'
@@ -15,6 +15,10 @@ const userManager = new UserManager({
   scope: 'openid email profile', // Allow to retrieve the email and user name later api side
 })
 
+const translate = (key: string) => {
+  const translator = useTranslate()
+  return translator(key)
+}
 const cleanup = () => {
   // Remove the ?code&state from the URL
   window.history.replaceState({}, window.document.title, window.location.origin)
@@ -44,6 +48,7 @@ async function getTokenApiFromAuthToken() {
 
 export const authProvider: AuthProvider = {
   // authentication
+
   async login(params) {
     const token = params.token
 
@@ -53,7 +58,7 @@ export const authProvider: AuthProvider = {
 
       const tokenApi = localStorage.getItem('tokenApi')
       if (!tokenApi) {
-        throw new Error('NO_TOKEN_API')
+        throw new Error(translate('errors.token.api'))
       }
 
       await userManager.clearStaleState()
@@ -64,19 +69,16 @@ export const authProvider: AuthProvider = {
     }
   },
   checkError(error) {
-    console.log('checkError', error)
     // if (status === 401 || status === 403) {
     //   localStorage.removeItem('username');
-    //   return Promise.reject();
     // }
     eventMonitoring.captureException(error)
     throw error
   },
   async checkAuth() {
     const token = localStorage.getItem('token')
-
     if (!token) {
-      throw new Error('No Token Found')
+      throw new Error(translate('errors.token.notFound'))
     }
 
     // This is specific to the Google authentication implementation
@@ -86,7 +88,7 @@ export const authProvider: AuthProvider = {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore 12356
     if (now.getTime() > jwt.exp * 1000) {
-      throw new Error('EXPIRED_TOKEN')
+      throw new Error(translate('errors.token.expired'))
     }
   },
   async logout() {
@@ -104,7 +106,7 @@ export const authProvider: AuthProvider = {
         avatar: jwt.picture,
       }
     } catch (error) {
-      throw new Error('Pas de token en mémoire')
+      throw new Error(translate('errors.token.notFound'))
     }
   },
   // authorization
