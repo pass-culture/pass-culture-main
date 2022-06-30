@@ -2,8 +2,7 @@ import typing
 
 from sqlalchemy.orm import joinedload
 
-from pcapi.core.permissions.models import Permission
-from pcapi.core.permissions.models import Role
+from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.repository import repository
 
@@ -13,39 +12,40 @@ def raise_error_on_empty_role_name(name: str) -> None:
         raise ValueError("Role name cannot be empty")
 
 
-def list_roles() -> list[Role]:
-    roles = Role.query.options(joinedload(Role.permissions)).all()
+def list_roles() -> list[perm_models.Role]:
+    roles = perm_models.Role.query.options(joinedload(perm_models.Role.permissions)).all()
     return roles
 
 
-def list_permissions() -> list[Permission]:
-    permissions = Permission.query.all()
+def list_permissions() -> list[perm_models.Permission]:
+    permissions = perm_models.Permission.query.all()
     return permissions
 
 
-def create_role(name: str, permission_ids: typing.Iterable[int]) -> Role:
+def create_role(name: str, permission_ids: typing.Iterable[int]) -> perm_models.Role:
     raise_error_on_empty_role_name(name)
-    permissions = Permission.query.filter(Permission.id.in_(permission_ids))
-    role = Role(name=name, permissions=permissions.all())
+    permissions = perm_models.Permission.query.filter(perm_models.Permission.id.in_(permission_ids))
+    role = perm_models.Role(name=name, permissions=permissions.all())
     repository.save(role)
     return role
 
 
-def update_role(id_: int, name: str, permission_ids: typing.Iterable[int]) -> Role:
+def update_role(id_: int, name: str, permission_ids: typing.Iterable[int]) -> perm_models.Role:
     raise_error_on_empty_role_name(name)
-    permissions = Permission.query.filter(Permission.id.in_(permission_ids))
-    role = Role.query.get(id_)
+    permissions = perm_models.Permission.query.filter(perm_models.Permission.id.in_(permission_ids))
+    role = perm_models.Role.query.get(id_)
     role.name = name
     role.permissions = permissions.all()
     repository.save(role)
     return role
 
 
-def delete_role(id_: int) -> Role:
-    role = Role.query.get(id_)
+def delete_role(id_: int) -> tuple[int, str, list[perm_models.Permission]]:
+    role = perm_models.Role.query.get(id_)
+    role_id, role_name, role_permission = role.id, role.name, role.permissions
     if role.name == "admin":
         raise ValueError("Cannot delete admin role")
     role.permissions = []
     repository.save(role)
     db.session.delete(role)
-    return role
+    return role_id, role_name, role_permission
