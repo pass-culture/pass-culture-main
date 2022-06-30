@@ -135,6 +135,33 @@ def _notify_field_error(field_errors: list[dms_types.DmsFieldErrorDetails], appl
     )
 
 
+
+def _on_dms_eligibility_error(
+    user: users_models.User,
+    fraud_check: fraud_models.BeneficiaryFraudCheck,
+    fraud_check_birth_date: typing.Optional[date],
+    extra_data: typing.Optional[dict] = None,
+) -> None:
+    logger.info(
+        "Birthdate of DMS application %d shows that user is not eligible",
+        fraud_check.thirdPartyId,
+        extra=extra_data,
+    )
+    birth_date_field_error = dms_types.DmsFieldErrorDetails(
+        key=dms_types.DmsFieldErrorKeyEnum.birth_date,
+        value=fraud_check_birth_date.isoformat() if fraud_check_birth_date else None,
+    )
+    subscription_messages.on_dms_application_field_errors(
+        user,
+        [birth_date_field_error],
+        is_application_updatable=True,
+    )
+    fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
+    fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]  # type: ignore [list-item]
+    fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
+    pcapi_repository.repository.save(fraud_check)
+
+
 def _process_draft_application(
     user: users_models.User,
     current_fraud_check: fraud_models.BeneficiaryFraudCheck,
