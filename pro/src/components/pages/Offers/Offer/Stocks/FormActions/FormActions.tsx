@@ -1,6 +1,5 @@
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'components/layout/Icon'
 import React from 'react'
 import { SubmitButton } from 'ui-kit'
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -25,11 +24,7 @@ const FormActions = ({
   return (
     <>
       {cancelUrl && (
-        <ButtonLink
-          Icon={isDraft ? () => <Icon svg="ico-left-arrow" /> : undefined}
-          variant={ButtonVariant.SECONDARY}
-          to={cancelUrl}
-        >
+        <ButtonLink variant={ButtonVariant.SECONDARY} to={cancelUrl}>
           {isDraft ? 'Étape précédente' : 'Annuler et quitter'}
         </ButtonLink>
       )}
