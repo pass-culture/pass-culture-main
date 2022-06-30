@@ -1,4 +1,5 @@
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 type IPayloadSuccess = null
 type IPayloadFailure = null
@@ -32,10 +33,7 @@ export const patchIsTemplateOfferActiveAdapter: PatchIsOfferActiveAdapter =
         isOk: false,
         message: `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : 'la désactivation'
-        } de votre offre. ${
-          // @ts-ignore
-          error?.message ?? ''
-        }`,
+        } de votre offre. ${isErrorAPIError(error) && error.message}`,
         payload: null,
       }
     }

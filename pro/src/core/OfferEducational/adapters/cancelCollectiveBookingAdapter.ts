@@ -1,5 +1,6 @@
+import { getErrorCode, isErrorAPIError } from 'apiClient/helpers'
+
 import { api } from 'apiClient/api'
-import { hasStatusCodeAndErrorsCode } from '../utils'
 
 type IPayloadSuccess = null
 type IPayloadFailure = null
@@ -28,11 +29,7 @@ export const cancelCollectiveBookingAdapter: cancelCollectiveBookingAdapter =
         payload: null,
       }
 
-      if (
-        hasStatusCodeAndErrorsCode(error) &&
-        error.status === 400 &&
-        error.errors.code === 'NO_BOOKING'
-      ) {
+      if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
         return {
           ...errorResponse,
           message:
