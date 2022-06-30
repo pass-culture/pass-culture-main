@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { OfferStatus } from 'api/v1/gen'
+import { OfferStatus } from 'apiClient/v1'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import React from 'react'
 import { Title } from 'ui-kit'

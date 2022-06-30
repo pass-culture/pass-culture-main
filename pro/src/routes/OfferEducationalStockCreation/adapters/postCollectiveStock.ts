@@ -1,13 +1,12 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
-  StockPayload,
   createStockDataPayload,
   hasStatusCode,
   hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
+
+import { api } from 'apiClient/api'
 
 type Params = {
   offer: GetStockOfferSuccessPayload
@@ -37,13 +36,13 @@ const postCollectiveStockAdapter: PostCollectiveStockAdapter = async ({
   offer,
   values,
 }: Params) => {
-  const stockPayload: StockPayload = createStockDataPayload(
+  const stockPayload = createStockDataPayload(
     values,
-    offer.venueDepartmentCode
+    offer.venueDepartmentCode,
+    offer.id
   )
-  const stockCreationPayload = { offerId: offer.id, ...stockPayload }
   try {
-    await pcapi.createCollectiveStock(stockCreationPayload)
+    await api.createCollectiveStock(stockPayload)
     return {
       isOk: true,
       message: null,

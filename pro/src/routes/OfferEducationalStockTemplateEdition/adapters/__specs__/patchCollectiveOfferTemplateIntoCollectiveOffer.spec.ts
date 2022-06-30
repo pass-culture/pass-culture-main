@@ -1,5 +1,5 @@
 import { EducationalOfferType } from 'core/OfferEducational'
-import { OfferStatus } from 'api/v1/gen'
+import { OfferStatus } from 'apiClient/v1'
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from '../patchCollectiveOfferTemplateIntoCollectiveOffer'
 
 describe('patchCollectiveOfferTemplateIntoCollectiveOfferAdapter', () => {

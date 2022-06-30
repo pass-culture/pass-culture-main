@@ -1,16 +1,8 @@
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import {
   CollectiveOfferResponseModel,
-  CollectiveOfferTemplate,
-  CollectiveOfferTemplateResponseModel,
-  CollectiveStockResponseModel,
-  CreateCollectiveOfferTemplatePayload,
-  CreateCollectiveStockPayload,
-  EditCollectiveStockPayload,
-  EditEducationalOfferPayload,
   EducationalDomain,
   EducationalInstitutions,
-  StockPayload,
 } from 'core/OfferEducational'
 import {
   FORMAT_ISO_DATE_ONLY,
@@ -42,10 +34,6 @@ export const createOffer = offer => {
   return client.post(`/offers`, offer)
 }
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offer' implicitly has an 'any' type.
-export const createEducationalOffer = offer =>
-  client.post('/offers/educational', offer)
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
 export const updateOffer = (offerId, offer) => {
   return client.patch(`/offers/${offerId}`, offer)
@@ -60,17 +48,6 @@ export const patchIsCollectiveOfferActive = (
     isActive,
   })
 }
-
-export const updateEducationalOffer = (
-  offerId: string,
-  offer: EditEducationalOfferPayload
-): Promise<Offer> => client.patch(`/offers/educational/${offerId}`, offer)
-
-export const updateCollectiveOffer = (
-  offerId: string,
-  offer: EditEducationalOfferPayload
-): Promise<CollectiveOfferResponseModel> =>
-  client.patch(`/collective/offers/${offerId}`, offer)
 
 export const loadFilteredOffers = async ({
   nameOrIsbn = DEFAULT_SEARCH_FILTERS.nameOrIsbn,
@@ -144,27 +121,6 @@ const createRequestBody = searchFilters => {
 
   return body
 }
-
-export const getCollectiveOffer = async (
-  offerId: string
-): Promise<CollectiveOfferResponseModel> => {
-  return client.get(`/collective/offers/${offerId}`)
-}
-
-export const getCollectiveOfferTemplate = async (
-  offerId: string
-): Promise<CollectiveOfferTemplateResponseModel> => {
-  return client.get(`/collective/offers-template/${offerId}`)
-}
-
-export const patchCollectiveOfferTemplateIntoCollectiveOffer = async (
-  offerId: string,
-  body: StockPayload & { offerId: string }
-): Promise<CollectiveStockResponseModel> =>
-  client.patch(
-    `/collective/offers-template/${offerId}/to-collective-offer`,
-    body
-  )
 
 export const getEducationalInstitutions = (
   page?: number
@@ -365,47 +321,6 @@ export const deleteStock = stockId => {
   return client.delete(`/stocks/${stockId}`)
 }
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'stock' implicitly has an 'any' type.
-export const createEducationalStock = stock => {
-  return client.post(`/stocks/educational`, stock)
-}
-
-export const createCollectiveStock = (stock: CreateCollectiveStockPayload) => {
-  return client.post(`/collective/stocks`, stock)
-}
-
-export const createCollectiveOfferTemplate = (
-  offerId: string,
-  payload: CreateCollectiveOfferTemplatePayload
-): Promise<{ id: string }> => {
-  return client.post(`/collective/offers-template/${offerId}/`, payload)
-}
-
-export const patchCollectiveOfferTemplate = (
-  offerId: string,
-  payload: Partial<Omit<CollectiveOfferTemplate, 'educationalPriceDetails'>> & {
-    priceDetail?: string
-  }
-) => {
-  return client.patch(`/collective/offers-template/${offerId}/`, payload)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
-export const createEducationalShadowStock = (offerId, stock) =>
-  client.post(`/offers/educational/${offerId}/shadow-stock`, stock)
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'stockId' implicitly has an 'any' type.
-export const editEducationalStock = (stockId, stock) => {
-  return client.patch(`/stocks/educational/${stockId}`, stock)
-}
-
-export const editCollectiveStock = (
-  stockId: string,
-  stock: Partial<EditCollectiveStockPayload>
-) => {
-  return client.patch(`/collective/stocks/${stockId}`, stock)
-}
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'offerId' implicitly has an 'any' type.
 export const cancelEducationalBooking = offerId => {
   return client.patch(`/offers/${offerId}/cancel_booking`)
@@ -414,19 +329,6 @@ export const cancelEducationalBooking = offerId => {
 export const cancelCollectiveOfferBooking = (offerId: string) => {
   return client.patch(`/collective/offers/${offerId}/cancel_booking`)
 }
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'stockId' implicitly has an 'any' type.
-export const transformShadowStockIntoEducationalStock = (stockId, stock) =>
-  client.patch(`/stocks/shadow-to-educational/${stockId}`, stock)
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'stockId' implicitly has an 'any' type.
-export const editShadowStock = (stockId, stock) =>
-  client.patch(`/stocks/shadow/${stockId}`, stock)
-
-export const getCollectiveStockForOffer = (
-  offerId: string
-): Promise<CollectiveStockResponseModel> =>
-  client.get(`/collective/offers/${offerId}/stock`)
 
 //
 // thumbnail

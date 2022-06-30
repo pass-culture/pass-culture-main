@@ -35,7 +35,7 @@ export const buildBeginningDatetimeForStockPayload = (
   eventDate: Date,
   eventTime: Date,
   departmentCode: string
-): Date => {
+): string => {
   const beginningDateTimeInDepartmentTimezone = buildBeginningDatetime(
     eventDate,
     eventTime
@@ -52,7 +52,7 @@ export const buildBookingLimitDatetimeForStockPayload = (
   eventTime: Date,
   bookingLimitDatetime: Date | null,
   departmentCode: string
-): Date => {
+): string => {
   const beginningDateTimeInDepartmentTimezone = buildBeginningDatetime(
     eventDate,
     eventTime

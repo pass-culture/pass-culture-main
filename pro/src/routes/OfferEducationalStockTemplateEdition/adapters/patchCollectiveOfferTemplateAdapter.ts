@@ -1,18 +1,22 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
-  StockResponse,
   hasStatusCode,
 } from 'core/OfferEducational'
+
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 
 export type Params = {
   offer: GetStockOfferSuccessPayload
   values: OfferEducationalStockFormValues
 }
 
-type patchCollectiveOfferTemplateAdapter = Adapter<Params, StockResponse, null>
+type patchCollectiveOfferTemplateAdapter = Adapter<
+  Params,
+  GetCollectiveOfferTemplateResponseModel,
+  null
+>
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -34,7 +38,7 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
         throw new Error('L’identifiant de l’offre n’est pas valide.')
       }
 
-      const updatedOffer = await pcapi.patchCollectiveOfferTemplate(offer.id, {
+      const updatedOffer = await api.editCollectiveOfferTemplate(offer.id, {
         priceDetail: values.priceDetail,
       })
 

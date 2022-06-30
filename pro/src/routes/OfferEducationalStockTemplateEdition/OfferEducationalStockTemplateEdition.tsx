@@ -80,7 +80,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
           priceDetail: stockResponse.payload.educationalPriceDetail ?? '',
           educationalOfferType: EducationalOfferType.SHOWCASE,
         }
-      : extractInitialStockValues(stockResponse.payload, offerResponse.payload)
+      : extractInitialStockValues(
+          stockResponse.payload,
+          offerResponse.payload,
+          EducationalOfferType.CLASSIC
+        )
     setInitialValues(initialValuesFromStock)
   }
 

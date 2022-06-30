@@ -1,11 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { CollectiveOfferTemplate } from 'core/OfferEducational/types'
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 
 type IPayloadFailure = null
 type GetCollectiveOfferTemplateAdapter = Adapter<
   string,
-  CollectiveOfferTemplate,
+  GetCollectiveOfferTemplateResponseModel,
   IPayloadFailure
 >
 
@@ -18,7 +17,7 @@ const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
 const getCollectiveOfferTemplateAdapter: GetCollectiveOfferTemplateAdapter =
   async offerId => {
     try {
-      const offer = await pcapi.getCollectiveOfferTemplate(offerId)
+      const offer = await api.getCollectiveOfferTemplate(offerId)
 
       return {
         isOk: true,

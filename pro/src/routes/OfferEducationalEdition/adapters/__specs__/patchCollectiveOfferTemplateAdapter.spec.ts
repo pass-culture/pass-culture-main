@@ -1,9 +1,8 @@
+import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
 import {
   Params,
   patchCollectiveOfferTemplateAdapter,
 } from '../patchCollectiveOfferTemplateAdapter'
-
-import { OfferAddressType } from 'api/v1/gen/api'
 
 describe('cancelCollectiveBookingAdapter', () => {
   let props: Params
@@ -12,14 +11,14 @@ describe('cancelCollectiveBookingAdapter', () => {
       offerId: '12',
       offer: {
         category: 'PRATIQUE_ART',
-        subCategory: 'ATELIER_PRATIQUE_ART',
+        subCategory: SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
         title: 'CollectiveOffer 0',
         description: 'A passionate description of collectiveoffer 0',
         duration: '',
         offererId: 'BU',
         venueId: 'DY',
         eventAddress: {
-          addressType: OfferAddressType.Other,
+          addressType: OfferAddressType.OTHER,
           otherAddress: '1 rue des polissons, Paris 75017',
           venueId: '',
         },
@@ -47,14 +46,14 @@ describe('cancelCollectiveBookingAdapter', () => {
       },
       initialValues: {
         category: 'PRATIQUE_ART',
-        subCategory: 'ATELIER_PRATIQUE_ART',
+        subCategory: SubcategoryIdEnum.ATELIER_PRATIQUE_ART,
         title: 'CollectiveOffer 0',
         description: 'A passionate description of collectiveoffer 0',
         duration: '',
         offererId: 'BU',
         venueId: 'DY',
         eventAddress: {
-          addressType: OfferAddressType.Other,
+          addressType: OfferAddressType.OTHER,
           otherAddress: '1 rue des polissons, Paris 75017',
           venueId: '',
         },
@@ -103,9 +102,10 @@ describe('cancelCollectiveBookingAdapter', () => {
     it('should return an error when the offer could not be updated', async () => {
       // given
       // @ts-ignore
-      jest.spyOn(window, 'fetch').mockResolvedValueOnce({
+      jest.spyOn(window, 'fetch').mockRejectedValueOnce({
         status: 422,
         json: async () => ({}),
+        error: '',
       })
 
       // when

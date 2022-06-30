@@ -1,11 +1,9 @@
 import {
-  CollectiveStockResponseModel,
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
-  StockResponse,
   cancelCollectiveBookingAdapter,
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
@@ -14,6 +12,7 @@ import {
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import { CollectiveStockResponseModel } from 'apiClient/v1'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
@@ -28,9 +27,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)
-  const [stock, setStock] = useState<
-    StockResponse | CollectiveStockResponseModel | null
-  >(null)
+  const [stock, setStock] = useState<CollectiveStockResponseModel | null>(null)
   const [isReady, setIsReady] = useState<boolean>(false)
   const { offerId } = useParams<{ offerId: string }>()
   const notify = useNotification()
@@ -67,7 +64,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
           priceDetail: stockResponse.payload.educationalPriceDetail ?? '',
           educationalOfferType: EducationalOfferType.SHOWCASE,
         }
-      : extractInitialStockValues(stockResponse.payload, offerResponse.payload)
+      : extractInitialStockValues(
+          stockResponse.payload,
+          offerResponse.payload,
+          values.educationalOfferType
+        )
     setInitialValues(initialValuesFromStock)
   }
 
@@ -104,13 +105,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   useEffect(() => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
-        const getStockAdapter = () =>
-          getCollectiveStockAdapter({
-            offerId,
-          })
         const [offerResponse, stockResponse] = await Promise.all([
           getStockCollectiveOfferAdapter(offerId),
-          getStockAdapter(),
+          getCollectiveStockAdapter({
+            offerId,
+          }),
         ])
         if (!offerResponse.isOk) {
           return notify.error(offerResponse.message)
@@ -134,7 +133,10 @@ const OfferEducationalStockEdition = (): JSX.Element => {
             }
           : extractInitialStockValues(
               stockResponse.payload.stock,
-              offerResponse.payload
+              offerResponse.payload,
+              offerResponse.payload.isShowcase
+                ? EducationalOfferType.SHOWCASE
+                : EducationalOfferType.CLASSIC
             )
         setInitialValues(initialValuesFromStock)
         setIsReady(true)

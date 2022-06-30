@@ -1,6 +1,4 @@
 import {
-  CollectiveOffer,
-  CollectiveOfferTemplate,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   Mode,
@@ -13,6 +11,11 @@ import {
   patchIsTemplateOfferActiveAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
@@ -48,7 +51,7 @@ const OfferEducationalEdition = (): JSX.Element => {
   const [initialValues, setInitialValues] =
     useState<IOfferEducationalFormValues>(DEFAULT_EAC_FORM_VALUES)
   const [offer, setOffer] = useState<
-    CollectiveOffer | CollectiveOfferTemplate
+    GetCollectiveOfferResponseModel | GetCollectiveOfferTemplateResponseModel
   >()
   const notify = useNotification()
 
@@ -109,8 +112,8 @@ const OfferEducationalEdition = (): JSX.Element => {
     async (
       offerResponse:
         | AdapterFailure<null>
-        | AdapterSuccess<CollectiveOffer>
-        | AdapterSuccess<CollectiveOfferTemplate>
+        | AdapterSuccess<GetCollectiveOfferResponseModel>
+        | AdapterSuccess<GetCollectiveOfferTemplateResponseModel>
     ) => {
       if (!offerResponse.isOk) {
         return notify.error(offerResponse.message)
@@ -149,7 +152,8 @@ const OfferEducationalEdition = (): JSX.Element => {
       const initialValuesFromOffer = computeInitialValuesFromOffer(
         offer,
         offerCategory?.id ?? '',
-        offerSubcategory?.id ?? ''
+        (offerSubcategory?.id ??
+          DEFAULT_EAC_FORM_VALUES.subCategory) as SubcategoryIdEnum
       )
 
       setScreenProps({
@@ -203,7 +207,11 @@ const OfferEducationalEdition = (): JSX.Element => {
           cancelActiveBookings={cancelActiveBookings}
           initialValues={initialValues}
           isOfferActive={offer?.isActive}
-          isOfferBooked={offer?.isBooked}
+          isOfferBooked={
+            offer && 'collectiveStock' in offer
+              ? offer?.collectiveStock?.isBooked
+              : false
+          }
           mode={offer?.isEditable ? Mode.EDITION : Mode.READ_ONLY}
           notify={notify}
           onSubmit={editOffer}

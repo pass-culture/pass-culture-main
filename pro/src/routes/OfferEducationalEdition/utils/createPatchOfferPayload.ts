@@ -1,48 +1,31 @@
 import {
-  EditEducationalOfferPayload,
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
 
+import { PatchCollectiveOfferBodyModel } from 'apiClient/v1'
 import isEqual from 'lodash.isequal'
 
 const serializer = {
   title: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, name: offer.title }),
   description: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, description: offer.description }),
   duration: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, durationMinutes: parseDuration(offer.duration) }),
   subCategory: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({ ...payload, subcategoryId: offer.subCategory }),
-  eventAddress: (
-    payload: EditEducationalOfferPayload,
-    offer: IOfferEducationalFormValues
-  ) => ({
-    ...payload,
-    extraData: { ...payload.extraData, offerVenue: offer.eventAddress },
-  }),
-  participants: (
-    payload: EditEducationalOfferPayload,
-    offer: IOfferEducationalFormValues
-  ) => ({
-    ...payload,
-    extraData: {
-      ...payload.extraData,
-      students: serializeParticipants(offer.participants),
-    },
-  }),
   accessibility: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
@@ -51,28 +34,8 @@ const serializer = {
     audioDisabilityCompliant: offer.accessibility.audio,
     visualDisabilityCompliant: offer.accessibility.visual,
   }),
-  phone: (
-    payload: EditEducationalOfferPayload,
-    offer: IOfferEducationalFormValues
-  ) => ({
-    ...payload,
-    extraData: {
-      ...payload.extraData,
-      contactPhone: offer.phone,
-    },
-  }),
-  email: (
-    payload: EditEducationalOfferPayload,
-    offer: IOfferEducationalFormValues
-  ) => ({
-    ...payload,
-    extraData: {
-      ...payload.extraData,
-      contactEmail: offer.email,
-    },
-  }),
   notificationEmail: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => {
     if (offer.notifications) {
@@ -84,7 +47,7 @@ const serializer = {
     return payload
   },
   notifications: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => {
     if (offer.notifications) {
@@ -100,11 +63,11 @@ const serializer = {
   },
   // Unchanged keys
   // Need to put them here for ts not to raise an error
-  offererId: (payload: EditEducationalOfferPayload) => payload,
-  venueId: (payload: EditEducationalOfferPayload) => payload,
-  category: (payload: EditEducationalOfferPayload) => payload,
+  offererId: (payload: PatchCollectiveOfferBodyModel) => payload,
+  venueId: (payload: PatchCollectiveOfferBodyModel) => payload,
+  category: (payload: PatchCollectiveOfferBodyModel) => payload,
   domains: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
@@ -115,35 +78,35 @@ const serializer = {
 const collectiveOfferSerializer = {
   ...serializer,
   eventAddress: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
     offerVenue: offer.eventAddress,
   }),
   participants: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
     students: serializeParticipants(offer.participants),
   }),
   phone: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
     contactPhone: offer.phone,
   }),
   email: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
     contactEmail: offer.email,
   }),
   domains: (
-    payload: EditEducationalOfferPayload,
+    payload: PatchCollectiveOfferBodyModel,
     offer: IOfferEducationalFormValues
   ) => ({
     ...payload,
@@ -153,18 +116,15 @@ const collectiveOfferSerializer = {
 
 export const createPatchOfferPayload = (
   offer: IOfferEducationalFormValues,
-  initialValues: IOfferEducationalFormValues,
-  useCollectiveSerializer = false
-): EditEducationalOfferPayload => {
-  let changedValues: EditEducationalOfferPayload = {}
+  initialValues: IOfferEducationalFormValues
+): PatchCollectiveOfferBodyModel => {
+  let changedValues: PatchCollectiveOfferBodyModel = {}
 
   const offerKeys = Object.keys(offer) as (keyof IOfferEducationalFormValues)[]
 
   offerKeys.forEach(key => {
     if (!isEqual(offer[key], initialValues[key]) && key !== 'search-domains') {
-      changedValues = (
-        useCollectiveSerializer ? collectiveOfferSerializer : serializer
-      )[key](changedValues, offer)
+      changedValues = collectiveOfferSerializer[key](changedValues, offer)
     }
   })
 

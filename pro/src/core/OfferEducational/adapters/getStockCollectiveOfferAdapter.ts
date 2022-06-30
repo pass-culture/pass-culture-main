@@ -1,6 +1,5 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { GetStockOfferSuccessPayload } from '../types'
+import { api } from 'apiClient/api'
 
 type IPayloadFailure = null
 type GetStockCollectiveOfferAdapter = Adapter<
@@ -18,9 +17,9 @@ const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
 export const getStockCollectiveOfferAdapter: GetStockCollectiveOfferAdapter =
   async offerId => {
     try {
-      const offer = await pcapi.getCollectiveOffer(offerId)
+      const offer = await api.getCollectiveOffer(offerId)
 
-      const isBooked = offer?.collectiveStock?.isBooked
+      const isBooked = Boolean(offer?.collectiveStock?.isBooked)
 
       return {
         isOk: true,
