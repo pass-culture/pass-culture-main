@@ -1,11 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
-  CollectiveOffer,
   IOfferEducationalFormValues,
   hasStatusCode,
 } from 'core/OfferEducational'
 
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 
 type Params = {
@@ -14,7 +13,11 @@ type Params = {
   initialValues: IOfferEducationalFormValues
 }
 
-type PatchCollectiveOfferAdapter = Adapter<Params, CollectiveOffer, null>
+type PatchCollectiveOfferAdapter = Adapter<
+  Params,
+  GetCollectiveOfferResponseModel,
+  null
+>
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -34,14 +37,13 @@ const patchCollectiveOfferAdapter: PatchCollectiveOfferAdapter = async ({
   initialValues,
 }) => {
   try {
-    const payload = createPatchOfferPayload(offer, initialValues, true)
-    const updatedOffer = await pcapi.updateCollectiveOffer(offerId, payload)
-    const isBooked = updatedOffer.collectiveStock.isBooked
+    const payload = createPatchOfferPayload(offer, initialValues)
+    const updatedOffer = await api.editCollectiveOffer(offerId, payload)
 
     return {
       isOk: true,
       message: 'Votre offre a bien été modifiée.',
-      payload: { ...updatedOffer, isBooked },
+      payload: updatedOffer,
     }
   } catch (error) {
     if (hasStatusCode(error) && error.status === 400) {

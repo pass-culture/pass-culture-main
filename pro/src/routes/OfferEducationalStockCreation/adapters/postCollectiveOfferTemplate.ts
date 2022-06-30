@@ -1,10 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   OfferEducationalStockFormValues,
   hasStatusCode,
   hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
+
+import { api } from 'apiClient/api'
 
 type Params = {
   offerId: string
@@ -38,7 +38,7 @@ const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
       educationalPriceDetail: values.priceDetail,
     }
     try {
-      const { id } = await pcapi.createCollectiveOfferTemplate(
+      const { id } = await api.createCollectiveOfferTemplateFromCollectiveOffer(
         offerId,
         collectiveOfferTemplatePayload
       )

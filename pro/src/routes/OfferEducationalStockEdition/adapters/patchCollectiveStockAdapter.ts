@@ -1,13 +1,12 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
-  StockPayload,
-  StockResponse,
   createPatchStockDataPayload,
   hasStatusCode,
 } from 'core/OfferEducational'
+
+import { CollectiveStockResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 
 type Params = {
   offer: GetStockOfferSuccessPayload
@@ -16,7 +15,11 @@ type Params = {
   initialValues: OfferEducationalStockFormValues
 }
 
-type PatchCollectiveStockAdapter = Adapter<Params, StockResponse, null>
+type PatchCollectiveStockAdapter = Adapter<
+  Params,
+  CollectiveStockResponseModel,
+  null
+>
 
 const BAD_REQUEST_FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
@@ -36,16 +39,13 @@ const patchCollectiveStockAdapter: PatchCollectiveStockAdapter = async ({
   values,
   initialValues,
 }: Params) => {
-  const patchStockPayload: Partial<StockPayload> = createPatchStockDataPayload(
+  const patchStockPayload = createPatchStockDataPayload(
     values,
     offer.venueDepartmentCode,
     initialValues
   )
   try {
-    const stock = (await pcapi.editCollectiveStock(
-      stockId,
-      patchStockPayload
-    )) as StockResponse
+    const stock = await api.editCollectiveStock(stockId, patchStockPayload)
     return {
       isOk: true,
       message: 'Le détail de votre stock a bien été modifié.',

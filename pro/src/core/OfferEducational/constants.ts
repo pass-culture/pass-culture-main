@@ -4,18 +4,22 @@ import {
   OfferEducationalStockFormValues,
   VisibilityFormValues,
 } from './types'
-import { OfferAddressType, StudentLevels } from 'api/v1/gen'
+import {
+  OfferAddressType,
+  StudentLevels,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 
 export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   category: '',
-  subCategory: '',
+  subCategory: '' as SubcategoryIdEnum,
   title: '',
   description: '',
   duration: '',
   offererId: '',
   venueId: '',
   eventAddress: {
-    addressType: OfferAddressType.OffererVenue,
+    addressType: OfferAddressType.OFFERER_VENUE,
     otherAddress: '',
     venueId: '',
   },
@@ -44,13 +48,13 @@ export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
 }
 
 export const PARTICIPANTS: Record<string, StudentLevels> = {
-  quatrieme: StudentLevels.Collge4e,
-  troisieme: StudentLevels.Collge3e,
-  CAPAnnee1: StudentLevels.CAP1reAnne,
-  CAPAnnee2: StudentLevels.CAP2eAnne,
-  seconde: StudentLevels.LyceSeconde,
-  premiere: StudentLevels.LycePremire,
-  terminale: StudentLevels.LyceTerminale,
+  quatrieme: StudentLevels.COLL_GE_4E,
+  troisieme: StudentLevels.COLL_GE_3E,
+  CAPAnnee1: StudentLevels.CAP_1RE_ANN_E,
+  CAPAnnee2: StudentLevels.CAP_2E_ANN_E,
+  seconde: StudentLevels.LYC_E_SECONDE,
+  premiere: StudentLevels.LYC_E_PREMI_RE,
+  terminale: StudentLevels.LYC_E_TERMINALE,
 }
 
 export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {

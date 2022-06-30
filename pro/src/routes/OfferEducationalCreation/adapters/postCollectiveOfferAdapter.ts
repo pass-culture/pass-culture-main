@@ -3,7 +3,7 @@ import {
   hasStatusCode,
 } from 'core/OfferEducational'
 
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = {
@@ -44,7 +44,7 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async ({
       enableEducationalDomains
     )
 
-    const response = await api.postCollectiveCreateCollectiveOffer(payload)
+    const response = await api.createCollectiveOffer(payload)
 
     return {
       isOk: true,
