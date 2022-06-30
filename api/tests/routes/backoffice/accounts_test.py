@@ -275,7 +275,7 @@ class UpdatePublicAccountTest:
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_explicit_token(auth_token).post(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_public_account", user_id=user.id),
             json={
                 "firstName": "Upda",
@@ -321,7 +321,7 @@ class UpdatePublicAccountTest:
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_explicit_token(auth_token).post(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_public_account", user_id=user.id),
             json={"email": "Updated@example.com"},
         )
@@ -387,7 +387,7 @@ class UpdatePublicAccountTest:
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_explicit_token(auth_token).post(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_public_account", user_id=user.id),
             json={"email": "updated.example.com"},
         )
@@ -404,7 +404,7 @@ class UpdatePublicAccountTest:
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_explicit_token(auth_token).post(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_public_account", user_id=user1.id),
             json={"email": user2.email},
         )
@@ -421,7 +421,7 @@ class UpdatePublicAccountTest:
         auth_token = generate_token(admin, [Permissions.MANAGE_PUBLIC_ACCOUNT])
 
         # when
-        response = client.with_explicit_token(auth_token).post(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_public_account", user_id=user.id),
             json={"phoneNumber": "0987654321"},
         )
@@ -441,7 +441,7 @@ class UpdatePublicAccountTest:
         auth_token = generate_token(user, [])
 
         # when
-        response = client.with_explicit_token(auth_token).post(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_public_account", user_id=user.id),
             json={"email": "updated@example.com"},
         )

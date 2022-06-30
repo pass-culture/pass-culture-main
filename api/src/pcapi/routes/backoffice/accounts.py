@@ -62,7 +62,7 @@ def get_public_account(user_id: int) -> serialization.PublicAccount:
     return serialization.PublicAccount.from_orm(user)
 
 
-@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["POST"])
+@blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["PUT"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.PublicAccount,
