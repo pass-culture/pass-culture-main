@@ -1,11 +1,11 @@
 import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
-  hasStatusCode,
 } from 'core/OfferEducational'
 
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 export type Params = {
   offer: GetStockOfferSuccessPayload
@@ -48,7 +48,7 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
         payload: updatedOffer,
       }
     } catch (error) {
-      if (hasStatusCode(error) && error.status === 400) {
+      if (isErrorAPIError(error) && error.status === 400) {
         return BAD_REQUEST_FAILING_RESPONSE
       } else {
         return {
