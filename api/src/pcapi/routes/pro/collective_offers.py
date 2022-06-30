@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
     response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
     api=blueprint.pro_private_schema,
 )
-def list_collective_offers(
+def get_collective_offers(
     query: collective_offers_serialize.ListCollectiveOffersQueryModel,
 ) -> collective_offers_serialize.ListCollectiveOffersResponseModel:
     capped_offers = educational_api.list_collective_offers_for_pro_user(
