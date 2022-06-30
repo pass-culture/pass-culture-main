@@ -2,11 +2,11 @@ import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
   createPatchStockDataPayload,
-  hasStatusCode,
 } from 'core/OfferEducational'
 
 import { CollectiveStockResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offer: GetStockOfferSuccessPayload
@@ -52,7 +52,7 @@ const patchCollectiveStockAdapter: PatchCollectiveStockAdapter = async ({
       payload: stock,
     }
   } catch (error) {
-    if (hasStatusCode(error) && error.status === 400) {
+    if (isErrorAPIError(error) && error.status === 400) {
       return BAD_REQUEST_FAILING_RESPONSE
     } else {
       return UNKNOWN_FAILING_RESPONSE

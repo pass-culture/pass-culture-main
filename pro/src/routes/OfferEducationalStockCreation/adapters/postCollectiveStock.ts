@@ -2,11 +2,11 @@ import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
   createStockDataPayload,
-  hasStatusCode,
   hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
 
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offer: GetStockOfferSuccessPayload
@@ -57,7 +57,7 @@ const postCollectiveStockAdapter: PostCollectiveStockAdapter = async ({
         }
       }
     }
-    if (hasStatusCode(error) && error.status === 400) {
+    if (isErrorAPIError(error) && error.status === 400) {
       return BAD_REQUEST_FAILING_RESPONSE
     } else {
       return UNKNOWN_FAILING_RESPONSE

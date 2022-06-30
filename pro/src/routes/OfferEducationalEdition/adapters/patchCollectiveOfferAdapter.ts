@@ -1,11 +1,8 @@
-import {
-  IOfferEducationalFormValues,
-  hasStatusCode,
-} from 'core/OfferEducational'
-
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { api } from 'apiClient/api'
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offerId: string
@@ -46,7 +43,7 @@ const patchCollectiveOfferAdapter: PatchCollectiveOfferAdapter = async ({
       payload: updatedOffer,
     }
   } catch (error) {
-    if (hasStatusCode(error) && error.status === 400) {
+    if (isErrorAPIError(error) && error.status === 400) {
       return BAD_REQUEST_FAILING_RESPONSE
     }
 

@@ -1,10 +1,10 @@
 import {
   OfferEducationalStockFormValues,
-  hasStatusCode,
   hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
 
 import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offerId: string
@@ -56,7 +56,7 @@ const postCollectiveOfferTemplateAdapter: PostCollectiveOfferTemplateAdapter =
           }
         }
       }
-      if (hasStatusCode(error) && error.status === 400) {
+      if (isErrorAPIError(error) && error.status === 400) {
         return BAD_REQUEST_FAILING_RESPONSE
       } else {
         return UNKNOWN_FAILING_RESPONSE

@@ -2,6 +2,7 @@ import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { api } from 'apiClient/api'
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 export type Params = {
   offerId: string
@@ -36,8 +37,7 @@ export const patchCollectiveOfferTemplateAdapter: patchCollectiveOfferTemplateAd
       return {
         isOk: false,
         message: `Une erreur est survenue lors de la modification de votre offre.${
-          // @ts-ignore
-          error?.message ? ` ${error?.message}` : ''
+          isErrorAPIError(error) && error.message
         }`,
         payload: null,
       }

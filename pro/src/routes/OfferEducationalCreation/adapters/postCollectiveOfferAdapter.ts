@@ -1,10 +1,7 @@
-import {
-  IOfferEducationalFormValues,
-  hasStatusCode,
-} from 'core/OfferEducational'
-
+import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { api } from 'apiClient/api'
 import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
+import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offer: IOfferEducationalFormValues
@@ -55,7 +52,7 @@ const postCollectiveOfferAdapter: PostOfferAdapter = async ({
       },
     }
   } catch (error) {
-    if (hasStatusCode(error) && error.status === 400) {
+    if (isErrorAPIError(error) && error.status === 400) {
       return BAD_REQUEST_FAILING_RESPONSE
     }
 
