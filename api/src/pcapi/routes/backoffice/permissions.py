@@ -73,11 +73,14 @@ def update_role(id_: int, body: RoleRequestModel) -> Role:
 @blueprint.backoffice_blueprint.route("roles/<int:id_>", methods=["DELETE"])
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 @spectree_serialize(
-    on_success_status=204,
+    response_model=Role,
+    on_success_status=200,
     api=blueprint.api,
 )
-def delete_role(id_: int) -> None:
+def delete_role(id_: int) -> Role:
     try:
-        perm_api.delete_role(id_=id_)
+        deleted = perm_api.delete_role(id_=id_)
     except ValueError as err:
         raise ApiErrors(errors={"id": str(err)})
+
+    return Role.from_orm(deleted)
