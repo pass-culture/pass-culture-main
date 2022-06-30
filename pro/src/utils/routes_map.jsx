@@ -188,7 +188,6 @@ const routes = [
     exact: true,
     path: '/offres/collectives',
     title: 'Offres',
-    featureName: 'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION',
   },
   {
     component: OfferEducationalStockCreation,

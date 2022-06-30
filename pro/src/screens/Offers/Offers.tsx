@@ -29,7 +29,6 @@ export interface IOffersProps {
   offerer: Offerer | null
   offers: Offer[]
   setOfferer: (offerer: Offerer | null) => void
-  separateIndividualAndCollectiveOffers: boolean
   initialSearchFilters: TSearchFilters
   audience: Audience
   redirectWithUrlFilters: (
@@ -51,7 +50,6 @@ const Offers = ({
   offerer,
   offers,
   setOfferer,
-  separateIndividualAndCollectiveOffers,
   initialSearchFilters,
   audience,
   redirectWithUrlFilters,
@@ -186,26 +184,24 @@ const Offers = ({
     <div className="offers-page">
       <PageTitle title="Vos offres" />
       <Titles action={actionLink} title="Offres" />
-      {separateIndividualAndCollectiveOffers && (
-        <Tabs
-          selectedKey={audience}
-          tabs={[
-            {
-              label: 'Offres individuelles',
-              url: '/offres',
-              key: 'individual',
-              Icon: UserIcon,
-            },
-            {
-              label: 'Offres collectives',
-              url: '/offres/collectives',
-              key: 'collective',
-              Icon: LibraryIcon,
-            },
-          ]}
-          withQueryParams
-        />
-      )}
+      <Tabs
+        selectedKey={audience}
+        tabs={[
+          {
+            label: 'Offres individuelles',
+            url: '/offres',
+            key: 'individual',
+            Icon: UserIcon,
+          },
+          {
+            label: 'Offres collectives',
+            url: '/offres/collectives',
+            key: 'collective',
+            Icon: LibraryIcon,
+          },
+        ]}
+        withQueryParams
+      />
       <ActionsBarPortal isVisible={nbSelectedOffers > 0}>
         <ActionsBar
           areAllOffersSelected={areAllOffersSelected}
