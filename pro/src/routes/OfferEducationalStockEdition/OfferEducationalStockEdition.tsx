@@ -9,7 +9,6 @@ import {
   cancelCollectiveBookingAdapter,
   extractInitialStockValues,
   getStockCollectiveOfferAdapter,
-  getStockOfferAdapter,
   patchIsCollectiveOfferActiveAdapter,
 } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
@@ -20,21 +19,11 @@ import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 import Spinner from 'components/layout/Spinner'
 import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
-import { getEducationalStockAdapter } from 'core/OfferEducational/adapters'
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
-
-const getGetOfferAdapter = (enableIndividualAndCollectiveSeparation: boolean) =>
-  enableIndividualAndCollectiveSeparation
-    ? getStockCollectiveOfferAdapter
-    : getStockOfferAdapter
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()
-  const enableIndividualAndCollectiveSeparation = useActiveFeature(
-    'ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION'
-  )
 
   const [initialValues, setInitialValues] =
     useState<OfferEducationalStockFormValues>(DEFAULT_EAC_STOCK_FORM_VALUES)
@@ -60,9 +49,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       values,
       initialValues,
     })
-    const offerResponse = await getGetOfferAdapter(
-      enableIndividualAndCollectiveSeparation
-    )(offerId)
+    const offerResponse = await getStockCollectiveOfferAdapter(offerId)
     setOffer(offerResponse.payload)
 
     if (!stockResponse.isOk) {
@@ -118,16 +105,11 @@ const OfferEducationalStockEdition = (): JSX.Element => {
     if (!isReady) {
       const loadStockAndOffer = async () => {
         const getStockAdapter = () =>
-          enableIndividualAndCollectiveSeparation
-            ? getCollectiveStockAdapter({
-                offerId,
-              })
-            : getEducationalStockAdapter(offerId)
-        const getOfferAdapter = getGetOfferAdapter(
-          enableIndividualAndCollectiveSeparation
-        )
+          getCollectiveStockAdapter({
+            offerId,
+          })
         const [offerResponse, stockResponse] = await Promise.all([
-          getOfferAdapter(offerId),
+          getStockCollectiveOfferAdapter(offerId),
           getStockAdapter(),
         ])
         if (!offerResponse.isOk) {
@@ -159,13 +141,7 @@ const OfferEducationalStockEdition = (): JSX.Element => {
       }
       loadStockAndOffer()
     }
-  }, [
-    offerId,
-    isReady,
-    notify,
-    history,
-    enableIndividualAndCollectiveSeparation,
-  ])
+  }, [offerId, isReady, notify, history])
 
   return (
     <OfferEducationalLayout
