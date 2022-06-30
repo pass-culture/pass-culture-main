@@ -4,7 +4,7 @@ import {
   patchCollectiveOfferTemplateAdapter,
 } from '../patchCollectiveOfferTemplateAdapter'
 
-describe('cancelCollectiveBookingAdapter', () => {
+describe('patchCollectiveOfferTemplateAdapter', () => {
   let props: Params
   beforeEach(() => {
     props = {
@@ -82,7 +82,7 @@ describe('cancelCollectiveBookingAdapter', () => {
     }
   })
 
-  describe('cancelCollectiveBookingAdapter', () => {
+  describe('patchCollectiveOfferTemplateAdapter', () => {
     it('should return an error when the offer id is not valid', async () => {
       // given
 
