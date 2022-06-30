@@ -1,5 +1,7 @@
 import Bookings from 'routes/Bookings'
+import BusinessUnitList from 'screens/BusinessUnitList'
 import CollectiveBookings from 'routes/CollectiveBookings'
+import CollectiveDataEdition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
@@ -17,7 +19,9 @@ import { OfferIndividualConfirmation } from 'routes/OfferIndividualConfirmation'
 import { OfferIndividualCreation } from 'routes/OfferIndividualCreation'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import OfferType from 'routes/OfferType'
-import OfferersLayout from 'components/pages/Offerers/OfferersLayout'
+import OffererCreation from 'components/pages/Offerers/OffererCreation'
+import OffererDetails from 'components/pages/Offerers/Offerer/OffererDetails/OffererDetails'
+import OfferersContainer from 'components/pages/Offerers/List/OfferersContainer'
 import Offers from 'routes/Offers'
 import React from 'react'
 import { Redirect } from 'react-router-dom'
@@ -30,6 +34,8 @@ import SignupContainer from 'components/pages/Signup/SignupContainer'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import Unavailable from 'components/pages/Errors/Unavailable/Unavailable'
 import { UserProfile } from 'routes/User'
+import VenueCreation from 'components/pages/Offerers/Offerer/VenueV1/VenueCreation/VenueCreation'
+import VenueEdition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/VenueEdition'
 import { useLocation } from 'react-router-dom'
 
 const RedirectToConnexionComponent = () => {
@@ -150,10 +156,47 @@ const routes = [
     },
   },
   {
-    component: OfferersLayout,
-    exact: false,
+    component: OfferersContainer,
+    exact: true,
     path: '/structures',
     title: 'Structures',
+  },
+  {
+    component: OffererCreation,
+    exact: true,
+    path: '/structures/creation',
+    title: 'Structures',
+  },
+  {
+    component: OffererDetails,
+    exact: true,
+    path: '/structures/:offererId([A-Z0-9]+)',
+    title: 'Structures',
+  },
+  {
+    component: VenueCreation,
+    exact: true,
+    path: '/structures/:offererId([A-Z0-9]+)/lieux/creation',
+    title: 'Structures',
+  },
+  {
+    component: VenueEdition,
+    exact: true,
+    path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)',
+    title: 'Structures',
+  },
+  {
+    component: CollectiveDataEdition,
+    exact: true,
+    path: '/structures/:offererId([A-Z0-9]+)/lieux/:venueId([A-Z0-9]+)/eac',
+    title: 'Structures',
+  },
+  {
+    component: BusinessUnitList,
+    exact: true,
+    path: '/structures/:offererId([A-Z0-9]+)/point-de-remboursement',
+    title: 'Structures',
+    featureName: 'ENFORCE_BANK_INFORMATION_WITH_SIRET',
   },
   {
     component: OfferType,
