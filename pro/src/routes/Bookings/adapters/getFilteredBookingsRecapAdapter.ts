@@ -3,8 +3,8 @@ import {
   GetFilteredBookingsRecapAdapterPayload,
 } from 'core/Bookings'
 
-import { BookingRecapResponseModel } from 'api/v1/gen'
-import { api } from 'api/v1/api'
+import { BookingRecapResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
 
 const MAX_LOADED_PAGES = 5
@@ -44,7 +44,7 @@ export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
           page,
         } = buildBookingsRecapQuery(nextPageFilters)
 
-        const bookings = await api.getBookingsGetBookingsPro(
+        const bookings = await api.getBookingsPro(
           page,
           // @ts-expect-error api expect number
           venueId,

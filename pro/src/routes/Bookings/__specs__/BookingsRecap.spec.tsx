@@ -21,7 +21,7 @@ import { MemoryRouter } from 'react-router'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { Provider } from 'react-redux'
 import React from 'react'
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { getNthCallNthArg } from 'utils/testHelpers'
 import userEvent from '@testing-library/user-event'
@@ -33,9 +33,9 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getUserHasBookings: jest.fn(),
 }))
 
-jest.mock('api/v1/api', () => ({
+jest.mock('apiClient/api', () => ({
   api: {
-    getBookingsGetBookingsPro: jest.fn(),
+    getBookingsPro: jest.fn(),
   },
 }))
 
@@ -117,9 +117,7 @@ describe('components | BookingsRecap | Pro user', () => {
       pages: 0,
       total: 0,
     }
-    jest
-      .spyOn(api, 'getBookingsGetBookingsPro')
-      .mockResolvedValue(emptyBookingsRecapPage)
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue(emptyBookingsRecapPage)
 
     user = {
       publicName: 'René',
@@ -140,7 +138,7 @@ describe('components | BookingsRecap | Pro user', () => {
   })
 
   afterEach(() => {
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockReset()
+    jest.spyOn(api, 'getBookingsPro').mockReset()
   })
 
   it('should show a pre-filter section', async () => {
@@ -163,7 +161,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await renderBookingsRecap(store)
 
     // Then
-    expect(api.getBookingsGetBookingsPro).not.toHaveBeenCalled()
+    expect(api.getBookingsPro).not.toHaveBeenCalled()
     const choosePreFiltersMessage = screen.getByText(
       'Pour visualiser vos réservations, veuillez sélectionner un ou plusieurs des filtres précédents et cliquer sur « Afficher »'
     )
@@ -173,7 +171,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of venue requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -189,17 +187,13 @@ describe('components | BookingsRecap | Pro user', () => {
     // Then
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        1,
-        NTH_ARGUMENT_GET_BOOKINGS.venueId
-      )
+      getNthCallNthArg(api.getBookingsPro, 1, NTH_ARGUMENT_GET_BOOKINGS.venueId)
     ).toBe(venue.id)
   })
 
   it('should warn user that his prefilters returned no booking when no bookings where returned by selected pre-filters', async () => {
     // Given
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -219,7 +213,7 @@ describe('components | BookingsRecap | Pro user', () => {
 
   it('should allow user to reset its pre-filters in the no bookings warning', async () => {
     // Given
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 0,
       total: 0,
@@ -244,7 +238,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not allow user to reset prefilters when none were applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -265,7 +259,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should allow user to reset prefilters when some where applied', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -307,7 +301,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should ask user to select a pre-filter when user reset them', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -430,7 +424,7 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [bookings2],
     }
     jest
-      .spyOn(api, 'getBookingsGetBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       // @ts-ignore FIX ME
       .mockResolvedValueOnce(paginatedBookingRecapReturned)
       // @ts-ignore FIX ME
@@ -449,41 +443,25 @@ describe('components | BookingsRecap | Pro user', () => {
     const firstBookingRecap = screen.getAllByText(bookings1.stock.offer_name)
     expect(firstBookingRecap).toHaveLength(2)
 
-    expect(api.getBookingsGetBookingsPro).toHaveBeenCalledTimes(2)
+    expect(api.getBookingsPro).toHaveBeenCalledTimes(2)
     expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        1,
-        NTH_ARGUMENT_GET_BOOKINGS.page
-      )
+      getNthCallNthArg(api.getBookingsPro, 1, NTH_ARGUMENT_GET_BOOKINGS.page)
     ).toBe(1)
     expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        1,
-        NTH_ARGUMENT_GET_BOOKINGS.venueId
-      )
+      getNthCallNthArg(api.getBookingsPro, 1, NTH_ARGUMENT_GET_BOOKINGS.venueId)
     ).toBe(venue.id)
     expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        2,
-        NTH_ARGUMENT_GET_BOOKINGS.page
-      )
+      getNthCallNthArg(api.getBookingsPro, 2, NTH_ARGUMENT_GET_BOOKINGS.page)
     ).toBe(2)
     expect(
-      getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
-        2,
-        NTH_ARGUMENT_GET_BOOKINGS.venueId
-      )
+      getNthCallNthArg(api.getBookingsPro, 2, NTH_ARGUMENT_GET_BOOKINGS.venueId)
     ).toBe(venue.id)
   })
 
   it('should request bookings of event date requested by user when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -501,7 +479,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.eventDate
       )
@@ -516,7 +494,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set booking period to null when user select event date', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -533,14 +511,14 @@ describe('components | BookingsRecap | Pro user', () => {
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
       )
     ).toBeUndefined()
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
       )
@@ -551,7 +529,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // Given
     const bookingRecap = bookingRecapFactory()
 
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -567,14 +545,14 @@ describe('components | BookingsRecap | Pro user', () => {
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
       )
     ).toStrictEqual(FORMATTED_DEFAULT_BEGINNING_DATE)
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
       )
@@ -584,7 +562,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should request bookings of selected period when user clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -608,7 +586,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
       )
@@ -620,7 +598,7 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
       )
@@ -635,7 +613,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set default beginning period date when user empties it and clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -662,7 +640,7 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingBeginningDate
       )
@@ -672,7 +650,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should set default ending period date when user empties it and clicks on "Afficher"', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -699,7 +677,7 @@ describe('components | BookingsRecap | Pro user', () => {
     )
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
       )
@@ -709,7 +687,7 @@ describe('components | BookingsRecap | Pro user', () => {
   it('should not be possible to select ending period date greater than today', async () => {
     // Given
     const bookingRecap = bookingRecapFactory()
-    jest.spyOn(api, 'getBookingsGetBookingsPro').mockResolvedValue({
+    jest.spyOn(api, 'getBookingsPro').mockResolvedValue({
       page: 1,
       pages: 1,
       total: 1,
@@ -731,7 +709,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await screen.findAllByText(bookingRecap.stock.offer_name)
     expect(
       getNthCallNthArg(
-        api.getBookingsGetBookingsPro,
+        api.getBookingsPro,
         1,
         NTH_ARGUMENT_GET_BOOKINGS.bookingEndingDate
       )
@@ -759,7 +737,7 @@ describe('components | BookingsRecap | Pro user', () => {
       bookingsRecap: [otherVenueBooking],
     }
     jest
-      .spyOn(api, 'getBookingsGetBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       // @ts-ignore FIX ME
       .mockResolvedValueOnce(otherVenuePaginatedBookingRecapReturned)
       // @ts-ignore FIX ME
@@ -788,7 +766,7 @@ describe('components | BookingsRecap | Pro user', () => {
     // Given
     const bookingsRecap = { pages: 6, bookingsRecap: [] }
     jest
-      .spyOn(api, 'getBookingsGetBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       // @ts-ignore FIX ME
@@ -812,14 +790,14 @@ describe('components | BookingsRecap | Pro user', () => {
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
     expect(informationalMessage).toBeInTheDocument()
-    expect(api.getBookingsGetBookingsPro).toHaveBeenCalledTimes(5)
+    expect(api.getBookingsPro).toHaveBeenCalledTimes(5)
   })
 
   it('should not show notification with information message when there are 5 pages or less', async () => {
     // Given
     const bookingsRecap = { pages: 5, bookingsRecap: [] }
     jest
-      .spyOn(api, 'getBookingsGetBookingsPro')
+      .spyOn(api, 'getBookingsPro')
       // @ts-ignore FIX ME
       .mockResolvedValueOnce({ ...bookingsRecap, page: 1 })
       // @ts-ignore FIX ME
@@ -837,9 +815,7 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
 
     // Then
-    await waitFor(() =>
-      expect(api.getBookingsGetBookingsPro).toHaveBeenCalledTimes(5)
-    )
+    await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(5))
     const informationalMessage = screen.queryByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
     )
