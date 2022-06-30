@@ -17,6 +17,7 @@ import React from 'react'
 import { Router } from 'react-router'
 import type { Store } from 'redux'
 import { api } from 'api/v1/api'
+import { api as apiClient } from 'apiClient/api'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { configureTestStore } from 'store/testUtils'
 import { createMemoryHistory } from 'history'
@@ -92,11 +93,16 @@ jest.mock('repository/venuesService', () => ({
 jest.mock('api/v1/api', () => ({
   api: {
     getOffersListOffers: jest.fn(),
-    getCollectiveListCollectiveOffers: jest.fn(),
     getOfferersGetOfferer: jest.fn(),
     getOffersGetCategories: jest
       .fn()
       .mockResolvedValue(categoriesAndSubcategories),
+  },
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getCollectiveOffers: jest.fn(),
   },
 }))
 
@@ -142,7 +148,7 @@ describe('route CollectiveOffers', () => {
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
     jest
-      .spyOn(api, 'getCollectiveListCollectiveOffers')
+      .spyOn(apiClient, 'getCollectiveOffers')
       // @ts-ignore FIX ME
       .mockResolvedValue(offersRecap)
   })
@@ -179,9 +185,7 @@ describe('route CollectiveOffers', () => {
           // When
           fireEvent.click(screen.getByText('Appliquer'))
           // Then
-          expect(
-            api.getCollectiveListCollectiveOffers
-          ).toHaveBeenLastCalledWith(
+          expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             'EXPIRED',
@@ -196,7 +200,7 @@ describe('route CollectiveOffers', () => {
         it('should indicate that no offers match selected filters', async () => {
           // Given
           jest
-            .spyOn(api, 'getCollectiveListCollectiveOffers')
+            .spyOn(apiClient, 'getCollectiveOffers')
             // @ts-ignore FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
@@ -218,9 +222,7 @@ describe('route CollectiveOffers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          jest
-            .spyOn(api, 'getCollectiveListCollectiveOffers')
-            .mockResolvedValueOnce([])
+          jest.spyOn(apiClient, 'getCollectiveOffers').mockResolvedValueOnce([])
           // When
           renderOffers(store)
 
@@ -266,9 +268,7 @@ describe('route CollectiveOffers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
-            expect(
-              api.getCollectiveListCollectiveOffers
-            ).toHaveBeenLastCalledWith(
+            expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               undefined,
@@ -299,9 +299,7 @@ describe('route CollectiveOffers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
-            expect(
-              api.getCollectiveListCollectiveOffers
-            ).toHaveBeenLastCalledWith(
+            expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               'EF',
               'INACTIVE',
@@ -332,9 +330,7 @@ describe('route CollectiveOffers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
-            expect(
-              api.getCollectiveListCollectiveOffers
-            ).toHaveBeenLastCalledWith(
+            expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               undefined,
@@ -367,9 +363,7 @@ describe('route CollectiveOffers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
-            expect(
-              api.getCollectiveListCollectiveOffers
-            ).toHaveBeenLastCalledWith(
+            expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               'INACTIVE',
@@ -420,7 +414,7 @@ describe('route CollectiveOffers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledWith(
+          expect(apiClient.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             undefined,
             undefined,
@@ -443,7 +437,7 @@ describe('route CollectiveOffers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledWith(
+          expect(apiClient.getCollectiveOffers).toHaveBeenCalledWith(
             undefined,
             undefined,
             undefined,
@@ -468,9 +462,7 @@ describe('route CollectiveOffers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(
-            api.getCollectiveListCollectiveOffers
-          ).toHaveBeenLastCalledWith(
+          expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -494,9 +486,7 @@ describe('route CollectiveOffers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(
-            api.getCollectiveListCollectiveOffers
-          ).toHaveBeenLastCalledWith(
+          expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -518,9 +508,7 @@ describe('route CollectiveOffers', () => {
           // When
           fireEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(
-            api.getCollectiveListCollectiveOffers
-          ).toHaveBeenLastCalledWith(
+          expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -540,7 +528,7 @@ describe('route CollectiveOffers', () => {
       // Given
       const offersRecap = Array.from({ length: 11 }, () => offerFactory())
       jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .spyOn(apiClient, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
       const { history } = renderOffers(store)
@@ -582,7 +570,7 @@ describe('route CollectiveOffers', () => {
       fireEvent.change(searchInput, { target: { value: 'search string' } })
       fireEvent.click(screen.getByText('Lancer la recherche'))
       // Then
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledWith(
         'search string',
         undefined,
         undefined,
@@ -630,7 +618,7 @@ describe('route CollectiveOffers', () => {
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
       jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .spyOn(apiClient, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
       jest.spyOn(api, 'getOffersGetCategories').mockResolvedValue({
@@ -681,20 +669,18 @@ describe('route CollectiveOffers', () => {
 
     it('should have status value when user filters by status', async () => {
       // Given
-      jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
-        .mockResolvedValueOnce([
-          // @ts-ignore FIX ME
-          offerFactory(
-            {
-              id: 'KE',
-              availabilityMessage: 'Pas de stock',
-              status: 'ACTIVE',
-            },
-            // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
-            null
-          ),
-        ])
+      jest.spyOn(apiClient, 'getCollectiveOffers').mockResolvedValueOnce([
+        // @ts-ignore FIX ME
+        offerFactory(
+          {
+            id: 'KE',
+            availabilityMessage: 'Pas de stock',
+            status: 'ACTIVE',
+          },
+          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+          null
+        ),
+      ])
       const { history } = renderOffers(store)
       fireEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
@@ -711,20 +697,18 @@ describe('route CollectiveOffers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
-        .mockResolvedValueOnce([
-          // @ts-ignore FIX ME
-          offerFactory(
-            {
-              id: 'KE',
-              availabilityMessage: 'Pas de stock',
-              status: 'ACTIVE',
-            },
-            // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
-            null
-          ),
-        ])
+      jest.spyOn(apiClient, 'getCollectiveOffers').mockResolvedValueOnce([
+        // @ts-ignore FIX ME
+        offerFactory(
+          {
+            id: 'KE',
+            availabilityMessage: 'Pas de stock',
+            status: 'ACTIVE',
+          },
+          // @ts-expect-error offerFactory is not typed and null throws an error but is accepted by the function
+          null
+        ),
+      ])
       const { history } = renderOffers(store)
       fireEvent.click(
         await screen.findByAltText('Afficher ou masquer le filtre par statut')
@@ -772,7 +756,7 @@ describe('route CollectiveOffers', () => {
     it('should redirect to individual offers when user clicks on individual offers link', async () => {
       // Given
 
-      jest.spyOn(api, 'getCollectiveListCollectiveOffers').mockResolvedValue(
+      jest.spyOn(apiClient, 'getCollectiveOffers').mockResolvedValue(
         // @ts-ignore FIX ME
         offersRecap
       )
@@ -790,7 +774,7 @@ describe('route CollectiveOffers', () => {
         expect(history.location.pathname).toBe('/offres')
       })
 
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenLastCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenLastCalledWith(
         undefined,
         undefined,
         undefined,
@@ -806,7 +790,7 @@ describe('route CollectiveOffers', () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
       jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .spyOn(apiClient, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offers)
       renderOffers(store)
@@ -814,7 +798,7 @@ describe('route CollectiveOffers', () => {
       // When
       fireEvent.click(nextIcon)
       // Then
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(1)
       await expect(
         screen.findByText(offers[10].name)
       ).resolves.toBeInTheDocument()
@@ -825,7 +809,7 @@ describe('route CollectiveOffers', () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
       jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .spyOn(apiClient, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offers)
       renderOffers(store)
@@ -835,7 +819,7 @@ describe('route CollectiveOffers', () => {
       // When
       fireEvent.click(previousIcon)
       // Then
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(1)
       await expect(
         screen.findByText(offers[0].name)
       ).resolves.toBeInTheDocument()
@@ -855,7 +839,7 @@ describe('route CollectiveOffers', () => {
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
       jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .spyOn(apiClient, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
       // When
@@ -873,7 +857,7 @@ describe('route CollectiveOffers', () => {
       it('should have max number page of 50', async () => {
         // Given
         jest
-          .spyOn(api, 'getCollectiveListCollectiveOffers')
+          .spyOn(apiClient, 'getCollectiveOffers')
           // @ts-ignore FIX ME
           .mockResolvedValueOnce(offersRecap)
         // When
@@ -887,7 +871,7 @@ describe('route CollectiveOffers', () => {
       it('should not display the 501st offer', async () => {
         // Given
         jest
-          .spyOn(api, 'getCollectiveListCollectiveOffers')
+          .spyOn(apiClient, 'getCollectiveOffers')
           // @ts-ignore FIX ME
           .mockResolvedValueOnce(offersRecap)
         renderOffers(store)
@@ -908,7 +892,7 @@ describe('route CollectiveOffers', () => {
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .spyOn(apiClient, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
@@ -924,8 +908,8 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
 
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(apiClient.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         undefined,
@@ -939,8 +923,8 @@ describe('route CollectiveOffers', () => {
 
       fireEvent.click(screen.getByText('Lancer la recherche'))
 
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(2)
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(2)
+      expect(apiClient.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
         undefined,
@@ -956,8 +940,8 @@ describe('route CollectiveOffers', () => {
 
       fireEvent.click(screen.getByText('afficher toutes les offres'))
 
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(3)
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(3)
+      expect(apiClient.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
         undefined,
@@ -972,7 +956,7 @@ describe('route CollectiveOffers', () => {
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
       jest
-        .spyOn(api, 'getCollectiveListCollectiveOffers')
+        .spyOn(apiClient, 'getCollectiveOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
@@ -989,8 +973,8 @@ describe('route CollectiveOffers', () => {
 
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(1)
+      expect(apiClient.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         undefined,
@@ -1003,8 +987,8 @@ describe('route CollectiveOffers', () => {
       )
 
       fireEvent.click(screen.getByText('Lancer la recherche'))
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(2)
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(2)
+      expect(apiClient.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
         undefined,
@@ -1017,8 +1001,8 @@ describe('route CollectiveOffers', () => {
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenCalledTimes(3)
-      expect(api.getCollectiveListCollectiveOffers).toHaveBeenNthCalledWith(
+      expect(apiClient.getCollectiveOffers).toHaveBeenCalledTimes(3)
+      expect(apiClient.getCollectiveOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
         undefined,
