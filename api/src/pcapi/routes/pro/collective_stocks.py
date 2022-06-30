@@ -68,7 +68,12 @@ def create_collective_stock(
 
 @private_api.route("/collective/stocks/<collective_stock_id>", methods=["PATCH"])
 @login_required
-@spectree_serialize(on_success_status=200, on_error_statuses=[400, 401, 404, 422], api=blueprint.pro_private_schema)
+@spectree_serialize(
+    on_success_status=200,
+    on_error_statuses=[400, 401, 404, 422],
+    api=blueprint.pro_private_schema,
+    response_model=collective_stock_serialize.CollectiveStockResponseModel,
+)
 def edit_collective_stock(
     collective_stock_id: str, body: collective_stock_serialize.CollectiveStockEditionBodyModel
 ) -> collective_stock_serialize.CollectiveStockResponseModel:
