@@ -1,8 +1,7 @@
-import {
-  ListCollectiveOffersResponseModel,
-  ListOffersOfferResponseModel,
-} from 'api/v1/gen'
 import { Offer, Stock, Venue } from 'core/Offers/types'
+
+import { CollectiveOfferResponseModel } from 'apiClient/v1'
+import { ListOffersOfferResponseModel } from 'api/v1/gen'
 
 const serializeVenue = (
   venue: ListOffersOfferResponseModel['venue']
@@ -15,15 +14,17 @@ const serializeVenue = (
 })
 
 const serializeStocks = (
-  stocks: ListOffersOfferResponseModel['stocks']
+  stocks: CollectiveOfferResponseModel['stocks']
 ): Stock[] =>
   stocks.map(stock => ({
-    beginningDatetime: stock.beginningDatetime,
+    beginningDatetime: stock.beginningDatetime
+      ? new Date(stock.beginningDatetime)
+      : null,
     remainingQuantity: stock.remainingQuantity,
   }))
 
 export const serializeOffers = (
-  offers: ListCollectiveOffersResponseModel
+  offers: CollectiveOfferResponseModel[]
 ): Offer[] =>
   offers.map(offer => ({
     id: offer.id,

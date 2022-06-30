@@ -1,6 +1,6 @@
 import { Offer, TSearchFilters } from 'core/Offers/types'
 
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { serializeOffers } from './serializers'
 
@@ -36,7 +36,7 @@ export const getFilteredCollectiveOffersAdapter: GetFilteredCollectiveOffersAdap
         periodEndingDate,
       } = serializeApiFilters(apiFilters)
 
-      const offers = await api.getCollectiveListCollectiveOffers(
+      const offers = await api.getCollectiveOffers(
         nameOrIsbn,
         offererId,
         status,
