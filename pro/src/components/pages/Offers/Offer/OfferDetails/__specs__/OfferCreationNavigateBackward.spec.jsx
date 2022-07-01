@@ -9,7 +9,7 @@ import NotificationContainer from 'components/layout/Notification/NotificationCo
 import OfferLayout from '../../OfferLayout'
 import { Provider } from 'react-redux'
 import React from 'react'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { getOfferInputForField } from './helpers'
 import userEvent from '@testing-library/user-event'
@@ -247,7 +247,7 @@ describe('offerCreation - navigate backward', () => {
       visualDisabilityCompliant: false,
     }
 
-    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
     pcapi.getUserValidatedOfferersNames.mockResolvedValue(offerers)
     pcapi.getVenuesForOfferer.mockResolvedValue(venues)
     pcapi.getVenue.mockReturnValue(Promise.resolve())
@@ -260,7 +260,7 @@ describe('offerCreation - navigate backward', () => {
     await getOfferInputForField('categoryId')
 
     expect(screen.getByRole('heading', { name: 'Créer une offre' }))
-    expect(apiV1.getOffersGetOffer).toHaveBeenCalledWith(offer.id)
+    expect(api.getOffer).toHaveBeenCalledWith(offer.id)
   })
 
   it('should display creation layout on creation url with offer id', async () => {
