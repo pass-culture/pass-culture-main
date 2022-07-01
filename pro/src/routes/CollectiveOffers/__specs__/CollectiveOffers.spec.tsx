@@ -93,7 +93,6 @@ jest.mock('repository/venuesService', () => ({
 jest.mock('api/v1/api', () => ({
   api: {
     getOffersListOffers: jest.fn(),
-    getOfferersGetOfferer: jest.fn(),
     getOffersGetCategories: jest
       .fn()
       .mockResolvedValue(categoriesAndSubcategories),
@@ -103,6 +102,7 @@ jest.mock('api/v1/api', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     getCollectiveOffers: jest.fn(),
+    getOfferer: jest.fn(),
   },
 }))
 
@@ -315,7 +315,7 @@ describe('route CollectiveOffers', () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-ignore FIX ME
-            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
+            jest.spyOn(apiClient, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
               status: 'INACTIVE',
@@ -347,7 +347,7 @@ describe('route CollectiveOffers', () => {
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-ignore FIX ME
-            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
+            jest.spyOn(apiClient, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
               status: 'INACTIVE',
@@ -725,7 +725,7 @@ describe('route CollectiveOffers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
+      jest.spyOn(apiClient, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       // When
@@ -739,7 +739,7 @@ describe('route CollectiveOffers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
+      jest.spyOn(apiClient, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       renderOffers(store, filters)

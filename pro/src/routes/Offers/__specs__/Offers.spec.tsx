@@ -81,7 +81,6 @@ jest.mock('repository/venuesService', () => ({
 
 jest.mock('api/v1/api', () => ({
   api: {
-    getOfferersGetOfferer: jest.fn(),
     getOffersGetCategories: jest
       .fn()
       .mockResolvedValue(categoriesAndSubcategories),
@@ -91,6 +90,7 @@ jest.mock('api/v1/api', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     listOffers: jest.fn(),
+    getOfferer: jest.fn(),
   },
 }))
 
@@ -300,7 +300,7 @@ describe('route Offers', () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-ignore FIX ME
-            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
+            jest.spyOn(apiClient, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
               status: 'INACTIVE',
@@ -332,7 +332,7 @@ describe('route Offers', () => {
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-ignore FIX ME
-            jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValue(offerer)
+            jest.spyOn(apiClient, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
               status: 'INACTIVE',
@@ -720,7 +720,7 @@ describe('route Offers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
+      jest.spyOn(apiClient, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       // When
@@ -734,7 +734,7 @@ describe('route Offers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOfferersGetOfferer').mockResolvedValueOnce({
+      jest.spyOn(apiClient, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       renderOffers(store, filters)
