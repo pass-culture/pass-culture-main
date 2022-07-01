@@ -1,6 +1,10 @@
+import typing
+
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.backoffice.serialization import PaginatedResponse
+from pcapi.routes.serialization import BaseModel
 
 
 def get_user_or_error(user_id: int, error_code: int = 400) -> users_models.User:
@@ -9,3 +13,9 @@ def get_user_or_error(user_id: int, error_code: int = 400) -> users_models.User:
         raise ApiErrors(errors={"user_id": "L'utilisateur n'existe pas"}, status_code=error_code)
 
     return user
+
+
+def build_paginated_response(
+    page: int, pages: int, total: int, sort: typing.Optional[str], data: list[BaseModel]
+) -> PaginatedResponse:
+    return PaginatedResponse(pages=pages, total=total, page=page, size=len(data), sort=sort, data=data)

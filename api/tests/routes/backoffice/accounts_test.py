@@ -74,8 +74,8 @@ class PublicAccountSearchTest:
 
         # then
         assert response.status_code == 200
-        assert len(response.json["accounts"]) == 1
-        found_user = response.json["accounts"][0]
+        assert len(response.json["data"]) == 1
+        found_user = response.json["data"][0]
         assert found_user["firstName"] == underage.firstName
         assert found_user["lastName"] == underage.lastName
         assert found_user["dateOfBirth"] == underage.dateOfBirth.isoformat()
@@ -99,8 +99,8 @@ class PublicAccountSearchTest:
 
         # then
         assert response.status_code == 200
-        assert len(response.json["accounts"]) == 1
-        found_user = response.json["accounts"][0]
+        assert len(response.json["data"]) == 1
+        found_user = response.json["data"][0]
         assert found_user["firstName"] == grant_18.firstName
         assert found_user["lastName"] == grant_18.lastName
         assert found_user["dateOfBirth"] == grant_18.dateOfBirth.isoformat()
@@ -124,8 +124,8 @@ class PublicAccountSearchTest:
 
         # then
         assert response.status_code == 200
-        assert len(response.json["accounts"]) == 1
-        found_user = response.json["accounts"][0]
+        assert len(response.json["data"]) == 1
+        found_user = response.json["data"][0]
         assert found_user["firstName"] == random.firstName
         assert found_user["lastName"] == random.lastName
         assert found_user["dateOfBirth"] == random.dateOfBirth.isoformat()
@@ -149,8 +149,8 @@ class PublicAccountSearchTest:
 
         # then
         assert response.status_code == 200
-        assert len(response.json["accounts"]) == 1
-        found_user = response.json["accounts"][0]
+        assert len(response.json["data"]) == 1
+        found_user = response.json["data"][0]
         assert found_user["firstName"] == random.firstName
         assert found_user["lastName"] == random.lastName
         assert found_user["dateOfBirth"] == random.dateOfBirth.isoformat()
@@ -201,6 +201,170 @@ class PublicAccountSearchTest:
 
         # then
         assert response.status_code == 403
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_pagination_default(self, client):
+        # given
+        for i in range(50):
+            users_factories.UserFactory(
+                firstName="Robert" if i % 2 else "Mireille",
+                lastName=f"{i:02}",
+            )
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="Robert"),
+        )
+
+        # then
+        assert response.status_code == 200
+        content = response.json
+        assert content["pages"] == 2
+        assert content["total"] == 25
+        assert content["page"] == 1
+        assert content["size"] == 20
+        data = content["data"]
+        assert len(data) == content["size"]
+        assert all(account["firstName"] == "Robert" for account in data)
+        assert [account["lastName"] for account in data] == [f"{i:02}" for i in range(1, 40, 2)]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_pagination_custom_page_size(self, client):
+        # given
+        for i in range(50):
+            users_factories.UserFactory(
+                firstName="Robert" if i % 2 else "Mireille",
+                lastName=f"{i:02}",
+            )
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="Mireille", perPage=10),
+        )
+
+        # then
+        assert response.status_code == 200
+        content = response.json
+        assert content["pages"] == 3
+        assert content["total"] == 25
+        assert content["page"] == 1
+        assert content["size"] == 10
+        data = content["data"]
+        assert len(data) == content["size"]
+        assert all(account["firstName"] == "Mireille" for account in data)
+        assert [account["lastName"] for account in data] == [f"{i:02}" for i in range(0, 20, 2)]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_pagination_custom_page_number(self, client):
+        # given
+        for i in range(50):
+            users_factories.UserFactory(
+                firstName="Robert" if i % 2 else "Mireille",
+                lastName=f"{i:02}",
+            )
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="Mireille", page=2),
+        )
+
+        # then
+        assert response.status_code == 200
+        content = response.json
+        assert content["pages"] == 2
+        assert content["total"] == 25
+        assert content["page"] == 2
+        assert content["size"] == 5
+        data = content["data"]
+        assert len(data) == content["size"]
+        assert all(account["firstName"] == "Mireille" for account in data)
+        assert [account["lastName"] for account in data] == [f"{i:02}" for i in range(40, 50, 2)]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_pagination_custom_page_number_and_size(self, client):
+        # given
+        for i in range(50):
+            users_factories.UserFactory(
+                firstName="Robert" if i % 2 else "Mireille",
+                lastName=f"{i:02}",
+            )
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="Mireille", page=3, perPage=5),
+        )
+
+        # then
+        assert response.status_code == 200
+        content = response.json
+        assert content["pages"] == 5
+        assert content["total"] == 25
+        assert content["page"] == 3
+        assert content["size"] == 5
+        data = content["data"]
+        assert len(data) == content["size"]
+        assert all(account["firstName"] == "Mireille" for account in data)
+        assert [account["lastName"] for account in data] == [f"{i:02}" for i in range(20, 30, 2)]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_pagination_ordering(self, client):
+        # given
+        for i in range(30):
+            users_factories.UserFactory(
+                firstName="Michel" if i % 2 else "Micheline",
+                lastName=f"{i:02}",
+            )
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="Michel", sort="firstName,-lastName"),
+        )
+
+        # then
+        assert response.status_code == 200
+        content = response.json
+        assert content["pages"] == 2
+        assert content["total"] == 30
+        assert content["page"] == 1
+        assert content["size"] == 20
+        data = content["data"]
+        assert len(data) == content["size"]
+        assert all(account["firstName"] == "Michel" for account in data[:15])
+        assert [account["lastName"] for account in data[:15]] == [f"{i:02}" for i in range(29, 0, -2)]
+        assert all(account["firstName"] == "Micheline" for account in data[15:])
+        assert [account["lastName"] for account in data[15:]] == [f"{i:02}" for i in range(28, 19, -2)]
+
+    @override_features(ENABLE_BACKOFFICE_API=True)
+    def test_error_on_bad_sorted_field(self, client):
+        # given
+        for i in range(30):
+            users_factories.UserFactory(
+                firstName="Michel" if i % 2 else "Micheline",
+                lastName=f"{i:02}",
+            )
+        user = users_factories.UserFactory()
+        auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
+
+        # when
+        response = client.with_explicit_token(auth_token).get(
+            url_for("backoffice_blueprint.search_public_account", q="Michel", sort="thisFieldDoesNotExist"),
+        )
+
+        # then
+        assert response.status_code == 400
+        content = response.json
+        assert "sorting" in content
+        assert "thisFieldDoesNotExist" in content["sorting"]
 
 
 class GetPublicAccountTest:

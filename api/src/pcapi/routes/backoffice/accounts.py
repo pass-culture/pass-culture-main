@@ -18,7 +18,7 @@ from pcapi.serialization.decorator import spectree_serialize
 
 from . import blueprint
 from . import serialization
-from .utils import get_user_or_error
+from . import utils
 
 
 # Same methods as called from legacy backoffice with Flask-Admin
@@ -34,18 +34,27 @@ SUBSCRIPTION_ITEM_METHODS = [
 @blueprint.backoffice_blueprint.route("public_accounts/search", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=serialization.ListPublicAccountsResponseModel,
+    response_model=serialization.PaginatedResponse,
     on_success_status=200,
     api=blueprint.api,
 )
 def search_public_account(
     query: serialization.PublicAccountSearchQuery,
-) -> serialization.ListPublicAccountsResponseModel:
+) -> serialization.PaginatedResponse:
     terms = query.q.split()
-    accounts = users_api.search_public_account(terms)
+    sorts = query.sort.split(",") if query.sort else ["id"]
 
-    return serialization.ListPublicAccountsResponseModel(
-        accounts=[serialization.PublicAccount.from_orm(account) for account in accounts]
+    paginated = users_api.search_public_account(terms, order_by=sorts).paginate(
+        page=query.page,
+        per_page=query.perPage,
+    )
+
+    return utils.build_paginated_response(
+        pages=paginated.pages,
+        total=paginated.total,
+        page=paginated.page,
+        sort=query.sort,
+        data=[serialization.PublicAccount.from_orm(account) for account in paginated.items],
     )
 
 
@@ -57,7 +66,7 @@ def search_public_account(
     api=blueprint.api,
 )
 def get_public_account(user_id: int) -> serialization.PublicAccount:
-    user = get_user_or_error(user_id)
+    user = utils.get_user_or_error(user_id)
 
     return serialization.PublicAccount.from_orm(user)
 
@@ -109,7 +118,7 @@ def update_public_account(user_id: int, body: serialization.PublicAccountUpdateR
     api=blueprint.api,
 )
 def get_beneficiary_credit(user_id: int) -> serialization.GetBeneficiaryCreditResponseModel:
-    user = get_user_or_error(user_id)
+    user = utils.get_user_or_error(user_id)
 
     domains_credit = users_api.get_domains_credit(user) if user.is_beneficiary else None
 
@@ -131,7 +140,7 @@ def get_beneficiary_credit(user_id: int) -> serialization.GetBeneficiaryCreditRe
     api=blueprint.api,
 )
 def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscriptionHistoryResponseModel:
-    user = get_user_or_error(user_id)
+    user = utils.get_user_or_error(user_id)
 
     subscriptions = {}
 
@@ -161,7 +170,7 @@ def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscrip
 def review_public_account(
     user_id: int, body: serialization.BeneficiaryReviewRequestModel
 ) -> serialization.BeneficiaryReviewResponseModel:
-    user = get_user_or_error(user_id, error_code=412)
+    user = utils.get_user_or_error(user_id, error_code=412)
 
     eligibility = None if body.eligibility is None else users_models.EligibilityType[body.eligibility]
 
@@ -189,7 +198,7 @@ def review_public_account(
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def resend_validation_email(user_id: int) -> None:
-    user = get_user_or_error(user_id)
+    user = utils.get_user_or_error(user_id)
 
     if user.has_admin_role or user.has_pro_role:
         raise ApiErrors(errors={"user_id": "Cette action n'est pas supportée pour les utilisateurs admin ou pro"})
@@ -204,7 +213,7 @@ def resend_validation_email(user_id: int) -> None:
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def send_phone_validation_code(user_id: int) -> None:
-    user = get_user_or_error(user_id)
+    user = utils.get_user_or_error(user_id)
 
     try:
         phone_validation_api.send_phone_validation_code(user, user.phoneNumber, ignore_limit=True)
@@ -232,7 +241,7 @@ def send_phone_validation_code(user_id: int) -> None:
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 def skip_phone_validation(user_id: int) -> None:
-    user = get_user_or_error(user_id)
+    user = utils.get_user_or_error(user_id)
     try:
         users_api.skip_phone_validation_step(user)
     except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
@@ -247,7 +256,7 @@ def skip_phone_validation(user_id: int) -> None:
     api=blueprint.api,
 )
 def get_public_history(user_id: int) -> serialization.PublicHistoryResponseModel:
-    user = get_user_or_error(user_id)
+    user = utils.get_user_or_error(user_id)
 
     history = users_api.public_account_history(user)
 

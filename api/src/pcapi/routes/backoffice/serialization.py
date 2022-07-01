@@ -67,15 +67,27 @@ class PublicAccount(BaseModel):
     city: typing.Optional[str]
 
 
-class PublicAccountSearchQuery(BaseModel):
+class PaginableQuery(BaseModel):
+    page: typing.Optional[int] = 1
+    perPage: typing.Optional[int] = 20
+    sort: typing.Optional[str] = None
+
+
+class PublicAccountSearchQuery(PaginableQuery):
     q: str
 
 
-class ListPublicAccountsResponseModel(BaseModel):
-    class Config:
-        orm_mode = True
+class PaginatedResponse(BaseModel):
+    pages: int
+    total: int
+    page: int
+    size: int
+    sort: typing.Optional[str]
+    data: typing.Any
 
-    accounts: list[PublicAccount]
+
+class ListPublicAccountsResponseModel(PaginatedResponse):
+    data: list[PublicAccount]
 
 
 class PublicAccountUpdateRequest(BaseModel):
