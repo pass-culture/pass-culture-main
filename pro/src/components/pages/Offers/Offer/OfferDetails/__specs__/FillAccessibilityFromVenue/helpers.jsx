@@ -24,7 +24,7 @@ import NotificationContainer from 'components/layout/Notification/NotificationCo
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import { Provider } from 'react-redux'
 import React from 'react'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
 
@@ -148,7 +148,7 @@ export const initialize = async ({
 
   let rtlRenderReturn
   if (offer) {
-    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
     pcapi.getVenue.mockReturnValue(offer.venue)
     rtlRenderReturn = await renderOfferEdition({
       props: {},

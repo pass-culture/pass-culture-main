@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react-hooks'
 import { useGetOffererNames } from '..'
 
@@ -15,7 +15,7 @@ describe('useOffererNames', () => {
     ]
 
     jest
-      .spyOn(apiV1, 'getOfferersListOfferersNames')
+      .spyOn(api, 'listOfferersNames')
       .mockResolvedValue({ offerersNames: offererNames })
 
     const { result, waitForNextUpdate } = renderHook(() => useGetOffererNames())
@@ -26,7 +26,7 @@ describe('useOffererNames', () => {
     expect(loadingState.error).toBeUndefined()
 
     await waitForNextUpdate()
-    expect(apiV1.getOfferersListOfferersNames).toHaveBeenCalled()
+    expect(api.listOfferersNames).toHaveBeenCalled()
 
     const updatedState = result.current
     expect(updatedState.data).toEqual(offererNames)
@@ -36,7 +36,7 @@ describe('useOffererNames', () => {
 
   it('should return loading payload then error payload', async () => {
     jest
-      .spyOn(apiV1, 'getOfferersListOfferersNames')
+      .spyOn(api, 'listOfferersNames')
       .mockRejectedValue(new Error('Api error'))
 
     const { result, waitForNextUpdate } = renderHook(() => useGetOffererNames())
@@ -47,7 +47,7 @@ describe('useOffererNames', () => {
     expect(loadingState.error).toBeUndefined()
 
     await waitForNextUpdate()
-    expect(apiV1.getOfferersListOfferersNames).toHaveBeenCalled()
+    expect(api.listOfferersNames).toHaveBeenCalled()
 
     const updatedState = result.current
     expect(updatedState.isLoading).toBe(false)
