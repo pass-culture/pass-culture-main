@@ -269,7 +269,7 @@ class CollectiveReimbursementDetailsTest:
         )
         booking3 = educational_factories.UsedCollectiveBookingFactory(
             dateUsed=datetime(2022, 6, 18),
-            collectiveStock__beginningDatetime=datetime.utcnow(),
+            collectiveStock__beginningDatetime=datetime(2022, 6, 18),
             collectiveStock__collectiveOffer__venue=venue2,
             collectiveStock__collectiveOffer__name="Un super nom d'offre",
         )
@@ -329,7 +329,7 @@ class CollectiveReimbursementDetailsTest:
         booking = educational_factories.UsedCollectiveBookingFactory(
             dateUsed=datetime(2022, 6, 18),
             collectiveStock__price=21,
-            collectiveStock__beginningDatetime=datetime.utcnow(),
+            collectiveStock__beginningDatetime=datetime(2022, 6, 18),
             collectiveStock__collectiveOffer__venue=venue,
         )
         finance_factories.CollectivePricingFactory(
