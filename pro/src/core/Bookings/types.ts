@@ -3,7 +3,7 @@ import {
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
 
-import { BookingStatusFilter } from 'api/v1/gen'
+import { BookingStatusFilter } from 'apiClient/v1'
 
 export type TPreFilters = {
   offerVenueId: string

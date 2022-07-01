@@ -12,7 +12,7 @@ import { CollectiveDataFormValues } from './type'
 import FormLayout from 'new_components/FormLayout'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import { StudentLevels } from 'api/v1/gen'
+import { StudentLevels } from 'apiClient/v1'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { getVenueEducationalStatusesAdapter } from './adapters'
 import { handleAllFranceDepartmentOptions } from './utils/handleAllFranceDepartmentOptions'
@@ -33,13 +33,16 @@ const initialValues: CollectiveDataFormValues = {
 }
 
 const studentOptions = [
-  { value: StudentLevels.Collge4e, label: StudentLevels.Collge4e },
-  { value: StudentLevels.Collge3e, label: StudentLevels.Collge3e },
-  { value: StudentLevels.CAP1reAnne, label: StudentLevels.CAP1reAnne },
-  { value: StudentLevels.CAP2eAnne, label: StudentLevels.CAP1reAnne },
-  { value: StudentLevels.LyceSeconde, label: StudentLevels.LyceSeconde },
-  { value: StudentLevels.LycePremire, label: StudentLevels.LycePremire },
-  { value: StudentLevels.LyceTerminale, label: StudentLevels.LyceTerminale },
+  { value: StudentLevels.COLL_GE_4E, label: StudentLevels.COLL_GE_4E },
+  { value: StudentLevels.COLL_GE_3E, label: StudentLevels.COLL_GE_3E },
+  { value: StudentLevels.CAP_1RE_ANN_E, label: StudentLevels.CAP_1RE_ANN_E },
+  { value: StudentLevels.CAP_2E_ANN_E, label: StudentLevels.CAP_2E_ANN_E },
+  { value: StudentLevels.LYC_E_SECONDE, label: StudentLevels.LYC_E_SECONDE },
+  { value: StudentLevels.LYC_E_PREMI_RE, label: StudentLevels.LYC_E_PREMI_RE },
+  {
+    value: StudentLevels.LYC_E_TERMINALE,
+    label: StudentLevels.LYC_E_TERMINALE,
+  },
 ]
 
 const CollectiveDataEdition = (): JSX.Element => {

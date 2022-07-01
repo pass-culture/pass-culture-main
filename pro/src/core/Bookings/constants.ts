@@ -1,6 +1,6 @@
 import { startOfDay, subDays } from 'date-fns'
 
-import { BookingStatusFilter } from 'api/v1/gen'
+import { BookingStatusFilter } from 'apiClient/v1'
 import { getToday } from 'utils/date'
 
 export const BOOKING_STATUS = {
@@ -25,7 +25,7 @@ export const DEFAULT_BOOKING_PERIOD = 30
 export const DEFAULT_PRE_FILTERS = {
   bookingBeginningDate: startOfDay(subDays(getToday(), DEFAULT_BOOKING_PERIOD)),
   bookingEndingDate: startOfDay(getToday()),
-  bookingStatusFilter: BookingStatusFilter.Booked,
+  bookingStatusFilter: BookingStatusFilter.BOOKED,
   offerEventDate: ALL_DATES,
   offerVenueId: ALL_VENUES,
   offerType: ALL_OFFER_TYPE,
@@ -37,11 +37,11 @@ export const ALL_VENUES_OPTION = {
 }
 
 const BOOOKING_STATUS_OPTIONS = [
-  { displayName: 'Période de réservation', id: BookingStatusFilter.Booked },
-  { displayName: 'Période de validation', id: BookingStatusFilter.Validated },
+  { displayName: 'Période de réservation', id: BookingStatusFilter.BOOKED },
+  { displayName: 'Période de validation', id: BookingStatusFilter.VALIDATED },
   {
     displayName: 'Période de remboursement',
-    id: BookingStatusFilter.Reimbursed,
+    id: BookingStatusFilter.REIMBURSED,
   },
 ]
 
