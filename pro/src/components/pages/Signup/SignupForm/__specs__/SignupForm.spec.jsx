@@ -3,11 +3,11 @@ import '@testing-library/jest-dom'
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { ApiError, HTTP_STATUS } from 'api/helpers'
 import { MemoryRouter, Route } from 'react-router'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { Events } from 'core/FirebaseEvents/constants'
+import { HTTP_STATUS } from 'api/helpers'
 import { Provider } from 'react-redux'
 import React from 'react'
 import SignupForm from '../SignupForm'
@@ -328,7 +328,7 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
         expect(submitButton).toBeEnabled()
         // Structure name should be displayed and submit button enabled
-        waitFor(() =>
+        await waitFor(() =>
           expect(
             screen.findByText('Ma Petite structure')
           ).resolves.toBeInTheDocument()
@@ -362,48 +362,36 @@ describe('src | components | pages | Signup | SignupForm', () => {
         expect(mockLogEvent).toHaveBeenCalledTimes(1)
       })
       it('should show a notification on api call error', async () => {
-        pcapi.signup.mockRejectedValue(
-          new ApiError(HTTP_STATUS.GONE, {
-            telephone: 'Le téléphone doit faire moins de 20 caractères',
-          })
-        )
+        pcapi.signup.mockRejectedValue({
+          errors: {
+            phoneNumber: 'Le téléphone doit faire moins de 20 caractères',
+          },
+          status: HTTP_STATUS.GONE,
+        })
         renderSignUp(store)
         const submitButton = screen.getByRole('button', {
           name: /Créer mon compte/,
         })
+
         await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Adresse e-mail/,
-          }),
+          screen.getByLabelText('Adresse e-mail'),
           'test@example.com'
         )
         await userEvent.type(
-          screen.getByLabelText(/Mot de passe/),
+          screen.getByLabelText('Mot de passe'),
           'user@AZERTY123'
         )
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Nom/,
-          }),
-          'Nom'
-        )
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Prénom/,
-          }),
-          'Prénom'
-        )
+        await userEvent.type(screen.getByLabelText('Nom'), 'Nom')
+        await userEvent.type(screen.getByLabelText('Prénom'), 'Prénom')
 
         await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Téléphone/,
-          }),
-          '0722332233'
+          screen.getByLabelText(
+            'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
+          ),
+          '0722332200'
         )
         await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /SIREN/,
-          }),
+          screen.getByLabelText('SIREN de la structure que vous représentez'),
           '881457238'
         )
         // To simulate onBlur event
@@ -411,20 +399,21 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
         await userEvent.click(submitButton)
         expect(pcapi.signup).toHaveBeenCalledTimes(1)
+        expect(submitButton).toBeDisabled()
 
-        waitFor(() => expect(submitButton).toBeDisabled())
         expect(
-          screen.findByText('Le téléphone doit faire moins de 20 caractères')
-        ).resolves.toBeInTheDocument()
+          await screen.findByText(
+            'Le téléphone doit faire moins de 20 caractères'
+          )
+        ).toBeInTheDocument()
 
-        await userEvent.type(
-          screen.getByRole('textbox', {
-            name: /Téléphone/,
-          }),
-          '0722332233'
+        const phoneInput = screen.getByLabelText(
+          'Téléphone (utilisé uniquement par l’équipe du pass Culture)'
         )
+        await userEvent.clear(phoneInput)
+        await userEvent.type(phoneInput, '0622332233')
         await userEvent.tab()
-        waitFor(() => expect(submitButton).toBeEnabled())
+        await waitFor(() => expect(submitButton).toBeEnabled())
       })
       it('should display a Banner when SIREN is invisible', async () => {
         jest.spyOn(getSirenDataAdapter, 'default').mockResolvedValue({
