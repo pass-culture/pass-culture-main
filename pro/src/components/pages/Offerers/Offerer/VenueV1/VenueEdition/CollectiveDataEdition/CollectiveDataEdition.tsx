@@ -1,10 +1,13 @@
 import { FormikProvider, useFormik } from 'formik'
 import { MultiSelectAutocomplete, TextArea, TextInput, Title } from 'ui-kit'
+import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
-import React from 'react'
+import { SelectOption } from 'custom_types/form'
 import { StudentLevels } from 'api/v1/gen'
+import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import styles from './CollectiveDataEdition.module.scss'
+import useNotification from 'components/hooks/useNotification'
 import { validationSchema } from './validationSchema'
 
 type CollectiveDataFormValues = {
@@ -13,14 +16,16 @@ type CollectiveDataFormValues = {
   collectiveWebsite: string
   collectivePhone: string
   collectiveEmail: string
+  collectiveDomains: string[]
 }
 
-const initialValues = {
+const initialValues: CollectiveDataFormValues = {
   collectiveDescription: '',
   collectiveStudents: [],
   collectiveWebsite: '',
   collectivePhone: '',
   collectiveEmail: '',
+  collectiveDomains: [],
 }
 
 const studentOptions = [
@@ -34,11 +39,25 @@ const studentOptions = [
 ]
 
 const CollectiveDataEdition = (): JSX.Element => {
+  const notify = useNotification()
+
+  const [domains, setDomains] = useState<SelectOption[]>([])
+
   const formik = useFormik<CollectiveDataFormValues>({
     initialValues,
     onSubmit: () => {},
     validationSchema,
   })
+
+  useEffect(() => {
+    getEducationalDomainsAdapter().then(response => {
+      if (response.isOk) {
+        setDomains(response.payload)
+      } else {
+        notify.error(response.message)
+      }
+    })
+  }, [])
 
   return (
     <>
@@ -81,6 +100,20 @@ const CollectiveDataEdition = (): JSX.Element => {
               placeholder="http://exemple.com"
               inline
               className={styles.row}
+            />
+          </FormLayout.Row>
+          <div className={styles.section}>
+            Informations du lieu relatives à l’EAC
+          </div>
+          <FormLayout.Row>
+            <MultiSelectAutocomplete
+              hideTags
+              options={domains}
+              fieldName="collectiveDomains"
+              label="Domaine artistique et culturel :"
+              placeholder="Sélectionner un ou plusieurs domaine(s)"
+              className={styles.row}
+              inline
             />
           </FormLayout.Row>
           <div className={styles.section}>Contact pour les scolaires</div>
