@@ -1217,6 +1217,7 @@ class GenerateCashflowsTest:
         n_queries += 1  # compute next CashflowBatch.label
         n_queries += 1  # insert CashflowBatch
         n_queries += 1  # commit
+        n_queries += 1  # select CashflowBatch again after commit
         n_queries += 1  # select business unit and bank account ids to process
         n_queries += 2 * sum(  # 2 business units
             (
