@@ -874,8 +874,8 @@ jobs:
     environment:
       HELM_EXPERIMENTAL_OCI: 1
       CHART_NAME: dbops-chart
-      CHART_RELEASE: passculture-db-operations
-      NAMESPACE: operations
+      CHART_RELEASE: database-operations
+      NAMESPACE: database-operations
     steps:
       - checkout
       - clone-pass-culture-deployment-repo
@@ -1376,7 +1376,7 @@ workflows:
                 - production
           context:
             - GCP
-            - GCP_EHP
+            - GCP_PROD
       - deploy-pcapi:
           filters:
             branches:
