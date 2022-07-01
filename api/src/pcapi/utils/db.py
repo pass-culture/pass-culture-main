@@ -9,6 +9,7 @@ import sqlalchemy.dialects.postgresql.json as sqla_json
 import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.types as sqla_types
 
+from pcapi.models import Model
 from pcapi.models import db
 
 
@@ -102,3 +103,44 @@ def make_timerange(
         upper=end.astimezone(pytz.utc).isoformat() if end else None,
         bounds=bounds,
     )
+
+
+class BadSortError(Exception):
+    pass
+
+
+def get_ordering_clauses(
+    model: Model,  # type: ignore[valid-type]
+    sorts: typing.Iterable[str],
+) -> list[typing.Union[sqla.sql.ColumnElement, sqla.sql.expression.UnaryExpression]]:
+    """
+    `sorts` should contains string in the form of:
+    - an optional `-` prefix specifying a sort descending direction (ascending by default)
+    - the name of a `model`'s attribute
+
+    example:
+    - "-city" for the `model.city` field in descending order
+    - "email" for the `model.email` field in ascending order
+    """
+    ordering_clauses = []
+    bad_sorts = []
+    for sort in sorts:
+        *desc, field_name = sort.split("-")
+        try:
+            field = getattr(model, field_name)
+        except AttributeError:
+            bad_sorts.append(
+                (
+                    sort,
+                    f"model `{model.__name__}` does not have a `{field_name}` attribute",  # type: ignore[attr-defined]
+                )
+            )
+        else:
+            if desc:
+                field = field.desc()
+            ordering_clauses.append(field)
+
+    if bad_sorts:
+        raise BadSortError("bad sort provided: " ", ".join((f"{sort}: {message}" for sort, message in bad_sorts)))
+
+    return ordering_clauses
