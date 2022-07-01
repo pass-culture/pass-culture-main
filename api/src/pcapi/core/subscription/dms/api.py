@@ -68,19 +68,19 @@ def handle_dms_application(
     user_email = users_utils.sanitize_email(dms_application.profile.email)
     application_scalar_id = dms_application.id
     state = dms_application.state
-    procedure_id = dms_application.procedure.number
+    procedure_number = dms_application.procedure.number
 
     log_extra_data = {
         "application_number": application_number,
         "application_scalar_id": application_scalar_id,
-        "procedure_id": procedure_id,
+        "procedure_number": procedure_number,
         "user_email": user_email,
     }
 
     user = find_user_by_email(user_email)
     if not user:
         logger.info("[DMS] User not found for application", extra=log_extra_data)
-        _process_user_not_found_error(user_email, application_number, procedure_id, state, application_scalar_id)
+        _process_user_not_found_error(user_email, application_number, procedure_number, state, application_scalar_id)
         return None
 
     application_content, field_errors = dms_serializer.parse_beneficiary_information_graphql(dms_application)
@@ -199,12 +199,12 @@ def _create_profile_completion_fraud_check_from_dms(
 def _process_user_not_found_error(
     email: str,
     application_number: int,
-    procedure_id: int,
+    procedure_number: int,
     state: dms_models.GraphQLApplicationStates,
     application_scalar_id: str,
 ) -> None:
     dms_repository.create_orphan_dms_application_if_not_exists(
-        application_number=application_number, procedure_id=procedure_id, email=email
+        application_number=application_number, procedure_number=procedure_number, email=email
     )
     if state == dms_models.GraphQLApplicationStates.draft:
         dms_connector_api.DMSGraphQLClient().send_user_message(
@@ -263,14 +263,14 @@ def _process_accepted_application(
         logger.exception(
             "[DMS] Could not save application %s - Procedure %s",
             dms_content.application_number,
-            dms_content.procedure_id,
+            dms_content.procedure_number,
         )
         return
 
     logger.info(
         "[DMS] Successfully imported accepted DMS application %s - Procedure %s",
         dms_content.application_number,
-        dms_content.procedure_id,
+        dms_content.procedure_number,
     )
 
     if not has_completed_all_steps:
@@ -295,6 +295,6 @@ def _handle_validation_errors(
         "[DMS] Rejected application %s because of '%s' - Procedure %s",
         dms_content.application_number,
         reason,
-        dms_content.procedure_id,
+        dms_content.procedure_number,
         extra={"user_id": user.id},
     )

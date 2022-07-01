@@ -19,9 +19,9 @@ class ArchiveDMSApplicationsTest:
     def test_archive_applications(self, dms_archive, dms_applications):
         to_archive_applications_id = 123
         pending_applications_id = 456
-        procedure_id = 1
+        procedure_number = 1
 
-        content = fraud_factories.DMSContentFactory(procedure_id=procedure_id)
+        content = fraud_factories.DMSContentFactory(procedure_number=procedure_number)
         fraud_factories.BeneficiaryFraudCheckFactory(
             resultContent=content,
             status=fraud_models.FraudCheckStatus.OK,
@@ -41,7 +41,7 @@ class ArchiveDMSApplicationsTest:
             make_parsed_graphql_application(pending_applications_id, "accepte", application_techid="PENDING_ID"),
         ]
 
-        archive_dms_applications.archive_applications(procedure_id, dry_run=False)
+        archive_dms_applications.archive_applications(procedure_number, dry_run=False)
 
         dms_archive.assert_called_once()
         assert dms_archive.call_args[0] == ("TO_ARCHIVE_TECHID", "SomeInstructorId")

@@ -711,7 +711,7 @@ class BeneficiaryInformationUpdateTest:
             postal_code="67200",
             address="11 Rue du Test",
             application_number=123,
-            procedure_id=98012,
+            procedure_number=98012,
             registration_datetime=datetime.datetime(2020, 5, 1),
         )
 
