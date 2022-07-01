@@ -20,6 +20,7 @@ import React from 'react'
 import { Router } from 'react-router'
 import type { Store } from 'redux'
 import { api } from 'api/v1/api'
+import { api as apiClient } from 'apiClient/api'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { configureTestStore } from 'store/testUtils'
 import { createMemoryHistory } from 'history'
@@ -80,11 +81,16 @@ jest.mock('repository/venuesService', () => ({
 
 jest.mock('api/v1/api', () => ({
   api: {
-    getOffersListOffers: jest.fn(),
     getOfferersGetOfferer: jest.fn(),
     getOffersGetCategories: jest
       .fn()
       .mockResolvedValue(categoriesAndSubcategories),
+  },
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    listOffers: jest.fn(),
   },
 }))
 
@@ -130,7 +136,7 @@ describe('route Offers', () => {
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
     // @ts-ignore FIX ME
-    jest.spyOn(api, 'getOffersListOffers').mockResolvedValue(offersRecap)
+    jest.spyOn(apiClient, 'listOffers').mockResolvedValue(offersRecap)
   })
 
   describe('render', () => {
@@ -201,7 +207,7 @@ describe('route Offers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce([])
+          jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce([])
           // When
           renderOffers(store)
 
@@ -536,7 +542,7 @@ describe('route Offers', () => {
       // Given
       const offersRecap = Array.from({ length: 11 }, () => offerFactory())
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offersRecap)
+      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offersRecap)
       const { history } = renderOffers(store)
       const nextPageIcon = await screen.findByAltText('page suivante')
       // When
@@ -658,7 +664,7 @@ describe('route Offers', () => {
     it('should have status value when user filters by status', async () => {
       // Given
 
-      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce([
+      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce([
         // @ts-ignore FIX ME
         offerFactory(
           {
@@ -686,7 +692,7 @@ describe('route Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce([
+      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce([
         // @ts-ignore FIX ME
         offerFactory(
           {
@@ -778,7 +784,7 @@ describe('route Offers', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
       // Given
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOffersListOffers').mockResolvedValue(offersRecap)
+      jest.spyOn(apiClient, 'listOffers').mockResolvedValue(offersRecap)
       const { history } = renderOffers(store)
       await screen.findByText('Lancer la recherche')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
@@ -798,7 +804,7 @@ describe('route Offers', () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offers)
+      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       // When
@@ -815,7 +821,7 @@ describe('route Offers', () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offers)
+      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       const previousIcon = await screen.findByAltText('page précédente')
@@ -843,7 +849,7 @@ describe('route Offers', () => {
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
       // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOffersListOffers').mockResolvedValueOnce(offersRecap)
+      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offersRecap)
       // When
       renderOffers(store)
       // Then
