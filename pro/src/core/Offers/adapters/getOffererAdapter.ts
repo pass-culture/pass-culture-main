@@ -1,6 +1,6 @@
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { Offerer } from 'core/Offers/types'
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 
 type IPayload = Offerer
 
@@ -16,7 +16,7 @@ export const getOffererAdapter: GetOffererAdapter = async (
   offererId: string
 ) => {
   try {
-    const offerer = await api.getOfferersGetOfferer(offererId)
+    const offerer = await api.getOfferer(offererId)
 
     return {
       isOk: true,
