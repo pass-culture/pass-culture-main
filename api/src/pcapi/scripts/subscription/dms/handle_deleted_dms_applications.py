@@ -18,13 +18,13 @@ def is_dms_content(obj: typing.Any) -> TypeGuard[fraud_models.DMSContent]:
     return isinstance(obj, fraud_models.DMSContent)
 
 
-def get_latest_deleted_application_datetime(procedure_id: int) -> typing.Optional[datetime.datetime]:
+def get_latest_deleted_application_datetime(procedure_number: int) -> typing.Optional[datetime.datetime]:
     fraud_check: typing.Optional[fraud_models.BeneficiaryFraudCheck] = (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.CANCELED,
             fraud_models.BeneficiaryFraudCheck.resultContent.isnot(None),
-            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer) == procedure_id,
+            fraud_models.BeneficiaryFraudCheck.resultContent["procedure_id"].astext.cast(Integer) == procedure_number,
             fraud_models.BeneficiaryFraudCheck.resultContent.has_key("deletion_datetime"),  # type: ignore [attr-defined]
         )
         .order_by(fraud_models.BeneficiaryFraudCheck.resultContent["deletion_datetime"].desc())
@@ -39,18 +39,20 @@ def get_latest_deleted_application_datetime(procedure_id: int) -> typing.Optiona
     return None
 
 
-def handle_deleted_dms_applications(procedure_id: int) -> None:
-    latest_deleted_application_datetime = get_latest_deleted_application_datetime(procedure_id)
+def handle_deleted_dms_applications(procedure_number: int) -> None:
+    latest_deleted_application_datetime = get_latest_deleted_application_datetime(procedure_number)
 
     logger.info(
-        "Looking for deleted applications for procedure %d since %s", procedure_id, latest_deleted_application_datetime
+        "Looking for deleted applications for procedure %d since %s",
+        procedure_number,
+        latest_deleted_application_datetime,
     )
 
     dms_graphql_client = dms_api.DMSGraphQLClient()
     applications_to_mark_as_deleted = {}
 
     for deleted_application in dms_graphql_client.get_deleted_applications(
-        procedure_id, deletedSince=latest_deleted_application_datetime
+        procedure_number, deletedSince=latest_deleted_application_datetime
     ):
         applications_to_mark_as_deleted[str(deleted_application.number)] = deleted_application
 
@@ -83,6 +85,6 @@ def handle_deleted_dms_applications(procedure_id: int) -> None:
     logger.info(
         "Marked %d fraud checks as deleted for procedure %d since %s",
         updated_fraud_checks_count,
-        procedure_id,
+        procedure_number,
         latest_deleted_application_datetime,
     )

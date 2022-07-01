@@ -33,10 +33,10 @@ class HandleDeletedDmsApplicationsTest:
             thirdPartyId="4", type=fraud_models.FraudCheckType.DMS, resultContent=None
         )
 
-        procedure_id = 1
-        execute_query.return_value = make_graphql_deleted_applications(procedure_id, [2, 3, 4])
+        procedure_number = 1
+        execute_query.return_value = make_graphql_deleted_applications(procedure_number, [2, 3, 4])
 
-        handle_deleted_dms_applications(procedure_id)
+        handle_deleted_dms_applications(procedure_number)
 
         assert fraud_check_not_to_mark_as_deleted.status == fraud_models.FraudCheckStatus.PENDING
         assert fraud_check_to_mark_as_deleted.status == fraud_models.FraudCheckStatus.CANCELED
@@ -59,14 +59,14 @@ class HandleDeletedDmsApplicationsTest:
     @pytest.mark.usefixtures("db_session")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_latest_deleted_application_datetime(self, execute_query):
-        procedure_id = 1
+        procedure_number = 1
         latest_deletion_date = datetime.datetime(2020, 1, 1)
 
         dms_content_with_deletion_date = fraud_factories.DMSContentFactory(
-            deletion_datetime=latest_deletion_date, procedure_id=procedure_id
+            deletion_datetime=latest_deletion_date, procedure_number=procedure_number
         )
         dms_content_before_deletion_date = fraud_factories.DMSContentFactory(
-            deletion_datetime=latest_deletion_date - datetime.timedelta(days=1), procedure_id=procedure_id
+            deletion_datetime=latest_deletion_date - datetime.timedelta(days=1), procedure_number=procedure_number
         )
 
         # fraud_check_deleted_last
@@ -91,6 +91,6 @@ class HandleDeletedDmsApplicationsTest:
             resultContent=None,
         )
 
-        execute_query.return_value = make_graphql_deleted_applications(procedure_id, [8888, 8889, 8890])
+        execute_query.return_value = make_graphql_deleted_applications(procedure_number, [8888, 8889, 8890])
 
-        assert get_latest_deleted_application_datetime(procedure_id) == latest_deletion_date
+        assert get_latest_deleted_application_datetime(procedure_number) == latest_deletion_date

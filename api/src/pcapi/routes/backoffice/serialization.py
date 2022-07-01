@@ -142,7 +142,7 @@ class IdCheckItemModel(BaseModel):
 
         if fraud_check.type == fraud_models.FraudCheckType.DMS and fraud_check.resultContent is not None:
             dms_content = fraud_models.DMSContent(**fraud_check.resultContent)  # type: ignore [arg-type]
-            fraud_check.sourceId = str(dms_content.procedure_id)
+            fraud_check.sourceId = str(dms_content.procedure_number)
 
         return super().from_orm(fraud_check)
 

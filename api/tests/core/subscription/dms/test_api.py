@@ -88,12 +88,12 @@ class DMSOrphanSubsriptionTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_orphan_corresponding_user(self, execute_query):
         application_number = 1234
-        procedure_id = 4321
+        procedure_number = 4321
         email = "dms_orphan@example.com"
 
         user = users_factories.UserFactory(email=email)
         fraud_factories.OrphanDmsApplicationFactory(
-            email=email, application_id=application_number, process_id=procedure_id
+            email=email, application_id=application_number, process_id=procedure_number
         )
 
         execute_query.return_value = make_single_application(
@@ -111,12 +111,12 @@ class DMSOrphanSubsriptionTest:
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_dms_orphan_corresponding_user_with_field_error(self, execute_query):
         application_number = 1234
-        procedure_id = 4321
+        procedure_number = 4321
         email = "dms_orphan@example.com"
 
         user = users_factories.UserFactory(email=email)
         fraud_factories.OrphanDmsApplicationFactory(
-            email=email, application_id=application_number, process_id=procedure_id
+            email=email, application_id=application_number, process_id=procedure_number
         )
 
         execute_query.return_value = make_single_application(

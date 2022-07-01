@@ -130,7 +130,7 @@ def parse_beneficiary_information_graphql(
         last_name=last_name,
         phone=phone,
         postal_code=postal_code,
-        procedure_id=application_detail.procedure.number,
+        procedure_number=application_detail.procedure.number,
         processed_datetime=processed_datetime,
         registration_datetime=registration_datetime,
         state=application_detail.state.value,
