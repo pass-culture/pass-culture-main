@@ -1,7 +1,7 @@
 import { Offer, TSearchFilters } from 'core/Offers/types'
 
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { serializeOffers } from './serializers'
 
@@ -33,7 +33,7 @@ export const getFilteredOffersAdapter: GetFilteredOffersAdapter =
         periodEndingDate,
       } = serializeApiFilters(apiFilters)
 
-      const offers = await api.getOffersListOffers(
+      const offers = await api.listOffers(
         nameOrIsbn,
         offererId,
         status,

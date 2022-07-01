@@ -1,7 +1,7 @@
 import {
   ListOffersOfferResponseModel,
   ListOffersResponseModel,
-} from 'api/v1/gen'
+} from 'apiClient/v1'
 import { Offer, Stock, Venue } from 'core/Offers/types'
 
 const serializeVenue = (
@@ -18,7 +18,9 @@ const serializeStocks = (
   stocks: ListOffersOfferResponseModel['stocks']
 ): Stock[] =>
   stocks.map(stock => ({
-    beginningDatetime: stock.beginningDatetime,
+    beginningDatetime: stock.beginningDatetime
+      ? new Date(stock.beginningDatetime)
+      : null,
     remainingQuantity: stock.remainingQuantity,
   }))
 
