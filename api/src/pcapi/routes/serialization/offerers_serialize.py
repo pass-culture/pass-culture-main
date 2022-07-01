@@ -1,18 +1,15 @@
 from datetime import datetime
-from typing import Dict
 from typing import Optional
 
 from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offerers.repository import get_api_key_prefixes
-from pcapi.core.offerers.repository import has_digital_venue_with_at_least_one_offer
-from pcapi.core.offerers.repository import has_physical_venue_without_draft_or_accepted_bank_information
+import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.users.models as users_models
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.venues_serialize import VenueStatsResponseModel
+from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.utils import humanize_field
-from pcapi.utils.date import format_into_utc_date
+import pcapi.utils.date as date_utils
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
@@ -37,7 +34,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime: date_utils.format_into_utc_date}
 
 
 class OffererApiKey(BaseModel):
@@ -71,25 +68,27 @@ class GetOffererResponseModel(BaseModel):
     _humanize_id = humanize_field("id")
 
     @classmethod
-    def from_orm(cls, offerer: offerers_models.Offerer, venue_stats_by_ids: Optional[Dict[int, VenueStatsResponseModel]] = None):  # type: ignore
+    def from_orm(cls, offerer: offerers_models.Offerer, venue_stats_by_ids: Optional[dict[int, venues_serialize.VenueStatsResponseModel]] = None):  # type: ignore
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
-            "prefixes": get_api_key_prefixes(offerer.id),
+            "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
         }
         if venue_stats_by_ids:
             for managedVenue in offerer.managedVenues:
                 managedVenue.stats = venue_stats_by_ids[managedVenue.id]
 
-        offerer.hasDigitalVenueAtLeastOneOffer = has_digital_venue_with_at_least_one_offer(offerer.id)
+        offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
+            offerer.id
+        )
         offerer.hasMissingBankInformation = not offerer.demarchesSimplifieesApplicationId and (
-            has_physical_venue_without_draft_or_accepted_bank_information(offerer.id)
+            offerers_repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer.id)
             or offerer.hasDigitalVenueAtLeastOneOffer
         )
         return super().from_orm(offerer)
 
     class Config:
         orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
+        json_encoders = {datetime: date_utils.format_into_utc_date}
 
 
 class GetOffererNameResponseModel(BaseModel):
