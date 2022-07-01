@@ -13,6 +13,7 @@ from pydantic import validator
 
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -146,6 +147,20 @@ class BannerMetaModel(BaseModel):
         return raw_crop_params
 
 
+class GetVenuePricingPointResponseModel(BaseModel):
+    id: int
+    siret: str
+    venueName: str
+
+    class Config:
+        orm_mode = True
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetVenuePricingPointResponseModel":
+        venue.venueName = venue.publicName or venue.name
+        return super().from_orm(venue)
+
+
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     id: str
     dateCreated: datetime
@@ -168,7 +183,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     isBusinessUnitMainVenue: Optional[bool]
     lastProviderId: Optional[str]
     managingOfferer: GetVenueManagingOffererResponseModel
-    pricingPointId: Optional[int]
+    pricingPoint: Optional[GetVenuePricingPointResponseModel]
     reimbursementPointId: Optional[int]
     siret: Optional[str]
     venueLabelId: Optional[str]
@@ -204,7 +219,11 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         # does not work when passing directly an enum instance.
         venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None  # type: ignore [attr-defined]
         venue.nonHumanizedId = venue.id
-        venue.pricingPointId = venue.current_pricing_point_id
+        venue.pricingPoint = (
+            offerers_repository.find_venue_by_id(venue.current_pricing_point_id)
+            if venue.current_pricing_point_id
+            else None
+        )
         venue.reimbursementPointId = venue.current_reimbursement_point_id
         return super().from_orm(venue)
 
