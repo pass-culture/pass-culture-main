@@ -4,7 +4,7 @@ import {
   TPreFilters,
 } from 'core/Bookings'
 
-import { BookingStatusFilter } from 'api/v1/gen'
+import { BookingStatusFilter } from 'apiClient/v1'
 import React from 'react'
 import Select from 'components/layout/inputs/Select'
 

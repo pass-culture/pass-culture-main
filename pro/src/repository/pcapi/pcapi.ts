@@ -7,7 +7,7 @@ import {
 import { DEFAULT_INVOICES_FILTERS } from 'components/pages/Reimbursements/_constants'
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { EducationalDomain } from 'core/OfferEducational'
-import { ListOffersQueryModel } from 'api/v1/gen'
+import { ListOffersQueryModel } from 'apiClient/v1'
 import { client } from 'repository/pcapi/pcapiClient'
 import { stringify } from 'utils/query-string'
 
