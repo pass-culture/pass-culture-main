@@ -19,8 +19,7 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import { Router } from 'react-router'
 import type { Store } from 'redux'
-import { api } from 'api/v1/api'
-import { api as apiClient } from 'apiClient/api'
+import { api } from 'apiClient/api'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { configureTestStore } from 'store/testUtils'
 import { createMemoryHistory } from 'history'
@@ -79,16 +78,9 @@ jest.mock('repository/venuesService', () => ({
   fetchAllVenuesByProUser: jest.fn().mockResolvedValue(proVenues),
 }))
 
-jest.mock('api/v1/api', () => ({
-  api: {
-    getOffersGetCategories: jest
-      .fn()
-      .mockResolvedValue(categoriesAndSubcategories),
-  },
-}))
-
 jest.mock('apiClient/api', () => ({
   api: {
+    getCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
     listOffers: jest.fn(),
     getOfferer: jest.fn(),
   },
@@ -136,7 +128,7 @@ describe('route Offers', () => {
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
     // @ts-ignore FIX ME
-    jest.spyOn(apiClient, 'listOffers').mockResolvedValue(offersRecap)
+    jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
   })
 
   describe('render', () => {
@@ -170,7 +162,7 @@ describe('route Offers', () => {
           // When
           await userEvent.click(screen.getByText('Appliquer'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             'EXPIRED',
@@ -185,7 +177,7 @@ describe('route Offers', () => {
         it('should indicate that no offers match selected filters', async () => {
           // Given
           jest
-            .spyOn(api, 'getOffersListOffers')
+            .spyOn(api, 'listOffers')
             // @ts-ignore FIX ME
             .mockResolvedValueOnce(offersRecap)
             .mockResolvedValueOnce([])
@@ -207,7 +199,7 @@ describe('route Offers', () => {
 
         it('should not display column titles when no offers are returned', async () => {
           // Given
-          jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce([])
+          jest.spyOn(api, 'listOffers').mockResolvedValueOnce([])
           // When
           renderOffers(store)
 
@@ -253,7 +245,7 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               undefined,
@@ -284,7 +276,7 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               'EF',
               'INACTIVE',
@@ -300,7 +292,7 @@ describe('route Offers', () => {
             // Given
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-ignore FIX ME
-            jest.spyOn(apiClient, 'getOfferer').mockResolvedValue(offerer)
+            jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               offererId: offerer.id,
               status: 'INACTIVE',
@@ -315,7 +307,7 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               undefined,
@@ -332,7 +324,7 @@ describe('route Offers', () => {
             const { id: venueId } = proVenues[0]
             const offerer = { name: 'La structure', id: 'EF' }
             // @ts-ignore FIX ME
-            jest.spyOn(apiClient, 'getOfferer').mockResolvedValue(offerer)
+            jest.spyOn(api, 'getOfferer').mockResolvedValue(offerer)
             const filters = {
               venueId: venueId,
               status: 'INACTIVE',
@@ -348,7 +340,7 @@ describe('route Offers', () => {
               'Afficher ou masquer le filtre par statut'
             )
             expect(statusFiltersIcon.closest('button')).not.toBeDisabled()
-            expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+            expect(api.listOffers).toHaveBeenLastCalledWith(
               undefined,
               undefined,
               'INACTIVE',
@@ -401,7 +393,7 @@ describe('route Offers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenCalledWith(
+          expect(api.listOffers).toHaveBeenCalledWith(
             'Any word',
             undefined,
             undefined,
@@ -424,7 +416,7 @@ describe('route Offers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenCalledWith(
+          expect(api.listOffers).toHaveBeenCalledWith(
             undefined,
             undefined,
             undefined,
@@ -449,7 +441,7 @@ describe('route Offers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -474,7 +466,7 @@ describe('route Offers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -498,7 +490,7 @@ describe('route Offers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -522,7 +514,7 @@ describe('route Offers', () => {
           // When
           await userEvent.click(screen.getByText('Lancer la recherche'))
           // Then
-          expect(api.getOffersListOffers).toHaveBeenLastCalledWith(
+          expect(api.listOffers).toHaveBeenLastCalledWith(
             undefined,
             undefined,
             undefined,
@@ -542,7 +534,7 @@ describe('route Offers', () => {
       // Given
       const offersRecap = Array.from({ length: 11 }, () => offerFactory())
       // @ts-ignore FIX ME
-      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offersRecap)
+      jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       const { history } = renderOffers(store)
       const nextPageIcon = await screen.findByAltText('page suivante')
       // When
@@ -584,7 +576,7 @@ describe('route Offers', () => {
       fireEvent.change(searchInput, { target: { value: 'search string' } })
       await userEvent.click(screen.getByText('Lancer la recherche'))
       // Then
-      expect(api.getOffersListOffers).toHaveBeenCalledWith(
+      expect(api.listOffers).toHaveBeenCalledWith(
         'search string',
         undefined,
         undefined,
@@ -633,8 +625,7 @@ describe('route Offers', () => {
 
     it('should have venue value be removed when user asks for all venues', async () => {
       // Given
-      // @ts-ignore FIX ME
-      jest.spyOn(api, 'getOffersGetCategories').mockResolvedValue({
+      jest.spyOn(api, 'getCategories').mockResolvedValue({
         categories: [
           { id: 'test_id_1', proLabel: 'My test value', isSelectable: true },
           {
@@ -643,6 +634,7 @@ describe('route Offers', () => {
             isSelectable: true,
           },
         ],
+        subcategories: [],
       })
       const { history } = renderOffers(store)
       const firstTypeOption = await screen.findByRole('option', {
@@ -664,7 +656,7 @@ describe('route Offers', () => {
     it('should have status value when user filters by status', async () => {
       // Given
 
-      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce([
+      jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
         // @ts-ignore FIX ME
         offerFactory(
           {
@@ -692,7 +684,7 @@ describe('route Offers', () => {
 
     it('should have status value be removed when user ask for all status', async () => {
       // Given
-      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce([
+      jest.spyOn(api, 'listOffers').mockResolvedValueOnce([
         // @ts-ignore FIX ME
         offerFactory(
           {
@@ -720,7 +712,7 @@ describe('route Offers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-ignore FIX ME
-      jest.spyOn(apiClient, 'getOfferer').mockResolvedValueOnce({
+      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       // When
@@ -734,7 +726,7 @@ describe('route Offers', () => {
       // Given
       const filters = { offererId: 'A4' }
       // @ts-ignore FIX ME
-      jest.spyOn(apiClient, 'getOfferer').mockResolvedValueOnce({
+      jest.spyOn(api, 'getOfferer').mockResolvedValueOnce({
         name: 'La structure',
       })
       renderOffers(store, filters)
@@ -784,7 +776,7 @@ describe('route Offers', () => {
     it('should redirect to collective offers when user click on collective offer link', async () => {
       // Given
       // @ts-ignore FIX ME
-      jest.spyOn(apiClient, 'listOffers').mockResolvedValue(offersRecap)
+      jest.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
       const { history } = renderOffers(store)
       await screen.findByText('Lancer la recherche')
       const collectiveAudienceLink = screen.getByText('Offres collectives', {
@@ -804,13 +796,13 @@ describe('route Offers', () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
       // @ts-ignore FIX ME
-      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offers)
+      jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       // When
       await userEvent.click(nextIcon)
       // Then
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
       await expect(
         screen.findByText(offers[10].name)
       ).resolves.toBeInTheDocument()
@@ -821,7 +813,7 @@ describe('route Offers', () => {
       // Given
       const offers = Array.from({ length: 11 }, () => offerFactory())
       // @ts-ignore FIX ME
-      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offers)
+      jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offers)
       renderOffers(store)
       const nextIcon = await screen.findByAltText('page suivante')
       const previousIcon = await screen.findByAltText('page précédente')
@@ -829,7 +821,7 @@ describe('route Offers', () => {
       // When
       await userEvent.click(previousIcon)
       // Then
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
       await expect(
         screen.findByText(offers[0].name)
       ).resolves.toBeInTheDocument()
@@ -849,7 +841,7 @@ describe('route Offers', () => {
     it('should not be able to click on next arrow when being on the last page', async () => {
       // Given
       // @ts-ignore FIX ME
-      jest.spyOn(apiClient, 'listOffers').mockResolvedValueOnce(offersRecap)
+      jest.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
       // When
       renderOffers(store)
       // Then
@@ -865,7 +857,7 @@ describe('route Offers', () => {
       it('should have max number page of 50', async () => {
         // Given
         jest
-          .spyOn(api, 'getOffersListOffers')
+          .spyOn(api, 'listOffers')
           // @ts-ignore FIX ME
           .mockResolvedValueOnce(offersRecap)
         // When
@@ -879,7 +871,7 @@ describe('route Offers', () => {
       it('should not display the 501st offer', async () => {
         // Given
         jest
-          .spyOn(api, 'getOffersListOffers')
+          .spyOn(api, 'listOffers')
           // @ts-ignore FIX ME
           .mockResolvedValueOnce(offersRecap)
         renderOffers(store)
@@ -900,7 +892,7 @@ describe('route Offers', () => {
   describe('should reset filters', () => {
     it('when clicking on "afficher toutes les offres" when no offers are displayed', async () => {
       jest
-        .spyOn(api, 'getOffersListOffers')
+        .spyOn(api, 'listOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
@@ -916,8 +908,8 @@ describe('route Offers', () => {
 
       await userEvent.selectOptions(venueSelect, firstVenueOption)
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(api.listOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         undefined,
@@ -931,8 +923,8 @@ describe('route Offers', () => {
 
       await userEvent.click(screen.getByText('Lancer la recherche'))
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(2)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.listOffers).toHaveBeenCalledTimes(2)
+      expect(api.listOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
         undefined,
@@ -948,8 +940,8 @@ describe('route Offers', () => {
 
       await userEvent.click(screen.getByText('afficher toutes les offres'))
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(3)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.listOffers).toHaveBeenCalledTimes(3)
+      expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
         undefined,
@@ -964,7 +956,7 @@ describe('route Offers', () => {
 
     it('when clicking on "Réinitialiser les filtres"', async () => {
       jest
-        .spyOn(api, 'getOffersListOffers')
+        .spyOn(api, 'listOffers')
         // @ts-ignore FIX ME
         .mockResolvedValueOnce(offersRecap)
         .mockResolvedValueOnce([])
@@ -981,8 +973,8 @@ describe('route Offers', () => {
 
       await userEvent.selectOptions(venueSelect, venueOptionToSelect)
 
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(1)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+      expect(api.listOffers).toHaveBeenNthCalledWith(
         1,
         undefined,
         undefined,
@@ -995,8 +987,8 @@ describe('route Offers', () => {
       )
 
       await userEvent.click(screen.getByText('Lancer la recherche'))
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(2)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.listOffers).toHaveBeenCalledTimes(2)
+      expect(api.listOffers).toHaveBeenNthCalledWith(
         2,
         undefined,
         undefined,
@@ -1009,8 +1001,8 @@ describe('route Offers', () => {
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
-      expect(api.getOffersListOffers).toHaveBeenCalledTimes(3)
-      expect(api.getOffersListOffers).toHaveBeenNthCalledWith(
+      expect(api.listOffers).toHaveBeenCalledTimes(3)
+      expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
         undefined,
         undefined,

@@ -10,7 +10,7 @@ import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { Audience } from 'core/shared'
 import OffersScreen from 'screens/Offers'
 import Spinner from 'components/layout/Spinner'
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { getFilteredOffersAdapter } from './adapters'
 import { getOffererAdapter } from 'core/Offers/adapters'
@@ -80,7 +80,7 @@ const Offers = (): JSX.Element => {
 
   useEffect(() => {
     const loadCategories = () =>
-      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+      api.getCategories().then(categoriesAndSubcategories => {
         const categoriesOptions = categoriesAndSubcategories.categories
           .filter(category => category.isSelectable)
           .map(category => ({

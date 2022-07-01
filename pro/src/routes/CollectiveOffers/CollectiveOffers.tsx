@@ -10,7 +10,7 @@ import { Audience } from 'core/shared/types'
 import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import OffersScreen from 'screens/Offers'
 import Spinner from 'components/layout/Spinner'
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 import { computeCollectiveOffersUrl } from 'core/Offers/utils'
 import { filterEducationalCategories } from 'core/OfferEducational'
 import { getFilteredCollectiveOffersAdapter } from './adapters'
@@ -61,7 +61,7 @@ const CollectiveOffers = (): JSX.Element => {
 
   useEffect(() => {
     const loadCategories = () => {
-      api.getOffersGetCategories().then(categoriesAndSubcategories => {
+      api.getCategories().then(categoriesAndSubcategories => {
         const categoriesOptions = filterEducationalCategories(
           categoriesAndSubcategories
         ).educationalCategories.map(category => ({
