@@ -26,6 +26,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     name: str
     postalCode: Optional[str]
     publicName: Optional[str]
+    siret: Optional[str]
     venueLabelId: Optional[str]
     withdrawalDetails: Optional[str]
     _humanize_id = humanize_field("id")
@@ -51,6 +52,7 @@ class GetOffererResponseModel(BaseModel):
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
     fieldsUpdated: list[str]
+    hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
     hasMissingBankInformation: bool
     iban: Optional[str]
@@ -84,6 +86,8 @@ class GetOffererResponseModel(BaseModel):
             offerers_repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer.id)
             or offerer.hasDigitalVenueAtLeastOneOffer
         )
+        offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)
+
         return super().from_orm(offerer)
 
     class Config:
