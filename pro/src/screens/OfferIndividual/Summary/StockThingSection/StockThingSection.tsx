@@ -5,7 +5,7 @@ import { SummaryLayout } from 'new_components/SummaryLayout'
 import { format } from 'date-fns-tz'
 
 export interface IStockThingSectionProps {
-  quantity: number
+  quantity?: number | null
   price: number
   bookingLimitDatetime: Date | null
 }

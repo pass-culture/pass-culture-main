@@ -1,7 +1,7 @@
-import { IApiOfferIndividual, IOfferIndividual } from 'core/Offers/types'
 import { TUseAdapterFailure, useAdapter } from 'hooks'
 
-import { apiV1 } from 'api/api'
+import { IOfferIndividual } from 'core/Offers/types'
+import { api } from 'apiClient/api'
 import { serializeOfferApi } from './serializers'
 
 type GetOfferAdapter = Adapter<string, IOfferIndividual, null>
@@ -14,9 +14,7 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
 
 const getOfferAdapter: GetOfferAdapter = async offerId => {
   try {
-    const offerApi = (await apiV1.getOffersGetOffer(
-      offerId
-    )) as IApiOfferIndividual
+    const offerApi = await api.getOffer(offerId)
 
     return {
       isOk: true,

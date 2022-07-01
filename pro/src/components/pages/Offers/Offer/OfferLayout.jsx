@@ -17,7 +17,7 @@ import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGua
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
 import { Title } from 'ui-kit'
 import Titles from 'components/layout/Titles/Titles'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { serializeOfferApi } from 'core/Offers/adapters/serializers'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useGetCategories } from 'core/Offers/adapters'
@@ -54,7 +54,7 @@ const OfferLayout = () => {
     useGetCategories()
   const loadOffer = async offerId => {
     try {
-      const existingOffer = await apiV1.getOffersGetOffer(offerId)
+      const existingOffer = await api.getOffer(offerId)
       setOffer(existingOffer)
     } catch {
       history.push('/404')

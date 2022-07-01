@@ -13,7 +13,7 @@ export interface IStockEventItemProps {
   className?: string
   beginningDateTime: Date | null
   price: number
-  quantity: number
+  quantity?: number | null
   bookingLimitDatetime: Date | null
 }
 

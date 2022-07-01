@@ -6,7 +6,7 @@ import {
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 
-import { GetOfferVenueResponseModel } from 'api/v1/gen'
+import { GetOfferVenueResponseModel } from 'apiClient/v1'
 
 export type IUserVenue = {
   id: string
