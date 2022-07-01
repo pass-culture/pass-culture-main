@@ -1265,6 +1265,11 @@ class DeletePastDraftOfferTest:
         today_offer = educational_factories.CollectiveOfferFactory(
             dateCreated=datetime.utcnow(), validation=OfferValidationStatus.DRAFT
         )
+        # past offer with collective stock but user did not finalize offer creation
+        # with institution association
+        educational_factories.CollectiveStockFactory(
+            collectiveOffer__dateCreated=two_days_ago, collectiveOffer__validation=OfferValidationStatus.DRAFT
+        )
 
         delete_past_draft_collective_offers()
 
