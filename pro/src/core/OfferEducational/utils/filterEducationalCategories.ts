@@ -4,7 +4,7 @@ import {
   IEducationalSubCategory,
 } from 'core/OfferEducational'
 
-import { CategoriesResponseModel } from 'api/v1/gen'
+import { CategoriesResponseModel } from 'apiClient/v1'
 
 interface IFilterEducationalCategoriesResult {
   educationalCategories: IEducationalCategory[]
