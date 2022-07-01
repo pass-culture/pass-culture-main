@@ -1,6 +1,8 @@
 import {
-  IApiOfferIndividual,
-  IApiOfferIndividualStock,
+  GetIndividualOfferResponseModel,
+  GetOfferStockResponseModel,
+} from 'apiClient/v1'
+import {
   IOfferIndividual,
   IOfferIndividualOfferer,
   IOfferIndividualStock,
@@ -8,7 +10,7 @@ import {
 } from 'core/Offers/types'
 
 export const serializeOffererApi = (
-  apiOffer: IApiOfferIndividual
+  apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualOfferer => {
   return {
     id: apiOffer.venue.managingOfferer.id,
@@ -17,7 +19,7 @@ export const serializeOffererApi = (
 }
 
 export const serializeVenueApi = (
-  apiOffer: IApiOfferIndividual
+  apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualVenue => {
   return {
     id: apiOffer.venue.id,
@@ -32,13 +34,17 @@ export const serializeVenueApi = (
 }
 
 export const serializeStockApi = (
-  apiStock: IApiOfferIndividualStock
+  apiStock: GetOfferStockResponseModel
 ): IOfferIndividualStock => {
   return {
-    beginningDatetime: apiStock.beginningDatetime,
-    bookingLimitDatetime: apiStock.bookingLimitDatetime,
+    beginningDatetime: apiStock.beginningDatetime
+      ? new Date(apiStock.beginningDatetime)
+      : null,
+    bookingLimitDatetime: apiStock.bookingLimitDatetime
+      ? new Date(apiStock.bookingLimitDatetime)
+      : null,
     bookingsQuantity: apiStock.bookingsQuantity,
-    dateCreated: apiStock.dateCreated,
+    dateCreated: new Date(apiStock.dateCreated),
     hasActivationCode: apiStock.hasActivationCode,
     id: apiStock.id,
     isEventDeletable: apiStock.isEventDeletable,
@@ -47,12 +53,12 @@ export const serializeStockApi = (
     offerId: apiStock.offerId,
     price: apiStock.price,
     quantity: apiStock.quantity,
-    remainingQuantity: apiStock.remainingQuantity,
+    remainingQuantity: apiStock.remainingQuantity ?? 0,
   }
 }
 
 export const serializeOfferApi = (
-  apiOffer: IApiOfferIndividual
+  apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividual => {
   const offer: IOfferIndividual = {
     id: apiOffer.id,

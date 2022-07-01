@@ -1,26 +1,26 @@
 import '@testing-library/jest-dom'
 
-import { OfferStatus, SubcategoryIdEnum } from 'api/v1/gen/api'
+import {
+  GetIndividualOfferResponseModel,
+  OfferStatus,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 
-import { IApiOfferIndividual } from 'core/Offers/types'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react-hooks'
 import { useGetOffer } from '..'
 
 describe('useOffererNames', () => {
   it('should return loading payload then success payload', async () => {
-    const apiOffer: IApiOfferIndividual = {
+    const apiOffer: GetIndividualOfferResponseModel = {
       activeMediation: null,
       ageMax: null,
       ageMin: null,
       bookingEmail: null,
       conditions: null,
-      dateCreated: new Date('2022-05-18T08:25:30.991476Z'),
-      dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.991481Z'),
-      dateRange: [
-        new Date('2022-05-23T08:25:31.009799Z'),
-        new Date('2022-05-23T08:25:31.009799Z'),
-      ],
+      dateCreated: '2022-05-18T08:25:30.991476Z',
+      dateModifiedAtLastProvider: '2022-05-18T08:25:30.991481Z',
+      dateRange: ['2022-05-23T08:25:31.009799Z', '2022-05-23T08:25:31.009799Z'],
       description: 'A passionate description of product 80',
       durationMinutes: null,
       extraData: null,
@@ -50,7 +50,7 @@ describe('useOffererNames', () => {
         ageMax: null,
         ageMin: null,
         conditions: null,
-        dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.980975Z'),
+        dateModifiedAtLastProvider: '2022-05-18T08:25:30.980975Z',
         description: 'A passionate description of product 80',
         durationMinutes: null,
         extraData: null,
@@ -69,13 +69,13 @@ describe('useOffererNames', () => {
       productId: 'AJFA',
       stocks: [
         {
-          beginningDatetime: new Date('2022-05-23T08:25:31.009799Z'),
-          bookingLimitDatetime: new Date('2022-05-23T07:25:31.009799Z'),
+          beginningDatetime: '2022-05-23T08:25:31.009799Z',
+          bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
           bookingsQuantity: 2,
-          cancellationLimitDate: new Date('2022-06-01T12:15:12.343431Z'),
-          dateCreated: new Date('2022-05-18T08:25:31.015652Z'),
-          dateModified: new Date('2022-05-18T08:25:31.015655Z'),
-          dateModifiedAtLastProvider: new Date('2022-05-18T08:25:31.015643Z'),
+          cancellationLimitDate: '2022-06-01T12:15:12.343431Z',
+          dateCreated: '2022-05-18T08:25:31.015652Z',
+          dateModified: '2022-05-18T08:25:31.015655Z',
+          dateModifiedAtLastProvider: '2022-05-18T08:25:31.015643Z',
           fieldsUpdated: [],
           hasActivationCode: false,
           id: 'YE',
@@ -91,7 +91,7 @@ describe('useOffererNames', () => {
           remainingQuantity: 998,
         },
       ],
-      subcategoryId: SubcategoryIdEnum.SEANCECINE,
+      subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       thumbUrl: null,
       externalTicketOfficeUrl: null,
       url: null,
@@ -100,8 +100,8 @@ describe('useOffererNames', () => {
         bookingEmail: 'venue29@example.net',
         city: 'Paris',
         comment: null,
-        dateCreated: new Date('2022-05-18T08:25:30.929961Z'),
-        dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.929955Z'),
+        dateCreated: '2022-05-18T08:25:30.929961Z',
+        dateModifiedAtLastProvider: '2022-05-18T08:25:30.929955Z',
         departementCode: '75',
         fieldsUpdated: [],
         id: 'DY',
@@ -114,8 +114,8 @@ describe('useOffererNames', () => {
         managingOfferer: {
           address: '1 boulevard Poissonnière',
           city: 'Paris',
-          dateCreated: new Date('2022-05-18T08:25:30.891369Z'),
-          dateModifiedAtLastProvider: new Date('2022-05-18T08:25:30.891364Z'),
+          dateCreated: '2022-05-18T08:25:30.891369Z',
+          dateModifiedAtLastProvider: '2022-05-18T08:25:30.891364Z',
           fieldsUpdated: [],
           id: 'CU',
           idAtProviders: null,
@@ -146,7 +146,7 @@ describe('useOffererNames', () => {
       withdrawalDelay: null,
     }
 
-    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(apiOffer)
+    jest.spyOn(api, 'getOffer').mockResolvedValue(apiOffer)
 
     const { result, waitForNextUpdate } = renderHook(() => useGetOffer('YA'))
     const loadingState = result.current
@@ -183,7 +183,7 @@ describe('useOffererNames', () => {
       showType: '',
       stageDirector: '',
       speaker: '',
-      subcategoryId: SubcategoryIdEnum.SEANCECINE,
+      subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       url: '',
       externalTicketOfficeUrl: '',
       venueId: 'DY',
@@ -223,7 +223,7 @@ describe('useOffererNames', () => {
     }
 
     await waitForNextUpdate()
-    expect(apiV1.getOffersGetOffer).toHaveBeenCalled()
+    expect(api.getOffer).toHaveBeenCalled()
     const updatedState = result.current
     expect(updatedState.isLoading).toBe(false)
     expect(updatedState.data).toEqual(offerIndividual)
