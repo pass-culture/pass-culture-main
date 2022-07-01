@@ -12,12 +12,6 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import EducationalBooking
-from pcapi.core.educational.models import EducationalRedactor
-import pcapi.core.educational.testing as adage_api_testing
-import pcapi.core.mails.testing as mails_testing
-from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
-from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 import pcapi.core.search.testing as search_testing
 from pcapi.core.testing import override_settings
@@ -465,43 +459,6 @@ class CreateCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
-==== BASE ====
-    def test_create_stock_triggers_draft_offer_validation(self):
-        # Given
-        offers_api.import_offer_validation_config(SIMPLE_OFFER_VALIDATION_CONFIG)
-        user_pro = users_factories.ProFactory()
-        draft_approvable_offer = educational_factories.CollectiveOfferFactory(
-            name="a great offer", validation=OfferValidationStatus.DRAFT
-        )
-        draft_suspicious_offer = educational_factories.CollectiveOfferFactory(
-            name="a suspicious offer", validation=OfferValidationStatus.DRAFT
-        )
-        common_created_stock_data = {
-            "beginningDatetime": dateutil.parser.parse("2022-01-17T22:00:00Z"),
-            "bookingLimitDatetime": dateutil.parser.parse("2021-12-31T20:00:00Z"),
-            "totalPrice": 1500,
-            "numberOfTickets": 38,
-        }
-        created_stock_data_approvable = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=draft_approvable_offer.id, **common_created_stock_data
-        )
-        created_stock_data_suspicious = stock_serialize.EducationalStockCreationBodyModel(
-            offerId=draft_suspicious_offer.id, **common_created_stock_data
-        )
-
-        # When
-        educational_api.create_collective_stock(stock_data=created_stock_data_approvable, user=user_pro)
-        educational_api.create_collective_stock(stock_data=created_stock_data_suspicious, user=user_pro)
-
-        # Then
-        assert draft_approvable_offer.validation == OfferValidationStatus.APPROVED
-        assert draft_approvable_offer.isActive
-        assert draft_approvable_offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15, 0)
-        assert draft_suspicious_offer.validation == OfferValidationStatus.PENDING
-        assert not draft_suspicious_offer.isActive
-        assert draft_suspicious_offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15, 0)
-
-==== BASE ====
     def test_create_stock_for_non_approved_offer_fails(self):
         # Given
         user = users_factories.ProFactory()
