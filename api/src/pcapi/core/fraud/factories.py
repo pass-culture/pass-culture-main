@@ -64,7 +64,7 @@ class DMSContentFactory(factory.Factory):
     civility = users_models.GenderEnum.F
     email = factory.Faker("ascii_safe_email")
     application_number = factory.Faker("pyint")
-    procedure_id = factory.Faker("pyint")
+    procedure_number = factory.Faker("pyint")
     departement = factory.Sequence("{}".format)
     birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())
     phone = factory.Sequence("+3361212121{}".format)

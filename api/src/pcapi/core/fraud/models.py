@@ -190,7 +190,7 @@ class DMSContent(common_models.IdentityCheckContent):
     last_name: str
     phone: typing.Optional[str]
     postal_code: typing.Optional[str]
-    procedure_id: int
+    procedure_number: int = pydantic.Field(..., alias="procedure_id")  # keep alias for old data
     processed_datetime: typing.Optional[datetime.datetime]
     registration_datetime: typing.Optional[datetime.datetime]
     state: typing.Optional[str]

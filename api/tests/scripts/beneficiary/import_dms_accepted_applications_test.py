@@ -39,7 +39,7 @@ AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=ELIGIBILITY_
 @pytest.mark.usefixtures("db_session")
 class RunTest:
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
-    def test_should_retrieve_applications_from_new_procedure_id(
+    def test_should_retrieve_applications_from_new_procedure_number(
         self,
         get_applications_with_details,
     ):
@@ -55,7 +55,7 @@ class RunTest:
             ),
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
         assert get_applications_with_details.call_count == 1
         get_applications_with_details.assert_called_with(6712558, dms_models.GraphQLApplicationStates.accepted)
 
@@ -93,7 +93,7 @@ class RunTest:
             ),
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
         assert on_successful_application.call_count == 3
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
@@ -107,7 +107,7 @@ class RunTest:
             fixture.make_parsed_graphql_application(123, "accepte", email="john.doe@example.com")
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS
@@ -126,7 +126,9 @@ class RunTest:
     @override_features(FORCE_PHONE_VALIDATION=False)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
-    def test_beneficiary_is_created_with_procedure_id(self, on_successful_application, get_applications_with_details):
+    def test_beneficiary_is_created_with_procedure_number(
+        self, on_successful_application, get_applications_with_details
+    ):
         # given
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
         get_applications_with_details.return_value = [
@@ -136,11 +138,11 @@ class RunTest:
                 id_piece_number="123123121",
                 email=applicant.email,
                 birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
-                procedure_id=6712558,
+                procedure_number=6712558,
             )
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         on_successful_application.assert_called_with(
             user=applicant,
@@ -150,7 +152,7 @@ class RunTest:
                 civility=users_models.GenderEnum.F,
                 email="john.doe@test.com",
                 application_number=123,
-                procedure_id=6712558,
+                procedure_number=6712558,
                 department=None,
                 phone="0123456789",
                 birth_date=AGE18_ELIGIBLE_BIRTH_DATE.date(),
@@ -203,7 +205,7 @@ class RunIntegrationTest:
                 application_number=123, state="accepte", email=user.email, city="Strasbourg"
             )
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -252,7 +254,7 @@ class RunIntegrationTest:
         details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         details.draft_date = datetime.utcnow().isoformat()
         get_applications_with_details.return_value = [details]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -274,11 +276,11 @@ class RunIntegrationTest:
         # when
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(
-                application_number=123, state="accepte", email="nonexistant@example.com", procedure_id=6712558
+                application_number=123, state="accepte", email="nonexistant@example.com", procedure_number=6712558
             )
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
         dms_application = fraud_models.OrphanDmsApplication.query.filter(
             fraud_models.OrphanDmsApplication.application_id == 123
         ).one()
@@ -308,7 +310,7 @@ class RunIntegrationTest:
             fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
         # when
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -348,7 +350,7 @@ class RunIntegrationTest:
             fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
         # when
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -402,7 +404,7 @@ class RunIntegrationTest:
             fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert users_models.User.query.count() == 1
         user = users_models.User.query.first()
@@ -460,7 +462,7 @@ class RunIntegrationTest:
         get_applications_with_details.return_value = [
             fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         user = users_models.User.query.one()
 
@@ -494,7 +496,7 @@ class RunIntegrationTest:
                 application_number=123, state="accepte", email=user.email, birth_date=self.BENEFICIARY_BIRTH_DATE
             )
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert users_models.User.query.count() == 2
 
@@ -537,7 +539,7 @@ class RunIntegrationTest:
         ]
 
         process_mock = mocker.patch("pcapi.core.subscription.api.on_successful_application")
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert process_mock.call_count == 0
         assert users_models.User.query.count() == 2
@@ -580,7 +582,7 @@ class RunIntegrationTest:
                 email=user.email,
             )
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         # then
         assert users_models.User.query.count() == 1
@@ -609,7 +611,7 @@ class RunIntegrationTest:
                 id_piece_number="121314",
             )
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
@@ -628,7 +630,7 @@ class RunIntegrationTest:
 
         # A second import should ignore the already processed application
         user_fraud_check_number = len(user.beneficiaryFraudChecks)
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
         assert len(user.beneficiaryFraudChecks) == user_fraud_check_number
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
@@ -643,7 +645,7 @@ class RunIntegrationTest:
                 email=user.email,
             )
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         fraud_check = user.beneficiaryFraudChecks[0]
         assert fraud_check.status == fraud_models.FraudCheckStatus.ERROR
@@ -685,7 +687,7 @@ class RunIntegrationTest:
                 state="accepte",
             )
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert (
             subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.PROFILE_COMPLETION
@@ -717,7 +719,7 @@ class RunIntegrationTest:
                 city="Strasbourg",
             )
         ]
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         client.with_token(user.email)
         response = client.get("/native/v1/subscription/next_step")
@@ -737,7 +739,7 @@ class GraphQLSourceProcessApplicationTest:
             fixture.make_parsed_graphql_application(123, "accepte", email=user.email),
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert len(user.beneficiaryFraudChecks) == 2
         dms_fraud_check = next(
@@ -770,7 +772,7 @@ class GraphQLSourceProcessApplicationTest:
             fixture.make_parsed_graphql_application(123, "accepte", email=user.email),
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
@@ -800,7 +802,7 @@ class GraphQLSourceProcessApplicationTest:
             ),
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert len(user.beneficiaryFraudChecks) == 4  # profile, user profiling, DMS, honor statement
         assert user.roles == [users_models.UserRole.BENEFICIARY]
@@ -822,7 +824,7 @@ class GraphQLSourceProcessApplicationTest:
             ),
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         assert len(user.beneficiaryFraudChecks) == 1
         dms_fraud_check = user.beneficiaryFraudChecks[0]
@@ -843,7 +845,7 @@ class GraphQLSourceProcessApplicationTest:
             )
         ]
 
-        import_dms_accepted_applications(procedure_id=6712558)
+        import_dms_accepted_applications(6712558)
 
         dms_fraud_check = fraud_models.BeneficiaryFraudCheck.query.first()
         assert dms_fraud_check.userId == user.id
@@ -870,7 +872,7 @@ class GraphQLSourceProcessApplicationTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_avoid_reimporting_already_imported_user(self, get_applications_with_details):
-        procedure_id = 42
+        procedure_number = 42
         already_imported_user = users_factories.BeneficiaryGrant18Factory()
 
         get_applications_with_details.return_value = [
@@ -881,7 +883,7 @@ class GraphQLSourceProcessApplicationTest:
             ),
         ]
 
-        import_dms_accepted_applications(procedure_id=procedure_id)
+        import_dms_accepted_applications(procedure_number)
 
         fraud_check = fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.userId == already_imported_user.id,

@@ -56,7 +56,7 @@ class ParseBeneficiaryInformationTest:
         assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
         assert content.application_number == 5718303
-        assert content.procedure_id == 32
+        assert content.procedure_number == 32
         assert content.department == None
         assert content.birth_date == date(2004, 12, 19)
         assert content.phone == "0601010101"
@@ -73,7 +73,7 @@ class ParseBeneficiaryInformationTest:
         assert content.civility == users_models.GenderEnum.M
         assert content.email == "jean.valgean@example.com"
         assert content.application_number == 5742994
-        assert content.procedure_id == 32
+        assert content.procedure_number == 32
         assert content.department == None
         assert content.birth_date == date(2006, 5, 12)
         assert content.phone == "0601010101"

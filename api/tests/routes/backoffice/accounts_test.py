@@ -713,7 +713,7 @@ class GetUserHistoryTest:
             type=fraud_models.FraudCheckType.DMS,
             status=fraud_models.FraudCheckStatus.OK,
             thirdPartyId="24680",
-            resultContent=fraud_factories.DMSContentFactory(procedure_id=13579, application_number=24680),
+            resultContent=fraud_factories.DMSContentFactory(procedure_number=13579, application_number=24680),
         )
 
         fraud_factories.BeneficiaryFraudCheckFactory(

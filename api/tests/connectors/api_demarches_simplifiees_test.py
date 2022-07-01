@@ -19,12 +19,12 @@ class GetApplicationDetailsTest:
         response_return_value = MagicMock(status_code=200, text="")
         response_return_value.json = MagicMock(return_value={"test": "value"})
         requests_get.return_value = response_return_value
-        procedure_id = 1
+        procedure_number = 1
         application_id = 2
         token = "12345"
 
         # When
-        application_details = api_dms.get_application_details(application_id, procedure_id, token)
+        application_details = api_dms.get_application_details(application_id, procedure_number, token)
 
         # Then
         call_args = requests_get.call_args
@@ -91,13 +91,13 @@ class GraphqlResponseTest:
     @freezegun.freeze_time("2020-01-01")
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
     def test_get_deleted_applications(self, execute_query):
-        procedure_id = 1
-        execute_query.return_value = make_graphql_deleted_applications(procedure_id, application_numbers=[1, 2, 3])
+        procedure_number = 1
+        execute_query.return_value = make_graphql_deleted_applications(procedure_number, application_numbers=[1, 2, 3])
 
         client = api_dms.DMSGraphQLClient()
 
         deleted_application_count = 0
-        for result in client.get_deleted_applications(procedure_id):
+        for result in client.get_deleted_applications(procedure_number):
             assert result.deletion_datetime == datetime.datetime(2021, 10, 1, 22, 0, 0)
             assert result.reason == "user_request"
             deleted_application_count += 1

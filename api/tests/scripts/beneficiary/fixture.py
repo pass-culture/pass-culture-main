@@ -36,7 +36,7 @@ def make_graphql_application(
     processed_datetime: Optional[str] = "2020-05-13T10:41:21+02:00",
     messages: Optional[list] = None,
     application_techid: Optional[str] = None,
-    procedure_id: Optional[int] = 8888,
+    procedure_number: Optional[int] = 8888,
 ) -> dict:
     if messages is None:
         messages = DEFAULT_MESSAGES
@@ -53,7 +53,7 @@ def make_graphql_application(
         "dateTraitement": processed_datetime,
         "demarche": {
             "id": "PROCEDURE_ID_AT_DMS",
-            "number": procedure_id,
+            "number": procedure_number,
         },
         "messages": messages,
         "motivation": "",
@@ -531,11 +531,11 @@ def make_new_stranger_application():
     return data
 
 
-def make_graphql_deleted_applications(procedure_id: int, application_numbers: Iterable[int]):
+def make_graphql_deleted_applications(procedure_number: int, application_numbers: Iterable[int]):
     return {
         "demarche": {
             "id": "PROCEDURE_ID_AT_DMS",
-            "number": procedure_id,
+            "number": procedure_number,
             "deletedDossiers": {
                 "pageInfo": {"endCursor": "MTAw", "hasNextPage": False},
                 "nodes": [

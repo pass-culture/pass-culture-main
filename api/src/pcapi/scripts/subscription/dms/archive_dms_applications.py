@@ -9,15 +9,15 @@ from pcapi.core.subscription.dms import repository as dms_repository
 logger = logging.getLogger()
 
 
-def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
+def archive_applications(procedure_number: int, dry_run: bool = True) -> None:
     total_applications = 0
     archived_applications = 0
 
-    already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_id)
+    already_processed_applications_ids = dms_repository.get_already_processed_applications_ids(procedure_number)
     client = api_dms.DMSGraphQLClient()
 
     for application_details in client.get_applications_with_details(
-        procedure_id, dms_models.GraphQLApplicationStates.accepted
+        procedure_number, dms_models.GraphQLApplicationStates.accepted
     ):
         total_applications += 1
 
@@ -32,7 +32,7 @@ def archive_applications(procedure_id: int, dry_run: bool = True) -> None:
                 client.archive_application(application_techid, settings.DMS_ENROLLMENT_INSTRUCTOR)
             except Exception:  # pylint: disable=broad-except
                 logger.exception("error while archiving application %d", application_number)
-        logger.info("Archiving application %d on procedure %d", application_number, procedure_id)
+        logger.info("Archiving application %d on procedure %d", application_number, procedure_number)
         archived_applications += 1
 
     logger.info(
