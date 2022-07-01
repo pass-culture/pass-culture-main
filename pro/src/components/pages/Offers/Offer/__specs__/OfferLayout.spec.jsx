@@ -9,7 +9,7 @@ import NotificationContainer from 'components/layout/Notification/NotificationCo
 import OfferLayout from '../OfferLayout'
 import { Provider } from 'react-redux'
 import React from 'react'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
 
@@ -84,7 +84,7 @@ describe('offerLayout', () => {
         },
       ],
     }
-    jest.spyOn(apiV1, 'getOffersGetOffer')
+    jest.spyOn(api, 'getOffer')
     pcapi.loadCategories.mockResolvedValue(categories)
   })
 
@@ -114,7 +114,7 @@ describe('offerLayout', () => {
         },
         subcategoryId: 'ID',
       }
-      apiV1.getOffersGetOffer.mockResolvedValue(editedOffer)
+      api.getOffer.mockResolvedValue(editedOffer)
     })
 
     it('should have title "Éditer une offre"', async () => {
@@ -131,7 +131,7 @@ describe('offerLayout', () => {
     it('should allow to activate inactive offer', async () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
-      apiV1.getOffersGetOffer
+      api.getOffer
         .mockResolvedValueOnce({
           ...editedOffer,
           isActive: false,
@@ -178,7 +178,7 @@ describe('offerLayout', () => {
     it('should allow to deactivate active offer', async () => {
       // Given
       pcapi.updateOffersActiveStatus.mockResolvedValue()
-      apiV1.getOffersGetOffer
+      api.getOffer
         .mockResolvedValueOnce({
           ...editedOffer,
           isActive: true,
@@ -219,7 +219,7 @@ describe('offerLayout', () => {
 
     it('should not allow to deactivate pending offer', async () => {
       // Given
-      apiV1.getOffersGetOffer.mockResolvedValue({
+      api.getOffer.mockResolvedValue({
         ...editedOffer,
         status: 'PENDING',
         isActive: true,
@@ -236,7 +236,7 @@ describe('offerLayout', () => {
 
     it('should not allow to deactivate rejected offer', async () => {
       // Given
-      apiV1.getOffersGetOffer.mockResolvedValue({
+      api.getOffer.mockResolvedValue({
         ...editedOffer,
         status: 'REJECTED',
         isActive: false,
@@ -253,7 +253,7 @@ describe('offerLayout', () => {
 
     it('should inform user something went wrong when impossible to toggle offer status', async () => {
       // Given
-      apiV1.getOffersGetOffer.mockResolvedValue({
+      api.getOffer.mockResolvedValue({
         ...editedOffer,
         isActive: true,
       })

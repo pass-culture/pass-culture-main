@@ -14,7 +14,7 @@ import {
   venueFactory,
 } from 'utils/apiFactories'
 
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
 import { screen } from '@testing-library/react'
@@ -50,7 +50,7 @@ describe('offer step', () => {
     it('should display breadcrumb whithout "Confirmation" tab', async () => {
       // Given
       const offer = offerFactory({ subcategoryId: 'LIVRE_PAPIER' })
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+      jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
       const venue = venueFactory()
       loadFakeApiVenue(venue)
       loadFakeApiCategories()
@@ -80,7 +80,7 @@ describe('stocks step', () => {
         status: 'DRAFT',
         subcategoryId: 'LIVRE_PAPIER',
       })
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+      jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
       loadFakeApiStocks([])
 
       // When
@@ -113,7 +113,7 @@ describe('stocks step', () => {
         status: 'ACTIVE',
         subcategoryId: 'LIVRE_PAPIER',
       })
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+      jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
       loadFakeApiStocks([stock])
 
       // When
@@ -141,7 +141,7 @@ describe('confirmation step', () => {
         status: 'DRAFT',
         subcategoryId: 'LIVRE_PAPIER',
       })
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+      jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
 
       // When
       await renderOffer({

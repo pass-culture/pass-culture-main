@@ -17,7 +17,7 @@ import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
 import OfferLayout from '../../OfferLayout'
 import { Provider } from 'react-redux'
 import React from 'react'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiCategories } from 'utils/fakeApi'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
@@ -1791,7 +1791,7 @@ describe('offerDetails - Creation - pro user', () => {
 
   describe('when submitting form', () => {
     beforeEach(() => {
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue({
+      jest.spyOn(api, 'getOffer').mockResolvedValue({
         status: 'DRAFT',
         venue: {
           departementCode: 93,
@@ -1951,7 +1951,7 @@ describe('offerDetails - Creation - pro user', () => {
       }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(createdOffer)
+      jest.spyOn(api, 'getOffer').mockResolvedValue(createdOffer)
 
       await setOfferValues({ categoryId: 'MUSIQUE_LIVE' })
       await setOfferValues({ subcategoryId: offerValues.subcategoryId })
@@ -2269,7 +2269,7 @@ describe('offerDetails - Creation - pro user', () => {
       }
       pcapi.createOffer.mockResolvedValue(createdOffer)
       await renderOffers(props, store)
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(createdOffer)
+      jest.spyOn(api, 'getOffer').mockResolvedValue(createdOffer)
 
       await setOfferValues({ categoryId: 'CINEMA' })
       await setOfferValues({ subcategoryId: 'CARTE_CINE_MULTISEANCES' })

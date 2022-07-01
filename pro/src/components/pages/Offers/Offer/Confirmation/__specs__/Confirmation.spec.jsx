@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom'
 
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { offerFactory } from 'utils/apiFactories'
 import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
 import { screen } from '@testing-library/react'
@@ -19,7 +19,7 @@ describe('confirmation page', () => {
       status: 'DRAFT',
       venueId: 'VENUEID',
     })
-    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
 
     // When
     await renderOffer({
@@ -55,7 +55,7 @@ describe('confirmation page', () => {
       status: 'PENDING',
       venueId: 'VENUEID',
     })
-    jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
+    jest.spyOn(api, 'getOffer').mockResolvedValue(offer)
 
     // When
     await renderOffer({
