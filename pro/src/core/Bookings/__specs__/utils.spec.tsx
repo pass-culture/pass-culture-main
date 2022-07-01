@@ -3,7 +3,7 @@ import {
   formatBrowserTimezonedDateAsUTC,
 } from 'utils/date'
 
-import { BookingStatusFilter } from 'api/v1/gen'
+import { BookingStatusFilter } from 'apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '../constants'
 import { buildBookingsRecapQuery } from '../utils'
 
@@ -29,7 +29,7 @@ describe('buildBookingsRecapQuery', () => {
       offerEventDate: new Date('2022-01-01T10:00:00.000Z'),
       bookingBeginningDate: new Date('2022-01-01T00:00:00.000Z'),
       bookingEndingDate: new Date('2022-01-02T00:00:00.000Z'),
-      bookingStatusFilter: BookingStatusFilter.Reimbursed,
+      bookingStatusFilter: BookingStatusFilter.REIMBURSED,
       offerType: 'individual',
       page: 2,
     }
@@ -49,7 +49,7 @@ describe('buildBookingsRecapQuery', () => {
         new Date('2022-01-02T00:00:00.000Z'),
         FORMAT_ISO_DATE_ONLY
       ),
-      bookingStatusFilter: BookingStatusFilter.Reimbursed,
+      bookingStatusFilter: BookingStatusFilter.REIMBURSED,
       page: 2,
     })
   })

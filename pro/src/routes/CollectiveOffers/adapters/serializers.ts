@@ -1,7 +1,8 @@
+import {
+  CollectiveOfferResponseModel,
+  ListOffersOfferResponseModel,
+} from 'apiClient/v1'
 import { Offer, Stock, Venue } from 'core/Offers/types'
-
-import { CollectiveOfferResponseModel } from 'apiClient/v1'
-import { ListOffersOfferResponseModel } from 'api/v1/gen'
 
 const serializeVenue = (
   venue: ListOffersOfferResponseModel['venue']

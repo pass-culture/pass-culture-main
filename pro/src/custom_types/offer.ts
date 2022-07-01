@@ -1,4 +1,4 @@
-import { OfferAddressType, OfferStatus } from 'api/v1/gen'
+import { OfferAddressType, OfferStatus } from 'apiClient/v1'
 
 type Venue = {
   departementCode: string

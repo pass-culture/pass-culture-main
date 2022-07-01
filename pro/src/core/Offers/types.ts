@@ -1,5 +1,5 @@
 import { CATEGORY_STATUS } from '.'
-import { EducationalInstitutionResponseModel } from 'api/v1/gen/'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 
 export type TSearchFilters = {
