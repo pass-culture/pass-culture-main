@@ -16,7 +16,10 @@ export const getEducationalInstitutionsAdapter: GetEducationalInstitutionsAdapte
 
       do {
         currentPage += 1
-        const institutions = await api.getEducationalInstitutions(currentPage)
+        const institutions = await api.getEducationalInstitutions(
+          undefined,
+          currentPage
+        )
         currentPage = institutions.page
         totalPages = institutions.pages
         allInstitutions = [
