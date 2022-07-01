@@ -858,15 +858,32 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     """Generate a new CashflowBatch and a new cashflow for each business
     unit for which there is money to transfer.
     """
-    logger.info("Started to generate cashflows")
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
-    db.session.flush()
-    batch_id = batch.id  # access _before_ COMMIT to avoid extra SELECT
     db.session.commit()
+    # Store now otherwise SQLAlchemy will make a SELECT to fetch the
+    # id again after COMMITs in `_generate_cashflows()`.
+    batch_id = batch.id
+    _generate_cashflows(batch)
+    return batch_id
+
+
+def _generate_cashflows(batch: models.CashflowBatch) -> None:
+    """Given an existing CashflowBatch and corresponding cutoff, generate
+    a new cashflow for each business unit for which there is money to
+    transfer.
+
+    This is a private function that should only be called directly if
+    the cashflow generation stopped before its end and you want to
+    proceed with an **existing** CashflowBatch.
+    """
+    # Store now otherwise SQLAlchemy will make a SELECT to fetch the
+    # id again after each COMMIT.
+    batch_id = batch.id
+    logger.info("Started to generate cashflows for batch %d", batch)
     filters: typing.Tuple = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
-        models.Pricing.valueDate < cutoff,
+        models.Pricing.valueDate < batch.cutoff,
         # We should not have any validated pricing with a cashflow,
         # this is a safety belt.
         models.CashflowPricing.pricingId.is_(None),
@@ -879,19 +896,17 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
         *filters,
         # Even if a booking is marked as used prematurely, we should
         # wait for the event to happen.
-        # Either the Pricing has a bookingId and we want the filter to be
-        # applied on the Stock model or the Pricing has a collectiveBookingId
-        # and we want the filter to be applied on the CollectiveStock model
         sqla.or_(
             sqla.and_(
                 models.Pricing.bookingId.isnot(None),
                 sqla.or_(
-                    offers_models.Stock.beginningDatetime.is_(None), offers_models.Stock.beginningDatetime < cutoff
+                    offers_models.Stock.beginningDatetime.is_(None),
+                    offers_models.Stock.beginningDatetime < batch.cutoff,
                 ),
             ),
             sqla.and_(
                 models.Pricing.collectiveBookingId.isnot(None),
-                educational_models.CollectiveStock.beginningDatetime < cutoff,
+                educational_models.CollectiveStock.beginningDatetime < batch.cutoff,
             ),
         ),
     )
@@ -971,8 +986,6 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
                 "Could not generate cashflows for a business unit",
                 extra={"business_unit": business_unit_id, "batch": batch_id},
             )
-
-    return batch_id
 
 
 def generate_payment_files(batch_id: int) -> None:
