@@ -1,10 +1,6 @@
-import {
-  EducationalInstitutionResponseModel,
-  GetOfferResponseModel,
-} from 'api/v1/gen/'
-
 import { CATEGORY_STATUS } from '.'
-import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from '.'
+import { EducationalInstitutionResponseModel } from 'api/v1/gen/'
+import { WithdrawalTypeEnum } from 'apiClient/v1'
 
 export type TSearchFilters = {
   nameOrIsbn: string
@@ -85,29 +81,6 @@ export interface IOfferSubCategory {
   isSelectable: boolean
 }
 
-export interface IApiOfferIndividualStock {
-  beginningDatetime: Date | null
-  bookingLimitDatetime: Date | null
-  bookingsQuantity: number
-  cancellationLimitDate: Date | null
-  dateCreated: Date
-  dateModified: Date
-  dateModifiedAtLastProvider: Date
-  fieldsUpdated: string[]
-  hasActivationCode: boolean
-  id: string
-  idAtProviders: string | null
-  isBookable: boolean
-  isEventDeletable: boolean
-  isEventExpired: boolean
-  isSoftDeleted: boolean
-  lastProviderId: null
-  offerId: string
-  price: number
-  quantity: number
-  remainingQuantity: number
-}
-
 export interface IOfferIndividualStock {
   beginningDatetime: Date | null
   bookingLimitDatetime: Date | null
@@ -120,26 +93,8 @@ export interface IOfferIndividualStock {
   isSoftDeleted: boolean
   offerId: string
   price: number
-  quantity: number
-  remainingQuantity: number
-}
-
-export interface IApiOfferIndividual extends GetOfferResponseModel {
-  stocks: IApiOfferIndividualStock[]
-  withdrawalDelay: number | null
-  withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS | null
-  extraData?: {
-    author?: string
-    isbn?: string
-    musicType?: string
-    musicSubType?: string
-    performer?: string
-    showType?: string
-    showSubType?: string
-    speaker?: string
-    stageDirector?: string
-    visa?: string
-  } | null
+  quantity?: number | null
+  remainingQuantity: number | string
 }
 
 export interface IOfferIndividualOfferer {
@@ -193,6 +148,6 @@ export interface IOfferIndividual {
   visa: string
   withdrawalDetails: string | null
   withdrawalDelay?: number | null
-  withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS | null
+  withdrawalType: WithdrawalTypeEnum | null
   stocks: IOfferIndividualStock[]
 }

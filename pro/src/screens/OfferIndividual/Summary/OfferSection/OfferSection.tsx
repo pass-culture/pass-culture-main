@@ -1,11 +1,9 @@
 import { AccessibilityLabel, AccessiblityLabelEnum } from 'ui-kit'
-import {
-  OFFER_WITHDRAWAL_TYPE_LABELS,
-  OFFER_WITHDRAWAL_TYPE_OPTIONS,
-} from 'core/Offers'
 
+import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
 import React from 'react'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { WithdrawalTypeEnum } from 'apiClient/v1'
 import humanizeDelay from './utils'
 import styles from './OfferSummary.module.scss'
 
@@ -43,7 +41,7 @@ export interface IOfferSectionProps {
   offererName: string
   bookingEmail: string
   withdrawalDetails: string
-  withdrawalType: OFFER_WITHDRAWAL_TYPE_OPTIONS | null
+  withdrawalType: WithdrawalTypeEnum | null
   withdrawalDelay: number | null
 }
 
