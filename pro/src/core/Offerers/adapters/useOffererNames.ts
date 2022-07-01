@@ -1,6 +1,6 @@
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOffererName } from 'core/Offerers/types'
-import { apiV1 } from 'api/api'
+import { api } from 'apiClient/api'
 import { useAdapter } from 'hooks'
 
 type TGetOffererNamesAdapter = Adapter<void, TOffererName[], TOffererName[]>
@@ -13,7 +13,7 @@ const FAILING_RESPONSE = {
 
 const getOffererNamesAdapter: TGetOffererNamesAdapter = async () => {
   try {
-    const response = await apiV1.getOfferersListOfferersNames()
+    const response = await api.listOfferersNames()
     return {
       isOk: true,
       message: null,
