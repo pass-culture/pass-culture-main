@@ -8,6 +8,7 @@ import typing
 
 from dateutil.relativedelta import relativedelta
 from flask_jwt_extended import create_access_token
+from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sa
 
 from pcapi import settings
@@ -37,6 +38,7 @@ from pcapi.models.user_session import UserSession
 from pcapi.repository import repository
 from pcapi.routes.serialization.users import ProUserCreationBodyModel
 from pcapi.tasks import batch_tasks
+from pcapi.utils import db as db_utils
 
 from . import constants
 from . import exceptions
@@ -796,7 +798,8 @@ def is_user_age_compatible_with_eligibility(
     return False
 
 
-def search_public_account(terms: typing.Iterable[str]) -> list[models.User]:
+def search_public_account(terms: typing.Iterable[str], order_by: typing.Optional[list[str]] = None) -> BaseQuery:
+    order_by = order_by or []
     filters = []
 
     for term in terms:
@@ -809,7 +812,13 @@ def search_public_account(terms: typing.Iterable[str]) -> list[models.User]:
         filters.append(sa.cast(models.User.id, sa.Unicode) == term)
         filters.append(sa.cast(models.User.email, sa.Unicode).ilike(f"%{term}%"))
 
-    accounts = models.User.query.filter(sa.or_(*filters)).all()
+    accounts = models.User.query.filter(sa.or_(*filters))
+
+    if order_by:
+        try:
+            accounts = accounts.order_by(*db_utils.get_ordering_clauses(models.User, order_by))
+        except db_utils.BadSortError as err:
+            raise ApiErrors({"sorting": str(err)})
 
     return accounts
 
