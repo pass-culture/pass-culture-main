@@ -21,7 +21,7 @@ import { Offer } from 'core/Offers/types'
 import { Provider } from 'react-redux'
 import React from 'react'
 import type { Store } from 'redux'
-import { api } from 'api/v1/api'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { createMemoryHistory } from 'history'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
@@ -75,12 +75,10 @@ const proVenuesOptions = [
   },
 ]
 
-jest.mock('api/v1/api', () => ({
+jest.mock('apiClient/api', () => ({
   api: {
-    getOffersListOffers: jest.fn(),
-    getOffersGetCategories: jest
-      .fn()
-      .mockResolvedValue(categoriesAndSubcategories),
+    listOffers: jest.fn(),
+    getCategories: jest.fn().mockResolvedValue(categoriesAndSubcategories),
   },
 }))
 
@@ -123,7 +121,7 @@ describe('screen Offers', () => {
       },
     })
     offersRecap = [offerFactory({ venue: proVenues[0] })]
-    ;(api.getOffersListOffers as jest.Mock).mockResolvedValue(offersRecap)
+    ;(api.listOffers as jest.Mock).mockResolvedValue(offersRecap)
 
     props = {
       currentPageNumber: 1,
