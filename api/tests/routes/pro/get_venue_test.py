@@ -15,7 +15,9 @@ class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offerers_factories.VenueFactory(name="L'encre et la plume", managingOfferer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, pricing_point="self"
+        )
         bank_information = offers_factories.BankInformationFactory(venue=venue)
 
         expected_serialized_venue = {
@@ -39,7 +41,11 @@ class Returns200Test:
                 "socialMedias": venue.contact.social_medias,
             },
             "comment": venue.comment,
-            "pricingPointId": None,
+            "pricingPoint": {
+                "id": venue.id,
+                "venueName": venue.publicName or venue.name,
+                "siret": venue.siret,
+            },
             "reimbursementPointId": None,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
