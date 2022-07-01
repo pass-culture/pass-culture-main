@@ -1,9 +1,8 @@
+import { GetOffererNameResponseModel } from 'apiClient/v1'
 import { IAPIVenue } from '../Venue/types'
 
-export type TOffererName = {
-  id: string
-  name: string
-}
+export type TOffererName = GetOffererNameResponseModel
+
 export interface IAPIOfferer {
   address: string | null
   apiKey: {
