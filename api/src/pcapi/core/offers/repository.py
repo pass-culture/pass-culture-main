@@ -584,10 +584,17 @@ def delete_past_draft_offers() -> None:
 
 def delete_past_draft_collective_offers() -> None:
     yesterday = datetime.utcnow() - timedelta(days=1)
-    CollectiveOffer.query.filter(
+    collective_offer_ids_tuple = CollectiveOffer.query.filter(
         CollectiveOffer.dateCreated < yesterday,
         CollectiveOffer.validation == OfferValidationStatus.DRAFT,
-    ).delete()
+    ).with_entities(CollectiveOffer.id)
+    collective_offer_ids = [collective_offer_id for (collective_offer_id,) in collective_offer_ids_tuple]
+
+    # Handle collective offers having a stock but user did not save institution association
+    # Thus the collective offer is not fully created
+    CollectiveStock.query.filter(CollectiveStock.collectiveOfferId.in_(collective_offer_ids)).delete()
+    CollectiveOffer.query.filter(CollectiveOffer.id.in_(collective_offer_ids)).delete()
+
     db.session.commit()
 
 
