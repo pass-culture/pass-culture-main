@@ -86,6 +86,7 @@ class IdentifierFields extends PureComponent {
               readOnly={readOnly || initialSiret !== null}
               siren={siren}
               isToggleDisabled={isToggleDisabled}
+              isCreatedEntity={isCreatedEntity}
               initialSiret={initialSiret}
               updateIsSiretValued={updateIsSiretValued}
             />
