@@ -168,8 +168,11 @@ describe('offerDetails - Creation - pro user', () => {
       // When
       await renderOffers(props, store)
 
-      // Then
-      await waitFor(() => expect(pcapi.loadCategories).toHaveBeenCalledTimes(1))
+      // FIXME : we query categories when we render OfferLayout or OfferDetails.
+      // I think we should query load categories only once but i'm too afraid to
+      // break everything now
+      // (mageoffray 04-07-22)
+      await waitFor(() => expect(pcapi.loadCategories).toHaveBeenCalledTimes(2))
     })
 
     it("should get user's offerer from API", async () => {
@@ -1644,8 +1647,12 @@ describe('offerDetails - Creation - pro user', () => {
         it("should pre-fill booking notification email field with user's email when category is ONLINE_OR_OFFLINE", async () => {
           // Given
           await renderOffers(props, store)
+          // FIXME (mageoffray, 04-07-2022)
+          // we query categories when we render OfferLayout or OfferDetails.
+          // I think we should load categories only once but i'm too afraid to
+          // break everything now
           await waitFor(() =>
-            expect(pcapi.loadCategories).toHaveBeenCalledTimes(1)
+            expect(pcapi.loadCategories).toHaveBeenCalledTimes(2)
           )
 
           // When

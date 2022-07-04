@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import type { IStockEventItemProps } from './StockEventItem'
-import { Icon } from '@mui/material'
 import { ROOT_PATH } from 'utils/config'
 import { StockEventItem } from './StockEventItem'
 import { SummaryLayout } from 'new_components/SummaryLayout'
@@ -30,7 +29,6 @@ const StockEventSection = ({
   }, [showAllStocks])
 
   const iconName = showAllStocks ? 'ico-arrow-up-r' : 'ico-arrow-down-r'
-  const showButtonIcon = <img src={`${ROOT_PATH}/icons/${iconName}.svg`} />
 
   return (
     <SummaryLayout.Section title="Stocks et prix">
