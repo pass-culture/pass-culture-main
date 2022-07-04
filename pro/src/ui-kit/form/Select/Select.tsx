@@ -2,17 +2,13 @@ import React, { useEffect } from 'react'
 
 import { FieldLayout } from '../shared'
 import SelectInput from './SelectInput'
+import { SelectOption } from 'custom_types/form'
 import { useField } from 'formik'
-
-type Option = {
-  value: string
-  label: string
-}
 
 interface ISelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string
-  defaultOption?: Option | null
-  options: Option[]
+  defaultOption?: SelectOption | null
+  options: SelectOption[]
   className?: string
   disabled?: boolean
   label: string
