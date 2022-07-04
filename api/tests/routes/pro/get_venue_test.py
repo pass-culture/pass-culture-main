@@ -1,8 +1,10 @@
 import pytest
 
+from pcapi.core import testing
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.image_conversion import DO_NOT_CROP
@@ -15,9 +17,13 @@ class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client):
         # given
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        venue = offerers_factories.VenueFactory(
-            name="L'encre et la plume", managingOfferer=user_offerer.offerer, pricing_point="self"
+        main_venue = offerers_factories.VenueFactory(
+            name="Le lieu du calcul", managingOfferer=user_offerer.offerer, pricing_point="self"
         )
+        venue = offerers_factories.VenueFactory(
+            name="L'encre et la plume", managingOfferer=user_offerer.offerer, pricing_point=main_venue
+        )
+        venue_id = venue.id
         bank_information = offers_factories.BankInformationFactory(venue=venue)
 
         expected_serialized_venue = {
@@ -42,9 +48,9 @@ class Returns200Test:
             },
             "comment": venue.comment,
             "pricingPoint": {
-                "id": venue.id,
-                "venueName": venue.publicName or venue.name,
-                "siret": venue.siret,
+                "id": main_venue.id,
+                "venueName": main_venue.publicName,
+                "siret": main_venue.siret,
             },
             "reimbursementPointId": None,
             "dateCreated": format_into_utc_date(venue.dateCreated),
@@ -98,7 +104,25 @@ class Returns200Test:
 
         # when
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("/venues/%s" % humanize(venue.id))
+        db.session.commit()  # clear SQLA cached objects
+        n_queries = (
+            testing.AUTHENTICATION_QUERIES
+            + 1  # Venue
+            + 1  # check_user_has_access_to_offerer()
+            + 1  # update Venue.venueTypeCode (why?)
+            + 1  # Venue.currentPricingPointId
+            + 1  # Venue.currentPricingPointId (a second time !)
+            + 1  # the Venue used as pricingPoint
+            + 1  # Venue.currentReimbursementPointId
+            + 1  # venue contact
+            + 1  # Venue bank info
+            + 1  # Venue business unit
+            + 1  # BusinessUnit bank info
+            + 1  # managingOfferer
+            + 1  # Offerer bank info
+        )
+        with testing.assert_num_queries(n_queries):
+            response = auth_request.get("/venues/%s" % humanize(venue_id))
 
         # then
         assert response.status_code == 200
