@@ -20,10 +20,18 @@
 
   &-inline {
     display: flex;
-    align-items: baseline;
 
     .field-layout-content {
       width: 100%
+    }
+
+    /*
+    * When label and input are inline, we need to add margin
+    * bottom to the label in order to align label and input,
+    * since there is a placeholder for the footer under the input
+    */
+    .field-layout-label {
+      margin-bottom: rem.torem(forms.$input-space-before-error + forms.$input-error-reserved-space)
     }
   }
 
