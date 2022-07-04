@@ -119,6 +119,15 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
     pricing_point = models.Venue.query.filter_by(id=pricing_point_id).one_or_none()
     if not pricing_point:
         raise ApiErrors(errors={"pricingPointId": ["Ce lieu n'existe pas."]})
+    if not pricing_point.siret:
+        raise ApiErrors(
+            errors={
+                "pricingPointId": [
+                    "Ce lieu ne peut pas être utilisé comme base de calcul du barème de "
+                    "remboursement, car il n'a pas de SIRET."
+                ]
+            }
+        )
     if pricing_point.managingOffererId != venue.managingOffererId:
         raise ApiErrors(
             errors={
