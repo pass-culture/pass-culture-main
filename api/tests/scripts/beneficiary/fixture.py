@@ -17,7 +17,7 @@ DEFAULT_MESSAGES = [
 ]
 
 
-def make_graphql_application(
+def make_graphql_application(  # pylint: disable=dangerous-default-value
     application_number: int,
     state: str,
     activity: str = "Étudiant",
@@ -37,6 +37,7 @@ def make_graphql_application(
     messages: Optional[list] = None,
     application_techid: Optional[str] = None,
     procedure_number: Optional[int] = 8888,
+    labels: Optional[dict] = {},
 ) -> dict:
     if messages is None:
         messages = DEFAULT_MESSAGES
@@ -69,7 +70,7 @@ def make_graphql_application(
             },
             {
                 "id": "Q2hhbXAtNTgyMjIw",
-                "label": "Quelle est votre date de naissance",
+                "label": labels.get("birth_date") or "Quelle est votre date de naissance",
                 "stringValue": babel.dates.format_date(birth_date, format="long", locale="fr"),
             },
             {"id": "Q2hhbXAtNzE4MjIy", "label": "Pièces justificatives acceptées", "stringValue": ""},
@@ -84,21 +85,30 @@ def make_graphql_application(
             },
             {
                 "id": "Q2hhbXAtMTg3Mzc0Mw==",
-                "label": "Quel est le numéro de la pièce que tu viens de saisir ?",
+                "label": labels.get("id_piece_number") or "Quel est le numéro de la pièce que tu viens de saisir ?",
                 "stringValue": id_piece_number,
             },
-            {"id": "Q2hhbXAtNTgyMjE5", "label": "Quel est ton numéro de téléphone ?", "stringValue": "01 23 45 67 89"},
+            {
+                "id": "Q2hhbXAtNTgyMjE5",
+                "label": labels.get("phone_number") or "Quel est ton numéro de téléphone ?",
+                "stringValue": "01 23 45 67 89",
+            },
             {
                 "id": "Q2hhbXAtNTgyMjIx",
-                "label": "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
+                "label": labels.get("postal_code")
+                or "Quel est le code postal de ta commune de résidence ? (ex : 25370)",
                 "stringValue": postal_code,
             },
             {
                 "id": "Q2hhbXAtNTgyMjIz",
-                "label": "Quelle est ton adresse de résidence",
+                "label": labels.get("address") or "Quelle est ton adresse de résidence",
                 "stringValue": "3 La Bigotais 22800 Saint-Donan",
             },
-            {"id": "Q2hhbXAtNzE4MDk0", "label": "Merci d'indiquer ton statut", "stringValue": activity},
+            {
+                "id": "Q2hhbXAtNzE4MDk0",
+                "label": labels.get("status") or "Merci d'indiquer ton statut",
+                "stringValue": activity,
+            },
             {"id": "Q2hhbXAtNDUxMjg0", "label": "Déclaration de résidence", "stringValue": ""},
             {"id": "Q2hhbXAtNTgyMzI4", "label": "Certification sur l'honneur", "stringValue": ""},
             {
@@ -145,7 +155,11 @@ def make_graphql_application(
     }
     if city is not None:
         data["champs"].append(
-            {"id": "Q2hhbXAtNTgyMjIy", "label": "Quelle est ta ville de résidence ?", "stringValue": city}
+            {
+                "id": "Q2hhbXAtNTgyMjIy",
+                "label": labels.get("city") or "Quelle est ta ville de résidence ?",
+                "stringValue": city,
+            }
         )
     if full_graphql_response:
         enveloppe = {
