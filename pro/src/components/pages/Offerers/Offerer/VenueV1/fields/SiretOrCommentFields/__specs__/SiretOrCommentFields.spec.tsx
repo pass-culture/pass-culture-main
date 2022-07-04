@@ -21,6 +21,7 @@ describe('components | SiretOrCommentFields', () => {
     const updateIsSiretValued = jest.fn()
 
     props = {
+      isCreatedEntity: true,
       siren: siren,
       siretLabel: siretLabel,
       readOnly: false,
@@ -40,7 +41,7 @@ describe('components | SiretOrCommentFields', () => {
     const siretField = screen.getByLabelText('Siret field*')
     expect(siretField).toBeInTheDocument()
     expect(siretField).toBeRequired()
-    const commentField = screen.queryByText('Commentaire :')
+    const commentField = screen.queryByText('Commentaire du lieu sans SIRET : ')
     expect(commentField).not.toBeInTheDocument()
   })
 
@@ -60,9 +61,12 @@ describe('components | SiretOrCommentFields', () => {
     await userEvent.click(toggle)
     const siretField = screen.queryByText('Siret field')
     expect(siretField).not.toBeInTheDocument()
-    const commentField = screen.getByLabelText('Commentaire :', {
-      exact: false,
-    })
+    const commentField = screen.getByLabelText(
+      'Commentaire du lieu sans SIRET : ',
+      {
+        exact: false,
+      }
+    )
     expect(commentField).toBeInTheDocument()
     expect(commentField).toBeRequired()
   })

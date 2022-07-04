@@ -6,6 +6,7 @@ import Toggle from 'ui-kit/Toggle'
 import { useState } from 'react'
 
 export interface SiretOrCommentInterface {
+  isCreatedEntity: boolean
   isToggleDisabled?: boolean
   initialSiret?: string
   readOnly: boolean
@@ -16,6 +17,7 @@ export interface SiretOrCommentInterface {
 
 const SiretOrCommentFields = ({
   initialSiret,
+  isCreatedEntity,
   isToggleDisabled = false,
   readOnly,
   siretLabel,
@@ -39,12 +41,14 @@ const SiretOrCommentFields = ({
 
   return (
     <>
-      <Toggle
-        label="Je veux créer un lieu avec SIRET"
-        isActiveByDefault={isSiretSelected}
-        isDisabled={readOnly || isToggleDisabled}
-        handleClick={handleChange}
-      ></Toggle>
+      {isCreatedEntity && (
+        <Toggle
+          label="Je veux créer un lieu avec SIRET"
+          isActiveByDefault={isSiretSelected}
+          isDisabled={readOnly || isToggleDisabled}
+          handleClick={handleChange}
+        />
+      )}
       {isSiretSelected ? (
         <SiretField
           label={siretLabel}
@@ -54,7 +58,7 @@ const SiretOrCommentFields = ({
         />
       ) : (
         <TextareaField
-          label="Commentaire : "
+          label="Commentaire du lieu sans SIRET : "
           name="comment"
           placeholder="Je suis un équipement culturel (ou autre) donc je n’ai pas de SIRET ou je n’ai pas la gestion de ce lieu, il accueille simplement une proposition...
           "
