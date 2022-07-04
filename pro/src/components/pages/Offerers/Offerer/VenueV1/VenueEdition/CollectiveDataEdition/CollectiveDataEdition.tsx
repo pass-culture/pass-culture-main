@@ -14,6 +14,7 @@ import { SelectOption } from 'custom_types/form'
 import { StudentLevels } from 'api/v1/gen'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { getVenueEducationalStatusesAdapter } from './adapters'
+import { interventionOptions } from './interventionOptions'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import { validationSchema } from './validationSchema'
@@ -26,6 +27,7 @@ type CollectiveDataFormValues = {
   collectiveEmail: string
   collectiveDomains: string[]
   collectiveLegalStatus: string
+  collectiveInterventionArea: string[]
 }
 
 const initialValues: CollectiveDataFormValues = {
@@ -36,6 +38,7 @@ const initialValues: CollectiveDataFormValues = {
   collectiveEmail: '',
   collectiveDomains: [],
   collectiveLegalStatus: '',
+  collectiveInterventionArea: [],
 }
 
 const studentOptions = [
@@ -129,6 +132,17 @@ const CollectiveDataEdition = (): JSX.Element => {
               fieldName="collectiveDomains"
               label="Domaine artistique et culturel :"
               placeholder="Sélectionner un ou plusieurs domaine(s)"
+              className={styles.row}
+              inline
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <MultiSelectAutocomplete
+              hideTags
+              options={interventionOptions}
+              fieldName="collectiveInterventionArea"
+              label="Périmètre d’intervention :"
+              placeholder="Séléctionner un territoire cible"
               className={styles.row}
               inline
             />
