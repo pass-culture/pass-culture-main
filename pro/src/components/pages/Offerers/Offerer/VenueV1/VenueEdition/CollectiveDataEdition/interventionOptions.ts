@@ -108,9 +108,14 @@ export const domtomOptions: SelectOption[] = [
   { value: '976', label: '976 - Mayotte' },
 ]
 
+export const ALL_FRANCE_OPTION_VALUE = 'all'
+
 export const otherInterventionOptions: SelectOption[] = [
   { value: 'culturalPartner', label: 'Uniquement dans mon lieu' },
-  { value: 'all', label: 'France métropolitaine et d’outre-mer' },
+  {
+    value: ALL_FRANCE_OPTION_VALUE,
+    label: 'France métropolitaine et d’outre-mer',
+  },
   { value: 'mainland', label: 'France métropolitaine' },
 ]
 
@@ -119,3 +124,8 @@ export const interventionOptions: SelectOption[] = [
   ...mainlandOptions,
   ...domtomOptions,
 ]
+
+export const allDepartmentValues = [
+  ...mainlandOptions.map(({ value }) => value),
+  ...domtomOptions.map(({ value }) => value),
+] as string[]
