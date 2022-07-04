@@ -8,27 +8,18 @@ import {
 } from 'ui-kit'
 import React, { useEffect, useState } from 'react'
 
+import { CollectiveDataFormValues } from './type'
 import FormLayout from 'new_components/FormLayout'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import { StudentLevels } from 'api/v1/gen'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import { getVenueEducationalStatusesAdapter } from './adapters'
+import { handleAllFranceDepartmentOptions } from './utils/handleAllFranceDepartmentOptions'
 import { interventionOptions } from './interventionOptions'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import { validationSchema } from './validationSchema'
-
-type CollectiveDataFormValues = {
-  collectiveDescription: string
-  collectiveStudents: string[]
-  collectiveWebsite: string
-  collectivePhone: string
-  collectiveEmail: string
-  collectiveDomains: string[]
-  collectiveLegalStatus: string
-  collectiveInterventionArea: string[]
-}
 
 const initialValues: CollectiveDataFormValues = {
   collectiveDescription: '',
@@ -56,6 +47,9 @@ const CollectiveDataEdition = (): JSX.Element => {
 
   const [domains, setDomains] = useState<SelectOption[]>([])
   const [statuses, setStatuses] = useState<SelectOption[]>([])
+  const [previousInterventionValues, setPreviousInterventionValues] = useState<
+    string[] | null
+  >(null)
 
   const formik = useFormik<CollectiveDataFormValues>({
     initialValues,
@@ -78,6 +72,16 @@ const CollectiveDataEdition = (): JSX.Element => {
       setStatuses(statusesResponse.payload)
     })
   }, [])
+
+  useEffect(() => {
+    handleAllFranceDepartmentOptions(
+      formik.values.collectiveInterventionArea,
+      previousInterventionValues,
+      formik.setFieldValue
+    )
+
+    setPreviousInterventionValues(formik.values.collectiveInterventionArea)
+  }, [formik.values.collectiveInterventionArea])
 
   return (
     <>
