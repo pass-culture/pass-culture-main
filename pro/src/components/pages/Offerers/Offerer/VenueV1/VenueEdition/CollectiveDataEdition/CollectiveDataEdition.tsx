@@ -1,11 +1,19 @@
 import { FormikProvider, useFormik } from 'formik'
-import { MultiSelectAutocomplete, TextArea, TextInput, Title } from 'ui-kit'
+import {
+  MultiSelectAutocomplete,
+  Select,
+  TextArea,
+  TextInput,
+  Title,
+} from 'ui-kit'
 import React, { useEffect, useState } from 'react'
 
 import FormLayout from 'new_components/FormLayout'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import { StudentLevels } from 'api/v1/gen'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
+import { getVenueEducationalStatusesAdapter } from './adapters'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import { validationSchema } from './validationSchema'
@@ -17,6 +25,7 @@ type CollectiveDataFormValues = {
   collectivePhone: string
   collectiveEmail: string
   collectiveDomains: string[]
+  collectiveLegalStatus: string
 }
 
 const initialValues: CollectiveDataFormValues = {
@@ -26,6 +35,7 @@ const initialValues: CollectiveDataFormValues = {
   collectivePhone: '',
   collectiveEmail: '',
   collectiveDomains: [],
+  collectiveLegalStatus: '',
 }
 
 const studentOptions = [
@@ -42,6 +52,7 @@ const CollectiveDataEdition = (): JSX.Element => {
   const notify = useNotification()
 
   const [domains, setDomains] = useState<SelectOption[]>([])
+  const [statuses, setStatuses] = useState<SelectOption[]>([])
 
   const formik = useFormik<CollectiveDataFormValues>({
     initialValues,
@@ -50,12 +61,18 @@ const CollectiveDataEdition = (): JSX.Element => {
   })
 
   useEffect(() => {
-    getEducationalDomainsAdapter().then(response => {
-      if (response.isOk) {
-        setDomains(response.payload)
-      } else {
-        notify.error(response.message)
+    Promise.all([
+      getEducationalDomainsAdapter(),
+      getVenueEducationalStatusesAdapter(),
+    ]).then(([domainsResponse, statusesResponse]) => {
+      if (
+        [domainsResponse, statusesResponse].some(response => !response.isOk)
+      ) {
+        notify.error(GET_DATA_ERROR_MESSAGE)
       }
+
+      setDomains(domainsResponse.payload)
+      setStatuses(statusesResponse.payload)
     })
   }, [])
 
@@ -113,6 +130,19 @@ const CollectiveDataEdition = (): JSX.Element => {
               label="Domaine artistique et culturel :"
               placeholder="Sélectionner un ou plusieurs domaine(s)"
               className={styles.row}
+              inline
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <Select
+              options={[
+                { value: '', label: 'Sélectionner un statut' },
+                ...statuses,
+              ]}
+              name="collectiveLegalStatus"
+              label="Statut :"
+              className={styles.row}
+              placeholder="Association, établissement public..."
               inline
             />
           </FormLayout.Row>
