@@ -1,14 +1,52 @@
 import '@testing-library/jest-dom'
 
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import CollectiveDataEdition from '../CollectiveDataEdition'
+import { Provider } from 'react-redux'
 import React from 'react'
+import { api } from 'apiClient/api'
+import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
 
+jest.mock('repository/pcapi/pcapi', () => ({
+  getEducationalDomains: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getVenuesEducationalStatuses: jest.fn(),
+  },
+}))
+
 describe('CollectiveDataEdition', () => {
+  beforeAll(() => {
+    jest.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
+      statuses: [
+        {
+          id: 1,
+          name: 'statut 1',
+        },
+        {
+          id: 2,
+          name: 'statut 2',
+        },
+      ],
+    })
+    jest.spyOn(pcapi, 'getEducationalDomains').mockResolvedValue([
+      { id: 1, name: 'domain 1' },
+      { id: 2, name: 'domain 2' },
+    ])
+  })
+
   it('should render form', () => {
-    render(<CollectiveDataEdition />)
+    render(
+      <Provider store={configureTestStore({})}>
+        <CollectiveDataEdition />
+      </Provider>
+    )
 
     const descriptionField = screen.queryByLabelText(
       'Ajoutez des informations complémentaires concernant l’EAC.',
@@ -18,17 +56,31 @@ describe('CollectiveDataEdition', () => {
     const websiteField = screen.getByLabelText(/URL de votre site web/)
     const phoneField = screen.getByLabelText(/Téléphone/)
     const emailField = screen.getByLabelText(/E-mail/)
+    const domainsField = screen.getByLabelText(
+      /Domaine artistique et culturel :/
+    )
+    const interventionAreaField = screen.getByLabelText(
+      /Périmètre d’intervention :/
+    )
+    const statusField = screen.getByLabelText(/Statut :/)
 
     expect(descriptionField).toBeInTheDocument()
     expect(studentsField).toBeInTheDocument()
     expect(websiteField).toBeInTheDocument()
     expect(phoneField).toBeInTheDocument()
     expect(emailField).toBeInTheDocument()
+    expect(domainsField).toBeInTheDocument()
+    expect(interventionAreaField).toBeInTheDocument()
+    expect(statusField).toBeInTheDocument()
   })
 
   describe('error fields', () => {
     it('should display error fields', async () => {
-      render(<CollectiveDataEdition />)
+      render(
+        <Provider store={configureTestStore({})}>
+          <CollectiveDataEdition />
+        </Provider>
+      )
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Téléphone/)
