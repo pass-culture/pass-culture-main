@@ -52,7 +52,7 @@ export const OfferWithdrawalTypeOptions = ({
           disabled={false}
           error={error}
           label={
-            OFFER_WITHDRAWAL_TYPE_LABELS[OFFER_WITHDRAWAL_TYPE_OPTIONS.ON_SITE]
+            OFFER_WITHDRAWAL_TYPE_LABELS[OFFER_WITHDRAWAL_TYPE_OPTIONS.BY_EMAIL]
           }
           name="withdrawalType"
           onChange={handleRadioInputChange}
