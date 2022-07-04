@@ -1,17 +1,13 @@
 import { ReactComponent as Down } from './assets/down.svg'
 import React from 'react'
+import { SelectOption } from 'custom_types/form'
 import cn from 'classnames'
 import styles from './Select.module.scss'
 
-type Option = {
-  label: string
-  value: string
-}
-
 interface ISelectInputProps {
   name: string
-  defaultOption?: Option | null
-  options: Option[]
+  defaultOption?: SelectOption | null
+  options: SelectOption[]
   disabled?: boolean
   hasError?: boolean
   hasDescription?: boolean
