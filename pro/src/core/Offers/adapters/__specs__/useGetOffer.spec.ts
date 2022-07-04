@@ -171,6 +171,9 @@ describe('useOffererNames', () => {
       visualDisabilityCompliant: false,
       isNational: false,
       name: 'Séance ciné duo',
+      isEvent: true,
+      withdrawalType: null,
+      thumbUrl: '',
       musicSubType: '',
       musicType: '',
       offererId: 'CU',
@@ -203,6 +206,19 @@ describe('useOffererNames', () => {
           remainingQuantity: 998,
         },
       ],
+      venue: {
+        address: '1 boulevard Poissonnière',
+        city: 'Paris',
+        id: 'DY',
+        isVirtual: false,
+        name: 'Cinéma synchro avec booking provider',
+        offerer: {
+          id: 'CU',
+          name: 'Le Petit Rintintin Management 6',
+        },
+        postalCode: '75000',
+        publicName: 'Cinéma synchro avec booking provider',
+      },
     }
 
     await waitForNextUpdate()
