@@ -119,3 +119,28 @@ class ParseBeneficiaryInformationTest:
         content, _ = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.activity == None
         mocked_logger.assert_called_once_with("Unknown activity value for application %s: %s", 1, "invalid")
+
+    def test_serializer_is_resilient_to_minor_label_updates(self):
+        base_raw_data = fixture.make_graphql_application(1, "accepte")
+        labels_edited_raw_data = fixture.make_graphql_application(
+            1,
+            "accepte",
+            labels={
+                "status": "statut ?",
+                "address": "adresse de résidence ?",
+                "birth_date": "date de naissance ?",
+                "city": "commune de résidence ?",
+                "id_piece_number": "numéro de la pièce ?",
+                "postal_code": "code postal ?",
+                "phone_number": "numéro de téléphone ?",
+            },
+        )
+
+        base_content, _ = dms_serializer.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**base_raw_data)
+        )
+        labels_edited_content, _ = dms_serializer.parse_beneficiary_information_graphql(
+            dms_models.DmsApplicationResponse(**labels_edited_raw_data)
+        )
+
+        assert base_content == labels_edited_content

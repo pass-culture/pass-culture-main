@@ -63,10 +63,10 @@ def parse_beneficiary_information_graphql(
         )
 
     for field in application_detail.fields:
-        label = field.label
+        label = field.label.lower()
         value = field.value or ""
 
-        if label in (dms_models.FieldLabel.BIRTH_DATE_ET.value, dms_models.FieldLabel.BIRTH_DATE_FR.value):
+        if dms_models.FieldLabelKeyword.BIRTH_DATE.value in label:
             try:
                 birth_date = date_parser.parse(value, FrenchParserInfo())
             except date_parser.ParserError:
@@ -75,13 +75,28 @@ def parse_beneficiary_information_graphql(
                 )
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
-        elif label in (dms_models.FieldLabel.TELEPHONE_FR.value, dms_models.FieldLabel.TELEPHONE_ET.value):
+        elif dms_models.FieldLabelKeyword.TELEPHONE.value in label:
             phone = value.replace(" ", "")
-        elif label in (
-            dms_models.FieldLabel.POSTAL_CODE_ET.value,
-            dms_models.FieldLabel.POSTAL_CODE_FR.value,
-            dms_models.FieldLabel.POSTAL_CODE_OLD.value,
-        ):
+        elif dms_models.FieldLabelKeyword.ACTIVITY.value in label:
+            activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
+            if activity is None:
+                logger.error("Unknown activity value for application %s: %s", application_number, value)
+
+        elif dms_models.FieldLabelKeyword.ADDRESS.value in label:
+            address = value
+        elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
+            value = value.strip()
+            if not fraud_api.validate_id_piece_number_format_fraud_item(value):
+                field_errors.append(
+                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.id_piece_number, value=value)
+                )
+            else:
+                id_piece_number = value
+
+        # The order between POSTAL_CODE and CITY check is important. Postal code needs to happen first.
+        # If we check CITY first, we will get a false positive for the postal code,
+        # because both labels match the 'commune de résidence' keyword
+        elif dms_models.FieldLabelKeyword.POSTAL_CODE.value in label:
             space_free_value = str(value).strip().replace(" ", "")
             match = re.search("^[0-9]{5}", space_free_value)
             if match is None:
@@ -90,30 +105,7 @@ def parse_beneficiary_information_graphql(
                 )
                 continue
             postal_code = match.group(0)
-
-        elif label in (dms_models.FieldLabel.ACTIVITY_FR.value, dms_models.FieldLabel.ACTIVITY_ET.value):
-            activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
-            if activity is None:
-                logger.error("Unknown activity value for application %s: %s", application_number, value)
-
-        elif label in (
-            dms_models.FieldLabel.ADDRESS_ET.value,
-            dms_models.FieldLabel.ADDRESS_FR.value,
-        ):
-            address = value
-        elif label in (
-            dms_models.FieldLabel.ID_PIECE_NUMBER_FR.value,
-            dms_models.FieldLabel.ID_PIECE_NUMBER_ET.value,
-            dms_models.FieldLabel.ID_PIECE_NUMBER_PROCEDURE_4765.value,
-        ):
-            value = value.strip()
-            if not fraud_api.validate_id_piece_number_format_fraud_item(value):
-                field_errors.append(
-                    dms_types.DmsFieldErrorDetails(key=dms_types.DmsFieldErrorKeyEnum.id_piece_number, value=value)
-                )
-            else:
-                id_piece_number = value
-        elif label in (dms_models.FieldLabel.CITY_FR.value, dms_models.FieldLabel.CITY_ET.value):
+        elif dms_models.FieldLabelKeyword.CITY_1.value in label or dms_models.FieldLabelKeyword.CITY_2.value in label:
             city = value
 
     result_content = fraud_models.DMSContent(
