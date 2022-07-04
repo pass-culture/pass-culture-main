@@ -223,7 +223,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         for pricing_link in venue.pricing_point_links:
             if pricing_link.timespan.lower > now:
                 continue
-            if not pricing_link.timespan.upper or pricing_link.timespan.upper < now:
+            if not pricing_link.timespan.upper or pricing_link.timespan.upper > now:
                 venue.pricingPoint = pricing_link.pricingPoint
 
         venue.reimbursementPointId = None
