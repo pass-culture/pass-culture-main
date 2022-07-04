@@ -86,7 +86,7 @@ class Return200Test:
         # Given
         EducationalInstitutionFactory()
         EducationalInstitutionFactory()
-        institution3 = EducationalInstitutionFactory()
+        institution3 = EducationalInstitutionFactory(name="zzzzzzzzzzzzzzz_last_institution")
         pro_user = users_factories.ProFactory()
 
         client.with_session_auth(pro_user.email)
