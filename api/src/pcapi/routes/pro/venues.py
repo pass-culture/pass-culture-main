@@ -1,10 +1,14 @@
+import flask
 from flask import request
 from flask_login import current_user
 from flask_login import login_required
 import pydantic
+import sqlalchemy.orm as sqla_orm
 
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import exceptions
+from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
 from pcapi.models.api_errors import ApiErrors
@@ -26,9 +30,22 @@ from . import blueprint
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetVenueResponseModel, api=blueprint.pro_private_schema)
 def get_venue(venue_id: str) -> venues_serialize.GetVenueResponseModel:
-    venue = load_or_404(Venue, venue_id)
+    dehumanized_id = dehumanize(venue_id)
+    venue = (
+        models.Venue.query.filter(models.Venue.id == dehumanized_id)
+        .options(sqla_orm.joinedload(models.Venue.contact))
+        .options(sqla_orm.joinedload(models.Venue.bankInformation))
+        .options(sqla_orm.joinedload(models.Venue.businessUnit).joinedload(finance_models.BusinessUnit.bankAccount))
+        .options(sqla_orm.joinedload(models.Venue.managingOfferer).joinedload(models.Offerer.bankInformation))
+        .options(
+            sqla_orm.joinedload(models.Venue.pricing_point_links).joinedload(models.VenuePricingPointLink.pricingPoint)
+        )
+        .options(sqla_orm.joinedload(models.Venue.reimbursement_point_links))
+    ).one_or_none()
+    if not venue:
+        flask.abort(404)
 
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
     return venues_serialize.GetVenueResponseModel.from_orm(venue)
 
 

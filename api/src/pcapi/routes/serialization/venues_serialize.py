@@ -13,7 +13,6 @@ from pydantic import validator
 
 from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.validation import VENUE_BANNER_MAX_SIZE
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -219,12 +218,20 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         # does not work when passing directly an enum instance.
         venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None  # type: ignore [attr-defined]
         venue.nonHumanizedId = venue.id
-        venue.pricingPoint = (
-            offerers_repository.find_venue_by_id(venue.current_pricing_point_id)
-            if venue.current_pricing_point_id
-            else None
-        )
-        venue.reimbursementPointId = venue.current_reimbursement_point_id
+        now = datetime.utcnow()
+        venue.pricingPoint = None
+        for pricing_link in venue.pricing_point_links:
+            if pricing_link.timespan.lower > now:
+                continue
+            if not pricing_link.timespan.upper or pricing_link.timespan.upper < now:
+                venue.pricingPoint = pricing_link.pricingPoint
+
+        venue.reimbursementPointId = None
+        for reimbursement_link in venue.reimbursement_point_links:
+            if reimbursement_link.timespan.lower > now:
+                continue
+            if not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now:
+                venue.reimbursementPointId = reimbursement_link.reimbursementPoint.id
         return super().from_orm(venue)
 
 

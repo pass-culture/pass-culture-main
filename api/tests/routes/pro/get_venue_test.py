@@ -106,20 +106,9 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         db.session.commit()  # clear SQLA cached objects
         n_queries = (
-            testing.AUTHENTICATION_QUERIES
-            + 1  # Venue
+            testing.AUTHENTICATION_QUERIES  # 2
+            + 1  # Venue and eager loading of relations
             + 1  # check_user_has_access_to_offerer()
-            + 1  # update Venue.venueTypeCode (why?)
-            + 1  # Venue.currentPricingPointId
-            + 1  # Venue.currentPricingPointId (a second time !)
-            + 1  # the Venue used as pricingPoint
-            + 1  # Venue.currentReimbursementPointId
-            + 1  # venue contact
-            + 1  # Venue bank info
-            + 1  # Venue business unit
-            + 1  # BusinessUnit bank info
-            + 1  # managingOfferer
-            + 1  # Offerer bank info
         )
         with testing.assert_num_queries(n_queries):
             response = auth_request.get("/venues/%s" % humanize(venue_id))

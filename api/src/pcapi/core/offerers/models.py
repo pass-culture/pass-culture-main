@@ -471,7 +471,7 @@ class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId])
+    venue = relationship(Venue, foreign_keys=[venueId], backref="reimbursement_point_links")
     reimbursementPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
     reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])
     # The lower bound is inclusive and required. The upper bound is
