@@ -54,7 +54,6 @@
 
 @mixin input-icon-wrapper($icon-width: 16px) {
   position: absolute;
-  z-index: 1;
   right: 0;
   top: 0;
   width: rem.torem(48px);
