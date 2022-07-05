@@ -6,6 +6,7 @@ import {
 
 import React from 'react'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import humanizeDelay from './utils'
 import styles from './OfferSummary.module.scss'
 
 export interface IOfferSectionProps {
@@ -83,7 +84,7 @@ const OfferSummary = ({ ...offer }: IOfferSectionProps): JSX.Element => {
         <SummaryLayout.Row title="Titre de l'offre" description={offer.name} />
         <SummaryLayout.Row
           title="Description"
-          description={offer.description}
+          description={offer.description || ' - '}
         />
 
         {offer.speaker && (
@@ -110,12 +111,12 @@ const OfferSummary = ({ ...offer }: IOfferSectionProps): JSX.Element => {
         {offer.performer && (
           <SummaryLayout.Row title="Interprète" description={offer.performer} />
         )}
-        {offer.durationMinutes && (
-          <SummaryLayout.Row
-            title="Durée"
-            description={`${offer.durationMinutes} min`}
-          />
-        )}
+        <SummaryLayout.Row
+          title="Durée"
+          description={
+            offer.durationMinutes ? `${offer.durationMinutes} min` : '-'
+          }
+        />
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Informations pratiques">
@@ -131,7 +132,7 @@ const OfferSummary = ({ ...offer }: IOfferSectionProps): JSX.Element => {
         {offer.withdrawalDelay && (
           <SummaryLayout.Row
             title="Heure de retrait"
-            description={`${offer.withdrawalDelay} secondes`}
+            description={humanizeDelay(offer.withdrawalDelay)}
           />
         )}
 
