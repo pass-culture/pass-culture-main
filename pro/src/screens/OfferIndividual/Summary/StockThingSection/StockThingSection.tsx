@@ -10,13 +10,23 @@ export interface IStockThingSectionProps {
   bookingLimitDatetime: Date | null
 }
 
+interface IStockThingSummarySection extends IStockThingSectionProps {
+  isCreation: boolean
+  offerId: string
+}
+
 const StockThingSection = ({
   quantity,
   price,
   bookingLimitDatetime,
-}: IStockThingSectionProps): JSX.Element => {
+  isCreation,
+  offerId,
+}: IStockThingSummarySection): JSX.Element => {
+  const editLink = isCreation
+    ? `/offre/${offerId}/individuel/creation/stocks`
+    : `/offre/${offerId}/individuel/stocks`
   return (
-    <SummaryLayout.Section title="Stocks et prix">
+    <SummaryLayout.Section title="Stocks et prix" editLink={editLink}>
       <SummaryLayout.Row title="Prix" description={`${price} €`} />
       {bookingLimitDatetime !== null && (
         <SummaryLayout.Row

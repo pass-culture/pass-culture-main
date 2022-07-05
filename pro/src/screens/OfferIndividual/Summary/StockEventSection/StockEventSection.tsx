@@ -12,10 +12,14 @@ const NB_UNFOLDED_STOCK = 2
 
 export interface IStockEventSectionProps {
   stocks: IStockEventItemProps[]
+  isCreation: boolean
+  offerId: string
 }
 
 const StockEventSection = ({
   stocks,
+  isCreation,
+  offerId,
 }: IStockEventSectionProps): JSX.Element => {
   const [showAllStocks, setShowAllStocks] = useState(false)
   const [displayedStocks, setDisplayedStocks] = useState(
@@ -29,9 +33,11 @@ const StockEventSection = ({
   }, [showAllStocks])
 
   const iconName = showAllStocks ? 'ico-arrow-up-r' : 'ico-arrow-down-r'
-
+  const editLink = isCreation
+    ? `/offre/${offerId}/individuel/creation/stocks`
+    : `/offre/${offerId}/individuel/stocks`
   return (
-    <SummaryLayout.Section title="Stocks et prix">
+    <SummaryLayout.Section title="Stocks et prix" editLink={editLink}>
       {displayedStocks.map((s, k) => (
         <StockEventItem
           key={`stock-${k}`}

@@ -56,6 +56,7 @@ export const serializeOfferApi = (
 ): IOfferIndividual => {
   const offer: IOfferIndividual = {
     id: apiOffer.id,
+    nonHumanizedId: apiOffer.nonHumanizedId,
     bookingEmail: apiOffer.bookingEmail || '',
     description: apiOffer.description || '',
     durationMinutes: apiOffer.durationMinutes || null,
