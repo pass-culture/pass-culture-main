@@ -14,6 +14,7 @@ export type GetOffererResponseModel = {
   dateModifiedAtLastProvider?: string | null;
   demarchesSimplifieesApplicationId?: string | null;
   fieldsUpdated: Array<string>;
+  hasAvailablePricingPoints: boolean;
   hasDigitalVenueAtLeastOneOffer: boolean;
   hasMissingBankInformation: boolean;
   iban?: string | null;
@@ -24,6 +25,7 @@ export type GetOffererResponseModel = {
   lastProviderId?: string | null;
   managedVenues: Array<GetOffererVenueResponseModel>;
   name: string;
+  nonHumanizedId: number;
   postalCode: string;
   siren?: string | null;
 };
