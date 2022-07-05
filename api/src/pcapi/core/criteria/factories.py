@@ -1,6 +1,5 @@
 import factory
 
-import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import BaseFactory
 
@@ -12,14 +11,6 @@ class CriterionFactory(BaseFactory):
         model = models.Criterion
 
     name = factory.Sequence("Criterion_{}".format)
-
-
-class VenueCriterionFactory(BaseFactory):
-    class Meta:
-        model = models.VenueCriterion
-
-    venue = factory.SubFactory(offerers_factories.VenueFactory)
-    criterion = factory.SubFactory(CriterionFactory)
 
 
 class OfferCriterionFactory(BaseFactory):

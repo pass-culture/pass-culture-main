@@ -17,11 +17,9 @@ class Criterion(PcObject, Model):  # type: ignore [valid-type, misc]
 
 class VenueCriterion(PcObject, Model):  # type: ignore [valid-type, misc]
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id", ondelete="CASCADE"), index=True, nullable=False)
-    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
     criterionId = sqla.Column(
         sqla.BigInteger, sqla.ForeignKey("criterion.id", ondelete="CASCADE"), nullable=False, index=True
     )
-    criterion = sqla_orm.relationship("Criterion", foreign_keys=[criterionId])
 
     __table_args__ = (
         sqla.UniqueConstraint(
