@@ -1,3 +1,4 @@
+from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
@@ -7,7 +8,6 @@ from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id
-from pcapi.models.bank_information import BankInformationStatus
 
 
 class SaveOffererBankInformations:

@@ -3,10 +3,10 @@ from datetime import datetime
 from schwifty import BIC
 from schwifty import IBAN
 
+from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offerers.models import Offerer
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.bank_information import BankInformationStatus
 
 
 status_weight = {BankInformationStatus.ACCEPTED: 2, BankInformationStatus.DRAFT: 1, BankInformationStatus.REJECTED: 0}

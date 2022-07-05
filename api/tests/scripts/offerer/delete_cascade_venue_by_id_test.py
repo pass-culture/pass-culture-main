@@ -7,6 +7,7 @@ import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
+from pcapi.core.finance.models import BankInformation
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -22,7 +23,6 @@ from pcapi.core.providers.models import Provider
 from pcapi.core.providers.models import VenueProvider
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
-from pcapi.models.bank_information import BankInformation
 from pcapi.scripts.offerer.delete_cascade_venue_by_id import delete_cascade_venue_by_id
 
 

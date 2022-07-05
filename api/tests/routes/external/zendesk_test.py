@@ -3,13 +3,13 @@ from datetime import datetime
 import pytest
 
 from pcapi import settings
+from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.models import PhoneValidationStatusType
-from pcapi.models.bank_information import BankInformationStatus
 
 
 @pytest.mark.usefixtures("db_session")

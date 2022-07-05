@@ -1,6 +1,6 @@
+from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.validation.models.bank_information import validate
 
 

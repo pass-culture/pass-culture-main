@@ -3,10 +3,10 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.categories import subcategories
+from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.validation.models.entity_validator import validate
 
 

@@ -4,6 +4,7 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
+from pcapi.core.finance.models import BankInformation
 import pcapi.core.fraud.models as fraud_models
 import pcapi.core.mails.models as mails_models
 import pcapi.core.offerers.models as offerers_models
@@ -14,7 +15,6 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
 from pcapi.local_providers.install import install_local_providers
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformation
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import Feature

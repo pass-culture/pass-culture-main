@@ -7,6 +7,7 @@ from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsExcept
 from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.models as finance_models
+from pcapi.core.finance.models import BankInformation
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -20,7 +21,6 @@ from pcapi.core.providers.models import AllocineVenueProviderPriceRule
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.users.models import Favorite
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformation
 from pcapi.models.product import Product
 
 

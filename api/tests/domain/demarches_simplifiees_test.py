@@ -4,13 +4,13 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.finance.models import BankInformationStatus
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import CannotRegisterBankInformation
 from pcapi.domain.demarches_simplifiees import _get_status_from_demarches_simplifiees_application_state
 from pcapi.domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import parse_raw_bic_data
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils.date import DATE_ISO_FORMAT
 
 from tests.connector_creators.demarches_simplifiees_creators import (
