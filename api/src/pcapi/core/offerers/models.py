@@ -628,12 +628,7 @@ class OffererTagMapping(PcObject, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offerer_tag_mapping"
 
     offererId = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    offerer = relationship("Offerer", foreign_keys=[offererId])
-
     tagId = Column(BigInteger, ForeignKey("offerer_tag.id", ondelete="CASCADE"), index=True, nullable=False)
-
-    tag = relationship("OffererTag", foreign_keys=[tagId])
 
     __table_args__ = (
         UniqueConstraint(
