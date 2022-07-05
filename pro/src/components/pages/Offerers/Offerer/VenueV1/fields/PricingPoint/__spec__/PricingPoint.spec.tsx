@@ -1,43 +1,39 @@
 import '@testing-library/jest-dom'
-import { render, screen } from '@testing-library/react'
-import { configureTestStore } from 'store/testUtils'
-import PricingPoint from '../PricingPoint'
-import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
-import React from 'react'
-import userEvent from '@testing-library/user-event'
 
+import PricingPoint, { IPricingPointProps } from '../PricingPoint'
+import { render, screen, waitFor } from '@testing-library/react'
+
+import { Form } from 'react-final-form'
+import React from 'react'
+import { api } from 'apiClient/api'
+import userEvent from '@testing-library/user-event'
 const renderPricingPointFields = async ({
   props,
   formValues = {},
-  storeOverride = {},
+}: {
+  props: IPricingPointProps
+  formValues: { venueSiret?: string }
 }) => {
-  const store = configureTestStore(storeOverride)
   const rtlReturns = render(
-    <Provider store={store}>
-      <Form initialValues={formValues} name="venue" onSubmit={() => null}>
-        {() => <PricingPoint {...props} />}
-      </Form>
-    </Provider>
+    <Form initialValues={formValues} name="venue" onSubmit={async () => null}>
+      {() => <PricingPoint {...props} />}
+    </Form>
   )
   await screen.findByText('Barème de remboursement')
   return rtlReturns
 }
+jest.mock('apiClient/api', () => ({
+  api: {
+    linkVenueToPricingPoint: jest.fn(),
+  },
+}))
 describe('src | components | pages | Venue | fields | PricingPoint', () => {
-  let props
-  let formValues
+  let props: IPricingPointProps
+  let formValues: { venueSiret?: string }
   beforeEach(() => {
-    formValues = {
-      siret: '12345678912345',
-      name: 'Venue name',
-      publicName: 'Venue publicName',
-      bookingEmail: 'booking@email.app',
-      venueTypeCode: 'OTHER_TYPE_ID',
-      venueLabelId: 'OTHER_LABEL_ID',
-      description: 'Venue description',
-    }
+    jest.spyOn(api, 'linkVenueToPricingPoint').mockResolvedValue()
+    formValues = {}
     props = {
-      ...props,
       readOnly: false,
       venue: {
         name: 'testName',
@@ -64,7 +60,7 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
           },
         ],
       },
-    }
+    } as unknown as IPricingPointProps
   })
 
   it('should display component', async () => {
@@ -82,8 +78,8 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
     await renderPricingPointFields({ props, formValues })
 
     await userEvent.selectOptions(
-      screen.queryByTestId('pricingPointSelect'),
-      screen.queryByText(/test - 1000001111/)
+      screen.getByTestId('pricingPointSelect'),
+      screen.getByText(/test - 1000001111/)
     )
 
     const selectedValued = screen.queryByText(/test - 1000001111/)
@@ -96,12 +92,12 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
     expect(venueSiretButton).toBeEnabled()
   })
 
-  it.skip('should submit venue pricing point', async () => {
+  it('should submit venue pricing point', async () => {
     await renderPricingPointFields({ props, formValues })
 
     await userEvent.selectOptions(
-      screen.queryByTestId('pricingPointSelect'),
-      screen.queryByText(/test - 1000001111/)
+      screen.getByTestId('pricingPointSelect'),
+      screen.getByText(/test - 1000001111/)
     )
 
     const selectedValued = screen.queryByText(/test - 1000001111/)
@@ -112,9 +108,11 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
 
     await userEvent.click(venueSiretButton)
 
-    const validationText = await screen.queryByTestId('validationText')
-
     expect(selectedValued).toBeInTheDocument()
-    expect(validationText).toBeInTheDocument()
+
+    await waitFor(() => {
+      const validationText = screen.queryByTestId('validationText')
+      expect(validationText).toBeInTheDocument()
+    })
   })
 })
