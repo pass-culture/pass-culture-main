@@ -45,6 +45,8 @@ const OfferBreadcrumb = ({
   const isTemplateId = offerId.startsWith('T-')
   let steps: Step[] = []
 
+  if (activeStep == OfferBreadcrumbStep.CONFIRMATION) return <></>
+
   if (!isCreatingOffer) {
     steps = [
       {
