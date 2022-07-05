@@ -193,7 +193,7 @@ class OfferView(BaseAdminView):
             .join(criteria_models.OfferCriterion)
             .filter(criteria_models.OfferCriterion.offerId.in_(ids))
             .group_by(criteria_models.Criterion.id)
-            .having(func.count(criteria_models.OfferCriterion.criterion) == len(ids))
+            .having(func.count(criteria_models.OfferCriterion.criterionId) == len(ids))
             .all()
         )
         change_form.tags.data = criteria_in_common
