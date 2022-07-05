@@ -4,7 +4,7 @@ import { getEducationalDomainsAdapter } from '../getEducationalDomainsAdapter'
 
 describe('getEducationalDomainsAdapter', () => {
   it('should return an error when API returns an error', async () => {
-    jest.spyOn(pcapi, 'getEducationalDomains').mockRejectedValue(null)
+    jest.spyOn(pcapi, 'getEducationalDomains').mockRejectedValueOnce(null)
     const response = await getEducationalDomainsAdapter()
 
     expect(response.isOk).toBeFalsy()

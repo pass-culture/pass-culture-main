@@ -6,7 +6,7 @@ describe('patchEducationalInstitutionAdapter', () => {
   it('should return an error when the institutions could not be saved', async () => {
     jest
       .spyOn(api, 'patchCollectiveOffersEducationalInstitution')
-      .mockRejectedValue(null)
+      .mockRejectedValueOnce(null)
     const response = await patchEducationalInstitutionAdapter({
       offerId: '12',
       institutionId: '24',
