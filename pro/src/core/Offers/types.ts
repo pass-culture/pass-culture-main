@@ -160,6 +160,7 @@ export interface IOfferIndividualVenue {
 
 export interface IOfferIndividual {
   id: string
+  nonHumanizedId: number
   author: string
   bookingEmail: string
   description: string

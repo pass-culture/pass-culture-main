@@ -10,9 +10,12 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { ActionBar } from '../ActionBar'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import React from 'react'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import styles from './Summary.module.scss'
 
 export interface ISummaryProps {
   offerId: string
@@ -45,9 +48,21 @@ const Summary = ({
   return (
     <SummaryLayout>
       <SummaryLayout.Content>
-        <OfferSection {...offer} />
-        {stockThing && <StockThingSection {...stockThing} />}
-        {stockEventList && <StockEventSection stocks={stockEventList} />}
+        <OfferSection offer={offer} isCreation={isCreation} />
+        {stockThing && (
+          <StockThingSection
+            {...stockThing}
+            isCreation={isCreation}
+            offerId={offerId}
+          />
+        )}
+        {stockEventList && (
+          <StockEventSection
+            stocks={stockEventList}
+            isCreation={isCreation}
+            offerId={offerId}
+          />
+        )}
 
         {formOfferV2 ? (
           isCreation && (
@@ -69,7 +84,16 @@ const Summary = ({
       </SummaryLayout.Content>
 
       <SummaryLayout.Side>
+        <div className={styles['offer-creation-preview-title']}>
+          <PhoneInfo />
+          <span>Aperçu dans l'app</span>
+        </div>
         <OfferAppPreview {...preview} />
+        {!isCreation && (
+          <div className={styles['offer-preview-app-link']}>
+            <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
+          </div>
+        )}
       </SummaryLayout.Side>
     </SummaryLayout>
   )
