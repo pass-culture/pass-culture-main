@@ -113,7 +113,7 @@ class VenueCriteriaFilter(fa_filters.BaseSQLAFilter):
         parsed_value = tools.parse_like_term(value)
         return (
             query.join(criteria_models.VenueCriterion)
-            .join(criteria_models.Criterion)
+            .join(criteria_models.Criterion, Venue.criteria)
             .filter(criteria_models.Criterion.name.ilike(parsed_value))
         )
 
@@ -343,7 +343,7 @@ class VenueView(BaseAdminView):
             .join(criteria_models.VenueCriterion)
             .filter(criteria_models.VenueCriterion.venueId.in_(ids))
             .group_by(criteria_models.Criterion.id)
-            .having(func.count(criteria_models.VenueCriterion.criterion) == len(ids))
+            .having(func.count(criteria_models.VenueCriterion.criterionId) == len(ids))
             .all()
         )
         change_form.tags.data = criteria_in_common
@@ -361,6 +361,7 @@ class VenueView(BaseAdminView):
         url = get_redirect_target() or self.get_url(".index_view")
         change_form = VenueChangeForm(request.form)
         if change_form.validate():
+
             venue_ids: list[str] = change_form.ids.data.split(",")
             is_permanent: bool = change_form.is_permanent.data
             criteria: list[criteria_models.VenueCriterion] = change_form.data["tags"]
