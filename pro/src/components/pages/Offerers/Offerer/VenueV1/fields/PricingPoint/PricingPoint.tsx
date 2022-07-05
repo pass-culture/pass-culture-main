@@ -1,14 +1,16 @@
 import { Field, useField } from 'react-final-form'
 import React, { useEffect, useState } from 'react'
-import { api } from 'apiClient/api'
+
 import Button from 'ui-kit/Button/Button'
+import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
 import Icon from 'components/layout/Icon'
+import { api } from 'apiClient/api'
 import styles from './PricingPoint.module.scss'
 
-interface IPricingPointProps {
+export interface IPricingPointProps {
   readOnly: boolean
-  offerer: any
+  offerer: IAPIOfferer
   venue: IAPIVenue
 }
 
@@ -99,7 +101,7 @@ const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
               className={styles['space-text-left']}
               data-testid={'validationText'}
             >
-              Sélection validée{' '}
+              Sélection validée
             </p>
           </>
         )}
