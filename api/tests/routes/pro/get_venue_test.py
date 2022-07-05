@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from pcapi.core import testing
@@ -15,17 +17,41 @@ from tests.conftest import TestClient
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
     def when_user_has_rights_on_managing_offerer(self, client):
-        # given
+        now = datetime.datetime.utcnow()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
-        main_venue = offerers_factories.VenueFactory(
-            name="Le lieu du calcul", managingOfferer=user_offerer.offerer, pricing_point="self"
-        )
         venue = offerers_factories.VenueFactory(
-            name="L'encre et la plume", managingOfferer=user_offerer.offerer, pricing_point=main_venue
+            name="L'encre et la plume",
+            managingOfferer=user_offerer.offerer,
+        )
+        offerers_factories.VenuePricingPointLinkFactory(
+            venue=venue,
+            timespan=[now - datetime.timedelta(days=30), now - datetime.timedelta(days=7)],
+        )
+        venue_currently_used_for_pricing = offerers_factories.VenueFactory(
+            publicName="Le Repos du Comptable",
+            managingOfferer=user_offerer.offerer,
+        )
+        offerers_factories.VenuePricingPointLinkFactory(
+            pricingPoint=venue_currently_used_for_pricing,
+            venue=venue,
+            timespan=[now - datetime.timedelta(days=7), None],
+        )
+        offerers_factories.VenueReimbursementPointLinkFactory(
+            venue=venue,
+            timespan=[now - datetime.timedelta(days=90), now - datetime.timedelta(days=14)],
+        )
+        venue_currently_used_for_reimbursement = offerers_factories.VenueFactory(
+            name="Le nouveau lieu de remboursement",
+            publicName="Le Palais de Midas",
+            managingOfferer=user_offerer.offerer,
+        )
+        offerers_factories.VenueReimbursementPointLinkFactory(
+            reimbursementPoint=venue_currently_used_for_reimbursement,
+            venue=venue,
+            timespan=[now - datetime.timedelta(days=14), None],
         )
         venue_id = venue.id
         bank_information = offers_factories.BankInformationFactory(venue=venue)
-
         expected_serialized_venue = {
             "address": venue.address,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
@@ -48,11 +74,11 @@ class Returns200Test:
             },
             "comment": venue.comment,
             "pricingPoint": {
-                "id": main_venue.id,
-                "venueName": main_venue.publicName,
-                "siret": main_venue.siret,
+                "id": venue_currently_used_for_pricing.id,
+                "venueName": venue_currently_used_for_pricing.publicName,
+                "siret": venue_currently_used_for_pricing.siret,
             },
-            "reimbursementPointId": None,
+            "reimbursementPointId": venue_currently_used_for_reimbursement.id,
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "dateModifiedAtLastProvider": format_into_utc_date(venue.dateModifiedAtLastProvider),
             "demarchesSimplifieesApplicationId": venue.demarchesSimplifieesApplicationId,
@@ -102,7 +128,6 @@ class Returns200Test:
             "nonHumanizedId": venue.id,
         }
 
-        # when
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         db.session.commit()  # clear SQLA cached objects
         n_queries = (
@@ -113,7 +138,6 @@ class Returns200Test:
         with testing.assert_num_queries(n_queries):
             response = auth_request.get("/venues/%s" % humanize(venue_id))
 
-        # then
         assert response.status_code == 200
         assert response.json == expected_serialized_venue
 
