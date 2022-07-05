@@ -3,6 +3,9 @@ from datetime import timedelta
 import re
 import typing
 
+import google.auth
+from google.auth import credentials as auth_credentials
+from google.auth import transport as auth_transport
 from google.oauth2 import service_account
 import googleapiclient.discovery
 
@@ -14,6 +17,8 @@ from pcapi.core.users.utils import decode_jwt_token
 from pcapi.core.users.utils import encode_jwt_payload
 from pcapi.utils import requests
 
+
+TOKEN_URI = "https://accounts.google.com/o/oauth2/token"
 
 BACKOFFICE_SERVICE_ACCOUNT_SCOPES = ("https://www.googleapis.com/auth/admin.directory.group.readonly",)
 
@@ -55,11 +60,27 @@ def get_user_from_google_id(token: str) -> typing.Optional[users_models.User]:
     return db_user
 
 
-def get_groups_from_google_workspace(email: str) -> dict:
-    credentials = service_account.Credentials.from_service_account_info(
-        settings.BACKOFFICE_SERVICE_ACCOUNT_KEY, scopes=BACKOFFICE_SERVICE_ACCOUNT_SCOPES
+def delegate_credentials(
+    credentials: auth_credentials.Credentials, subject: str, scopes: tuple[str]
+) -> service_account.Credentials:
+    request = auth_transport.request.Request()
+
+    credentials.refresh(request)
+
+    signer = google.auth.iam.Signer(request, credentials, credentials.service_account_email)
+
+    updated_credentials = service_account.Credentials(
+        signer, credentials.service_account_email, TOKEN_URI, scopes=scopes, subject=subject
     )
-    delegated_credentials = credentials.with_subject(settings.BACKOFFICE_USER_EMAIL)
+
+    return updated_credentials
+
+
+def get_groups_from_google_workspace(email: str) -> dict:
+    credentials, _ = google.auth.default()
+    delegated_credentials = delegate_credentials(
+        credentials, settings.BACKOFFICE_USER_EMAIL, BACKOFFICE_SERVICE_ACCOUNT_SCOPES
+    )
     directory_service = googleapiclient.discovery.build("admin", "directory_v1", credentials=delegated_credentials)
     response = directory_service.groups().list(userKey=email).execute()
     return response
