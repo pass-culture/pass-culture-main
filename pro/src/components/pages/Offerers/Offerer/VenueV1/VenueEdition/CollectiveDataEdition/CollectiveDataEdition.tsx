@@ -67,7 +67,6 @@ const CollectiveDataEdition = (): JSX.Element => {
             <MultiSelectAutocomplete
               fieldName="collectiveStudents"
               label="Public cible :"
-              pluralLabel="Public cible :"
               options={studentOptions}
               placeholder="Sélectionner un public cible"
               inline
