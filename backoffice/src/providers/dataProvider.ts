@@ -1,9 +1,8 @@
-import { CreateParams, DataProvider } from 'react-admin'
+import { CreateParams, DataProvider, GetListParams } from 'react-admin'
 
 import { env } from '../libs/environment/env'
 import { eventMonitoring } from '../libs/monitoring/sentry'
 import {
-  UserSearchResponse,
   UserApiResponse,
   UserManualReview,
 } from '../resources/PublicUsers/types'
@@ -11,31 +10,18 @@ import {
 import { safeFetch } from './apiHelpers'
 
 export const dataProvider: DataProvider = {
-  async searchList(resource: string, params: string) {
-    let assets: UserApiResponse[] = []
-    switch (resource) {
-      case 'public_accounts/search': {
-        const response = await safeFetch(
-          `${env.API_URL}/${resource}?q=${encodeURIComponent(params)}`
-        )
+  async searchList(resource: string, params: GetListParams) {
+    const response = await safeFetch(
+      `${env.API_URL}/${resource}/search?q=${encodeURIComponent(
+        params.meta.search
+      )}&page=${params.pagination.page}&perPage=${params.pagination.perPage}`
+    )
 
-        const userSearchResponse: UserSearchResponse = response.json
-        assets = userSearchResponse.accounts.map(item => ({
-          ...item,
-          id: item.id,
-        }))
-
-        assets = assets.filter(
-          (obj, pos, arr) => arr.map(({ id }) => id).indexOf(obj.id) === pos
-        )
-
-        return {
-          data: assets,
-          total: assets.length,
-        }
-      }
-      default:
-        break
+    return {
+      data: response.json.data,
+      total: response.json.total,
+      currentPage: response.json.page,
+      totalPages: response.json.pages,
     }
   },
 
