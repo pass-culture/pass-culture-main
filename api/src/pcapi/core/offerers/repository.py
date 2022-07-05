@@ -9,14 +9,14 @@ import pcapi.core.bookings.repository as bookings_repository
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveOfferTemplate
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.finance.models import BankInformation
+from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offers.models import Offer
 import pcapi.core.offers.repository as offers_repository
 from pcapi.core.users.models import User
 from pcapi.domain.ts_vector import create_filter_matching_all_keywords_in_any_model
 from pcapi.domain.ts_vector import create_get_filter_matching_ts_query_in_any_model
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 

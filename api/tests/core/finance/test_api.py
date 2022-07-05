@@ -36,7 +36,6 @@ from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.utils import human_ids
 
 import tests
@@ -239,7 +238,7 @@ class PriceBookingTest:
             # This test is not relevant when using pricing points.
             return
         booking = bookings_factories.UsedBookingFactory(
-            stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+            stock__offer__venue__businessUnit__bankAccount__status=models.BankInformationStatus.DRAFT,
         )
         pricing = api.price_booking(booking, self.use_pricing_point)
         assert pricing
@@ -996,7 +995,7 @@ class PriceBookingsTest:
             return  # This test is not relevant when using pricing points.
         booking = bookings_factories.UsedBookingFactory(
             dateUsed=self.few_minutes_ago,
-            stock__offer__venue__businessUnit__bankAccount__status=BankInformationStatus.DRAFT,
+            stock__offer__venue__businessUnit__bankAccount__status=models.BankInformationStatus.DRAFT,
         )
         api.price_bookings(min_date=self.few_minutes_ago)
         assert len(booking.pricings) == 1
@@ -1188,7 +1187,7 @@ class GenerateCashflowsTest:
         assert models.Cashflow.query.count() == 0
 
     def test_no_cashflow_if_no_accepted_bank_information(self):
-        business_unit1 = factories.BusinessUnitFactory(bankAccount__status=BankInformationStatus.DRAFT)
+        business_unit1 = factories.BusinessUnitFactory(bankAccount__status=models.BankInformationStatus.DRAFT)
         factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
             businessUnit=business_unit1,

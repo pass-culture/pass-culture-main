@@ -1,7 +1,7 @@
+from pcapi.core.finance.models import BankInformation as BankInformationsSQLEntity
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.domain.bank_informations.bank_informations_repository import BankInformationsRepository
 from pcapi.infrastructure.repository.bank_informations import bank_informations_domain_converter
-from pcapi.models.bank_information import BankInformation as BankInformationsSQLEntity
 from pcapi.repository import repository
 
 

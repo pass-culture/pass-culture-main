@@ -6,11 +6,11 @@ import schwifty
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
+from pcapi.core.finance.models import BankInformation
+from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.models.product import Product
 

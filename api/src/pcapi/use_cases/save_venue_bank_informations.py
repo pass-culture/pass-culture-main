@@ -2,6 +2,7 @@ from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors import api_entreprises
+from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.models import Offerer
@@ -22,7 +23,6 @@ from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_informatio
 from pcapi.domain.venue.venue_with_basic_information.venue_with_basic_information_repository import (
     VenueWithBasicInformationRepository,
 )
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import repository
 
 

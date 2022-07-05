@@ -1,5 +1,5 @@
+from pcapi.core.finance.models import BankInformation as BankInformationsSQLEntity
 from pcapi.domain.bank_informations.bank_informations import BankInformations
-from pcapi.models.bank_information import BankInformation as BankInformationsSQLEntity
 
 
 def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankInformations:
