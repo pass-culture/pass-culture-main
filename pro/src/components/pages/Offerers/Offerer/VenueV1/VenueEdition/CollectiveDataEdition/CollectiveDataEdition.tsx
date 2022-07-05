@@ -11,12 +11,16 @@ type CollectiveDataFormValues = {
   collectiveDescription: string
   collectiveStudents: string[]
   collectiveWebsite: string
+  collectivePhone: string
+  collectiveEmail: string
 }
 
 const initialValues = {
   collectiveDescription: '',
   collectiveStudents: [],
   collectiveWebsite: '',
+  collectivePhone: '',
+  collectiveEmail: '',
 }
 
 const studentOptions = [
@@ -76,6 +80,25 @@ const CollectiveDataEdition = (): JSX.Element => {
               name="collectiveWebsite"
               label="URL de votre site web :"
               placeholder="http://exemple.com"
+              inline
+              className={styles.row}
+            />
+          </FormLayout.Row>
+          <div className={styles.section}>Contact pour les scolaires</div>
+          <FormLayout.Row>
+            <TextInput
+              name="collectivePhone"
+              label="Téléphone :"
+              placeholder="0648592819"
+              inline
+              className={styles.row}
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <TextInput
+              name="collectiveEmail"
+              label="E-mail :"
+              placeholder="email@exemple.com"
               inline
               className={styles.row}
             />
