@@ -206,10 +206,6 @@ export const getVenuesForOfferer = ({
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
 export const getVenue = venueId => client.get(`/venues/${venueId}`)
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venueId' implicitly has an 'any' type.
-export const editVenuePricingPoint = (venueId, body) =>
-  client.post(`/venues/${venueId}/pricing-point`, body)
-
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'venue' implicitly has an 'any' type.
 export const createVenue = venue => client.post(`/venues`, venue)
 
