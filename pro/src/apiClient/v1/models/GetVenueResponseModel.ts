@@ -5,6 +5,7 @@
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { BusinessUnitResponseModel } from './BusinessUnitResponseModel';
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
+import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 
@@ -43,7 +44,7 @@ export type GetVenueResponseModel = {
   name: string;
   nonHumanizedId: number;
   postalCode?: string | null;
-  pricingPointId?: number | null;
+  pricingPoint?: GetVenuePricingPointResponseModel | null;
   publicName?: string | null;
   reimbursementPointId?: number | null;
   siret?: string | null;

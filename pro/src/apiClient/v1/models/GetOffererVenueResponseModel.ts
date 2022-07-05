@@ -17,8 +17,10 @@ export type GetOffererVenueResponseModel = {
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
+  nonHumanizedId: number;
   postalCode?: string | null;
   publicName?: string | null;
+  siret?: string | null;
   venueLabelId?: string | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
