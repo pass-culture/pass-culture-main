@@ -70,9 +70,8 @@ class CriteriaViewTest:
     def test_delete_criterion(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
-        offer = offers_factories.OfferFactory()
         criterion = criteria_factories.CriterionFactory(name="test_delete_criterion")
-        criteria_factories.OfferCriterionFactory(offer=offer, criterion=criterion)
+        offer = offers_factories.OfferFactory(criteria=[criterion])
 
         assert len(offer.criteria) == 1
 

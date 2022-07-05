@@ -166,13 +166,15 @@ def test_delete_cascade_venue_should_remove_favorites_of_managed_offers():
 @pytest.mark.usefixtures("db_session")
 def test_delete_cascade_venue_should_remove_criterions():
     # Given
-    venue = offerers_factories.VenueFactory()
-    venue_to_delete = offerers_factories.VenueFactory()
-    criteria_factories.OfferCriterionFactory(offer__venue=venue_to_delete)
-    criteria_factories.OfferCriterionFactory(offer__venue=venue)
+    offers_factories.OfferFactory(
+        venue=offerers_factories.VenueFactory(), criteria=[criteria_factories.CriterionFactory()]
+    )
+    offer_venue_to_delete = offers_factories.OfferFactory(
+        venue=offerers_factories.VenueFactory(), criteria=[criteria_factories.CriterionFactory()]
+    )
 
     # When
-    delete_cascade_venue_by_id(venue_to_delete.id)
+    delete_cascade_venue_by_id(offer_venue_to_delete.venue.id)
 
     # Then
     assert Venue.query.count() == 1

@@ -12,8 +12,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_get_educational_institutions(self, client: Any) -> None:
         # Given
-        institution1 = EducationalInstitutionFactory()
-        institution2 = EducationalInstitutionFactory()
+        institution1 = EducationalInstitutionFactory(name="aaaaaaaaaaaaaaaaa")
+        institution2 = EducationalInstitutionFactory(name="zzzzzzzzzzzzzzzzz")
         pro_user = users_factories.ProFactory()
 
         client.with_session_auth(pro_user.email)
