@@ -40,6 +40,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.scheduled_tasks.decorators import cron_require_feature
 from pcapi.scheduled_tasks.decorators import log_cron_with_transaction
+from pcapi.scheduled_tasks.decorators import log_input_args
 from pcapi.scripts.booking import handle_expired_bookings as handle_expired_bookings_module
 from pcapi.scripts.booking import notify_soon_to_be_expired_bookings
 from pcapi.scripts.payment import user_recredit
@@ -184,6 +185,7 @@ def send_today_events_notifications_metropolitan_france_command() -> None:
 
 
 @blueprint.cli.command("send_today_events_notifications_overseas_france")
+@log_input_args
 @log_cron_with_transaction
 @click.option("--utc-mean-offset", help="UTC offset to use (can be negative)", type=int)
 @click.option("--departments", help="target departments (list of str)", type=list)

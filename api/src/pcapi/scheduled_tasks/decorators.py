@@ -1,5 +1,6 @@
 from functools import wraps
 import logging
+import os
 import time
 
 from pcapi.models import db
@@ -64,5 +65,23 @@ def log_cron_with_transaction(func):  # type: ignore [no-untyped-def]
             logger.info(build_cron_log_message(name=func.__name__, status=status, duration=duration))
 
         return result
+
+    return wrapper
+
+
+def log_input_args(func):  # type: ignore [no-untyped-def]
+    @wraps(func)
+    def wrapper(*args, **kwargs):  # type: ignore [no-untyped-def]
+        try:
+            # Only log if an env variable has been set manually
+            # If not, the caller might not realise that secret inputs
+            # might be logged.
+            log_args = os.getenv("CRON_LOG_ARG", "false").lower() == "true"
+        except AttributeError:
+            log_args = False
+
+        if log_args:
+            logger.info("%s called with args: %s and kwargs: %s", func.__name__, str(args), str(kwargs))
+        return func(*args, **kwargs)
 
     return wrapper
