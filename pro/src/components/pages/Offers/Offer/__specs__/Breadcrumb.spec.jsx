@@ -134,7 +134,7 @@ describe('stocks step', () => {
 
 describe('confirmation step', () => {
   describe('in creation mode', () => {
-    it('should display breadcrumb without link', async () => {
+    it('should not display breadcrumb', async () => {
       // Given
       const offer = offerFactory({
         name: 'mon offer',
@@ -149,19 +149,7 @@ describe('confirmation step', () => {
       })
 
       // Then
-      const detailTab = await screen.findByText("Détails de l'offre")
-      expect(detailTab).toBeInTheDocument()
-      expect(detailTab).not.toHaveAttribute('href')
-      const stockTab = screen.getByText('Stock et prix')
-      expect(stockTab).toBeInTheDocument()
-      expect(stockTab).not.toHaveAttribute('href')
-      const confirmationTab = queryByTextTrimHtml(screen, 'Confirmation', {
-        selector: 'li',
-        leafOnly: false,
-      })
-      expect(confirmationTab).toBeInTheDocument()
-      expect(confirmationTab).not.toHaveAttribute('href')
-      expect(confirmationTab).toHaveClass('active')
+      expect(screen.queryByText("Détails de l'offre")).not.toBeInTheDocument()
     })
   })
 })
