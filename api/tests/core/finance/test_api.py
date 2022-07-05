@@ -2294,20 +2294,20 @@ def test_merge_cashflow_batches():
     factories.CashflowFactory(batch=batch5, businessUnit=bu1, amount=160)
     # Business unit 2: batches 3 and 4.
     cf_3_2 = factories.CashflowFactory(batch=batch3, businessUnit=bu2, amount=320)
-    factories.CashflowPricingFactory(cashflow=cf_3_2)
+    factories.PricingFactory(cashflows=[cf_3_2])
     cf_4_2 = factories.CashflowFactory(batch=batch4, businessUnit=bu2, amount=640)
-    factories.CashflowPricingFactory(cashflow=cf_4_2)
+    factories.PricingFactory(cashflows=[cf_4_2])
     # Business unit 3: batches 3 and 5.
     cf_3_3 = factories.CashflowFactory(batch=batch3, businessUnit=bu3, amount=1280)
-    factories.CashflowPricingFactory(cashflow=cf_3_3)
+    factories.PricingFactory(cashflows=[cf_3_3])
     cf_5_3 = factories.CashflowFactory(batch=batch5, businessUnit=bu3, amount=2560)
-    factories.CashflowPricingFactory(cashflow=cf_5_3)
+    factories.PricingFactory(cashflows=[cf_5_3])
     # Business unit 4: batch 3 only
     cf_3_4 = factories.CashflowFactory(batch=batch3, businessUnit=bu4, amount=5120)
-    factories.CashflowPricingFactory(cashflow=cf_3_4)
+    factories.PricingFactory(cashflows=[cf_3_4])
     # Business unit 5: batch 5 (nothing to do)
     cf_5_5 = factories.CashflowFactory(batch=batch5, businessUnit=bu5, amount=10240)
-    factories.CashflowPricingFactory(cashflow=cf_5_5)
+    factories.PricingFactory(cashflows=[cf_5_5])
 
     def get_cashflows(batch_id, business_unit=None):
         query = models.Cashflow.query.filter_by(batchId=batch_id)

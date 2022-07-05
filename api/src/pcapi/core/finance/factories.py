@@ -131,14 +131,6 @@ class CashflowFactory(BaseFactory):
     bankAccount = factory.SelfAttribute("businessUnit.bankAccount")
 
 
-class CashflowPricingFactory(BaseFactory):
-    class Meta:
-        model = models.CashflowPricing
-
-    cashflow = factory.SubFactory(CashflowFactory)
-    pricing = factory.SubFactory(PricingFactory, businessUnit=factory.SelfAttribute("..cashflow.businessUnit"))
-
-
 # Factories below are deprecated and should probably NOT BE USED in
 # any new test. See comment in `models.py` above the definition of the
 # `Payment` model.
