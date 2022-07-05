@@ -2,6 +2,8 @@ from datetime import datetime
 
 import pytest
 
+from pcapi.core.finance.models import BankInformation as BankInformationsSQLEntity
+from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.domain.bank_informations.bank_informations import BankInformations
@@ -10,8 +12,6 @@ from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_rep
     BankInformationsSQLRepository,
 )
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.bank_information import BankInformation as BankInformationsSQLEntity
-from pcapi.models.bank_information import BankInformationStatus
 
 
 class BankInformationsSQLRepositoryTest:

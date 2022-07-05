@@ -15,6 +15,7 @@ import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
 from pcapi.models import Model
+from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
 
 
@@ -63,6 +64,32 @@ class CashflowStatus(enum.Enum):
     ACCEPTED = "accepted"
 
 
+class BankInformationStatus(enum.Enum):
+    REJECTED = "REJECTED"
+    DRAFT = "DRAFT"
+    ACCEPTED = "ACCEPTED"
+
+
+class BankInformation(PcObject, Model):  # type: ignore [valid-type, misc]
+    offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
+
+    offerer = sqla_orm.relationship("Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False))  # type: ignore [misc]
+
+    venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True, unique=True)
+
+    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId], backref=sqla_orm.backref("bankInformation", uselist=False))  # type: ignore [misc]
+
+    iban = sqla.Column(sqla.String(27), nullable=True)
+
+    bic = sqla.Column(sqla.String(11), nullable=True)
+
+    applicationId = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
+
+    status = sqla.Column(sqla.Enum(BankInformationStatus), nullable=False)
+
+    dateModified = sqla.Column(sqla.DateTime, nullable=True)
+
+
 class BusinessUnit(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name = sqla.Column(sqla.Text)
@@ -72,7 +99,7 @@ class BusinessUnit(Model):  # type: ignore [valid-type, misc]
     )
 
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True)
-    bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])  # type: ignore [misc]
+    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
 
     cashflowFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
     invoiceFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
@@ -228,7 +255,7 @@ class Cashflow(Model):  # type: ignore [valid-type, misc]
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False)
-    bankAccount = sqla_orm.relationship("BankInformation", foreign_keys=[bankAccountId])  # type: ignore [misc]
+    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once cashflow code
     # has been updated and old data has been migrated.
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)

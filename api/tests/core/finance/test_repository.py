@@ -13,7 +13,6 @@ import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformationStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -87,7 +86,7 @@ class GetBusinessUnitsTest:
         business_unit1 = venue.businessUnit
         offerers_factories.VenueFactory(businessUnit=business_unit1)
         _other_venue = offerers_factories.VenueFactory(
-            businessUnit__bankAccount__status=BankInformationStatus.REJECTED,
+            businessUnit__bankAccount__status=models.BankInformationStatus.REJECTED,
         )
 
         business_units = repository.get_business_units_query(admin)

@@ -1,8 +1,8 @@
 import pytest
 
+from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.models.bank_information import BankInformationStatus
 
 
 class OffererBankInformationTest:

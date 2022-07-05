@@ -13,8 +13,6 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.payments.models as payments_models
 import pcapi.core.users.models as users_models
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.feature import FeatureToggle
 import pcapi.utils.date as date_utils
 import pcapi.utils.db as db_utils
@@ -28,9 +26,9 @@ def get_business_units_query(  # type: ignore [no-untyped-def]
     offerer_id: int = None,
 ):
     query = (
-        models.BusinessUnit.query.join(BankInformation)
+        models.BusinessUnit.query.join(models.BankInformation)
         .filter(models.BusinessUnit.status == models.BusinessUnitStatus.ACTIVE)
-        .filter(BankInformation.status == BankInformationStatus.ACCEPTED)
+        .filter(models.BankInformation.status == models.BankInformationStatus.ACCEPTED)
         .join(offerers_models.Venue, offerers_models.Venue.businessUnitId == models.BusinessUnit.id)
     )
     venue_subquery = offerers_models.Venue.query
@@ -304,7 +302,7 @@ def _get_sent_pricings_for_collective_bookings(
             models.Invoice.reference.label("invoice_reference"),
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
-            BankInformation.iban.label("iban"),
+            models.BankInformation.iban.label("iban"),
         )
     ).all()
 
@@ -386,6 +384,6 @@ def _get_sent_pricings_for_individual_bookings(
             models.Invoice.reference.label("invoice_reference"),
             models.CashflowBatch.cutoff.label("cashflow_batch_cutoff"),
             models.CashflowBatch.label.label("cashflow_batch_label"),
-            BankInformation.iban.label("iban"),
+            models.BankInformation.iban.label("iban"),
         )
     ).all()

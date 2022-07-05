@@ -3,6 +3,8 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi.core.finance.models import BankInformation
+from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.offers import factories as offers_factories
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
@@ -10,8 +12,6 @@ from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_rep
 )
 from pcapi.model_creators.generic_creators import create_offerer
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.repository import repository
 from pcapi.use_cases.save_offerer_bank_informations import SaveOffererBankInformations
 

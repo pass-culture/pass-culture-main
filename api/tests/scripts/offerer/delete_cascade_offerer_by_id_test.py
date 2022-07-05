@@ -6,6 +6,7 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.factories as finance_factories
+from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BusinessUnit
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import ApiKey
@@ -25,7 +26,6 @@ from pcapi.core.providers.models import VenueProvider
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
-from pcapi.models.bank_information import BankInformation
 from pcapi.models.product import Product
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 

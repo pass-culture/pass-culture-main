@@ -25,7 +25,6 @@ def install_models() -> None:
     import pcapi.core.reference.models
     import pcapi.core.subscription.models
     import pcapi.core.users.models
-    import pcapi.models.bank_information
     import pcapi.models.beneficiary_import
     import pcapi.models.beneficiary_import_status
     import pcapi.models.feature

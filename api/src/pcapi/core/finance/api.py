@@ -69,8 +69,6 @@ import pcapi.core.reference.models as reference_models
 import pcapi.core.users.models as users_models
 from pcapi.domain import reimbursement
 from pcapi.models import db
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.models.feature import FeatureToggle
 from pcapi.repository import transaction
 from pcapi.utils import date as date_utils
@@ -889,7 +887,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         models.CashflowPricing.pricingId.is_(None),
         # Bookings can now be priced even if BankInformation is not ACCEPTED,
         # but to generate cashflows we definitely need it.
-        BankInformation.status == BankInformationStatus.ACCEPTED,
+        models.BankInformation.status == models.BankInformationStatus.ACCEPTED,
     )
 
     filters = (
@@ -1142,8 +1140,8 @@ def _generate_business_units_file() -> pathlib.Path:
                 offerers_models.Venue.publicName,
                 offerers_models.Venue.name,
             ).label("venue_name"),
-            BankInformation.iban.label("iban"),
-            BankInformation.bic.label("bic"),
+            models.BankInformation.iban.label("iban"),
+            models.BankInformation.bic.label("bic"),
         )
     )
     row_formatter = lambda row: (

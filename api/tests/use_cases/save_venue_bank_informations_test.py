@@ -6,6 +6,8 @@ import pytest
 
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
 import pcapi.core.finance.models as finance_models
+from pcapi.core.finance.models import BankInformation
+from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.domain.bank_information import CannotRegisterBankInformation
@@ -17,8 +19,6 @@ from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_wi
     VenueWithBasicInformationSQLRepository,
 )
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.bank_information import BankInformation
-from pcapi.models.bank_information import BankInformationStatus
 from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations
 
 from tests.connector_creators.demarches_simplifiees_creators import (
