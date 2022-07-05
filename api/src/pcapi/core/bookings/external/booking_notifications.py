@@ -28,6 +28,10 @@ def send_today_events_notifications_metropolitan_france() -> None:
     today_min, today_max = _setup_today_min_max(utc_mean_offset=1)
     stock_ids = find_today_event_stock_ids_metropolitan_france(today_min, today_max)
 
+    if not stock_ids:
+        logger.warning("No stock found", extra={"today_min": today_min, "departments": today_max})
+        return
+
     for stock_id in stock_ids:
         try:
             send_today_stock_notification.delay(stock_id)
@@ -47,6 +51,18 @@ def send_today_events_notifications_overseas(utc_mean_offset: int, departments: 
     """
     today_min, today_max = _setup_today_min_max(utc_mean_offset)
     stock_ids = offers_repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments)
+
+    if not stock_ids:
+        logger.warning(
+            "No stock found",
+            extra={
+                "today_min": today_min,
+                "today_max": today_max,
+                "utc_mean_offset": utc_mean_offset,
+                "departments": departments,
+            },
+        )
+        return
 
     for stock_id in stock_ids:
         try:
