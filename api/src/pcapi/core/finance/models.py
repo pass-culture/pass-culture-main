@@ -72,21 +72,13 @@ class BankInformationStatus(enum.Enum):
 
 class BankInformation(PcObject, Model):  # type: ignore [valid-type, misc]
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
-
     offerer = sqla_orm.relationship("Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False))  # type: ignore [misc]
-
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True, unique=True)
-
     venue = sqla_orm.relationship("Venue", foreign_keys=[venueId], backref=sqla_orm.backref("bankInformation", uselist=False))  # type: ignore [misc]
-
     iban = sqla.Column(sqla.String(27), nullable=True)
-
     bic = sqla.Column(sqla.String(11), nullable=True)
-
     applicationId = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
-
     status = sqla.Column(sqla.Enum(BankInformationStatus), nullable=False)
-
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
 
 

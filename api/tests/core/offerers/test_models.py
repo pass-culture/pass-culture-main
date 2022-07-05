@@ -4,6 +4,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from pcapi.core.educational import factories as educational_factories
+import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 import pcapi.core.offers.factories as offers_factories
@@ -14,7 +15,9 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.repository import repository
 
 
-@pytest.mark.usefixtures("db_session")
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class VenueModelConstraintsTest:
     def test_virtual_venue_cannot_have_address(self):
         venue = factories.VirtualVenueFactory()
@@ -85,7 +88,6 @@ class VenueModelConstraintsTest:
         assert err.value.errors["isVirtual"] == ["Un lieu pour les offres numériques existe déjà pour cette structure"]
 
 
-@pytest.mark.usefixtures("db_session")
 class VenueTimezonePropertyTest:
     def test_europe_paris_is_default_timezone(self):
         venue = factories.VenueFactory(postalCode="75000")
@@ -103,7 +105,6 @@ class VenueTimezonePropertyTest:
         assert venue.timezone == "America/Cayenne"
 
 
-@pytest.mark.usefixtures("db_session")
 class VenueTimezoneSqlQueryTest:
     def test_europe_paris_is_default_timezone(self):
         factories.VenueFactory(postalCode="75000")
@@ -130,7 +131,6 @@ class OffererDepartementCodePropertyTest:
         assert offerer.departementCode == "973"
 
 
-@pytest.mark.usefixtures("db_session")
 class OffererDepartementCodeSQLExpressionTest:
     def test_metropole_postal_code(self):
         factories.OffererFactory(postalCode="75000")
@@ -141,7 +141,6 @@ class OffererDepartementCodeSQLExpressionTest:
         assert models.Offerer.query.filter_by(departementCode="973").count() == 1
 
 
-@pytest.mark.usefixtures("db_session")
 class VenueNApprovedOffersTest:
     def test_venue_n_approved_offers(self):
         venue = factories.VenueFactory()
@@ -179,7 +178,6 @@ class OffererLegalCategoryTest:
         assert mocked_get_offerer_legal_category.call_count == 1
 
 
-@pytest.mark.usefixtures("db_session")
 def test_save_user_offerer_raise_api_error_when_not_unique(app):
     user = users_factories.ProFactory.build()
     offerer = factories.OffererFactory()
@@ -190,3 +188,54 @@ def test_save_user_offerer_raise_api_error_when_not_unique(app):
         repository.save(uo2)
 
     assert error.value.errors["global"] == ["Une entrée avec cet identifiant existe déjà dans notre base de données"]
+
+
+class OffererBankInformationTest:
+    def test_bic_property_returns_bank_information_bic_when_offerer_has_bank_information(self):
+        offerer = factories.OffererFactory()
+        offers_factories.BankInformationFactory(offerer=offerer, bic="BDFEFR2LCCB")
+        assert offerer.bic == "BDFEFR2LCCB"
+
+    def test_bic_property_returns_none_when_offerer_does_not_have_bank_information(self):
+        offerer = factories.OffererFactory()
+        assert offerer.bic is None
+
+    def test_iban_property_returns_bank_information_iban_when_offerer_has_bank_information(self):
+        offerer = factories.OffererFactory()
+        offers_factories.BankInformationFactory(offerer=offerer, iban="FR7630007000111234567890144")
+        assert offerer.iban == "FR7630007000111234567890144"
+
+    def test_iban_property_returns_none_when_offerer_does_not_have_bank_information(self):
+        offerer = factories.OffererFactory()
+        assert offerer.iban is None
+
+    def test_demarchesSimplifieesApplicationId_returns_id_if_status_is_draft(self):
+        offerer = factories.OffererFactory()
+        offers_factories.BankInformationFactory(
+            offerer=offerer,
+            applicationId=12345,
+            status=finance_models.BankInformationStatus.DRAFT,
+        )
+        assert offerer.demarchesSimplifieesApplicationId == 12345
+
+    def test_demarchesSimplifieesApplicationId_returns_none_if_status_is_rejected(self):
+        offerer = factories.OffererFactory()
+        info = offers_factories.BankInformationFactory(
+            offerer=offerer,
+            applicationId=12345,
+            status=finance_models.BankInformationStatus.REJECTED,
+        )
+        offerer = info.offerer
+        assert offerer.demarchesSimplifieesApplicationId is None
+
+
+class IsValidatedTest:
+    def test_is_validated_property(self):
+        offerer = factories.OffererFactory()
+        factories.UserOffererFactory(offerer=offerer, validationToken="token")
+        assert offerer.isValidated
+
+    def test_is_validated_property_when_still_offerer_has_validation_token(self):
+        offerer = factories.OffererFactory(validationToken="token")
+        factories.UserOffererFactory(offerer=offerer)
+        assert not offerer.isValidated
