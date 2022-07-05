@@ -14,7 +14,6 @@ from pcapi.core.bookings.exceptions import CannotDeleteOffererWithBookingsExcept
 from pcapi.core.bookings.repository import offerer_has_ongoing_bookings
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import OffererTag
-from pcapi.core.offerers.models import OffererTagMapping
 import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.users.external import update_external_pro
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
@@ -51,7 +50,7 @@ class OffererTagFilter(fa_filters.BaseSQLAFilter):
 
     def apply(self, query: BaseQuery, value: str, alias: str = None) -> BaseQuery:
         parsed_value = tools.parse_like_term(value)
-        return query.join(OffererTagMapping).join(OffererTag).filter(OffererTag.name.ilike(parsed_value))
+        return query.join(OffererTag, Offerer.tags).filter(OffererTag.name.ilike(parsed_value))
 
     def operation(self):  # type: ignore [no-untyped-def]
         return lazy_gettext("contains")

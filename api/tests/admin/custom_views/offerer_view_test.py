@@ -48,10 +48,12 @@ class OffererViewTest:
     def test_edit_offerer_remove_tags(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.OffererTagMappingFactory(offerer=offerer)
-        offerers_factories.OffererTagMappingFactory(offerer=offerer)
-
+        offerer = offerers_factories.OffererFactory(
+            tags=[
+                offerers_factories.OffererTagFactory(),
+                offerers_factories.OffererTagFactory(),
+            ]
+        )
         api_client = client.with_session_auth("admin@example.com")
 
         response = api_client.post(

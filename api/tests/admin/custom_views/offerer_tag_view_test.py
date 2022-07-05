@@ -58,13 +58,11 @@ class OffererTagViewTest:
     def test_delete_tag(self, mocked_validate_csrf_token, client):
         users_factories.AdminFactory(email="admin@example.com")
 
-        offerer = offerers_factories.OffererFactory()
-        tag = offerers_factories.OffererTagFactory(name="test_delete_tag")
-        offerers_factories.OffererTagMappingFactory(offerer=offerer, tag=tag)
+        offerer = offerers_factories.OffererFactory(tags=[offerers_factories.OffererTagFactory(name="test_delete_tag")])
 
         api_client = client.with_session_auth("admin@example.com")
 
-        response = api_client.post("/pc/back-office/offerertag/delete/", form={"id": tag.id})
+        response = api_client.post("/pc/back-office/offerertag/delete/", form={"id": offerer.tags[0].id})
 
         assert response.status_code == 302
         assert len(offerer.tags) == 0
