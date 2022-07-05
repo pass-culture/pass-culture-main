@@ -1,5 +1,9 @@
+import { ApiError, OfferStatus } from 'apiClient/v1'
+
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { EducationalOfferType } from 'core/OfferEducational'
-import { OfferStatus } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { patchCollectiveOfferTemplateAdapter } from '../patchCollectiveOfferTemplateAdapter'
 
 describe('patchCollectiveOfferTemplateAdapter', () => {
@@ -39,12 +43,15 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
   it('should return an error when there is an error in the form', async () => {
     // given
     // @ts-ignore
-    jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-      status: 400,
-      json: async () => ({
-        code: '',
-      }),
-    })
+    jest
+      .spyOn(api, 'editCollectiveOfferTemplate')
+      .mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          { body: {}, status: 400 } as ApiResult,
+          ''
+        )
+      )
 
     // when
     const response = await patchCollectiveOfferTemplateAdapter({

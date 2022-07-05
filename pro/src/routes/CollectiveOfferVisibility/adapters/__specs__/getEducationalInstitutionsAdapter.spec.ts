@@ -33,7 +33,7 @@ describe('getEducationalInstitutionsAdapter', () => {
   })
 
   it('should return an error when the institutions could not be retrieved', async () => {
-    jest.spyOn(api, 'getEducationalInstitutions').mockRejectedValue(null)
+    jest.spyOn(api, 'getEducationalInstitutions').mockRejectedValueOnce(null)
     const response = await getEducationalInstitutionsAdapter()
     expect(response.isOk).toBe(false)
     expect(response.message).toBe(
