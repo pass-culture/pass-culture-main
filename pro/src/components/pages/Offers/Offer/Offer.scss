@@ -10,6 +10,16 @@
     margin-bottom: rem.torem(24px);
   }
 
+  .section {
+    margin-bottom: 0;
+  }
+
+  .sub-title {
+    @include fonts.title4();
+    font-weight: 500;
+    margin-bottom: rem.torem(32px);
+  }
+
   .offer-content {
     margin-top: rem.torem(25px);
 

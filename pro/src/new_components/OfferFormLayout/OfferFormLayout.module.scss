@@ -9,6 +9,11 @@
   margin-top: rem.torem(32px);
 }
 
+h4 {
+  @include fonts.title4();
+  font-weight: 500;
+}
+
 .action-bar {
   background: colors.$white;
   position: fixed;

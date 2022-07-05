@@ -15,6 +15,7 @@ import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndivid
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
+import { Title } from 'ui-kit'
 import Titles from 'components/layout/Titles/Titles'
 import { apiV1 } from 'api/api'
 import { serializeOfferApi } from 'core/Offers/adapters/serializers'
@@ -104,6 +105,11 @@ const OfferLayout = () => {
   return (
     <div className="offer-page">
       <Titles action={offerHeader} title={pageTitle} />
+      {(!isCreatingOffer || activeStep !== OfferBreadcrumbStep.DETAILS) && (
+        <Title as="h4" className="sub-title" level={4}>
+          {offer.name}
+        </Title>
+      )}
 
       <Breadcrumb
         activeStep={activeStep}

@@ -50,7 +50,11 @@ const OfferIndividualCreation = (): JSX.Element | null => {
       <OfferFormLayout.TitleBlock>
         <h1>Créer une offre</h1>
       </OfferFormLayout.TitleBlock>
-
+      {offer && currentStep.id !== OFFER_FORM_STEP_IDS.INFORMATIONS && (
+        <OfferFormLayout.TitleBlock>
+          <h4>{offer.name}</h4>
+        </OfferFormLayout.TitleBlock>
+      )}
       <OfferFormLayout.Stepper>
         <Breadcrumb
           activeStep={currentStep.id}
