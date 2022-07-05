@@ -16,6 +16,12 @@ def get_user_or_error(user_id: int, error_code: int = 400) -> users_models.User:
 
 
 def build_paginated_response(
-    page: int, pages: int, total: int, sort: typing.Optional[str], data: list[BaseModel]
+    page: int,
+    pages: int,
+    total: int,
+    sort: typing.Optional[str],
+    data: list[BaseModel],
+    response_model: typing.Type[PaginatedResponse] = PaginatedResponse,
 ) -> PaginatedResponse:
-    return PaginatedResponse(pages=pages, total=total, page=page, size=len(data), sort=sort, data=data)
+    response = response_model(pages=pages, total=total, page=page, size=len(data), sort=sort, data=data)
+    return response

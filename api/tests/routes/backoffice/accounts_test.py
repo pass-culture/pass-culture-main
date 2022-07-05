@@ -1,4 +1,5 @@
 import datetime
+import math
 import re
 from unittest import mock
 
@@ -21,6 +22,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users.factories import DepositGrantFactory
 from pcapi.models import db
 from pcapi.models.beneficiary_import_status import ImportStatus
+from pcapi.routes.backoffice.serialization import PaginableQuery
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -60,6 +62,20 @@ def create_bunch_of_accounts():
 
 
 class PublicAccountSearchTest:
+    def _create_accounts(self, number, first_names=("Mireille", "Robert")):
+        for i in range(number):
+            users_factories.UserFactory(
+                firstName=first_names[i % len(first_names)],
+                lastName=f"{i:02}",
+            )
+
+    def _check_pagination(self, content, result_items, items_per_page, page=1):
+        pages = math.ceil(result_items / items_per_page)
+        assert content["pages"] == pages
+        assert content["total"] == result_items
+        assert content["page"] == page
+        assert content["size"] == result_items % items_per_page if (page == pages) else items_per_page
+
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_can_search_public_account_by_id(self, client):
         # given
@@ -205,11 +221,9 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_pagination_default(self, client):
         # given
-        for i in range(50):
-            users_factories.UserFactory(
-                firstName="Robert" if i % 2 else "Mireille",
-                lastName=f"{i:02}",
-            )
+        total_items = 50
+        items_per_page = PaginableQuery.__fields__["perPage"].default
+        self._create_accounts(total_items)
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -221,10 +235,7 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         content = response.json
-        assert content["pages"] == 2
-        assert content["total"] == 25
-        assert content["page"] == 1
-        assert content["size"] == 20
+        self._check_pagination(content, total_items / 2, items_per_page, 1)
         data = content["data"]
         assert len(data) == content["size"]
         assert all(account["firstName"] == "Robert" for account in data)
@@ -233,26 +244,21 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_pagination_custom_page_size(self, client):
         # given
-        for i in range(50):
-            users_factories.UserFactory(
-                firstName="Robert" if i % 2 else "Mireille",
-                lastName=f"{i:02}",
-            )
+        total_items = 50
+        items_per_page = 10
+        self._create_accounts(total_items)
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_public_account", q="Mireille", perPage=10),
+            url_for("backoffice_blueprint.search_public_account", q="Mireille", perPage=items_per_page),
         )
 
         # then
         assert response.status_code == 200
         content = response.json
-        assert content["pages"] == 3
-        assert content["total"] == 25
-        assert content["page"] == 1
-        assert content["size"] == 10
+        self._check_pagination(content, total_items / 2, items_per_page, 1)
         data = content["data"]
         assert len(data) == content["size"]
         assert all(account["firstName"] == "Mireille" for account in data)
@@ -261,26 +267,22 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_pagination_custom_page_number(self, client):
         # given
-        for i in range(50):
-            users_factories.UserFactory(
-                firstName="Robert" if i % 2 else "Mireille",
-                lastName=f"{i:02}",
-            )
+        total_items = 50
+        items_per_page = PaginableQuery.__fields__["perPage"].default
+        page = 2
+        self._create_accounts(total_items)
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_public_account", q="Mireille", page=2),
+            url_for("backoffice_blueprint.search_public_account", q="Mireille", page=page),
         )
 
         # then
         assert response.status_code == 200
         content = response.json
-        assert content["pages"] == 2
-        assert content["total"] == 25
-        assert content["page"] == 2
-        assert content["size"] == 5
+        self._check_pagination(content, total_items / 2, items_per_page, page)
         data = content["data"]
         assert len(data) == content["size"]
         assert all(account["firstName"] == "Mireille" for account in data)
@@ -289,26 +291,22 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_pagination_custom_page_number_and_size(self, client):
         # given
-        for i in range(50):
-            users_factories.UserFactory(
-                firstName="Robert" if i % 2 else "Mireille",
-                lastName=f"{i:02}",
-            )
+        total_items = 50
+        items_per_page = 5
+        page = 3
+        self._create_accounts(total_items)
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
         # when
         response = client.with_explicit_token(auth_token).get(
-            url_for("backoffice_blueprint.search_public_account", q="Mireille", page=3, perPage=5),
+            url_for("backoffice_blueprint.search_public_account", q="Mireille", page=page, perPage=items_per_page),
         )
 
         # then
         assert response.status_code == 200
         content = response.json
-        assert content["pages"] == 5
-        assert content["total"] == 25
-        assert content["page"] == 3
-        assert content["size"] == 5
+        self._check_pagination(content, total_items / 2, items_per_page, page)
         data = content["data"]
         assert len(data) == content["size"]
         assert all(account["firstName"] == "Mireille" for account in data)
@@ -317,11 +315,10 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_pagination_ordering(self, client):
         # given
-        for i in range(30):
-            users_factories.UserFactory(
-                firstName="Michel" if i % 2 else "Micheline",
-                lastName=f"{i:02}",
-            )
+        total_items = 30
+        items_per_page = PaginableQuery.__fields__["perPage"].default
+        page = 1
+        self._create_accounts(total_items, ("Micheline", "Michel"))
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
@@ -333,10 +330,7 @@ class PublicAccountSearchTest:
         # then
         assert response.status_code == 200
         content = response.json
-        assert content["pages"] == 2
-        assert content["total"] == 30
-        assert content["page"] == 1
-        assert content["size"] == 20
+        self._check_pagination(content, total_items, items_per_page, page)
         data = content["data"]
         assert len(data) == content["size"]
         assert all(account["firstName"] == "Michel" for account in data[:15])
@@ -347,11 +341,8 @@ class PublicAccountSearchTest:
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_error_on_bad_sorted_field(self, client):
         # given
-        for i in range(30):
-            users_factories.UserFactory(
-                firstName="Michel" if i % 2 else "Micheline",
-                lastName=f"{i:02}",
-            )
+        total_items = 30
+        self._create_accounts(total_items)
         user = users_factories.UserFactory()
         auth_token = generate_token(user, [Permissions.SEARCH_PUBLIC_ACCOUNT])
 
