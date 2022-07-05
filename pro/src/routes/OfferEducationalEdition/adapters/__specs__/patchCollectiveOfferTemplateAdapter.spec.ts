@@ -1,8 +1,17 @@
-import { OfferAddressType, SubcategoryIdEnum } from 'apiClient/v1'
+import {
+  ApiError,
+  GetCollectiveOfferTemplateResponseModel,
+  OfferAddressType,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
 import {
   Params,
   patchCollectiveOfferTemplateAdapter,
 } from '../patchCollectiveOfferTemplateAdapter'
+
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { api } from 'apiClient/api'
 
 describe('patchCollectiveOfferTemplateAdapter', () => {
   let props: Params
@@ -101,12 +110,15 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
 
     it('should return an error when the offer could not be updated', async () => {
       // given
-      // @ts-ignore
-      jest.spyOn(window, 'fetch').mockRejectedValueOnce({
-        status: 422,
-        json: async () => ({}),
-        error: '',
-      })
+      jest
+        .spyOn(api, 'editCollectiveOfferTemplate')
+        .mockRejectedValueOnce(
+          new ApiError(
+            {} as ApiRequestOptions,
+            { body: {}, status: 422 } as ApiResult,
+            ''
+          )
+        )
 
       // when
       const response = await patchCollectiveOfferTemplateAdapter({
@@ -122,12 +134,9 @@ describe('patchCollectiveOfferTemplateAdapter', () => {
     })
     it('should return a confirmation when the booking was cancelled', async () => {
       // given
-      // @ts-ignore
-      jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ collectiveStock: { isBooked: false } }),
-      })
+      jest
+        .spyOn(api, 'editCollectiveOfferTemplate')
+        .mockResolvedValueOnce({} as GetCollectiveOfferTemplateResponseModel)
 
       // when
       const response = await patchCollectiveOfferTemplateAdapter({

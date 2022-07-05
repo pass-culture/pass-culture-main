@@ -1,16 +1,25 @@
+import { ApiError } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+import { api } from 'apiClient/api'
 import { getStockCollectiveOfferTemplateAdapter } from '../getStockCollectiveOfferTemplateAdapter'
 
 describe('getStockCollectiveOfferTemplateAdapter', () => {
   describe('getStockCollectiveOfferTemplateAdapter', () => {
     it('should return an error when API returns an error', async () => {
       // given
-      // @ts-ignore
-      jest.spyOn(window, 'fetch').mockResolvedValueOnce({
-        status: 400,
-        json: async () => ({
-          code: 'NO_BOOKING',
-        }),
-      })
+      jest.spyOn(api, 'getCollectiveOfferTemplate').mockRejectedValueOnce(
+        new ApiError(
+          {} as ApiRequestOptions,
+          {
+            status: 400,
+            body: {
+              code: 'NO_BOOKING',
+            },
+          } as ApiResult,
+          ''
+        )
+      )
 
       // when
       const response = await getStockCollectiveOfferTemplateAdapter('A1')
