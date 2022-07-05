@@ -68,12 +68,20 @@ const Summary = ({
 
         {formOfferV2 ? (
           isCreation && (
-            <ButtonLink
-              variant={ButtonVariant.PRIMARY}
-              to={`/offre/${offerId}/individuel/creation/confirmation${location.search}`}
-            >
-              Publier
-            </ButtonLink>
+            <div className={styles['offer-creation-preview-actions']}>
+              <ButtonLink
+                variant={ButtonVariant.SECONDARY}
+                to={`/offre/${offerId}/individuel/creation/stocks`}
+              >
+                Étape précédente
+              </ButtonLink>
+              <ButtonLink
+                variant={ButtonVariant.PRIMARY}
+                to={`/offre/${offerId}/individuel/creation/confirmation${location.search}`}
+              >
+                Publier l'offre
+              </ButtonLink>
+            </div>
           )
         ) : (
           <OfferFormLayout.ActionBar>

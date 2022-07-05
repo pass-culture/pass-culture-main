@@ -13,3 +13,20 @@
         margin-right: rem.torem(8px);
     }
 }
+
+.offer-creation-preview-actions {
+    flex: 1;
+    justify-content: center;
+    margin-top: rem.torem(64px);
+
+    button,
+    a {
+      flex: 1;
+      margin-left: rem.torem(24px);
+      text-align: center;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+}
