@@ -66,7 +66,15 @@ def parse_beneficiary_information_graphql(
         label = field.label.lower()
         value = field.value or ""
 
-        if dms_models.FieldLabelKeyword.BIRTH_DATE.value in label:
+        if dms_models.FieldLabelKeyword.ACTIVITY.value in label:
+            activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
+            if activity is None:
+                logger.error("Unknown activity value for application %s: %s", application_number, value)
+
+        elif dms_models.FieldLabelKeyword.ADDRESS.value in label:
+            address = value
+
+        elif dms_models.FieldLabelKeyword.BIRTH_DATE.value in label:
             try:
                 birth_date = date_parser.parse(value, FrenchParserInfo())
             except date_parser.ParserError:
@@ -75,15 +83,6 @@ def parse_beneficiary_information_graphql(
                 )
                 logger.error("Could not parse birth date %s for DMS application %s", value, application_number)
 
-        elif dms_models.FieldLabelKeyword.TELEPHONE.value in label:
-            phone = value.replace(" ", "")
-        elif dms_models.FieldLabelKeyword.ACTIVITY.value in label:
-            activity = DMS_ACTIVITY_ENUM_MAPPING.get(value) if value else None
-            if activity is None:
-                logger.error("Unknown activity value for application %s: %s", application_number, value)
-
-        elif dms_models.FieldLabelKeyword.ADDRESS.value in label:
-            address = value
         elif dms_models.FieldLabelKeyword.ID_PIECE_NUMBER.value in label:
             value = value.strip()
             if not fraud_api.validate_id_piece_number_format_fraud_item(value):
@@ -92,6 +91,9 @@ def parse_beneficiary_information_graphql(
                 )
             else:
                 id_piece_number = value
+
+        elif dms_models.FieldLabelKeyword.TELEPHONE.value in label:
+            phone = value.replace(" ", "")
 
         # The order between POSTAL_CODE and CITY check is important. Postal code needs to happen first.
         # If we check CITY first, we will get a false positive for the postal code,
@@ -105,6 +107,7 @@ def parse_beneficiary_information_graphql(
                 )
                 continue
             postal_code = match.group(0)
+
         elif dms_models.FieldLabelKeyword.CITY_1.value in label or dms_models.FieldLabelKeyword.CITY_2.value in label:
             city = value
 
