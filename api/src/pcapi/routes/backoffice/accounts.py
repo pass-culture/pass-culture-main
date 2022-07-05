@@ -1,3 +1,5 @@
+import typing
+
 from pcapi.core.auth.utils import get_current_user
 from pcapi.core.fraud import api as fraud_api
 from pcapi.core.fraud import models as fraud_models
@@ -34,13 +36,13 @@ SUBSCRIPTION_ITEM_METHODS = [
 @blueprint.backoffice_blueprint.route("public_accounts/search", methods=["GET"])
 @perm_utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
 @spectree_serialize(
-    response_model=serialization.PaginatedResponse,
+    response_model=serialization.ListPublicAccountsResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
 def search_public_account(
     query: serialization.PublicAccountSearchQuery,
-) -> serialization.PaginatedResponse:
+) -> serialization.ListPublicAccountsResponseModel:
     terms = query.q.split()
     sorts = query.sort.split(",") if query.sort else ["id"]
 
@@ -49,13 +51,18 @@ def search_public_account(
         per_page=query.perPage,
     )
 
-    return utils.build_paginated_response(
-        pages=paginated.pages,
-        total=paginated.total,
-        page=paginated.page,
-        sort=query.sort,
-        data=[serialization.PublicAccount.from_orm(account) for account in paginated.items],
+    response = typing.cast(
+        serialization.ListPublicAccountsResponseModel,
+        utils.build_paginated_response(
+            response_model=serialization.ListPublicAccountsResponseModel,
+            pages=paginated.pages,
+            total=paginated.total,
+            page=paginated.page,
+            sort=query.sort,
+            data=[serialization.PublicAccount.from_orm(account) for account in paginated.items],
+        ),
     )
+    return response
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["GET"])
