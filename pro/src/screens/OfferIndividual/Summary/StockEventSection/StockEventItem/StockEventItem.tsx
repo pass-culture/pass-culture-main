@@ -35,7 +35,7 @@ const StockEventItem = ({
       )}
       {beginningDateTime && (
         <SummaryLayout.Row
-          title="Horraire"
+          title="Horaire"
           description={format(eventLocalDateTime, FORMAT_HH_mm)}
         />
       )}
