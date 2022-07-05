@@ -22,7 +22,7 @@ export interface MultiSelectAutocompleteProps {
   maxHeight?: number
   options: SelectOption[]
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void
-  pluralLabel: string
+  pluralLabel?: string
   smallLabel?: boolean
   disabled?: boolean
   placeholder?: string
@@ -130,7 +130,8 @@ const MultiSelectAutocomplete = ({
             setFieldTouched(fieldName, true)
           }}
           placeholder={
-            placeholder ?? (field.value.length > 1 ? pluralLabel : label)
+            placeholder ??
+            (field.value.length > 1 && pluralLabel ? pluralLabel : label)
           }
           style={{ paddingLeft: field.value.length > 0 ? '2.2rem' : '1rem' }}
           className={cx({
