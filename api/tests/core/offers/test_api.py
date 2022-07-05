@@ -1422,18 +1422,15 @@ class AddCriterionToOffersTest:
     def test_add_criteria_from_isbn_when_one_has_criteria(self, mocked_async_index_offer_ids):
         # Given
         isbn = "2221001648"
+        criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
+        criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
         product1 = factories.ProductFactory(extraData={"isbn": isbn})
-        offer11 = factories.OfferFactory(product=product1)
-        offer12 = factories.OfferFactory(product=product1)
+        offer11 = factories.OfferFactory(product=product1, criteria=[criterion1])
+        offer12 = factories.OfferFactory(product=product1, criteria=[criterion2])
         product2 = factories.ProductFactory(extraData={"isbn": isbn})
         offer21 = factories.OfferFactory(product=product2)
         inactive_offer = factories.OfferFactory(product=product1, isActive=False)
         unmatched_offer = factories.OfferFactory()
-        criterion1 = criteria_factories.CriterionFactory(name="Pretty good books")
-        criterion2 = criteria_factories.CriterionFactory(name="Other pretty good books")
-
-        criteria_factories.OfferCriterionFactory(offer=offer11, criterion=criterion1)
-        criteria_factories.OfferCriterionFactory(offer=offer12, criterion=criterion2)
 
         # When
         is_successful = api.add_criteria_to_offers([criterion1, criterion2], isbn=isbn)

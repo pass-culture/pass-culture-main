@@ -1242,9 +1242,11 @@ class DeletePastDraftOfferTest:
     @freeze_time("2020-10-15 09:00:00")
     def test_delete_past_draft_offers(self):
         two_days_ago = datetime.utcnow() - timedelta(days=2)
-        offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.DRAFT)
+        criterion = criteria_factories.CriterionFactory()
+        offer = offers_factories.OfferFactory(
+            dateCreated=two_days_ago, validation=OfferValidationStatus.DRAFT, criteria=[criterion]
+        )
         offers_factories.MediationFactory(offer=offer)
-        criteria_factories.OfferCriterionFactory(offer=offer)
         past_offer = offers_factories.OfferFactory(dateCreated=two_days_ago, validation=OfferValidationStatus.PENDING)
         today_offer = offers_factories.OfferFactory(
             dateCreated=datetime.utcnow(), validation=OfferValidationStatus.DRAFT

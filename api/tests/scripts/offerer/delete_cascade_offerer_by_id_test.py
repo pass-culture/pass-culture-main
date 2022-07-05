@@ -225,9 +225,11 @@ def test_delete_cascade_offerer_should_remove_favorites_of_managed_offers():
 def test_delete_cascade_offerer_should_remove_criterion_attachment_of_managed_offers():
     # Given
     offerer_to_delete = offerers_factories.OffererFactory()
-    criteria_factories.OfferCriterionFactory(offer__venue__managingOfferer=offerer_to_delete)
-    criteria_factories.OfferCriterionFactory()
-
+    offers_factories.OfferFactory(
+        venue__managingOfferer=offerer_to_delete,
+        criteria=[criteria_factories.CriterionFactory()],
+    )
+    offers_factories.OfferFactory(criteria=[criteria_factories.CriterionFactory()])
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
 

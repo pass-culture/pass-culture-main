@@ -106,8 +106,9 @@ def test_serialize_offer_distinct(extra_data, expected_distinct):
 
 
 def test_serialize_offer_tags():
-    tag = criteria_factories.OfferCriterionFactory(criterion__name="formidable")
-    serialized = algolia.AlgoliaBackend().serialize_offer(tag.offer)
+    criterion = criteria_factories.CriterionFactory(name="formidable")
+    offer = offers_factories.OfferFactory(criteria=[criterion])
+    serialized = algolia.AlgoliaBackend().serialize_offer(offer)
     assert serialized["offer"]["tags"] == ["formidable"]
 
 
