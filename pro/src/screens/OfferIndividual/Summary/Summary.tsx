@@ -8,6 +8,7 @@ import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { ActionBar } from '../ActionBar'
+import { BannerSummary } from 'new_components/Banner'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
@@ -48,6 +49,7 @@ const Summary = ({
   return (
     <SummaryLayout>
       <SummaryLayout.Content>
+        {isCreation && <BannerSummary />}
         <OfferSection offer={offer} isCreation={isCreation} />
         {stockThing && (
           <StockThingSection
