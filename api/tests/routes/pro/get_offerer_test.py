@@ -86,6 +86,7 @@ class Returns200Test:
                     "mentalDisabilityCompliant": False,
                     "motorDisabilityCompliant": False,
                     "name": offererVenue.name,
+                    "nonHumanizedId": offererVenue.id,
                     "postalCode": offererVenue.postalCode,
                     "publicName": offererVenue.publicName,
                     "siret": offererVenue.siret,
@@ -96,6 +97,7 @@ class Returns200Test:
                 for offererVenue in offerer.managedVenues
             ],
             "name": offerer.name,
+            "nonHumanizedId": offerer.id,
             "postalCode": offerer.postalCode,
             "siren": offerer.siren,
         }

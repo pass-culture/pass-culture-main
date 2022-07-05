@@ -24,6 +24,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     isVirtual: bool
     managingOffererId: str
     name: str
+    nonHumanizedId: int
     postalCode: Optional[str]
     publicName: Optional[str]
     siret: Optional[str]
@@ -32,6 +33,11 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetOffererVenueResponseModel":
+        venue.nonHumanizedId = venue.id
+        return super().from_orm(venue)
 
     class Config:
         orm_mode = True
@@ -63,6 +69,7 @@ class GetOffererResponseModel(BaseModel):
     lastProviderId: Optional[str]
     managedVenues: list[GetOffererVenueResponseModel]
     name: str
+    nonHumanizedId: int
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
     siren: Optional[str]
@@ -87,6 +94,7 @@ class GetOffererResponseModel(BaseModel):
             or offerer.hasDigitalVenueAtLeastOneOffer
         )
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)
+        offerer.nonHumanizedId = offerer.id
 
         return super().from_orm(offerer)
 
