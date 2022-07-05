@@ -9,10 +9,12 @@ import React, { useCallback } from 'react'
 
 import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 
 const StatusToggleButton = ({ offer, reloadOffer }) => {
   const notification = useNotification()
+  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
   const toggleOfferActiveStatus = useCallback(() => {
     pcapi
@@ -29,6 +31,9 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
         )
       })
   }, [offer, reloadOffer])
+
+  const activateAction = useSummaryPage ? 'Publier' : 'Activer'
+  const deActivateAction = useSummaryPage ? 'Dépublier' : 'Désactiver'
   return (
     <button
       className="tertiary-button with-icon"
@@ -41,12 +46,12 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
       {offer.status !== OFFER_STATUS_INACTIVE ? (
         <>
           <Icon svg="ico-status-inactive" />
-          Désactiver
+          {deActivateAction}
         </>
       ) : (
         <>
           <Icon svg="ico-status-validated" />
-          Activer
+          {activateAction}
         </>
       )}
     </button>

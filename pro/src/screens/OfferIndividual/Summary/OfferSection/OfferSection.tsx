@@ -9,6 +9,8 @@ import { SummaryLayout } from 'new_components/SummaryLayout'
 import styles from './OfferSummary.module.scss'
 
 export interface IOfferSectionProps {
+  id: string
+  nonHumanizedId: number
   name: string
   description: string
   categoryName: string
@@ -43,9 +45,20 @@ export interface IOfferSectionProps {
   withdrawalDelay: number | null
 }
 
-const OfferSummary = ({ ...offer }: IOfferSectionProps): JSX.Element => {
+interface IOfferSummaryProps {
+  offer: IOfferSectionProps
+  isCreation: boolean
+}
+
+const OfferSummary = ({
+  isCreation,
+  offer,
+}: IOfferSummaryProps): JSX.Element => {
+  const editLink = isCreation
+    ? `/offre/${offer.id}/individuel/creation`
+    : `/offre/${offer.id}/individuel/edition`
   return (
-    <SummaryLayout.Section title="Détails de l'offre">
+    <SummaryLayout.Section title="Détails de l'offre" editLink={editLink}>
       <SummaryLayout.SubSection title="Type d'offre">
         <SummaryLayout.Row title="Catégorie" description={offer.categoryName} />
         <SummaryLayout.Row

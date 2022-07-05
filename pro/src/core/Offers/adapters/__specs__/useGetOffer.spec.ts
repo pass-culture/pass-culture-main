@@ -176,6 +176,7 @@ describe('useOffererNames', () => {
       thumbUrl: '',
       musicSubType: '',
       musicType: '',
+      nonHumanizedId: 192,
       offererId: 'CU',
       performer: '',
       showSubType: '',

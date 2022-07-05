@@ -18,6 +18,17 @@
 
     &-header {
       margin-bottom: rem.torem(24px);
+      &-content {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+      }
+      &-edit-link {
+        & > svg {
+            height: rem.torem(16px);
+        }
+      }
 
       &-separator {
         border-bottom: rem.torem(2px) solid colors.$black;
