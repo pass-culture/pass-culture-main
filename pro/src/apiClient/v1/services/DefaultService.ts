@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
 import type { BusinessUnitEditionBodyModel } from '../models/BusinessUnitEditionBodyModel';
@@ -19,9 +20,6 @@ import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel'
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
 import type { EditVenueBodyModel } from '../models/EditVenueBodyModel';
 import type { EducationalInstitutionsResponseModel } from '../models/EducationalInstitutionsResponseModel';
-import type { EducationalOfferResponseIdModel } from '../models/EducationalOfferResponseIdModel';
-import type { EducationalStockCreationBodyModel } from '../models/EducationalStockCreationBodyModel';
-import type { EducationalStockEditionBodyModel } from '../models/EducationalStockEditionBodyModel';
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
@@ -48,14 +46,12 @@ import type { PatchCollectiveOfferActiveStatusBodyModel } from '../models/PatchC
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
-import type { PatchEducationalOfferBodyModel } from '../models/PatchEducationalOfferBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
 import type { PatchProUserBodyModel } from '../models/PatchProUserBodyModel';
 import type { PatchProUserResponseModel } from '../models/PatchProUserResponseModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
-import type { PostEducationalOfferBodyModel } from '../models/PostEducationalOfferBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { ReimbursementPointListResponseModel } from '../models/ReimbursementPointListResponseModel';
@@ -565,6 +561,23 @@ export class DefaultService {
   }
 
   /**
+   * get_educational_partners <GET>
+   * @returns AdageCulturalPartnersResponseModel OK
+   * @throws ApiError
+   */
+  public getEducationalPartners(): CancelablePromise<AdageCulturalPartnersResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/cultural-partners',
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_educational_institutions <GET>
    * @param perPageLimit
    * @param page
@@ -1012,53 +1025,6 @@ export class DefaultService {
   }
 
   /**
-   * create_educational_offer <POST>
-   * @param requestBody
-   * @returns EducationalOfferResponseIdModel Created
-   * @throws ApiError
-   */
-  public createEducationalOffer(
-    requestBody?: PostEducationalOfferBodyModel,
-  ): CancelablePromise<EducationalOfferResponseIdModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offers/educational',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * edit_educational_offer <PATCH>
-   * @param offerId
-   * @param requestBody
-   * @returns OfferResponseIdModel OK
-   * @throws ApiError
-   */
-  public editEducationalOffer(
-    offerId: string,
-    requestBody?: PatchEducationalOfferBodyModel,
-  ): CancelablePromise<OfferResponseIdModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/offers/educational/{offer_id}',
-      path: {
-        'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * patch_publish_offer <PATCH>
    * @param requestBody
    * @returns void
@@ -1145,30 +1111,6 @@ export class DefaultService {
   }
 
   /**
-   * cancel_educational_offer_booking <PATCH>
-   * @param offerId
-   * @returns void
-   * @throws ApiError
-   */
-  public cancelEducationalOfferBooking(
-    offerId: string,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/offers/{offer_id}/cancel_booking',
-      path: {
-        'offer_id': offerId,
-      },
-      errors: {
-        400: `Bad Request`,
-        403: `Forbidden`,
-        404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * get_stocks <GET>
    * @param offerId
    * @returns StocksResponseModel OK
@@ -1234,56 +1176,6 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * create_educational_stock <POST>
-   * @param requestBody
-   * @returns StockIdResponseModel Created
-   * @throws ApiError
-   */
-  public createEducationalStock(
-    requestBody?: EducationalStockCreationBodyModel,
-  ): CancelablePromise<StockIdResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/stocks/educational',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * edit_educational_stock <PATCH>
-   * @param stockId
-   * @param requestBody
-   * @returns any OK
-   * @throws ApiError
-   */
-  public editEducationalStock(
-    stockId: string,
-    requestBody?: EducationalStockEditionBodyModel,
-  ): CancelablePromise<any> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/stocks/educational/{stock_id}',
-      path: {
-        'stock_id': stockId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: `Bad Request`,
-        401: `Unauthorized`,
-        403: `Forbidden`,
-        404: `Not Found`,
         422: `Unprocessable Entity`,
       },
     });
