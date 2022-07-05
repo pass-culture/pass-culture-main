@@ -95,7 +95,7 @@ test('je peux créer un lieu sans SIRET avec une description', async t => {
     .typeText(commentInput, 'Test sans SIRET', { paste: true })
     .click(venueType)
     .click(venueTypeOption.withText('Festival'))
-    .typeText(addressInput, '1 place du trocadéro Paris', { paste: true })
+    .typeText(addressInput, '1 place du trocadéro Paris')
     .click(addressSuggestion)
     .click(audioDisabilityCompliant)
     .expect(postalCodeInput.value)
