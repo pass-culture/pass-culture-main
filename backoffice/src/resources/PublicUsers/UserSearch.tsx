@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardActions,
+  Pagination,
   CardContent,
   Grid,
   IconButton,
@@ -95,37 +96,68 @@ function stopTypingOnSearch(event: {
 }
 
 export const UserSearch = () => {
-  const [userData, setUserData] = useState([])
+  const [userDataState, setUserDataState] = useState({
+    userData: [],
+    userTotal: 0,
+    totalPages: 0,
+  })
+  const [searchParameter, setSearchParameter] = useState('')
   const [emptyResults, setEmptyResults] = useState(true)
   useAuthenticated()
   const notify = useNotify()
 
+  async function searchPublicUserList(searchParameter: string, page: number) {
+    try {
+      const response = await dataProvider.searchList('public_accounts', {
+        pagination: {
+          page: page,
+          perPage: 20,
+        },
+        meta: {
+          search: searchParameter,
+        },
+      })
+      if (response && response.data && response.data.length > 0) {
+        setUserDataState({
+          userData: response.data,
+          userTotal: response.total,
+          totalPages: response.totalPages,
+        })
+        setEmptyResults(false)
+      }
+    } catch (error) {
+      if (error instanceof PcApiHttpError) {
+        notify(getHttpApiErrorMessage(error), { type: 'error' })
+      } else {
+        notify('Une erreur est survenue !', { type: 'error' })
+      }
+      captureException(error)
+    }
+  }
+
+  async function onChangePage(event: React.ChangeEvent<unknown>, page: number) {
+    await searchPublicUserList(searchParameter, page)
+  }
+
   async function formSubmit(params: FieldValues) {
     if (params && params.search) {
-      setUserData([])
+      setSearchParameter(params.search)
+      setUserDataState({
+        userData: [],
+        userTotal: 0,
+        totalPages: 0,
+      })
       setEmptyResults(true)
-      try {
-        const response = await dataProvider.searchList(
-          'public_accounts/search',
-          String(params.search)
-        )
-        if (response && response.data && response.data.length > 0) {
-          setUserData(response.data)
-          setEmptyResults(false)
-        }
-      } catch (error) {
-        if (error instanceof PcApiHttpError) {
-          notify(getHttpApiErrorMessage(error), { type: 'error' })
-        } else {
-          notify('Une erreur est survenue !', { type: 'error' })
-        }
-        captureException(error)
-      }
+      await searchPublicUserList(params.search, 1)
     }
   }
 
   const clearSearch = () => {
-    setUserData([])
+    setUserDataState({
+      userData: [],
+      userTotal: 0,
+      totalPages: 0,
+    })
     setEmptyResults(true)
   }
 
@@ -226,13 +258,19 @@ export const UserSearch = () => {
               </Form>
             </Box>
           </Grid>
-          {!emptyResults && <div>{userData.length} résultat(s)</div>}
+          {!emptyResults && <div>{userDataState.userTotal} résultat(s)</div>}
+          {!emptyResults && (
+            <Pagination
+              count={userDataState.totalPages}
+              onChange={onChangePage}
+            />
+          )}
         </CardContent>
       </Card>
       <List>
         <Grid container spacing={2} sx={{ marginTop: '1em', minWidth: 275 }}>
           {!emptyResults &&
-            userData.map(user => (
+            userDataState.userData.map(user => (
               <Grid
                 key={user['id']}
                 sx={{ minWidth: 275 }}
