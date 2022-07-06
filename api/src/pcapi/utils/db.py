@@ -59,8 +59,13 @@ class MagicEnum(sqla_types.TypeDecorator):
          assert wall.color == Color.RED  # again, not `Color.RED.value`
     """
 
+    cache_ok = True
+
     def __init__(self, enum_class: typing.Type[enum.Enum]):  # pylint: disable=super-init-not-called
-        self.enum = enum_class
+        # WARNING: The attribute MUST have the same name as the
+        # argument in `__init__()` for SQLAlchemy to produce a valid
+        # cache key. See https://docs.sqlalchemy.org/en/14/core/type_api.html#sqlalchemy.types.ExternalType.cache_ok
+        self.enum_class = enum_class
         first_value = list(enum_class)[0].value  # type: ignore[attr-defined]
         if isinstance(first_value, str):
             self.impl = sqla_types.Text()
@@ -75,10 +80,10 @@ class MagicEnum(sqla_types.TypeDecorator):
 
     @property
     def python_type(self) -> typing.Type[enum.Enum]:
-        return self.enum
+        return self.enum_class
 
     def copy(self, **kwargs: typing.Any) -> "MagicEnum":
-        return self.__class__(self.enum)
+        return self.__class__(self.enum_class)
 
     def process_bind_param(
         self,
@@ -96,7 +101,7 @@ class MagicEnum(sqla_types.TypeDecorator):
     ) -> typing.Optional[enum.Enum]:
         if value is None:
             return None
-        return self.enum(value)
+        return self.enum_class(value)
 
 
 SafeJsonB = sqla_mutable.MutableDict.as_mutable(sqla_json.JSONB)
