@@ -5,7 +5,8 @@ import typing
 
 import google.auth
 from google.auth import credentials as auth_credentials
-from google.auth import transport as auth_transport
+from google.auth import iam
+from google.auth.transport import requests as auth_requests
 from google.oauth2 import service_account
 import googleapiclient.discovery
 
@@ -63,11 +64,11 @@ def get_user_from_google_id(token: str) -> typing.Optional[users_models.User]:
 def delegate_credentials(
     credentials: auth_credentials.Credentials, subject: str, scopes: tuple[str]
 ) -> service_account.Credentials:
-    request = auth_transport.request.Request()
+    request = auth_requests.Request()
 
     credentials.refresh(request)
 
-    signer = google.auth.iam.Signer(request, credentials, credentials.service_account_email)
+    signer = iam.Signer(request, credentials, credentials.service_account_email)
 
     updated_credentials = service_account.Credentials(
         signer, credentials.service_account_email, TOKEN_URI, scopes=scopes, subject=subject
