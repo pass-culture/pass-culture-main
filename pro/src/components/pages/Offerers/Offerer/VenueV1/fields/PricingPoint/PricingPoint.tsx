@@ -85,11 +85,11 @@ const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
             </Field>
           </div>
         </div>
-        {!readOnly && !isInputDisabled && (
+        {!readOnly && !isInputDisabled && !venue.pricingPoint && (
           <Button
             className={styles['space-left']}
             onClick={handleClick}
-            disabled={venue.pricingPoint?.id ? true : canSubmit}
+            disabled={canSubmit}
           >
             Valider la sélection
           </Button>
