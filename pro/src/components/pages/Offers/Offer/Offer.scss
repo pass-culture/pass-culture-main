@@ -17,6 +17,9 @@
   .sub-title {
     @include fonts.title4();
     font-weight: 500;
+  }
+
+  .title-section {
     margin-bottom: rem.torem(32px);
   }
 

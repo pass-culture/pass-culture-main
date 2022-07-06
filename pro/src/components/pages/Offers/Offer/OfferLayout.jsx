@@ -104,12 +104,14 @@ const OfferLayout = () => {
 
   return (
     <div className="offer-page">
-      <Titles action={offerHeader} title={pageTitle} />
-      {(!isCreatingOffer || activeStep !== OfferBreadcrumbStep.DETAILS) && (
-        <Title as="h4" className="sub-title" level={4}>
-          {offer.name}
-        </Title>
-      )}
+      <div className="title-section">
+        <Titles action={offerHeader} title={pageTitle} />
+        {(!isCreatingOffer || activeStep !== OfferBreadcrumbStep.DETAILS) && (
+          <Title as="h4" className="sub-title" level={4}>
+            {offer.name}
+          </Title>
+        )}
+      </div>
 
       <Breadcrumb
         activeStep={activeStep}
