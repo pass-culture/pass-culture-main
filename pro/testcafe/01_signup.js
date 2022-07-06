@@ -31,7 +31,7 @@ test('je peux créer un compte avec un SIREN non existant en base de données, e
     .typeText(lastNameInput, '93 Café0', { paste: true })
     .typeText(firstNameInput, 'PC Test 0 Pro', { paste: true })
     .typeText(phoneNumberInput, '0102030405', { paste: true })
-    .typeText(sirenInput, '501106520', { paste: true })
+    .typeText(sirenInput, '501106520')
     .pressKey('tab')
     .click(signUpButton)
     .expect(getPathname())
