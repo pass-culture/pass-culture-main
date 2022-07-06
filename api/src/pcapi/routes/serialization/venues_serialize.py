@@ -176,6 +176,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     dateModifiedAtLastProvider: Optional[datetime]
     demarchesSimplifieesApplicationId: Optional[str]
     departementCode: Optional[str]
+    dmsToken: Optional[str]
     fieldsUpdated: list[str]
     iban: Optional[str]
     idAtProviders: Optional[str]
