@@ -14,7 +14,11 @@ jest.mock('utils/config', () => {
 describe('confirmation page', () => {
   it('should display the rights information when offer is draft', async () => {
     // Given
-    const offer = offerFactory({ name: 'mon offre', status: 'DRAFT' })
+    const offer = offerFactory({
+      name: 'mon offre',
+      status: 'DRAFT',
+      venueId: 'VENUEID',
+    })
     jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
 
     // When
@@ -38,12 +42,19 @@ describe('confirmation page', () => {
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute('href', '/offre/creation/individuel')
+    ).toHaveAttribute(
+      'href',
+      `/offre/creation/individuel?structure=${offer.venue.managingOffererId}&lieu=${offer.venueId}`
+    )
   })
 
   it('should display the rights information when offer is pending', async () => {
     // Given
-    const offer = offerFactory({ name: 'mon offre', status: 'PENDING' })
+    const offer = offerFactory({
+      name: 'mon offre',
+      status: 'PENDING',
+      venueId: 'VENUEID',
+    })
     jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(offer)
 
     // When
@@ -68,6 +79,9 @@ describe('confirmation page', () => {
     ).toHaveAttribute('href', `http://localhost/offre/${offer.nonHumanizedId}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute('href', '/offre/creation/individuel')
+    ).toHaveAttribute(
+      'href',
+      `/offre/creation/individuel?structure=${offer.venue.managingOffererId}&lieu=${offer.venueId}`
+    )
   })
 })
