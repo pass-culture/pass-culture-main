@@ -1,5 +1,6 @@
 import { Offer, TSearchFilters } from 'core/Offers/types'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { api } from 'api/v1/api'
 import { serializeApiFilters } from 'core/Offers/utils'
 import { serializeOffers } from './serializers'
@@ -12,7 +13,7 @@ type GetFilteredOffersAdapter = Adapter<TSearchFilters, IPayload, IPayload>
 
 const FAILING_RESPONSE: AdapterFailure<IPayload> = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: {
     offers: [],
   },

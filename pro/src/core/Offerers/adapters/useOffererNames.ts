@@ -1,3 +1,4 @@
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { TOffererName } from 'core/Offerers/types'
 import { apiV1 } from 'api/api'
 import { useAdapter } from 'hooks'
@@ -6,7 +7,7 @@ type TGetOffererNamesAdapter = Adapter<void, TOffererName[], TOffererName[]>
 
 const FAILING_RESPONSE = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: [],
 }
 
