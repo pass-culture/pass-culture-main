@@ -34,6 +34,10 @@ export const updateOffer = (offerId, offer) => {
   return client.patch(`/offers/${offerId}`, offer)
 }
 
+export const publishOffer = (offerId: string) => {
+  return client.patch(`/offers/publish`, { id: offerId })
+}
+
 export const patchIsCollectiveOfferActive = (
   offerIds: string[],
   isActive: boolean

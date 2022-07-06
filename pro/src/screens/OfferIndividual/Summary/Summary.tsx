@@ -1,3 +1,6 @@
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import { Button, ButtonLink } from 'ui-kit'
 import {
   IOfferAppPreviewProps,
   OfferAppPreview,
@@ -5,18 +8,18 @@ import {
 import { IOfferSectionProps, OfferSection } from './OfferSection'
 import { IStockEventItemProps, StockEventSection } from './StockEventSection'
 import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
+import React, { useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { ActionBar } from '../ActionBar'
 import { BannerSummary } from 'new_components/Banner'
-import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
-import React from 'react'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import styles from './Summary.module.scss'
+import useNotification from 'components/hooks/useNotification'
 
 export interface ISummaryProps {
   offerId: string
@@ -37,7 +40,24 @@ const Summary = ({
   stockEventList,
   preview,
 }: ISummaryProps): JSX.Element => {
+  const [isDisabled, setIsDisabled] = useState(false)
   const location = useLocation()
+  const notification = useNotification()
+  const handleOfferPublication = () => {
+    setIsDisabled(true)
+    const url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
+    pcapi
+      .publishOffer(offerId)
+      .then(() => {
+        setIsDisabled(false)
+        history.push(url)
+      })
+      .catch(() => {
+        notification.error("Une erreur s'est produite, veuillez réessayer")
+        setIsDisabled(false)
+      })
+  }
+
   const history = useHistory()
   const handleNextStep = () => {
     history.push(`/offre/${offerId}/v3/creation/individuelle/confirmation`)
@@ -75,12 +95,13 @@ const Summary = ({
               >
                 Étape précédente
               </ButtonLink>
-              <ButtonLink
+              <Button
                 variant={ButtonVariant.PRIMARY}
-                to={`/offre/${offerId}/individuel/creation/confirmation${location.search}`}
+                onClick={handleOfferPublication}
+                disabled={isDisabled}
               >
                 Publier l'offre
-              </ButtonLink>
+              </Button>
             </div>
           )
         ) : (
