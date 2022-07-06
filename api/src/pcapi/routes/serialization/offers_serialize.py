@@ -66,7 +66,7 @@ class CategoryResponseModel(BaseModel):
 class PostOfferBodyModel(BaseModel):
     venue_id: str
     product_id: Optional[str]
-    subcategory_id: Optional[str]
+    subcategory_id: str
     name: Optional[str]
     booking_email: Optional[str]
     external_ticket_office_url: Optional[HttpUrl]

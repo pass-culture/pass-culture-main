@@ -145,14 +145,14 @@ def create_offer(
     user: User,
     save_as_active: bool = True,
 ) -> Offer:
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT.get(offer_data.subcategory_id)  # type: ignore [arg-type]
     venue = load_or_raise_error(Venue, offer_data.venue_id)
     check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [attr-defined]
     _check_offer_data_is_valid(offer_data, offer_data.is_educational)  # type: ignore [arg-type]
-    if _is_able_to_create_book_offer_from_isbn(subcategory):  # type: ignore [arg-type]
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[offer_data.subcategory_id]
+    if _is_able_to_create_book_offer_from_isbn(subcategory):
         offer = _initialize_book_offer_from_template(offer_data)
     else:
-        offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)  # type: ignore [arg-type]
+        offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)
 
     _complete_common_offer_fields(offer, offer_data, venue)
     offer.isActive = save_as_active
@@ -211,7 +211,7 @@ def _initialize_offer_with_new_data(
     offer = Offer()
     offer.populate_from_dict(data)
     offer.product = product
-    offer.subcategoryId = subcategory.id if subcategory else None  # type: ignore [assignment]
+    offer.subcategoryId = subcategory.id
     offer.product.owningOfferer = venue.managingOfferer
     return offer
 
@@ -237,7 +237,7 @@ def _check_offer_data_is_valid(
     offer_is_educational: bool,
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
-    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)  # type: ignore [arg-type]
+    check_offer_is_eligible_for_educational(offer_data.subcategory_id, offer_is_educational)
     if not offer_is_educational:
         validation.check_offer_extra_data(None, offer_data.subcategory_id, offer_data.extra_data)  # type: ignore [arg-type]
 
