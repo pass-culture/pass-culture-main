@@ -2209,11 +2209,11 @@ describe('stocks page', () => {
 
     it('should display a specific success notification when the user has finished the offer creation process', async () => {
       // Given
-      const draftOffer = {
-        ...defaultOffer,
+      const draftOffer = offerFactory({
         name: 'mon offre',
+        id: 'AG3A',
         status: 'DRAFT',
-      }
+      })
 
       jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(draftOffer)
       pcapi.bulkCreateOrEditStock.mockResolvedValue({})
