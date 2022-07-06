@@ -53,7 +53,6 @@ type StatusLabelProps = {
 const StatusLabel = ({ status }: StatusLabelProps) => {
   if (useActiveFeature('OFFER_FORM_SUMMARY_PAGE')) {
     OFFER_STATUS_PROPERTIES[OFFER_STATUS_ACTIVE].label = 'publiée'
-    OFFER_STATUS_PROPERTIES[OFFER_STATUS_INACTIVE].label = 'dépubliée'
   }
   return (
     <span
