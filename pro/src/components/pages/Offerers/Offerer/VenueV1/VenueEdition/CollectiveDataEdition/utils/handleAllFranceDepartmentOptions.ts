@@ -27,129 +27,89 @@ export const handleAllFranceDepartmentOptions = (
     shouldValidate?: boolean | undefined
   ) => Promise<void> | Promise<FormikErrors<CollectiveDataFormValues>>
 ) => {
-  const allDepartmentsSelected = areAllDepartmentsSelected(formikValues)
-  const allMainlandDepartmentsSelected =
+  let allDepartmentsSelected = areAllDepartmentsSelected(formikValues)
+  let allMainlandDepartmentsSelected =
     allDepartmentsSelected || areAllMainlandDepartmentsSelected(formikValues)
 
-  // values does not include "Toute la France" and all departments are selected
-  // Case 1 : user unselected the option --> we need to unselect all departments options
-  // Case 2 : user selected the last department option --> we need to select "Toute la France"
-  if (
-    allDepartmentsSelected &&
-    !formikValues.includes(ALL_FRANCE_OPTION_VALUE)
-  ) {
-    // Unselect all departments + "France métropolitaine" if user has unselected "Toute la France"
-    if (
-      previousFormikValues &&
-      previousFormikValues.includes(ALL_FRANCE_OPTION_VALUE)
-    ) {
-      setFieldValue(
-        'collectiveInterventionArea',
-        formikValues.filter(
-          value =>
-            !allDepartmentValues.includes(value) &&
-            value !== MAINLAND_OPTION_VALUE
-        )
-      )
-    } else {
-      // Select "Toute la France" + "France métropolitaine" if user has selected all departements
-      setFieldValue('collectiveInterventionArea', [
-        ...new Set([
-          ...formikValues,
-          ALL_FRANCE_OPTION_VALUE,
-          MAINLAND_OPTION_VALUE,
-        ]),
-      ])
-    }
-  }
+  // a user can only deselect "Toute la France" if all departments are checked
+  const userUnselectedAllFrance =
+    previousFormikValues?.includes(ALL_FRANCE_OPTION_VALUE) &&
+    !formikValues.includes(ALL_FRANCE_OPTION_VALUE) &&
+    allDepartmentsSelected
 
-  // values includes "Toute la France" but not all departments
-  // Case 1 : user unselected one department --> we need to unselect "Toute la France"
-  // Case 2 : user selected "Toute la France" --> we need to select all departments
-  else if (
-    formikValues.includes(ALL_FRANCE_OPTION_VALUE) &&
-    !allDepartmentsSelected
-  ) {
-    // Unselect "Toute la France" if user has unselected a department but all were selected before
-    if (
-      previousFormikValues &&
-      areAllDepartmentsSelected(previousFormikValues)
-    ) {
-      setFieldValue(
-        'collectiveInterventionArea',
-        formikValues.filter(value => {
-          // If user has unselected a mainland department option we also need to unselect "France métropolitaine"
-          if (!allMainlandDepartmentsSelected) {
-            return (
-              value !== ALL_FRANCE_OPTION_VALUE &&
-              value !== MAINLAND_OPTION_VALUE
-            )
-          }
-
-          // else if user has unselected un domtom department option, we only unselect "Toute la France"
-          return value !== ALL_FRANCE_OPTION_VALUE
-        })
-      )
-    } else {
-      // Select all departments + "France métropolitaine" if user has selected "Toute la France"
-      setFieldValue('collectiveInterventionArea', [
-        ...new Set([
-          ...formikValues,
-          ...allDepartmentValues,
-          MAINLAND_OPTION_VALUE,
-        ]),
-      ])
-    }
-  }
-
-  // values does not include "France métropolitaine" but all mainland departments are selected
-  // Case 1 : user unselected an option --> we need to unselect "Toute la France" + all mainland departments
-  // Case 2 : user selected the last mainland department option --> we need to select "France métropolitaine"
-  else if (
+  // a user can only deselect "France métropolitaine" if all mainland departments are checked
+  const userUnselectedMainland =
+    previousFormikValues?.includes(MAINLAND_OPTION_VALUE) &&
     !formikValues.includes(MAINLAND_OPTION_VALUE) &&
     allMainlandDepartmentsSelected
-  ) {
-    // Unselect all mainland values and "Toute la France"
-    if (
-      previousFormikValues &&
-      previousFormikValues.includes(MAINLAND_OPTION_VALUE)
-    ) {
-      setFieldValue(
-        'collectiveInterventionArea',
-        formikValues.filter(
-          value =>
-            value !== ALL_FRANCE_OPTION_VALUE && !mainlandValues.includes(value)
-        )
+
+  if (userUnselectedAllFrance) {
+    return setFieldValue(
+      'collectiveInterventionArea',
+      formikValues.filter(
+        value =>
+          !allDepartmentValues.includes(value) &&
+          value !== MAINLAND_OPTION_VALUE
       )
-    } else {
-      // Select "France métropolitaine"
-      setFieldValue('collectiveInterventionArea', [
-        ...new Set([...formikValues, MAINLAND_OPTION_VALUE]),
-      ])
-    }
+    )
   }
 
-  // values includes "France métropolitaine" but not all mainland department options
-  // Case 1 : user selected "France métropolitaine" --> we need to select all mainland department options
-  // Case 2 : user unselected one mainland department option --> we need to unselect "France métropolitaine"
-  else if (
-    formikValues.includes(MAINLAND_OPTION_VALUE) &&
-    !allMainlandDepartmentsSelected
-  ) {
-    // Select all mainland values
-    if (
-      previousFormikValues &&
-      !previousFormikValues.includes(MAINLAND_OPTION_VALUE)
-    ) {
-      setFieldValue('collectiveInterventionArea', [
-        ...new Set([...formikValues, ...mainlandValues]),
-      ])
-    } else {
-      // Unselect "France métropolitaine"
-      setFieldValue(
-        'collectiveInterventionArea',
-        formikValues.filter(value => value !== MAINLAND_OPTION_VALUE)
+  if (userUnselectedMainland) {
+    return setFieldValue(
+      'collectiveInterventionArea',
+      formikValues.filter(
+        value =>
+          !(mainlandValues.includes(value) || value == ALL_FRANCE_OPTION_VALUE)
       )
-    }
+    )
   }
+
+  const userSelectedAllFrance =
+    !previousFormikValues?.includes(ALL_FRANCE_OPTION_VALUE) &&
+    formikValues.includes(ALL_FRANCE_OPTION_VALUE)
+
+  const userSelectedMainland =
+    !previousFormikValues?.includes(MAINLAND_OPTION_VALUE) &&
+    formikValues.includes(MAINLAND_OPTION_VALUE)
+
+  let newValues = new Set(formikValues)
+
+  if (userSelectedAllFrance) {
+    newValues = new Set([
+      ...formikValues,
+      ...allDepartmentValues,
+      MAINLAND_OPTION_VALUE,
+    ])
+  }
+
+  if (userSelectedMainland) {
+    newValues = new Set([...formikValues, ...mainlandValues])
+  }
+
+  allDepartmentsSelected = areAllDepartmentsSelected([...newValues])
+  allMainlandDepartmentsSelected =
+    allDepartmentsSelected || areAllMainlandDepartmentsSelected([...newValues])
+
+  if (allMainlandDepartmentsSelected) {
+    newValues.add(MAINLAND_OPTION_VALUE)
+  }
+
+  if (newValues.has(MAINLAND_OPTION_VALUE) && !allMainlandDepartmentsSelected) {
+    newValues.delete(MAINLAND_OPTION_VALUE)
+  }
+
+  if (allDepartmentsSelected) {
+    newValues.add(ALL_FRANCE_OPTION_VALUE)
+  }
+
+  if (newValues.has(ALL_FRANCE_OPTION_VALUE) && !allDepartmentsSelected) {
+    newValues.delete(ALL_FRANCE_OPTION_VALUE)
+  }
+
+  // This is to avoid infinite loop as formik values are immutable
+  if (newValues.size !== formikValues.length) {
+    return setFieldValue('collectiveInterventionArea', [...newValues])
+  }
+
+  return
 }
