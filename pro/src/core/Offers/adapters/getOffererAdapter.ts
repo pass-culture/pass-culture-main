@@ -1,3 +1,4 @@
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { Offerer } from 'core/Offers/types'
 import { api } from 'api/v1/api'
 
@@ -7,7 +8,7 @@ type GetOffererAdapter = Adapter<string, IPayload, null>
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: null,
 }
 

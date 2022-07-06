@@ -2,6 +2,8 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+
 type Params = string | null
 
 type IPayload = IUserOfferer[]
@@ -10,7 +12,7 @@ type GetOfferersAdapter = Adapter<Params, IPayload, IPayload>
 
 const FAILING_RESPONSE = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: [],
 }
 
