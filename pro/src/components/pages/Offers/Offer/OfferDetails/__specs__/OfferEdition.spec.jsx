@@ -1236,44 +1236,6 @@ describe('offerDetails - Edition', () => {
       )
     })
 
-    it('should show a success notification when form was correctly submitted', async () => {
-      // Given
-      const editedOffer = {
-        id: 'ABC12',
-        nonHumanizedId: 111,
-        subcategoryId: 'ID',
-        name: 'My edited offer',
-        description: 'Offer description',
-        venueId: editedOfferVenue.id,
-        venue: editedOfferVenue,
-        withdrawalDetails: 'Offer withdrawal details',
-        bookingEmail: 'booking@example.net',
-        extraData: {
-          musicType: '501',
-          musicSubType: '502',
-          isbn: '1234567890123',
-        },
-        audioDisabilityCompliant: false,
-        visualDisabilityCompliant: true,
-        motorDisabilityCompliant: false,
-        mentalDisabilityCompliant: false,
-        status: 'ACTIVE',
-      }
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
-      await renderOffers(props, store)
-
-      const submitButton = screen.getByText('Enregistrer')
-
-      // When
-      await userEvent.click(submitButton)
-
-      // Then
-      const successNotification = await screen.findByText(
-        'Votre offre a bien été modifiée'
-      )
-      expect(successNotification).toBeInTheDocument()
-    })
-
     it('should send accessibility fields for synchronized offers', async () => {
       // Given
       const editedOffer = {
@@ -1593,24 +1555,6 @@ describe('offerDetails - Edition', () => {
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
       ).toBeInTheDocument()
-    })
-
-    it('should show a success notification when a thumbnail submitted', async () => {
-      // Given
-      jest.spyOn(Object, 'values').mockReturnValue(['item'])
-      jest.spyOn(apiV1, 'getOffersGetOffer').mockResolvedValue(editedOffer)
-      pcapi.updateOffer.mockResolvedValue({ id: 'AA' })
-      pcapi.postThumbnail.mockResolvedValue({ id: 'BB' })
-      await renderOffers(props, store)
-
-      // When
-      await userEvent.click(await screen.findByText('Enregistrer'))
-
-      // Then
-      const successNotification = await screen.findByText(
-        'Votre offre a bien été modifiée'
-      )
-      expect(successNotification).toBeInTheDocument()
     })
   })
 

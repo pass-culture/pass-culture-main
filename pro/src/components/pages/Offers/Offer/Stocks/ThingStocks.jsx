@@ -152,9 +152,10 @@ const ThingStocks = ({
                 }`
               )
             } else {
-              showSuccessNotification(
-                'Votre offre a bien été créée et vos stocks sauvegardés.'
-              )
+              if (!useSummaryPage)
+                showSuccessNotification(
+                  'Votre offre a bien été créée et vos stocks sauvegardés.'
+                )
             }
 
             const queryParams = queryParamsFromOfferer(location)
