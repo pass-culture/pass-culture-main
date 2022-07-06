@@ -38,6 +38,7 @@ export interface IOfferSectionProps {
   url: string
 
   venueName: string
+  venuePublicName: string
   offererName: string
   bookingEmail: string
   withdrawalDetails: string
@@ -133,7 +134,10 @@ const OfferSummary = ({
 
       <SummaryLayout.SubSection title="Informations pratiques">
         <SummaryLayout.Row title="Structure" description={offer.offererName} />
-        <SummaryLayout.Row title="Lieu" description={offer.venueName} />
+        <SummaryLayout.Row
+          title="Lieu"
+          description={offer.venuePublicName || offer.venueName}
+        />
         {offer.withdrawalType && (
           <SummaryLayout.Row
             title="Comment les billets, places seront-ils transmis ?"

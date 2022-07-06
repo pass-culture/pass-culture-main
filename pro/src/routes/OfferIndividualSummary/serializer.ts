@@ -93,6 +93,7 @@ const serializerOfferSectionProps = (
     subCategoryName: offerSubCategory?.proLabel || ' - ',
 
     venueName: offer.venue.name,
+    venuePublicName: offer.venue.publicName,
     offererName: offer.venue.offerer.name,
     bookingEmail: offer.bookingEmail,
     withdrawalDetails: offer.withdrawalDetails || '',
