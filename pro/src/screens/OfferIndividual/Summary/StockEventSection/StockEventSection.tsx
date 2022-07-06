@@ -30,7 +30,7 @@ const StockEventSection = ({
     setDisplayedStocks(
       showAllStocks ? [...stocks] : stocks.slice(0, NB_UNFOLDED_STOCK)
     )
-  }, [showAllStocks])
+  }, [showAllStocks, stocks])
 
   const iconName = showAllStocks ? 'ico-arrow-up-r' : 'ico-arrow-down-r'
   const editLink = isCreation
