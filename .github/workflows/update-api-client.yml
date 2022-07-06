@@ -1,0 +1,56 @@
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  update-api-client:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          ref: ${{ github.head_ref }}
+          fetch-depth: 2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Install dockerize
+        run: |
+          sudo chown -R $USER .
+          ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+      - name: Run API
+        run: |
+          sudo chown -R 1000:1000 .
+          ./pc start-backend &
+      - name: Run api client update
+        id: update
+        run: |
+          cd pro
+          sudo chown -R $USER .
+          dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
+          yarn install
+          yarn generate:api:client:local
+      - name: Check if there are changes
+        id: changes
+        run: |
+          if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
+            then
+              echo ::set-output name=changed::'false'
+            else
+              echo "1"
+            fi
+          echo ::set-output name=changed::'true'
+      - name: Commit
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          sudo chown -R $USER .
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add .
+          git commit -m "(BSR)[PRO] chore: update api client"
+      - name: Push changes
+        if: steps.changes.outputs.changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ github.head_ref }}
