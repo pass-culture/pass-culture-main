@@ -3,6 +3,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import { Category, SubCategory } from 'custom_types/categories'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
 
 interface IPayload {
@@ -14,7 +15,7 @@ type GetCategoriesAdapter = Adapter<void, IPayload, IPayload>
 
 const FAILING_RESPONSE = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: {
     categories: [],
     subCategories: [],

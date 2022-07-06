@@ -5,6 +5,7 @@ import {
   IEducationalSubCategory,
 } from 'core/OfferEducational'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { filterEducationalCategories } from '../utils/filterEducationalCategories'
 
 type Params = null
@@ -18,7 +19,7 @@ type GetCategoriesAdapter = Adapter<Params, IPayload, IPayload>
 
 const FAILING_RESPONSE = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: {
     educationalCategories: [],
     educationalSubCategories: [],

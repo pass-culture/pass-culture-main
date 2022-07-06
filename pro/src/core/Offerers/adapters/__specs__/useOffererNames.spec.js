@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { apiV1 } from 'api/api'
 import { renderHook } from '@testing-library/react-hooks'
 import { useGetOffererNames } from '..'
@@ -51,8 +52,6 @@ describe('useOffererNames', () => {
     const updatedState = result.current
     expect(updatedState.isLoading).toBe(false)
     expect(updatedState.error.payload).toEqual([])
-    expect(updatedState.error.message).toBe(
-      'Nous avons rencontré un problème lors du chargemement des données'
-    )
+    expect(updatedState.error.message).toBe(GET_DATA_ERROR_MESSAGE)
   })
 })

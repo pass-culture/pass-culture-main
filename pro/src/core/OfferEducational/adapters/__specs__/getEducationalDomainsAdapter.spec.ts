@@ -1,5 +1,6 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getEducationalDomainsAdapter } from '../getEducationalDomainsAdapter'
 
 describe('getEducationalDomainsAdapter', () => {
@@ -8,9 +9,7 @@ describe('getEducationalDomainsAdapter', () => {
     const response = await getEducationalDomainsAdapter()
 
     expect(response.isOk).toBeFalsy()
-    expect(response.message).toBe(
-      'Nous avons rencontré un problème lors du chargemement des données'
-    )
+    expect(response.message).toBe(GET_DATA_ERROR_MESSAGE)
   })
 
   it('should return a list of domains', async () => {

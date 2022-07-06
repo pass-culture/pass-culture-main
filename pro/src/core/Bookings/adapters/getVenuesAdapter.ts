@@ -2,11 +2,12 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { GetVenuesAdapter, VenuesPayload } from 'core/Bookings'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { formatAndOrderVenues } from 'repository/venuesService'
 
 const FAILING_RESPONSE: AdapterFailure<VenuesPayload> = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: { venues: [] },
 }
 

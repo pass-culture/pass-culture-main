@@ -2,6 +2,7 @@ import '@testing-library/jest-dom'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { renderHook } from '@testing-library/react-hooks'
 import { useGetOfferIndividualVenues } from '..'
 
@@ -93,8 +94,6 @@ describe('useOffererNames', () => {
     expect(loadingState.data).toBeUndefined()
     expect(errorState.isLoading).toBe(false)
     expect(errorState.error?.payload).toEqual([])
-    expect(errorState.error?.message).toBe(
-      'Nous avons rencontré un problème lors du chargemement des données'
-    )
+    expect(errorState.error?.message).toBe(GET_DATA_ERROR_MESSAGE)
   })
 })

@@ -1,5 +1,6 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 
 export type GetEducationalDomainsAdapter = Adapter<
@@ -10,7 +11,7 @@ export type GetEducationalDomainsAdapter = Adapter<
 
 const FAILING_RESPONSE: AdapterFailure<SelectOption[]> = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: [],
 }
 

@@ -1,4 +1,5 @@
 import { CollectiveStockResponseModel } from 'apiClient/v1'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { api } from 'apiClient/api'
 
 export type IPayloadSuccess = {
@@ -13,7 +14,7 @@ type GetCollectiveStockAdapter = Adapter<
 
 const FAILING_RESPONSE: AdapterFailure<IPayloadFailure> = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: { stock: null },
 }
 

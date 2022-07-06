@@ -1,10 +1,11 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { GetUserHasBookingsAdapter } from 'core/Bookings'
 
 const FAILING_RESPONSE: AdapterFailure<boolean> = {
   isOk: false,
-  message: 'Nous avons rencontré un problème lors du chargemement des données',
+  message: GET_DATA_ERROR_MESSAGE,
   payload: false,
 }
 
