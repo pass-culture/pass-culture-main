@@ -52,7 +52,7 @@ const PricingPoint = ({
       {!readOnly && !venue.pricingPoint && (
         <p className={styles['reimbursement-subtitle']}>
           <span className={styles['text-hightlight']}>
-            Sélectionner et valider{' '}
+            Sélectionner et valider
           </span>
           ci-dessous le lieu avec SIRET sur lequel vous souhaitez que vos
           remboursements soient calculés.
