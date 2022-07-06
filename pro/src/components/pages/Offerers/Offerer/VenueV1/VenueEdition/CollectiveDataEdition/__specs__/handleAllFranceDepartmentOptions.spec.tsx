@@ -1,5 +1,6 @@
 import {
   ALL_FRANCE_OPTION_VALUE,
+  MAINLAND_OPTION_VALUE,
   allDepartmentValues,
 } from '../interventionOptions'
 
@@ -36,7 +37,7 @@ describe('handleAllFranceDepartmentOptions', () => {
 
     expect(mockedFormikSetFieldValue).toHaveBeenCalledWith(
       'collectiveInterventionArea',
-      [...currentValues, ALL_FRANCE_OPTION_VALUE]
+      [...currentValues, MAINLAND_OPTION_VALUE, ALL_FRANCE_OPTION_VALUE]
     )
   })
 
@@ -78,7 +79,12 @@ describe('handleAllFranceDepartmentOptions', () => {
 
     expect(mockedFormikSetFieldValue).toHaveBeenCalledWith(
       'collectiveInterventionArea',
-      [ALL_FRANCE_OPTION_VALUE, 'culturalPartner', ...allDepartmentValues]
+      [
+        ALL_FRANCE_OPTION_VALUE,
+        'culturalPartner',
+        ...allDepartmentValues,
+        MAINLAND_OPTION_VALUE,
+      ]
     )
   })
 
