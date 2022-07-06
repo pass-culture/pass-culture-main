@@ -1,48 +1,6 @@
 from typing import Optional
 
 
-def offerer_demarche_simplifiee_application_detail_response(
-    siren: str,
-    bic: Optional[str],
-    iban: Optional[str],
-    idx: int = 1,
-    updated_at: str = "2020-01-21T18:55:03.387Z",
-    state: str = "closed",
-) -> dict:
-    return {
-        "dossier": {
-            "id": idx,
-            "updated_at": updated_at,
-            "state": state,
-            "entreprise": {
-                "siren": siren,
-            },
-            "champs": [
-                {
-                    "value": bic,
-                    "type_de_champ": {
-                        "id": 352727,
-                        "libelle": "BIC",
-                        "type_champ": "text",
-                        "order_place": 8,
-                        "description": "",
-                    },
-                },
-                {
-                    "value": iban,
-                    "type_de_champ": {
-                        "id": 352722,
-                        "libelle": "IBAN",
-                        "type_champ": "text",
-                        "order_place": 9,
-                        "description": "",
-                    },
-                },
-            ],
-        }
-    }
-
-
 def venue_demarche_simplifiee_application_detail_response_with_siret(
     siret: str,
     bic: Optional[str],
