@@ -689,7 +689,13 @@ def _delete_dependent_pricings(
     pricings = pricings.filter(clause)
 
     pricings = pricings.with_entities(
-        models.Pricing.id, models.Pricing.bookingId, models.Pricing.status, bookings_models.Booking.stockId
+        models.Pricing.id,
+        models.Pricing.bookingId,
+        models.Pricing.status,
+        # FIXME (dbaty, 2022-07-06): remove siret column when
+        # FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST is removed.
+        models.Pricing.siret,
+        bookings_models.Booking.stockId,
     ).all()
     if not pricings:
         return
@@ -745,6 +751,20 @@ def _delete_dependent_pricings(
                         "booking_being_priced_or_cancelled": booking.id,
                         "older_pricing": pricing.id,
                         "older_pricing_status": pricing.status,
+                    },
+                )
+            # FIXME (dbaty, 2022-07-06): temporarily disable pricing
+            # ordering to get back on our feet. See PC-16084.
+            elif pricing.siret in settings.FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST:
+                pricing_ids.remove(pricing.id)
+                bookings_already_priced.remove(pricing.bookingId)
+                logger.info(
+                    "Found non-deletable pricing for a SIRET that has an older booking to price or cancel (special case for problematic venues)",
+                    extra={
+                        "booking_being_priced_or_cancelled": booking.id,
+                        "older_pricing": pricing.id,
+                        "older_pricing_status": pricing.status,
+                        "siret": pricing.siret,
                     },
                 )
             else:
