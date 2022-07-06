@@ -34,7 +34,7 @@ const ReimbursementFields = ({
           Remboursement
           <a
             className={styles['reimbursement-hint']}
-            href="todo"
+            href="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
             rel="noopener noreferrer"
             target="_blank"
           >
