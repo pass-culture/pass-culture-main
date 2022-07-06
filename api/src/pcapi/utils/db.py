@@ -6,6 +6,7 @@ import psycopg2.extras
 import pytz
 import sqlalchemy as sqla
 import sqlalchemy.dialects.postgresql.json as sqla_json
+import sqlalchemy.engine as sqla_engine
 import sqlalchemy.ext.mutable as sqla_mutable
 import sqlalchemy.types as sqla_types
 
@@ -58,9 +59,9 @@ class MagicEnum(sqla_types.TypeDecorator):
          assert wall.color == Color.RED  # again, not `Color.RED.value`
     """
 
-    def __init__(self, enum_class):  # type: ignore [no-untyped-def] # pylint: disable=super-init-not-called
+    def __init__(self, enum_class: typing.Type[enum.Enum]):  # pylint: disable=super-init-not-called
         self.enum = enum_class
-        first_value = list(enum_class)[0].value
+        first_value = list(enum_class)[0].value  # type: ignore[attr-defined]
         if isinstance(first_value, str):
             self.impl = sqla_types.Text()
         elif isinstance(first_value, int):
@@ -73,20 +74,28 @@ class MagicEnum(sqla_types.TypeDecorator):
     process_literal_param = sqla_types.TypeDecorator.process_literal_param
 
     @property
-    def python_type(self):  # type: ignore [no-untyped-def]
+    def python_type(self) -> typing.Type[enum.Enum]:
         return self.enum
 
-    def copy(self):  # type: ignore [no-untyped-def]
+    def copy(self, **kwargs: typing.Any) -> "MagicEnum":
         return self.__class__(self.enum)
 
-    def process_bind_param(self, value, dialect) -> typing.Optional[str]:  # type: ignore [no-untyped-def]
+    def process_bind_param(
+        self,
+        value: typing.Any,
+        dialect: sqla_engine.Dialect,
+    ) -> typing.Optional[str]:
         if value is None:
             return None
         return value.value
 
-    def process_result_value(self, value, dialect) -> enum.Enum:  # type: ignore [no-untyped-def]
+    def process_result_value(
+        self,
+        value: typing.Any,
+        dialect: sqla_engine.Dialect,
+    ) -> typing.Optional[enum.Enum]:
         if value is None:
-            return None  # type: ignore [return-value]
+            return None
         return self.enum(value)
 
 
