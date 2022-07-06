@@ -772,6 +772,12 @@ class DeleteDependentPricingsTest:
             api._delete_dependent_pricings(booking, "some log message", use_pricing_point=True)
         assert models.Pricing.query.one() == pricing
 
+        # With the appropriate setting, don't raise and don't
+        # delete the pricing.
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST=[booking.venue.siret]):
+            api._delete_dependent_pricings(booking, "some log message", use_pricing_point=True)
+        assert models.Pricing.query.one() == pricing
+
 
 class LegacyDeleteDependentPricingsTest:
     def test_basics(self):
@@ -930,6 +936,12 @@ class LegacyDeleteDependentPricingsTest:
         booking = create_booking_with_undeletable_dependent()
         pricing = models.Pricing.query.one()
         with pytest.raises(exceptions.NonCancellablePricingError):
+            api._delete_dependent_pricings(booking, "some log message", use_pricing_point=False)
+        assert models.Pricing.query.one() == pricing
+
+        # With the appropriate setting, don't raise and don't
+        # delete the pricing.
+        with override_settings(FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST=[booking.venue.siret]):
             api._delete_dependent_pricings(booking, "some log message", use_pricing_point=False)
         assert models.Pricing.query.one() == pricing
 
