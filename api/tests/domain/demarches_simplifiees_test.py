@@ -8,14 +8,10 @@ from pcapi.core.finance.models import BankInformationStatus
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.domain.demarches_simplifiees import CannotRegisterBankInformation
 from pcapi.domain.demarches_simplifiees import _get_status_from_demarches_simplifiees_application_state
-from pcapi.domain.demarches_simplifiees import get_offerer_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import get_venue_bank_information_application_details_by_application_id
 from pcapi.domain.demarches_simplifiees import parse_raw_bic_data
 from pcapi.utils.date import DATE_ISO_FORMAT
 
-from tests.connector_creators.demarches_simplifiees_creators import (
-    offerer_demarche_simplifiee_application_detail_response,
-)
 from tests.connector_creators.demarches_simplifiees_creators import (
     venue_demarche_simplifiee_application_detail_response_with_siret,
 )
@@ -23,54 +19,6 @@ from tests.connector_creators.demarches_simplifiees_creators import (
     venue_demarche_simplifiee_application_detail_response_without_siret,
 )
 from tests.connector_creators.demarches_simplifiees_creators import venue_demarche_simplifiee_get_bic_response_v2
-
-
-@patch("pcapi.connectors.dms.api.get_application_details")
-class GetOffererBankInformation_applicationDetailsByApplicationIdTest:
-    def test_retrieve_and_format_all_fields(self, get_application_details):
-        # Given
-        updated_at = datetime(2020, 1, 3)
-        get_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
-            siren="123456789",
-            bic="SOGEFRPP",
-            iban="FR7630007000111234567890144",
-            idx=8,
-            state="closed",
-            updated_at=updated_at.strftime(DATE_ISO_FORMAT),
-        )
-
-        # When
-        application_details = get_offerer_bank_information_application_details_by_application_id(8)
-
-        # Then
-        assert isinstance(application_details, ApplicationDetail)
-        assert application_details.siren == "123456789"
-        assert application_details.status == BankInformationStatus.ACCEPTED
-        assert application_details.application_id == 8
-        assert application_details.iban == "FR7630007000111234567890144"
-        assert application_details.bic == "SOGEFRPP"
-        assert application_details.siret == None
-        assert application_details.venue_name == None
-        assert application_details.modification_date == updated_at
-
-    @patch("pcapi.domain.demarches_simplifiees.format_raw_iban_and_bic")
-    def test_format_bic_and_iban(self, mock_format_raw_iban_and_bic, get_application_details):
-        # Given
-        updated_at = datetime(2020, 1, 3)
-        get_application_details.return_value = offerer_demarche_simplifiee_application_detail_response(
-            siren="123456789",
-            bic="SOGeferp",
-            iban="F R763000 700011123 45 67890144",
-            idx=8,
-            state="closed",
-            updated_at=updated_at.strftime(DATE_ISO_FORMAT),
-        )
-
-        # When
-        get_offerer_bank_information_application_details_by_application_id(8)
-
-        # Then
-        mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
 
 
 @patch("pcapi.connectors.dms.api.get_application_details")
@@ -175,7 +123,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         )
 
         # When
-        get_offerer_bank_information_application_details_by_application_id(8)
+        get_venue_bank_information_application_details_by_application_id(8)
 
         # Then
         mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
@@ -196,7 +144,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         )
 
         # When
-        get_offerer_bank_information_application_details_by_application_id(8)
+        get_venue_bank_information_application_details_by_application_id("8")
 
         # Then
         mock_format_raw_iban_and_bic.assert_has_calls([call("F R763000 700011123 45 67890144"), call("SOGeferp")])
