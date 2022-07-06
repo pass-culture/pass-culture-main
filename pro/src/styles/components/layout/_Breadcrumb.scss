@@ -7,7 +7,7 @@
   display: flex;
 
   .bc-step {
-    @include fonts.caption();
+    @include fonts.button();
 
     color: colors.$grey-medium;
     display: flex;
@@ -41,10 +41,6 @@
       path {
         fill: colors.$grey-medium;
       }
-    }
-
-    &.active .separator path {
-      fill: colors.$black;
     }
   }
 
