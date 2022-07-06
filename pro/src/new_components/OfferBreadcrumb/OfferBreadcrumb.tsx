@@ -46,6 +46,7 @@ const OfferBreadcrumb = ({
   let steps: Step[] = []
 
   if (activeStep == OfferBreadcrumbStep.CONFIRMATION) return <></>
+  if (useSummaryPage && !isCreatingOffer) return <></>
 
   if (!isCreatingOffer) {
     steps = [
