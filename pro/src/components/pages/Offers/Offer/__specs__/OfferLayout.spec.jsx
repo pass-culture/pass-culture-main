@@ -281,7 +281,7 @@ describe('offerLayout', () => {
   })
 
   describe('render when creating a new offer', () => {
-    it('should have title "Nouvelle offre"', async () => {
+    it('should have title "Créer une offre"', async () => {
       pcapi.getVenuesForOfferer.mockResolvedValue([
         { id: 'AB', publicName: 'venue', name: 'venue' },
       ])
@@ -292,7 +292,7 @@ describe('offerLayout', () => {
 
       // Then
       expect(
-        await screen.findByText('Nouvelle offre', { selector: 'h1' })
+        await screen.findByText('Créer une offre', { selector: 'h1' })
       ).toBeInTheDocument()
     })
   })

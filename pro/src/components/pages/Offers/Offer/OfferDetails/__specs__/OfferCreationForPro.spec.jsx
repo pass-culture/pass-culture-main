@@ -1878,7 +1878,7 @@ describe('offerDetails - Creation - pro user', () => {
 
       // When
       await userEvent.click(submitButton)
-      await screen.findByText('Nouvelle offre')
+      await screen.findByText('Créer une offre')
 
       // Then
       expect(submitButton).toBeDisabled()
@@ -1969,7 +1969,7 @@ describe('offerDetails - Creation - pro user', () => {
         ).toBeInTheDocument()
       )
       expect(
-        screen.getByRole('heading', { name: 'Nouvelle offre', level: 1 })
+        screen.getByRole('heading', { name: 'Créer une offre', level: 1 })
       ).toBeInTheDocument()
     })
 
