@@ -14,10 +14,11 @@
   }
 
   &-section {
-    margin-bottom: rem.torem(32px);
+    margin-bottom: rem.torem(40px);
 
     &-header {
       margin-bottom: rem.torem(24px);
+
       &-content {
           display: flex;
           flex-direction: row;
@@ -25,6 +26,8 @@
           align-items: center;
       }
       &-edit-link {
+        height: rem.torem(0px);
+
         & > svg {
             height: rem.torem(16px);
         }
@@ -38,7 +41,7 @@
   }
 
   &-sub-section {
-    margin-bottom: rem.torem(32px);
+    margin-bottom: rem.torem(24px);
 
     &-title {
       margin-bottom: rem.torem(8px);
