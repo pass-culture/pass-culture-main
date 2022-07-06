@@ -11,7 +11,7 @@
   position: relative;
 
   .subtitle {
-    padding-top: rem.torem(8px) ;
+    padding-top: rem.torem(8px);
   }
 
   .section-icon {
@@ -83,4 +83,9 @@
 
 h3.section-title {
   @include fonts.title3();
+}
+
+.title-description {
+  @include fonts.body();
+  margin-top: rem.torem(20px);
 }
