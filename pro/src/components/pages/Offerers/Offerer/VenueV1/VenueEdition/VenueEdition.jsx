@@ -493,8 +493,14 @@ const VenueEdition = () => {
       <Titles
         action={actionLink || undefined}
         subtitle={pageSubtitle}
+        description={
+          venue && venue.dmsToken && isNewBankInformationCreation
+            ? `N° d'identifidant du lieu : ${venue.dmsToken}`
+            : ''
+        }
         title="Lieu"
       />
+
       {venue && !initialIsVirtual && <VenueProvidersManager venue={venue} />}
       {venue && offerer && isReady && renderForm()}
     </div>
