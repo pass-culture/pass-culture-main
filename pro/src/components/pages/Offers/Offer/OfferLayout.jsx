@@ -74,7 +74,7 @@ const OfferLayout = () => {
     match.params.offerId && loadOfferFromQueryParam()
   }, [match.params.offerId])
 
-  let pageTitle = 'Nouvelle offre'
+  let pageTitle = 'Créer une offre'
 
   if (isLoadingCategories || (match.params.offerId && !offer)) {
     return null
