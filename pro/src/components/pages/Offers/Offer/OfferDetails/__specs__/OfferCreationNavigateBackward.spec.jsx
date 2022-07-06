@@ -259,7 +259,7 @@ describe('offerCreation - navigate backward', () => {
     await renderOfferCreation(props)
     await getOfferInputForField('categoryId')
 
-    expect(screen.getByRole('heading', { name: 'Nouvelle offre' }))
+    expect(screen.getByRole('heading', { name: 'Créer une offre' }))
     expect(apiV1.getOffersGetOffer).toHaveBeenCalledWith(offer.id)
   })
 
