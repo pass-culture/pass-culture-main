@@ -15,4 +15,4 @@ def get_existing_pro_user_with_offerer():  # type: ignore [no-untyped-def]
 def get_existing_pro_not_validated_user_with_real_offerer():  # type: ignore [no-untyped-def]
     user: User = users_factories.ProFactory()
     user.generate_validation_token()
-    return {"user": get_pro_helper(users_factories.ProFactory())}
+    return {"user": get_pro_helper(user)}
