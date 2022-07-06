@@ -323,7 +323,7 @@ def check_offer_is_eligible_for_educational(subcategory_id: str, is_educational:
 
 
 def check_offer_withdrawal(
-    withdrawal_type: Optional[WithdrawalTypeEnum], withdrawal_delay: Optional[int], subcategory_id: Optional[str]
+    withdrawal_type: Optional[WithdrawalTypeEnum], withdrawal_delay: Optional[int], subcategory_id: str
 ) -> None:
     if subcategory_id not in WITHDRAWABLE_SUBCATEGORIES and withdrawal_type is not None:
         raise exceptions.NonWithdrawableEventOfferCantHaveWithdrawal()
@@ -342,7 +342,7 @@ def check_offer_withdrawal(
         raise exceptions.EventWithTicketMustHaveDelay()
 
 
-def check_offer_subcategory_is_valid(offer_subcategory_id):  # type: ignore [no-untyped-def]
+def check_offer_subcategory_is_valid(offer_subcategory_id: str) -> None:
     if offer_subcategory_id not in ALL_SUBCATEGORIES_DICT:
         raise exceptions.UnknownOfferSubCategory()
     if not ALL_SUBCATEGORIES_DICT[offer_subcategory_id].is_selectable:

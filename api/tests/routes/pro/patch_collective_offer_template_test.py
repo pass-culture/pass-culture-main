@@ -151,7 +151,7 @@ class Returns400Test:
 
 
 class Returns403Test:
-    def when_user_is_not_attached_to_offerer(self, app, client):
+    def test_when_user_is_not_attached_to_offerer(self, app, client):
         # Given
         offer = CollectiveOfferTemplateFactory(name="Old name")
         offerers_factories.UserOffererFactory(user__email="user@example.com")
