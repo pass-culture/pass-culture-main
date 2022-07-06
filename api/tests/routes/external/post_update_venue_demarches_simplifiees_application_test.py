@@ -17,7 +17,7 @@ class Returns202Test:
 
         # Then
         assert response.status_code == 202
-        mock_bank_information_job.assert_called_once_with("666", "venue", settings.DMS_VENUE_PROCEDURE_ID)
+        mock_bank_information_job.assert_called_once_with("666", settings.DMS_VENUE_PROCEDURE_ID)
 
 
 class Returns400Test:

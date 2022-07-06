@@ -56,26 +56,6 @@ class ApplicationDetail:
         self.dossier_id = dossier_id
 
 
-def get_offerer_bank_information_application_details_by_application_id(application_id: str) -> ApplicationDetail:
-    assert settings.DMS_OFFERER_PROCEDURE_ID
-    assert settings.DMS_TOKEN
-    response_application_details = api_dms.get_application_details(
-        application_id, procedure_id=settings.DMS_OFFERER_PROCEDURE_ID, token=settings.DMS_TOKEN
-    )
-
-    application_details = ApplicationDetail(
-        siren=response_application_details["dossier"]["entreprise"]["siren"],
-        status=_get_status_from_demarches_simplifiees_application_state(
-            response_application_details["dossier"]["state"]
-        ),
-        application_id=int(response_application_details["dossier"]["id"]),
-        iban=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")),  # type: ignore [arg-type]
-        bic=format_raw_iban_and_bic(_find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")),  # type: ignore [arg-type]
-        modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
-    )
-    return application_details
-
-
 def parse_raw_bic_data(data: dict) -> dict:
     result = {
         "status": data["dossier"]["state"],
