@@ -33,7 +33,6 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
   }, [offer, reloadOffer])
 
   const activateAction = useSummaryPage ? 'Publier' : 'Activer'
-  const deActivateAction = useSummaryPage ? 'Dépublier' : 'Désactiver'
   return (
     <button
       className="tertiary-button with-icon"
@@ -46,7 +45,7 @@ const StatusToggleButton = ({ offer, reloadOffer }) => {
       {offer.status !== OFFER_STATUS_INACTIVE ? (
         <>
           <Icon svg="ico-status-inactive" />
-          {deActivateAction}
+          Désactiver
         </>
       ) : (
         <>
