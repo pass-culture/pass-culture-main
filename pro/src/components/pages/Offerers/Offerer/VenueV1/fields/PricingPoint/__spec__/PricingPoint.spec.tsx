@@ -115,4 +115,19 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
       expect(validationText).toBeInTheDocument()
     })
   })
+  it('should not display submit button when venue have pricing point', async () => {
+    props = {
+      ...props,
+      venue: {
+        pricingPoint: {
+          id: 2,
+        },
+      },
+    } as IPricingPointProps
+    await renderPricingPointFields({ props, formValues })
+
+    expect(
+      screen.queryByText('Valider la sélection', { selector: 'button' })
+    ).not.toBeInTheDocument()
+  })
 })
