@@ -270,7 +270,7 @@ const OfferDetails = ({
               />
               <OfferPreview offerPreviewData={offerPreviewData} />
             </div>
-            {offer ? (
+            {!isCreatingOffer ? (
               <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
             ) : null}
           </div>
