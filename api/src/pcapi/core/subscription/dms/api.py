@@ -139,7 +139,6 @@ def _notify_field_error(field_errors: list[dms_types.DmsFieldErrorDetails], appl
 def _notify_eligibility_error(
     birth_date: typing.Optional[date],
     application_scalar_id: str,
-    application_number: int,
     extra_data: typing.Optional[dict] = None,
 ) -> None:
     if not birth_date:
@@ -152,7 +151,7 @@ def _notify_eligibility_error(
     client.send_user_message(
         application_scalar_id,
         settings.DMS_INSTRUCTOR_ID,
-        subscription_messages.build_dms_error_message_user_not_eligible(birth_date, application_number),
+        subscription_messages.build_dms_error_message_user_not_eligible(birth_date),
     )
 
 
@@ -199,9 +198,7 @@ def _process_draft_application(
         return
 
     if current_fraud_check.eligibilityType is None:
-        _notify_eligibility_error(
-            birth_date, application_scalar_id, fraud_check_content.application_number, extra_data=log_extra_data
-        )
+        _notify_eligibility_error(birth_date, application_scalar_id, extra_data=log_extra_data)
         _on_dms_eligibility_error(user, current_fraud_check, birth_date, extra_data=log_extra_data)
     if field_errors:
         _notify_field_error(field_errors, application_scalar_id)
