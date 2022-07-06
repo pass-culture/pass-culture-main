@@ -601,28 +601,31 @@ def decide_eligibility(
     It may be the current eligibility of the user if the age is between 15 and 18, or it may be the eligibility AGE18
     if the user is over 19 and had previously tried to register when the age was 18.
     """
-    if registration_datetime is None or birth_date is None:
+    if birth_date is None:
         return None
 
     user_age_today = users_utils.get_age_from_birth_date(birth_date)
-    eligibility_at_registration = users_api.get_eligibility_at_date(birth_date, registration_datetime)
+    if user_age_today < 15:
+        return None
+    if user_age_today < 18:
+        return users_models.EligibilityType.UNDERAGE
+    if user_age_today == 18:
+        return users_models.EligibilityType.AGE18
 
     eligibility_today = users_api.get_eligibility_at_date(birth_date, datetime.datetime.utcnow())
 
+    if eligibility_today == users_models.EligibilityType.AGE18:
+        return users_models.EligibilityType.AGE18
+
+    eligibility_at_registration = (
+        users_api.get_eligibility_at_date(birth_date, registration_datetime) if registration_datetime else None
+    )
     if eligibility_at_registration is None and eligibility_today is None and user_age_today == 19:
         earliest_identity_check_date = subscription_api.get_first_registration_date(
             user, users_models.EligibilityType.AGE18
         )
         if earliest_identity_check_date:
             return users_api.get_eligibility_at_date(birth_date, earliest_identity_check_date)
-
-    # When a user turns 18, his underage credit expires.
-    # If he turned 18 between registration and today, we consider the application as coming from a 18 years old user
-    if (
-        eligibility_today == users_models.EligibilityType.AGE18
-        and eligibility_at_registration == users_models.EligibilityType.UNDERAGE
-    ):
-        return users_models.EligibilityType.AGE18
 
     return eligibility_at_registration
 
