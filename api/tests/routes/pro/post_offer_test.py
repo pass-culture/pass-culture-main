@@ -388,7 +388,7 @@ class Returns400Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    def when_user_is_not_attached_to_offerer(self, client):
+    def test_when_user_is_not_attached_to_offerer(self, client):
         # Given
         users_factories.ProFactory(email="user@example.com")
         venue = offerers_factories.VirtualVenueFactory()
@@ -396,6 +396,7 @@ class Returns403Test:
         # When
         data = {
             "venueId": humanize(venue.id),
+            "subcategoryId": subcategories.JEU_EN_LIGNE.id,
             "audioDisabilityCompliant": True,
             "mentalDisabilityCompliant": False,
             "motorDisabilityCompliant": False,

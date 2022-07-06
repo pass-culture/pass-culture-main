@@ -1044,7 +1044,6 @@ class CreateOfferTest:
         assert offer.isEducational
 
     def test_cannot_create_educational_offer_when_not_eligible_subcategory(self):
-
         # Given
         unauthorized_subcategory_id = "BON_ACHAT_INSTRUMENT"
         venue = offerers_factories.VenueFactory()
@@ -1091,6 +1090,7 @@ class CreateOfferTest:
         user = users_factories.ProFactory()
         data = offers_serialize.PostOfferBodyModel(
             venueId=humanize(venue.id),
+            subcategoryId=subcategories.CONCERT.id,
             audioDisabilityCompliant=True,
             mentalDisabilityCompliant=True,
             motorDisabilityCompliant=True,
