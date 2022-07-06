@@ -28,8 +28,8 @@ const DialogBox: FunctionComponent<DialogProps> = ({
     onDismiss={onDismiss}
   >
     <DialogContent aria-labelledby={labelledBy} className="dialog-box-content">
-      <section className={extraClassNames}>{children}</section>
       {hasCloseButton && <CloseButton onCloseClick={onDismiss} />}
+      <section className={extraClassNames}>{children}</section>
     </DialogContent>
   </DialogOverlay>
 )

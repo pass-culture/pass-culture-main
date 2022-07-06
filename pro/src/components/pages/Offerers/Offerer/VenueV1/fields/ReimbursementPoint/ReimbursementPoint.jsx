@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import ApplicationBanner from '../ApplicationBanner'
-import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import { Field } from 'react-final-form'
 import InfoDialog from 'new_components/InfoDialog'
 import PropTypes from 'prop-types'
+import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
 
@@ -47,15 +47,12 @@ const ReimbursementPoint = ({
 
   const openDMSApplication = useCallback(() => {
     if (venueHasPricingPoint || venue.siret) {
-      window.open(
-        DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
-        '_blank'
-      )
+      setIsDmsDialogOpen(true)
     } else {
       setIsNoSiretDialogOpen(true)
     }
   }, [venueHasPricingPoint])
-
+  const [isDmsDialogOpen, setIsDmsDialogOpen] = useState(false)
   useEffect(() => {
     async function loadReimbursementPoints(offererId) {
       const reimbursementPointsResponse =
@@ -147,6 +144,13 @@ const ReimbursementPoint = ({
             )}
             {!venueReimbursementPoint && !!reimbursementPointOptions.length && (
               <p className={styles['or-separator']}>ou</p>
+            )}
+            {isDmsDialogOpen && (
+              <ReimbursmentPointDialog
+                closeDialog={() => setIsDmsDialogOpen(false)}
+                buttonAction={openDMSApplication}
+                dmsToken={venue.dmsToken}
+              />
             )}
             {!!reimbursementPointOptions.length && (
               <div className={styles['field-select']}>
