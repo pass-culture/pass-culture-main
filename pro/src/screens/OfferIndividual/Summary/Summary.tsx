@@ -67,66 +67,68 @@ const Summary = ({
   }
 
   return (
-    <SummaryLayout>
-      <SummaryLayout.Content>
-        {isCreation && <BannerSummary />}
-        <OfferSection offer={offer} isCreation={isCreation} />
-        {stockThing && (
-          <StockThingSection
-            {...stockThing}
-            isCreation={isCreation}
-            offerId={offerId}
-          />
-        )}
-        {stockEventList && (
-          <StockEventSection
-            stocks={stockEventList}
-            isCreation={isCreation}
-            offerId={offerId}
-          />
-        )}
-
-        {formOfferV2 ? (
-          isCreation && (
-            <div className={styles['offer-creation-preview-actions']}>
-              <ButtonLink
-                variant={ButtonVariant.SECONDARY}
-                to={`/offre/${offerId}/individuel/creation/stocks`}
-              >
-                Étape précédente
-              </ButtonLink>
-              <Button
-                variant={ButtonVariant.PRIMARY}
-                onClick={handleOfferPublication}
-                disabled={isDisabled}
-              >
-                Publier l'offre
-              </Button>
-            </div>
-          )
-        ) : (
-          <OfferFormLayout.ActionBar>
-            <ActionBar
-              onClickNext={handleNextStep}
-              onClickPrevious={handlePreviousStep}
+    <>
+      {isCreation && <BannerSummary />}
+      <SummaryLayout>
+        <SummaryLayout.Content>
+          <OfferSection offer={offer} isCreation={isCreation} />
+          {stockThing && (
+            <StockThingSection
+              {...stockThing}
+              isCreation={isCreation}
+              offerId={offerId}
             />
-          </OfferFormLayout.ActionBar>
-        )}
-      </SummaryLayout.Content>
+          )}
+          {stockEventList && (
+            <StockEventSection
+              stocks={stockEventList}
+              isCreation={isCreation}
+              offerId={offerId}
+            />
+          )}
 
-      <SummaryLayout.Side>
-        <div className={styles['offer-creation-preview-title']}>
-          <PhoneInfo />
-          <span>Aperçu dans l'app</span>
-        </div>
-        <OfferAppPreview {...preview} />
-        {!isCreation && (
-          <div className={styles['offer-preview-app-link']}>
-            <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
+          {formOfferV2 ? (
+            isCreation && (
+              <div className={styles['offer-creation-preview-actions']}>
+                <ButtonLink
+                  variant={ButtonVariant.SECONDARY}
+                  to={`/offre/${offerId}/individuel/creation/stocks`}
+                >
+                  Étape précédente
+                </ButtonLink>
+                <Button
+                  variant={ButtonVariant.PRIMARY}
+                  onClick={handleOfferPublication}
+                  disabled={isDisabled}
+                >
+                  Publier l'offre
+                </Button>
+              </div>
+            )
+          ) : (
+            <OfferFormLayout.ActionBar>
+              <ActionBar
+                onClickNext={handleNextStep}
+                onClickPrevious={handlePreviousStep}
+              />
+            </OfferFormLayout.ActionBar>
+          )}
+        </SummaryLayout.Content>
+
+        <SummaryLayout.Side>
+          <div className={styles['offer-creation-preview-title']}>
+            <PhoneInfo />
+            <span>Aperçu dans l'app</span>
           </div>
-        )}
-      </SummaryLayout.Side>
-    </SummaryLayout>
+          <OfferAppPreview {...preview} />
+          {!isCreation && (
+            <div className={styles['offer-preview-app-link']}>
+              <DisplayOfferInAppLink nonHumanizedId={offer.nonHumanizedId} />
+            </div>
+          )}
+        </SummaryLayout.Side>
+      </SummaryLayout>
+    </>
   )
 }
 
