@@ -387,8 +387,8 @@ def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data:
         extra_data = {}
 
     for field in mandatory_fields:
-        if offer and offer.extraData and offer.extraData.get(field):  # type: ignore [union-attr]
-            extra_data[field] = offer.extraData.get(field)  # type: ignore [union-attr]
+        if offer and offer.extraData and offer.extraData.get(field):
+            extra_data[field] = offer.extraData.get(field)
         elif not extra_data or not extra_data.get(field):
             api_errors.add_error(field, "Ce champ est obligatoire")
 

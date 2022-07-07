@@ -27,13 +27,14 @@ from pcapi.core.offerers.models import Venue
 import pcapi.core.providers.constants as provider_constants
 from pcapi.domain.price_rule import PriceRule
 from pcapi.infrastructure.repository.stock_provider.provider_api import ProviderAPI
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.providable_mixin import ProvidableMixin
 
 
-class Provider(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
+class Provider(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True)
 
     name = Column(String(90), index=True, nullable=False)
@@ -74,21 +75,21 @@ class Provider(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, 
     def getProviderAPI(self) -> ProviderAPI:
         return ProviderAPI(
             api_url=self.apiUrl,  # type: ignore [arg-type]
-            name=self.name,
+            name=self.name,  # type: ignore [arg-type]
             authentication_token=self.authToken,
         )
 
 
-class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
+class VenueProvider(PcObject, Base, Model, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     """Stores specific sync settings for a Venue, and whether it is active"""
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), nullable=False)
 
-    venue = relationship("Venue", foreign_keys=[venueId])
+    venue = relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
 
     providerId = Column(BigInteger, ForeignKey("provider.id"), index=True, nullable=False)
 
-    provider = relationship("Provider", foreign_keys=[providerId])
+    provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
 
     venueIdAtOfferProvider = Column(String(70), nullable=False)
 
@@ -97,14 +98,14 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type
     # describe if synchronised offers are available for duo booking or not
     isDuoOffers = Column(Boolean, nullable=True)
 
-    isFromAllocineProvider = column_property(
+    isFromAllocineProvider = column_property(  # type: ignore [misc]
         exists(select([Provider.id]).where(and_(Provider.id == providerId, Provider.localClass == "AllocineStocks")))
     )
 
     __mapper_args__ = {
         "polymorphic_on": case(
             [
-                (isFromAllocineProvider, "allocine_venue_provider"),  # type: ignore [list-item]
+                (isFromAllocineProvider, "allocine_venue_provider"),
             ],
             else_="venue_provider",
         ),
@@ -138,16 +139,16 @@ class VenueProvider(PcObject, Model, ProvidableMixin, DeactivableMixin):  # type
         )
 
 
-class CinemaProviderPivot(PcObject, Model):  # type: ignore [valid-type, misc]
+class CinemaProviderPivot(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     """Stores whether a Venue has requested to be synced with a Provider"""
 
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=True, unique=True)
 
-    venue = relationship(Venue, foreign_keys=[venueId])
+    venue = relationship(Venue, foreign_keys=[venueId])  # type: ignore [misc]
 
     providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
 
-    provider = relationship("Provider", foreign_keys=[providerId])
+    provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
 
     idAtProvider = Column(Text, nullable=False)
 
@@ -160,14 +161,14 @@ class CinemaProviderPivot(PcObject, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class CDSCinemaDetails(PcObject, Model):  # type: ignore [valid-type, misc]
+class CDSCinemaDetails(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     """Stores info on the specific login details of a cinema synced with CDS"""
 
     cinemaProviderPivotId = Column(
         BigInteger, ForeignKey("cinema_provider_pivot.id"), index=False, nullable=True, unique=True
     )
 
-    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])
+    cinemaProviderPivot = relationship(CinemaProviderPivot, foreign_keys=[cinemaProviderPivotId])  # type: ignore [misc]
 
     cinemaApiToken = Column(Text, nullable=False)
 
@@ -190,12 +191,12 @@ class AllocineVenueProvider(VenueProvider):
     }
 
 
-class AllocineVenueProviderPriceRule(PcObject, Model):  # type: ignore [valid-type, misc]
+class AllocineVenueProviderPriceRule(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     priceRule = Column(Enum(PriceRule), nullable=False)
 
     allocineVenueProviderId = Column(BigInteger, ForeignKey("allocine_venue_provider.id"), index=True, nullable=False)
 
-    allocineVenueProvider = relationship(
+    allocineVenueProvider = relationship(  # type: ignore [misc]
         "AllocineVenueProvider", foreign_keys=[allocineVenueProviderId], backref="priceRules"
     )
 
@@ -240,17 +241,17 @@ class StockDetail:
     price: float | None
 
 
-class AllocinePivot(PcObject, Model):  # type: ignore [valid-type, misc]
+class AllocinePivot(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=False, nullable=False, unique=True)
 
-    venue = relationship(Venue, foreign_keys=[venueId])
+    venue = relationship(Venue, foreign_keys=[venueId])  # type: ignore [misc]
 
     theaterId = Column(String(20), nullable=False, unique=True)
 
     internalId = Column(Text, nullable=False, unique=True)
 
 
-class AllocineTheater(PcObject, Model):  # type: ignore [valid-type, misc]
+class AllocineTheater(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     siret = Column(String(14), nullable=True, unique=True)
 
     theaterId = Column(String(20), nullable=False, unique=True)
@@ -268,10 +269,10 @@ class LocalProviderEventType(enum.Enum):
     SyncEnd = "SyncEnd"
 
 
-class LocalProviderEvent(PcObject, Model):  # type: ignore [valid-type, misc]
+class LocalProviderEvent(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
-    provider = relationship("Provider", foreign_keys=[providerId])
+    provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
     date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
     type = Column(Enum(LocalProviderEventType), nullable=False)
     payload = Column(String(50), nullable=True)

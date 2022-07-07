@@ -101,7 +101,7 @@ def activate_beneficiary(user: users_models.User) -> users_models.User:
         )
     eligibility = fraud_check.eligibilityType
 
-    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):  # type: ignore [arg-type]
+    if not users_api.is_eligible_for_beneficiary_upgrade(user, eligibility):
         raise exceptions.CannotUpgradeBeneficiaryRole()
 
     return activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)  # type: ignore [arg-type]
@@ -479,7 +479,7 @@ def _update_fraud_check_eligibility_with_history(
         eligibilityType=eligibility,
     )
     # Cancel the old fraud check
-    fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
+    fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
     reason_message = "Eligibility type changed by the identity provider"
     fraud_check.reason = (
         f"{fraud_check.reason} {fraud_api.FRAUD_RESULT_REASON_SEPARATOR} {reason_message}"
@@ -551,11 +551,11 @@ def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool
     ):
         return False
 
-    subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)  # type: ignore [arg-type]
+    subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)
     if subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO):
         return False
 
-    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)  # type: ignore [arg-type]
+    profile_completion = get_profile_completion_subscription_item(user, fraud_check.eligibilityType)
     if profile_completion.status != models.SubscriptionItemStatus.OK:
         return False
 

@@ -4,6 +4,7 @@ from typing import Type
 
 import sqlalchemy as sa
 
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -65,18 +66,18 @@ role_permission_table = sa.Table(
 )
 
 
-class Permission(PcObject, Model):  # type: ignore[valid-type, misc]
+class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "permission"
 
     name = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
 
 
-class Role(PcObject, Model):  # type: ignore[valid-type, misc]
+class Role(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "role"
 
     name = sa.Column(sa.String(140), nullable=False, unique=True)
-    permissions = sa.orm.relationship(
+    permissions = sa.orm.relationship(  # type: ignore [misc]
         Permission,
         secondary=role_permission_table,
         backref="roles",

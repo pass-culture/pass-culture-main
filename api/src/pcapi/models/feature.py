@@ -8,6 +8,7 @@ from sqlalchemy import String
 from sqlalchemy import Text
 from sqlalchemy.sql import text
 
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -137,7 +138,7 @@ class FeatureToggle(enum.Enum):
         return value
 
 
-class Feature(PcObject, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
+class Feature(PcObject, Base, Model, DeactivableMixin):  # type: ignore [valid-type, misc]
     name = Column(Text, unique=True, nullable=False)
     description = Column(String(300), nullable=False)
 
@@ -243,7 +244,7 @@ def install_feature_flags() -> None:
 
     for flag in to_install_flags:
         db.session.add(
-            Feature(
+            Feature(  # type: ignore [call-arg]
                 name=FeatureToggle[flag].name,
                 description=FeatureToggle[flag].value,
                 isActive=FeatureToggle[flag] not in FEATURES_DISABLED_BY_DEFAULT,

@@ -133,7 +133,7 @@ def delete_venue_provider(venue_provider_id: str) -> None:
 
     venue_provider = repository.get_venue_provider_by_id(int(dehumanized_venue_provider_id))
 
-    check_user_can_alter_venue(current_user, venue_provider.venueId)
+    check_user_can_alter_venue(current_user, venue_provider.venueId)  # type: ignore [arg-type]
 
     api.delete_venue_provider(venue_provider)
 

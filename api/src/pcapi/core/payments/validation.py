@@ -58,7 +58,7 @@ def _check_reimbursement_rule_dates(rule, check_start_date=True):  # type: ignor
 
 def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule):  # type: ignore [no-untyped-def]
     overlapping = models.CustomReimbursementRule.query
-    overlapping = overlapping.filter(models.CustomReimbursementRule.timespan.overlaps(rule.timespan))  # type: ignore [attr-defined]
+    overlapping = overlapping.filter(models.CustomReimbursementRule.timespan.overlaps(rule.timespan))
     if rule.offerId:
         overlapping = overlapping.filter_by(offerId=rule.offerId)
     else:
@@ -79,7 +79,7 @@ def _check_reimbursement_rule_conflicts(rule: models.CustomReimbursementRule):  
         overlapping = overlapping.filter(
             or_(
                 models.CustomReimbursementRule.subcategories == [],
-                models.CustomReimbursementRule.subcategories.overlap(rule.subcategories),  # type: ignore [attr-defined]
+                models.CustomReimbursementRule.subcategories.overlap(rule.subcategories),
             )
         )
 

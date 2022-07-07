@@ -20,12 +20,14 @@ from sqlalchemy import event
 from sqlalchemy import exists
 from sqlalchemy import select
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.constants import BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.bookings.constants import BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY
 from pcapi.core.categories import subcategories
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.human_ids import humanize
@@ -62,7 +64,7 @@ class BookingExportType(enum.Enum):
     EXCEL = "excel"
 
 
-class IndividualBooking(PcObject, Model):  # type: ignore [valid-type, misc]
+class IndividualBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "individual_booking"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -79,7 +81,7 @@ class IndividualBooking(PcObject, Model):  # type: ignore [valid-type, misc]
     depositId = Column(BigInteger, ForeignKey("deposit.id"), index=True, nullable=True)
     deposit = relationship("Deposit", back_populates="individual_bookings")  # type: ignore [misc]
 
-    booking = relationship(
+    booking = relationship(  # type: ignore [misc]
         "Booking",
         back_populates="individualBooking",
         uselist=False,
@@ -88,19 +90,19 @@ class IndividualBooking(PcObject, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class ExternalBooking(PcObject, Model):  # type: ignore [valid-type, misc]
+class ExternalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
-    booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")
+    booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")  # type: ignore [misc]
 
     barcode = Column(String, nullable=False)
 
     seat = Column(String)
 
 
-class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
+class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "booking"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -161,7 +163,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         unique=True,
         index=True,
     )
-    educationalBooking: "EducationalBooking | None" = relationship(  # type: ignore [assignment]
+    educationalBooking: "Mapped[EducationalBooking]" = relationship(
         "EducationalBooking",
         back_populates="booking",
         uselist=False,
@@ -174,14 +176,14 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         unique=True,
         index=True,
     )
-    individualBooking: IndividualBooking | None = relationship(  # type: ignore [assignment]
+    individualBooking = relationship(
         IndividualBooking,
         back_populates="booking",
         uselist=False,
     )
 
     def mark_as_used(self) -> None:
-        if self.is_used_or_reimbursed:  # pylint: disable=using-constant-test
+        if self.is_used_or_reimbursed:
             raise exceptions.BookingHasAlreadyBeenUsed()
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsCancelled()
@@ -192,7 +194,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
 
     def mark_as_unused_set_confirmed(self) -> None:
         self.dateUsed = None
-        self.status = BookingStatus.CONFIRMED  # type: ignore [assignment]
+        self.status = BookingStatus.CONFIRMED
 
     def cancel_booking(self, cancel_even_if_used=False) -> None:  # type: ignore [no-untyped-def]
         if self.status is BookingStatus.CANCELLED:
@@ -201,7 +203,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
             raise exceptions.BookingIsAlreadyUsed()
         if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()
-        self.status = BookingStatus.CANCELLED  # type: ignore [assignment]
+        self.status = BookingStatus.CANCELLED
         self.cancellationDate = datetime.utcnow()
 
     def uncancel_booking_set_used(self) -> None:
@@ -218,7 +220,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         if self.educationalBooking.has_confirmation_limit_date_passed():
             raise exceptions.ConfirmationLimitDateHasPassed()
 
-        self.status = BookingStatus.CONFIRMED  # type: ignore [assignment]
+        self.status = BookingStatus.CONFIRMED
         self.educationalBooking.confirmationDate = datetime.utcnow()
 
     @property
@@ -233,7 +235,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
 
     @property
     def total_amount(self) -> Decimal:
-        return self.amount * self.quantity
+        return self.amount * self.quantity  # type: ignore [operator, return-value]
 
     # FIXME: many functions here are only used when serializing
     # bookings in the web API. They can be moved elsewhere once we

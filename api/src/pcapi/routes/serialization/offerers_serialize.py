@@ -88,7 +88,7 @@ class GetOffererResponseModel(BaseModel):
     def from_orm(cls, offerer: offerers_models.Offerer, venue_stats_by_ids: dict[int, venues_serialize.VenueStatsResponseModel] | None = None):  # type: ignore
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
-            "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
+            "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),  # type: ignore [arg-type]
         }
         venues = (
             offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
@@ -101,10 +101,10 @@ class GetOffererResponseModel(BaseModel):
                 venue.stats = venue_stats_by_ids[venue.id]
 
         offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
-            offerer.id
+            offerer.id  # type: ignore [arg-type]
         )
         offerer.hasMissingBankInformation = not offerer.demarchesSimplifieesApplicationId and (
-            offerers_repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer.id)
+            offerers_repository.has_physical_venue_without_draft_or_accepted_bank_information(offerer.id)  # type: ignore [arg-type]
             or offerer.hasDigitalVenueAtLeastOneOffer
         )
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)

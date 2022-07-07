@@ -219,6 +219,6 @@ def _is_human_id_column(column: Column) -> bool:
     if column is None:
         return None
     column_name = column.key
-    is_column_primary_key_or_foreign_key = column_name == "id" or column_name.endswith("Id")
+    is_column_primary_key_or_foreign_key = column_name == "id" or column_name.endswith("Id")  # type: ignore [union-attr]
     is_column_a_number = isinstance(column.expression.type, (Integer, BigInteger))
     return is_column_primary_key_or_foreign_key and is_column_a_number

@@ -116,7 +116,7 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     timespan = db_utils.make_timerange(start=now, end=None)
     query = payments_models.CustomReimbursementRule.query.filter(
         payments_models.CustomReimbursementRule.offerId == offer.id,
-        payments_models.CustomReimbursementRule.timespan.overlaps(timespan),  # type: ignore [attr-defined]
+        payments_models.CustomReimbursementRule.timespan.overlaps(timespan),
     ).exists()
     return db.session.query(query).scalar()
 

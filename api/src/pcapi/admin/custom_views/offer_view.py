@@ -288,7 +288,7 @@ class OfferView(BaseAdminView):
         res = super().update_model(form, offer)
 
         if tags_updated:
-            search.reindex_offer_ids([offer.id])
+            search.reindex_offer_ids([offer.id])  # type: ignore [list-item]
 
         return res
 
@@ -297,12 +297,12 @@ class OfferView(BaseAdminView):
             previous_validation = form._fields["validation"].object_data
             new_validation = offer.validation
             if previous_validation != new_validation:
-                offer.lastValidationDate = datetime.utcnow()
+                offer.lastValidationDate = datetime.utcnow()  # type: ignore [assignment]
                 offer.lastValidationType = OfferValidationType.MANUAL  # type: ignore [assignment]
                 if new_validation == OfferValidationStatus.APPROVED:
-                    offer.isActive = True
+                    offer.isActive = True  # type: ignore [assignment]
                 if new_validation == OfferValidationStatus.REJECTED:
-                    offer.isActive = False
+                    offer.isActive = False  # type: ignore [assignment]
                     cancelled_bookings = cancel_bookings_from_rejected_offer(offer)
                     if cancelled_bookings:
                         send_cancel_booking_notification.delay([booking.id for booking in cancelled_bookings])
@@ -319,7 +319,7 @@ class OfferView(BaseAdminView):
 
                 flash("Le statut de l'offre a bien été modifié", "success")
 
-        search.async_index_offer_ids([offer.id])
+        search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
 
     def get_query(self) -> BaseQuery:
         return self.session.query(self.model).filter(self.model.validation != OfferValidationStatus.DRAFT).from_self()
@@ -381,7 +381,7 @@ def _related_offers_link(view: BaseAdminView, context: Context, model: Offer, na
 
 
 def _metabase_offer_link(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
-    url = _metabase_offer_url(model.id)
+    url = _metabase_offer_url(model.id)  # type: ignore [arg-type]
     return Markup('<a href="{}" target="_blank" rel="noopener noreferrer">Offre</a>').format(escape(url))
 
 

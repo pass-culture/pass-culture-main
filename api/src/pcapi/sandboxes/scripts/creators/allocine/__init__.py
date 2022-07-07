@@ -45,13 +45,13 @@ def save_allocine_sandbox() -> None:
         bookingEmail="fake@email.com",
         city=offerer.city,
         comment="Salle de cinéma",
-        name=offerer.name + " - Salle 1",
+        name=offerer.name + " - Salle 1",  # type: ignore [operator]
         postalCode=offerer.postalCode,
         siret=sirene.siret,
     )
 
     provider = get_provider_by_local_class("AllocineStocks")
-    provider.isActive = True
+    provider.isActive = True  # type: ignore [assignment]
     provider.enabledForPro = True
 
     venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider)

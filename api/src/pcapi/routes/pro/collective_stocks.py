@@ -33,7 +33,7 @@ def get_collective_stock(offer_id: str) -> collective_stock_serialize.Collective
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
 
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
     stock = get_collective_stock_for_offer(dehumanize_or_raise(offer_id))
 
     if stock is None:
@@ -56,7 +56,7 @@ def create_collective_stock(
         offerer = offerers_repository.get_by_collective_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
 
     try:
         collective_stock = educational_api.create_collective_stock(body, current_user)
@@ -82,10 +82,10 @@ def edit_collective_stock(
         raise ApiErrors({"code": "COLLECTIVE_STOCK_NOT_FOUND"}, status_code=404)
 
     try:
-        offerer = offerers_repository.get_by_collective_stock_id(collective_stock.id)
+        offerer = offerers_repository.get_by_collective_stock_id(collective_stock.id)  # type: ignore [arg-type]
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)
+    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
 
     try:
         collective_stock = educational_api.edit_collective_stock(

@@ -151,7 +151,7 @@ def update_cultural_survey(user: users_models.User, body: serializers.CulturalSu
             user.needsToFillCulturalSurvey = False
         if body.cultural_survey_id:
             logger.info("User %s updated cultural survey", user.id, extra={"actor": user.id})
-            user.culturalSurveyId = body.cultural_survey_id  # type: ignore [assignment]
+            user.culturalSurveyId = body.cultural_survey_id  # type: ignore [call-overload]
             user.culturalSurveyFilledDate = datetime.utcnow()
     return
 
@@ -362,8 +362,8 @@ def profiling_fraud_score(user: users_models.User, body: serializers.UserProfili
     try:
         profiling_infos = handler.get_user_profiling_fraud_data(
             session_id=body.sessionId,  # type: ignore [arg-type]
-            user_id=user.id,
-            user_email=user.email,
+            user_id=user.id,  # type: ignore [arg-type]
+            user_email=user.email,  # type: ignore [arg-type]
             birth_date=user.dateOfBirth.date() if user.dateOfBirth else None,
             phone_number=user.phoneNumber,
             workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,

@@ -72,7 +72,7 @@ def update_external_pro(email: str | None) -> None:
 
 def get_user_or_pro_attributes(user: User) -> UserAttributes | ProAttributes:
     if user.has_pro_role:
-        return get_pro_attributes(user.email)
+        return get_pro_attributes(user.email)  # type: ignore [arg-type]
 
     return get_user_attributes(user)
 
@@ -113,7 +113,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
                     user_is_creator = True
                 else:
                     user_is_attached = True
-                if not is_eac and offerer_has_venue_with_adage_id(offerer_id):
+                if not is_eac and offerer_has_venue_with_adage_id(offerer_id):  # type: ignore[arg-type]
                     is_eac = True
 
         attributes.update(
@@ -155,11 +155,11 @@ def get_pro_attributes(email: str) -> ProAttributes:
         is_user_email=bool(user),
         is_booking_email=bool(venues),
         marketing_email_subscription=marketing_email_subscription,
-        offerers_names=set(offerers_names),
-        venues_ids={venue.id for venue in all_venues},
-        venues_names={venue.publicName or venue.name for venue in all_venues},
-        venues_types={venue.venueTypeCode.name for venue in all_venues if venue.venueTypeCode},  # type: ignore [attr-defined]
-        venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},
+        offerers_names=set(offerers_names),  # type: ignore[arg-type]
+        venues_ids={venue.id for venue in all_venues},  # type: ignore [misc]
+        venues_names={venue.publicName or venue.name for venue in all_venues},  # type: ignore [misc]
+        venues_types={venue.venueTypeCode.name for venue in all_venues if venue.venueTypeCode},
+        venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},  # type: ignore [misc]
         departement_code={venue.departementCode for venue in all_venues if venue.departementCode},
         postal_code={venue.postalCode for venue in all_venues if venue.postalCode},
         **attributes,  # type: ignore [arg-type]
@@ -186,7 +186,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         booking_count=len(user_bookings),
         booking_subcategories=bookings_attributes.booking_subcategories,
         city=user.city,
-        date_created=user.dateCreated,
+        date_created=user.dateCreated,  # type: ignore [arg-type]
         date_of_birth=user.dateOfBirth,  # type: ignore [arg-type]
         departement_code=user.departementCode,
         deposit_activation_date=user.deposit_activation_date,
@@ -195,8 +195,8 @@ def get_user_attributes(user: User) -> UserAttributes:
         eligibility=user.eligibility,
         first_name=user.firstName,
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
-        user_id=user.id,
-        is_active=user.isActive,
+        user_id=user.id,  # type: ignore [arg-type]
+        is_active=user.isActive,  # type: ignore [arg-type]
         is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
         is_current_beneficiary=user.is_beneficiary and not is_ex_beneficiary,
         is_former_beneficiary=is_ex_beneficiary,

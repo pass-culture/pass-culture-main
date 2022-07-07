@@ -220,14 +220,16 @@ def delete_venue_banner(venue_id: str) -> None:
 )
 def get_venue_stats(humanized_venue_id: str) -> venues_serialize.VenueStatsResponseModel:
     venue: Venue = load_or_404(Venue, humanized_venue_id)
-    check_user_has_access_to_offerer(current_user, venue.managingOffererId)
+    check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [arg-type]
 
     (
         active_bookings_quantity,
         validated_bookings_count,
         active_offers_count,
         sold_out_offers_count,
-    ) = offerers_repository.get_venue_stats(venue.id)
+    ) = offerers_repository.get_venue_stats(
+        venue.id  # type: ignore [arg-type]
+    )
 
     return venues_serialize.VenueStatsResponseModel(
         activeBookingsQuantity=active_bookings_quantity,

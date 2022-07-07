@@ -63,7 +63,7 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             days_from_booking=booking_constants.BOOKS_BOOKINGS_AUTO_EXPIRY_DELAY.days
             - booking_constants.BOOKS_BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
         )
-        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)
+        success &= mails.send(recipients=[beneficiary.email], data=books_bookings_data)  # type: ignore [list-item]
 
     if other_bookings:
         other_bookings_data = build_soon_to_be_expired_bookings_recap_email_data_for_beneficiary(
@@ -73,6 +73,6 @@ def send_soon_to_be_expired_individual_bookings_recap_email_to_beneficiary(
             days_from_booking=booking_constants.BOOKINGS_AUTO_EXPIRY_DELAY.days
             - booking_constants.BOOKINGS_EXPIRY_NOTIFICATION_DELAY.days,
         )
-        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)
+        success &= mails.send(recipients=[beneficiary.email], data=other_bookings_data)  # type: ignore [list-item]
 
     return success

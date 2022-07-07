@@ -64,7 +64,7 @@ def _format_venue_provider(view: BaseAdminView, context: Context, model: Venue, 
 
 
 def _format_venue_type_code(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
-    return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value if model.venueTypeCode else "")  # type: ignore [attr-defined]
+    return Markup("<span>{text}</span>").format(text=model.venueTypeCode.value if model.venueTypeCode else "")
 
 
 def _format_venue_name(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup:
@@ -82,7 +82,7 @@ def _get_emails_by_venue(venue: Venue) -> set[str]:
     Get all emails for which pro attributes may be modified when the venue is updated or deleted.
     Be careful: venue attributes are no longer available after venue object is deleted, call this function before.
     """
-    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(venue.managingOffererId)
+    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(venue.managingOffererId)  # type: ignore [arg-type]
     emails = {user_offerer.user.email for user_offerer in users_offerer}
     emails.add(venue.bookingEmail)
     return emails
@@ -234,7 +234,7 @@ class VenueView(BaseAdminView):
     def delete_model(self, venue: Venue) -> bool:
         emails = _get_emails_by_venue(venue)
         try:
-            delete_cascade_venue_by_id(venue.id)
+            delete_cascade_venue_by_id(venue.id)  # type: ignore [arg-type]
             for email in emails:
                 update_external_pro(email)
             return True
@@ -301,20 +301,20 @@ class VenueView(BaseAdminView):
         # home page) and waiting N minutes for the next indexing
         # cron tasks is painful.
         if "criteria" in changed_attributes:
-            search.reindex_venue_ids([venue.id])
+            search.reindex_venue_ids([venue.id])  # type: ignore [list-item]
 
             # remove criteria to avoid an unnecessary call to
             # async_index_offers_of_venue_ids: no need to update the
             # offers if the only change is the venue's tags.
             changed_attributes.remove("criteria")
         else:
-            search.async_index_venue_ids([venue.id])
+            search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
 
         if has_siret_changed and old_siret:
             update_stock_id_at_providers(venue, old_siret)
 
         if changed_attributes:
-            search.async_index_offers_of_venue_ids([venue.id])
+            search.async_index_offers_of_venue_ids([venue.id])  # type: ignore [list-item]
 
         # Update pro attributes for all related emails: bookingEmail (no distinct former and new because bookingEmail
         # cannot be changed from backoffice) and pro users

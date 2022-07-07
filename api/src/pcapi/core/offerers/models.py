@@ -2,6 +2,7 @@ from datetime import datetime
 import enum
 import typing
 
+import psycopg2.extras
 import sqlalchemy as sa
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -25,6 +26,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
@@ -39,6 +41,7 @@ from pcapi.core.finance.models import BankInformationStatus
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
 from pcapi.domain.postal_code.postal_code import PostalCode
 from pcapi.domain.ts_vector import create_ts_vector_and_table_args
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
@@ -129,7 +132,7 @@ VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
 )
 
 
-class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
+class Venue(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixin, AccessibilityMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "venue"
 
     id = Column(BigInteger, primary_key=True)
@@ -148,7 +151,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     managingOffererId = Column(BigInteger, ForeignKey("offerer.id"), nullable=False, index=True)
 
-    managingOfferer = relationship("Offerer", foreign_keys=[managingOffererId], backref="managedVenues")
+    managingOfferer = relationship("Offerer", foreign_keys=[managingOffererId], backref="managedVenues")  # type: ignore [misc]
 
     bookingEmail = Column(String(120), nullable=True)
 
@@ -188,13 +191,13 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     venueTypeId = Column(Integer, ForeignKey("venue_type.id"), nullable=True)
 
-    venueType = relationship("VenueType", foreign_keys=[venueTypeId])
+    venueType = relationship("VenueType", foreign_keys=[venueTypeId])  # type: ignore [misc]
 
     venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 
-    venueLabel = relationship("VenueLabel", foreign_keys=[venueLabelId])
+    venueLabel = relationship("VenueLabel", foreign_keys=[venueLabelId])  # type: ignore [misc]
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
@@ -202,7 +205,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     description = Column(Text, nullable=True)
 
-    contact = relationship("VenueContact", back_populates="venue", uselist=False)
+    contact = relationship("VenueContact", back_populates="venue", uselist=False)  # type: ignore [misc]
 
     businessUnitId = Column(Integer, ForeignKey("business_unit.id"), nullable=True)
     businessUnit = relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venues")  # type: ignore [misc]
@@ -212,7 +215,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     # helpful like image type, author, etc. that can change over time.
     bannerUrl = Column(Text, nullable=True)
 
-    bannerMeta = Column(MutableDict.as_mutable(JSONB), nullable=True)
+    bannerMeta = Column(MutableDict.as_mutable(JSONB), nullable=True)  # type: ignore [misc]
 
     adageId = Column(Text, nullable=True)
 
@@ -226,25 +229,46 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     dmsToken = Column(Text, nullable=True, unique=True)
 
     venueEducationalStatusId = Column(BigInteger, ForeignKey("venue_educational_status.id"), nullable=True)
-    venueEducationalStatus = relationship(
+    venueEducationalStatus: Mapped["VenueEducationalStatus"] = relationship(
         "VenueEducationalStatus", back_populates="venues", foreign_keys=[venueEducationalStatusId]
+    )
+    reimbursement_point_links: Mapped[list["VenueReimbursementPointLink"]] = relationship(
+        "VenueReimbursementPointLink",
+        back_populates="venue",
+        foreign_keys="VenueReimbursementPointLink.venueId",
+        uselist=True,
+    )
+
+    pricing_point_links: Mapped[list["VenuePricingPointLink"]] = relationship(
+        "VenuePricingPointLink",
+        back_populates="venue",
+        foreign_keys="VenuePricingPointLink.venueId",
+        uselist=True,
     )
 
     collectiveDescription = Column(Text, nullable=True)
-    collectiveStudents = sa.Column(
+    collectiveStudents: list[educational_models.StudentLevels] | None = sa.Column(
         MutableList.as_mutable(sa.dialects.postgresql.ARRAY(sa.Enum(educational_models.StudentLevels))),
         nullable=True,
         server_default="{}",
     )
     collectiveWebsite = Column(Text, nullable=True)
-    collectiveDomains = relationship(
-        educational_models.EducationalDomain, back_populates="venues", secondary="educational_domain_venue"
+    collectiveDomains: Mapped[list[educational_models.EducationalDomain]] = relationship(
+        educational_models.EducationalDomain,
+        back_populates="venues",
+        secondary="educational_domain_venue",
+        uselist=True,
     )
-    collectiveInterventionArea = sa.Column(MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True)  # type: ignore [attr-defined]
-    collectiveNetwork = sa.Column(MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True)  # type: ignore [attr-defined]
+    collectiveInterventionArea: list[str] | None = sa.Column(
+        MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True
+    )
+    collectiveNetwork: list[str] | None = sa.Column(
+        MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True
+    )
     collectiveAccessInformation = Column(Text, nullable=True)
     collectivePhone = Column(Text, nullable=True)
     collectiveEmail = Column(Text, nullable=True)
+    bankInformation = relationship("BankInformation", back_populates="venue", uselist=False)  # type: ignore [misc]
 
     @property
     def is_eligible_for_search(self) -> bool:
@@ -317,7 +341,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     @property
     def isReleased(self) -> bool:
-        return self.isValidated and self.managingOfferer.isActive and self.managingOfferer.isValidated  # type: ignore [return-value]
+        return self.isValidated and self.managingOfferer.isActive and self.managingOfferer.isValidated
 
     @hybrid_property
     def timezone(self) -> str:
@@ -355,7 +379,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         timespan = db_utils.make_timerange(start=now, end=None)
         return (
             db.session.query(VenuePricingPointLink.pricingPointId)
-            .filter(VenuePricingPointLink.venueId == self.id, VenuePricingPointLink.timespan.overlaps(timespan))  # type: ignore [attr-defined]
+            .filter(VenuePricingPointLink.venueId == self.id, VenuePricingPointLink.timespan.overlaps(timespan))
             .scalar()
         )
 
@@ -366,34 +390,34 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         return (
             db.session.query(VenueReimbursementPointLink.reimbursementPointId)
             .filter(
-                VenueReimbursementPointLink.venueId == self.id, VenueReimbursementPointLink.timespan.overlaps(timespan)  # type: ignore [attr-defined]
+                VenueReimbursementPointLink.venueId == self.id, VenueReimbursementPointLink.timespan.overlaps(timespan)
             )
             .scalar()
         )
 
 
-class VenueLabel(PcObject, Model):  # type: ignore [valid-type, misc]
+class VenueLabel(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_label"
 
     label = Column(String(100), nullable=False)
 
-    venue = relationship("Venue", back_populates="venueLabel")
+    venue = relationship(Venue, back_populates="venueLabel", uselist=False)
 
 
-class VenueType(PcObject, Model):  # type: ignore [valid-type, misc]
+class VenueType(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     label = Column(String(100), nullable=False)
 
-    venue = relationship("Venue", back_populates="venueType")
+    venue = relationship("Venue", back_populates="venueType")  # type: ignore [misc]
 
 
-class VenueContact(PcObject, Model):  # type: ignore [valid-type, misc]
+class VenueContact(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_contact"
 
     id = Column(BigInteger, primary_key=True)
 
     venueId = Column(BigInteger, ForeignKey("venue.id", ondelete="CASCADE"), nullable=False, index=True, unique=True)
 
-    venue = relationship("Venue", foreign_keys=[venueId], back_populates="contact")
+    venue = relationship("Venue", foreign_keys=[venueId], back_populates="contact")  # type: ignore [misc]
 
     email = Column(String(256), nullable=True)
 
@@ -401,7 +425,7 @@ class VenueContact(PcObject, Model):  # type: ignore [valid-type, misc]
 
     phone_number = Column(String(64), nullable=True)
 
-    social_medias = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")
+    social_medias = Column(MutableDict.as_mutable(JSONB), nullable=False, default={}, server_default="{}")  # type: ignore [misc]
 
     def __repr__(self) -> str:
         return (
@@ -449,7 +473,7 @@ ts_indexes = [
 (Venue.__ts_vectors__, Venue.__table_args__) = create_ts_vector_and_table_args(ts_indexes)
 
 
-class VenuePricingPointLink(Model):  # type: ignore [misc, valid-type]
+class VenuePricingPointLink(Base, Model):  # type: ignore [valid-type, misc]
     """At any given time, the bookings of a venue are priced against a
     particular venue that we call the "pricing point" of the venue.
     There should only ever be one pricing point for each venue, but
@@ -459,15 +483,15 @@ class VenuePricingPointLink(Model):  # type: ignore [misc, valid-type]
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId], backref="pricing_point_links")
+    venue = relationship(Venue, foreign_keys=[venueId], back_populates="pricing_point_links")  # type: ignore [misc]
     pricingPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    pricingPoint = relationship(Venue, foreign_keys=[pricingPointId])
+    pricingPoint = relationship(Venue, foreign_keys=[pricingPointId])  # type: ignore [misc]
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the pricing point. For links
     # that existed before this table was introduced, the lower bound
     # is set to the Epoch.
-    timespan = Column(sa_psql.TSRANGE, nullable=False)
+    timespan: psycopg2.extras.DateTimeRange = Column(sa_psql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # A venue cannot be linked to multiple pricing points at the
@@ -480,7 +504,7 @@ class VenuePricingPointLink(Model):  # type: ignore [misc, valid-type]
         super().__init__(**kwargs)
 
 
-class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
+class VenueReimbursementPointLink(Base, Model):  # type: ignore [valid-type, misc]
     """At any given time, all bookings of a venue are reimbursed to a bank
     account that is attached to a particular venue that we call the
     "reimbursement point" of the venue. It may be the venue itself or
@@ -489,15 +513,15 @@ class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     venueId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    venue = relationship(Venue, foreign_keys=[venueId], backref="reimbursement_point_links")
+    venue = relationship(Venue, foreign_keys=[venueId], back_populates="reimbursement_point_links")  # type: ignore [misc]
     reimbursementPointId = Column(BigInteger, ForeignKey("venue.id"), index=True, nullable=False)
-    reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])
+    reimbursementPoint = relationship(Venue, foreign_keys=[reimbursementPointId])  # type: ignore [misc]
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the reimbursement point. For links
     # that existed before this table was introduced, the lower bound
     # is set to the Epoch.
-    timespan = Column(sa_psql.TSRANGE, nullable=False)
+    timespan: psycopg2.extras.DateTimeRange = Column(sa_psql.TSRANGE, nullable=False)
 
     __table_args__ = (
         # A venue cannot be linked to multiple reimbursement points at
@@ -510,15 +534,16 @@ class VenueReimbursementPointLink(Model):  # type: ignore [misc, valid-type]
         super().__init__(**kwargs)
 
 
-class VenueEducationalStatus(Model):  # type: ignore [misc, valid-type]
+class VenueEducationalStatus(Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "venue_educational_status"
     id = Column(BigInteger, primary_key=True, autoincrement=False, nullable=False)
     name = Column(String(256), nullable=False)
-    venues = relationship("Venue", back_populates="venueEducationalStatus")
+    venues = relationship(Venue, back_populates="venueEducationalStatus", uselist=True)
 
 
 class Offerer(
     PcObject,
+    Base,
     Model,  # type: ignore [valid-type, misc]
     HasThumbMixin,
     HasAddressMixin,
@@ -532,7 +557,7 @@ class Offerer(
 
     name = Column(String(140), nullable=False)
 
-    users = relationship("User", secondary="user_offerer")  # type: ignore [misc]
+    users = relationship("User", secondary="user_offerer")  # type: ignore [var-annotated]
 
     siren = Column(
         String(9), nullable=True, unique=True
@@ -540,7 +565,7 @@ class Offerer(
 
     dateValidated = Column(DateTime, nullable=True, default=None)
 
-    tags = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")
+    tags = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")  # type: ignore [var-annotated]
 
     thumb_path_component = "offerers"
 
@@ -595,11 +620,12 @@ offerer_ts_indexes = [
 (Offerer.__ts_vectors__, Offerer.__table_args__) = create_ts_vector_and_table_args(offerer_ts_indexes)
 
 
-class UserOfferer(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
+class UserOfferer(PcObject, Base, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
+    __table_name__ = "user_offerer"
     userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
     user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))  # type: ignore [misc]
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))  # type: ignore [misc]
 
     __table_args__ = (
         UniqueConstraint(
@@ -610,13 +636,13 @@ class UserOfferer(PcObject, Model, NeedsValidationMixin):  # type: ignore [valid
     )
 
 
-class ApiKey(PcObject, Model):  # type: ignore [valid-type, misc]
+class ApiKey(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     # TODO: remove value colum when legacy keys are migrated
     value = Column(CHAR(64), index=True, nullable=True)
 
     offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, nullable=False)
 
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))
+    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("apiKeys"))  # type: ignore [misc]
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow, server_default=func.now())
 
@@ -628,7 +654,7 @@ class ApiKey(PcObject, Model):  # type: ignore [valid-type, misc]
         return crypto.check_password(clear_text, self.secret)  # type: ignore [arg-type]
 
 
-class OffererTag(PcObject, Model):  # type: ignore [valid-type, misc]
+class OffererTag(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     """
     Tags on offerers are only used in backoffice, set to help for filtering and analytics in metabase.
     There is currently no display or impact in mobile and web apps.
@@ -642,7 +668,7 @@ class OffererTag(PcObject, Model):  # type: ignore [valid-type, misc]
         return "%s" % self.name
 
 
-class OffererTagMapping(PcObject, Model):  # type: ignore [valid-type, misc]
+class OffererTagMapping(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offerer_tag_mapping"
 
     offererId = Column(BigInteger, ForeignKey("offerer.id", ondelete="CASCADE"), index=True, nullable=False)

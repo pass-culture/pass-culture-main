@@ -49,6 +49,6 @@ if settings.DATABASE_IDLE_IN_TRANSACTION_SESSION_TIMEOUT:
 if _db_options:
     _engine_options["connect_args"] = {"options": " ".join(_db_options)}
 
-db = SQLAlchemy(engine_options=_engine_options)
 Base = declarative_base()
+db = SQLAlchemy(engine_options=_engine_options)
 Model = db.Model

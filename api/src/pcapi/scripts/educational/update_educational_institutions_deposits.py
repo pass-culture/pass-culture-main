@@ -57,7 +57,7 @@ def _process_educational_csv(
             return
 
         educational_deposit = educational_repository.find_educational_deposit_by_institution_id_and_year(
-            educational_institution.id, educational_year.adageId
+            educational_institution.id, educational_year.adageId  # type: ignore [arg-type]
         )
         if not educational_deposit:
             print("\033[91mERROR: script has ceased execution")

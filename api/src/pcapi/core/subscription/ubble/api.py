@@ -32,20 +32,20 @@ logger = logging.getLogger(__name__)
 
 
 def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
-    content = ubble.get_content(fraud_check.thirdPartyId)
+    content = ubble.get_content(fraud_check.thirdPartyId)  # type: ignore [arg-type]
     status = content.status
 
     if not settings.IS_PROD and ubble_fraud_api.does_match_ubble_test_email(fraud_check.user.email):
         content.birth_date = fraud_check.user.dateOfBirth.date() if fraud_check.user.dateOfBirth else None
 
-    fraud_check.resultContent = content  # type: ignore [assignment]
+    fraud_check.resultContent = content  # type: ignore [call-overload]
     pcapi_repository.repository.save(fraud_check)
 
     user = fraud_check.user
 
     if status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSING:
         subscription_messages.on_review_pending(user)
-        fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.PENDING
         pcapi_repository.repository.save(user, fraud_check)
 
     elif status == ubble_fraud_models.UbbleIdentificationStatus.PROCESSED:
@@ -60,7 +60,7 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
             return
 
         if fraud_check.status != fraud_models.FraudCheckStatus.OK:
-            can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)  # type: ignore [arg-type]
+            can_retry = ubble_fraud_api.is_user_allowed_to_perform_ubble_check(user, fraud_check.eligibilityType)
             handle_validation_errors(user, fraud_check, can_retry=can_retry)
             subscription_api.update_user_birth_date(user, content.get_birth_date())
             return
@@ -77,13 +77,13 @@ def update_ubble_workflow(fraud_check: fraud_models.BeneficiaryFraudCheck) -> No
         ubble_fraud_models.UbbleIdentificationStatus.ABORTED,
         ubble_fraud_models.UbbleIdentificationStatus.EXPIRED,
     ):
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
         pcapi_repository.repository.save(fraud_check)
 
 
 def start_ubble_workflow(user: users_models.User, redirect_url: str) -> str:
     content = ubble.start_identification(
-        user_id=user.id,
+        user_id=user.id,  # type: ignore [arg-type]
         first_name=user.firstName,  # type: ignore [arg-type]
         last_name=user.lastName,  # type: ignore [arg-type]
         webhook_url=flask.url_for("Public API.ubble_webhook_update_application_status", _external=True),
@@ -105,25 +105,25 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
             subscription_messages.on_idcheck_unread_document_with_retry(user)
         else:
             subscription_messages.on_idcheck_unread_document(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "unread-document")
+        subscription_document_error.send_subscription_document_error_email(user.email, "unread-document")  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.ID_CHECK_DATA_MATCH in reason_codes:
         subscription_messages.on_idcheck_document_data_not_matching(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "information-error")
+        subscription_document_error.send_subscription_document_error_email(user.email, "information-error")  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED in reason_codes:
         if can_retry:
             subscription_messages.on_idcheck_document_not_supported_with_retry(user)
         else:
             subscription_messages.on_idcheck_document_not_supported(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "unread-mrz-document")
+        subscription_document_error.send_subscription_document_error_email(user.email, "unread-mrz-document")  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.ID_CHECK_EXPIRED in reason_codes:
         if can_retry:
             subscription_messages.on_idcheck_invalid_document_date_with_retry(user)
         else:
             subscription_messages.on_idcheck_invalid_document_date(user)
-        subscription_document_error.send_subscription_document_error_email(user.email, "invalid-document")
+        subscription_document_error.send_subscription_document_error_email(user.email, "invalid-document")  # type: ignore [arg-type]
 
     elif fraud_models.FraudReasonCode.ID_CHECK_BLOCKED_OTHER in reason_codes:
         subscription_messages.on_idcheck_rejected(user)
@@ -222,7 +222,7 @@ def archive_ubble_user_id_pictures(identification_id: str) -> bool:
             f"Fraud check status {fraud_check.status} is incompatible with pictures archives for identification_id {identification_id}"
         )
 
-    ubble_content = ubble.get_content(fraud_check.thirdPartyId)
+    ubble_content = ubble.get_content(fraud_check.thirdPartyId)  # type: ignore [arg-type]
     ubble_files = download_ubble_document_pictures(ubble_content, fraud_check)
 
     front_picture_stored = back_picture_stored = False

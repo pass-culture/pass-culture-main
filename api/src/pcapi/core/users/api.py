@@ -103,7 +103,7 @@ def generate_and_save_token(
         value=token_value,
         type=token_type,
         expirationDate=expiration,
-        extraData=asdict(extra_data) if extra_data else None,
+        extraData=asdict(extra_data) if extra_data else None,  # type: ignore [arg-type]
     )
     repository.save(token)
 
@@ -139,7 +139,7 @@ def create_account(
         dateOfBirth=datetime.datetime.combine(birthdate, datetime.datetime.min.time()),
         isEmailValidated=is_email_validated,
         publicName=models.VOID_PUBLIC_NAME,  # Required because model validation requires 3+ chars
-        notificationSubscriptions=asdict(
+        notificationSubscriptions=asdict(  # type: ignore [arg-type]
             models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
         ),
         phoneNumber=phone_number,
@@ -168,7 +168,7 @@ def initialize_account(
     if apps_flyer_user_id and apps_flyer_platform:
         if user.externalIds is None:
             user.externalIds = {}
-        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
+        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}  # type: ignore [index, call-overload]
 
     repository.save(user)
     logger.info("Created user account", extra={"user": user.id})
@@ -354,11 +354,11 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     """
     import pcapi.core.bookings.api as bookings_api  # avoid import loop
 
-    user.isActive = False
+    user.isActive = False  # type: ignore [assignment]
     user_suspension = models.UserSuspension(
         user=user,
         eventType=models.SuspensionEventType.SUSPENDED,
-        actorUser=actor,
+        actorUser=actor,  # type: ignore [arg-type]
         reasonCode=reason,
     )
     user.remove_admin_role()
@@ -405,7 +405,7 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
 
 
 def unsuspend_account(user: models.User, actor: models.User, send_email: bool = False) -> None:
-    user.isActive = True
+    user.isActive = True  # type: ignore [assignment]
     user_suspension = models.UserSuspension(
         user=user,
         eventType=models.SuspensionEventType.UNSUSPENDED,
@@ -539,7 +539,7 @@ def get_domains_credit(
         return None
 
     if user_bookings is None:
-        deposit_bookings = bookings_repository.get_bookings_from_deposit(user.deposit.id)
+        deposit_bookings = bookings_repository.get_bookings_from_deposit(user.deposit.id)  # type: ignore [arg-type]
     else:
         deposit_bookings = [
             booking
@@ -551,8 +551,8 @@ def get_domains_credit(
 
     domains_credit = models.DomainsCredit(
         all=models.Credit(
-            initial=user.deposit.amount,
-            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))
+            initial=user.deposit.amount,  # type: ignore [arg-type]
+            remaining=max(user.deposit.amount - sum(booking.total_amount for booking in deposit_bookings), Decimal("0"))  # type: ignore [arg-type, operator, misc]
             if user.has_active_deposit
             else Decimal("0"),
         ),
@@ -628,9 +628,9 @@ def create_pro_user_and_offerer(pro_user: ProUserCreationBodyModel) -> models.Us
 
 
 def create_pro_user(pro_user: ProUserCreationBodyModel) -> models.User:
-    new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))
-    new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)
-    new_pro_user.notificationSubscriptions = asdict(models.NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type]
+    new_pro_user = models.User(from_dict=pro_user.dict(by_alias=True))  # type: ignore [call-arg]
+    new_pro_user.email = users_utils.sanitize_email(new_pro_user.email)  # type: ignore [arg-type]
+    new_pro_user.notificationSubscriptions = asdict(models.NotificationSubscriptions(marketing_email=pro_user.contact_ok))  # type: ignore [arg-type, call-overload]
     new_pro_user.remove_admin_role()
     new_pro_user.remove_beneficiary_role()
     new_pro_user.needsToFillCulturalSurvey = False
@@ -667,7 +667,7 @@ def _generate_offerer(data: dict) -> offerers_models.Offerer:
 
 def _set_offerer_departement_code(new_user: models.User, offerer: offerers_models.Offerer) -> models.User:
     if offerer.postalCode:  # not None, not ""
-        new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()
+        new_user.departementCode = PostalCode(offerer.postalCode).get_departement_code()  # type: ignore [arg-type]
     else:
         new_user.departementCode = None
     return new_user
@@ -713,7 +713,7 @@ def update_notification_subscription(
     if subscriptions is None:
         return
 
-    user.notificationSubscriptions = {
+    user.notificationSubscriptions = {  # type: ignore [call-overload]
         "marketing_push": subscriptions.marketing_push,
         "marketing_email": subscriptions.marketing_email,
     }
@@ -819,7 +819,7 @@ def skip_phone_validation_step(user: models.User) -> None:
     if user.phoneValidationStatus == models.PhoneValidationStatusType.VALIDATED:
         raise phone_validation_exceptions.UserPhoneNumberAlreadyValidated()
 
-    user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name
+    user.phoneValidationStatus = models.PhoneValidationStatusType.SKIPPED_BY_SUPPORT.name  # type: ignore [call-overload]
     repository.save(user)
 
 

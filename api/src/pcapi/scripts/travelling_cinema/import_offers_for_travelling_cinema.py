@@ -188,7 +188,7 @@ def _create_venue(infos: dict, offerer: offerers_models.Offerer) -> offerers_mod
         "city": infos["venue_city"],
         "longitude": infos["longitude"],
         "latitude": infos["latitude"],
-        "managingOffererId": humanize(offerer.id),
+        "managingOffererId": humanize(offerer.id),  # type: ignore [arg-type]
         "name": infos["venue_name"],
         "venueTypeCode": "TRAVELING_CINEMA",
         "bookingEmail": infos["venue_email"],
@@ -309,7 +309,7 @@ def _create_stock(infos: dict, offer: offers_models.Offer, user: users_models.Us
         "bookingLimitDatetime": date_in_utc,
     }
 
-    return offers_api.upsert_stocks(offer.id, [stock_serialize.StockCreationBodyModel(**stock_data)], user)[0]
+    return offers_api.upsert_stocks(offer.id, [stock_serialize.StockCreationBodyModel(**stock_data)], user)[0]  # type: ignore [arg-type]
 
 
 def _duration_str_to_minutes(duration: str) -> int | None:

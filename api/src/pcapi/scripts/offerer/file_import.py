@@ -62,7 +62,7 @@ def create_activated_user_offerer(csv_row: list[str]) -> UserOfferer:
     filled_offerer = fill_offerer_from(csv_row, offerer)
     repository.save(filled_offerer)
 
-    virtual_venue = find_venue_by_managing_offerer_id(filled_offerer.id)
+    virtual_venue = find_venue_by_managing_offerer_id(filled_offerer.id)  # type: ignore [arg-type]
     if not virtual_venue:
         filled_virtual_venue = create_digital_venue(offerer)
         repository.save(filled_virtual_venue)
@@ -102,9 +102,9 @@ def fill_user_from(csv_row: list[str], user: User) -> User:
 def fill_offerer_from(csv_row: list[str], offerer: Offerer) -> Offerer:
     offerer.siren = csv_row[OFFERER_SIREN_COLUMN_INDEX]
     offerer.name = csv_row[OFFERER_NAME_COLUMN_INDEX]
-    offerer.thumbCount = 0
-    offerer.postalCode = csv_row[OFFERER_POSTAL_CODE_COLUMN_INDEX]
-    offerer.city = csv_row[OFFERER_CITY_COLUMN_INDEX]
+    offerer.thumbCount = 0  # type: ignore [assignment]
+    offerer.postalCode = csv_row[OFFERER_POSTAL_CODE_COLUMN_INDEX]  # type: ignore [assignment]
+    offerer.city = csv_row[OFFERER_CITY_COLUMN_INDEX]  # type: ignore [assignment]
     offerer.dateCreated = datetime.utcnow()
     return offerer
 

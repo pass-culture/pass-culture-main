@@ -120,7 +120,7 @@ def update_venue_provider(
     venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.VenueProvider:
     if venue_provider.isActive != venue_provider_payload.isActive:
-        venue_provider.isActive = bool(venue_provider_payload.isActive)
+        venue_provider.isActive = bool(venue_provider_payload.isActive)  # type: ignore[assignment]
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
         )
@@ -152,7 +152,7 @@ def update_allocine_venue_provider(
     allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.AllocineVenueProvider:
     allocine_venue_provider.quantity = venue_provider_payload.quantity
-    allocine_venue_provider.isDuo = venue_provider_payload.isDuo  # type: ignore [assignment]
+    allocine_venue_provider.isDuo = venue_provider_payload.isDuo
     for price_rule in allocine_venue_provider.priceRules:
         # PriceRule.default is the only existing value at this time
         # could need to be tweaked in the future
@@ -204,7 +204,7 @@ def _check_provider_can_be_connected(provider: providers_models.Provider, id_at_
         raise providers_exceptions.ProviderWithoutApiImplementation()
 
     if not _siret_can_be_synchronized(id_at_provider, provider):
-        raise providers_exceptions.VenueSiretNotRegistered(provider.name, id_at_provider)
+        raise providers_exceptions.VenueSiretNotRegistered(provider.name, id_at_provider)  # type: ignore [arg-type]
     return
 
 
@@ -258,7 +258,7 @@ def synchronize_stocks(
             "ref_count": len(products_references),
         },
     ):
-        offers_by_venue_reference = offers_repository.get_offers_map_by_venue_reference(products_references, venue.id)
+        offers_by_venue_reference = offers_repository.get_offers_map_by_venue_reference(products_references, venue.id)  # type: ignore [arg-type]
 
     offers_update_mapping = [
         {"id": offer_id, "lastProviderId": provider_id} for offer_id in offers_by_provider_reference.values()
@@ -353,7 +353,7 @@ def _get_stocks_to_upsert(
     for stock_detail in stock_details:
         stock_provider_reference = stock_detail.stocks_provider_reference
         product = products_by_provider_reference[stock_detail.products_provider_reference]
-        book_price = stock_detail.price or float(product.extraData["prix_livre"])  # type: ignore [call-overload, index]
+        book_price = stock_detail.price or float(product.extraData["prix_livre"])
         if stock_provider_reference in stocks_by_provider_reference:
             stock = stocks_by_provider_reference[stock_provider_reference]
 
@@ -403,7 +403,7 @@ def _get_stocks_to_upsert(
                 continue
 
             new_stocks.append(stock)
-            offer_ids.add(stock.offerId)
+            offer_ids.add(stock.offerId)  # type: ignore [arg-type]
 
     return update_stock_mapping, new_stocks, offer_ids
 
@@ -411,7 +411,7 @@ def _get_stocks_to_upsert(
 def _build_stock_from_stock_detail(
     stock_detail: providers_models.StockDetail, offers_id: int, price: float, provider_id: int | None
 ) -> offers_models.Stock:
-    return offers_models.Stock(
+    return offers_models.Stock(  # type: ignore [call-arg]
         quantity=stock_detail.available_quantity,
         rawProviderQuantity=stock_detail.available_quantity,
         bookingLimitDatetime=None,
@@ -443,14 +443,14 @@ def _build_new_offer(
     id_at_provider: str,
     provider_id: int | None,
 ) -> offers_models.Offer:
-    return offers_models.Offer(
+    return offers_models.Offer(  # type: ignore [call-arg]
         bookingEmail=venue.bookingEmail,
         description=product.description,
         extraData=product.extraData,
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
-        productId=product.id,
+        productId=product.id,  # type: ignore [arg-type]
         venueId=venue.id,
         subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,

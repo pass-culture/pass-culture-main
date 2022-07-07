@@ -61,7 +61,7 @@ def archive_past_identification_pictures(
 
         for fraud_check in fraud_checks:
             try:
-                archived_result = ubble_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+                archived_result = ubble_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)  # type: ignore [arg-type]
                 result.add_result(archived_result)
             except Exception:  # pylint: disable=broad-except
                 # Catch all exception. Watch logs to find errors during archive

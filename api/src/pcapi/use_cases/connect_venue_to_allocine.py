@@ -46,7 +46,7 @@ def _create_allocine_venue_provider_price_rule(
 ) -> AllocineVenueProviderPriceRule:
     venue_provider_price_rule = AllocineVenueProviderPriceRule()
     venue_provider_price_rule.allocineVenueProvider = allocine_venue_provider
-    venue_provider_price_rule.priceRule = PriceRule.default  # type: ignore [assignment]
+    venue_provider_price_rule.priceRule = PriceRule.default
     venue_provider_price_rule.price = price
 
     return venue_provider_price_rule
@@ -59,7 +59,7 @@ def _create_allocine_venue_provider(
     allocine_venue_provider.venue = venue
     allocine_venue_provider.providerId = provider_id
     allocine_venue_provider.venueIdAtOfferProvider = allocine_pivot.theaterId
-    allocine_venue_provider.isDuo = venue_provider_payload.isDuo  # type: ignore [assignment]
+    allocine_venue_provider.isDuo = venue_provider_payload.isDuo
     allocine_venue_provider.quantity = venue_provider_payload.quantity
     allocine_venue_provider.internalId = allocine_pivot.internalId
 

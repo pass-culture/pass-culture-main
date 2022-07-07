@@ -23,6 +23,7 @@ from pcapi.core.users import utils as users_utils
 from pcapi.core.users.constants import SuspensionEventType
 from pcapi.core.users.constants import SuspensionReason
 from pcapi.core.users.exceptions import InvalidUserRoleException
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -59,14 +60,14 @@ class TokenExtraData:
     phone_number: str | None
 
 
-class Token(PcObject, Model):  # type: ignore [valid-type, misc]
+class Token(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "token"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True))
+    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("tokens", passive_deletes=True))  # type: ignore [misc]
 
     value = sa.Column(sa.String, index=True, unique=True, nullable=False)
 
@@ -78,7 +79,7 @@ class Token(PcObject, Model):  # type: ignore [valid-type, misc]
 
     isUsed = sa.Column(sa.Boolean, nullable=False, server_default=expression.false(), default=False)
 
-    extraData = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)
+    extraData = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)  # type: ignore [misc]
 
     def get_extra_data(self) -> TokenExtraData | None:
         return TokenExtraData(**self.extraData) if self.extraData else None
@@ -184,7 +185,7 @@ class AccountState(enum.Enum):
         return self == AccountState.DELETED
 
 
-class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
+class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "user"
 
     activity = sa.Column(sa.String(128), nullable=True)
@@ -194,13 +195,13 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
     clearTextPassword = None
     comment = sa.Column(sa.Text(), nullable=True)
     culturalSurveyFilledDate = sa.Column(sa.DateTime, nullable=True)
-    culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)
+    culturalSurveyId = sa.Column(postgresql.UUID(as_uuid=True), nullable=True)  # type: ignore [misc]
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow)
     dateOfBirth = sa.Column(sa.DateTime, nullable=True)
     departementCode = sa.Column(sa.String(3), nullable=True)
     email = sa.Column(sa.String(120), nullable=False, unique=True)
-    externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")  # type: ignore [attr-defined]
-    extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")  # type: ignore [attr-defined]
+    externalIds = sa.Column(postgresql.json.JSONB, nullable=True, default={}, server_default="{}")
+    extraData = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=True, default={}, server_default="{}")  # type: ignore [misc]
     firstName = sa.Column(sa.String(128), nullable=True)
     hasSeenProTutorials = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
     hasSeenProRgs = sa.Column(sa.Boolean, nullable=False, server_default=expression.false())
@@ -211,8 +212,8 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
     lastName = sa.Column(sa.String(128), nullable=True)
     married_name = sa.Column(sa.String(128), nullable=True)
     needsToFillCulturalSurvey = sa.Column(sa.Boolean, server_default=expression.true(), default=True)
-    notificationSubscriptions = sa.Column(
-        MutableDict.as_mutable(postgresql.json.JSONB),  # type: ignore [attr-defined]
+    notificationSubscriptions = sa.Column(  # type: ignore [misc]
+        MutableDict.as_mutable(postgresql.json.JSONB),
         nullable=True,
         default=asdict(NotificationSubscriptions()),
         server_default="""{"marketing_push": true, "marketing_email": true}""",
@@ -224,7 +225,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
     postalCode = sa.Column(sa.String(5), nullable=True)
     publicName = sa.Column(sa.String(255), nullable=False)
     recreditAmountToShow = sa.Column(sa.Numeric(10, 2), nullable=True)
-    roles = sa.Column(
+    roles = sa.Column(  # type: ignore [misc]
         MutableList.as_mutable(postgresql.ARRAY(sa.Enum(UserRole, native_enum=False, create_constraint=False))),
         nullable=False,
         server_default="{}",
@@ -239,7 +240,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
             return
 
         current_roles = copy.deepcopy(self.roles) if self.roles else []
-        updated_roles = current_roles + [role]
+        updated_roles = current_roles + [role]  # type: ignore [operator]
 
         if UserRole.BENEFICIARY in updated_roles and UserRole.ADMIN in updated_roles:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
@@ -247,13 +248,13 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         self.roles = updated_roles
 
     def add_admin_role(self) -> None:
-        if self.is_beneficiary:  # pylint: disable=using-constant-test
+        if self.is_beneficiary:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
 
         self._add_role(UserRole.ADMIN)
 
     def add_beneficiary_role(self) -> None:
-        if self.has_admin_role:  # pylint: disable=using-constant-test
+        if self.has_admin_role:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.BENEFICIARY)
 
@@ -261,7 +262,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         self._add_role(UserRole.PRO)
 
     def add_underage_beneficiary_role(self) -> None:
-        if self.has_admin_role:  # pylint: disable=using-constant-test
+        if self.has_admin_role:
             raise InvalidUserRoleException("User can't have both ADMIN and BENEFICIARY role")
         self._add_role(UserRole.UNDERAGE_BENEFICIARY)
 
@@ -278,7 +279,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         # FIXME (dbaty, 2021-11-26): consider moving to a function in `core.users.api`?
         from pcapi.core.offerers.models import UserOfferer
 
-        if self.has_admin_role:  # pylint: disable=using-constant-test
+        if self.has_admin_role:
             return True
         return db.session.query(
             UserOfferer.query.filter(
@@ -298,7 +299,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
 
     @property
     def is_active(self) -> bool:  # required by flask-login
-        return self.isActive
+        return self.isActive  # type: ignore [return-value]
 
     @property
     def is_anonymous(self) -> bool:  # required by flask-login
@@ -318,19 +319,19 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
             self.setPassword(data["password"])
 
     def remove_admin_role(self) -> None:
-        if self.has_admin_role:  # pylint: disable=using-constant-test
+        if self.has_admin_role:
             self.roles.remove(UserRole.ADMIN)
 
     def remove_underage_beneficiary_role(self) -> None:
-        if self.has_underage_beneficiary_role:  # pylint: disable=using-constant-test
+        if self.has_underage_beneficiary_role:
             self.roles.remove(UserRole.UNDERAGE_BENEFICIARY)
 
     def remove_beneficiary_role(self) -> None:
-        if self.has_beneficiary_role:  # pylint: disable=using-constant-test
+        if self.has_beneficiary_role:
             self.roles.remove(UserRole.BENEFICIARY)
 
     def remove_pro_role(self) -> None:
-        if self.has_pro_role:  # pylint: disable=using-constant-test
+        if self.has_pro_role:
             self.roles.remove(UserRole.PRO)
 
     def setPassword(self, newpass):  # type: ignore [no-untyped-def]
@@ -357,7 +358,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
 
     @property
     def deposit_type(self) -> "DepositType | None":
-        return self.deposit.type if self.deposit else None  # type: ignore [return-value]
+        return self.deposit.type if self.deposit else None
 
     @property
     def deposit_version(self) -> int | None:
@@ -591,12 +592,12 @@ class DomainsCredit:
     physical: Credit | None = None
 
 
-class Favorite(PcObject, Model):  # type: ignore [valid-type, misc]
+class Favorite(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "favorite"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)
 
-    user = orm.relationship("User", foreign_keys=[userId], backref="favorites")
+    user = orm.relationship("User", foreign_keys=[userId], backref="favorites")  # type: ignore [misc]
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
@@ -629,13 +630,13 @@ class EmailHistoryEventTypeEnum(enum.Enum):
     ADMIN_UPDATE_REQUEST = "ADMIN_UPDATE_REQUEST"
 
 
-class UserEmailHistory(PcObject, Model):  # type: ignore [valid-type, misc]
+class UserEmailHistory(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_email_history"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), index=True, nullable=True)
-    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True))
+    user = orm.relationship("User", foreign_keys=[userId], backref=orm.backref("email_history", passive_deletes=True))  # type: ignore [misc]
 
     oldUserEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
     oldDomainEmail = sa.Column(sa.String(120), nullable=False, unique=False, index=True)
@@ -654,7 +655,7 @@ class UserEmailHistory(PcObject, Model):  # type: ignore [valid-type, misc]
         new_email: str,
         event_type: EmailHistoryEventTypeEnum,
     ) -> "UserEmailHistory":
-        old_user_email, old_domain_email = split_email(user.email)
+        old_user_email, old_domain_email = split_email(user.email)  # type: ignore [arg-type]
         new_user_email, new_domain_email = split_email(new_email)
         return cls(
             user=user,
@@ -694,13 +695,13 @@ class UserEmailHistory(PcObject, Model):  # type: ignore [valid-type, misc]
         return func.concat(cls.newUserEmail, "@", cls.newDomainEmail)
 
 
-class UserSuspension(PcObject, Model):  # type: ignore [valid-type, misc]
+class UserSuspension(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "user_suspension"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="CASCADE"), index=True, nullable=False)
-    user = orm.relationship(
+    user = orm.relationship(  # type: ignore [misc]
         "User",
         foreign_keys=[userId],
         backref=orm.backref(
@@ -716,7 +717,7 @@ class UserSuspension(PcObject, Model):  # type: ignore [valid-type, misc]
     # Super-admin or the user himself who initiated the suspension event on user account
     # nullable because of old suspensions without author migrated here; but mandatory for new actions
     actorUserId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id", ondelete="SET NULL"), nullable=True)
-    actorUser = orm.relationship("User", foreign_keys=[actorUserId])
+    actorUser = orm.relationship("User", foreign_keys=[actorUserId])  # type: ignore [misc]
 
     # Reason is filled in only when suspended but could be useful also when unsuspended for support traceability
     reasonCode = sa.Column(sa.Enum(SuspensionReason), nullable=True)

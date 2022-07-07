@@ -31,7 +31,7 @@ class CDSStocks(LocalProvider):
         self.apiUrl = settings.CDS_API_URL
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
-        cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
+        cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)  # type: ignore [arg-type]
         self.apiToken = cinema_details.cinemaApiToken
         self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
@@ -101,7 +101,7 @@ class CDSStocks(LocalProvider):
         self.update_from_movie_information(cds_offer, self.movie_information)
 
         if self.movie_information.visa:
-            cds_offer.extraData = {"visa": self.movie_information.visa}
+            cds_offer.extraData = {"visa": self.movie_information.visa}  # type: ignore [assignment]
 
         cds_offer.name = self.movie_information.title
         cds_offer.subcategoryId = subcategories.SEANCE_CINE.id
@@ -116,7 +116,7 @@ class CDSStocks(LocalProvider):
         self.last_offer_id = cds_offer.id  # type: ignore [assignment]
 
     def fill_stock_attributes(self, cds_stock: Stock):  # type: ignore [no-untyped-def]
-        cds_stock.offerId = self.last_offer_id  # type: ignore [assignment]
+        cds_stock.offerId = self.last_offer_id
 
         showtime_uuid = _get_showtimes_uuid_by_idAtProvider(cds_stock.idAtProviders)  # type: ignore [arg-type]
         showtime = _find_showtime_by_showtime_uuid(self.filtered_movie_showtimes, showtime_uuid)  # type: ignore [arg-type]
@@ -131,7 +131,7 @@ class CDSStocks(LocalProvider):
 
         is_new_stock_to_insert = cds_stock.id is None
         if is_new_stock_to_insert:
-            cds_stock.fieldsUpdated = []
+            cds_stock.fieldsUpdated = []  # type: ignore [assignment]
 
         if "bookingLimitDatetime" not in cds_stock.fieldsUpdated:
             cds_stock.bookingLimitDatetime = bookingLimitDatetime
@@ -155,8 +155,8 @@ class CDSStocks(LocalProvider):
         if self.movie_information.duration:
             obj.durationMinutes = movie_information.duration
         if not obj.extraData:
-            obj.extraData = {}
-        obj.extraData = {"visa": self.movie_information.visa}
+            obj.extraData = {}  # type: ignore [assignment]
+        obj.extraData = {"visa": self.movie_information.visa}  # type: ignore [assignment]
 
     def get_object_thumb(self) -> bytes:
         if self.movie_information.posterpath:
@@ -175,7 +175,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
+            account_id=self.accountId,  # type: ignore [arg-type]
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )
@@ -186,7 +186,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
+            account_id=self.accountId,  # type: ignore [arg-type]
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )
@@ -197,7 +197,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
+            account_id=self.accountId,  # type: ignore [arg-type]
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )
@@ -208,7 +208,7 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
-            account_id=self.accountId,
+            account_id=self.accountId,  # type: ignore [arg-type]
             api_url=self.apiUrl,
             cinema_api_token=self.apiToken,
         )

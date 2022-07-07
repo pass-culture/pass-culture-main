@@ -146,10 +146,10 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
                 bookingEmail="fake@email.com",
                 city=offerer.city,
                 comment="Salle de cinéma",
-                name=offerer.name + " - Salle 1",
+                name=offerer.name + " - Salle 1",  # type: ignore[operator]
                 postalCode=offerer.postalCode,
                 siret="88145723811111",
-                venueTypeCode=VenueTypeCode.MOVIE,  # type: ignore [attr-defined]
+                venueTypeCode=VenueTypeCode.MOVIE,
             )
 
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban

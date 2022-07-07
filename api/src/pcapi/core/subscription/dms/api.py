@@ -101,7 +101,7 @@ def handle_dms_application(
         return fraud_check
 
     fraud_check.resultContent = application_content.dict()
-    fraud_check.eligibilityType = fraud_api.decide_eligibility(  # type: ignore [assignment]
+    fraud_check.eligibilityType = fraud_api.decide_eligibility(
         user, application_content.get_birth_date(), application_content.get_registration_datetime()
     )
 
@@ -110,18 +110,18 @@ def handle_dms_application(
 
     elif state == dms_models.GraphQLApplicationStates.on_going:
         subscription_messages.on_dms_application_received(user)
-        fraud_check.status = fraud_models.FraudCheckStatus.PENDING  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.PENDING
 
     elif state == dms_models.GraphQLApplicationStates.accepted:
         _process_accepted_application(user, fraud_check, field_errors)
 
     elif state == dms_models.GraphQLApplicationStates.refused:
-        fraud_check.status = fraud_models.FraudCheckStatus.KO  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.KO
         fraud_check.reasonCodes = [fraud_models.FraudReasonCode.REFUSED_BY_OPERATOR]  # type: ignore [list-item]
         subscription_messages.on_dms_application_refused(user)
 
     elif state == dms_models.GraphQLApplicationStates.without_continuation:
-        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED  # type: ignore [assignment]
+        fraud_check.status = fraud_models.FraudCheckStatus.CANCELED
 
     pcapi_repository.repository.save(fraud_check)
     return fraud_check
@@ -177,7 +177,7 @@ def _on_dms_eligibility_error(
     )
     fraud_check.reason = "La date de naissance de l'utilisateur ne correspond pas à un âge autorisé"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.AGE_NOT_VALID]  # type: ignore [list-item]
-    fraud_check.status = fraud_models.FraudCheckStatus.ERROR  # type: ignore [assignment]
+    fraud_check.status = fraud_models.FraudCheckStatus.ERROR
     pcapi_repository.repository.save(fraud_check)
 
 
@@ -194,7 +194,7 @@ def _process_draft_application(
 
     if not field_errors and current_fraud_check.eligibilityType is not None:
         subscription_messages.on_dms_application_received(user)
-        current_fraud_check.status = draft_status  # type: ignore [assignment]
+        current_fraud_check.status = draft_status
         return
 
     if current_fraud_check.eligibilityType is None:
@@ -214,7 +214,7 @@ def _update_fraud_check_with_field_errors(
     errors = ",".join([f"'{field_error.key.value}' ({field_error.value})" for field_error in field_errors])
     fraud_check.reason = f"Erreur dans les données soumises dans le dossier DMS : {errors}"
     fraud_check.reasonCodes = [fraud_models.FraudReasonCode.ERROR_IN_DATA]  # type: ignore [list-item]
-    fraud_check.status = fraud_check_status  # type: ignore [assignment]
+    fraud_check.status = fraud_check_status
 
     pcapi_repository.repository.save(fraud_check)
 
@@ -274,7 +274,7 @@ def _process_accepted_application(
     if field_errors:
         subscription_messages.on_dms_application_field_errors(user, field_errors, is_application_updatable=False)
         dms_subscription_emails.send_pre_subscription_from_dms_error_email_to_beneficiary(
-            user.email,
+            user.email,  # type: ignore [arg-type]
             field_errors,
         )
         _update_fraud_check_with_field_errors(fraud_check, field_errors, fraud_models.FraudCheckStatus.ERROR)
@@ -287,7 +287,7 @@ def _process_accepted_application(
 
     if fraud_check.eligibilityType != eligibility_type:
         logger.info("User changed his eligibility in DMS application", extra={"user_id": user.id})
-        fraud_check.eligibilityType = eligibility_type  # type: ignore [assignment]
+        fraud_check.eligibilityType = eligibility_type
 
     try:
         fraud_api.on_dms_fraud_result(user, fraud_check)
@@ -301,7 +301,7 @@ def _process_accepted_application(
         return
 
     fraud_api.create_honor_statement_fraud_check(
-        user, "honor statement contained in DMS application", fraud_check.eligibilityType  # type: ignore [arg-type]
+        user, "honor statement contained in DMS application", fraud_check.eligibilityType
     )
     _create_profile_completion_fraud_check_from_dms(
         user, fraud_check.eligibilityType, dms_content, application_id=fraud_check.thirdPartyId  # type: ignore [arg-type]
@@ -324,7 +324,7 @@ def _process_accepted_application(
     )
 
     if not has_completed_all_steps:
-        dms_subscription_emails.send_complete_subscription_after_dms_email(user.email)
+        dms_subscription_emails.send_complete_subscription_after_dms_email(user.email)  # type: ignore [arg-type]
 
 
 def _handle_validation_errors(

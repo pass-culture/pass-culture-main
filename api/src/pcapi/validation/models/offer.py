@@ -4,10 +4,10 @@ from pcapi.models.api_errors import ApiErrors
 
 
 def validate(offer: Offer, api_errors: ApiErrors) -> ApiErrors:
-    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)
+    venue = offer.venue if offer.venue else find_venue_by_id(offer.venueId)  # type: ignore [arg-type]
 
     if offer.isDigital:
-        if not venue.isVirtual:
+        if not venue.isVirtual:  # type: ignore [union-attr]
             api_errors.add_error(
                 "venue", 'Une offre numérique doit obligatoirement être associée au lieu "Offre numérique"'
             )

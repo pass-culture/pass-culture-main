@@ -105,7 +105,7 @@ def start_ubble_fraud_check(user: users_models.User, ubble_content: ubble_fraud_
         user=user,
         type=fraud_models.FraudCheckType.UBBLE,
         thirdPartyId=str(ubble_content.identification_id),
-        resultContent=ubble_content,
+        resultContent=ubble_content,  # type: ignore [arg-type]
         status=fraud_models.FraudCheckStatus.STARTED,
         eligibilityType=user.eligibility,
     )

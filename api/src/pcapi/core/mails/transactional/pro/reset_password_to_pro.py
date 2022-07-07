@@ -9,7 +9,7 @@ from pcapi.utils.mailing import build_pc_pro_reset_password_link
 
 
 def get_reset_password_to_pro_email_data(user: User, token: Token) -> SendinblueTransactionalEmailData:
-    reinit_password_url = build_pc_pro_reset_password_link(token.value)
+    reinit_password_url = build_pc_pro_reset_password_link(token.value)  # type: ignore [arg-type]
 
     return SendinblueTransactionalEmailData(
         template=TransactionalEmail.RESET_PASSWORD_TO_PRO.value,
@@ -22,7 +22,7 @@ def get_reset_password_to_pro_email_data(user: User, token: Token) -> Sendinblue
 def send_reset_password_email_to_pro(user: User) -> bool:
     token = create_reset_password_token(user)
     data = get_reset_password_to_pro_email_data(user, token)
-    return mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
 
 
 def get_reset_password_link_to_admin_email_data(

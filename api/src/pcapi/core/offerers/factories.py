@@ -41,7 +41,7 @@ class VenueFactory(BaseFactory):
     publicName = factory.SelfAttribute("name")
     siret = factory.LazyAttributeSequence(lambda o, n: f"{o.managingOfferer.siren}{n:05}")
     isVirtual = False
-    venueTypeCode = models.VenueTypeCode.OTHER  # type: ignore[attr-defined]
+    venueTypeCode = models.VenueTypeCode.OTHER
     venueType = factory.SubFactory(
         "pcapi.core.offerers.factories.VenueTypeFactory", label=factory.SelfAttribute("..venueTypeCode.value")
     )
@@ -96,7 +96,7 @@ class VenueFactory(BaseFactory):
 
 
 class CollectiveVenueFactory(VenueFactory):
-    venueTypeCode = models.VenueTypeCode.PERFORMING_ARTS  # type: ignore[attr-defined]
+    venueTypeCode = models.VenueTypeCode.PERFORMING_ARTS
 
     isPermanent = True
 
