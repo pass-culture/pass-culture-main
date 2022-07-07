@@ -13,6 +13,13 @@ from . import serialization
     api=blueprint.api,
 )
 def get_auth_token(query: serialization.AuthTokenQuery) -> serialization.AuthTokenResponseModel:
+    """
+    Gets a JWT token containing the email and the permission of user from a Google tokenId.
+
+    A Google tokenId can be obtained using [this Google login demo](https://anthonyjgrove.github.io/react-google-login).
+
+    Once logged, the Google tokenId is available in the console in the `clicked[0].tokenId` field.
+    """
     try:
         token = auth_api.authenticate_with_permissions(query.token)
     except auth_api.NotAPassCultureTeamAccountError:

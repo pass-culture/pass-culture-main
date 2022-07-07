@@ -32,12 +32,12 @@ SUBSCRIPTION_ITEM_METHODS = [
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/search", methods=["GET"])
-@perm_utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.ListPublicAccountsResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
+@perm_utils.permission_required(perm_models.Permissions.SEARCH_PUBLIC_ACCOUNT)
 def search_public_account(
     query: serialization.PublicAccountSearchQuery,
 ) -> serialization.ListPublicAccountsResponseModel:
@@ -50,12 +50,12 @@ def search_public_account(
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["GET"])
-@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.PublicAccount,
     on_success_status=200,
     api=blueprint.api,
 )
+@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_public_account(user_id: int) -> serialization.PublicAccount:
     user = get_user_or_error(user_id)
 
@@ -63,12 +63,12 @@ def get_public_account(user_id: int) -> serialization.PublicAccount:
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>", methods=["PUT"])
-@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.PublicAccount,
     on_success_status=200,
     api=blueprint.api,
 )
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def update_public_account(user_id: int, body: serialization.PublicAccountUpdateRequest) -> serialization.PublicAccount:
     user = users_repository.get_user_by_id(user_id)
     if not user:
@@ -102,12 +102,12 @@ def update_public_account(user_id: int, body: serialization.PublicAccountUpdateR
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/credit", methods=["GET"])
-@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.GetBeneficiaryCreditResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
+@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_beneficiary_credit(user_id: int) -> serialization.GetBeneficiaryCreditResponseModel:
     user = get_user_or_error(user_id)
 
@@ -124,12 +124,12 @@ def get_beneficiary_credit(user_id: int) -> serialization.GetBeneficiaryCreditRe
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/history", methods=["GET"])
-@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.GetUserSubscriptionHistoryResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
+@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscriptionHistoryResponseModel:
     user = get_user_or_error(user_id)
 
@@ -152,12 +152,12 @@ def get_user_subscription_history(user_id: int) -> serialization.GetUserSubscrip
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/review", methods=["POST"])
-@perm_utils.permission_required(perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.BeneficiaryReviewResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
+@perm_utils.permission_required(perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT)
 def review_public_account(
     user_id: int, body: serialization.BeneficiaryReviewRequestModel
 ) -> serialization.BeneficiaryReviewResponseModel:
@@ -186,8 +186,8 @@ def review_public_account(
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/resend-validation-email", methods=["POST"])
-@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def resend_validation_email(user_id: int) -> None:
     user = get_user_or_error(user_id)
 
@@ -201,8 +201,8 @@ def resend_validation_email(user_id: int) -> None:
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/send-phone-validation-code", methods=["POST"])
-@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def send_phone_validation_code(user_id: int) -> None:
     user = get_user_or_error(user_id)
 
@@ -229,8 +229,8 @@ def send_phone_validation_code(user_id: int) -> None:
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/skip-phone-validation", methods=["POST"])
-@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 @spectree_serialize(on_success_status=204, api=blueprint.api)
+@perm_utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def skip_phone_validation(user_id: int) -> None:
     user = get_user_or_error(user_id)
     try:
@@ -240,12 +240,12 @@ def skip_phone_validation(user_id: int) -> None:
 
 
 @blueprint.backoffice_blueprint.route("public_accounts/<int:user_id>/logs", methods=["GET"])
-@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 @spectree_serialize(
     response_model=serialization.PublicHistoryResponseModel,
     on_success_status=200,
     api=blueprint.api,
 )
+@perm_utils.permission_required(perm_models.Permissions.READ_PUBLIC_ACCOUNT)
 def get_public_history(user_id: int) -> serialization.PublicHistoryResponseModel:
     user = get_user_or_error(user_id)
 

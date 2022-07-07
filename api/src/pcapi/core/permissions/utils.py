@@ -3,7 +3,6 @@ import logging
 import typing
 
 from flask import Response
-from flask import jsonify
 from flask import request
 
 from pcapi import settings
@@ -16,35 +15,34 @@ from pcapi.core.auth.utils import _set_current_user
 from pcapi.core.permissions.models import Permissions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.backoffice.blueprint import BACKOFFICE_AUTH
+from pcapi.serialization.spec_tree import add_security_scheme
 
 
 logger = logging.getLogger(__name__)
 
 
-def send_403(error_description: str) -> tuple[Response, int]:
-    e = ApiErrors()
-    e.add_error("global", error_description)
-    return jsonify(e.errors), 403
-
-
 def permission_required(permission: Permissions) -> typing.Callable:
     def wrapper(func: typing.Callable) -> typing.Callable:
+        add_security_scheme(func, BACKOFFICE_AUTH)
+
         @wraps(func)
         def wrapped(*args, **kwargs) -> typing.Union[tuple[Response, int], typing.Callable]:  # type: ignore[no-untyped-def]
             if not FeatureToggle.ENABLE_BACKOFFICE_API.is_active():
-                e = ApiErrors()
-                e.add_error("global", "This function is behind the deactivated ENABLE_BACKOFFICE_API feature flag.")
-                return jsonify(e.errors), 403
+                raise ApiErrors(
+                    {"global": "This function is behind the deactivated ENABLE_BACKOFFICE_API feature flag"},
+                    status_code=403,
+                )
 
             try:
                 authorization = request.headers.get("Authorization", "")
                 user, user_permissions = authenticate_from_bearer(authorization)
             except BadPCToken:
-                return send_403("bad token")
+                raise ApiErrors({"global": "bad token"}, status_code=403)
             except ExpiredTokenError:
-                return send_403("authentication expired")
+                raise ApiErrors({"global": "authentication expired"}, status_code=403)
             except NotAPassCultureTeamAccountError:
-                return send_403("unknown user")
+                raise ApiErrors({"global": "unknown user"}, status_code=403)
 
             _set_current_user(user)
             _set_current_permissions(user_permissions)
@@ -57,7 +55,7 @@ def permission_required(permission: Permissions) -> typing.Callable:
                         permission.name,
                         request.url,
                     )
-                    return send_403("missing permission")
+                    raise ApiErrors({"global": "missing permission"}, status_code=403)
 
             return func(*args, **kwargs)
 
