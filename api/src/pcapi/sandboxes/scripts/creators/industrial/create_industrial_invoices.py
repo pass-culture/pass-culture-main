@@ -48,6 +48,9 @@ def create_specific_invoice() -> None:
         pricing_point="self",
         reimbursement_point="self",
     )
+    virtual_venue = offerers_factories.VirtualVenueFactory(
+        managingOfferer=offerer, name=f"{venue.name} (Offre numérique)", businessUnit__name=offerer.name
+    )
     bank_info.venue = venue
     db.session.add(bank_info)
     db.session.commit()
@@ -55,8 +58,8 @@ def create_specific_invoice() -> None:
     thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
     book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
     book_offer2 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
-    digital_offer1 = offers_factories.DigitalOfferFactory(venue=venue)
-    digital_offer2 = offers_factories.DigitalOfferFactory(venue=venue)
+    digital_offer1 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
+    digital_offer2 = offers_factories.DigitalOfferFactory(venue=virtual_venue)
     custom_rule_offer1 = offers_factories.ThingOfferFactory(venue=venue)
     payments_factories.CustomReimbursementRuleFactory(rate=0.94, offer=custom_rule_offer1)
     custom_rule_offer2 = offers_factories.ThingOfferFactory(venue=venue)
