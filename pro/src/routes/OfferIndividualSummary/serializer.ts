@@ -91,8 +91,11 @@ const serializerOfferSectionProps = (
     description: offer.description,
     categoryName: offerCategory?.proLabel || ' - ',
     subCategoryName: offerSubCategory?.proLabel || ' - ',
+    subcategoryId: offer.subcategoryId,
 
     venueName: offer.venue.name,
+    venuePublicName: offer.venue.publicName,
+    isVenueVirtual: offer.venue.isVirtual,
     offererName: offer.venue.offerer.name,
     bookingEmail: offer.bookingEmail,
     withdrawalDetails: offer.withdrawalDetails || '',

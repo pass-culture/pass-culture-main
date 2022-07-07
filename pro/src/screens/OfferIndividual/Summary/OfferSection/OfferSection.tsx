@@ -16,6 +16,7 @@ export interface IOfferSectionProps {
   description: string
   categoryName: string
   subCategoryName: string
+  subcategoryId: string
 
   musicTypeName?: string
   musicSubTypeName?: string
@@ -39,6 +40,8 @@ export interface IOfferSectionProps {
   url: string
 
   venueName: string
+  venuePublicName: string
+  isVenueVirtual: boolean
   offererName: string
   bookingEmail: string
   withdrawalDetails: string
@@ -49,11 +52,13 @@ export interface IOfferSectionProps {
 interface IOfferSummaryProps {
   offer: IOfferSectionProps
   isCreation: boolean
+  conditionalFields: string[]
 }
 
 const OfferSummary = ({
   isCreation,
   offer,
+  conditionalFields,
 }: IOfferSummaryProps): JSX.Element => {
   const editLink = isCreation
     ? `/offre/${offer.id}/individuel/creation`
@@ -67,10 +72,10 @@ const OfferSummary = ({
           description={offer.subCategoryName}
         />
 
-        {offer.musicTypeName && (
+        {conditionalFields.includes('musicType') && (
           <SummaryLayout.Row
             title="Genre musical"
-            description={offer.musicTypeName}
+            description={offer.musicTypeName || '-'}
           />
         )}
         {offer.musicSubTypeName && (
@@ -79,10 +84,10 @@ const OfferSummary = ({
             description={offer.musicSubTypeName}
           />
         )}
-        {offer.showTypeName && (
+        {conditionalFields.includes('showType') && (
           <SummaryLayout.Row
             title="Type de spéctacle"
-            description={offer.showTypeName}
+            description={offer.showTypeName || '-'}
           />
         )}
         {offer.showSubTypeName && (
@@ -100,36 +105,38 @@ const OfferSummary = ({
           description={offer.description || ' - '}
         />
 
-        {offer.speaker && (
+        {conditionalFields.includes('speaker') && (
           <SummaryLayout.Row title="Intervenant" description={offer.speaker} />
         )}
-        {offer.author && (
+        {conditionalFields.includes('author') && (
           <SummaryLayout.Row title="Auteur" description={offer.author} />
         )}
-        {offer.speaker && (
+        {conditionalFields.includes('visa') && (
           <SummaryLayout.Row
             title="Visa d’exploitation"
             description={offer.visa}
           />
         )}
-        {offer.speaker && (
+        {conditionalFields.includes('isbn') && (
           <SummaryLayout.Row title="ISBN" description={offer.isbn} />
         )}
-        {offer.stageDirector && (
+        {conditionalFields.includes('stageDirector') && (
           <SummaryLayout.Row
             title="Metteur en scène"
             description={offer.stageDirector}
           />
         )}
-        {offer.performer && (
+        {conditionalFields.includes('performer') && (
           <SummaryLayout.Row title="Interprète" description={offer.performer} />
         )}
-        <SummaryLayout.Row
-          title="Durée"
-          description={
-            offer.durationMinutes ? `${offer.durationMinutes} min` : '-'
-          }
-        />
+        {conditionalFields.includes('durationMinutes') && (
+          <SummaryLayout.Row
+            title="Durée"
+            description={
+              offer.durationMinutes ? `${offer.durationMinutes} min` : '-'
+            }
+          />
+        )}
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Informations pratiques">
@@ -145,7 +152,9 @@ const OfferSummary = ({
         {offer.withdrawalDelay && (
           <SummaryLayout.Row
             title="Heure de retrait"
-            description={humanizeDelay(offer.withdrawalDelay)}
+            description={`${humanizeDelay(
+              offer.withdrawalDelay
+            )} avant le début de l'événement`}
           />
         )}
 
@@ -185,13 +194,19 @@ const OfferSummary = ({
         )}
       </SummaryLayout.SubSection>
 
-      {offer.isDuo === true && (
+      {conditionalFields.includes('isDuo') && (
         <SummaryLayout.SubSection title="Autres caractèristiques">
-          <SummaryLayout.Row description='Accepter les réservations "Duo"' />
+          <SummaryLayout.Row
+            description={
+              offer.isDuo === true
+                ? 'Accepter les réservations "Duo"'
+                : 'Refuser les réservations "Duo"'
+            }
+          />
         </SummaryLayout.SubSection>
       )}
 
-      {offer.url && (
+      {conditionalFields.includes('url') && (
         <SummaryLayout.SubSection title="Lien pour grand public">
           <SummaryLayout.Row description={offer.url} />
         </SummaryLayout.SubSection>

@@ -1,4 +1,4 @@
-import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
+import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
 
 import React from 'react'
 import { SummaryLayout } from 'new_components/SummaryLayout'
@@ -33,7 +33,7 @@ const StockThingSection = ({
           title="Date limite de réservation"
           description={format(
             toDateStrippedOfTimezone(bookingLimitDatetime),
-            FORMAT_DD_MM_YYYY_HH_mm
+            FORMAT_DD_MM_YYYY
           )}
         />
       )}
