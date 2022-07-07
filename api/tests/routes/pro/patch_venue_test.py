@@ -69,7 +69,7 @@ class Returns200Test:
         assert response.status_code == 200
         venue = offerers_models.Venue.query.get(venue_id)
         assert venue.name == "Ma librairie"
-        assert venue.venueTypeCode == "BOOKSTORE"
+        assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         json = response.json
         assert json["isValidated"] is True
         assert "validationToken" not in json

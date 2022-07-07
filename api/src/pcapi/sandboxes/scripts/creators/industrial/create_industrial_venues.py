@@ -6,7 +6,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
@@ -50,7 +49,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     bic_prefix, bic_suffix = "QSDFGH8Z", 556
     application_id_prefix = "12"
 
-    label_to_code = {label: code for code, label in VENUE_TYPE_CODE_MAPPING.items()}
+    label_to_code = {venue_type.name: venue_type.value for venue_type in VenueTypeCode}
 
     image_venue_counter = 0
 
