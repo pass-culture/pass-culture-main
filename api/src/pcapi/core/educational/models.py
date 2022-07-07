@@ -881,13 +881,30 @@ class EducationalDomain(PcObject, Model):  # type: ignore[valid-type, misc]
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     name = sa.Column(sa.Text, nullable=False)
-
+    venues = sa.orm.relationship("Venue", back_populates="collectiveDomains", secondary="educational_domain_venue")
     collectiveOffers: RelationshipProperty[list["CollectiveOffer"]] = relationship(
         "CollectiveOffer", secondary="collective_offer_domain", back_populates="domains"
     )
 
     collectiveOfferTemplates: RelationshipProperty[list["CollectiveOfferTemplate"]] = relationship(
         "CollectiveOfferTemplate", secondary="collective_offer_template_domain", back_populates="domains"
+    )
+
+
+class EducationalDomainVenue(Model):  # type: ignore[valid-type, misc]
+    __tablename__ = "educational_domain_venue"
+    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
+    educationalDomainId = sa.Column(
+        sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    VenueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False)
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "educationalDomainId",
+            "VenueId",
+            name="unique_offer_criterion",
+        ),
     )
 
 
