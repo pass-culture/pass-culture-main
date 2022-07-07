@@ -16,15 +16,15 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
     stocks = [_stock_serializer(stock_entity) for stock_entity in offer.activeStocks]
 
     return OfferRecap(
-        id=offer.id,
+        id=offer.id,  # type: ignore [arg-type]
         has_booking_limit_datetimes_passed=offer.hasBookingLimitDatetimesPassed,  # type: ignore [arg-type]
-        is_active=offer.isActive,
+        is_active=offer.isActive,  # type: ignore [arg-type]
         is_editable=offer.isEditable,
         is_event=typing.cast(bool, offer.isEvent),
         is_thing=offer.isThing,
-        is_educational=offer.isEducational,
-        product_isbn=offer.extraData.get("isbn") if offer.extraData else None,  # type: ignore [union-attr]
-        name=offer.name,
+        is_educational=offer.isEducational,  # type: ignore [arg-type]
+        product_isbn=offer.extraData.get("isbn") if offer.extraData else None,
+        name=offer.name,  # type: ignore [arg-type]
         thumb_url=offer.thumbUrl,
         subcategory_id=offer.subcategoryId,
         venue_id=offer.venue.id,
@@ -36,7 +36,7 @@ def _offer_recap_to_domain(offer: Offer) -> OfferRecap:
         venue_departement_code=offer.venue.departementCode,
         stocks=stocks,
         status=offer.status.name,  # type: ignore [attr-defined]
-        is_showcase=offer.extraData.get("isShowcase") if offer.extraData else None,  # type: ignore [union-attr, arg-type]
+        is_showcase=offer.extraData.get("isShowcase") if offer.extraData else None,
     )
 
 

@@ -81,8 +81,8 @@ def book_offer(
         validation.check_offer_already_booked(beneficiary, stock.offer)
         validation.check_quantity(stock.offer, quantity)
         validation.check_stock_is_bookable(stock, quantity)
-        total_amount = quantity * stock.price
-        validation.check_expenses_limits(beneficiary, total_amount, stock.offer)
+        total_amount = quantity * stock.price  # type: ignore [operator]
+        validation.check_expenses_limits(beneficiary, total_amount, stock.offer)  # type: ignore [arg-type]
 
         is_activation_code_applicable = (
             stock.canHaveActivationCodes
@@ -107,7 +107,7 @@ def book_offer(
         # I don't think that we should use autoflush, nor should we use
         # the `pcapi.repository.repository` module.
         booking = Booking(
-            userId=beneficiary.id,
+            userId=beneficiary.id,  # type: ignore [arg-type]
             stockId=stock.id,
             amount=stock.price,
             quantity=quantity,
@@ -121,15 +121,15 @@ def book_offer(
         booking.cancellationLimitDate = compute_cancellation_limit_date(stock.beginningDatetime, booking.dateCreated)
 
         if is_activation_code_applicable:
-            booking.activationCode = offers_repository.get_available_activation_code(stock)
+            booking.activationCode = offers_repository.get_available_activation_code(stock)  # type: ignore [assignment]
             booking.mark_as_used()
 
         individual_booking = IndividualBooking(
             booking=booking,
             depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
-            userId=beneficiary.id,
+            userId=beneficiary.id,  # type: ignore [arg-type]
         )
-        stock.dnBookedQuantity += booking.quantity
+        stock.dnBookedQuantity += booking.quantity  # type: ignore [operator]
         _book_external_offer(booking, stock)
 
         repository.save(individual_booking, stock)
@@ -153,7 +153,7 @@ def book_offer(
     if not send_individual_booking_confirmation_email_to_beneficiary(individual_booking):
         logger.warning("Could not send booking=%s confirmation email to beneficiary", booking.id)
 
-    search.async_index_offer_ids([stock.offerId])
+    search.async_index_offer_ids([stock.offerId])  # type: ignore [list-item]
 
     update_external_user(individual_booking.user)
     update_external_pro(stock.offer.venue.bookingEmail)
@@ -173,8 +173,8 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         and stock.offer.subcategory.id == subcategories.SEANCE_CINE.id
         and is_active_venue_booking_provider
     ):
-        if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():
-            show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))
+        if stock.idAtProviders and get_cds_show_id_from_uuid(stock.idAtProviders).isdigit():  # type: ignore [arg-type]
+            show_id = int(get_cds_show_id_from_uuid(stock.idAtProviders))  # type: ignore [arg-type]
         else:
             logger.error(
                 'Stock %d has invalid (non-digit) show_id in idAtProviders "%s"', stock.id, stock.idAtProviders
@@ -184,7 +184,7 @@ def _book_external_offer(booking: Booking, stock: Stock) -> None:
         tickets = booking_providers_api.book_ticket(
             venue_id=stock.offer.venueId,
             show_id=show_id,
-            quantity=booking.quantity,
+            quantity=booking.quantity,  # type: ignore [arg-type]
         )
         booking.externalBookings = [
             ExternalBooking(barcode=ticket.barcode, seat=ticket.seat_number) for ticket in tickets
@@ -199,7 +199,7 @@ def _cancel_booking(
 ) -> bool:
     """Cancel booking and update a user's credit information on Batch"""
     with transaction():
-        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
+        stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)  # type: ignore [arg-type]
         db.session.refresh(booking)
         old_status = booking.status
         try:
@@ -220,8 +220,8 @@ def _cancel_booking(
             return False
         if old_status is BookingStatus.USED:
             finance_api.cancel_pricing(booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
-        booking.cancellationReason = reason  # type: ignore [assignment]
-        stock.dnBookedQuantity -= booking.quantity
+        booking.cancellationReason = reason
+        stock.dnBookedQuantity -= booking.quantity  # type: ignore [operator]
         repository.save(booking, stock)
 
     logger.info(  # type: ignore [call-arg]
@@ -272,7 +272,7 @@ def _cancel_collective_booking(
         if old_status is CollectiveBookingStatus.USED:
             finance_api.cancel_pricing(collective_booking, finance_models.PricingLogReason.MARK_AS_UNUSED)
 
-        collective_booking.cancellationReason = reason  # type: ignore [assignment]
+        collective_booking.cancellationReason = reason
         repository.save(collective_booking, collective_stock)
     logger.info(
         "CollectiveBooking has been cancelled",
@@ -308,7 +308,7 @@ def _cancel_collective_booking_from_stock(
     booking_to_cancel: CollectiveBooking | None = next(
         (
             collective_booking
-            for collective_booking in collective_stock.collectiveBookings
+            for collective_booking in collective_stock.collectiveBookings  # type: ignore [attr-defined]
             if collective_booking.status not in [CollectiveBookingStatus.CANCELLED, CollectiveBookingStatus.REIMBURSED]
         ),
         None,
@@ -338,7 +338,7 @@ def cancel_booking_by_offerer(booking: Booking) -> None:
 
 def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Booking]:
     cancelled_bookings = _cancel_bookings_from_stock(stock, BookingCancellationReasons.OFFERER)
-    search.async_index_offer_ids([stock.offerId])
+    search.async_index_offer_ids([stock.offerId])  # type: ignore [list-item]
     return cancelled_bookings
 
 
@@ -397,7 +397,7 @@ def mark_as_used(booking: Booking) -> None:
     logger.info("Booking was marked as used", extra={"booking_id": booking.id}, technical_message_id="booking.used")  # type: ignore [call-arg]
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr, arg-type]
+        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr]
 
 
 def mark_as_used_with_uncancelling(booking: Booking) -> None:
@@ -417,15 +417,15 @@ def mark_as_used_with_uncancelling(booking: Booking) -> None:
     with transaction():
         if booking.status == BookingStatus.CANCELLED:
             booking.uncancel_booking_set_used()
-            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)
-            stock.dnBookedQuantity += booking.quantity
+            stock = offers_repository.get_and_lock_stock(stock_id=booking.stockId)  # type: ignore [arg-type]
+            stock.dnBookedQuantity += booking.quantity  # type: ignore [operator]
             db.session.add(stock)
     db.session.add(booking)
     db.session.commit()
     logger.info("Booking was uncancelled and marked as used", extra={"bookingId": booking.id})
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr, arg-type]
+        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr]
 
 
 def mark_as_cancelled(booking: Booking) -> None:
@@ -456,7 +456,7 @@ def mark_as_unused(booking: Booking) -> None:
     logger.info("Booking was marked as unused", extra={"booking_id": booking.id}, technical_message_id="booking.unused")  # type: ignore [call-arg]
 
     if booking.individualBookingId is not None:
-        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr, arg-type]
+        update_external_user(booking.individualBooking.user)  # type: ignore [union-attr]
         update_external_pro(booking.venue.bookingEmail)
 
 

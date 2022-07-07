@@ -10,6 +10,7 @@ from sqlalchemy import String
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -18,7 +19,7 @@ class BookingProviderName(enum.Enum):
     CINE_DIGITAL_SERVICE = "Cine_Digital_Service"
 
 
-class BookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
+class BookingProvider(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True)
 
     name = Column(Enum(BookingProviderName), nullable=False)
@@ -26,7 +27,7 @@ class BookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
     apiUrl = Column(String, nullable=False)
 
 
-class VenueBookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
+class VenueBookingProvider(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     id = Column(BigInteger, primary_key=True)
 
     isActive = Column(Boolean, nullable=False, default=True)
@@ -37,7 +38,7 @@ class VenueBookingProvider(PcObject, Model):  # type: ignore [valid-type, misc]
 
     bookingProviderId = Column(BigInteger, ForeignKey("booking_provider.id"), nullable=False)
 
-    bookingProvider = relationship("BookingProvider", foreign_keys=[bookingProviderId])
+    bookingProvider = relationship("BookingProvider", foreign_keys=[bookingProviderId])  # type: ignore [misc]
 
     idAtProvider = Column(String(70), nullable=False)
 

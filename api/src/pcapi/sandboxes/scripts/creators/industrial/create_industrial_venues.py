@@ -31,7 +31,7 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
         mode="rb",
     ) as file:
         offerers_api.save_venue_banner(
-            user=offerer.users[0],
+            user=offerer.users[0],  # type: ignore [index]
             venue=venue,
             content=file.read(),
             image_credit="industrial sandbox picture provider",
@@ -91,7 +91,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             # the venue_type table has been finally replaced by the
             # VenueTypeCode enum
             venue_type = random.choice(venue_types)
-            venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]
+            venue_type_code = VenueTypeCode[label_to_code.get(venue_type.label, "OTHER")]  # type: ignore [arg-type]
 
             venue = offerers_factories.VenueFactory(
                 managingOfferer=offerer,
@@ -164,7 +164,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     )
 
     cds_provider = get_provider_by_local_class("CDSStocks")
-    cds_provider.isActive = True
+    cds_provider.isActive = True  # type: ignore [assignment]
     cds_provider.enabledForPro = True
 
     cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(

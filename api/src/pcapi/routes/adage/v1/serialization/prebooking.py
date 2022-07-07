@@ -151,10 +151,10 @@ def serialize_collective_bookings(educational_bookings: list[CollectiveBooking])
 
 
 def serialize_collective_booking(collective_booking: CollectiveBooking) -> EducationalBookingResponse:
-    stock: educational_models.CollectiveStock = collective_booking.collectiveStock
-    offer: educational_models.CollectiveOffer = stock.collectiveOffer
+    stock: educational_models.CollectiveStock = collective_booking.collectiveStock  # type: ignore [assignment]
+    offer: educational_models.CollectiveOffer = stock.collectiveOffer  # type: ignore [assignment]
     domains = offer.domains
-    venue: offerers_models.Venue = offer.venue
+    venue: offerers_models.Venue = offer.venue  # type: ignore [assignment]
     return EducationalBookingResponse(
         accessibility=_get_educational_offer_accessibility(offer),
         address=_get_collective_offer_address(offer),
@@ -197,8 +197,8 @@ def serialize_collective_booking(collective_booking: CollectiveBooking) -> Educa
         totalAmount=stock.price,
         url=offer_app_link(offer),
         withdrawalDetails=None,
-        domain_ids=[domain.id for domain in domains],
-        domain_labels=[domain.name for domain in domains],
+        domain_ids=[domain.id for domain in domains],  # type: ignore [attr-defined]
+        domain_labels=[domain.name for domain in domains],  # type: ignore [attr-defined]
     )
 
 
@@ -214,7 +214,7 @@ def get_collective_booking_status(
     if collective_booking.cancellationReason == CollectiveBookingCancellationReasons.REFUSED_BY_INSTITUTE:
         return "REFUSED"  # type: ignore [return-value]
 
-    return collective_booking.status.value  # type: ignore [attr-defined]
+    return collective_booking.status.value  # type: ignore [union-attr]
 
 
 def _get_collective_offer_contact(offer: educational_models.CollectiveOffer) -> Contact:
@@ -236,7 +236,7 @@ def _get_collective_offer_address(offer: educational_models.CollectiveOffer) -> 
         return default_address
 
     if address_type == "other":
-        return offer.offerVenue["otherAddress"]
+        return offer.offerVenue["otherAddress"]  # type: ignore [return-value]
 
     if address_type == "school":
         return "Dans l’établissement scolaire"

@@ -51,7 +51,7 @@ class MagicEnum(sqla_types.TypeDecorator):
              RED = "red"
              BLUE = "blue"
 
-         class Wall(Model):
+         class Wall(Base, Model):
              color = sqla.Column(MagicEnum(Color))
 
          wall = Wall(color=Color.RED)  # not `Color.RED.value`
@@ -126,7 +126,7 @@ class BadSortError(Exception):
 def get_ordering_clauses(
     model: Model,  # type: ignore[valid-type]
     sorts: typing.Iterable[str],
-) -> list[sqla.sql.ColumnElement | sqla.sql.expression.UnaryExpression]:
+) -> list[sqla.sql.ColumnElement | sqla.sql.expression.UnaryExpression]:  # type: ignore [name-defined]
     """
     `sorts` should contains string in the form of:
     - an optional `-` prefix specifying a sort descending direction (ascending by default)
@@ -146,7 +146,7 @@ def get_ordering_clauses(
             bad_sorts.append(
                 (
                     sort,
-                    f"model `{model.__name__}` does not have a `{field_name}` attribute",  # type: ignore[attr-defined]
+                    f"model `{model.__name__}` does not have a `{field_name}` attribute",  # type: ignore [attr-defined]
                 )
             )
         else:

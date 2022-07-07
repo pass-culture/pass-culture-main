@@ -14,6 +14,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from pcapi.core.offers.models import Offer
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_stock
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.api_errors import DateTimeCastError
 from pcapi.models.api_errors import DecimalCastError
@@ -24,12 +25,12 @@ from pcapi.utils.human_ids import NonDehumanizableId
 from pcapi.utils.human_ids import dehumanize
 
 
-class TimeInterval(PcObject, Model):
+class TimeInterval(PcObject, Base, Model):
     start = Column(DateTime)
     end = Column(DateTime)
 
 
-class TestPcObject(PcObject, Model):
+class TestPcObject(PcObject, Base, Model):
     date_attribute = Column(DateTime, nullable=True)
     entityId = Column(BigInteger, nullable=True)
     float_attribute = Column(Float, nullable=True)

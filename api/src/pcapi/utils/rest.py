@@ -16,11 +16,11 @@ def check_user_has_access_to_offerer(user: User, offerer_id: int) -> None:
         )
 
 
-def load_or_404(obj_class: Model, human_id: str) -> Model:  # type: ignore  [valid-type]
+def load_or_404(obj_class: Model, human_id: str) -> Model:  # type: ignore [valid-type]
     return obj_class.query.get_or_404(dehumanize(human_id))  # type: ignore [attr-defined]
 
 
-def load_or_raise_error(obj_class: Model, human_id: str) -> Model:  # type: ignore  [valid-type]
+def load_or_raise_error(obj_class: Model, human_id: str) -> Model:  # type: ignore [valid-type]
     try:
         data = obj_class.query.filter_by(id=dehumanize(human_id)).one()  # type: ignore [attr-defined]
     except NoResultFound:

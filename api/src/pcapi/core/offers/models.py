@@ -3,14 +3,18 @@ from datetime import datetime
 from datetime import timedelta
 import enum
 import logging
+from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 import sqlalchemy.orm as sa_orm
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import relationship
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
@@ -28,6 +32,9 @@ from pcapi.utils.date import DateTimes
 
 logger = logging.getLogger(__name__)
 
+if TYPE_CHECKING:
+    from pcapi.core.users.models import User
+
 
 class BookFormat(enum.Enum):
     REVUE = "REVUE"
@@ -42,7 +49,7 @@ class BookFormat(enum.Enum):
 UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
 
 
-class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):  # type: ignore [valid-type, misc]
+class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):  # type: ignore [valid-type, misc]
     name = sa.Column(sa.String(140), nullable=False)
     description = sa.Column(sa.Text, nullable=True)
     conditions = sa.Column(sa.String(120), nullable=True)
@@ -89,7 +96,7 @@ class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin): 
         )
 
 
-class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
+class Mediation(PcObject, Base, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "mediation"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -104,12 +111,12 @@ class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixi
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="mediations")
+    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="mediations")  # type: ignore [misc]
 
     thumb_path_component = "mediations"
 
 
-class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: ignore [valid-type, misc]
+class Stock(PcObject, Base, Model, ProvidableMixin, SoftDeletableMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "stock"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -122,7 +129,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: igno
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False)
 
-    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="stocks")
+    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="stocks")  # type: ignore [misc]
 
     price = sa.Column(
         sa.Numeric(10, 2), sa.CheckConstraint("price >= 0", name="check_price_is_not_negative"), nullable=False
@@ -136,7 +143,7 @@ class Stock(PcObject, Model, ProvidableMixin, SoftDeletableMixin):  # type: igno
 
     rawProviderQuantity = sa.Column(sa.Integer, nullable=True)
 
-    activationCodes = sa.orm.relationship("ActivationCode", back_populates="stock")
+    activationCodes = sa.orm.relationship("ActivationCode", back_populates="stock")  # type: ignore [misc]
 
     numberOfTickets = sa.Column(sa.Integer, nullable=True)
 
@@ -322,14 +329,14 @@ class WithdrawalTypeEnum(enum.Enum):
     ON_SITE = "on_site"
 
 
-class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):  # type: ignore [valid-type, misc]
+class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, AccessibilityMixin, StatusMixin):  # type: ignore [valid-type, misc]
     __tablename__ = "offer"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
 
-    product = sa.orm.relationship("Product", foreign_keys=[productId], backref="offers")
+    product = sa.orm.relationship(Product, foreign_keys=[productId], backref="offers")
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
@@ -372,7 +379,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     authorId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
-    author = sa.orm.relationship("User", foreign_keys=[authorId], backref="offers")  # type: ignore [misc]
+    author: Mapped["User"] | None = relationship("User", foreign_keys=[authorId], backref="offers", uselist=False)
 
     rankingWeight = sa.Column(sa.Integer, nullable=True)
 
@@ -390,7 +397,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
 
-    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)  # type: ignore [assignment]
+    dateUpdated: datetime = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     dateModifiedAtLastProvider = sa.Column(sa.DateTime, nullable=True, default=datetime.utcnow)
 
@@ -402,12 +409,12 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     sa.Index("offer_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
 
-    @sa.ext.declarative.declared_attr
-    def lastProviderId(cls):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    @sa.ext.declarative.declared_attr  # type: ignore [misc]
+    def lastProviderId(cls):  # pylint: disable=no-self-argument
         return sa.Column(sa.BigInteger, sa.ForeignKey("provider.id"), nullable=True)
 
-    @sa.ext.declarative.declared_attr
-    def lastProvider(cls):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
+    @sa.ext.declarative.declared_attr  # type: ignore [misc]
+    def lastProvider(cls):  # pylint: disable=no-self-argument
         return sa.orm.relationship("Provider", foreign_keys=[cls.lastProviderId])
 
     @sa.ext.hybrid.hybrid_property
@@ -603,7 +610,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
             return 0
 
 
-class ActivationCode(PcObject, Model):  # type: ignore [valid-type, misc]
+class ActivationCode(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "activation_code"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -614,7 +621,7 @@ class ActivationCode(PcObject, Model):  # type: ignore [valid-type, misc]
 
     stockId = sa.Column(sa.BigInteger, sa.ForeignKey("stock.id"), index=True, nullable=False)
 
-    stock = sa.orm.relationship("Stock", back_populates="activationCodes")
+    stock = sa.orm.relationship("Stock", back_populates="activationCodes")  # type: ignore [misc]
 
     bookingId = sa.Column(sa.BigInteger, sa.ForeignKey("booking.id"), index=True, nullable=True)
 
@@ -629,7 +636,7 @@ class ActivationCode(PcObject, Model):  # type: ignore [valid-type, misc]
     )
 
 
-class OfferValidationConfig(PcObject, Model):  # type: ignore [valid-type, misc]
+class OfferValidationConfig(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offer_validation_config"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -695,7 +702,7 @@ OR (
 """
 
 
-class OfferReport(PcObject, Model):  # type: ignore [valid-type, misc]
+class OfferReport(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "offer_report"
 
     __table_args__ = (
@@ -718,7 +725,7 @@ class OfferReport(PcObject, Model):  # type: ignore [valid-type, misc]
 
     offerId = sa.Column(sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="reports")
+    offer = sa.orm.relationship("Offer", foreign_keys=[offerId], backref="reports")  # type: ignore [misc]
 
     reportedAt = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 

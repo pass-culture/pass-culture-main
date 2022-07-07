@@ -101,7 +101,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
             # count all active
             func.count(Stock.id).filter(active_stock_filters).over(partition_by=Stock.offerId).label("active_count"),
         )
-        .options(Load(Favorite).load_only("id"))  # type: ignore [attr-defined]
+        .options(Load(Favorite).load_only("id"))
         .join(Favorite.offer)
         .join(Offer.venue)
         .outerjoin(Offer.stocks)
@@ -205,7 +205,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
         if not favorite:
             raise exception
 
-    favorite = get_favorites_for(user, favorite.id)[0]
+    favorite = get_favorites_for(user, favorite.id)[0]  # type: ignore [arg-type]
 
     return serializers.FavoriteResponse.from_orm(favorite)
 

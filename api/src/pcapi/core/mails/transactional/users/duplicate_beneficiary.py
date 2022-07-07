@@ -18,7 +18,7 @@ def send_duplicate_beneficiary_email(
 ) -> bool:
     if is_id_piece_number_duplicate:
         duplicate_beneficiary = fraud_api.find_duplicate_id_piece_number_user(
-            identity_content.get_id_piece_number(), rejected_user.id
+            identity_content.get_id_piece_number(), rejected_user.id  # type: ignore [arg-type]
         )
     else:
         duplicate_beneficiary = fraud_api.find_duplicate_beneficiary(
@@ -26,16 +26,16 @@ def send_duplicate_beneficiary_email(
             identity_content.get_last_name(),  # type: ignore [arg-type]
             identity_content.get_married_name(),
             identity_content.get_birth_date(),  # type: ignore [arg-type]
-            rejected_user.id,
+            rejected_user.id,  # type: ignore [arg-type]
         )
     if not duplicate_beneficiary:
         logger.error("No duplicate beneficiary found", extra={"user_id": rejected_user.id})
         anonymized_email = "***"
     else:
-        anonymized_email = _anonymize_email(duplicate_beneficiary.email)
+        anonymized_email = _anonymize_email(duplicate_beneficiary.email)  # type: ignore [arg-type]
 
     return mails.send(
-        recipients=[rejected_user.email],
+        recipients=[rejected_user.email],  # type: ignore [list-item]
         data=sendinblue_models.SendinblueTransactionalEmailData(
             template=TransactionalEmail.SUBCRIPTION_REJECTED_FOR_DUPLICATE_BENEFICIARY.value,
             params={"DUPLICATE_BENEFICIARY_EMAIL": anonymized_email},

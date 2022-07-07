@@ -3,6 +3,7 @@ import enum
 
 import sqlalchemy
 
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -60,7 +61,7 @@ class PopOverIcon(enum.Enum):
     MAGNIFYING_GLASS = "MAGNIFYING_GLASS"
 
 
-class SubscriptionMessage(PcObject, Model):  # type: ignore [valid-type, misc]
+class SubscriptionMessage(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_subscription_message"
 
     dateCreated = sqlalchemy.Column(sqlalchemy.DateTime, nullable=False, server_default=sqlalchemy.func.now())

@@ -47,7 +47,7 @@ def create_digital_venue(offerer: models.Offerer) -> models.Venue:
     digital_venue = models.Venue()
     digital_venue.isVirtual = True
     digital_venue.name = "Offre numérique"
-    digital_venue.venueTypeCode = models.VenueTypeCode.DIGITAL  # type: ignore [attr-defined]
+    digital_venue.venueTypeCode = models.VenueTypeCode.DIGITAL
     digital_venue.managingOfferer = offerer
     digital_venue.dmsToken = generate_dms_token()
     return digital_venue
@@ -73,7 +73,7 @@ def update_venue(
         upsert_venue_contact(venue, contact_data)
 
     if collective_domains_in_attrs:
-        venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains or [])  # type: ignore [assignment]
+        venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains or [])
 
     if collective_legal_status_in_attrs:
         if collectiveLegalStatus:
@@ -97,7 +97,7 @@ def update_venue(
             extra={"venue_id": venue.id, "business_unit_id": business_unit_id},
         )
     if "businessUnitId" in modifications:
-        set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)
+        set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)  # type: ignore [arg-type]
 
     if feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
         link_venue_to_reimbursement_point(venue, reimbursement_point_id)
@@ -107,11 +107,11 @@ def update_venue(
     venue.populate_from_dict(modifications)
 
     repository.save(venue)
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
 
     indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
     if indexing_modifications_fields or contact_data:
-        search.async_index_offers_of_venue_ids([venue.id])
+        search.async_index_offers_of_venue_ids([venue.id])  # type: ignore [list-item]
 
     # Former booking email address shall no longer receive emails about data related to this venue.
     # If booking email was only in this object, this will clear all columns here and it will never be updated later.
@@ -183,11 +183,11 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     repository.save(venue)
 
     if venue_data.businessUnitId:
-        set_business_unit_to_venue_id(venue_data.businessUnitId, venue.id)
+        set_business_unit_to_venue_id(venue_data.businessUnitId, venue.id)  # type: ignore [arg-type]
     if venue.siret:
-        link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
+        link_venue_to_pricing_point(venue, pricing_point_id=venue.id)  # type: ignore [arg-type]
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
 
     users_external.update_external_pro(venue.bookingEmail)
 
@@ -356,10 +356,10 @@ def create_offerer(user: users_models.User, offerer_informations: offerers_seria
 
     else:
         offerer = models.Offerer()
-        offerer.address = offerer_informations.address
-        offerer.city = offerer_informations.city
+        offerer.address = offerer_informations.address  # type: ignore [assignment]
+        offerer.city = offerer_informations.city  # type: ignore [assignment]
         offerer.name = offerer_informations.name
-        offerer.postalCode = offerer_informations.postalCode
+        offerer.postalCode = offerer_informations.postalCode  # type: ignore [assignment]
         offerer.siren = offerer_informations.siren
         offerer.generate_validation_token()
         digital_venue = create_digital_venue(offerer)
@@ -438,12 +438,12 @@ def rm_previous_venue_thumbs(venue: models.Venue) -> None:
 
     # some older venues might have a banner but not the original file
     # note: if bannerUrl is not None, bannerMeta should not be either.
-    if original_image_url := venue.bannerMeta.get("original_image_url"):  # type: ignore [union-attr]
+    if original_image_url := venue.bannerMeta.get("original_image_url"):
         original_image_timestamp = get_timestamp_from_url(original_image_url)
         storage.remove_thumb(venue, image_index=original_image_timestamp)  # type: ignore [arg-type]
 
     venue.bannerUrl = None
-    venue.bannerMeta = None
+    venue.bannerMeta = None  # type: ignore [call-overload]
 
 
 def save_venue_banner(
@@ -481,7 +481,7 @@ def save_venue_banner(
     )
 
     venue.bannerUrl = f"{venue.thumbUrl}_{banner_timestamp}"
-    venue.bannerMeta = {
+    venue.bannerMeta = {  # type: ignore [call-overload]
         "image_credit": image_credit,
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
@@ -491,13 +491,13 @@ def save_venue_banner(
 
     repository.save(venue)
 
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
 
 
 def delete_venue_banner(venue: models.Venue) -> None:
     rm_previous_venue_thumbs(venue)
     repository.save(venue)
-    search.async_index_venue_ids([venue.id])
+    search.async_index_venue_ids([venue.id])  # type: ignore [list-item]
 
 
 def can_offerer_create_educational_offer(offerer_id: int | None) -> None:

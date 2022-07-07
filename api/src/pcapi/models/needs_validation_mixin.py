@@ -2,8 +2,10 @@ import secrets
 
 import sqlalchemy as sqla
 import sqlalchemy.ext.hybrid as sqla_hybrid
+from sqlalchemy.orm import declarative_mixin
 
 
+@declarative_mixin
 class NeedsValidationMixin:
     validationToken = sqla.Column(sqla.String(27), unique=True, nullable=True)
 

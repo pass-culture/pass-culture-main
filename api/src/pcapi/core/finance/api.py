@@ -407,17 +407,17 @@ def price_booking(
 
     with transaction():
         if use_pricing_point:
-            lock_pricing_point(pricing_point_id)
+            lock_pricing_point(pricing_point_id)  # type: ignore [arg-type]
         else:
-            lock_business_unit(business_unit_id)  # type: ignore[arg-type]
+            lock_business_unit(business_unit_id)
 
         # Now that we have acquired a lock, fetch the booking from the
         # database again so that we can make some final checks before
         # actually pricing the booking.
         booking = (
-            reload_collective_booking_for_pricing(booking.id, use_pricing_point)
+            reload_collective_booking_for_pricing(booking.id, use_pricing_point)  # type: ignore [arg-type]
             if is_booking_collective
-            else reload_booking_for_pricing(booking.id, use_pricing_point)
+            else reload_booking_for_pricing(booking.id, use_pricing_point)  # type: ignore [arg-type]
         )
 
         # Perhaps the booking has been marked as unused since we
@@ -563,7 +563,7 @@ def _get_pricing_point_id_and_current_revenue(
         .with_entities(sqla.func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity))
         .scalar()
     )
-    return pricing_point_id, utils.to_eurocents(current_revenue or 0)
+    return pricing_point_id, utils.to_eurocents(current_revenue or 0)  # type: ignore [return-value]
 
 
 def _price_booking(
@@ -601,7 +601,7 @@ def _price_booking(
     ]
     lines.append(
         models.PricingLine(
-            amount=amount - lines[0].amount,
+            amount=amount - lines[0].amount,  # type: ignore [operator]
             category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
         )
     )
@@ -621,7 +621,7 @@ def _price_booking(
         "collectiveBookingId": booking.id if is_booking_collective else None,
     }
 
-    return models.Pricing(**pricing_data)
+    return models.Pricing(**pricing_data)  # type: ignore [arg-type]
 
 
 def _get_initial_pricing_status(booking: bookings_models.Booking | CollectiveBooking) -> models.PricingStatus:
@@ -814,9 +814,9 @@ def cancel_pricing(
 
     with transaction():
         if use_pricing_point:
-            lock_pricing_point(pricing_point_id)
+            lock_pricing_point(pricing_point_id)  # type: ignore [arg-type]
         else:
-            lock_business_unit(business_unit_id)  # type: ignore[arg-type]
+            lock_business_unit(business_unit_id)
 
         if isinstance(booking, CollectiveBooking):
             booking_attribute = models.Pricing.collectiveBooking
@@ -882,7 +882,7 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
     # id again after COMMITs in `_generate_cashflows()`.
     batch_id = batch.id
     _generate_cashflows(batch)
-    return batch_id
+    return batch_id  # type: ignore [return-value]
 
 
 def _generate_cashflows(batch: models.CashflowBatch) -> None:
@@ -1752,7 +1752,7 @@ def _generate_invoice(
 
     for custom_rule, pricings in pricings_by_custom_rule.items():
         # An InvoiceLine rate will be calculated for a CustomRule with a set reimbursed amount
-        invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, pricings, custom_rule.rate)
+        invoice_line, reimbursed_amount = _make_invoice_line(custom_rule.group, pricings, custom_rule.rate)  # type: ignore [arg-type]
         invoice_lines.append(invoice_line)
         total_reimbursed_amount += reimbursed_amount
 
@@ -1890,7 +1890,7 @@ def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: b
     else:
         venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
         reimbursement_point = None
-    period_start, period_end = get_invoice_period(invoice.date)
+    period_start, period_end = get_invoice_period(invoice.date)  # type: ignore [arg-type]
     return dict(
         invoice=invoice,
         groups=groups,
@@ -1908,7 +1908,7 @@ def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: b
 def get_reimbursements_by_venue(
     invoice: models.Invoice,
 ) -> typing.ValuesView:
-    common_columns = (
+    common_columns = (  # type: ignore [var-annotated]
         offerers_models.Venue.id.label("venue_id"),
         sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name).label("venue_name"),
     )

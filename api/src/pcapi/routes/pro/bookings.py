@@ -67,7 +67,7 @@ def get_booking_by_token(token: str) -> LegacyBookingResponse | None:
 
     bookings_validation.check_is_usable(booking)
 
-    if check_user_can_validate_bookings(current_user, booking.offererId):
+    if check_user_can_validate_bookings(current_user, booking.offererId):  # type: ignore [arg-type]
         response = _create_response_to_get_booking_by_token(booking)
         return LegacyBookingResponse(**response)
 
@@ -82,7 +82,7 @@ def patch_booking_by_token(token: str, query: PatchBookingByTokenQueryModel) -> 
     booking = booking_repository.find_by(token, email, offer_id)
 
     if current_user.is_authenticated:
-        check_user_has_access_to_offerer(current_user, booking.offererId)
+        check_user_has_access_to_offerer(current_user, booking.offererId)  # type: ignore [arg-type]
     else:
         check_email_and_offer_id_for_anonymous_user(email, offer_id)
 
@@ -191,11 +191,11 @@ def get_booking_by_token_v2(token: str) -> GetBookingResponse:
 
     if current_user.is_authenticated:
         # warning : current user is not none when user is not logged in
-        check_user_can_validate_bookings_v2(current_user, booking.offererId)
+        check_user_can_validate_bookings_v2(current_user, booking.offererId)  # type: ignore [arg-type]
     elif current_api_key:
         check_api_key_allows_to_validate_booking(
             current_api_key,  # type: ignore[arg-type]
-            booking.offererId,
+            booking.offererId,  # type: ignore [arg-type]
         )
     else:
         # We should not end up here, thanks to the `login_or_api_key_required` decorator.
@@ -231,11 +231,11 @@ def patch_booking_use_by_token(token: str) -> None:
     booking = booking_repository.find_by(token=token)
 
     if current_user.is_authenticated:
-        check_user_can_validate_bookings_v2(current_user, booking.offererId)
+        check_user_can_validate_bookings_v2(current_user, booking.offererId)  # type: ignore [arg-type]
     elif current_api_key:
         check_api_key_allows_to_validate_booking(
             current_api_key,  # type: ignore[arg-type]
-            booking.offererId,
+            booking.offererId,  # type: ignore [arg-type]
         )
     else:
         # We should not end up here, thanks to the `login_or_api_key_required` decorator.
@@ -277,11 +277,11 @@ def patch_cancel_booking_by_token(token: str) -> None:
     booking = booking_repository.find_by(token=token)
 
     if current_user.is_authenticated:
-        check_user_has_access_to_offerer(current_user, booking.offererId)
+        check_user_has_access_to_offerer(current_user, booking.offererId)  # type: ignore [arg-type]
     elif current_api_key:
         check_api_key_allows_to_cancel_booking(
             current_api_key,  # type: ignore[arg-type]
-            booking.offererId,
+            booking.offererId,  # type: ignore [arg-type]
         )
     else:
         # We should not end up here, thanks to the `login_or_api_key_required` decorator.
@@ -322,11 +322,11 @@ def patch_booking_keep_by_token(token: str) -> None:
     booking = booking_repository.find_by(token=token)
 
     if current_user.is_authenticated:
-        check_user_can_validate_bookings_v2(current_user, booking.offererId)
+        check_user_can_validate_bookings_v2(current_user, booking.offererId)  # type: ignore [arg-type]
     elif current_api_key:
         check_api_key_allows_to_validate_booking(
             current_api_key,  # type: ignore[arg-type]
-            booking.offererId,
+            booking.offererId,  # type: ignore [arg-type]
         )
     else:
         # We should not end up here, thanks to the `login_or_api_key_required` decorator.

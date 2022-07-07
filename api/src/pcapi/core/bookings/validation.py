@@ -123,7 +123,7 @@ def check_is_usable(booking: Booking) -> None:
         raise exceptions.BookingIsAlreadyCancelled()
 
     if booking.educationalBookingId is not None:
-        if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:  # type: ignore [union-attr]
+        if booking.educationalBooking.status is EducationalBookingStatus.REFUSED:
             raise exceptions.BookingRefused()
 
     is_booking_for_event_and_not_confirmed = booking.stock.beginningDatetime and not booking.isConfirmed
@@ -136,7 +136,7 @@ def check_is_usable(booking: Booking) -> None:
             utc_datetime_to_department_timezone(
                 api.compute_cancellation_limit_date(
                     booking.stock.beginningDatetime,
-                    booking.dateCreated,
+                    booking.dateCreated,  # type: ignore [arg-type]
                 ),
                 venue_departement_code,
             ),

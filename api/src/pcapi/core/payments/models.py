@@ -10,6 +10,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import SmallInteger
 
 from pcapi.core.finance import conf as finance_conf
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
@@ -52,7 +53,7 @@ class ReimbursementRule:
         raise NotImplementedError()
 
 
-class CustomReimbursementRule(ReimbursementRule, Model):  # type: ignore [valid-type, misc]
+class CustomReimbursementRule(ReimbursementRule, Base, Model):  # type: ignore [valid-type, misc]
     """Some offers are linked to custom reimbursement rules that overrides
     standard reimbursement rules.
 
@@ -120,7 +121,7 @@ class CustomReimbursementRule(ReimbursementRule, Model):  # type: ignore [valid-
 
     def apply(self, booking: "Booking"):  # type: ignore [no-untyped-def]
         if self.amount is not None:
-            return booking.quantity * self.amount
+            return booking.quantity * self.amount  # type: ignore [operator]
         return booking.total_amount * self.rate  # type: ignore [operator]
 
     @property
@@ -137,7 +138,7 @@ class DepositType(enum.Enum):
     GRANT_18 = "GRANT_18"
 
 
-class Deposit(PcObject, Model):  # type: ignore [valid-type, misc]
+class Deposit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     amount = sa.Column(sa.Numeric(10, 2), nullable=False)
@@ -165,7 +166,7 @@ class Deposit(PcObject, Model):  # type: ignore [valid-type, misc]
         server_default=DepositType.GRANT_18.value,
     )
 
-    recredits = relationship("Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit")
+    recredits = relationship("Recredit", order_by="Recredit.dateCreated.desc()", back_populates="deposit")  # type: ignore [misc]
 
     __table_args__ = (
         sa.UniqueConstraint(
@@ -195,10 +196,10 @@ class RecreditType(enum.Enum):
     RECREDIT_17 = "Recredit17"
 
 
-class Recredit(PcObject, Model):  # type: ignore [valid-type, misc]
+class Recredit(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     depositId = sa.Column(sa.BigInteger, sa.ForeignKey("deposit.id"), nullable=False)
 
-    deposit = relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")
+    deposit = relationship("Deposit", foreign_keys=[depositId], back_populates="recredits")  # type: ignore [misc]
 
     dateCreated = sa.Column(sa.DateTime, nullable=False, server_default=sa.func.now())
 

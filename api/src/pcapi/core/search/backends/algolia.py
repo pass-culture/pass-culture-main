@@ -382,7 +382,7 @@ class AlgoliaBackend(base.SearchBackend):
         venue = offer.venue
         offerer = venue.managingOfferer
         prices = map(lambda stock: stock.price, offer.bookableStocks)
-        prices_sorted = sorted(prices, key=float)
+        prices_sorted = sorted(prices, key=float)  # type: ignore [arg-type]
         dates = []
         times = []
         if offer.isEvent:
@@ -390,16 +390,16 @@ class AlgoliaBackend(base.SearchBackend):
             times = [
                 date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore [arg-type]
             ]
-        date_created = offer.dateCreated.timestamp()
-        stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]
+        date_created = offer.dateCreated.timestamp()  # type: ignore [union-attr]
+        stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]  # type: ignore [union-attr]
         tags = [criterion.name for criterion in offer.criteria]
-        extra_data = offer.extraData or {}
-        artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))  # type: ignore [union-attr]
+        extra_data = offer.extraData or {}  # type: ignore [var-annotated]
+        artist = " ".join(extra_data.get(key, "") for key in ("author", "performer", "speaker", "stageDirector"))
 
         # Field used by Algolia (not the frontend) to deduplicate results
         # https://www.algolia.com/doc/api-reference/api-parameters/distinct/
-        distinct = extra_data.get("isbn") or extra_data.get("visa") or str(offer.id)  # type: ignore [union-attr]
-        distinct += extra_data.get("diffusionVersion", "")  # type: ignore [union-attr]
+        distinct = extra_data.get("isbn") or extra_data.get("visa") or str(offer.id)
+        distinct += extra_data.get("diffusionVersion", "")
 
         object_to_index = {
             "distinct": distinct,
@@ -420,7 +420,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "prices": prices_sorted,
                 "searchGroupName": offer.subcategory.search_group_name,
                 "stocksDateCreated": sorted(stocks_date_created),
-                "students": extra_data.get("students") or [],  # type: ignore [union-attr]
+                "students": extra_data.get("students") or [],
                 "subcategoryId": offer.subcategory.id,
                 "thumbUrl": url_path(offer.thumbUrl),
                 "tags": tags,
@@ -475,7 +475,7 @@ class AlgoliaBackend(base.SearchBackend):
     def serialize_collective_offer(cls, collective_offer: educational_models.CollectiveOffer) -> dict:
         venue = collective_offer.venue
         offerer = venue.managingOfferer
-        date_created = collective_offer.dateCreated.timestamp()
+        date_created = collective_offer.dateCreated.timestamp()  # type: ignore [union-attr]
 
         return {
             "objectID": collective_offer.id,
@@ -484,7 +484,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "name": collective_offer.name,
                 "students": [student.value for student in collective_offer.students],
                 "subcategoryId": collective_offer.subcategoryId,
-                "domains": [domain.id for domain in collective_offer.domains],
+                "domains": [domain.id for domain in collective_offer.domains],  # type: ignore [attr-defined]
                 "educationalInstitutionUAICode": collective_offer.institution.institutionId
                 if collective_offer.institution
                 else "all",
@@ -507,16 +507,16 @@ class AlgoliaBackend(base.SearchBackend):
     ) -> dict:
         venue = collective_offer_template.venue
         offerer = venue.managingOfferer
-        date_created = collective_offer_template.dateCreated.timestamp()
+        date_created = collective_offer_template.dateCreated.timestamp()  # type: ignore [union-attr]
 
         return {
-            "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
+            "objectID": _transform_collective_offer_template_id(collective_offer_template.id),  # type: ignore [arg-type]
             "offer": {
                 "dateCreated": date_created,
                 "name": collective_offer_template.name,
                 "students": [student.value for student in collective_offer_template.students],
                 "subcategoryId": collective_offer_template.subcategoryId,
-                "domains": [domain.id for domain in collective_offer_template.domains],
+                "domains": [domain.id for domain in collective_offer_template.domains],  # type: ignore [attr-defined]
                 "educationalInstitutionUAICode": "all",
             },
             "offerer": {

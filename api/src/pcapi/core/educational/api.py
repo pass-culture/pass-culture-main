@@ -64,7 +64,7 @@ def _create_redactor(redactor_informations: RedactorInformation) -> educational_
         email=redactor_informations.email,
         firstName=redactor_informations.firstname,
         lastName=redactor_informations.lastname,
-        civility=redactor_informations.civility,
+        civility=redactor_informations.civility,  # type: ignore [arg-type]
     )
     repository.save(redactor)
     return redactor
@@ -86,14 +86,14 @@ def book_collective_offer(
         stock = educational_repository.get_and_lock_collective_stock(stock_id=stock_id)
         validation.check_collective_stock_is_bookable(stock)
 
-        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)
+        educational_year = educational_repository.find_educational_year_by_date(stock.beginningDatetime)  # type: ignore [arg-type]
         validation.check_educational_year_exists(educational_year)
         validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
         utcnow = datetime.datetime.utcnow()
         booking = educational_models.CollectiveBooking(
-            educationalInstitution=educational_institution,
-            educationalYear=educational_year,
+            educationalInstitution=educational_institution,  # type: ignore [arg-type]
+            educationalYear=educational_year,  # type: ignore [arg-type]
             educationalRedactor=redactor,
             confirmationLimitDate=stock.bookingLimitDatetime,
             collectiveStockId=stock.id,
@@ -102,7 +102,7 @@ def book_collective_offer(
             status=educational_models.CollectiveBookingStatus.PENDING,
             dateCreated=utcnow,
             cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
-                stock.beginningDatetime, utcnow
+                stock.beginningDatetime, utcnow  # type: ignore [arg-type]
             ),
         )
         repository.save(booking)
@@ -123,7 +123,7 @@ def book_collective_offer(
             extra={"booking": booking.id},
         )
 
-    search.async_index_collective_offer_ids([stock.collectiveOfferId])
+    search.async_index_collective_offer_ids([stock.collectiveOfferId])  # type: ignore [list-item]
 
     try:
         adage_client.notify_prebooking(data=prebooking.serialize_collective_booking(booking))
@@ -165,20 +165,20 @@ def confirm_collective_booking(educational_booking_id: int) -> educational_model
     with transaction():
 
         deposit = educational_repository.get_and_lock_educational_deposit(
-            educational_institution_id, educational_year_id
+            educational_institution_id, educational_year_id  # type: ignore [arg-type]
         )
         validation.check_institution_fund(
-            educational_institution_id,
-            educational_year_id,
+            educational_institution_id,  # type: ignore [arg-type]
+            educational_year_id,  # type: ignore [arg-type]
             collective_booking.collectiveStock.price,
             deposit,
         )
 
         validation.check_ministry_fund(
-            educational_year_id=educational_year_id,
+            educational_year_id=educational_year_id,  # type: ignore [no-untyped-def]
             booking_amount=collective_booking.collectiveStock.price,
             booking_date=collective_booking.collectiveStock.beginningDatetime,
-            ministry=deposit.ministry,
+            ministry=deposit.ministry,  # type: ignore [no-untyped-def]
         )
 
         collective_booking.mark_as_confirmed()
@@ -458,7 +458,7 @@ def edit_collective_stock(
     validation.check_collective_stock_is_editable(stock)
 
     with transaction():
-        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
+        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)  # type: ignore [arg-type]
         for attribute, new_value in updatable_fields.items():
             if new_value is not None and getattr(stock, attribute) != new_value:
                 setattr(stock, attribute, new_value)
@@ -466,7 +466,7 @@ def edit_collective_stock(
         db.session.commit()
 
     logger.info("Stock has been updated", extra={"stock": stock.id})
-    search.async_index_collective_offer_ids([stock.collectiveOfferId])
+    search.async_index_collective_offer_ids([stock.collectiveOfferId])  # type: ignore [list-item]
 
     notify_educational_redactor_on_collective_offer_or_stock_edit(
         stock.collectiveOffer.id,
@@ -660,7 +660,7 @@ def list_collective_offers_for_pro_user(
         offer_date = offers[offer_index].dateCreated
         template_date = templates[template_index].dateCreated
 
-        if offer_date > template_date:
+        if offer_date > template_date:  # type: ignore [operator]
             merged_offers.append(offers[offer_index])
             offer_index += 1
         else:
@@ -693,19 +693,19 @@ def create_collective_offer(
 
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
     venue: offerers_models.Venue = rest.load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
-    rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)  # type: ignore [arg-type]
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
     educational_domains = []
     if isinstance(offer_data, PostCollectiveOfferBodyModel):
         educational_domains = get_educational_domains_from_ids(offer_data.domains)
-    collective_offer = educational_models.CollectiveOffer(
+    collective_offer = educational_models.CollectiveOffer(  # type: ignore [call-arg]
         venueId=venue.id,
         name=offer_data.name,
         offerId=offer_id,
         bookingEmail=offer_data.booking_email,
         description=offer_data.description,
-        domains=educational_domains,
+        domains=educational_domains,  # type: ignore [arg-type]
         durationMinutes=offer_data.duration_minutes,
         subcategoryId=offer_data.subcategory_id,
         students=offer_data.extra_data.students
@@ -717,7 +717,7 @@ def create_collective_offer(
         contactPhone=offer_data.extra_data.contact_phone
         if isinstance(offer_data, PostEducationalOfferBodyModel)
         else offer_data.contact_phone,
-        offerVenue=offer_data.extra_data.offer_venue.dict()
+        offerVenue=offer_data.extra_data.offer_venue.dict()  # type: ignore [arg-type]
         if isinstance(offer_data, PostEducationalOfferBodyModel)
         else offer_data.offer_venue.dict(),
         validation=OfferValidationStatus.DRAFT,
@@ -772,8 +772,8 @@ def create_collective_offer_template_from_collective_offer(
 
 
 def get_collective_offer_id_from_educational_stock(stock: Stock) -> int:
-    collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)
-    return collective_offer.id
+    collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)  # type: ignore [arg-type]
+    return collective_offer.id  # type: ignore [return-value]
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
@@ -858,7 +858,7 @@ def update_collective_offer_educational_institution(
 
     if not is_creating_offer and offer.collectiveStock and not offer.collectiveStock.isEditable:
         raise exceptions.CollectiveOfferNotEditable()
-    offer.institution = institution
+    offer.institution = institution  # type: ignore [assignment]
     db.session.commit()
 
     if is_creating_offer and offer.validation == OfferValidationStatus.DRAFT:

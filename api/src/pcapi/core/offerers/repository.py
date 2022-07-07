@@ -144,9 +144,7 @@ def get_filtered_venues(
         if validated_offerer:
             query = query.filter(models.Offerer.isValidated)
         else:
-            query = query.filter(
-                ~models.Offerer.isValidated  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
-            )
+            query = query.filter(~models.Offerer.isValidated)  # type: ignore [operator]  # pylint: disable=invalid-unary-operand-type
 
     if active_offerers_only:
         query = query.filter(models.Offerer.isActive.is_(True))

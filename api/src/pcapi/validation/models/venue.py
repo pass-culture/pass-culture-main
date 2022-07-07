@@ -32,7 +32,7 @@ def validate(venue: Venue, api_errors: ApiErrors) -> ApiErrors:
         offerer_id = venue.managingOffererId
         if not offerer_id:
             offerer_id = venue.managingOfferer.id
-        already_existing_virtual_venue = find_virtual_venue_by_offerer_id(offerer_id)
+        already_existing_virtual_venue = find_virtual_venue_by_offerer_id(offerer_id)  # type: ignore [arg-type]
         if already_existing_virtual_venue and already_existing_virtual_venue.id != venue.id:
             api_errors.add_error("isVirtual", "Un lieu pour les offres numériques existe déjà pour cette structure")
 

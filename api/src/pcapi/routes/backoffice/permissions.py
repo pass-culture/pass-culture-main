@@ -50,7 +50,7 @@ def list_permissions() -> serialization.ListPermissionResponseModel:
     permissions = perm_api.list_permissions()
     return serialization.ListPermissionResponseModel(
         permissions=[
-            serialization.Permission(id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category)
+            serialization.Permission(id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category)  # type: ignore [misc]
             for perm in permissions
         ]
     )

@@ -26,8 +26,8 @@ def create_offerer_from_csv(row: dict) -> Offerer:
     offerer = Offerer()
     offerer.name = row["nom_structure"] if row["nom_structure"] else row["Name"]
     offerer.siren = row["SIREN"]
-    offerer.address = _get_address_from_row(row)
-    offerer.postalCode = _get_postal_code(row)
+    offerer.address = _get_address_from_row(row)  # type: ignore [assignment]
+    offerer.postalCode = _get_postal_code(row)  # type: ignore [assignment]
     offerer.city = row["City"]
 
     return offerer
@@ -48,7 +48,9 @@ def create_venue_from_csv(row: dict, offerer: Offerer) -> Venue:
     if row["nom_lieu"]:
         venue.name = row["nom_lieu"]
     else:
-        venue.name = f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer.siren)).count() + 1} - {row['nom_structure']}"  # type: ignore [arg-type]
+        venue.name = (
+            f"Lieu {Venue.query.filter(Venue.siret.startswith(offerer.siren)).count() + 1} - {row['nom_structure']}"
+        )
         logger.warning("Venue name missing for offerer with SIREN %s. Génerated name : %s", offerer.siren, venue.name)
 
     try:

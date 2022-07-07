@@ -156,7 +156,7 @@ def create_offer(
         offer = _initialize_offer_with_new_data(offer_data, subcategory, venue)
 
     _complete_common_offer_fields(offer, offer_data, venue)
-    offer.isActive = save_as_active
+    offer.isActive = save_as_active  # type: ignore [assignment]
 
     repository.save(offer)
 
@@ -180,14 +180,14 @@ def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcatego
 def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel | CompletedEducationalOfferModel) -> Offer:
     product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])  # type: ignore [index]
     extra_data = product.extraData
-    extra_data.update(offer_data.extra_data)  # type: ignore [union-attr]
-    offer = Offer(
+    extra_data.update(offer_data.extra_data)
+    offer = Offer(  # type: ignore [call-arg]
         product=product,
         subcategoryId=product.subcategoryId,
         name=offer_data.name,
         description=offer_data.description if offer_data.description else product.description,
         url=offer_data.url if offer_data.url else product.url,  # type: ignore [union-attr]
-        mediaUrls=offer_data.url if offer_data.url else product.url,  # type: ignore [union-attr]
+        mediaUrls=offer_data.url if offer_data.url else product.url,  # type: ignore [union-attr, arg-type]
         conditions=offer_data.conditions if offer_data.conditions else product.conditions,  # type: ignore [union-attr]
         ageMin=offer_data.age_min if offer_data.age_min else product.ageMin,  # type: ignore [union-attr]
         ageMax=offer_data.age_max if offer_data.age_max else product.ageMax,  # type: ignore [union-attr]
@@ -223,12 +223,12 @@ def _complete_common_offer_fields(
     offer.venue = venue
     offer.bookingEmail = offer_data.booking_email
     offer.externalTicketOfficeUrl = offer_data.external_ticket_office_url
-    offer.audioDisabilityCompliant = offer_data.audio_disability_compliant
-    offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant
-    offer.motorDisabilityCompliant = offer_data.motor_disability_compliant
-    offer.visualDisabilityCompliant = offer_data.visual_disability_compliant
+    offer.audioDisabilityCompliant = offer_data.audio_disability_compliant  # type: ignore [assignment]
+    offer.mentalDisabilityCompliant = offer_data.mental_disability_compliant  # type: ignore [assignment]
+    offer.motorDisabilityCompliant = offer_data.motor_disability_compliant  # type: ignore [assignment]
+    offer.visualDisabilityCompliant = offer_data.visual_disability_compliant  # type: ignore [assignment]
     offer.validation = OfferValidationStatus.DRAFT  # type: ignore [assignment]
-    offer.isEducational = offer_data.is_educational  # type: ignore [assignment]
+    offer.isEducational = offer_data.is_educational
 
 
 def _check_offer_data_is_valid(
@@ -269,7 +269,7 @@ def update_offer(
 ) -> Offer:
     validation.check_validation_status(offer)
     if extraData != UNCHANGED:
-        extraData = validation.check_offer_extra_data(offer, offer.subcategoryId, extraData)
+        extraData = validation.check_offer_extra_data(offer, offer.subcategoryId, extraData)  # type: ignore [arg-type]
 
     # fmt: off
     modifications = {
@@ -306,7 +306,7 @@ def update_offer(
             product_has_been_updated = False
 
     if offer.isFromAllocine:
-        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))
+        offer.fieldsUpdated = list(set(offer.fieldsUpdated) | set(modifications))  # type: ignore [arg-type]
 
     repository.save(offer)
 
@@ -315,7 +315,7 @@ def update_offer(
         repository.save(offer.product)
         logger.info("Product has been updated", extra={"product": offer.product.id})
 
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
 
     return offer
 
@@ -365,7 +365,7 @@ def _update_collective_offer(offer: CollectiveOffer | CollectiveOfferTemplate, n
 
         if key == "domains":
             domains = educational_api.get_educational_domains_from_ids(value)
-            offer.domains = domains
+            offer.domains = domains  # type: ignore [call-overload]
             continue
 
         setattr(offer, key, value)
@@ -490,7 +490,7 @@ def _edit_stock(
     validation.check_stock_is_updatable(stock)
     validation.check_required_dates_for_stock(stock.offer, beginning, booking_limit_datetime)
     validation.check_stock_price(price, stock.offer)
-    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)
+    validation.check_stock_quantity(quantity, stock.dnBookedQuantity)  # type: ignore [arg-type]
     validation.check_activation_codes_expiration_datetime_on_stock_edition(
         stock.activationCodes,
         booking_limit_datetime,
@@ -512,7 +512,7 @@ def _edit_stock(
         }
         # fmt: on
         validation.check_update_only_allowed_stock_fields_for_allocine_offer(updated_fields)
-        stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)
+        stock.fieldsUpdated = list(set(stock.fieldsUpdated) | updated_fields)  # type: ignore [assignment]
 
     for model_attr, value in updates.items():
         setattr(stock, model_attr, value)
@@ -648,9 +648,9 @@ def upsert_stocks(
 
 def publish_offer(offer_id: int, user: User) -> Offer:
     offer = offers_repository.get_offer_by_id(offer_id)
-    offer.isActive = True
+    offer.isActive = True  # type: ignore [assignment]
     update_offer_fraud_information(offer, user)
-    search.async_index_offer_ids([offer.id])
+    search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
     return offer
 
 
@@ -664,11 +664,11 @@ def update_offer_fraud_information(
 
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)  # type: ignore [assignment]
     offer.author = user
-    offer.lastValidationDate = datetime.datetime.utcnow()
+    offer.lastValidationDate = datetime.datetime.utcnow()  # type: ignore [assignment]
     offer.lastValidationType = OfferValidationType.AUTO  # type: ignore [assignment]
 
     if offer.validation in (OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED):
-        offer.isActive = False
+        offer.isActive = False  # type: ignore [assignment]
     repository.save(offer)
     if offer.validation == OfferValidationStatus.APPROVED and not silent:
         admin_emails.send_offer_creation_notification_to_administration(offer)
@@ -685,7 +685,7 @@ def update_offer_fraud_information(
 def _update_educational_booking_cancellation_limit_date(
     booking: Booking | educational_models.CollectiveBooking, new_beginning_datetime: datetime.datetime
 ) -> None:
-    booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(  # type: ignore [assignment]
+    booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(
         new_beginning_datetime, datetime.datetime.utcnow()
     )
 
@@ -700,7 +700,7 @@ def _invalidate_bookings(bookings: list[Booking]) -> list[Booking]:
 def delete_stock(stock: Stock) -> None:
     validation.check_stock_is_deletable(stock)
 
-    stock.isSoftDeleted = True
+    stock.isSoftDeleted = True  # type: ignore [assignment]
     repository.save(stock)
 
     # the algolia sync for the stock will happen within this function
@@ -756,7 +756,7 @@ def create_mediation(
         raise ThumbnailStorageError
 
     else:
-        mediation.thumbCount = 1
+        mediation.thumbCount = 1  # type: ignore [assignment]
         repository.save(mediation)
         # cleanup former thumbnails and mediations
 
@@ -776,7 +776,7 @@ def create_mediation(
             else:
                 repository.delete(previous_mediation)
 
-        search.async_index_offer_ids([offer.id])
+        search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
 
         return mediation
 
@@ -863,7 +863,7 @@ def add_criteria_to_offers(
                 offer_criteria.append(
                     criteria_models.OfferCriterion(
                         offerId=offer_id,
-                        criterionId=criterion.id,
+                        criterionId=criterion.id,  # type: ignore [arg-type]
                     )
                 )
 
@@ -965,7 +965,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
         return False
     offer.validation = validation_status  # type: ignore [assignment]
     if validation_status == OfferValidationStatus.APPROVED:
-        offer.isActive = True
+        offer.isActive = True  # type: ignore [assignment]
 
     try:
         db.session.commit()
@@ -977,7 +977,7 @@ def update_pending_offer_validation(offer: Offer, validation_status: OfferValida
         )
         return False
     if isinstance(offer, Offer):
-        search.async_index_offer_ids([offer.id])
+        search.async_index_offer_ids([offer.id])  # type: ignore [list-item]
     elif isinstance(offer, CollectiveOffer):
         search.async_index_collective_offer_ids([offer.id])
     elif isinstance(offer, CollectiveOfferTemplate):
@@ -999,7 +999,7 @@ def import_offer_validation_config(config_as_yaml: str, user: User = None) -> Of
         )
         raise WrongFormatInFraudConfigurationFile(str(error))  # type: ignore [arg-type]
 
-    config = OfferValidationConfig(specs=config_as_dict, user=user)
+    config = OfferValidationConfig(specs=config_as_dict, user=user)  # type: ignore [arg-type]
     repository.save(config)
     return config
 
@@ -1060,7 +1060,7 @@ def report_offer(user: User, offer: Offer, reason: str, custom_reason: str | Non
         #
         # Other errors are unexpected and are therefore re-raised as is.
         with transaction():
-            report = OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
+            report = OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)  # type: ignore [arg-type]
             db.session.add(report)
     except sqla_exc.IntegrityError as error:
         if error.orig.pgcode == UNIQUE_VIOLATION:
@@ -1129,7 +1129,7 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
         return
 
     shows_id = [
-        int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders
+        int(get_cds_show_id_from_uuid(stock.idAtProviders)) for stock in offer.activeStocks if stock.idAtProviders  # type: ignore [arg-type]
     ]
 
     if not shows_id:
@@ -1139,10 +1139,10 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
         "Getting up-to-date show stock from booking provider on offer view",
         extra={"offer": offer.id, "booking_provider": booking_provider.id},
     )
-    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)
+    shows_remaining_places = get_shows_stock(offer.venueId, shows_id)  # type: ignore [arg-type]
 
     for show_id, remaining_places in shows_remaining_places.items():
-        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))
+        stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))  # type: ignore [arg-type]
         if stock:
             if remaining_places <= 0:
                 stock.quantity = stock.dnBookedQuantity

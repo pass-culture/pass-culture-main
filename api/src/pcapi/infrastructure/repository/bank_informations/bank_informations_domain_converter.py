@@ -6,7 +6,7 @@ def to_domain(bank_informations_sql_entity: BankInformationsSQLEntity) -> BankIn
 
     return BankInformations(
         application_id=bank_informations_sql_entity.applicationId,  # type: ignore [arg-type]
-        status=bank_informations_sql_entity.status,
+        status=bank_informations_sql_entity.status,  # type: ignore [arg-type]
         iban=bank_informations_sql_entity.iban,
         bic=bank_informations_sql_entity.bic,
         date_modified=bank_informations_sql_entity.dateModified,

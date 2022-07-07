@@ -79,7 +79,7 @@ def create_industrial_event_products() -> dict[str, offers_models.Product]:
                 elif conditionalField == "visa":
                     pass
                 extra_data_index += 1
-            event_product.extraData = extraData
+            event_product.extraData = extraData  # type: ignore [assignment]
             event_products_by_name[name] = event_product
 
         product_creation_counter += len(event_subcategories)

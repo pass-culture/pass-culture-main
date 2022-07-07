@@ -110,10 +110,10 @@ def generate_token(user: users_models.User, permissions: typing.Iterable[perm_mo
 
 
 def authenticate_with_permissions(google_token_id: str) -> str:
-    if (user := get_user_from_google_id(google_token_id)) is None or not user.email.endswith("@passculture.app"):
+    if (user := get_user_from_google_id(google_token_id)) is None or not user.email.endswith("@passculture.app"):  # type: ignore [union-attr]
         raise NotAPassCultureTeamAccountError
 
-    groups = get_groups_from_google_workspace(user.email)
+    groups = get_groups_from_google_workspace(user.email)  # type: ignore [arg-type]
     backoffice_roles = extract_roles_from_google_workspace_groups(groups)
     permissions = get_permissions_from_roles(backoffice_roles)
     token = generate_token(user, permissions)
