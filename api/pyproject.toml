@@ -117,3 +117,42 @@ msg-template = "{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"
 
 [tool.pylint.FORMAT]
 max-line-length = 120
+
+
+[tool.pytest.ini_options]
+addopts = ["--verbose", "--tb=short"]
+filterwarnings = [
+    # Mark warnings as errors
+    "error",
+
+    # -------------- Temporary ignored warnings due to SLQAlchemy bump to 1.4 -------------- #
+    # FIXME (lixxday, 2022/06/09)
+    # Warning on relationships. Fix with backrefs: https://docs.sqlalchemy.org/en/14/errors.html#error-qzyx
+    "ignore:relationship '(User.UserOfferers|User.offerers|Offerer.UserOfferers|UserOfferer.*)' will copy column .* to column .*, which conflicts with relationship:sqlalchemy.exc.SAWarning",
+    # Warning on deprecated sqla function as_scalar()
+    "ignore:The Query.as_scalar\\(\\) method is deprecated and will be removed in a future release:sqlalchemy.exc.SADeprecationWarning",
+    # Warning on SELECT with IN. Fix: pass a select() construct explicitly
+    "ignore:Coercing Subquery object into a select\\(\\) for use in IN\\(\\):sqlalchemy.exc.SAWarning",
+    # ---------------------------- #
+
+    # FIXME (rpaoloni, 2022-04-19): some of our dependencies (swift and rq) use `distutils.version.StrictVersion`,
+    # which emits a deprecation warnings with setuptools >=59.6.0. Remove this when we update or remove those
+    # dependencies.
+    "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",
+    # FIXME (jsdupuis, 2022-04-25): flask_admin validators uses tuples for flags (eg. field_flags = ('unique', )),
+    # which emits deprecation warnings in wtforms >=3.0.0a1.
+    # Remove this when we remove flask_admin
+    "ignore:Flags should be stored in dicts and not in tuples. The next version of WTForms will abandon support for flags in tuples.:DeprecationWarning",
+    # FIXME (askorski, 2022-05-02): algoliasearch uses deprecated @coroutine decorator
+    # Remove this when alogliasearch no more uses @coroutine
+    'ignore:"@coroutine" decorator is deprecated since Python 3.8, use \"async def\" instead:DeprecationWarning',
+]
+testpaths = ["tests"]
+norecursedirs = [".git", "venv", ".pytest_cache"]
+# Synchronize these globs with `TEST_FILES` in CircleCI configuration
+python_files = ["*_test.py", "test_*.py", "tests.py"]
+python_classes = ["*Test"]
+python_functions = ["test_*", "when_*", "expect_*", "should_*"]
+env_files = ["local_test_env_file"]
+mocked-sessions = ["pcapi.models.db.session"]
+junit_family = "xunit1"
