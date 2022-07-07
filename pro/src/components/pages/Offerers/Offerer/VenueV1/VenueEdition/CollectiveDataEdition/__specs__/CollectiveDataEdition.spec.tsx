@@ -3,7 +3,10 @@ import '@testing-library/jest-dom'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as useNotification from 'components/hooks/useNotification'
 
-import { domtomOptions, mainlandOptions } from '../interventionOptions'
+import {
+  domtomOptions,
+  mainlandOptions,
+} from '../CollectiveDataForm/interventionOptions'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { ApiError } from 'apiClient/v1'

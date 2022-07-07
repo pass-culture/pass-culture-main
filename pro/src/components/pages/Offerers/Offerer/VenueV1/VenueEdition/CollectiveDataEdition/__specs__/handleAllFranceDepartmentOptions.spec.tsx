@@ -2,9 +2,9 @@ import {
   ALL_FRANCE_OPTION_VALUE,
   MAINLAND_OPTION_VALUE,
   allDepartmentValues,
-} from '../interventionOptions'
+} from '../CollectiveDataForm/interventionOptions'
 
-import { handleAllFranceDepartmentOptions } from '../utils/handleAllFranceDepartmentOptions'
+import { handleAllFranceDepartmentOptions } from '../CollectiveDataForm/utils/handleAllFranceDepartmentOptions'
 
 describe('handleAllFranceDepartmentOptions', () => {
   it('should do nothing', () => {
