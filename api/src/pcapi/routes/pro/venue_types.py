@@ -14,7 +14,7 @@ from . import blueprint
 @spectree_serialize(response_model=VenueTypeListResponseModel, api=blueprint.pro_private_schema)
 def get_venue_types() -> VenueTypeListResponseModel:
     venue_types = [
-        VenueTypeResponseModel(id=code_id, label=label)
-        for code_id, label in offerers_models.VENUE_TYPE_CODE_MAPPING.items()
+        VenueTypeResponseModel(id=venue_type.name, label=venue_type.value)
+        for venue_type in offerers_models.VenueTypeCode
     ]
     return VenueTypeListResponseModel(__root__=venue_types)
