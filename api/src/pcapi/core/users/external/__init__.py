@@ -107,7 +107,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         is_eac = False
         if user and offerers:
             offerer_ids = [offerer.id for offerer in offerers]
-            user_offerers = UserOfferer.query.filter(Offerer.id.in_(offerer_ids)).all()
+            user_offerers = UserOfferer.query.filter(UserOfferer.offererId.in_(offerer_ids)).all()
             all_venues += find_venues_by_offerers(*offerers)
             for offerer_id in offerer_ids:
                 if min((uo.id, uo.userId) for uo in user_offerers if uo.offererId == offerer_id)[1] == user.id:

@@ -349,7 +349,7 @@ class StockRemainingQuantityTest:
         stock = factories.StockFactory(offer=offer, quantity=None)
 
         assert stock.remainingQuantity == "unlimited"
-        assert Offer.query.filter(Stock.remainingQuantity.is_(None)).one() == offer
+        assert Stock.query.filter(Stock.remainingQuantity.is_(None)).one() == stock
 
     def test_stock_with_unlimited_remaining_quantity_after_booking(self):
         offer = factories.OfferFactory()
@@ -358,14 +358,14 @@ class StockRemainingQuantityTest:
         bookings_factories.BookingFactory(stock=stock)
 
         assert stock.remainingQuantity == "unlimited"
-        assert Offer.query.filter(Stock.remainingQuantity.is_(None)).one() == offer
+        assert Stock.query.filter(Stock.remainingQuantity.is_(None)).one() == stock
 
     def test_stock_with_positive_remaining_quantity(self):
         offer = factories.OfferFactory()
         stock = factories.StockFactory(offer=offer, quantity=5)
 
         assert stock.remainingQuantity == 5
-        assert Offer.query.filter(Stock.remainingQuantity == 5).one() == offer
+        assert Stock.query.filter(Stock.remainingQuantity == 5).one() == stock
 
     def test_stock_with_positive_remaining_quantity_after_some_bookings(self):
         offer = factories.OfferFactory()
@@ -374,7 +374,7 @@ class StockRemainingQuantityTest:
         bookings_factories.BookingFactory(stock=stock, quantity=2)
 
         assert stock.remainingQuantity == 3
-        assert Offer.query.filter(Stock.remainingQuantity == 3).one() == offer
+        assert Stock.query.filter(Stock.remainingQuantity == 3).one() == stock
 
     def test_stock_with_zero_remaining_quantity_after_booking(self):
         offer = factories.OfferFactory()
@@ -383,7 +383,7 @@ class StockRemainingQuantityTest:
         bookings_factories.BookingFactory(stock=stock)
 
         assert stock.remainingQuantity == 0
-        assert Offer.query.filter(Stock.remainingQuantity == 0).one() == offer
+        assert Stock.query.filter(Stock.remainingQuantity == 0).one() == stock
 
     def test_stock_with_positive_remaining_quantity_after_cancelled_booking(self):
         offer = factories.OfferFactory()
@@ -392,7 +392,7 @@ class StockRemainingQuantityTest:
         bookings_factories.CancelledBookingFactory(stock=stock)
 
         assert stock.remainingQuantity == 5
-        assert Offer.query.filter(Stock.remainingQuantity == 5).one() == offer
+        assert Stock.query.filter(Stock.remainingQuantity == 5).one() == stock
 
 
 class StockDateModifiedTest:
