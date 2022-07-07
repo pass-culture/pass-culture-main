@@ -45,8 +45,9 @@ const OfferBreadcrumb = ({
   const isTemplateId = offerId.startsWith('T-')
   let steps: Step[] = []
 
-  if (activeStep == OfferBreadcrumbStep.CONFIRMATION) return <></>
-  if (useSummaryPage && !isCreatingOffer) return <></>
+  if (activeStep == OfferBreadcrumbStep.CONFIRMATION && !isOfferEducational)
+    return <></>
+  if (useSummaryPage && !isCreatingOffer && !isOfferEducational) return <></>
 
   if (!isCreatingOffer) {
     steps = [
