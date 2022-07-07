@@ -40,56 +40,13 @@ import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import TextareaInput from 'components/layout/inputs/TextareaInput'
 import WithdrawalReminder from './Messages/WithdrawalReminder'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
+import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import isEqual from 'lodash.isequal'
 import { isUrlValid } from './validators'
 import { sortByDisplayName } from 'utils/strings'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
-
-const getOfferConditionalFields = ({
-  offerSubCategory = null,
-  isUserAdmin = null,
-  receiveNotificationEmails = null,
-  venue = null,
-}) => {
-  let offerConditionalFields = []
-
-  if (offerSubCategory?.isEvent) {
-    offerConditionalFields.push('durationMinutes')
-  }
-
-  if (offerSubCategory?.canBeDuo) {
-    offerConditionalFields.push('isDuo')
-  }
-
-  if (offerSubCategory?.conditionalFields.includes('musicType')) {
-    offerConditionalFields.push('musicSubType')
-  }
-
-  if (offerSubCategory?.conditionalFields.includes('showType')) {
-    offerConditionalFields.push('showSubType')
-  }
-
-  if (isUserAdmin) {
-    offerConditionalFields.push('isNational')
-  }
-
-  if (receiveNotificationEmails) {
-    offerConditionalFields.push('bookingEmail')
-  }
-
-  if (venue?.isVirtual) {
-    offerConditionalFields.push('url')
-  }
-
-  if (WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(offerSubCategory?.id)) {
-    offerConditionalFields.push('withdrawalType')
-    offerConditionalFields.push('withdrawalDelay')
-  }
-
-  return offerConditionalFields
-}
 
 const OfferForm = ({
   areAllVenuesVirtual,
@@ -278,12 +235,12 @@ const OfferForm = ({
 
   useEffect(
     function buildFormFields() {
+      const isVenueVirtual = venue?.isVirtual
       const offerConditionalFields = getOfferConditionalFields({
         offerSubCategory,
         isUserAdmin,
         receiveNotificationEmails,
-        venue,
-        withdrawalType: formValues.withdrawalType,
+        isVenueVirtual,
       })
       let offerSubCategoryConditionalFields = offerSubCategory
         ? offerSubCategory.conditionalFields

@@ -2,33 +2,28 @@ import { Checkbox, TextArea } from 'ui-kit'
 
 import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from '../types'
-import { IOfferSubCategory } from 'core/Offers/types'
 import React from 'react'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
 import { TicketWithdrawal } from './TicketWithdrawal'
 import { Venue } from './Venue'
+import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '.'
 import { useFormikContext } from 'formik'
 
 export interface IUsefulInformationsProps {
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
-  subCategories: IOfferSubCategory[]
   isUserAdmin: boolean
 }
 
 const UsefulInformations = ({
   offererNames,
   venueList,
-  subCategories,
   isUserAdmin,
 }: IUsefulInformationsProps): JSX.Element => {
   const {
     values: { subcategoryId },
   } = useFormikContext<IOfferIndividualFormValues>()
-
-  const subCategory = subCategories.find(s => s.id === subcategoryId)
-  const isEvent = subCategory?.isEvent
 
   return (
     <FormLayout.Section
@@ -37,7 +32,9 @@ const UsefulInformations = ({
     >
       <Venue offererNames={offererNames} venueList={venueList} />
 
-      {isEvent && <TicketWithdrawal subCategories={subCategories} />}
+      {WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(subcategoryId) && (
+        <TicketWithdrawal />
+      )}
 
       <FormLayout.Row>
         <TextArea

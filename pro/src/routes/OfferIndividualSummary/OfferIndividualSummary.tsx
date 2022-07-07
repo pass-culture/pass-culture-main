@@ -41,6 +41,7 @@ const OfferIndividualSummary = ({
       offer={offerData}
       stockThing={stockThing}
       stockEventList={stockEventList}
+      subCategories={subCategories}
       preview={preview}
     />
   )

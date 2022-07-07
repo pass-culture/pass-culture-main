@@ -1,6 +1,5 @@
 import {
   FORMAT_DD_MM_YYYY,
-  FORMAT_DD_MM_YYYY_HH_mm,
   FORMAT_HH_mm,
   toDateStrippedOfTimezone,
 } from 'utils/date'
@@ -45,7 +44,7 @@ const StockEventItem = ({
           title="Date limite de réservation"
           description={format(
             toDateStrippedOfTimezone(bookingLimitDatetime),
-            FORMAT_DD_MM_YYYY_HH_mm
+            FORMAT_DD_MM_YYYY
           )}
         />
       )}

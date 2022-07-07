@@ -15,9 +15,11 @@ import { ActionBar } from '../ActionBar'
 import { BannerSummary } from 'new_components/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
+import { IOfferSubCategory } from 'core/Offers/types'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import styles from './Summary.module.scss'
 import useNotification from 'components/hooks/useNotification'
 
@@ -28,6 +30,7 @@ export interface ISummaryProps {
   offer: IOfferSectionProps
   stockThing?: IStockThingSectionProps
   stockEventList?: IStockEventItemProps[]
+  subCategories: IOfferSubCategory[]
   preview: IOfferAppPreviewProps
 }
 
@@ -38,6 +41,7 @@ const Summary = ({
   offer,
   stockThing,
   stockEventList,
+  subCategories,
   preview,
 }: ISummaryProps): JSX.Element => {
   const [isDisabled, setIsDisabled] = useState(false)
@@ -65,13 +69,32 @@ const Summary = ({
   const handlePreviousStep = () => {
     history.push(`/offre/${offerId}/v3/creation/individuelle/stocks`)
   }
+  const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
+
+  const offerConditionalFields = getOfferConditionalFields({
+    offerSubCategory,
+    isUserAdmin: false,
+    receiveNotificationEmails: true,
+    isVenueVirtual: offer.isVenueVirtual,
+  })
+  const subCategoryConditionalFields = offerSubCategory
+    ? offerSubCategory.conditionalFields
+    : []
+  const conditionalFields = [
+    ...subCategoryConditionalFields,
+    ...offerConditionalFields,
+  ]
 
   return (
     <>
       {isCreation && <BannerSummary />}
       <SummaryLayout>
         <SummaryLayout.Content>
-          <OfferSection offer={offer} isCreation={isCreation} />
+          <OfferSection
+            conditionalFields={conditionalFields}
+            offer={offer}
+            isCreation={isCreation}
+          />
           {stockThing && (
             <StockThingSection
               {...stockThing}

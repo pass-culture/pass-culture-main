@@ -9,17 +9,11 @@ import {
 
 import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from '../../types'
-import { IOfferSubCategory } from 'core/Offers/types'
 import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
+import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '..'
 import { useFormikContext } from 'formik'
 
-export interface ITicketWithdrawalProps {
-  subCategories: IOfferSubCategory[]
-}
-
-const TicketWithdrawal = ({
-  subCategories,
-}: ITicketWithdrawalProps): JSX.Element => {
+const TicketWithdrawal = (): JSX.Element => {
   const {
     values: { subcategoryId, withdrawalType },
     setFieldValue,
@@ -27,8 +21,7 @@ const TicketWithdrawal = ({
 
   useEffect(
     function onSubCategoryChange() {
-      const subCategory = subCategories.find(s => s.id === subcategoryId)
-      if (!subCategory?.isEvent) {
+      if (!WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE.includes(subcategoryId)) {
         setFieldValue(
           'withdrawalType',
           TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalType']
