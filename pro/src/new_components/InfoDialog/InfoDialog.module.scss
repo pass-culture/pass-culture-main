@@ -1,0 +1,42 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+.info-dialog {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: rem.torem(532px);
+  text-align: center;
+
+  &-title {
+    @include fonts.gabarit();
+
+    margin-top: rem.torem(32px);
+    strong {
+      display: block;
+    }
+  }
+
+  &-icon {
+    height: rem.torem(80px);
+    width: rem.torem(80px);
+  }
+
+  &-subtitle {
+    margin-top: rem.torem(32px);
+  }
+
+  &-actions {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: rem.torem(48px);
+    gap: rem.torem(24px);
+
+    button {
+      min-width: rem.torem(150px);
+      padding: 0 rem.torem(40px);
+    }
+  }
+}
