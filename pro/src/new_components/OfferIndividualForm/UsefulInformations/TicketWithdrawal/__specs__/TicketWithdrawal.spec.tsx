@@ -3,11 +3,11 @@ import '@testing-library/jest-dom'
 import * as yup from 'yup'
 
 import { Form, Formik } from 'formik'
-import TicketWithdrawal, { ITicketWithdrawalProps } from '../TicketWithdrawal'
 import { render, screen } from '@testing-library/react'
 
 import React from 'react'
 import { SubmitButton } from 'ui-kit'
+import TicketWithdrawal from '../TicketWithdrawal'
 import userEvent from '@testing-library/user-event'
 import { validationSchema } from '../'
 
@@ -22,11 +22,9 @@ interface IInitialValues {
 const renderTicketWithdrawal = ({
   initialValues,
   onSubmit = jest.fn(),
-  props,
 }: {
   initialValues: IInitialValues
   onSubmit: () => void
-  props: ITicketWithdrawalProps
 }) => {
   return render(
     <Formik
@@ -35,7 +33,7 @@ const renderTicketWithdrawal = ({
       validationSchema={yup.object().shape(validationSchema)}
     >
       <Form>
-        <TicketWithdrawal {...props} />
+        <TicketWithdrawal />
         <SubmitButton className="primary-button" isLoading={false}>
           Submit
         </SubmitButton>
@@ -46,7 +44,6 @@ const renderTicketWithdrawal = ({
 
 describe('OfferIndividual section: TicketWithdrawal', () => {
   let initialValues: IInitialValues
-  let props: ITicketWithdrawalProps
   const onSubmit = jest.fn()
 
   beforeEach(() => {
@@ -57,17 +54,12 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
       withdrawalType: '',
       withdrawalDelay: '',
     }
-    props = {
-      subCategories: [],
-    }
   })
 
   it('should display "withdrawalDelay" fields depending of withdrawalType selected value.', async () => {
-    // for an event subCategory
     await renderTicketWithdrawal({
       initialValues,
       onSubmit,
-      props,
     })
 
     // should contain sent date information when tickets are sent by mail
@@ -85,7 +77,6 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     renderTicketWithdrawal({
       initialValues,
       onSubmit,
-      props,
     })
 
     expect(
@@ -108,7 +99,6 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     renderTicketWithdrawal({
       initialValues,
       onSubmit,
-      props,
     })
 
     await userEvent.click(screen.getByText('Envoi par e-mail'))
@@ -135,7 +125,6 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     renderTicketWithdrawal({
       initialValues,
       onSubmit,
-      props,
     })
 
     await userEvent.click(
