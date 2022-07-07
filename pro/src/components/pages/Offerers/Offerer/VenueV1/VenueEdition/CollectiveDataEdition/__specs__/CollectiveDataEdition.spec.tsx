@@ -75,6 +75,9 @@ describe('CollectiveDataEdition', () => {
         /Périmètre d’intervention :/
       )
       const statusField = screen.getByLabelText(/Statut :/)
+      const culturalPartnersField = screen.getByLabelText(
+        /Réseaux partenaires EAC :/
+      )
 
       expect(descriptionField).toBeInTheDocument()
       expect(studentsField).toBeInTheDocument()
@@ -84,6 +87,7 @@ describe('CollectiveDataEdition', () => {
       expect(domainsField).toBeInTheDocument()
       expect(interventionAreaField).toBeInTheDocument()
       expect(statusField).toBeInTheDocument()
+      expect(culturalPartnersField).toBeInTheDocument()
     })
 
     it('should display toaster when some data could not be loaded', async () => {

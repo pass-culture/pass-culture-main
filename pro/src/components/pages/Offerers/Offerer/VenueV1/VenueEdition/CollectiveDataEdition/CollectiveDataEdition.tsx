@@ -7,6 +7,10 @@ import {
   Title,
 } from 'ui-kit'
 import React, { useEffect, useState } from 'react'
+import {
+  getCulturalPartnersAdapter,
+  getVenueEducationalStatusesAdapter,
+} from './adapters'
 
 import { CollectiveDataFormValues } from './type'
 import FormLayout from 'new_components/FormLayout'
@@ -14,7 +18,6 @@ import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import { StudentLevels } from 'apiClient/v1'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
-import { getVenueEducationalStatusesAdapter } from './adapters'
 import { handleAllFranceDepartmentOptions } from './utils/handleAllFranceDepartmentOptions'
 import { interventionOptions } from './interventionOptions'
 import styles from './CollectiveDataEdition.module.scss'
@@ -29,6 +32,7 @@ const initialValues: CollectiveDataFormValues = {
   collectiveEmail: '',
   collectiveDomains: [],
   collectiveLegalStatus: '',
+  collectiveNetwork: [],
   collectiveInterventionArea: [],
 }
 
@@ -50,6 +54,7 @@ const CollectiveDataEdition = (): JSX.Element => {
 
   const [domains, setDomains] = useState<SelectOption[]>([])
   const [statuses, setStatuses] = useState<SelectOption[]>([])
+  const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
   const [previousInterventionValues, setPreviousInterventionValues] = useState<
     string[] | null
   >(null)
@@ -64,15 +69,19 @@ const CollectiveDataEdition = (): JSX.Element => {
     Promise.all([
       getEducationalDomainsAdapter(),
       getVenueEducationalStatusesAdapter(),
-    ]).then(([domainsResponse, statusesResponse]) => {
+      getCulturalPartnersAdapter(),
+    ]).then(([domainsResponse, statusesResponse, culturalPartnersResponse]) => {
       if (
-        [domainsResponse, statusesResponse].some(response => !response.isOk)
+        [domainsResponse, statusesResponse, culturalPartnersResponse].some(
+          response => !response.isOk
+        )
       ) {
         notify.error(GET_DATA_ERROR_MESSAGE)
       }
 
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
+      setCulturalPartners(culturalPartnersResponse.payload)
     })
   }, [])
 
@@ -165,6 +174,18 @@ const CollectiveDataEdition = (): JSX.Element => {
               className={styles.row}
               placeholder="Association, établissement public..."
               inline
+            />
+          </FormLayout.Row>
+          <FormLayout.Row>
+            <MultiSelectAutocomplete
+              options={culturalPartners}
+              fieldName="collectiveNetwork"
+              label="Réseaux partenaires EAC  :"
+              className={styles.row}
+              placeholder="Sélectionner un ou plusieurs réseaux partenaires"
+              inline
+              maxDisplayOptions={20}
+              maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
             />
           </FormLayout.Row>
           <div className={styles.section}>Contact pour les scolaires</div>
