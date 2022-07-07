@@ -25,6 +25,7 @@ from sqlalchemy.event import listens_for
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
+from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.orm import aliased
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
@@ -34,6 +35,7 @@ from sqlalchemy.sql.sqltypes import LargeBinary
 from werkzeug.utils import cached_property
 
 from pcapi.connectors.api_entreprises import get_offerer_legal_category
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.domain.postal_code.postal_code import OVERSEAS_DEPARTEMENT_CODE_START
 from pcapi.domain.postal_code.postal_code import PostalCode
@@ -227,6 +229,22 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
     venueEducationalStatus = relationship(
         "VenueEducationalStatus", back_populates="venues", foreign_keys=[venueEducationalStatusId]
     )
+
+    collectiveDescription = Column(Text, nullable=True)
+    collectiveStudents = sa.Column(
+        MutableList.as_mutable(sa.dialects.postgresql.ARRAY(sa.Enum(educational_models.StudentLevels))),
+        nullable=True,
+        server_default="{}",
+    )
+    collectiveWebsite = Column(Text, nullable=True)
+    collectiveDomains = relationship(
+        educational_models.EducationalDomain, back_populates="venues", secondary="educational_domain_venue"
+    )
+    collectiveInterventionArea = sa.Column(MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True)  # type: ignore [attr-defined]
+    collectiveNetwork = sa.Column(MutableList.as_mutable(sa.dialects.postgresql.json.JSONB), nullable=True)  # type: ignore [attr-defined]
+    collectiveAccessInformation = Column(Text, nullable=True)
+    collectivePhone = Column(Text, nullable=True)
+    collectiveEmail = Column(Text, nullable=True)
 
     @property
     def is_eligible_for_search(self) -> bool:
