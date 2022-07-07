@@ -1,9 +1,9 @@
 import functools
 import json
-import typing
 
 from flask_sqlalchemy import SQLAlchemy
 import pydantic.json
+from sqlalchemy.orm import declarative_base
 
 from pcapi import settings
 
@@ -50,4 +50,5 @@ if _db_options:
     _engine_options["connect_args"] = {"options": " ".join(_db_options)}
 
 db = SQLAlchemy(engine_options=_engine_options)
+Base = declarative_base()
 Model = db.Model
