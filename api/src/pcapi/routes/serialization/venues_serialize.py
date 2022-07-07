@@ -244,7 +244,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     def from_orm(cls, venue: offerers_models.Venue) -> "GetVenueResponseModel":
         # pydantic expects an enum key in order to build it, and therefore
         # does not work when passing directly an enum instance.
-        venue.venueTypeCode = venue.venueTypeCode.name if venue.venueTypeCode else None  # type: ignore [attr-defined]
         venue.nonHumanizedId = venue.id
         now = datetime.utcnow()
         venue.pricingPoint = None

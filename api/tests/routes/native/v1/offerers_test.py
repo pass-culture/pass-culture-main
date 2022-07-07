@@ -33,7 +33,7 @@ class VenuesTest:
             "withdrawalDetails": venue.withdrawalDetails,
             "address": venue.address,
             "postalCode": venue.postalCode,
-            "venueTypeCode": venue.venueTypeCode.name,
+            "venueTypeCode": "OTHER",
             "description": venue.description,
             "contact": {
                 "email": venue.contact.email,

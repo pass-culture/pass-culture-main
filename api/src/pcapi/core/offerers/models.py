@@ -83,48 +83,49 @@ CONSTRAINT_CHECK_HAS_SIRET_XOR_HAS_COMMENT_XOR_IS_VIRTUAL = """
     OR (siret IS NOT NULL AND "isVirtual" IS FALSE)
 """
 
-VENUE_TYPE_CODE_MAPPING = {
-    "VISUAL_ARTS": "Arts visuels, arts plastiques et galeries",
-    "CULTURAL_CENTRE": "Centre culturel",
-    "TRAVELING_CINEMA": "Cinéma itinérant",
-    "MOVIE": "Cinéma - Salle de projections",
-    "ARTISTIC_COURSE": "Cours et pratique artistiques",
-    "SCIENTIFIC_CULTURE": "Culture scientifique",
-    "FESTIVAL": "Festival",
-    "GAMES": "Jeux / Jeux vidéos",
-    "BOOKSTORE": "Librairie",
-    "LIBRARY": "Bibliothèque ou médiathèque",
-    "MUSEUM": "Musée",
-    "RECORD_STORE": "Musique - Disquaire",
-    "MUSICAL_INSTRUMENT_STORE": "Musique - Magasin d’instruments",
-    "CONCERT_HALL": "Musique - Salle de concerts",
-    "DIGITAL": "Offre numérique",
-    "PATRIMONY_TOURISM": "Patrimoine et tourisme",
-    "PERFORMING_ARTS": "Spectacle vivant",
-    "CREATIVE_ARTS_STORE": "Magasin arts créatifs",
-    "ADMINISTRATIVE": "Lieu administratif",
-    "OTHER": "Autre",
-}
 
+class VenueTypeCode(enum.Enum):
+    VISUAL_ARTS = "Arts visuels, arts plastiques et galeries"
+    CULTURAL_CENTRE = "Centre culturel"
+    TRAVELING_CINEMA = "Cinéma itinérant"
+    MOVIE = "Cinéma - Salle de projections"
+    ARTISTIC_COURSE = "Cours et pratique artistiques"
+    SCIENTIFIC_CULTURE = "Culture scientifique"
+    FESTIVAL = "Festival"
+    GAMES = "Jeux / Jeux vidéos"
+    BOOKSTORE = "Librairie"
+    LIBRARY = "Bibliothèque ou médiathèque"
+    MUSEUM = "Musée"
+    RECORD_STORE = "Musique - Disquaire"
+    MUSICAL_INSTRUMENT_STORE = "Musique - Magasin d’instruments"
+    CONCERT_HALL = "Musique - Salle de concerts"
+    DIGITAL = "Offre numérique"
+    PATRIMONY_TOURISM = "Patrimoine et tourisme"
+    PERFORMING_ARTS = "Spectacle vivant"
+    CREATIVE_ARTS_STORE = "Magasin arts créatifs"
+    ADMINISTRATIVE = "Lieu administratif"
+    OTHER = "Autre"
 
-class BaseVenueTypeCode(enum.Enum):
+    # These methods are used by Pydantic in order to return the enum name and validate the value
+    # instead of returning the enum directly.
     @classmethod
-    def __get_validators__(cls):  # type: ignore [no-untyped-def]
-        cls.lookup = {v: k.name for v, k in cls.__members__.items()}
+    def __get_validators__(cls) -> typing.Iterator[typing.Callable]:
         yield cls.validate
 
     @classmethod
-    def validate(cls, v):  # type: ignore [no-untyped-def]
-        try:
-            return cls.lookup[v]
-        except KeyError:
-            raise ValueError(f"{v}: invalide")
+    def validate(cls, value: str | enum.Enum) -> str:
+        if isinstance(value, enum.Enum):
+            value = value.name
+
+        if not hasattr(cls, value):
+            raise ValueError(f"{value}: invalide")
+
+        return value
 
 
-VenueTypeCode = enum.Enum("VenueTypeCode", VENUE_TYPE_CODE_MAPPING, type=BaseVenueTypeCode)  # type: ignore [misc]
 VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
     "VenueTypeCodeKey",
-    {name: name for name, _ in VENUE_TYPE_CODE_MAPPING.items()},
+    {name.name: name.name for name in VenueTypeCode},
 )
 
 
@@ -189,7 +190,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     venueType = relationship("VenueType", foreign_keys=[venueTypeId])
 
-    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)  # type: ignore [attr-defined]
+    venueTypeCode = Column(sa.Enum(VenueTypeCode, create_constraint=False), nullable=True, default=VenueTypeCode.OTHER)
 
     venueLabelId = Column(Integer, ForeignKey("venue_label.id"), nullable=True)
 
@@ -247,7 +248,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
 
     @property
     def is_eligible_for_search(self) -> bool:
-        not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE  # type: ignore [attr-defined]
+        not_administrative = self.venueTypeCode != VenueTypeCode.ADMINISTRATIVE
         return self.isPermanent and self.managingOfferer.isActive and not_administrative  # type: ignore [return-value]
 
     def store_departement_code(self) -> None:
