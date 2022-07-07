@@ -12,9 +12,15 @@ export interface IPricingPointProps {
   readOnly: boolean
   offerer: IAPIOfferer
   venue: IAPIVenue
+  setVenueHasPricingPoint: (venueHasPricingPoint: boolean) => void
 }
 
-const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
+const PricingPoint = ({
+  readOnly,
+  offerer,
+  venue,
+  setVenueHasPricingPoint,
+}: IPricingPointProps) => {
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const pricingPointSelectField = useField('venueSiret')
@@ -32,6 +38,7 @@ const PricingPoint = ({ readOnly, offerer, venue }: IPricingPointProps) => {
         })
         .then(() => {
           setIsInputDisabled(true)
+          setVenueHasPricingPoint(true)
         })
     }
   }

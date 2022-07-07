@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import ApplicationBanner from '../ApplicationBanner'
 import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import { Field } from 'react-final-form'
+import InfoDialog from 'new_components/InfoDialog'
 import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
@@ -16,10 +17,12 @@ const ReimbursementPoint = ({
   scrollToSection,
   venue,
   isCreatingVenue,
+  venueHasPricingPoint,
 }) => {
   const [reimbursementPointOptions, setReimbursementPointOptions] = useState([])
   const [venueReimbursementPoint, setVenueReimbursementPoint] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isNoSiretDialogOpen, setIsNoSiretDialogOpen] = useState(false)
   const [hasPendingDmsApplication, setHasPendingDmsApplication] =
     useState(false)
   const [hasAlreadyAddReimbursementPoint, setHasAlreadyAddReimbursementPoint] =
@@ -43,11 +46,15 @@ const ReimbursementPoint = ({
   }, [])
 
   const openDMSApplication = useCallback(() => {
-    window.open(
-      DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
-      '_blank'
-    )
-  })
+    if (venueHasPricingPoint) {
+      window.open(
+        DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
+        '_blank'
+      )
+    } else {
+      setIsNoSiretDialogOpen(true)
+    }
+  }, [venueHasPricingPoint])
 
   useEffect(() => {
     async function loadReimbursementPoints(offererId) {
@@ -113,6 +120,15 @@ const ReimbursementPoint = ({
           />
         ) : (
           <>
+            {isNoSiretDialogOpen && (
+              <InfoDialog
+                buttonText="J'ai compris"
+                iconName="ico-info-wrong"
+                title="Vous devez sélectionner un SIRET pour ajouter de nouvelles coordonnées bancaires"
+                subTitle="Sélectionner un SIRET parmi la liste puis valider votre sélection."
+                closeDialog={() => setIsNoSiretDialogOpen(false)}
+              ></InfoDialog>
+            )}
             <p className={styles['section-description']}>
               Ces coordonnées bancaires seront utilisées pour les remboursements
               des offres éligibles de ce lieu.

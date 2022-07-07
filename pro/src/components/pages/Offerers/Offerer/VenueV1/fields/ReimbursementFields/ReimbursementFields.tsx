@@ -1,8 +1,9 @@
+import React, { useState } from 'react'
 import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
 import Icon from 'components/layout/Icon'
 import PricingPoint from '../PricingPoint/PricingPoint'
-import React from 'react'
+
 import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
 import styles from './ReimbursementFields.module.scss'
 
@@ -21,6 +22,9 @@ const ReimbursementFields = ({
 }: ReimbursementInterface) => {
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
+  const [venueHasPricingPoint, setVenueHasPricingPoint] = useState<boolean>(
+    !!venue.pricingPoint
+  )
   return (
     <>
       <div className="section">
@@ -37,13 +41,19 @@ const ReimbursementFields = ({
           </a>
         </h2>
         {!venueHaveSiret && offererHaveVenueWithSiret && (
-          <PricingPoint readOnly={readOnly} offerer={offerer} venue={venue} />
+          <PricingPoint
+            readOnly={readOnly}
+            offerer={offerer}
+            venue={venue}
+            setVenueHasPricingPoint={setVenueHasPricingPoint}
+          />
         )}
         <ReimbursementPoint
           offerer={offerer}
           readOnly={readOnly}
           scrollToSection={scrollToSection}
           venue={venue}
+          venueHasPricingPoint={venueHasPricingPoint}
         />
       </div>
     </>

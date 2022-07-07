@@ -33,6 +33,7 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
   beforeEach(() => {
     jest.spyOn(api, 'linkVenueToPricingPoint').mockResolvedValue()
     formValues = {}
+    const setVenueHasPricingPoint = jest.fn()
     props = {
       readOnly: false,
       venue: {
@@ -60,6 +61,7 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
           },
         ],
       },
+      setVenueHasPricingPoint: setVenueHasPricingPoint,
     } as unknown as IPricingPointProps
   })
 
