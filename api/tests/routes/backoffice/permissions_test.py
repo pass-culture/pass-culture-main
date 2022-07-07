@@ -125,7 +125,14 @@ class NewRoleTest:
     def test_can_create_new_role_with_non_empty_permissions(self, client):
         # given
         user = UserFactory()
-        permissions = (perm_factories.PermissionFactory(), perm_factories.PermissionFactory())
+        permissions = perm_models.Permission.query.filter(
+            perm_models.Permission.name.in_(
+                (
+                    perm_models.Permissions.REVIEW_PUBLIC_ACCOUNT.name,
+                    perm_models.Permissions.READ_PUBLIC_ACCOUNT.name,
+                )
+            )
+        ).all()
         new_role_data = {"name": "dummy_role", "permissionIds": [p.id for p in permissions]}
         auth_token = generate_token(user, [perm_models.Permissions.MANAGE_PERMISSIONS])
 

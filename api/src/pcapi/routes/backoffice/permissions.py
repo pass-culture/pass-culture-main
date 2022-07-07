@@ -22,7 +22,21 @@ logger = logging.getLogger(__name__)
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def list_roles() -> serialization.ListRoleResponseModel:
     roles = perm_api.list_roles()
-    return serialization.ListRoleResponseModel(roles=[serialization.Role.from_orm(role) for role in roles])
+    return serialization.ListRoleResponseModel(
+        roles=[
+            serialization.Role(
+                id=role.id,
+                name=role.name,
+                permissions=[
+                    serialization.Permission(
+                        id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category
+                    )
+                    for perm in role.permissions
+                ],
+            )
+            for role in roles
+        ]
+    )
 
 
 @blueprint.backoffice_blueprint.route("permissions", methods=["GET"])
@@ -51,7 +65,14 @@ def list_permissions() -> serialization.ListPermissionResponseModel:
 @perm_utils.permission_required(perm_models.Permissions.MANAGE_PERMISSIONS)
 def create_role(body: serialization.RoleRequestModel) -> serialization.Role:
     new_role = perm_api.create_role(name=body.name, permission_ids=body.permissionIds)
-    return serialization.Role.from_orm(new_role)
+    return serialization.Role(
+        id=new_role.id,
+        name=new_role.name,
+        permissions=[
+            serialization.Permission(id=perm.id, name=perm_models.Permissions[perm.name].value, category=perm.category)
+            for perm in new_role.permissions
+        ],
+    )
 
 
 @blueprint.backoffice_blueprint.route("roles/<int:id_>", methods=["PUT"])
