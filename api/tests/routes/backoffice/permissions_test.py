@@ -191,10 +191,9 @@ class NewRoleTest:
         auth_token = generate_token(user, [])
 
         # when
-        response = client.post(
+        response = client.with_explicit_token(auth_token).post(
             url_for("backoffice_blueprint.create_role"),
-            json={"name": "should not work", "permissionsIds": []},
-            headers={"Authorization": auth_token},
+            json={"name": "should not work", "permissionIds": []},
         )
 
         # then
@@ -202,14 +201,10 @@ class NewRoleTest:
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_create_new_role_as_anonymous(self, client):
-        # given
-        auth_token = generate_token(UserFactory.build(), [perm_models.Permissions.MANAGE_PERMISSIONS])
-
         # when
         response = client.post(
             url_for("backoffice_blueprint.create_role"),
-            json={"name": "should not work", "permissionsIds": []},
-            headers={"Authorization": auth_token},
+            json={"name": "should not work", "permissionIds": []},
         )
 
         # then
@@ -291,10 +286,9 @@ class UpdateRoleTest:
         auth_token = generate_token(user, [])
 
         # when
-        response = client.put(
+        response = client.with_explicit_token(auth_token).put(
             url_for("backoffice_blueprint.update_role", id_=existing_role.id),
-            json={"name": "should not work", "permissionsIds": []},
-            headers={"Authorization": auth_token},
+            json={"name": "should not work", "permissionIds": []},
         )
 
         # then
@@ -304,13 +298,11 @@ class UpdateRoleTest:
     def test_cannot_update_role_as_anonymous(self, client):
         # given
         existing_role = perm_factories.RoleFactory(name="dummy_role", permissions=[perm_factories.PermissionFactory()])
-        auth_token = generate_token(UserFactory.build(), [perm_models.Permissions.MANAGE_PERMISSIONS])
 
         # when
         response = client.put(
             url_for("backoffice_blueprint.update_role", id_=existing_role.id),
-            json={"name": "should not work", "permissionsIds": []},
-            headers={"Authorization": auth_token},
+            json={"name": "should not work", "permissionIds": []},
         )
 
         # then

@@ -1,5 +1,6 @@
 from flask import Blueprint
 from flask_cors import CORS
+from spectree import SecurityScheme
 
 from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
@@ -14,13 +15,23 @@ CORS(
 )
 
 
+BACKOFFICE_AUTH = "backoffice_auth"
+
+SECURITY_SCHEMES = [
+    SecurityScheme(
+        name=BACKOFFICE_AUTH,
+        data={"type": "http", "scheme": "bearer", "bearerFormat": "JWT"},
+    ),
+]
+
+
 api = ExtendedSpecTree(
     "flask",
     title="pass Culture backoffice API",
     MODE="strict",
     before=before_handler,
     PATH="/",
-    security_schemes=None,  # FIXME (ASK, 2022/04/12): mettre un vrai security scheme ici
+    security_schemes=SECURITY_SCHEMES,
     humanize_operation_id=True,
     version=1,
 )
