@@ -893,7 +893,7 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
     # Store now otherwise SQLAlchemy will make a SELECT to fetch the
     # id again after each COMMIT.
     batch_id = batch.id
-    logger.info("Started to generate cashflows for batch %d", batch)
+    logger.info("Started to generate cashflows for batch %d", batch_id)
     filters: typing.Tuple = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
         models.Pricing.valueDate < batch.cutoff,
