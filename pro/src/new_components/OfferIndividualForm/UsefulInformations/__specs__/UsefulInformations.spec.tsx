@@ -5,10 +5,8 @@ import * as yup from 'yup'
 import { UsefulInformations, validationSchema } from '..'
 import { render, screen } from '@testing-library/react'
 
-import { CATEGORY_STATUS } from 'core/Offers'
 import { Formik } from 'formik'
 import { IUsefulInformationsProps } from '../UsefulInformations'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
 import React from 'react'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
@@ -64,44 +62,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
         withdrawalDetails: '',
       },
     ]
-    const subCategories = [
-      {
-        id: 'A-A',
-        categoryId: 'A',
-        proLabel: 'Sous catégorie de A',
-        isEvent: true,
-        conditionalFields: [],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
-        id: 'B-A',
-        categoryId: 'B',
-        proLabel: 'Sous catégorie de B',
-        isEvent: false,
-        conditionalFields: ['musicType', 'musicSubType'],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-      {
-        id: 'C-A',
-        categoryId: 'C',
-        proLabel: 'Sous catégorie de C',
-        isEvent: false,
-        conditionalFields: ['showType', 'showSubType'],
-        canBeDuo: false,
-        canBeEducational: false,
-        onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
-        reimbursementRule: REIMBURSEMENT_RULES.STANDARD,
-        isSelectable: true,
-      },
-    ]
     initialValues = {
       offererId: '',
       venueId: '',
@@ -113,7 +73,6 @@ describe('OfferIndividual section: UsefulInformations', () => {
     props = {
       offererNames,
       venueList,
-      subCategories,
       isUserAdmin: false,
     }
   })
@@ -143,8 +102,8 @@ describe('OfferIndividual section: UsefulInformations', () => {
     expect(screen.getByLabelText('Rayonnement national')).toBeInTheDocument()
   })
 
-  it('should contain withdrawal ticket informations when subcategory is an event', async () => {
-    initialValues.subcategoryId = 'A-A'
+  it('should contain withdrawal ticket informations when subcategory is from specific subCategory', async () => {
+    initialValues.subcategoryId = 'CONCERT'
     initialValues = {
       ...initialValues,
     }
@@ -161,8 +120,8 @@ describe('OfferIndividual section: UsefulInformations', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not contain withdrawal ticket informations when subcategory is not an event', async () => {
-    initialValues.subcategoryId = 'B-A'
+  it('should not contain withdrawal ticket informations when subcategory is not from specific subCategory', async () => {
+    initialValues.subcategoryId = 'ANOTHER_SUB_CATEGORY'
     initialValues = {
       ...initialValues,
     }
