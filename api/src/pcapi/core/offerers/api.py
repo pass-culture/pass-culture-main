@@ -459,7 +459,8 @@ def save_venue_banner(
     """
     rm_previous_venue_thumbs(venue)
 
-    banner_timestamp = int(datetime.utcnow().timestamp())
+    updated_at = datetime.utcnow()
+    banner_timestamp = int(updated_at.timestamp())
     storage.create_thumb(
         model_with_thumb=venue,
         image_as_bytes=content,
@@ -479,6 +480,7 @@ def save_venue_banner(
         "author_id": user.id,
         "original_image_url": f"{venue.thumbUrl}_{original_image_timestamp}",
         "crop_params": crop_params,
+        "updated_at": updated_at,
     }
 
     repository.save(venue)

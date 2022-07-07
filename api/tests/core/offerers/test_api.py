@@ -662,6 +662,7 @@ class VenueBannerTest:
                 "image_credit": "none",
                 "original_image_url": str(directory / f"{humanize(venue.id)}_1602720001"),
                 "crop_params": None,
+                "updated_at": "2020-10-15T00:00:00",
             }
 
             mock_search_async_index_venue_ids.assert_called_once_with([venue.id])
