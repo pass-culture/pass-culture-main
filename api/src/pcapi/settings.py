@@ -400,7 +400,4 @@ FINANCE_OVERRIDE_PRICING_ORDERING_ON_SIRET_LIST = os.environ.get(
 ).split(",")
 
 # BACKOFFICE
-BACKOFFICE_SERVICE_ACCOUNT_KEY = json.loads(
-    base64.b64decode(os.environ.get("BACKOFFICE_SERVICE_ACCOUNT_KEY", "")) or "{}"
-)
 BACKOFFICE_USER_EMAIL = os.environ.get("BACKOFFICE_USER_EMAIL", "dummy.backoffice@example.com")
