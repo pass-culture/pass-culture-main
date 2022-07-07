@@ -3,7 +3,6 @@ import typing
 from sqlalchemy.orm import joinedload
 
 from pcapi.core.permissions import models as perm_models
-from pcapi.models import db
 from pcapi.repository import repository
 
 
@@ -46,6 +45,5 @@ def delete_role(id_: int) -> tuple[int, str, list[perm_models.Permission]]:
     if role.name == "admin":
         raise ValueError("Cannot delete admin role")
     role.permissions = []
-    repository.save(role)
-    db.session.delete(role)
+    repository.delete(role)
     return role_id, role_name, role_permission
