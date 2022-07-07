@@ -58,8 +58,6 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ***************************************************************************** */
 
-/*! https://mths.be/punycode v1.3.2 by @mathias */
-
 /** @license MUI v5.8.0
  *
  * This source code is licensed under the MIT license found in the
