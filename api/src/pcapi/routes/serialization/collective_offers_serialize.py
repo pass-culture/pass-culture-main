@@ -1,7 +1,6 @@
 from datetime import datetime
 import enum
 from typing import Optional
-from typing import Union
 
 from pydantic import Field
 from pydantic import validator
@@ -49,7 +48,7 @@ class CollectiveOffersStockResponseModel(BaseModel):
     id: str
     hasBookingLimitDatetimePassed: bool
     offerId: str
-    remainingQuantity: Union[int, str]
+    remainingQuantity: int | str
     beginningDatetime: Optional[datetime]
 
     @validator("remainingQuantity", pre=True)
@@ -88,12 +87,12 @@ class ListCollectiveOffersResponseModel(BaseModel):
 
 
 def serialize_collective_offers_capped(
-    paginated_offers: list[Union[CollectiveOffer, CollectiveOfferTemplate]]
+    paginated_offers: list[CollectiveOffer | CollectiveOfferTemplate],
 ) -> list[CollectiveOfferResponseModel]:
     return [_serialize_offer_paginated(offer) for offer in paginated_offers]
 
 
-def _serialize_offer_paginated(offer: Union[CollectiveOffer, CollectiveOfferTemplate]) -> CollectiveOfferResponseModel:
+def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate) -> CollectiveOfferResponseModel:
     serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
 
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []

@@ -9,7 +9,7 @@ import pytz
 ACCOUNTING_TIMEZONE = pytz.timezone("Europe/Paris")
 
 
-def to_eurocents(amount_in_euros: typing.Union[decimal.Decimal, float]) -> int:
+def to_eurocents(amount_in_euros: decimal.Decimal | float) -> int:
     exponent = decimal.Decimal("0.01")
     # 0.010 to 0.014 -> 0.01
     # 0.015 to 0.019 -> 0.02

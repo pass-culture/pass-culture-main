@@ -1,5 +1,3 @@
-from typing import Union
-
 from flask_login import current_user
 from flask_login import login_required
 
@@ -132,7 +130,7 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     return VenueProviderResponse.from_orm(updated)
 
 
-def _allocine_venue_provider_price(venue_provider: AllocineVenueProvider) -> Union[float, None]:
+def _allocine_venue_provider_price(venue_provider: AllocineVenueProvider) -> float | None:
     for price_rule in venue_provider.priceRules:
         if price_rule.priceRule():
             return price_rule.price

@@ -7,7 +7,6 @@ import typing
 from typing import Callable
 from typing import Iterable
 from typing import Optional
-from typing import Union
 
 from pydantic.main import BaseModel
 import pytz
@@ -21,7 +20,7 @@ from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
-def format_number_as_french(num: Union[int, float]) -> str:
+def format_number_as_french(num: int | float) -> str:
     return str(num).replace(".", ",")
 
 
@@ -256,7 +255,7 @@ def find_all_offerers_reimbursement_details(
 
 def validate_reimbursement_period(
     reimbursement_period_field_names: tuple[str, str], get_query_param: Callable
-) -> Union[list[None], list[datetime.date]]:
+) -> list[None] | list[datetime.date]:
     api_errors = ApiErrors()
     reimbursement_period_dates = []
     for field_name in reimbursement_period_field_names:

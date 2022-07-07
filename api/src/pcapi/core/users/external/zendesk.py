@@ -10,7 +10,6 @@ from datetime import datetime
 import logging
 from typing import Iterable
 from typing import Optional
-from typing import Union
 from urllib.parse import quote
 
 from markupsafe import Markup
@@ -167,15 +166,13 @@ def _format_pro_attributes(email: str, attributes: ProAttributes) -> dict:
     }
 
 
-def format_contact_attributes(email: str, attributes: Union[UserAttributes, ProAttributes]) -> dict:
+def format_contact_attributes(email: str, attributes: UserAttributes | ProAttributes) -> dict:
     if isinstance(attributes, ProAttributes):
         return _format_pro_attributes(email, attributes)
     return _format_user_attributes(email, attributes)
 
 
-def _send_contact_attributes(
-    zendesk_user_id: int, email: str, attributes: Union[UserAttributes, ProAttributes]
-) -> bool:
+def _send_contact_attributes(zendesk_user_id: int, email: str, attributes: UserAttributes | ProAttributes) -> bool:
     """
     Update user with custom attributes
     https://developer.zendesk.com/api-reference/ticketing/users/users/#update-user
@@ -186,7 +183,7 @@ def _send_contact_attributes(
 
 
 def _add_internal_note(
-    ticket_id: int, zendesk_user_id: int, email: str, attributes: Union[UserAttributes, ProAttributes]
+    ticket_id: int, zendesk_user_id: int, email: str, attributes: UserAttributes | ProAttributes
 ) -> bool:
     """
     Post an internal note so that support people can click on hyperlinks (not possible with custom attributes)

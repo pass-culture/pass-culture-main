@@ -20,7 +20,7 @@ class LoggerBackend(BaseBackend):
     def send_mail(
         self,
         recipients: typing.Iterable[str],
-        data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
+        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
     ) -> MailResult:
         recipients = ", ".join(recipients)
         sent_data = asdict(data)

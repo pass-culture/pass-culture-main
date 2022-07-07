@@ -4,7 +4,6 @@ from datetime import date
 from datetime import datetime
 from typing import List
 from typing import Optional
-from typing import Union
 
 from sqlalchemy.orm import joinedload
 
@@ -72,7 +71,7 @@ def update_external_pro(email: Optional[str]) -> None:
         )
 
 
-def get_user_or_pro_attributes(user: User) -> Union[UserAttributes, ProAttributes]:
+def get_user_or_pro_attributes(user: User) -> UserAttributes | ProAttributes:
     if user.has_pro_role:
         return get_pro_attributes(user.email)
 

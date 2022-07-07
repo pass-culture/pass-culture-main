@@ -14,13 +14,13 @@ IterIds = typing.Iterable[int]
 
 IterOffer = typing.Iterable[offers_models.Offer]
 IterVenue = typing.Iterable[offerers_models.Venue]
-IterBase = typing.Union[IterOffer, IterVenue]
+IterBase = IterOffer | IterVenue
 
-Mapper = typing.Union[models.OfferCriterion, models.VenueCriterion]
+Mapper = models.OfferCriterion | models.VenueCriterion
 
 IterOfferCriterion = typing.Iterable[models.OfferCriterion]
 IterVenueCriterion = typing.Iterable[models.VenueCriterion]
-IterMapper = typing.Union[IterOfferCriterion, IterVenueCriterion]
+IterMapper = IterOfferCriterion | IterVenueCriterion
 
 BaseModel = typing.Union[typing.Type[offers_models.Offer], typing.Type[offerers_models.Venue]]
 MapperModel = typing.Union[typing.Type[models.OfferCriterion], typing.Type[models.VenueCriterion]]

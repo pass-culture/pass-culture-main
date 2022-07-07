@@ -1,6 +1,5 @@
 from dataclasses import asdict
 import logging
-import typing
 from typing import Iterable
 
 from pcapi import settings
@@ -22,7 +21,7 @@ class SendinblueBackend(BaseBackend):
     def send_mail(
         self,
         recipients: Iterable,
-        data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
+        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
     ) -> MailResult:
         if isinstance(data, SendinblueTransactionalEmailData):
             payload = SendTransactionalEmailRequest(
@@ -65,7 +64,7 @@ class ToDevSendinblueBackend(SendinblueBackend):
     def send_mail(
         self,
         recipients: Iterable,
-        data: typing.Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
+        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
     ) -> MailResult:
         whitelisted_recipients = set()
         for recipient in recipients:

@@ -1,9 +1,7 @@
-from typing import Union
-
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 
 
-adage_requests: list[dict[str, Union[EducationalBookingResponse, str]]] = []
+adage_requests: list[dict[str, EducationalBookingResponse | str]] = []
 
 
 def reset_requests() -> None:

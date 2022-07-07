@@ -594,7 +594,7 @@ def has_performed_honor_statement(user: users_models.User, eligibility_type: use
 
 def decide_eligibility(
     user: users_models.User,
-    birth_date: typing.Union[datetime.date, datetime.datetime, None],
+    birth_date: datetime.date | datetime.datetime | None,
     registration_datetime: typing.Optional[datetime.datetime],
 ) -> typing.Optional[users_models.EligibilityType]:
     """Returns the applicable eligibility of the user.

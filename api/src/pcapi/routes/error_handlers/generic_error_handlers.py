@@ -1,5 +1,4 @@
 import logging
-from typing import Union
 
 from flask import Response
 from flask import current_app as app
@@ -25,7 +24,7 @@ from pcapi.utils.image_conversion import ImageRatioError
 logger = logging.getLogger(__name__)
 
 
-ApiErrorResponse = tuple[Union[dict, Response], int]
+ApiErrorResponse = tuple[dict | Response, int]
 
 
 @app.errorhandler(NotFound)
@@ -44,7 +43,7 @@ def restize_too_late_to_delete_stock(error: offers_exceptions.TooLateToDeleteSto
 
 
 @app.errorhandler(Exception)
-def internal_error(error: Exception) -> Union[ApiErrorResponse, HTTPException]:
+def internal_error(error: Exception) -> ApiErrorResponse | HTTPException:
     # pass through HTTP errors
     if isinstance(error, HTTPException):
         return error

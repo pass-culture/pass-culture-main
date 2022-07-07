@@ -2,7 +2,6 @@ from datetime import datetime
 import enum
 from typing import Any
 from typing import Optional
-from typing import Union
 
 from pydantic import Field
 from pydantic import HttpUrl
@@ -307,7 +306,7 @@ class ListOffersStockResponseModel(BaseModel):
     id: str
     hasBookingLimitDatetimePassed: bool
     offerId: str
-    remainingQuantity: Union[int, str]
+    remainingQuantity: int | str
     beginningDatetime: Optional[datetime]
 
     @validator("remainingQuantity", pre=True)
@@ -411,7 +410,7 @@ class GetOfferStockResponseModel(BaseModel):
     offerId: str
     price: float
     quantity: Optional[int]
-    remainingQuantity: Optional[Union[int, str]]
+    remainingQuantity: Optional[int | str]
 
     _humanize_id = humanize_field("id")
     _humanize_last_provider_id = humanize_field("lastProviderId")

@@ -1,5 +1,4 @@
 import logging
-from typing import Union
 
 from pcapi.core.offerers.repository import find_venue_by_id
 from pcapi.core.providers import api
@@ -15,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 @job(worker.low_queue)
-def synchronize_stocks_job(serialized_stock_details: list[Union[dict, StockDetail]], venue_id: str) -> None:
+def synchronize_stocks_job(serialized_stock_details: list[dict | StockDetail], venue_id: str) -> None:
     pc_provider = get_provider_by_local_class(PASS_CULTURE_STOCKS_PROVIDER_NAME)
 
     # The worker is currently paused. In the queue there are both StockDetail and dict format

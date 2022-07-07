@@ -30,7 +30,7 @@ def send_403(error_description: str) -> tuple[Response, int]:
 def permission_required(permission: Permissions) -> typing.Callable:
     def wrapper(func: typing.Callable) -> typing.Callable:
         @wraps(func)
-        def wrapped(*args, **kwargs) -> typing.Union[tuple[Response, int], typing.Callable]:  # type: ignore[no-untyped-def]
+        def wrapped(*args, **kwargs) -> tuple[Response, int] | typing.Callable:  # type: ignore[no-untyped-def]
             if not FeatureToggle.ENABLE_BACKOFFICE_API.is_active():
                 e = ApiErrors()
                 e.add_error("global", "This function is behind the deactivated ENABLE_BACKOFFICE_API feature flag.")

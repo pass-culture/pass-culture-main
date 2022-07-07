@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import datetime
 from decimal import Decimal
-import typing
 from typing import Optional
 
 from pcapi.core.bookings.models import Booking
@@ -38,14 +37,14 @@ class EducationalOffersReimbursement(payments_models.ReimbursementRule):
     valid_from = None
     valid_until = None
 
-    def is_relevant(self, booking: typing.Union[Booking, CollectiveBooking], cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
+    def is_relevant(self, booking: Booking | CollectiveBooking, cumulative_revenue="ignored") -> bool:  # type: ignore [no-untyped-def]
         if isinstance(booking, CollectiveBooking):
             return True
 
         offer = booking.stock.offer
         return offer.isEducational
 
-    def apply(self, booking: typing.Union[Booking, CollectiveBooking]) -> Decimal:
+    def apply(self, booking: Booking | CollectiveBooking) -> Decimal:
         if isinstance(booking, Booking):
             return Decimal(booking.total_amount * self.rate)
 
@@ -245,7 +244,7 @@ class CustomRuleFinder:
 
 
 def get_reimbursement_rule(
-    booking: typing.Union[Booking, CollectiveBooking], custom_rule_finder: CustomRuleFinder, cumulative_revenue: Decimal
+    booking: Booking | CollectiveBooking, custom_rule_finder: CustomRuleFinder, cumulative_revenue: Decimal
 ) -> payments_models.ReimbursementRule:
     if isinstance(booking, CollectiveBooking):
         return EducationalOffersReimbursement()

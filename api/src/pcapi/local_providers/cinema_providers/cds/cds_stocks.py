@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Iterator
-from typing import Union
 
 import pytz
 from sqlalchemy import Sequence
@@ -143,7 +142,7 @@ class CDSStocks(LocalProvider):
         if not is_new_stock_to_insert:
             cds_stock.quantity = show.internet_remaining_place + cds_stock.dnBookedQuantity
 
-    def update_from_movie_information(self, obj: Union[Offer, Product], movie_information: Movie) -> None:
+    def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
         if movie_information.description:
             obj.description = movie_information.description
         if self.movie_information.duration:
@@ -225,7 +224,7 @@ def _find_showtimes_by_movie_id(showtimes_information: list[dict], movie_id: int
     )
 
 
-def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> Union[dict, None]:
+def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> dict | None:
     for showtime in showtimes:
         if _build_showtime_uuid(showtime["show_information"]) == showtime_uuid:
             return showtime
