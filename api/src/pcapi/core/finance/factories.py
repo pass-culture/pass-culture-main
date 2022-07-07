@@ -114,6 +114,7 @@ class CashflowFactory(BaseFactory):
 
     batch = factory.SubFactory(CashflowBatchFactory)
     status = models.CashflowStatus.ACCEPTED
+    # FIXME (dbaty, 2022-07-08): must be adapted for reimbursement points
     bankAccount = factory.SelfAttribute("businessUnit.bankAccount")
 
 
