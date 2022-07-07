@@ -30,6 +30,11 @@ jest.mock('apiClient/api', () => ({
   },
 }))
 
+const waitForLoader = () =>
+  waitFor(() => {
+    expect(screen.getByLabelText(/E-mail/)).toBeInTheDocument()
+  })
+
 describe('CollectiveDataEdition', () => {
   beforeAll(() => {
     jest.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
@@ -51,6 +56,16 @@ describe('CollectiveDataEdition', () => {
   })
 
   describe('render', () => {
+    it('should render a loader while data is loading', async () => {
+      render(
+        <Provider store={configureTestStore({})}>
+          <CollectiveDataEdition />
+        </Provider>
+      )
+
+      expect(screen.getByText(/Chargement en cours/)).toBeInTheDocument()
+    })
+
     it('should render form without errors', async () => {
       render(
         <Provider store={configureTestStore({})}>
@@ -58,10 +73,7 @@ describe('CollectiveDataEdition', () => {
         </Provider>
       )
 
-      const title = screen.getByText('Mes informations EAC')
-      await waitFor(() => {
-        expect(title).toBeInTheDocument()
-      })
+      await waitForLoader()
 
       const descriptionField = screen.queryByLabelText(
         'Ajoutez des informations complémentaires concernant l’EAC.',
@@ -132,6 +144,8 @@ describe('CollectiveDataEdition', () => {
         </Provider>
       )
 
+      await waitForLoader()
+
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
@@ -160,6 +174,8 @@ describe('CollectiveDataEdition', () => {
           <CollectiveDataEdition />
         </Provider>
       )
+
+      await waitForLoader()
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Téléphone/)
@@ -191,6 +207,8 @@ describe('CollectiveDataEdition', () => {
           <CollectiveDataEdition />
         </Provider>
       )
+
+      await waitForLoader()
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Téléphone/)
@@ -224,10 +242,7 @@ describe('CollectiveDataEdition', () => {
         </Provider>
       )
 
-      const title = screen.getByText('Mes informations EAC')
-      await waitFor(() => {
-        expect(title).toBeInTheDocument()
-      })
+      await waitForLoader()
 
       const interventionAreaField = screen.getByLabelText(
         /Périmètre d’intervention :/
@@ -254,6 +269,8 @@ describe('CollectiveDataEdition', () => {
         </Provider>
       )
 
+      await waitForLoader()
+
       const interventionAreaField = screen.getByLabelText(
         /Périmètre d’intervention :/
       )
@@ -274,6 +291,8 @@ describe('CollectiveDataEdition', () => {
           <CollectiveDataEdition />
         </Provider>
       )
+
+      await waitForLoader()
 
       const interventionAreaField = screen.getByLabelText(
         /Périmètre d’intervention :/
@@ -301,6 +320,8 @@ describe('CollectiveDataEdition', () => {
           <CollectiveDataEdition />
         </Provider>
       )
+
+      await waitForLoader()
 
       const interventionAreaField = screen.getByLabelText(
         /Périmètre d’intervention :/
