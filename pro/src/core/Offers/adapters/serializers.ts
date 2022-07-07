@@ -37,12 +37,8 @@ export const serializeStockApi = (
   apiStock: GetOfferStockResponseModel
 ): IOfferIndividualStock => {
   return {
-    beginningDatetime: apiStock.beginningDatetime
-      ? new Date(apiStock.beginningDatetime)
-      : null,
-    bookingLimitDatetime: apiStock.bookingLimitDatetime
-      ? new Date(apiStock.bookingLimitDatetime)
-      : null,
+    beginningDatetime: apiStock.beginningDatetime ?? null,
+    bookingLimitDatetime: apiStock.bookingLimitDatetime ?? null,
     bookingsQuantity: apiStock.bookingsQuantity,
     dateCreated: new Date(apiStock.dateCreated),
     hasActivationCode: apiStock.hasActivationCode,

@@ -7,7 +7,7 @@ import { format } from 'date-fns-tz'
 export interface IStockThingSectionProps {
   quantity?: number | null
   price: number
-  bookingLimitDatetime: Date | null
+  bookingLimitDatetime: string | null
 }
 
 interface IStockThingSummarySection extends IStockThingSectionProps {

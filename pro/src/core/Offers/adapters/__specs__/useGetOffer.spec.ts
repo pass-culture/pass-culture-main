@@ -10,7 +10,7 @@ import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react-hooks'
 import { useGetOffer } from '..'
 
-describe('useOffererNames', () => {
+describe('useGetOffer', () => {
   it('should return loading payload then success payload', async () => {
     const apiOffer: GetIndividualOfferResponseModel = {
       activeMediation: null,
@@ -192,8 +192,8 @@ describe('useOffererNames', () => {
       withdrawalDelay: null,
       stocks: [
         {
-          beginningDatetime: new Date('2022-05-23T08:25:31.009799Z'),
-          bookingLimitDatetime: new Date('2022-05-23T07:25:31.009799Z'),
+          beginningDatetime: '2022-05-23T08:25:31.009799Z',
+          bookingLimitDatetime: '2022-05-23T07:25:31.009799Z',
           bookingsQuantity: 2,
           dateCreated: new Date('2022-05-18T08:25:31.015652Z'),
           hasActivationCode: false,
