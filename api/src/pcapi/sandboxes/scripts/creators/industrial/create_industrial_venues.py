@@ -135,6 +135,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
         name="Lieu synchro allociné",
         siret="21070034000016",
         businessUnit__name="Business Unit du Lieu synchro allociné",
+        managingOfferer__name="Structure du lieu synchro allociné",
     )
     allocine_provider = providers_factories.AllocineProviderFactory(isActive=True)
     theater = providers_factories.AllocineTheaterFactory(siret=venue_synchronized_with_allocine.siret)
@@ -157,6 +158,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
         name="Lieu synchro Ciné Office",
         siret="21070034000018",
         businessUnit__name="Business Unit du Lieu synchro Ciné Office",
+        managingOfferer__name="Structure du lieu synchro Ciné Office",
     )
 
     cds_provider = get_provider_by_local_class("CDSStocks")
