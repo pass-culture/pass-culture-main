@@ -7,6 +7,7 @@ import {
 import CollectiveDataForm from './CollectiveDataForm'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
+import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import styles from './CollectiveDataEdition.module.scss'
@@ -18,6 +19,7 @@ const CollectiveDataEdition = (): JSX.Element => {
   const [domains, setDomains] = useState<SelectOption[]>([])
   const [statuses, setStatuses] = useState<SelectOption[]>([])
   const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
@@ -36,6 +38,8 @@ const CollectiveDataEdition = (): JSX.Element => {
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
       setCulturalPartners(culturalPartnersResponse.payload)
+
+      setIsLoading(false)
     })
   }, [])
 
@@ -48,11 +52,15 @@ const CollectiveDataEdition = (): JSX.Element => {
         enseignants et chefs d'établissement sur Adage (Application Dédiée A la
         Généralisation de l'Education artistique et culturelle).
       </p>
-      <CollectiveDataForm
-        statuses={statuses}
-        domains={domains}
-        culturalPartners={culturalPartners}
-      />
+      {isLoading ? (
+        <Spinner className={styles.spinner} />
+      ) : (
+        <CollectiveDataForm
+          statuses={statuses}
+          domains={domains}
+          culturalPartners={culturalPartners}
+        />
+      )}
     </>
   )
 }
