@@ -41,6 +41,7 @@ def get_venue(venue_id: str) -> venues_serialize.GetVenueResponseModel:
             sqla_orm.joinedload(models.Venue.pricing_point_links).joinedload(models.VenuePricingPointLink.pricingPoint)
         )
         .options(sqla_orm.joinedload(models.Venue.reimbursement_point_links))
+        .options(sqla_orm.joinedload(models.Venue.collectiveDomains))
     ).one_or_none()
     if not venue:
         flask.abort(404)

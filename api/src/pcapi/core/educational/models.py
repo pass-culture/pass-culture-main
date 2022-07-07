@@ -897,13 +897,13 @@ class EducationalDomainVenue(Model):  # type: ignore[valid-type, misc]
     educationalDomainId = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
     )
-    VenueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False)
+    venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=False)
 
     __table_args__ = (
         sa.UniqueConstraint(
             "educationalDomainId",
-            "VenueId",
-            name="unique_offer_criterion",
+            "venueId",
+            name="unique_educational_domain_venue",
         ),
     )
 
