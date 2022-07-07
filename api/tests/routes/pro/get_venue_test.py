@@ -127,6 +127,16 @@ class Returns200Test:
             "bannerUrl": venue.bannerUrl,
             "bannerMeta": None,
             "nonHumanizedId": venue.id,
+            "collectiveAccessInformation": None,
+            "collectiveDescription": None,
+            "collectiveDomains": [],
+            "collectiveEmail": None,
+            "collectiveInterventionArea": None,
+            "collectiveLegalStatus": None,
+            "collectiveNetwork": None,
+            "collectivePhone": None,
+            "collectiveStudents": [],
+            "collectiveWebsite": None,
         }
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)

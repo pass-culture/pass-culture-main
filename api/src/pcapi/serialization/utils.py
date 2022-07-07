@@ -1,5 +1,6 @@
 import re
 from typing import Any
+from typing import Callable
 from typing import Optional
 
 from flask import Request
@@ -94,6 +95,16 @@ def check_phone_number_format(string: str) -> str:
     return spaceless_string
 
 
+# No functools.partial here as it has no __name__ and threfore is not compatible with pydantic
+def check_string_length_wrapper(length: int) -> Callable:
+    def check_string_length(string: str) -> str:
+        if string and len(string) > length:
+            raise ValueError(f"Le champ doit faire moins de {length} caractères")
+        return string
+
+    return check_string_length
+
+
 def string_to_boolean(string: str) -> Optional[bool]:
     try:
         return {"true": True, "false": False}[string]
@@ -123,3 +134,7 @@ def validate_phone_number_format(field_name: str) -> classmethod:
 
 def string_to_boolean_field(field_name: str) -> classmethod:
     return validator(field_name, pre=True, allow_reuse=True)(string_to_boolean)
+
+
+def string_length_validator(field_name: str, *, length: int) -> classmethod:
+    return validator(field_name, pre=False, allow_reuse=True)(check_string_length_wrapper(length=length))
