@@ -11,6 +11,7 @@ import sqlalchemy as sa
 
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core.users import models as users_models
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -369,7 +370,7 @@ class FraudCheckStatus(enum.Enum):
     ERROR = "error"
 
 
-class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
+class BeneficiaryFraudCheck(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_check"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -411,7 +412,7 @@ class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         if self.resultContent is None:
             raise ValueError("No source data associated with this fraud check")
-        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type, return-value, index]
+        return FRAUD_CHECK_MAPPING[self.type](**self.resultContent)  # type: ignore [arg-type, return-value]
 
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
@@ -420,17 +421,17 @@ class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
 
     def get_min_date_between_creation_and_registration(self) -> datetime.datetime:
         if self.type not in IDENTITY_CHECK_TYPES or not self.resultContent:
-            return self.dateCreated
+            return self.dateCreated  # type: ignore [return-value]
         try:
             registration_datetime = self.source_data().get_registration_datetime()  # type: ignore [union-attr]
         except ValueError:  # TODO(viconnex) migrate Educonnect fraud checks that do not have registration date in their content
-            return self.dateCreated
+            return self.dateCreated  # type: ignore [return-value]
         if registration_datetime:
-            return min(self.dateCreated, registration_datetime)
-        return self.dateCreated
+            return min(self.dateCreated, registration_datetime)  # type: ignore [type-var, return-value]
+        return self.dateCreated  # type: ignore [return-value]
 
 
-class OrphanDmsApplication(PcObject, Model):  # type: ignore [valid-type, misc]
+class OrphanDmsApplication(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     # This model is used to store fraud checks that were not associated with a user.
     # This is mainly used for the DMS fraud check, when the user is not yet created, or in case of a failure.
     dateCreated = sa.Column(
@@ -441,7 +442,7 @@ class OrphanDmsApplication(PcObject, Model):  # type: ignore [valid-type, misc]
     process_id = sa.Column(sa.BigInteger)
 
 
-class BeneficiaryFraudReview(PcObject, Model):  # type: ignore [valid-type, misc]
+class BeneficiaryFraudReview(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "beneficiary_fraud_review"
 
     userId = sa.Column(sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False)

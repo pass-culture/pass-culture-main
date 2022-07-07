@@ -2,12 +2,13 @@ import psycopg2.errors
 import sqlalchemy as sqla
 import sqlalchemy.exc as sqla_exc
 
+from pcapi.models import Base
 from pcapi.models import Model
 
 from . import exceptions
 
 
-class ReferenceScheme(Model):  # type: ignore [valid-type, misc]
+class ReferenceScheme(Base, Model):  # type: ignore [valid-type, misc]
     """This table holds the next reference number (and other related
     parameters) for our invoices and possibly other entities.
 

@@ -19,7 +19,7 @@ def get_bookings_expiration_to_pro_email_data(  # type: ignore [no-untyped-def]
         template=TransactionalEmail.BOOKING_EXPIRATION_TO_PRO.value,
         params={
             "BOOKINGS": _extract_bookings_information_from_bookings_list(bookings),
-            "DEPARTMENT": PostalCode(offerer.postalCode).get_departement_code(),
+            "DEPARTMENT": PostalCode(offerer.postalCode).get_departement_code(),  # type: ignore [arg-type]
             "WITHDRAWAL_PERIOD": withdrawal_period,
         },
     )

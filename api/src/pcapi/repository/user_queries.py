@@ -43,7 +43,7 @@ def find_by_validation_token(token: str) -> User:
 
 
 def matching(column: Column, search_value: str) -> BinaryExpression:
-    return _sanitized_string(column) == _sanitized_string(search_value)  # type: ignore [arg-type]
+    return _sanitized_string(column) == _sanitized_string(search_value)  # type: ignore [arg-type, return-value]
 
 
 def _sanitized_string(value: str) -> Function:

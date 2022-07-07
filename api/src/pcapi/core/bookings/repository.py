@@ -475,14 +475,14 @@ def _get_filtered_bookings_query(
         )
 
         bookings_query = bookings_query.filter(
-            field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)  # type: ignore [arg-type]
+            field_to_venue_timezone(period_attribut_filter).between(*period, symmetric=True)
         )
 
     if venue_id is not None:
         bookings_query = bookings_query.filter(Booking.venueId == venue_id)
 
     if event_date:
-        bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)  # type: ignore [arg-type]
+        bookings_query = bookings_query.filter(field_to_venue_timezone(Stock.beginningDatetime) == event_date)
 
     if offer_type is not None:
         if offer_type == OfferType.INDIVIDUAL_OR_DUO:
@@ -528,7 +528,7 @@ def _get_filtered_booking_report(
             event_date,
             venue_id,
             offer_type,
-            extra_joins=(Stock.offer, Booking.user),  # type: ignore [arg-type]
+            extra_joins=(Stock.offer, Booking.user),
         )
         .with_entities(
             func.coalesce(Venue.publicName, Venue.name).label("venueName"),
@@ -581,7 +581,7 @@ def _get_filtered_booking_pro(
             event_date,
             venue_id,
             offer_type,
-            extra_joins=(  # type: ignore [arg-type]
+            extra_joins=(
                 Stock.offer,
                 Booking.individualBooking,
                 IndividualBooking.user,
@@ -605,7 +605,7 @@ def _get_filtered_booking_pro(
             educational_models.EducationalBooking.confirmationDate,
             educational_models.EducationalRedactor.firstName.label("redactorFirstname"),
             educational_models.EducationalRedactor.lastName.label("redactorLastname"),
-            educational_models.EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
+            educational_models.EducationalRedactor.email.label("redactorEmail"),
             Offer.name.label("offerName"),
             Offer.id.label("offerId"),
             Offer.extraData["isbn"].label("offerIsbn"),

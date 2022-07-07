@@ -71,11 +71,11 @@ def _create_pro_user(row: dict) -> User:
 
     # Validate offerer
     offerer = user.offerers[0]
-    offerer.validationToken = None
-    offerer.dateValidated = datetime.utcnow()
+    offerer.validationToken = None  # type: ignore [attr-defined]
+    offerer.dateValidated = datetime.utcnow()  # type: ignore [attr-defined]
     repository.save(offerer)
 
-    user.validationToken = None
+    user.validationToken = None  # type: ignore [assignment]
     user.isEmailValidated = True
     user.add_pro_role()
 

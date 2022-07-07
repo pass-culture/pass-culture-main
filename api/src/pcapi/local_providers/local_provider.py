@@ -248,7 +248,7 @@ class LocalProvider(Iterator):
 
 
 def _save_same_thumb_from_thumb_count_to_index(pc_object: Model, thumb_index: int, image_as_bytes: bytes, keep_poster_ratio: bool = False):  # type: ignore [no-untyped-def, valid-type]
-    if pc_object.thumbCount is None:  # type: ignore [attr-defined] # handle unsaved object
+    if pc_object.thumbCount is None:  # type: ignore [attr-defined]
         pc_object.thumbCount = 0  # type: ignore [attr-defined]
     if thumb_index <= pc_object.thumbCount:  # type: ignore [attr-defined]
         # replace existing thumb

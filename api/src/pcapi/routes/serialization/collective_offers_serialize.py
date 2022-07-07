@@ -92,7 +92,7 @@ def serialize_collective_offers_capped(
 
 
 def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate) -> CollectiveOfferResponseModel:
-    serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
+    serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))  # type: ignore [arg-type]
 
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)
@@ -111,7 +111,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
         stocks=serialized_stocks,
         thumbUrl=None,
         subcategoryId=offer.subcategoryId,
-        venue=_serialize_venue(offer.venue),
+        venue=_serialize_venue(offer.venue),  # type: ignore [arg-type]
         venueId=humanize(offer.venue.id),
         status=offer.status.name,  # type: ignore [attr-defined]
         isShowcase=is_offer_template,
@@ -449,7 +449,7 @@ class CollectiveOfferFromTemplateResponseModel(BaseModel):
     @classmethod
     def from_orm(cls, offer: CollectiveOffer) -> "CollectiveOfferFromTemplateResponseModel":
         stock = offer.collectiveStock
-        stock.offerId = humanize(offer.id)
+        stock.offerId = humanize(offer.id)  # type: ignore [attr-defined]
         return super().from_orm(stock)
 
     class Config:

@@ -50,9 +50,9 @@ def create_offer_with_event_product(
             is_national=is_national,
         )
     if criteria:
-        offer.criteria = criteria
+        offer.criteria = criteria  # type: ignore [call-overload]
     offer.product = product
-    offer.venue = venue
+    offer.venue = venue  # type: ignore [assignment]
     offer.name = product.name
     offer.subcategoryId = product.subcategoryId
     offer.description = description
@@ -60,15 +60,15 @@ def create_offer_with_event_product(
     offer.durationMinutes = product.durationMinutes
     offer.dateCreated = date_created
     offer.bookingEmail = booking_email
-    offer.isActive = is_active
-    offer.id = idx  # type: ignore [assignment]
+    offer.isActive = is_active  # type: ignore [assignment]
+    offer.id = idx
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
     offer.idAtProvider = id_at_provider
     offer.isDuo = is_duo
     offer.validation = validation  # type: ignore [assignment]
     offer.withdrawalDetails = withdrawal_details
-    offer.extraData = extra_data
+    offer.extraData = extra_data  # type: ignore [assignment]
     offer.rankingWeight = ranking_weight
 
     return offer
@@ -128,10 +128,10 @@ def create_offer_with_thing_product(
             is_national=is_national,
             description=description,
         )
-        offer.name = thing_name  # type: ignore [assignment]
-        offer.subcategoryId = thing_subcategory_id  # type: ignore [assignment]
-        offer.mediaUrls = media_urls  # type: ignore [assignment]
-        offer.extraData = {"author": author_name}
+        offer.name = thing_name
+        offer.subcategoryId = thing_subcategory_id
+        offer.mediaUrls = media_urls  # type: ignore [call-overload]
+        offer.extraData = {"author": author_name}  # type: ignore [assignment]
         offer.url = url
         offer.isNational = is_national
         offer.description = description
@@ -139,16 +139,16 @@ def create_offer_with_thing_product(
     offer.dateCreated = date_created
     offer.dateModifiedAtLastProvider = date_modified_at_last_provider
     offer.bookingEmail = booking_email
-    offer.isActive = is_active
+    offer.isActive = is_active  # type: ignore [assignment]
     offer.lastProviderId = last_provider_id
     offer.lastProvider = last_provider
-    offer.id = idx  # type: ignore [assignment]
+    offer.id = idx
     offer.withdrawalDetails = withdrawal_details
     offer.isDuo = False
     offer.validation = validation  # type: ignore [assignment]
 
     if extra_data:
-        offer.extraData = extra_data
+        offer.extraData = extra_data  # type: ignore [assignment]
 
     if id_at_provider:
         offer.idAtProvider = id_at_provider
@@ -172,11 +172,11 @@ def create_product_with_event_subcategory(
     product.name = event_name
     product.description = description
     product.durationMinutes = duration_minutes
-    product.thumbCount = thumb_count
-    product.idAtProviders = id_at_providers
+    product.thumbCount = thumb_count  # type: ignore [assignment]
+    product.idAtProviders = id_at_providers  # type: ignore [assignment]
     product.isNational = is_national
     product.isDuo = is_duo
-    product.subcategoryId = event_subcategory_id  # type: ignore [assignment]
+    product.subcategoryId = event_subcategory_id
     product.description = description
 
     return product
@@ -204,25 +204,25 @@ def create_product_with_thing_subcategory(
 ) -> Product:
     product = Product()
     product.id = idx  # type: ignore [assignment]
-    product.subcategoryId = thing_subcategory_id  # type: ignore [assignment]
+    product.subcategoryId = thing_subcategory_id
     product.name = thing_name
     product.description = description
     if extra_data:
-        product.extraData = extra_data
+        product.extraData = extra_data  # type: ignore [assignment]
     else:
-        product.extraData = {"author": author_name}
+        product.extraData = {"author": author_name}  # type: ignore [assignment]
     product.isNational = is_national
     if id_at_providers is None:
         id_at_providers = "".join(random.choices(string.digits, k=13))
-    product.dateModifiedAtLastProvider = date_modified_at_last_provider
+    product.dateModifiedAtLastProvider = date_modified_at_last_provider  # type: ignore [assignment]
     product.lastProviderId = last_provider_id
-    product.idAtProviders = id_at_providers
+    product.idAtProviders = id_at_providers  # type: ignore [assignment]
     product.isGcuCompatible = is_gcu_compatible
     product.isSynchronizationCompatible = is_synchronization_compatible
-    product.mediaUrls = media_urls  # type: ignore [assignment]
-    product.thumbCount = thumb_count
+    product.mediaUrls = media_urls  # type: ignore [call-overload]
+    product.thumbCount = thumb_count  # type: ignore [assignment]
     product.url = url
-    product.owningOfferer = owning_offerer
+    product.owningOfferer = owning_offerer  # type: ignore [assignment]
     product.description = description
     if is_digital:
         product.url = "fake/url"
@@ -245,7 +245,7 @@ def create_stock_from_event_occurrence(
     stock.offer = event_occurrence.offer
     stock.price = price
     stock.quantity = quantity
-    stock.isSoftDeleted = soft_deleted
+    stock.isSoftDeleted = soft_deleted  # type: ignore [assignment]
 
     if recap_sent:
         stock.bookingRecapSent = datetime.utcnow()
@@ -269,11 +269,11 @@ def create_stock_from_offer(
     date_modified: datetime = datetime.utcnow(),
 ) -> Stock:
     stock = Stock()
-    stock.id = idx  # type: ignore [assignment]
+    stock.id = idx
     stock.offer = offer
     stock.price = price
     stock.quantity = quantity
-    stock.isSoftDeleted = soft_deleted
+    stock.isSoftDeleted = soft_deleted  # type: ignore [assignment]
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.beginningDatetime = beginning_datetime
     stock.dateModified = date_modified
@@ -300,12 +300,12 @@ def create_stock_with_event_offer(
 ) -> Stock:
     stock = Stock()
     stock.offerer = offerer
-    stock.price = price  # type: ignore [assignment]
+    stock.price = price
     stock.quantity = quantity
     stock.beginningDatetime = beginning_datetime
     stock.bookingLimitDatetime = booking_limit_datetime
     stock.dateCreated = date_created
-    stock.dateModifiedAtLastProvider = date_modified_at_last_provider
+    stock.dateModifiedAtLastProvider = date_modified_at_last_provider  # type: ignore [assignment]
     stock.dateModified = date_modifed
     stock.offer = create_offer_with_event_product(
         venue,
@@ -315,8 +315,8 @@ def create_stock_with_event_offer(
         is_national=False,
         thumb_count=thumb_count,
     )
-    stock.offer.id = offer_id  # type: ignore [assignment]
-    stock.isSoftDeleted = is_soft_deleted
+    stock.offer.id = offer_id
+    stock.isSoftDeleted = is_soft_deleted  # type: ignore [assignment]
 
     return stock
 
@@ -336,7 +336,7 @@ def create_stock_with_thing_offer(
 ) -> Stock:
     stock = Stock()
     stock.offerer = offerer
-    stock.price = price  # type: ignore [assignment]
+    stock.price = price
 
     if offer:
         stock.offer = offer
@@ -348,6 +348,6 @@ def create_stock_with_thing_offer(
     stock.offer.url = url
     stock.offer.venue = venue
     stock.quantity = quantity
-    stock.isSoftDeleted = soft_deleted
+    stock.isSoftDeleted = soft_deleted  # type: ignore [assignment]
 
     return stock

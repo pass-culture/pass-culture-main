@@ -32,7 +32,7 @@ def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | O
 
 
 def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
-    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"
+    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"  # type: ignore [arg-type]
 
 
 def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:
@@ -60,7 +60,7 @@ def build_pc_webapp_reset_password_link(token_value: str) -> str:
 def format_booking_date_for_email(booking: Booking | CollectiveBooking) -> str:
     if isinstance(booking, CollectiveBooking) or booking.stock.offer.isEvent:
         stock = booking.collectiveStock if isinstance(booking, CollectiveBooking) else booking.stock
-        date_in_tz = get_event_datetime(stock)
+        date_in_tz = get_event_datetime(stock)  # type: ignore [arg-type]
         offer_date = date_in_tz.strftime("%d-%b-%Y")
         return offer_date
     return ""
@@ -69,7 +69,7 @@ def format_booking_date_for_email(booking: Booking | CollectiveBooking) -> str:
 def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
     if isinstance(booking, CollectiveBooking) or booking.stock.offer.isEvent:
         stock = booking.collectiveStock if isinstance(booking, CollectiveBooking) else booking.stock
-        date_in_tz = get_event_datetime(stock)
+        date_in_tz = get_event_datetime(stock)  # type: ignore [arg-type]
         event_hour = date_in_tz.hour
         event_minute = date_in_tz.minute
         return f"{event_hour}h" if event_minute == 0 else f"{event_hour}h{event_minute}"
@@ -83,7 +83,7 @@ def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
 ) -> dict:
     api_entreprise = get_by_siren(offerer)
 
-    offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()
+    offerer_departement_code = PostalCode(offerer.postalCode).get_departement_code()  # type: ignore [arg-type]
 
     email_html = render_template(
         "mails/internal_validation_email.html",

@@ -121,7 +121,7 @@ class PartnerUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdminView
                 expiration=datetime.datetime.utcnow() + RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED,
             )
             flash(
-                f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(resetPasswordToken.value)}"
+                f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(resetPasswordToken.value)}"  # type: ignore [arg-type]
             )
 
     def get_query(self) -> BaseQuery:

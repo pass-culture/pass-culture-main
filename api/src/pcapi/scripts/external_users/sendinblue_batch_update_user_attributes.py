@@ -29,7 +29,7 @@ def format_sendinblue_users(users: list[User]) -> list[SendinblueUserUpdateData]
     res = []
     for user in users:
         attributes = sendinblue.format_user_attributes(get_user_or_pro_attributes(user))
-        res.append(SendinblueUserUpdateData(email=user.email, attributes=attributes))
+        res.append(SendinblueUserUpdateData(email=user.email, attributes=attributes))  # type: ignore [arg-type]
     print(f"{len(res)} users formatted for sendinblue...")
     return res
 

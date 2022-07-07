@@ -146,7 +146,7 @@ class FillUserFromTest:
         assert user.publicName == "Philip Mortimer"
         assert user.email == "pmortimer@bletchley.co.uk"
         assert user.departementCode == "29"
-        assert user.has_beneficiary_role == False  # pylint: disable=comparison-with-callable
+        assert user.has_beneficiary_role == False
         assert user.has_pro_role
 
     def test_returns_an_user_with_computed_password(self):

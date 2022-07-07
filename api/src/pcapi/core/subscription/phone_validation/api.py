@@ -85,7 +85,7 @@ def _ensure_phone_number_unicity(
     unvalidated_by_peer_check = fraud_models.BeneficiaryFraudCheck(
         user=user_with_same_validated_number,
         type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER],
+        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATED_BY_PEER],  # type: ignore [list-item]
         reason=f"Phone number {phone_number} was unvalidated by user {user_validating_phone.id}",
         status=fraud_models.FraudCheckStatus.SUSPICIOUS,
         thirdPartyId=f"PC-{user_with_same_validated_number.id}",
@@ -94,7 +94,7 @@ def _ensure_phone_number_unicity(
     unvalidated_for_peer_check = fraud_models.BeneficiaryFraudCheck(
         user=user_validating_phone,
         type=fraud_models.FraudCheckType.PHONE_VALIDATION,
-        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER],
+        reasonCodes=[fraud_models.FraudReasonCode.PHONE_UNVALIDATION_FOR_PEER],  # type: ignore [list-item]
         reason=f"The phone number validation had the following side effect: phone number {phone_number} was unvalidated for user {user_with_same_validated_number.id}",
         status=fraud_models.FraudCheckStatus.SUSPICIOUS,
         thirdPartyId=f"PC-{user_validating_phone.id}",
@@ -176,5 +176,5 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
     _ensure_phone_number_unicity(user, phone_number, change_owner=True)
 
     user.phoneNumber = phone_number
-    user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED  # type: ignore [assignment]
+    user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
     repository.save(user)

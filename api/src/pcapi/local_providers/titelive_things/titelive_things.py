@@ -171,7 +171,7 @@ class TiteLiveThings(LocalProvider):
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
         product.subcategoryId = subcategory.id
         product.extraData = self.product_extra_data.copy()
-        product.extraData.update(get_extra_data_from_infos(self.product_infos))  # type: ignore [union-attr]
+        product.extraData.update(get_extra_data_from_infos(self.product_infos))
 
         if self.product_infos["url_extrait_pdf"] != "":
             if product.mediaUrls is None:

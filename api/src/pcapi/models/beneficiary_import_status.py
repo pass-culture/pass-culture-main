@@ -10,6 +10,7 @@ from sqlalchemy import String
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
 
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -25,7 +26,7 @@ class ImportStatus(enum.Enum):
     WITHOUT_CONTINUATION = "WITHOUT_CONTINUATION"
 
 
-class BeneficiaryImportStatus(PcObject, Model):  # type: ignore [valid-type, misc]
+class BeneficiaryImportStatus(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 

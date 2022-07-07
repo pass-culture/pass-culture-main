@@ -17,7 +17,7 @@ def get_email_validation_to_pro_email_data(user: User) -> SendinblueTransactiona
 
 def send_email_validation_to_pro_email(user: User) -> bool:
     data = get_email_validation_to_pro_email_data(user)
-    return mails.send(recipients=[user.email], data=data)
+    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]
 
 
 def get_email_validation_to_admin_email_data(token: str) -> SendinblueTransactionalEmailData:
@@ -30,5 +30,5 @@ def get_email_validation_to_admin_email_data(token: str) -> SendinblueTransactio
 
 
 def send_email_validation_to_admin_email(user: User, token: Token) -> bool:
-    data = get_email_validation_to_admin_email_data(token.value)
-    return mails.send(recipients=[user.email], data=data)
+    data = get_email_validation_to_admin_email_data(token.value)  # type: ignore [arg-type]
+    return mails.send(recipients=[user.email], data=data)  # type: ignore [list-item]

@@ -7,6 +7,7 @@ from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy.dialects.postgresql import JSONB
 
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 
@@ -22,7 +23,7 @@ class EmailStatus(enum.Enum):
     ERROR = "ERROR"
 
 
-class Email(PcObject, Model):  # type: ignore [valid-type, misc]
+class Email(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     content = Column("content", JSONB, nullable=False)
     status = Column(Enum(EmailStatus), nullable=False, index=True)
 

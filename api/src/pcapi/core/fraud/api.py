@@ -99,7 +99,7 @@ def educonnect_fraud_checks(
 ) -> list[models.FraudItem]:
     fraud_items = []
     fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))
-    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
+    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))  # type: ignore [arg-type]
 
     return fraud_items
 
@@ -144,11 +144,11 @@ def on_identity_fraud_check_result(
                 last_name=content_last_name,
                 married_name=identity_content.get_married_name(),
                 birth_date=content_birth_date,
-                excluded_user_id=user.id,
+                excluded_user_id=user.id,  # type: ignore [arg-type]
             )
         )
         fraud_items.append(_check_user_names_valid(content_first_name, content_last_name))
-        fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))  # type: ignore [arg-type]
+        fraud_items.append(_check_user_eligibility(user, beneficiary_fraud_check.eligibilityType))
     else:
         fraud_items.append(_missing_data_fraud_item())
 
@@ -251,7 +251,7 @@ def find_duplicate_beneficiary(
 
 
 def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_number: str) -> models.FraudItem:
-    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)
+    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)  # type: ignore [arg-type]
 
     if duplicate_user:
         return models.FraudItem(
@@ -402,7 +402,7 @@ def on_user_profiling_result(
         user=user,
         type=models.FraudCheckType.USER_PROFILING,
         thirdPartyId=profiling_infos.session_id,
-        resultContent=profiling_infos,
+        resultContent=profiling_infos,  # type: ignore [arg-type]
         status=fraud_check_status,
         eligibilityType=user.eligibility,
     )
@@ -436,10 +436,10 @@ def _create_failed_phone_validation_fraud_check(
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         reason=reason,
-        reasonCodes=reason_codes,
+        reasonCodes=reason_codes,  # type: ignore [arg-type]
         type=models.FraudCheckType.PHONE_VALIDATION,
         thirdPartyId=f"PC-{user.id}",
-        resultContent=fraud_check_data,
+        resultContent=fraud_check_data,  # type: ignore [arg-type]
         eligibilityType=user.eligibility,
         status=models.FraudCheckStatus.KO,
     )
@@ -515,7 +515,7 @@ def validate_frauds(
         if fraud_item.status != models.FraudStatus.OK and fraud_item.reason_code is not None
     ]
 
-    fraud_check.status = fraud_check_status  # type: ignore [assignment]
+    fraud_check.status = fraud_check_status
     fraud_check.reason = reason
     fraud_check.reasonCodes = reason_codes  # type: ignore [assignment]
     repository.save(fraud_check)
@@ -727,7 +727,7 @@ def handle_dms_redirection_review(
     else:
         review.reason += " ; Redirigé vers DMS"
 
-    send_subscription_document_error_email(user.email, "unread-document")
+    send_subscription_document_error_email(user.email, "unread-document")  # type: ignore [arg-type]
     subscription_messages.on_redirect_to_dms_from_idcheck(user)
 
 
@@ -756,7 +756,7 @@ def validate_beneficiary(
     if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
         raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
 
-    review = models.BeneficiaryFraudReview(user=user, author=reviewer, reason=reason, review=review.value)
+    review = models.BeneficiaryFraudReview(user=user, author=reviewer, reason=reason, review=review.value)  # type: ignore [arg-type]
 
     if review.review is not None:
         handler = REVIEW_HANDLERS.get(models.FraudReviewStatus(review.review))
@@ -771,20 +771,20 @@ def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: str
     if not id_piece_number:
         return
 
-    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)
+    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)  # type: ignore [arg-type]
 
     if duplicate_user:
-        raise DuplicateIdPieceNumber(id_piece_number, duplicate_user.id)
+        raise DuplicateIdPieceNumber(id_piece_number, duplicate_user.id)  # type: ignore [arg-type]
 
 
 def _check_ine_hash_unicity(user: users_models.User, ine_hash: str | None) -> None:
     if not ine_hash:
         return
 
-    duplicate_user = find_duplicate_ine_hash_user(ine_hash, user.id)
+    duplicate_user = find_duplicate_ine_hash_user(ine_hash, user.id)  # type: ignore [arg-type]
 
     if duplicate_user:
-        raise DuplicateIneHash(ine_hash, duplicate_user.id)
+        raise DuplicateIneHash(ine_hash, duplicate_user.id)  # type: ignore [arg-type]
 
 
 def create_profile_completion_fraud_check(
@@ -809,7 +809,7 @@ def create_profile_completion_fraud_check(
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
         type=models.FraudCheckType.PROFILE_COMPLETION,
-        resultContent=fraud_check_content,
+        resultContent=fraud_check_content,  # type: ignore [arg-type]
         status=models.FraudCheckStatus.OK,
         thirdPartyId=f"profile-completion-{user.id}",
         eligibilityType=eligibility,

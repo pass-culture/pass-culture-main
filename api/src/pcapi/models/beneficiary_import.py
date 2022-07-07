@@ -7,6 +7,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 
 from pcapi.core.users.models import EligibilityType
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
@@ -25,7 +26,7 @@ class BeneficiaryImportSources(Enum):
     ubble = "ubble"
 
 
-class BeneficiaryImport(PcObject, Model):  # type: ignore [valid-type, misc]
+class BeneficiaryImport(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     """
     THIS MODEL IS DEPRECATED - DO NOT USE
 
@@ -49,14 +50,14 @@ class BeneficiaryImport(PcObject, Model):  # type: ignore [valid-type, misc]
         default=EligibilityType.AGE18,  # TODO (viconnex) remove default values
         server_default=sa.text(EligibilityType.AGE18.name),  # TODO (viconnex) remove default values
     )
-    beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")
+    beneficiary = relationship("User", foreign_keys=[beneficiaryId], backref="beneficiaryImports")  # type: ignore [misc]
 
     def setStatus(self, status: ImportStatus, detail: str = None, author: "User" = None):  # type: ignore [no-untyped-def]
         new_status = BeneficiaryImportStatus()
-        new_status.status = status  # type: ignore [assignment]
+        new_status.status = status
         new_status.detail = detail
         new_status.date = datetime.utcnow()
-        new_status.author = author
+        new_status.author = author  # type: ignore [assignment]
 
         self.statuses.append(new_status)
 

@@ -178,7 +178,7 @@ def find_educational_deposit_by_institution_id_and_year(
 
 def get_educational_year_beginning_at_given_year(year: int) -> educational_models.EducationalYear:
     educational_year = educational_models.EducationalYear.query.filter(
-        extract("year", educational_models.EducationalYear.beginningDate) == year  # type: ignore [arg-type]
+        extract("year", educational_models.EducationalYear.beginningDate) == year
     ).one_or_none()
     if educational_year is None:
         raise educational_exceptions.EducationalYearNotFound()
@@ -315,7 +315,7 @@ def get_expired_collective_offers(interval: list[datetime]) -> BaseQuery:
         .filter(
             educational_models.CollectiveOffer.isActive.is_(True),
         )
-        .having(sa.func.max(educational_models.CollectiveStock.bookingLimitDatetime).between(*interval))
+        .having(sa.func.max(educational_models.CollectiveStock.bookingLimitDatetime).between(*interval))  # type: ignore [arg-type]
         .group_by(educational_models.CollectiveOffer.id)
         .order_by(educational_models.CollectiveOffer.id)
     )
@@ -522,7 +522,7 @@ def _get_filtered_collective_bookings_query(
         )
 
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)  # type: ignore [arg-type]
+            field_to_venue_timezone(period_attribute_filter).between(*period, symmetric=True)
         )
 
     if venue_id is not None:
@@ -532,7 +532,7 @@ def _get_filtered_collective_bookings_query(
 
     if event_date:
         collective_bookings_query = collective_bookings_query.filter(
-            field_to_venue_timezone(educational_models.CollectiveStock.beginningDatetime) == event_date  # type: ignore [arg-type]
+            field_to_venue_timezone(educational_models.CollectiveStock.beginningDatetime) == event_date
         )
 
     return collective_bookings_query
@@ -552,7 +552,7 @@ def _get_filtered_collective_bookings_pro(
             status_filter,  # type: ignore [arg-type]
             event_date,
             venue_id,
-            extra_joins=(  # type: ignore [arg-type]
+            extra_joins=(
                 educational_models.CollectiveStock.collectiveOffer,
                 educational_models.CollectiveBooking.educationalRedactor,
             ),
@@ -570,7 +570,7 @@ def _get_filtered_collective_bookings_pro(
             educational_models.CollectiveBooking.confirmationDate,
             educational_models.EducationalRedactor.firstName.label("redactorFirstname"),
             educational_models.EducationalRedactor.lastName.label("redactorLastname"),
-            educational_models.EducationalRedactor.email.label("redactorEmail"),  # type: ignore [attr-defined]
+            educational_models.EducationalRedactor.email.label("redactorEmail"),
             educational_models.CollectiveOffer.name.label("offerName"),
             educational_models.CollectiveOffer.id.label("offerId"),
             educational_models.CollectiveStock.beginningDatetime.label("stockBeginningDatetime"),
@@ -659,7 +659,7 @@ def get_filtered_collective_booking_report(
             status_filter,
             event_date,
             venue_id,
-            extra_joins=(  # type: ignore [arg-type]
+            extra_joins=(
                 educational_models.CollectiveStock.collectiveOffer,
                 educational_models.CollectiveBooking.educationalRedactor,
             ),
@@ -688,7 +688,7 @@ def get_filtered_collective_booking_report(
         .distinct(educational_models.CollectiveBooking.id)
     )
 
-    return bookings_query
+    return bookings_query  # type: ignore [return-value]
 
 
 def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:

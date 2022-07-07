@@ -49,9 +49,9 @@ def _get_model(offer: CollectiveOffer | CollectiveOfferTemplate | Offer, paramet
     if parameter_model in OFFER_LIKE_MODELS and _get_class_name(offer) == parameter_model:
         model = offer
     elif parameter_model == "CollectiveStock" and isinstance(offer, CollectiveOffer):
-        model = offer.collectiveStock
+        model = offer.collectiveStock  # type: ignore [assignment]
     elif parameter_model == "Venue":
-        model = offer.venue
+        model = offer.venue  # type: ignore [assignment]
     elif parameter_model == "Offerer":
         model = offer.venue.managingOfferer
     else:
@@ -62,29 +62,29 @@ def _get_model(offer: CollectiveOffer | CollectiveOfferTemplate | Offer, paramet
 def parse_offer_validation_config(
     offer: CollectiveOffer | CollectiveOfferTemplate | Offer, config: OfferValidationConfig
 ) -> tuple[float, list[OfferValidationRuleItem]]:
-    minimum_score = float(config.specs["minimum_score"])  # type: ignore [call-overload]
-    rules = config.specs["rules"]  # type: ignore [call-overload]
+    minimum_score = float(config.specs["minimum_score"])  # type: ignore [call-overload, index]
+    rules = config.specs["rules"]  # type: ignore [call-overload, index]
 
     rule_items = []
     for rule in rules:
         validation_items = []
-        for parameter in rule["conditions"]:
+        for parameter in rule["conditions"]:  # type: ignore [index]
             try:
-                model = _get_model(offer, parameter.get("model", None))
+                model = _get_model(offer, parameter.get("model", None))  # type: ignore [union-attr]
             except UnapplicableModel:
                 break
 
             validation_item = OfferValidationItem(
                 model=model,
-                attribute=parameter["attribute"],
-                type=parameter.get("type"),
-                condition=parameter["condition"],
+                attribute=parameter["attribute"],  # type: ignore [index]
+                type=parameter.get("type"),  # type: ignore [union-attr]
+                condition=parameter["condition"],  # type: ignore [arg-type, index]
             )
             validation_items.append(validation_item)
         else:
             if validation_items:
                 rule_item = OfferValidationRuleItem(
-                    name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items
+                    name=rule["name"], factor=rule["factor"], offer_validation_items=validation_items  # type: ignore [index, arg-type]
                 )
                 rule_items.append(rule_item)
     return minimum_score, rule_items

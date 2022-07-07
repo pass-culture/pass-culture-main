@@ -113,7 +113,7 @@ class AllocineStocks(LocalProvider):
         if "duration" in self.movie_information:  # type: ignore [operator]
             obj.durationMinutes = movie_information["duration"]
         if not obj.extraData:
-            obj.extraData = {}
+            obj.extraData = {}  # type: ignore [assignment]
         for field in (
             "visa",
             "stageDirector",
@@ -125,12 +125,12 @@ class AllocineStocks(LocalProvider):
             "cast",
         ):
             if field in movie_information:
-                obj.extraData[field] = movie_information[field]  # type: ignore [call-overload]
+                obj.extraData[field] = movie_information[field]
 
     def fill_product_attributes(self, allocine_product: Product):  # type: ignore [no-untyped-def]
         allocine_product.name = self.movie_information["title"]  # type: ignore [index]
         allocine_product.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_product.thumbCount = 0
+        allocine_product.thumbCount = 0  # type: ignore [assignment]
 
         self.update_from_movie_information(allocine_product, self.movie_information)  # type: ignore [arg-type]
 
@@ -147,15 +147,15 @@ class AllocineStocks(LocalProvider):
 
         self.update_from_movie_information(allocine_offer, self.movie_information)  # type: ignore [arg-type]
 
-        allocine_offer.extraData["theater"] = {  # type: ignore [index, call-overload]
+        allocine_offer.extraData["theater"] = {
             "allocine_movie_id": self.movie_information["internal_id"],  # type: ignore [index]
             "allocine_room_id": self.room_internal_id,
         }
 
         if "visa" in self.movie_information:  # type: ignore [operator]
-            allocine_offer.extraData["visa"] = self.movie_information["visa"]  # type: ignore [index, call-overload]
+            allocine_offer.extraData["visa"] = self.movie_information["visa"]  # type: ignore [index]
         if "stageDirector" in self.movie_information:  # type: ignore [operator]
-            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]  # type: ignore [index, call-overload]
+            allocine_offer.extraData["stageDirector"] = self.movie_information["stageDirector"]  # type: ignore [index]
 
         movie_version = (
             ORIGINAL_VERSION_SUFFIX
@@ -165,8 +165,8 @@ class AllocineStocks(LocalProvider):
 
         allocine_offer.name = f"{self.movie_information['title']} - {movie_version}"  # type: ignore [index]
         allocine_offer.subcategoryId = subcategories.SEANCE_CINE.id
-        allocine_offer.productId = self.last_product_id  # type: ignore [assignment]
-        allocine_offer.extraData["diffusionVersion"] = movie_version  # type: ignore [index, call-overload]
+        allocine_offer.productId = self.last_product_id
+        allocine_offer.extraData["diffusionVersion"] = movie_version
 
         is_new_offer_to_insert = allocine_offer.id is None
 
@@ -187,7 +187,7 @@ class AllocineStocks(LocalProvider):
         diffusion_version = parsed_showtimes["diffusionVersion"]
 
         allocine_stock.offerId = (
-            self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer_id  # type: ignore [assignment]
+            self.last_vo_offer_id if diffusion_version == ORIGINAL_VERSION else self.last_vf_offer_id
         )
 
         local_tz = get_department_timezone(self.venue.departementCode)
@@ -196,7 +196,7 @@ class AllocineStocks(LocalProvider):
 
         is_new_stock_to_insert = allocine_stock.id is None
         if is_new_stock_to_insert:
-            allocine_stock.fieldsUpdated = []
+            allocine_stock.fieldsUpdated = []  # type: ignore [assignment]
 
         if "bookingLimitDatetime" not in allocine_stock.fieldsUpdated:
             allocine_stock.bookingLimitDatetime = date_in_utc
@@ -205,7 +205,7 @@ class AllocineStocks(LocalProvider):
             allocine_stock.quantity = self.quantity
 
         if "price" not in allocine_stock.fieldsUpdated:
-            allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)  # type: ignore [assignment]
+            allocine_stock.price = self.apply_allocine_price_rule(allocine_stock)
 
     def apply_allocine_price_rule(self, allocine_stock: Stock) -> int:
         for price_rule in self.venue_provider.priceRules:

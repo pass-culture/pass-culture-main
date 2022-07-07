@@ -108,6 +108,6 @@ class AdminUserView(SuspensionMixin, BaseAdminView):
                 expiration=datetime.datetime.utcnow() + RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED,
             )
             send_email_validation_to_admin_email(model, token)
-            flash(f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(token.value)}")
+            flash(f"Lien de réinitialisation du mot de passe : {build_pc_webapp_reset_password_link(token.value)}")  # type: ignore [arg-type]
 
         super().after_model_change(form, model, is_created)

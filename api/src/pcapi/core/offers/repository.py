@@ -528,7 +528,7 @@ def get_expired_offers(interval: List[datetime]) -> BaseQuery:
             Stock.isSoftDeleted.is_(False),
             Stock.bookingLimitDatetime.isnot(None),
         )
-        .having(func.max(Stock.bookingLimitDatetime).between(*interval))
+        .having(func.max(Stock.bookingLimitDatetime).between(*interval))  # type: ignore [arg-type]
         .group_by(Offer.id)
         .order_by(Offer.id)
     )
@@ -613,7 +613,7 @@ def get_offer_by_id(offer_id: int) -> Offer:
     try:
         return (
             Offer.query.filter(Offer.id == offer_id)
-            .outerjoin(Stock, and_(Stock.offerId == offer_id, not_(Stock.isSoftDeleted)))
+            .outerjoin(Stock, and_(Stock.offerId == offer_id, not_(Stock.isSoftDeleted)))  # type: ignore [type-var]
             .options(contains_eager(Offer.stocks))
             .options(joinedload(Offer.mediations))
             .options(joinedload(Offer.product, innerjoin=True))

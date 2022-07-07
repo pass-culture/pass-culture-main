@@ -14,6 +14,7 @@ import sqlalchemy.dialects.postgresql as sqla_psql
 import sqlalchemy.orm as sqla_orm
 
 from pcapi import settings
+from pcapi.models import Base
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 import pcapi.utils.db as db_utils
@@ -70,11 +71,11 @@ class BankInformationStatus(enum.Enum):
     ACCEPTED = "ACCEPTED"
 
 
-class BankInformation(PcObject, Model):  # type: ignore [valid-type, misc]
+class BankInformation(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     offererId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("offerer.id"), index=True, nullable=True, unique=True)
     offerer = sqla_orm.relationship("Offerer", foreign_keys=[offererId], backref=sqla_orm.backref("bankInformation", uselist=False))  # type: ignore [misc]
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True, unique=True)
-    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId], backref=sqla_orm.backref("bankInformation", uselist=False))  # type: ignore [misc]
+    venue = sqla_orm.relationship("Venue", foreign_keys=[venueId], back_populates="bankInformation", uselist=False)  # type: ignore [misc]
     iban = sqla.Column(sqla.String(27), nullable=True)
     bic = sqla.Column(sqla.String(11), nullable=True)
     applicationId = sqla.Column(sqla.Integer, nullable=True, index=True, unique=True)
@@ -82,7 +83,7 @@ class BankInformation(PcObject, Model):  # type: ignore [valid-type, misc]
     dateModified = sqla.Column(sqla.DateTime, nullable=True)
 
 
-class BusinessUnit(Model):  # type: ignore [valid-type, misc]
+class BusinessUnit(Base, Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name = sqla.Column(sqla.Text)
     siret = sqla.Column(sqla.String(14), unique=True)
@@ -91,15 +92,15 @@ class BusinessUnit(Model):  # type: ignore [valid-type, misc]
     )
 
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=True)
-    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
+    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])  # type: ignore [misc]
 
     cashflowFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
     invoiceFrequency = sqla.Column(db_utils.MagicEnum(Frequency), nullable=False, default=Frequency.EVERY_TWO_WEEKS)
 
-    invoices = sqla_orm.relationship("Invoice", back_populates="businessUnit")
+    invoices = sqla_orm.relationship("Invoice", back_populates="businessUnit")  # type: ignore [misc]
 
 
-class BusinessUnitVenueLink(Model):  # type: ignore [valid-type, misc]
+class BusinessUnitVenueLink(Base, Model):  # type: ignore [valid-type, misc]
     """Represent the period of time during which a venue was linked to a
     specific business unit.
     """
@@ -108,7 +109,7 @@ class BusinessUnitVenueLink(Model):  # type: ignore [valid-type, misc]
     venueId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=False)
     venue = sqla_orm.relationship("Venue", foreign_keys=[venueId])  # type: ignore [misc]
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
-    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venue_links")
+    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId], backref="venue_links")  # type: ignore [misc]
     # The lower bound is inclusive and required. The upper bound is
     # exclusive and optional. If there is no upper bound, it means
     # that the venue is still linked to the business unit.
@@ -128,7 +129,7 @@ class BusinessUnitVenueLink(Model):  # type: ignore [valid-type, misc]
         super().__init__(**kwargs)
 
 
-class Pricing(Model):  # type: ignore [valid-type, misc]
+class Pricing(Base, Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     status = sqla.Column(db_utils.MagicEnum(PricingStatus), index=True, nullable=False)
@@ -146,7 +147,7 @@ class Pricing(Model):  # type: ignore [valid-type, misc]
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` and `siret`
     # columns once we have fully switched to `pricingPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
+    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])  # type: ignore [misc]
     # `siret` is either the SIRET of the venue if it has one, or the
     # SIRET of its business unit (at the time of the creation of the
     # pricing).
@@ -179,9 +180,9 @@ class Pricing(Model):  # type: ignore [valid-type, misc]
     # It is zero or positive.
     revenue = sqla.Column(sqla.Integer, nullable=False)
 
-    cashflows = sqla_orm.relationship("Cashflow", secondary="cashflow_pricing", back_populates="pricings")
-    lines = sqla_orm.relationship("PricingLine", back_populates="pricing", order_by="PricingLine.id")
-    logs = sqla_orm.relationship("PricingLog", back_populates="pricing")
+    cashflows = sqla_orm.relationship("Cashflow", secondary="cashflow_pricing", back_populates="pricings")  # type: ignore [misc]
+    lines = sqla_orm.relationship("PricingLine", back_populates="pricing", order_by="PricingLine.id")  # type: ignore [misc]
+    logs = sqla_orm.relationship("PricingLog", back_populates="pricing")  # type: ignore [misc]
 
     __table_args__ = (
         sqla.Index("idx_uniq_booking_id", bookingId, postgresql_where=status != PricingStatus.CANCELLED, unique=True),
@@ -200,11 +201,11 @@ class Pricing(Model):  # type: ignore [valid-type, misc]
     )
 
 
-class PricingLine(Model):  # type: ignore [valid-type, misc]
+class PricingLine(Base, Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=True)
-    pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")
+    pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="lines")  # type: ignore [misc]
 
     # See the note about `amount` at the beginning of this module.
     amount = sqla.Column(sqla.Integer, nullable=False)
@@ -212,7 +213,7 @@ class PricingLine(Model):  # type: ignore [valid-type, misc]
     category = sqla.Column(db_utils.MagicEnum(PricingLineCategory), nullable=False)
 
 
-class PricingLog(Model):  # type: ignore [valid-type, misc]
+class PricingLog(Base, Model):  # type: ignore [valid-type, misc]
     """A pricing log is created whenever the status of a pricing
     changes.
     """
@@ -220,7 +221,7 @@ class PricingLog(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
 
     pricingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("pricing.id"), index=True, nullable=False)
-    pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")
+    pricing = sqla_orm.relationship("Pricing", foreign_keys=[pricingId], back_populates="logs")  # type: ignore [misc]
 
     timestamp = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     statusBefore = sqla.Column(db_utils.MagicEnum(PricingStatus), nullable=False)
@@ -228,7 +229,7 @@ class PricingLog(Model):  # type: ignore [valid-type, misc]
     reason = sqla.Column(db_utils.MagicEnum(PricingLogReason), nullable=False)
 
 
-class Cashflow(Model):  # type: ignore [valid-type, misc]
+class Cashflow(Base, Model):  # type: ignore [valid-type, misc]
     """A cashflow represents a specific amount money that is transferred
     between us and a third party. It may be outgoing or incoming.
 
@@ -242,19 +243,19 @@ class Cashflow(Model):  # type: ignore [valid-type, misc]
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
     # fully switched to `reimbursementPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])
+    businessUnit = sqla_orm.relationship("BusinessUnit", foreign_keys=[businessUnitId])  # type: ignore [misc]
     # We denormalize `BusinessUnit.bankAccountId` here because it may
     # change. Here we want to store the bank account that was used at
     # the time the cashflow was created.
     bankAccountId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("bank_information.id"), index=True, nullable=False)
-    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])
+    bankAccount = sqla_orm.relationship(BankInformation, foreign_keys=[bankAccountId])  # type: ignore [misc]
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once cashflow code
     # has been updated and old data has been migrated.
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
     reimbursementPoint = sqla_orm.relationship("Venue", foreign_keys=[reimbursementPointId])  # type: ignore [misc]
 
     batchId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow_batch.id"), index=True, nullable=False)
-    batch = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])
+    batch = sqla_orm.relationship("CashflowBatch", foreign_keys=[batchId])  # type: ignore [misc]
 
     # See the note about `amount` at the beginning of this module.
     # The amount cannot be zero.
@@ -264,32 +265,32 @@ class Cashflow(Model):  # type: ignore [valid-type, misc]
 
     # The transaction id is a UUID that will be included in the wire
     # transfer file that is sent to the bank.
-    transactionId = sqla.Column(
+    transactionId = sqla.Column(  # type: ignore [misc]
         sqla_psql.UUID(as_uuid=True), nullable=False, unique=True, server_default=sqla.func.gen_random_uuid()
     )
 
-    logs = sqla_orm.relationship("CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp")
-    pricings = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")
-    invoices = sqla_orm.relationship("Invoice", secondary="invoice_cashflow", back_populates="cashflows")
+    logs = sqla_orm.relationship("CashflowLog", back_populates="cashflow", order_by="CashflowLog.timestamp")  # type: ignore [misc]
+    pricings = sqla_orm.relationship("Pricing", secondary="cashflow_pricing", back_populates="cashflows")  # type: ignore [misc]
+    invoices = sqla_orm.relationship("Invoice", secondary="invoice_cashflow", back_populates="cashflows")  # type: ignore [misc]
 
     __table_args__ = (sqla.CheckConstraint('("amount" != 0)', name="non_zero_amount_check"),)
 
 
-class CashflowLog(Model):  # type: ignore [valid-type, misc]
+class CashflowLog(Base, Model):  # type: ignore [valid-type, misc]
     """A cashflow log is created whenever the status of a cashflow
     changes.
     """
 
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     cashflowId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("cashflow.id"), index=True, nullable=False)
-    cashflow = sqla_orm.relationship("Cashflow", foreign_keys=[cashflowId], back_populates="logs")
+    cashflow = sqla_orm.relationship("Cashflow", foreign_keys=[cashflowId], back_populates="logs")  # type: ignore [misc]
     timestamp = sqla.Column(sqla.DateTime, nullable=False, server_default=sqla.func.now())
     statusBefore = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
     statusAfter = sqla.Column(db_utils.MagicEnum(CashflowStatus), nullable=False)
     details = sqla.Column(db_utils.SafeJsonB, nullable=True, default={}, server_default="{}")
 
 
-class CashflowPricing(Model):  # type: ignore [valid-type, misc]
+class CashflowPricing(Base, Model):  # type: ignore [valid-type, misc]
     """An association table between cashflows and pricings for their
     many-to-many relationship.
 
@@ -315,7 +316,7 @@ class CashflowPricing(Model):  # type: ignore [valid-type, misc]
     )
 
 
-class CashflowBatch(Model):  # type: ignore [valid-type, misc]
+class CashflowBatch(Base, Model):  # type: ignore [valid-type, misc]
     """A cashflow batch groups cashflows that are sent to the bank at the
     same time (in a single file).
     """
@@ -326,10 +327,10 @@ class CashflowBatch(Model):  # type: ignore [valid-type, misc]
     label = sqla.Column(sqla.Text, nullable=False, unique=True)
 
 
-class InvoiceLine(Model):  # type: ignore [valid-type, misc]
+class InvoiceLine(Base, Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     invoiceId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, nullable=False)
-    invoice = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")
+    invoice = sqla_orm.relationship("Invoice", foreign_keys=[invoiceId], back_populates="lines")  # type: ignore [misc]
     label = sqla.Column(sqla.Text, nullable=False)
     # a group is a dict of label and position, as defined in ..conf.InvoiceLineGroup
     group = sqla.Column(sqla_psql.JSONB, nullable=False)
@@ -360,7 +361,7 @@ class InvoiceLineGroup:
     reimbursed_amount_subtotal: float
 
 
-class Invoice(Model):  # type: ignore [valid-type, misc]
+class Invoice(Base, Model):  # type: ignore [valid-type, misc]
     """An invoice is linked to one or more cashflows and shows a summary
     of their related pricings.
     """
@@ -371,7 +372,9 @@ class Invoice(Model):  # type: ignore [valid-type, misc]
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
     # fully switched to `reimbursementPointId`
     businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
-    businessUnit = sqla_orm.relationship("BusinessUnit", back_populates="invoices")
+    businessUnit: "sqla_orm.Mapped[BusinessUnit]" = sqla_orm.relationship(
+        "BusinessUnit", back_populates="invoices", uselist=False
+    )
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once invoice code
     # has been updated and old data has been migrated.
     reimbursementPointId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("venue.id"), index=True, nullable=True)
@@ -379,8 +382,8 @@ class Invoice(Model):  # type: ignore [valid-type, misc]
     # See the note about `amount` at the beginning of this module.
     amount = sqla.Column(sqla.Integer, nullable=False)
     token = sqla.Column(sqla.Text, unique=True, nullable=False)
-    lines = sqla_orm.relationship("InvoiceLine", back_populates="invoice")
-    cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")
+    lines = sqla_orm.relationship("InvoiceLine", back_populates="invoice")  # type: ignore [misc]
+    cashflows = sqla_orm.relationship("Cashflow", secondary="invoice_cashflow", back_populates="invoices")  # type: ignore [misc]
 
     @property
     def storage_object_id(self):  # type: ignore [no-untyped-def]
@@ -394,7 +397,7 @@ class Invoice(Model):  # type: ignore [valid-type, misc]
         return f"{settings.OBJECT_STORAGE_URL}/invoices/{self.storage_object_id}"
 
 
-class InvoiceCashflow(Model):  # type: ignore [valid-type, misc]
+class InvoiceCashflow(Base, Model):  # type: ignore [valid-type, misc]
     """An association table between invoices and cashflows for their many-to-many relationship."""
 
     invoiceId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("invoice.id"), index=True, primary_key=True)
@@ -413,7 +416,7 @@ class InvoiceCashflow(Model):  # type: ignore [valid-type, misc]
 # were used in the "old" reimbursement system. No new data is created
 # with these models since 2022-01-01. These models have been replaced
 # by `Pricing`, `Cashflow` and other models listed above.
-class Payment(Model):  # type: ignore [valid-type, misc]
+class Payment(Base, Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")  # type: ignore [misc]
@@ -444,10 +447,10 @@ class Payment(Model):  # type: ignore [valid-type, misc]
     )
     comment = sqla.Column(sqla.Text, nullable=True)
     author = sqla.Column(sqla.String(27), nullable=False)
-    transactionEndToEndId = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)
+    transactionEndToEndId = sqla.Column(sqla_psql.UUID(as_uuid=True), nullable=True)  # type: ignore [misc]
     transactionLabel = sqla.Column(sqla.String(140), nullable=True)
     paymentMessageId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment_message.id"), nullable=True)
-    paymentMessage = sqla_orm.relationship(
+    paymentMessage = sqla_orm.relationship(  # type: ignore [misc]
         "PaymentMessage", foreign_keys=[paymentMessageId], backref=sqla_orm.backref("payments")
     )
     batchDate = sqla.Column(sqla.DateTime, nullable=True, index=True)
@@ -483,10 +486,10 @@ class TransactionStatus(enum.Enum):
 
 # `PaymentStatus` is deprecated. See comment above `Payment` model for
 # further details.
-class PaymentStatus(Model):  # type: ignore [valid-type, misc]
+class PaymentStatus(Base, Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     paymentId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("payment.id"), index=True, nullable=False)
-    payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")
+    payment = sqla_orm.relationship("Payment", foreign_keys=[paymentId], backref="statuses")  # type: ignore [misc]
     date = sqla.Column(sqla.DateTime, nullable=False, default=datetime.datetime.utcnow, server_default=sqla.func.now())
     status = sqla.Column(sqla.Enum(TransactionStatus), nullable=False)
     detail = sqla.Column(sqla.Text, nullable=True)
@@ -494,7 +497,7 @@ class PaymentStatus(Model):  # type: ignore [valid-type, misc]
 
 # `PaymentMessage` is deprecated. See comment above `Payment` model
 # for further details.
-class PaymentMessage(Model):  # type: ignore [valid-type, misc]
+class PaymentMessage(Base, Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
     name = sqla.Column(sqla.String(50), unique=True, nullable=False)
     checksum = sqla.Column(sqla.LargeBinary(32), unique=True, nullable=False)
