@@ -3,7 +3,6 @@ from datetime import timedelta
 from io import BytesIO
 import logging
 from typing import Optional
-from typing import Union
 
 from PIL import Image
 
@@ -97,7 +96,7 @@ def check_update_only_allowed_fields_for_offer_from_provider(updated_fields: set
         raise api_error
 
 
-def check_stock_quantity(quantity: Union[int, None], bookingQuantity: int = 0) -> None:
+def check_stock_quantity(quantity: int | None, bookingQuantity: int = 0) -> None:
     api_errors = ApiErrors()
 
     if quantity is not None and quantity < 0:
@@ -185,7 +184,7 @@ def check_stock_is_updatable(stock: Stock) -> None:
     check_event_expiration(stock)
 
 
-def check_event_expiration(stock: Union[CollectiveStock, Stock]):  # type: ignore [no-untyped-def]
+def check_event_expiration(stock: CollectiveStock | Stock):  # type: ignore [no-untyped-def]
     if stock.isEventExpired:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
@@ -230,7 +229,7 @@ def check_image(
         raise exceptions.ImageTooSmall(min_width, min_height)
 
 
-def check_validation_status(offer: Union[Offer, CollectiveOffer, CollectiveOfferTemplate]) -> None:
+def check_validation_status(offer: Offer | CollectiveOffer | CollectiveOfferTemplate) -> None:
     if offer.validation in (OfferValidationStatus.REJECTED, OfferValidationStatus.PENDING):
         error = ApiErrors()
         error.add_error("global", "Les offres refusées ou en attente de validation ne sont pas modifiables")
@@ -351,7 +350,7 @@ def check_offer_subcategory_is_valid(offer_subcategory_id):  # type: ignore [no-
 
 
 def check_booking_limit_datetime(
-    stock: Optional[Union[CollectiveStock, Stock]],
+    stock: Optional[CollectiveStock | Stock],
     beginning: Optional[datetime],
     booking_limit_datetime: Optional[datetime],
 ) -> None:

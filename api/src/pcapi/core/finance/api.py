@@ -205,7 +205,7 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
 
 
 def _get_pricing_point_link(
-    booking: typing.Union[bookings_models.Booking, educational_models.CollectiveBooking]
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> offerers_models.VenuePricingPointLink:
     """Return the venue-pricing point link to use at the requested
     datetime.
@@ -228,10 +228,7 @@ def _get_pricing_point_link(
 
 
 def _get_bookings_to_price(
-    model: typing.Union[
-        typing.Type[bookings_models.Booking],
-        typing.Type[educational_models.CollectiveBooking],
-    ],
+    model: typing.Type[bookings_models.Booking] | typing.Type[educational_models.CollectiveBooking],
     window: tuple[datetime.datetime, datetime.datetime],
     use_pricing_point: bool,
 ) -> BaseQuery:
@@ -378,7 +375,7 @@ def lock_business_unit(business_unit_id: int) -> None:
 
 
 def get_non_cancelled_pricing_from_booking(
-    booking: typing.Union[bookings_models.Booking, educational_models.CollectiveBooking]
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
 ) -> typing.Optional[models.Pricing]:
     if isinstance(booking, bookings_models.Booking):
         pricing_query = models.Pricing.query.filter_by(booking=booking)
@@ -394,7 +391,7 @@ def get_non_cancelled_pricing_from_booking(
 
 
 def price_booking(
-    booking: typing.Union[bookings_models.Booking, CollectiveBooking],
+    booking: bookings_models.Booking | CollectiveBooking,
     use_pricing_point: bool,
 ) -> typing.Optional[models.Pricing]:
     if use_pricing_point:
@@ -570,7 +567,7 @@ def _get_pricing_point_id_and_current_revenue(
 
 
 def _price_booking(
-    booking: typing.Union[bookings_models.Booking, CollectiveBooking],
+    booking: bookings_models.Booking | CollectiveBooking,
     use_pricing_point: bool,
 ) -> models.Pricing:
     if use_pricing_point:
@@ -627,9 +624,7 @@ def _price_booking(
     return models.Pricing(**pricing_data)
 
 
-def _get_initial_pricing_status(
-    booking: typing.Union[bookings_models.Booking, CollectiveBooking]
-) -> models.PricingStatus:
+def _get_initial_pricing_status(booking: bookings_models.Booking | CollectiveBooking) -> models.PricingStatus:
     # In the future, we may set the pricing as "pending" (as in
     # "pending validation") for example if the business unit is new,
     # or if the offer or offerer has particular characteristics. For
@@ -638,7 +633,7 @@ def _get_initial_pricing_status(
 
 
 def _delete_dependent_pricings(
-    booking: typing.Union[bookings_models.Booking, CollectiveBooking],
+    booking: bookings_models.Booking | CollectiveBooking,
     log_message: str,
     use_pricing_point: bool,
 ) -> None:
@@ -798,7 +793,7 @@ def _delete_dependent_pricings(
 
 
 def cancel_pricing(
-    booking: typing.Union[bookings_models.Booking, CollectiveBooking], reason: models.PricingLogReason
+    booking: bookings_models.Booking | CollectiveBooking, reason: models.PricingLogReason
 ) -> typing.Optional[models.Pricing]:
     use_pricing_point = FeatureToggle.USE_PRICING_POINT_FOR_PRICING.is_active()
 
@@ -1385,7 +1380,7 @@ def edit_business_unit(business_unit: models.BusinessUnit, siret: str) -> None:
     db.session.commit()
 
 
-def find_reimbursement_rule(rule_reference: typing.Union[str, int]) -> payments_models.ReimbursementRule:
+def find_reimbursement_rule(rule_reference: str | int) -> payments_models.ReimbursementRule:
     # regular rule description
     if isinstance(rule_reference, str):
         for regular_rule in reimbursement.REGULAR_RULES:

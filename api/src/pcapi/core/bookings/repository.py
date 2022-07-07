@@ -11,7 +11,6 @@ import typing
 from typing import Iterable
 from typing import List
 from typing import Optional
-from typing import Union
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
@@ -424,7 +423,7 @@ def get_export(
     venue_id: Optional[int] = None,
     offer_type: Optional[OfferType] = None,
     export_type: Optional[BookingExportType] = BookingExportType.CSV,
-) -> Union[str, bytes]:
+) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
         pro_user=user,
         period=booking_period,  # type: ignore [arg-type]

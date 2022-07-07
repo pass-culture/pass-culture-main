@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from typing import Union
 
 from pydantic import Field
 from pydantic import condecimal
@@ -121,7 +120,7 @@ class EducationalStockIdResponseModel(BaseModel):
 
 class StocksUpsertBodyModel(BaseModel):
     offer_id: int
-    stocks: list[Union[StockCreationBodyModel, StockEditionBodyModel]]
+    stocks: list[StockCreationBodyModel | StockEditionBodyModel]
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
 

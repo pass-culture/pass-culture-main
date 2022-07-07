@@ -1,6 +1,5 @@
 from dataclasses import asdict
 from typing import Iterable
-from typing import Union
 
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalWithoutTemplateEmailData
@@ -18,7 +17,7 @@ class TestingBackend(BaseBackend):
     def send_mail(
         self,
         recipients: Iterable[str],
-        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
+        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
     ) -> MailResult:
         sent_data = asdict(data)
         sent_data["To"] = ", ".join(recipients)
@@ -33,7 +32,7 @@ class FailingBackend(BaseBackend):
     def send_mail(
         self,
         recipients: Iterable[str],
-        data: Union[SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
+        data: SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
     ) -> MailResult:
         sent_data = asdict(data)
         sent_data["To"] = ", ".join(recipients)

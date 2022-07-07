@@ -4,7 +4,6 @@ import logging
 from operator import or_
 from typing import Iterable
 from typing import Optional
-from typing import Union
 from typing import cast
 
 from flask_sqlalchemy import BaseQuery
@@ -400,7 +399,7 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
 
 
 def _update_educational_booking_educational_year_id(
-    booking: Union[bookings_models.Booking, educational_models.CollectiveBooking],
+    booking: bookings_models.Booking | educational_models.CollectiveBooking,
     new_beginning_datetime: datetime.datetime,
 ) -> None:
     educational_year = educational_repository.find_educational_year_by_date(new_beginning_datetime)
@@ -591,7 +590,7 @@ def get_collective_booking_report(
     event_date: Optional[datetime.datetime] = None,
     venue_id: Optional[int] = None,
     export_type: Optional[BookingExportType] = BookingExportType.CSV,
-) -> Union[str, bytes]:
+) -> str | bytes:
     bookings_query = get_filtered_collective_booking_report(
         pro_user=user,
         period=booking_period,  # type: ignore [arg-type]
@@ -615,7 +614,7 @@ def list_collective_offers_for_pro_user(
     status: Optional[str] = None,
     period_beginning_date: Optional[str] = None,
     period_ending_date: Optional[str] = None,
-) -> list[Union[CollectiveOffer, CollectiveOfferTemplate]]:
+) -> list[CollectiveOffer | CollectiveOfferTemplate]:
     offers = get_collective_offers_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
@@ -690,7 +689,7 @@ def get_educational_domains_from_ids(
 
 
 def create_collective_offer(
-    offer_data: Union[PostCollectiveOfferBodyModel, PostEducationalOfferBodyModel],
+    offer_data: PostCollectiveOfferBodyModel | PostEducationalOfferBodyModel,
     user: User,
     offer_id: Optional[int] = None,
 ) -> CollectiveOffer:
@@ -822,11 +821,9 @@ def find_collective_bookings_for_adage(
     year_id: str,
     redactor_email: Optional[str] = None,
     status: Optional[
-        Union[
-            educational_models.CollectiveBookingStatus,
-            educational_models.EducationalBookingStatus,
-            bookings_models.BookingStatus,
-        ]
+        educational_models.CollectiveBookingStatus
+        | educational_models.EducationalBookingStatus
+        | bookings_models.BookingStatus
     ] = None,
 ) -> list[educational_models.CollectiveBooking]:
     return educational_repository.find_collective_bookings_for_adage(

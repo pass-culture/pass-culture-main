@@ -4,7 +4,6 @@ from decimal import InvalidOperation
 from io import BytesIO
 import typing
 from typing import Optional
-from typing import Union
 
 from PIL import Image
 import pydantic
@@ -240,8 +239,8 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     name: Optional[pydantic.constr(max_length=140)]  # type: ignore
     address: Optional[pydantic.constr(max_length=200)]  # type: ignore
     siret: Optional[pydantic.constr(min_length=14, max_length=14)]  # type: ignore
-    latitude: Optional[Union[float, str]]
-    longitude: Optional[Union[float, str]]
+    latitude: Optional[float | str]
+    longitude: Optional[float | str]
     bookingEmail: Optional[pydantic.constr(max_length=120)]  # type: ignore
     postalCode: Optional[pydantic.constr(min_length=4, max_length=6)]  # type: ignore
     city: Optional[pydantic.constr(max_length=50)]  # type: ignore

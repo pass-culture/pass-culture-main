@@ -9,7 +9,6 @@ from typing import Any
 from typing import Callable
 from typing import Iterable
 from typing import Optional
-from typing import Union
 
 import sib_api_v3_sdk
 from sib_api_v3_sdk.api.contacts_api import ContactsApi
@@ -93,7 +92,7 @@ class SendinblueAttributes(Enum):
 
 
 def update_contact_attributes(
-    user_email: str, attributes: Union[UserAttributes, ProAttributes], asynchronous: bool = True
+    user_email: str, attributes: UserAttributes | ProAttributes, asynchronous: bool = True
 ) -> None:
     formatted_attributes = format_user_attributes(attributes)
 
@@ -119,20 +118,20 @@ def format_list(raw_list: Iterable[str]) -> str:
     return ",".join(raw_list)
 
 
-def format_list_or_str(raw_value: Union[str, Iterable[str]]) -> str:
+def format_list_or_str(raw_value: str | Iterable[str]) -> str:
     if isinstance(raw_value, str):
         return raw_value
     return format_list(raw_value)
 
 
-def _get_attr(attributes: Union[UserAttributes, ProAttributes], name: str, func: Callable[[Any], Any] = None) -> Any:
+def _get_attr(attributes: UserAttributes | ProAttributes, name: str, func: Callable[[Any], Any] = None) -> Any:
     value = getattr(attributes, name, None)
     if value is not None and func is not None:
         value = func(value)
     return value
 
 
-def format_user_attributes(attributes: Union[UserAttributes, ProAttributes]) -> dict:
+def format_user_attributes(attributes: UserAttributes | ProAttributes) -> dict:
     return {
         SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
         SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(
@@ -273,7 +272,7 @@ def send_import_contacts_request(
         logger.exception("Exception when calling ContactsApi->import_contacts: %s", e)
 
 
-def format_file_value(value: Optional[Union[str, bool, int, datetime]]) -> str:
+def format_file_value(value: Optional[str | bool | int | datetime]) -> str:
     if value is None:
         return ""
     if isinstance(value, datetime):
