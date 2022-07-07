@@ -120,6 +120,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_IN_PAGE_PROFILE_FORM = "Active le formulaire d'édition de profile dans une page séparée"
     ENABLE_ADAGE_VENUE_INFORMATION = "Active la page acteur culturel"
     USE_PRICING_POINT_FOR_PRICING = "Utilise le modèle VenuePricingPointLink pour la valorisation"
+    USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS = "Utilise le modèle VenueReimbursementPointLink pour les cashflows"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -179,6 +180,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.PRO_DISABLE_EVENTS_QRCODE,
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.USE_PRICING_POINT_FOR_PRICING,
+    FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS,
 )
 
 

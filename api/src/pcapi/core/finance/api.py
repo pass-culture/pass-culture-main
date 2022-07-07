@@ -872,8 +872,8 @@ def _get_next_cashflow_batch_label() -> str:
 
 
 def generate_cashflows(cutoff: datetime.datetime) -> int:
-    """Generate a new CashflowBatch and a new cashflow for each business
-    unit for which there is money to transfer.
+    """Generate a new CashflowBatch and a new cashflow for each
+    reimbursement point for which there is money to transfer.
     """
     batch = models.CashflowBatch(cutoff=cutoff, label=_get_next_cashflow_batch_label())
     db.session.add(batch)
@@ -887,18 +887,18 @@ def generate_cashflows(cutoff: datetime.datetime) -> int:
 
 def _generate_cashflows(batch: models.CashflowBatch) -> None:
     """Given an existing CashflowBatch and corresponding cutoff, generate
-    a new cashflow for each business unit for which there is money to
-    transfer.
+    a new cashflow for each reimbursement point for which there is
+    money to transfer.
 
-    This is a private function that should only be called directly if
-    the cashflow generation stopped before its end and you want to
-    proceed with an **existing** CashflowBatch.
+    This is a private function that you should never called directly,
+    unless the cashflow generation stopped before its end and you want
+    to proceed with an **existing** CashflowBatch.
     """
     # Store now otherwise SQLAlchemy will make a SELECT to fetch the
     # id again after each COMMIT.
     batch_id = batch.id
     logger.info("Started to generate cashflows for batch %d", batch_id)
-    filters: typing.Tuple = (
+    filters = (
         models.Pricing.status == models.PricingStatus.VALIDATED,
         models.Pricing.valueDate < batch.cutoff,
         # We should not have any validated pricing with a cashflow,
@@ -907,10 +907,6 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         # Bookings can now be priced even if BankInformation is not ACCEPTED,
         # but to generate cashflows we definitely need it.
         models.BankInformation.status == models.BankInformationStatus.ACCEPTED,
-    )
-
-    filters = (
-        *filters,
         # Even if a booking is marked as used prematurely, we should
         # wait for the event to happen.
         sqla.or_(
@@ -937,43 +933,111 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
             synchronize_session=False,
         )
 
-    business_unit_ids_and_bank_account_ids_base_query = (
-        models.Pricing.query.filter(
-            models.BusinessUnit.bankAccountId.isnot(None),
-            *filters,
+    use_reimbursement_point = FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active()
+    if use_reimbursement_point:
+        reimbursement_point_infos = (
+            models.Pricing.query.filter(*filters)
+            .outerjoin(models.Pricing.booking)
+            .outerjoin(models.Pricing.collectiveBooking)
+            .outerjoin(bookings_models.Booking.stock)
+            .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+            .join(
+                offerers_models.VenueReimbursementPointLink,
+                offerers_models.VenueReimbursementPointLink.venueId
+                == sqla_func.coalesce(
+                    bookings_models.Booking.venueId,
+                    educational_models.CollectiveBooking.venueId,
+                ),
+            )
+            .filter(offerers_models.VenueReimbursementPointLink.timespan.contains(batch.cutoff))
+            .join(
+                models.BankInformation,
+                models.BankInformation.venueId == offerers_models.VenueReimbursementPointLink.reimbursementPointId,
+            )
+            .outerjoin(models.CashflowPricing)
+            .with_entities(
+                offerers_models.VenueReimbursementPointLink.reimbursementPointId,
+                models.BankInformation.id,
+                sqla.func.array_remove(
+                    sqla.func.array_cat(
+                        sqla_func.array_agg(bookings_models.Booking.venueId),
+                        sqla_func.array_agg(educational_models.CollectiveBooking.venueId),
+                    ),
+                    None,
+                ),
+            )
+            .group_by(
+                offerers_models.VenueReimbursementPointLink.reimbursementPointId,
+                models.BankInformation.id,
+            )
         )
-        .outerjoin(models.Pricing.booking)
-        .outerjoin(models.Pricing.collectiveBooking)
-        .outerjoin(bookings_models.Booking.stock)
-        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-    )
+        business_unit_infos = ()
+    else:
+        reimbursement_point_infos = ()
+        business_unit_infos = (
+            models.Pricing.query.filter(
+                models.BusinessUnit.bankAccountId.isnot(None),
+                *filters,
+            )
+            .outerjoin(models.Pricing.booking)
+            .outerjoin(models.Pricing.collectiveBooking)
+            .outerjoin(bookings_models.Booking.stock)
+            .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+            .join(models.Pricing.businessUnit)
+            .join(models.BusinessUnit.bankAccount)
+            .outerjoin(models.CashflowPricing)
+            .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
+            .distinct()
+        )
 
-    business_unit_ids_and_bank_account_ids = (
-        business_unit_ids_and_bank_account_ids_base_query.join(models.Pricing.businessUnit)
-        .join(models.BusinessUnit.bankAccount)
-        .outerjoin(models.CashflowPricing)
-        .with_entities(models.Pricing.businessUnitId, models.BusinessUnit.bankAccountId)
-        .distinct()
-    )
-    for business_unit_id, bank_account_id in business_unit_ids_and_bank_account_ids:
-        logger.info("Generating cashflow", extra={"business_unit": business_unit_id})
+    for info in reimbursement_point_infos or business_unit_infos:
+        if use_reimbursement_point:
+            reimbursement_point_id, bank_account_id, venue_ids = info
+            business_unit_id = None
+        else:
+            business_unit_id, bank_account_id = info
+            reimbursement_point_id = None
+        log_extra = {
+            "batch": batch_id,
+            "reimbursement_point": reimbursement_point_id,
+            "business_unit": business_unit_id,
+        }
+        logger.info("Generating cashflow", extra=log_extra)
         try:
             with transaction():
-                pricing_base_query = (
-                    models.Pricing.query.outerjoin(models.Pricing.booking)
-                    .outerjoin(bookings_models.Booking.stock)
-                    .outerjoin(models.Pricing.collectiveBooking)
-                    .outerjoin(educational_models.CollectiveBooking.collectiveStock)
-                )
-                pricings = (
-                    pricing_base_query.join(models.BusinessUnit)
-                    .join(models.BusinessUnit.bankAccount)
-                    .outerjoin(models.CashflowPricing)
-                    .filter(
-                        models.Pricing.businessUnitId == business_unit_id,
-                        *filters,
+                if use_reimbursement_point:
+                    pricings = (
+                        models.Pricing.query.outerjoin(models.Pricing.booking)
+                        .outerjoin(bookings_models.Booking.stock)
+                        .outerjoin(models.Pricing.collectiveBooking)
+                        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+                        .join(
+                            models.BankInformation,
+                            models.BankInformation.venueId == reimbursement_point_id,
+                        )
+                        .outerjoin(models.CashflowPricing)
+                        .filter(
+                            sqla_func.coalesce(
+                                bookings_models.Booking.venueId,
+                                educational_models.CollectiveBooking.venueId,
+                            ).in_(venue_ids),
+                            *filters,
+                        )
                     )
-                )
+                else:
+                    pricings = (
+                        models.Pricing.query.outerjoin(models.Pricing.booking)
+                        .outerjoin(bookings_models.Booking.stock)
+                        .outerjoin(models.Pricing.collectiveBooking)
+                        .outerjoin(educational_models.CollectiveBooking.collectiveStock)
+                        .join(models.BusinessUnit)
+                        .join(models.BusinessUnit.bankAccount)
+                        .outerjoin(models.CashflowPricing)
+                        .filter(
+                            models.Pricing.businessUnitId == business_unit_id,
+                            *filters,
+                        )
+                    )
                 total = pricings.with_entities(sqla.func.sum(models.Pricing.amount)).scalar()
                 if not total:
                     # Mark as `PROCESSED` even if there is no cashflow, so
@@ -983,25 +1047,32 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
                 cashflow = models.Cashflow(
                     batchId=batch_id,
                     businessUnitId=business_unit_id,
+                    reimbursementPointId=reimbursement_point_id,
                     bankAccountId=bank_account_id,
                     status=models.CashflowStatus.PENDING,
                     amount=total,
                 )
                 db.session.add(cashflow)
-                links = [models.CashflowPricing(cashflowId=cashflow.id, pricingId=pricing.id) for pricing in pricings]
+                links = [
+                    models.CashflowPricing(
+                        cashflowId=cashflow.id,
+                        pricingId=pricing.id,
+                    )
+                    for pricing in pricings
+                ]
                 # Mark as `PROCESSED` now (and not before), otherwise the
                 # `pricings` query above will be empty since it
                 # filters on `VALIDATED` pricings.
                 _mark_as_processed(pricings)
                 db.session.bulk_save_objects(links)
                 db.session.commit()
-                logger.info("Generated cashflow", extra={"business_unit": business_unit_id})
+                logger.info("Generated cashflow", extra=log_extra)
         except Exception:  # pylint: disable=broad-except
             if settings.IS_RUNNING_TESTS:
                 raise
             logger.exception(
                 "Could not generate cashflows for a business unit",
-                extra={"business_unit": business_unit_id, "batch": batch_id},
+                extra=log_extra,
             )
 
 
@@ -1021,8 +1092,12 @@ def generate_payment_files(batch_id: int) -> None:
         )
 
     file_paths = {}
-    logger.info("Generating business units file")
-    file_paths["business_units"] = _generate_business_units_file()
+    if FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active():
+        logger.info("Generating reimbursement points file")
+        file_paths["reimbursement_points"] = _generate_reimbursement_points_file()
+    else:
+        logger.info("Generating business units file")
+        file_paths["business_units"] = _generate_business_units_file()
     logger.info("Generating payments file")
     file_paths["payments"] = _generate_payments_file(batch_id)
     logger.info("Generating wallets file")
@@ -1133,6 +1208,42 @@ def _write_csv(
     return path
 
 
+def _generate_reimbursement_points_file() -> pathlib.Path:
+    header = (
+        "Identifiant du point de remboursement",
+        "SIRET",
+        "Raison sociale du point de remboursement",
+        "IBAN",
+        "BIC",
+    )
+    query = (
+        offerers_models.Venue.query.join(offerers_models.Venue.bankInformation)
+        .filter(
+            offerers_models.Venue.id.in_(
+                offerers_models.VenueReimbursementPointLink.query.with_entities(
+                    offerers_models.VenueReimbursementPointLink.reimbursementPointId
+                )
+            )
+        )
+        .order_by(offerers_models.Venue.id)
+        .with_entities(
+            offerers_models.Venue.id,
+            offerers_models.Venue.siret,
+            offerers_models.Venue.name,
+            models.BankInformation.iban.label("iban"),
+            models.BankInformation.bic.label("bic"),
+        )
+    )
+    row_formatter = lambda row: (
+        human_ids.humanize(row.id),
+        _clean_for_accounting(row.siret),
+        _clean_for_accounting(row.name),
+        _clean_for_accounting(row.iban),
+        _clean_for_accounting(row.bic),
+    )
+    return _write_csv("reimbursement_points", header, rows=query, row_formatter=row_formatter)
+
+
 def _generate_business_units_file() -> pathlib.Path:
     header = (
         "Identifiant de la BU",
@@ -1182,40 +1293,76 @@ def _clean_for_accounting(value: str) -> str:
 
 
 def _generate_payments_file(batch_id: int) -> pathlib.Path:
-    header = [
-        "Identifiant de la BU",
-        "SIRET de la BU",
-        "Libellé de la BU",  # actually, the commercial name of the related venue
-        "Type de réservation",
-        "Ministère",
-        "Prix de la réservation",
-        "Montant remboursé à l'offreur",
-    ]
+    use_reimbursement_point = FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active()
+    if use_reimbursement_point:
+        header = [
+            "Identifiant du point de remboursement",
+            "SIRET du point de remboursement",
+            "Libellé du point de remboursement",  # commercial name
+            "Type de réservation",
+            "Ministère",
+            "Prix de la réservation",
+            "Montant remboursé à l'offreur",
+        ]
+    else:
+        header = [
+            "Identifiant de la BU",
+            "SIRET de la BU",
+            "Libellé de la BU",  # actually, the commercial name of the related venue
+            "Type de réservation",
+            "Ministère",
+            "Prix de la réservation",
+            "Montant remboursé à l'offreur",
+        ]
     bookings_query = (
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.booking)
         .filter(bookings_models.Booking.amount != 0)
-        .join(models.Pricing.businessUnit)
-        # There should be a Venue with the same SIRET as the business
-        # unit... but edition has been sloppy and there are
-        # inconsistencies. To avoid excluding business unit, we do an
-        # _outer_ join and not an _inner_ join here. Obviously, the
-        # corresponding columns will be empty in the CSV file.
-        # See also `_generate_business_units_file()` and `generate_invoice_file()`.
-        .outerjoin(
+    )
+    if use_reimbursement_point:
+        bookings_query = bookings_query.join(
             offerers_models.Venue,
-            models.BusinessUnit.siret == offerers_models.Venue.siret,
+            offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
         )
-        .join(bookings_models.Booking.individualBooking)
+    else:
+        bookings_query = (
+            bookings_query.join(models.Pricing.businessUnit)
+            # There should be a Venue with the same SIRET as the business
+            # unit... but edition has been sloppy and there are
+            # inconsistencies. To avoid excluding business unit, we do an
+            # _outer_ join and not an _inner_ join here. Obviously, the
+            # corresponding columns will be empty in the CSV file.
+            # See also `_generate_business_units_file()` and `generate_invoice_file()`.
+            .outerjoin(
+                offerers_models.Venue,
+                models.BusinessUnit.siret == offerers_models.Venue.siret,
+            )
+        )
+    bookings_query = (
+        bookings_query.join(bookings_models.Booking.individualBooking)
         .join(bookings_models.IndividualBooking.deposit)
         .filter(models.Cashflow.batchId == batch_id)
         .group_by(
             offerers_models.Venue.id,
-            models.BusinessUnit.siret,
+            offerers_models.Venue.siret if use_reimbursement_point else models.BusinessUnit.siret,
             payments_models.Deposit.type,
         )
-        .with_entities(
+    )
+    if use_reimbursement_point:
+        bookings_query = bookings_query.with_entities(
+            offerers_models.Venue.id.label("reimbursement_point_id"),
+            offerers_models.Venue.siret.label("reimbursement_point_siret"),
+            sqla_func.coalesce(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ).label("reimbursement_point_name"),
+            sqla_func.sum(bookings_models.Booking.amount * bookings_models.Booking.quantity).label("booking_amount"),
+            payments_models.Deposit.type.label("deposit_type"),
+            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+        )
+    else:
+        bookings_query = bookings_query.with_entities(
             offerers_models.Venue.id.label("business_unit_venue_id"),
             models.BusinessUnit.siret.label("business_unit_siret"),
             sqla_func.coalesce(
@@ -1226,30 +1373,39 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             payments_models.Deposit.type.label("deposit_type"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
-        # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
-        # but I am not sure it helps here. We have used
-        # `pcapi.utils.db.get_batches` in the old-style payment code
-        # and that may be what's best here.
-        .yield_per(1000)
-    )
+    # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
+    # but I am not sure it helps here. We have used
+    # `pcapi.utils.db.get_batches` in the old-style payment code
+    # and that may be what's best here.
+    bookings_query = bookings_query.yield_per(1000)
 
     collective_bookings_query = (
         models.Pricing.query.filter_by(status=models.PricingStatus.PROCESSED)
         .join(models.Pricing.cashflows)
         .join(models.Pricing.collectiveBooking)
         .join(CollectiveBooking.collectiveStock)
-        .join(models.Pricing.businessUnit)
-        # There should be a Venue with the same SIRET as the business
-        # unit... but edition has been sloppy and there are
-        # inconsistencies. To avoid excluding business unit, we do an
-        # _outer_ join and not an _inner_ join here. Obviously, the
-        # corresponding columns will be empty in the CSV file.
-        # See also `_generate_business_units_file()` and `generate_invoice_file()`.
-        .outerjoin(
+    )
+    if use_reimbursement_point:
+        collective_bookings_query = collective_bookings_query.join(
             offerers_models.Venue,
-            models.BusinessUnit.siret == offerers_models.Venue.siret,
+            offerers_models.Venue.id == models.Cashflow.reimbursementPointId,
         )
-        .join(CollectiveBooking.educationalInstitution)
+    else:
+        collective_bookings_query = (
+            collective_bookings_query.join(models.Pricing.businessUnit)
+            # There should be a Venue with the same SIRET as the business
+            # unit... but edition has been sloppy and there are
+            # inconsistencies. To avoid excluding business unit, we do an
+            # _outer_ join and not an _inner_ join here. Obviously, the
+            # corresponding columns will be empty in the CSV file.
+            # See also `_generate_business_units_file()` and `generate_invoice_file()`.
+            .outerjoin(
+                offerers_models.Venue,
+                models.BusinessUnit.siret == offerers_models.Venue.siret,
+            )
+        )
+    collective_bookings_query = (
+        collective_bookings_query.join(CollectiveBooking.educationalInstitution)
         .join(
             educational_models.EducationalDeposit,
             and_(
@@ -1261,10 +1417,24 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         .filter(models.Cashflow.batchId == batch_id)
         .group_by(
             offerers_models.Venue.id,
-            models.BusinessUnit.siret,
+            offerers_models.Venue.siret if use_reimbursement_point else models.BusinessUnit.siret,
             educational_models.EducationalDeposit.ministry,
         )
-        .with_entities(
+    )
+    if use_reimbursement_point:
+        collective_bookings_query = collective_bookings_query.with_entities(
+            offerers_models.Venue.id.label("reimbursement_point_id"),
+            offerers_models.Venue.siret.label("reimbursement_point_siret"),
+            sqla_func.coalesce(
+                offerers_models.Venue.publicName,
+                offerers_models.Venue.name,
+            ).label("reimbursement_point_name"),
+            sqla_func.sum(CollectiveStock.price).label("booking_amount"),
+            educational_models.EducationalDeposit.ministry.label("ministry"),
+            sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
+        )
+    else:
+        collective_bookings_query = collective_bookings_query.with_entities(
             offerers_models.Venue.id.label("business_unit_venue_id"),
             models.BusinessUnit.siret.label("business_unit_siret"),
             sqla_func.coalesce(
@@ -1275,12 +1445,11 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
             educational_models.EducationalDeposit.ministry.label("ministry"),
             sqla_func.sum(models.Pricing.amount).label("pricing_amount"),
         )
-        # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
-        # but I am not sure it helps here. We have used
-        # `pcapi.utils.db.get_batches` in the old-style payment code
-        # and that may be what's best here.
-        .yield_per(1000)
-    )
+    # FIXME (dbaty, 2021-11-30): other functions use `yield_per()`
+    # but I am not sure it helps here. We have used
+    # `pcapi.utils.db.get_batches` in the old-style payment code
+    # and that may be what's best here.
+    collective_bookings_query = collective_bookings_query.yield_per(1000)
 
     return _write_csv(
         "payment_details",
@@ -1305,10 +1474,12 @@ def _payment_details_row_formatter(sql_row) -> tuple:  # type: ignore [no-untype
     reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
     ministry = sql_row.ministry.name if hasattr(sql_row, "ministry") else ""
 
+    # "legacy" means: use business unit. Otherwise, use reimbursement point.
+    legacy = hasattr(sql_row, "business_unit_venue_id")
     return (
-        human_ids.humanize(sql_row.business_unit_venue_id),
-        _clean_for_accounting(sql_row.business_unit_siret),
-        _clean_for_accounting(sql_row.business_unit_venue_name),
+        human_ids.humanize(sql_row.business_unit_venue_id if legacy else sql_row.reimbursement_point_id),
+        _clean_for_accounting(sql_row.business_unit_siret if legacy else sql_row.reimbursement_point_siret),
+        _clean_for_accounting(sql_row.business_unit_venue_name if legacy else sql_row.reimbursement_point_name),
         booking_type,
         ministry,
         booking_total_amount,
