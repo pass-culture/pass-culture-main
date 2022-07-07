@@ -82,8 +82,8 @@ export interface IOfferSubCategory {
 }
 
 export interface IOfferIndividualStock {
-  beginningDatetime: Date | null
-  bookingLimitDatetime: Date | null
+  beginningDatetime: string | null
+  bookingLimitDatetime: string | null
   bookingsQuantity: number
   dateCreated: Date
   hasActivationCode: boolean
