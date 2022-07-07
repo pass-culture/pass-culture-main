@@ -344,7 +344,7 @@ jobs:
       - run:
           name: Run mypy
           when: always
-          command: venv/bin/mypy src --show-error-codes --config-file mypy.ini
+          command: venv/bin/mypy src --show-error-codes
           working_directory: api
       - when:
           condition:
