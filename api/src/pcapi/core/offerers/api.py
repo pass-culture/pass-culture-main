@@ -9,7 +9,8 @@ import sqlalchemy as sa
 from pcapi import settings
 import pcapi.connectors.thumb_storage as storage
 from pcapi.core import search
-import pcapi.core.educational.exceptions as educational_exceptions
+from pcapi.core.educational import exceptions as educational_exceptions
+from pcapi.core.educational import repository as educational_repository
 import pcapi.core.finance.models as finance_models
 from pcapi.core.mails.transactional.pro import new_offerer_validation
 from pcapi.core.mails.transactional.pro import offerer_attachment_validation
@@ -62,6 +63,7 @@ def update_venue(
     # FUTURE-NEW-BANK-DETAILS: clean up when new bank details journey is complete
     update_reimbursement_point_id = "reimbursementPointId" in attrs
     reimbursement_point_id = attrs.pop("reimbursementPointId", None)
+    collectiveDomains = attrs.pop("collectiveDomains", None)
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
     validation.check_venue_edition(modifications, venue)
@@ -90,6 +92,9 @@ def update_venue(
             raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
+
+    if collectiveDomains:
+        venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains)
 
     venue.populate_from_dict(modifications)
 
