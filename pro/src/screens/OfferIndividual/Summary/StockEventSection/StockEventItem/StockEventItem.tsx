@@ -11,10 +11,10 @@ import { format } from 'date-fns-tz'
 
 export interface IStockEventItemProps {
   className?: string
-  beginningDateTime: Date | null
+  beginningDateTime: string | null
   price: number
   quantity?: number | null
-  bookingLimitDatetime: Date | null
+  bookingLimitDatetime: string | null
 }
 
 const StockEventItem = ({
