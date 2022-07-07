@@ -3,7 +3,6 @@ from datetime import datetime
 import logging
 from typing import Iterable
 from typing import Optional
-from typing import Union
 
 from pcapi.core import search
 from pcapi.core.logging import log_elapsed
@@ -387,7 +386,7 @@ def _build_stock_from_stock_detail(
     )
 
 
-def _validate_stock_or_offer(model: Union[offers_models.Offer, offers_models.Stock]) -> bool:
+def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -> bool:
     model_api_errors = validate(model)
     if model_api_errors.errors.keys():
         logger.exception(

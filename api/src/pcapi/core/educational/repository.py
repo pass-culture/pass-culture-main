@@ -6,7 +6,6 @@ from decimal import Decimal
 from typing import Iterable
 from typing import Optional
 from typing import Tuple
-from typing import Union
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
@@ -188,7 +187,7 @@ def find_collective_bookings_for_adage(
     year_id: str,
     redactor_email: Optional[str] = None,
     status: Optional[
-        Union[educational_models.CollectiveBookingStatus, educational_models.EducationalBookingStatus, BookingStatus]
+        educational_models.CollectiveBookingStatus | educational_models.EducationalBookingStatus | BookingStatus
     ] = None,
 ) -> list[educational_models.CollectiveBooking]:
 
@@ -384,7 +383,7 @@ def get_and_lock_collective_stock(stock_id: int) -> educational_models.Collectiv
     return stock
 
 
-def get_collective_stock_from_stock_id(stock_id: Union[int, str]) -> educational_models.CollectiveStock:
+def get_collective_stock_from_stock_id(stock_id: int | str) -> educational_models.CollectiveStock:
     return educational_models.CollectiveStock.query.filter(
         educational_models.CollectiveStock.stockId == stock_id
     ).one_or_none()

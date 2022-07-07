@@ -1,6 +1,5 @@
 from datetime import datetime
 from pprint import pformat
-from typing import Union
 
 from flask import render_template
 
@@ -22,7 +21,7 @@ from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.human_ids import humanize
 
 
-def build_pc_pro_offer_link(offer: Union[CollectiveOffer, CollectiveOfferTemplate, Offer]) -> str:
+def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | Offer) -> str:
     if isinstance(offer, CollectiveOffer) or (isinstance(offer, Offer) and offer.isEducational):
         return f"{settings.PRO_URL}/offre/{humanize(offer.id)}/collectif/edition"
 
@@ -58,7 +57,7 @@ def build_pc_webapp_reset_password_link(token_value: str) -> str:
     return f"{settings.WEBAPP_V2_URL}/mot-de-passe-perdu?token={token_value}"
 
 
-def format_booking_date_for_email(booking: Union[Booking, CollectiveBooking]) -> str:
+def format_booking_date_for_email(booking: Booking | CollectiveBooking) -> str:
     if isinstance(booking, CollectiveBooking) or booking.stock.offer.isEvent:
         stock = booking.collectiveStock if isinstance(booking, CollectiveBooking) else booking.stock
         date_in_tz = get_event_datetime(stock)
@@ -67,7 +66,7 @@ def format_booking_date_for_email(booking: Union[Booking, CollectiveBooking]) ->
     return ""
 
 
-def format_booking_hours_for_email(booking: Union[Booking, CollectiveBooking]) -> str:
+def format_booking_hours_for_email(booking: Booking | CollectiveBooking) -> str:
     if isinstance(booking, CollectiveBooking) or booking.stock.offer.isEvent:
         stock = booking.collectiveStock if isinstance(booking, CollectiveBooking) else booking.stock
         date_in_tz = get_event_datetime(stock)
@@ -104,7 +103,7 @@ def make_offerer_internal_validation_email(  # type: ignore [no-untyped-def]
     )
 
 
-def make_offer_creation_notification_email(offer: Union[Offer, CollectiveOffer, CollectiveOfferTemplate]) -> dict:
+def make_offer_creation_notification_email(offer: Offer | CollectiveOffer | CollectiveOfferTemplate) -> dict:
     author = getattr(offer, "author", None) or offer.venue.managingOfferer.UserOfferers[0].user
     venue = offer.venue
     pro_link_to_offer = build_pc_pro_offer_link(offer)
@@ -152,7 +151,7 @@ def make_offer_rejection_notification_email(offer: Offer) -> dict:
     )
 
 
-def get_event_datetime(stock: Union[CollectiveStock, Stock]) -> datetime:
+def get_event_datetime(stock: CollectiveStock | Stock) -> datetime:
     if isinstance(stock, Stock):
         departement_code = stock.offer.venue.departementCode
     else:

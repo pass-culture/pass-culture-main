@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 import math
-from typing import Union
 from typing import cast
 
 from dateutil import parser
@@ -79,7 +78,7 @@ def get_collective_bookings_pro(
 )
 def get_collective_bookings_csv(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> Union[str, bytes]:
+) -> str | bytes:
     return _create_collective_bookings_export_file(query, BookingExportType.CSV)
 
 
@@ -94,13 +93,13 @@ def get_collective_bookings_csv(
 )
 def get_collective_bookings_excel(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel,
-) -> Union[str, bytes]:
+) -> str | bytes:
     return _create_collective_bookings_export_file(query, BookingExportType.EXCEL)
 
 
 def _create_collective_bookings_export_file(
     query: collective_bookings_serialize.ListCollectiveBookingsQueryModel, export_type: BookingExportType
-) -> Union[str, bytes]:
+) -> str | bytes:
     venue_id = query.venue_id
     event_date = parser.parse(query.event_date) if query.event_date else None
     booking_period = None

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Union
 
 import pytz
 
@@ -9,7 +8,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.models.feature import FeatureToggle
 
 
-def offer_app_link(offer: Union[CollectiveOffer, Offer]) -> str:
+def offer_app_link(offer: CollectiveOffer | Offer) -> str:
     # This link opens the mobile app if installed, the browser app otherwise
     return f"{settings.WEBAPP_V2_URL}/offre/{offer.id}"
 

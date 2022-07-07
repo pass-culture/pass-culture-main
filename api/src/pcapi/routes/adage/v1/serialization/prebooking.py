@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Iterable
 from typing import Optional
-from typing import Union
 
 from pydantic import PositiveInt
 from pydantic.fields import Field
@@ -22,7 +21,7 @@ from pcapi.serialization.utils import to_camel
 
 class GetEducationalBookingsRequest(BaseModel):
     redactorEmail: Optional[str] = Field(description="Email of querying redactor")
-    status: Optional[Union[BookingStatus, CollectiveBookingStatus, EducationalBookingStatus]] = Field(
+    status: Optional[BookingStatus | CollectiveBookingStatus | EducationalBookingStatus] = Field(
         description="Status of retrieved preboookings"
     )
 
@@ -71,7 +70,7 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     redactor: Redactor
     UAICode: str = Field(description="Educational institution UAI code")
     yearId: int = Field(description="Shared year id")
-    status: Union[EducationalBookingStatus, BookingStatus]
+    status: EducationalBookingStatus | BookingStatus
     participants: list[str] = Field(description="List of class levels which can participate")
     priceDetail: Optional[str] = Field(description="Offer's stock price detail")
     venueTimezone: str
@@ -98,7 +97,7 @@ class EducationalBookingsResponse(AdageBaseResponseModel):
 class EducationalBookingPerYearResponse(AdageBaseResponseModel):
     id: int
     UAICode: str
-    status: Union[EducationalBookingStatus, BookingStatus, CollectiveBookingStatus]
+    status: EducationalBookingStatus | BookingStatus | CollectiveBookingStatus
     confirmationLimitDate: datetime
     totalAmount: float
     beginningDatetime: datetime

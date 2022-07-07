@@ -1,5 +1,4 @@
 from typing import Iterable
-from typing import Union
 
 from pcapi import settings
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
@@ -12,7 +11,7 @@ from .models import models  # noqa: F401
 def send(
     *,
     recipients: Iterable[str],
-    data: Union[dict, SendinblueTransactionalEmailData, SendinblueTransactionalWithoutTemplateEmailData],
+    data: dict | SendinblueTransactionalEmailData | SendinblueTransactionalWithoutTemplateEmailData,
 ) -> bool:
     """Try to send an e-mail and return whether it was successful."""
     if isinstance(recipients, str):

@@ -1,7 +1,6 @@
 from datetime import datetime
 import re
 from typing import Optional
-from typing import Union
 
 from dateutil.parser import parse
 from sqlalchemy import Sequence
@@ -109,7 +108,7 @@ class AllocineStocks(LocalProvider):
         if isinstance(pc_object, Stock):
             self.fill_stock_attributes(pc_object)
 
-    def update_from_movie_information(self, obj: Union[Offer, Product], movie_information: dict):  # type: ignore [no-untyped-def]
+    def update_from_movie_information(self, obj: Offer | Product, movie_information: dict):  # type: ignore [no-untyped-def]
         if "description" in self.movie_information:  # type: ignore [operator]
             obj.description = movie_information["description"]
         if "duration" in self.movie_information:  # type: ignore [operator]
@@ -278,7 +277,7 @@ def _filter_only_digital_and_non_experience_showtimes(showtimes_information: lis
     )
 
 
-def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> Union[dict, None]:
+def _find_showtime_by_showtime_uuid(showtimes: list[dict], showtime_uuid: str) -> dict | None:
     for showtime in showtimes:
         if _build_showtime_uuid(showtime) == showtime_uuid:
             return showtime

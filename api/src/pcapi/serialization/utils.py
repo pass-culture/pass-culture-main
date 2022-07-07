@@ -1,7 +1,6 @@
 import re
 from typing import Any
 from typing import Optional
-from typing import Union
 
 from flask import Request
 from flask import Response
@@ -56,7 +55,7 @@ def before_handler(
         raise api_errors
 
 
-def humanize_id(id_to_humanize: Optional[Union[int, str]]) -> Optional[str]:
+def humanize_id(id_to_humanize: Optional[int | str]) -> Optional[str]:
     if id_to_humanize is None:
         return None
 
@@ -68,7 +67,7 @@ def humanize_id(id_to_humanize: Optional[Union[int, str]]) -> Optional[str]:
     return str(id_to_humanize)
 
 
-def dehumanize_id(id_to_dehumanize: Optional[Union[int, str]]) -> Optional[int]:
+def dehumanize_id(id_to_dehumanize: Optional[int | str]) -> Optional[int]:
     if id_to_dehumanize is None:
         return None
 

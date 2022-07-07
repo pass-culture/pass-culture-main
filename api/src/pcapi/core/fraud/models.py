@@ -406,7 +406,7 @@ class BeneficiaryFraudCheck(PcObject, Model):  # type: ignore [valid-type, misc]
         nullable=True,
     )
 
-    def source_data(self) -> typing.Union[common_models.IdentityCheckContent, UserProfilingFraudData]:
+    def source_data(self) -> common_models.IdentityCheckContent | UserProfilingFraudData:
         if self.type not in FRAUD_CHECK_MAPPING:
             raise NotImplementedError(f"Cannot unserialize type {self.type}")
         if self.resultContent is None:

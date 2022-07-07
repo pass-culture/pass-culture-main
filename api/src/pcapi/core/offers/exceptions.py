@@ -1,5 +1,3 @@
-import typing
-
 from pcapi.domain.client_exceptions import ClientError
 from pcapi.models.api_errors import ApiErrors
 
@@ -21,7 +19,7 @@ class FileSizeExceeded(ImageValidationError):
         super().__init__(f"Utilisez une image dont le poids est inférieur à {self._natural_size(max_size)}")
 
     @staticmethod
-    def _natural_size(value: typing.Union[float, str]) -> str:
+    def _natural_size(value: float | str) -> str:
         """Format a number of bytes like a human readable filesize (e.g. 10 kB).
         Decimal suffixes (kB, MB) are used.
         Compatible with jinja2's `filesizeformat` filter.

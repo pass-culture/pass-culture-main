@@ -2,7 +2,6 @@ import datetime
 import logging
 from typing import List
 from typing import Optional
-from typing import Union
 
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
@@ -141,7 +140,7 @@ def list_offers_for_pro_user(
 
 
 def create_offer(
-    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
     user: User,
     save_as_active: bool = True,
 ) -> Offer:
@@ -176,9 +175,7 @@ def _is_able_to_create_book_offer_from_isbn(subcategory: subcategories.Subcatego
     )
 
 
-def _initialize_book_offer_from_template(
-    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel]
-) -> Offer:
+def _initialize_book_offer_from_template(offer_data: PostOfferBodyModel | CompletedEducationalOfferModel) -> Offer:
     product = _load_product_by_isbn_and_check_is_gcu_compatible_or_raise_error(offer_data.extra_data["isbn"])  # type: ignore [index]
     extra_data = product.extraData
     extra_data.update(offer_data.extra_data)  # type: ignore [union-attr]
@@ -199,7 +196,7 @@ def _initialize_book_offer_from_template(
 
 
 def _initialize_offer_with_new_data(
-    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
     subcategory: subcategories.Subcategory,
     venue: Venue,
 ) -> Offer:
@@ -218,7 +215,7 @@ def _initialize_offer_with_new_data(
 
 def _complete_common_offer_fields(
     offer: Offer,
-    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
     venue: Venue,
 ) -> None:
     offer.venue = venue
@@ -233,7 +230,7 @@ def _complete_common_offer_fields(
 
 
 def _check_offer_data_is_valid(
-    offer_data: Union[PostOfferBodyModel, CompletedEducationalOfferModel],
+    offer_data: PostOfferBodyModel | CompletedEducationalOfferModel,
     offer_is_educational: bool,
 ) -> None:
     check_offer_subcategory_is_valid(offer_data.subcategory_id)
@@ -356,7 +353,7 @@ def update_collective_offe_template(offer_id: int, new_values: dict) -> None:
     search.async_index_collective_offer_template_ids([offer_to_update.id])
 
 
-def _update_collective_offer(offer: Union[CollectiveOffer, CollectiveOfferTemplate], new_values: dict) -> list[str]:
+def _update_collective_offer(offer: CollectiveOffer | CollectiveOfferTemplate, new_values: dict) -> list[str]:
     validation.check_validation_status(offer)
     # This variable is meant for Adage mailing
     updated_fields = []
@@ -549,7 +546,7 @@ def _notify_beneficiaries_upon_stock_edit(stock: Stock, bookings: List[Booking])
 
 
 def upsert_stocks(
-    offer_id: int, stock_data_list: list[Union[StockCreationBodyModel, StockEditionBodyModel]], user: User
+    offer_id: int, stock_data_list: list[StockCreationBodyModel | StockEditionBodyModel], user: User
 ) -> list[Stock]:
     activation_codes = []
     stocks = []
@@ -660,7 +657,7 @@ def publish_offer(offer_id: int, user: User) -> Offer:
 
 
 def update_offer_fraud_information(
-    offer: Union[educational_models.CollectiveOffer, educational_models.CollectiveOfferTemplate, Offer],
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | Offer,
     user: User,
     *,
     silent: bool = False,
@@ -688,7 +685,7 @@ def update_offer_fraud_information(
 
 
 def _update_educational_booking_cancellation_limit_date(
-    booking: Union[Booking, educational_models.CollectiveBooking], new_beginning_datetime: datetime.datetime
+    booking: Booking | educational_models.CollectiveBooking, new_beginning_datetime: datetime.datetime
 ) -> None:
     booking.cancellationLimitDate = compute_educational_booking_cancellation_limit_date(  # type: ignore [assignment]
         new_beginning_datetime, datetime.datetime.utcnow()
@@ -943,7 +940,7 @@ def deactivate_permanently_unavailable_products(isbn: str) -> bool:
 
 
 def set_offer_status_based_on_fraud_criteria(
-    offer: Union[educational_models.CollectiveOffer, educational_models.CollectiveOfferTemplate, Offer]
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate | Offer,
 ) -> OfferValidationStatus:
     current_config = offers_repository.get_current_offer_validation_config()
     if not current_config:

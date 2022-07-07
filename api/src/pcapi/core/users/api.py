@@ -735,7 +735,7 @@ def reset_recredit_amount_to_show(user: models.User) -> None:
 
 
 def get_eligibility_end_datetime(
-    date_of_birth: typing.Optional[typing.Union[datetime.date, datetime.datetime]]
+    date_of_birth: typing.Optional[datetime.date | datetime.datetime],
 ) -> typing.Optional[datetime.datetime]:
     if not date_of_birth:
         return None
@@ -746,7 +746,7 @@ def get_eligibility_end_datetime(
 
 
 def get_eligibility_start_datetime(
-    date_of_birth: typing.Optional[typing.Union[datetime.date, datetime.datetime]]
+    date_of_birth: typing.Optional[datetime.date | datetime.datetime],
 ) -> typing.Optional[datetime.datetime]:
     if not date_of_birth:
         return None
@@ -758,7 +758,7 @@ def get_eligibility_start_datetime(
 
 
 def get_eligibility_at_date(
-    date_of_birth: typing.Optional[typing.Union[datetime.date, datetime.datetime]],
+    date_of_birth: typing.Optional[datetime.date | datetime.datetime],
     specified_datetime: datetime.datetime,
 ) -> typing.Optional[models.EligibilityType]:
     eligibility_start = get_eligibility_start_datetime(date_of_birth)

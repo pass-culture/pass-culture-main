@@ -1,7 +1,6 @@
 from datetime import datetime
 import logging
 from typing import List
-from typing import Union
 
 from flask import abort
 from flask import flash
@@ -679,7 +678,7 @@ class ImportConfigValidationOfferView(BaseSuperAdminView):
 
         return OfferValidationConfigForm(get_form_data())
 
-    def create_model(self, form: wtforms.Form) -> Union[None, OfferValidationConfig]:
+    def create_model(self, form: wtforms.Form) -> None | OfferValidationConfig:
         check_user_can_load_config(current_user)
         config = import_offer_validation_config(form.specs.data, current_user)
         return config

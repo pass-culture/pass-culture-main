@@ -1,7 +1,6 @@
 import enum
 from typing import Any
 from typing import Optional
-from typing import Union
 
 from pcapi import settings
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
@@ -28,7 +27,7 @@ class ResourceCDS(enum.Enum):
     CANCEL_BOOKING = "transaction/cancel"
 
 
-MOCKS: dict[ResourceCDS, Union[dict, list[dict], list]] = {
+MOCKS: dict[ResourceCDS, dict | list[dict] | list] = {
     ResourceCDS.SHOWS: MockedShows,
     ResourceCDS.PAYMENT_TYPE: MockedPaymentType,
     ResourceCDS.TARIFFS: MockedTariffs,
@@ -45,7 +44,7 @@ def get_resource(
     cinema_api_token: Optional[str],
     resource: ResourceCDS,
     path_params: Optional[dict[str, Any]] = None,
-) -> Union[dict, list[dict], list]:
+) -> dict | list[dict] | list:
 
     if settings.IS_DEV:
         return MOCKS[resource]
@@ -66,7 +65,7 @@ def get_resource(
 
 def put_resource(
     api_url: str, cinema_id: str, cinema_api_token: Optional[str], resource: ResourceCDS, body: BaseModel
-) -> Optional[Union[dict, list[dict], list]]:
+) -> Optional[dict | list[dict] | list]:
     if settings.IS_DEV:
         return MOCKS[resource]
 
