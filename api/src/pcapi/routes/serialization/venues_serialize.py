@@ -402,29 +402,29 @@ class VenuesEducationalStatusesResponseModel(BaseModel):
 
 class AdageCulturalPartner(BaseModel):
     id: int
-    venueId: int
-    siret: int
-    regionId: int
-    academieId: str
-    statutId: int
-    labelId: int
-    typeId: int
-    communeId: str
+    venueId: Optional[int]
+    siret: Optional[int]
+    regionId: Optional[int]
+    academieId: Optional[str]
+    statutId: Optional[int]
+    labelId: Optional[int]
+    typeId: Optional[int]
+    communeId: Optional[str]
     libelle: str
-    adresse: str
-    siteWeb: int
-    latitude: float
-    longitude: float
-    statutLibelle: str
-    labelLibelle: str
-    typeIcone: str
-    typeLibelle: str
-    communeLibelle: str
-    communeDepartement: str
-    academieLibelle: str
-    regionLibelle: str
-    domaines: str
-    actif: int
+    adresse: Optional[str]
+    siteWeb: Optional[int]
+    latitude: Optional[float]
+    longitude: Optional[float]
+    statutLibelle: Optional[str]
+    labelLibelle: Optional[str]
+    typeIcone: Optional[str]
+    typeLibelle: Optional[str]
+    communeLibelle: Optional[str]
+    communeDepartement: Optional[str]
+    academieLibelle: Optional[str]
+    regionLibelle: Optional[str]
+    domaines: Optional[str]
+    actif: Optional[int]
     dateModification: datetime
 
 
@@ -434,9 +434,9 @@ class AdageCulturalPartners(BaseModel):
 
 class AdageCulturalPartnerResponseModel(BaseModel):
     id: int
-    communeLibelle: str
+    communeLibelle: Optional[str]
     libelle: str
-    regionLibelle: str
+    regionLibelle: Optional[str]
 
     class Config:
         orm_mode = True
