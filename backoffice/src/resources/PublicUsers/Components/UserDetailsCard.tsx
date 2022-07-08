@@ -257,11 +257,10 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                   label={'Date de naissance'}
                   defaultValue={
                     user.dateOfBirth
-                      ? moment(user.dateOfBirth).format('YYYY-MM-D')
+                      ? moment(user.dateOfBirth).format('YYYY-MM-DD')
                       : ''
                   }
                   disabled={!editable}
-                  style={{ width: '100%' }}
                   variant={'standard'}
                   type={'date'}
                 />
