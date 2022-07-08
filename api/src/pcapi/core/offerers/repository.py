@@ -356,6 +356,7 @@ def offerer_has_venue_with_adage_id(offerer_id: int) -> bool:
     query = query.join(models.Offerer, models.Venue.managingOfferer)
     query = query.filter(
         models.Venue.adageId != None,
+        models.Venue.adageId != "",
         models.Offerer.id == offerer_id,
     )
     return bool(query.count())
