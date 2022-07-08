@@ -1140,6 +1140,12 @@ class GenerateCashflowsTest:
             businessUnit=business_unit1,
             amount=-1000,
         )
+        collective_pricing13 = factories.CollectivePricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            businessUnit=business_unit1,
+            amount=-500,
+            collectiveBooking__collectiveStock__beginningDatetime=now - datetime.timedelta(days=1),
+        )
         pricing2 = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
             booking__stock__beginningDatetime=now - datetime.timedelta(days=1),
@@ -1148,6 +1154,10 @@ class GenerateCashflowsTest:
         pricing_future_event = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
             booking__stock__beginningDatetime=now + datetime.timedelta(days=1),
+        )
+        collective_pricing_future_event = factories.CollectivePricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            collectiveBooking__collectiveStock__beginningDatetime=now + datetime.timedelta(days=1),
         )
         pricing_no_bank_account = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
@@ -1164,15 +1174,21 @@ class GenerateCashflowsTest:
         assert batch.cutoff == cutoff
         assert pricing11.status == models.PricingStatus.PROCESSED
         assert pricing12.status == models.PricingStatus.PROCESSED
+        assert collective_pricing13.status == models.PricingStatus.PROCESSED
+        assert pricing2.status == models.PricingStatus.PROCESSED
         assert models.Cashflow.query.count() == 2
         assert len(pricing11.cashflows) == 1
         assert len(pricing12.cashflows) == 1
+        assert len(collective_pricing13.cashflows) == 1
+        assert pricing11.cashflows == pricing12.cashflows == collective_pricing13.cashflows
+        assert len(pricing2.cashflows) == 1
         assert pricing11.cashflows[0] == pricing12.cashflows[0]
-        assert pricing11.cashflows[0].amount == -2000
+        assert pricing11.cashflows[0].amount == -2500
         assert pricing11.cashflows[0].bankAccount == business_unit1.bankAccount
         assert pricing2.cashflows[0].amount == -3000
 
         assert not pricing_future_event.cashflows
+        assert not collective_pricing_future_event.cashflows
         assert not pricing_no_bank_account.cashflows
         assert not pricing_pending.cashflows
         assert not pricing_after_cutoff.cashflows
@@ -1244,58 +1260,6 @@ class GenerateCashflowsTest:
             api.generate_cashflows(cutoff)
 
         assert models.Cashflow.query.count() == 2
-
-    def test_create_cashflow_for_collective_bookings_but_not_educational_booking_if_ff_is_enabled(self):
-        now = datetime.datetime.utcnow()
-        business_unit1 = factories.BusinessUnitFactory(siret="85331845900023")
-        business_unit2 = factories.BusinessUnitFactory(siret="11223344555667")
-        pricing = factories.PricingFactory(
-            status=models.PricingStatus.VALIDATED,
-            businessUnit=business_unit1,
-            amount=-1000,
-        )
-        # booking that has been priced before FF activation (no pricing will be generated for the associated collective booking)
-        educational_pricing = factories.EducationalPricingFactory(
-            status=models.PricingStatus.VALIDATED,
-            businessUnit=business_unit1,
-            amount=-1000,
-            booking__stock__beginningDatetime=now - datetime.timedelta(days=1),
-        )
-        pricing_collective_booking = factories.CollectivePricingFactory(
-            status=models.PricingStatus.VALIDATED,
-            businessUnit=business_unit2,
-            amount=-1000,
-            collectiveBooking__collectiveStock__beginningDatetime=now - datetime.timedelta(days=1),
-        )
-        pricing_collective_booking_future_event = factories.CollectivePricingFactory(
-            status=models.PricingStatus.VALIDATED,
-            collectiveBooking__collectiveStock__beginningDatetime=now + datetime.timedelta(days=1),
-        )
-        cutoff = datetime.datetime.utcnow()
-
-        batch_id = api.generate_cashflows(cutoff)
-
-        batch = models.CashflowBatch.query.one()
-
-        assert batch.id == batch_id
-        assert batch.cutoff == cutoff
-        assert pricing.status == models.PricingStatus.PROCESSED
-        assert educational_pricing.status == models.PricingStatus.PROCESSED
-        assert pricing_collective_booking.status == models.PricingStatus.PROCESSED
-        assert pricing_collective_booking_future_event.status == models.PricingStatus.VALIDATED
-        assert models.Cashflow.query.count() == 2
-        assert len(pricing.cashflows) == 1
-        assert len(educational_pricing.cashflows) == 1
-        assert len(pricing_collective_booking.cashflows) == 1
-        assert pricing.cashflows[0].amount == -2000  # pricing and educational_pricing have the same business unit
-        assert (
-            educational_pricing.cashflows[0].amount == -2000
-        )  # pricing and educational_pricing have the same business unit
-        assert pricing.cashflows[0].bankAccount == business_unit1.bankAccount
-        assert pricing_collective_booking.cashflows[0].amount == -1000
-        assert pricing_collective_booking.cashflows[0].bankAccount == business_unit2.bankAccount
-
-        assert not pricing_collective_booking_future_event.cashflows
 
 
 @clean_temporary_files
@@ -1455,18 +1419,6 @@ def test_generate_payments_file():
     )
     EducationalDepositFactory(
         educationalInstitution=educational_institution, educationalYear=year3, ministry=Ministry.ARMEES.name
-    )
-    # should not appear in the csv since the FF is enable
-    factories.EducationalPricingFactory(
-        amount=-600,  # rate = 100 %
-        booking__amount=6,
-        booking__dateUsed=used_date,
-        booking__stock__beginningDatetime=used_date,
-        booking__stock__offer__name="Une histoire plutôt bien",
-        booking__stock__offer__subcategoryId=subcategories.CINE_PLEIN_AIR.id,
-        booking__stock__offer__venue=offer_venue2,
-        booking__educationalBooking__educationalInstitution=deposit2.educationalInstitution,
-        booking__educationalBooking__educationalYear=deposit2.educationalYear,
     )
     # A pricing that belongs to a business unit whose SIRET is not a
     # SIRET of any venue.

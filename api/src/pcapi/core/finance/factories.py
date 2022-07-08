@@ -57,20 +57,6 @@ class PricingFactory(BaseFactory):
     revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
 
 
-class EducationalPricingFactory(BaseFactory):
-    class Meta:
-        model = models.Pricing
-
-    status = models.PricingStatus.VALIDATED
-    booking = factory.SubFactory(bookings_factories.UsedEducationalBookingFactory)
-    businessUnit = factory.SelfAttribute("booking.venue.businessUnit")
-    siret = factory.SelfAttribute("booking.venue.siret")
-    valueDate = factory.SelfAttribute("booking.dateUsed")
-    amount = LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
-    revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
-    standardRule = "Remboursement total"
-
-
 class CollectivePricingFactory(BaseFactory):
     class Meta:
         model = models.Pricing
