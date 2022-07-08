@@ -12,6 +12,18 @@ include = '\.pyi?$'
 line-length = 120
 target-version = ['py310']
 
+
+[tool.coverage.report]
+omit = [
+    "tests/*",
+    "venv/*",
+    "alembic/*",
+    ".circle/*",
+    "snippets/*",
+    "static/*",
+]
+
+
 [tool.isort]
 combine_as_imports = true
 ensure_newline_before_comments = true
