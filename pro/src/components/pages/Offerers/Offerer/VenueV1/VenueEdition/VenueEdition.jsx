@@ -495,7 +495,7 @@ const VenueEdition = () => {
         subtitle={pageSubtitle}
         description={
           venue && venue.dmsToken && isNewBankInformationCreation
-            ? `N° d'identifidant du lieu : ${venue.dmsToken}`
+            ? `N° d'identifiant du lieu : ${venue.dmsToken}`
             : ''
         }
         title="Lieu"
