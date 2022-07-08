@@ -578,7 +578,7 @@ def upsert_stocks(
 
             booking_limit_datetime = stock_data.booking_limit_datetime or stock.bookingLimitDatetime
             beginning = stock_data.beginning_datetime or stock.beginningDatetime
-            if beginning and booking_limit_datetime and beginning > booking_limit_datetime:
+            if beginning and booking_limit_datetime and beginning < booking_limit_datetime:
                 booking_limit_datetime = beginning
 
             edited_stock = _edit_stock(
