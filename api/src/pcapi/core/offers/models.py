@@ -9,6 +9,7 @@ import sqlalchemy as sa
 from sqlalchemy import and_
 
 import pcapi.core.bookings.constants as bookings_constants
+from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 from pcapi.models import Model
 from pcapi.models import db
@@ -501,6 +502,15 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
         if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
             raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for offer {self.id}")
         return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+
+    @property
+    def category(self) -> categories.Category:
+        category_id = self.subcategory.category_id
+
+        try:
+            return categories.ALL_CATEGORIES_DICT[category_id]
+        except KeyError:
+            raise ValueError(f"Unexpected category_id '{category_id}' for offer {self.id}")
 
     @property
     def image(self) -> Optional[OfferImage]:
