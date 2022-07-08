@@ -4,13 +4,13 @@ import cn from 'classnames'
 import styles from './InternalBanner.module.scss'
 
 interface IInternalBannerProps {
-  children: JSX.Element | null
-  extraClassName: string
+  children?: string | null
+  extraClassName?: string
   href: string
-  icon: string | null
+  icon?: string | null
   linkTitle: string
-  subtitle: string
-  type: 'notification-info' | 'attention'
+  subtitle?: string
+  type?: 'notification-info' | 'attention'
 }
 
 const InternalBanner = ({
