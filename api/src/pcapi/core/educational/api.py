@@ -373,7 +373,7 @@ def get_educational_categories() -> dict:
     educational_subcategories = [
         subcategory for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.can_be_educational == True
     ]
-    educational_categories_ids = list(set(subcategory.category_id for subcategory in educational_subcategories))
+    educational_categories_ids = list(set(subcategory.category.id for subcategory in educational_subcategories))
     educational_categories = [
         category for category in categories.ALL_CATEGORIES if category.id in educational_categories_ids
     ]

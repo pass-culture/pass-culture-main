@@ -87,9 +87,9 @@ def _get_products_compatible_status(products: list[offers_models.Product]) -> di
 
 
 def _get_product_type(product: offers_models.Product) -> str:
-    if product.subcategory.category_id == categories.FILM.id:
+    if product.subcategory.category == categories.FILM:
         return "cinema"
-    if product.subcategory.category_id == categories.LIVRE.id:
+    if product.subcategory.category == categories.LIVRE:
         return "book"
 
     return "unknown"
