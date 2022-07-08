@@ -577,12 +577,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     @property
     def category(self) -> categories.Category:
-        category_id = self.subcategory.category_id
-
-        try:
-            return categories.ALL_CATEGORIES_DICT[category_id]
-        except KeyError:
-            raise ValueError(f"Unexpected category_id '{category_id}' for offer {self.id}")
+        return self.subcategory.category
 
     @property
     def image(self) -> OfferImage | None:

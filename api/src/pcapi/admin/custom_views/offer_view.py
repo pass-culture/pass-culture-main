@@ -72,7 +72,7 @@ logger = logging.getLogger(__name__)
 def offer_category_formatter(view: BaseAdminView, context: Context, model: Offer, name: str) -> str:
     if model.subcategoryId is None:
         return ""
-    return subcategories.ALL_SUBCATEGORIES_DICT[model.subcategoryId].category_id
+    return subcategories.ALL_SUBCATEGORIES_DICT[model.subcategoryId].category.id
 
 
 def offer_name_formatter(view: BaseAdminView, context: Context, model: Offer, name: str) -> Markup:
@@ -100,7 +100,7 @@ class CategoryFilterEqual(FilterEqual):
         searched_subcategories = [
             subcategory.id
             for subcategory in subcategories.ALL_SUBCATEGORIES
-            if subcategory.category_id.upper() == value.upper()
+            if subcategory.category.id.upper() == value.upper()
         ]
         return filter_query.filter(self.get_column(alias).in_(searched_subcategories))
 

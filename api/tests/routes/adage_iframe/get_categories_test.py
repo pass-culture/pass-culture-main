@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from pcapi.core.categories.categories import Category
+from pcapi.core.categories import categories
 from pcapi.core.categories.subcategories import Subcategory
 
 from tests.routes.adage_iframe.utils_create_test_token import create_adage_valid_token_with_email
@@ -16,7 +16,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
     (
         Subcategory(
             id="ABO_BIBLIOTHEQUE",
-            category_id="LIVRE",
+            category=categories.LIVRE,
             pro_label="Abonnement (bibliothèques, médiathèques...)",
             app_label="Abonnement (bibliothèques, médiathèques...)",
             search_group_name="LIVRE",
@@ -33,7 +33,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
         ),
         Subcategory(
             id="CINE_PLEIN_AIR",
-            category_id="CINEMA",
+            category=categories.CINEMA,
             pro_label="Cinéma plein air",
             app_label="Cinéma plein air",
             search_group_name="CINEMA",
@@ -53,11 +53,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 @patch(
     "pcapi.core.categories.categories.ALL_CATEGORIES",
     (
-        Category(
+        categories.Category(
             id="LIVRE",
             pro_label="Livre",
         ),
-        Category(
+        categories.Category(
             id="CINEMA",
             pro_label="Cinéma",
         ),

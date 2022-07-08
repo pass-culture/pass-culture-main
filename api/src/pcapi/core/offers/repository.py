@@ -150,7 +150,7 @@ def get_offers_by_filters(
         query = _filter_by_creation_mode(query, creation_mode)
     if category_id is not None:
         requested_subcategories = [
-            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
         ]
         query = query.filter(Offer.subcategoryId.in_(requested_subcategories))
     if name_keywords_or_isbn is not None:
@@ -230,7 +230,7 @@ def get_collective_offers_by_filters(
         query = query.filter(CollectiveOffer.venueId == venue_id)
     if category_id is not None:
         requested_subcategories = [
-            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
         ]
         query = query.filter(CollectiveOffer.subcategoryId.in_(requested_subcategories))
     if name_keywords is not None:
@@ -310,7 +310,7 @@ def get_collective_offers_template_by_filters(
         query = query.filter(CollectiveOfferTemplate.venueId == venue_id)
     if category_id is not None:
         requested_subcategories = [
-            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category_id == category_id
+            subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id == category_id
         ]
         query = query.filter(CollectiveOfferTemplate.subcategoryId.in_(requested_subcategories))
     if name_keywords is not None:
