@@ -26,6 +26,7 @@ export type GetVenueResponseModel = {
   demarchesSimplifieesApplicationId?: string | null;
   departementCode?: string | null;
   description?: string | null;
+  dmsToken?: string | null;
   fieldsUpdated: Array<string>;
   iban?: string | null;
   id: string;
