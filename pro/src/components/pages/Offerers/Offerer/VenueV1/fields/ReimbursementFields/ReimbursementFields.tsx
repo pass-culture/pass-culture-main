@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
 import Icon from 'components/layout/Icon'
+import InternalBanner from 'components/layout/InternalBanner'
 import PricingPoint from '../PricingPoint/PricingPoint'
 
 import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
 import styles from './ReimbursementFields.module.scss'
-import InternalBanner from 'components/layout/InternalBanner'
 
 export interface ReimbursementInterface {
   offerer: IAPIOfferer
@@ -48,9 +48,8 @@ const ReimbursementFields = ({
             icon="ico-external-site-filled"
             linkTitle="Créer un lieu avec SIRET"
           >
-            Certains de vos points de remboursement ne sont pas rattachés à un
-            SIRET. Pour continuer à percevoir vos remboursements, veuillez
-            renseigner un SIRET de référence.
+            Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
+            devez avoir minimum un lieu rattaché à un SIRET.
           </InternalBanner>
         ) : (
           <>
