@@ -469,7 +469,7 @@ jobs:
           name: Running tests
           command: |
             # Synchronize these globs with `python_files` in `pytest.ini`
-            TEST_FILES=$(circleci tests glob "tests/**/*_test.py" "tests/**/test_*.py" "tests/**/tests.py" | circleci tests split)
+            TEST_FILES=$(circleci tests glob "tests/**/*test.py" "tests/**/test*.py" | circleci tests split)
             mkdir -p test-results
             RUN_ENV=tests venv/bin/pytest $TEST_FILES --durations=10 --junitxml=test-results/junit.xml
           working_directory: api

@@ -162,7 +162,7 @@ filterwarnings = [
 testpaths = ["tests"]
 norecursedirs = [".git", "venv", ".pytest_cache"]
 # Synchronize these globs with `TEST_FILES` in CircleCI configuration
-python_files = ["*_test.py", "test_*.py", "tests.py"]
+python_files = ["*test.py", "test*.py"]
 python_classes = ["*Test"]
 python_functions = ["test_*", "when_*", "expect_*", "should_*"]
 env_files = ["local_test_env_file"]
