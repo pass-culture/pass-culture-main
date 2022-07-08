@@ -605,7 +605,7 @@ def upsert_stocks(
             if (
                 stock_data.beginning_datetime
                 and booking_limit_datetime
-                and stock_data.beginning_datetime > booking_limit_datetime
+                and stock_data.beginning_datetime < booking_limit_datetime
             ):
                 booking_limit_datetime = stock_data.beginning_datetime
 
