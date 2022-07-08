@@ -188,7 +188,10 @@ export const UserDetail = () => {
                   Suspendre le compte
                 </Button>
 
-                <ManualReviewModal user={userBaseInfo} />
+                <ManualReviewModal
+                  user={userBaseInfo}
+                  checkHistory={idsCheckHistory}
+                />
               </Stack>
             </div>
           </Grid>
