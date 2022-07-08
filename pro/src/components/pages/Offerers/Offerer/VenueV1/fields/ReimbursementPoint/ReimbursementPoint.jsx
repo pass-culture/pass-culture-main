@@ -167,7 +167,7 @@ const ReimbursementPoint = ({
                     component="select"
                     id="venue-reimbursement-point"
                     name="reimbursementPointId"
-                    disabled={readOnly}
+                    disabled={readOnly || !venueHasPricingPoint}
                   >
                     <option disabled value="">
                       Sélectionner des coordonnées dans la liste
