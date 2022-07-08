@@ -14,10 +14,13 @@ import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import CollectiveDataEdition from '../CollectiveDataEdition'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import type { History } from 'history'
 import { Provider } from 'react-redux'
 import React from 'react'
+import { Router } from 'react-router'
 import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
+import { createBrowserHistory } from 'history'
 import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi', () => ({
@@ -27,6 +30,7 @@ jest.mock('repository/pcapi/pcapi', () => ({
 jest.mock('apiClient/api', () => ({
   api: {
     getVenuesEducationalStatuses: jest.fn(),
+    getEducationalPartners: jest.fn(),
   },
 }))
 
@@ -35,7 +39,18 @@ const waitForLoader = () =>
     expect(screen.getByLabelText(/E-mail/)).toBeInTheDocument()
   })
 
+const renderCollectiveDataEdition = (history: History) =>
+  render(
+    <Router history={history}>
+      <Provider store={configureTestStore({})}>
+        <CollectiveDataEdition />
+      </Provider>
+    </Router>
+  )
+
 describe('CollectiveDataEdition', () => {
+  const history = createBrowserHistory()
+
   beforeAll(() => {
     jest.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [
@@ -53,25 +68,20 @@ describe('CollectiveDataEdition', () => {
       { id: 1, name: 'domain 1' },
       { id: 2, name: 'domain 2' },
     ])
+    jest
+      .spyOn(api, 'getEducationalPartners')
+      .mockResolvedValue({ partners: [] })
   })
 
   describe('render', () => {
     it('should render a loader while data is loading', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       expect(screen.getByText(/Chargement en cours/)).toBeInTheDocument()
     })
 
     it('should render form without errors', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
@@ -124,25 +134,33 @@ describe('CollectiveDataEdition', () => {
         close: jest.fn(),
       }))
 
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitFor(() => {
         expect(notifyErrorMock).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
       })
     })
+
+    it('should display popin when user is leaving page without saving', async () => {
+      renderCollectiveDataEdition(history)
+
+      await waitForLoader()
+
+      const phoneField = screen.getByLabelText(/Téléphone/)
+      await userEvent.type(phoneField, '0612345678')
+
+      history.push('/')
+      await waitFor(() =>
+        expect(
+          screen.getByText('Voulez-vous quitter la page d’informations EAC ?')
+        ).toBeInTheDocument()
+      )
+    })
   })
 
   describe('error fields', () => {
     it('should display error fields', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
@@ -169,11 +187,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should not display error fields when fields are valid', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
@@ -202,11 +216,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should not display error fields when fields are empty', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
@@ -236,11 +246,7 @@ describe('CollectiveDataEdition', () => {
 
   describe('intervention area', () => {
     it('should select all departments when clicking on "Toute la France"', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
@@ -263,11 +269,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should select all mainland departments when clicking on "France métropolitaine"', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
@@ -286,11 +288,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should select only domtom options after selecting "Toute la France" then unselecting "France métropolitaine"', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
@@ -315,11 +313,7 @@ describe('CollectiveDataEdition', () => {
     })
 
     it('should select (unselect) "Toute la France" and "France métropolitaine" when selecting (unselecting) all (one) departments', async () => {
-      render(
-        <Provider store={configureTestStore({})}>
-          <CollectiveDataEdition />
-        </Provider>
-      )
+      renderCollectiveDataEdition(history)
 
       await waitForLoader()
 
