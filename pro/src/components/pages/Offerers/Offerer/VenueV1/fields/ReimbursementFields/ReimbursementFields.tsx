@@ -6,6 +6,7 @@ import PricingPoint from '../PricingPoint/PricingPoint'
 
 import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
 import styles from './ReimbursementFields.module.scss'
+import InternalBanner from 'components/layout/InternalBanner'
 
 export interface ReimbursementInterface {
   offerer: IAPIOfferer
@@ -22,6 +23,7 @@ const ReimbursementFields = ({
 }: ReimbursementInterface) => {
   const venueHaveSiret = !!venue.siret
   const offererHaveVenueWithSiret = offerer.hasAvailablePricingPoints
+  const createVenuePath = `/structures/${offerer.id}/lieux/creation`
   const [venueHasPricingPoint, setVenueHasPricingPoint] = useState<boolean>(
     !!venue.pricingPoint
   )
@@ -40,21 +42,36 @@ const ReimbursementFields = ({
             En savoir plus sur les remboursements
           </a>
         </h2>
-        {!venueHaveSiret && offererHaveVenueWithSiret && (
-          <PricingPoint
-            readOnly={readOnly}
-            offerer={offerer}
-            venue={venue}
-            setVenueHasPricingPoint={setVenueHasPricingPoint}
-          />
+        {!venueHaveSiret && !offererHaveVenueWithSiret ? (
+          <InternalBanner
+            href={createVenuePath}
+            icon="ico-external-site-filled"
+            linkTitle="Créer un lieu avec SIRET"
+          >
+            Certains de vos points de remboursement ne sont pas rattachés à un
+            SIRET. Pour continuer à percevoir vos remboursements, veuillez
+            renseigner un SIRET de référence.
+          </InternalBanner>
+        ) : (
+          <>
+            {!venueHaveSiret && (
+              <PricingPoint
+                readOnly={readOnly}
+                offerer={offerer}
+                venue={venue}
+                setVenueHasPricingPoint={setVenueHasPricingPoint}
+              />
+            )}
+
+            <ReimbursementPoint
+              offerer={offerer}
+              readOnly={readOnly}
+              scrollToSection={scrollToSection}
+              venue={venue}
+              venueHasPricingPoint={venueHasPricingPoint}
+            />
+          </>
         )}
-        <ReimbursementPoint
-          offerer={offerer}
-          readOnly={readOnly}
-          scrollToSection={scrollToSection}
-          venue={venue}
-          venueHasPricingPoint={venueHasPricingPoint}
-        />
       </div>
     </>
   )
