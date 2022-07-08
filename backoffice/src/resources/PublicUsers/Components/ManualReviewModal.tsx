@@ -18,10 +18,17 @@ import {
 } from '../../../providers/apiHelpers'
 import { dataProvider } from '../../../providers/dataProvider'
 import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
-import { UserBaseInfo, UserManualReview } from '../types'
+import { UserBaseInfo, UserManualReview, CheckHistory } from '../types'
 
-export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
+export const ManualReviewModal = ({
+  user,
+  checkHistory,
+}: {
+  user: UserBaseInfo
+  checkHistory: CheckHistory[]
+}) => {
   const [openModal, setOpenModal] = useState(false)
+  const [noFraudCheck, setNoFraudCheck] = useState(checkHistory.length <= 0)
   const notify = useNotify()
 
   const styleModal = {
@@ -49,7 +56,9 @@ export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
     { id: 'AGE18', name: 'Pass 18 ans' },
   ]
 
-  const handleOpenModal = () => setOpenModal(true)
+  const handleOpenModal = () => {
+    setOpenModal(!noFraudCheck)
+  }
   const handleCloseModal = () => setOpenModal(false)
 
   const formSubmit = async (params: FieldValues) => {
@@ -81,8 +90,14 @@ export const ManualReviewModal = ({ user }: { user: UserBaseInfo }) => {
 
   return (
     <>
-      <Button variant={'contained'} onClick={handleOpenModal}>
-        Revue manuelle
+      <Button
+        variant={'contained'}
+        onClick={handleOpenModal}
+        disabled={noFraudCheck}
+      >
+        {noFraudCheck
+          ? 'Revue manuelle non disponible (aucun fraud check avec nom, prénom, date de naissance)'
+          : 'Revue manuelle'}
       </Button>
       <Modal
         open={openModal}
