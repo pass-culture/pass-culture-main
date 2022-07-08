@@ -688,6 +688,10 @@ def _delete_dependent_pricings(
         )
     pricings = pricings.filter(clause)
 
+    if not use_pricing_point:
+        # De-duplicate if there was multiple venue-business unit links.
+        pricings = pricings.distinct(models.Pricing.id)
+
     pricings = pricings.with_entities(
         models.Pricing.id,
         models.Pricing.bookingId,
