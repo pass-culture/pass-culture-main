@@ -1,6 +1,8 @@
+import { StudentLevels } from 'apiClient/v1'
+
 export type CollectiveDataFormValues = {
   collectiveDescription: string
-  collectiveStudents: string[]
+  collectiveStudents: StudentLevels[]
   collectiveWebsite: string
   collectivePhone: string
   collectiveEmail: string
