@@ -94,7 +94,7 @@ def update_venue(
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
     if collectiveDomains:
-        venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains)
+        venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains)  # type: ignore [assignment]
 
     venue.populate_from_dict(modifications)
 
