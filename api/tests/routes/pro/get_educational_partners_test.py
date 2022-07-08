@@ -21,16 +21,16 @@ class Return200Test:
         assert response.json == {
             "partners": [
                 {
-                    "id": 0,
-                    "libelle": "string",
-                    "communeLibelle": "string",
-                    "regionLibelle": "string",
+                    "id": 128029,
+                    "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
+                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 },
                 {
-                    "id": 1,
-                    "libelle": "string",
-                    "communeLibelle": "string",
-                    "regionLibelle": "string",
+                    "id": 128028,
+                    "libelle": "Fête du livre jeunesse de St Paul les trois Châteaux",
+                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 },
             ]
         }

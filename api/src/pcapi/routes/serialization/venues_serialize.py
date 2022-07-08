@@ -402,7 +402,7 @@ class VenuesEducationalStatusesResponseModel(BaseModel):
 class AdageCulturalPartner(BaseModel):
     id: int
     venueId: Optional[int]
-    siret: Optional[int]
+    siret: Optional[str]
     regionId: Optional[int]
     academieId: Optional[str]
     statutId: Optional[int]
@@ -411,7 +411,7 @@ class AdageCulturalPartner(BaseModel):
     communeId: Optional[str]
     libelle: str
     adresse: Optional[str]
-    siteWeb: Optional[int]
+    siteWeb: Optional[str]
     latitude: Optional[float]
     longitude: Optional[float]
     statutLibelle: Optional[str]
