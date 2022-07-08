@@ -245,7 +245,7 @@ def _get_bookings_categories_and_subcategories(user_bookings: list[Booking]) -> 
     bookings_by_subcategories = defaultdict(list)
     for booking in user_bookings:
         if booking.status != BookingStatus.CANCELLED:
-            booking_categories.add(booking.stock.offer.subcategory.category_id)
+            booking_categories.add(booking.stock.offer.subcategory.category.id)
             bookings_by_subcategories[booking.stock.offer.subcategoryId].append(booking)
 
     sorted_subcategories_items = sorted(

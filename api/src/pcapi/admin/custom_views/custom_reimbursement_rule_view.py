@@ -37,7 +37,7 @@ def _get_subcategory_choices() -> list[tuple[str, list[tuple[str, str]]]]:
     choices = collections.defaultdict(list)
     for subcategory in ALL_SUBCATEGORIES:
         if subcategory.is_selectable:
-            choices[ALL_CATEGORIES_DICT[subcategory.category_id].pro_label].append(
+            choices[ALL_CATEGORIES_DICT[subcategory.category.id].pro_label].append(
                 (subcategory.id, subcategory.pro_label)
             )
 
