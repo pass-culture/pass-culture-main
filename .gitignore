@@ -40,6 +40,7 @@ tests/result_output.txt
 # misc
 /.vscode/
 .dccache
+.graphqlconfig
 
 # storybook build
 docs-build/
