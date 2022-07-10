@@ -1286,46 +1286,12 @@ def _generate_payments_file(batch_id: int) -> pathlib.Path:
         "payment_details",
         header,
         rows=itertools.chain(bookings_query, collective_bookings_query),
-        row_formatter=_new_payment_details_row_formatter,
+        row_formatter=_payment_details_row_formatter,
         compress=True,  # it's a large CSV file (> 100 Mb), we should compress it
     )
 
 
 def _payment_details_row_formatter(sql_row) -> tuple:  # type: ignore [no-untyped-def]
-    if sql_row.educational_booking_id is not None:
-        booking_type = "EACC"
-    elif sql_row.deposit_type == payments_models.DepositType.GRANT_15_17:
-        booking_type = "EACI"
-    elif sql_row.deposit_type == payments_models.DepositType.GRANT_18:
-        booking_type = "PC"
-    else:
-        raise ValueError("Unknown booking type (not educational nor individual)")
-
-    booking_total_amount = sql_row.booking_amount * sql_row.booking_quantity
-    reimbursed_amount = utils.to_euros(-sql_row.pricing_amount)
-    reimbursement_rate = (reimbursed_amount / booking_total_amount).quantize(decimal.Decimal("0.01"))
-    ministry = sql_row.ministry.name if sql_row.ministry else ""
-
-    return (
-        human_ids.humanize(sql_row.business_unit_venue_id),
-        _clean_for_accounting(sql_row.business_unit_siret),
-        _clean_for_accounting(sql_row.business_unit_venue_name),
-        human_ids.humanize(sql_row.offer_venue_id),
-        _clean_for_accounting(sql_row.offer_venue_name),
-        sql_row.offer_id,
-        _clean_for_accounting(sql_row.offer_name),
-        sql_row.offer_subcategory_id,
-        booking_total_amount,
-        booking_type,
-        sql_row.booking_used_date,
-        sql_row.pricing_id,
-        reimbursement_rate,
-        reimbursed_amount,
-        ministry,
-    )
-
-
-def _new_payment_details_row_formatter(sql_row) -> tuple:  # type: ignore [no-untyped-def]
     if hasattr(sql_row, "ministry"):
         booking_type = "EACC"
     elif sql_row.deposit_type == payments_models.DepositType.GRANT_15_17:
