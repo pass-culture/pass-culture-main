@@ -129,6 +129,8 @@ describe('src | components | pages | Venue | VenueProvidersManager | AllocinePro
     fireEvent.click(editAllocineProviderButton)
 
     // then
-    expect(screen.getByText('Modifier mes offres')).toBeInTheDocument()
+    expect(
+      screen.getByText('Modifier les paramètres de mes offres')
+    ).toBeInTheDocument()
   })
 })
