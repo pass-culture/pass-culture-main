@@ -8,6 +8,6 @@ export type CollectiveDataFormValues = {
   collectiveEmail: string
   collectiveDomains: string[]
   collectiveLegalStatus: string
-  collectiveNetwork: []
+  collectiveNetwork: string[]
   collectiveInterventionArea: string[]
 }

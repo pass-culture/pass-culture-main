@@ -1,28 +1,27 @@
 import { FormikProvider, useFormik } from 'formik'
-import { MultiSelectAutocomplete, Select, TextArea, TextInput } from 'ui-kit'
+import { Link, useHistory } from 'react-router-dom'
+import {
+  MultiSelectAutocomplete,
+  Select,
+  SubmitButton,
+  TextArea,
+  TextInput,
+} from 'ui-kit'
 import React, { useEffect, useState } from 'react'
 
+import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from './initialValues'
 import { CollectiveDataFormValues } from './type'
 import FormLayout from 'new_components/FormLayout'
 import RouteLeavingGuardVenueCollectiveDataEdition from '../RouteLeavingGuardVenueCollectiveDataEdition'
 import { SelectOption } from 'custom_types/form'
 import { StudentLevels } from 'apiClient/v1'
+import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
+import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import { handleAllFranceDepartmentOptions } from './utils/handleAllFranceDepartmentOptions'
 import { interventionOptions } from './interventionOptions'
 import styles from './CollectiveDataForm.module.scss'
+import useNotification from 'components/hooks/useNotification'
 import { validationSchema } from './validationSchema'
-
-const initialValues: CollectiveDataFormValues = {
-  collectiveDescription: '',
-  collectiveStudents: [],
-  collectiveWebsite: '',
-  collectivePhone: '',
-  collectiveEmail: '',
-  collectiveDomains: [],
-  collectiveLegalStatus: '',
-  collectiveNetwork: [],
-  collectiveInterventionArea: [],
-}
 
 const studentOptions = [
   { value: StudentLevels.COLL_GE_4E, label: StudentLevels.COLL_GE_4E },
@@ -41,20 +40,49 @@ type CollectiveDataFormProps = {
   statuses: SelectOption[]
   domains: SelectOption[]
   culturalPartners: SelectOption[]
+  venueId: string
+  offererId: string
 }
 
 const CollectiveDataForm = ({
   statuses,
   domains,
   culturalPartners,
+  venueId,
+  offererId,
 }: CollectiveDataFormProps): JSX.Element => {
+  const notify = useNotification()
+  const history = useHistory()
+
   const [previousInterventionValues, setPreviousInterventionValues] = useState<
     string[] | null
   >(null)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onSubmit = async (values: CollectiveDataFormValues) => {
+    setIsLoading(true)
+    const response = await editVenueCollectiveDataAdapter({ venueId, values })
+
+    if (!response.isOk) {
+      notify.error(response.message)
+      return setIsLoading(false)
+    }
+
+    formik.resetForm({
+      values: extractInitialValuesFromVenue(response.payload),
+    })
+
+    history.push({
+      pathname: `/structures/${offererId}/lieux/${venueId}`,
+      state: {
+        collectiveDataEditionSuccess: response.message,
+      },
+    })
+  }
 
   const formik = useFormik<CollectiveDataFormValues>({
-    initialValues,
-    onSubmit: () => {},
+    initialValues: COLLECTIVE_DATA_FORM_INITIAL_VALUES,
+    onSubmit: onSubmit,
     validationSchema,
   })
 
@@ -171,6 +199,15 @@ const CollectiveDataForm = ({
               className={styles.row}
             />
           </FormLayout.Row>
+          <FormLayout.Actions>
+            <Link
+              className="secondary-link"
+              to={`/structures/${offererId}/lieux/${venueId}`}
+            >
+              Annuler et quitter
+            </Link>
+            <SubmitButton isLoading={isLoading}>Enregistrer</SubmitButton>
+          </FormLayout.Actions>
         </form>
       </FormikProvider>
       <RouteLeavingGuardVenueCollectiveDataEdition isFormDirty={formik.dirty} />
