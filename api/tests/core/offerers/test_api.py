@@ -912,6 +912,17 @@ class LinkVenueToReimbursementPointTest:
         assert new_link.timespan.lower == current_link.timespan.upper
         assert new_link.timespan.upper is None
 
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_fails_if_reimbursement_point_has_no_siret(self):
+        reimbursement_point = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        offerer = reimbursement_point.managingOfferer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
+        msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
+        assert error.value.errors == {"reimbursementPointId": [msg]}
+
 
 class HasVenueAtLeastOneBookableOfferTest:
     @override_features(ENABLE_VENUE_STRICT_SEARCH=True)

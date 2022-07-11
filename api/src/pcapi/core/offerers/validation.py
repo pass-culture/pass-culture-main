@@ -143,6 +143,14 @@ def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbu
     reimbursement_point = models.Venue.query.filter_by(id=reimbursement_point_id).one_or_none()
     if not reimbursement_point:
         raise ApiErrors(errors={"reimbursementPointId": ["Ce lieu n'existe pas."]})
+    if not reimbursement_point.siret:
+        raise ApiErrors(
+            errors={
+                "reimbursementPointId": [
+                    f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
+                ]
+            }
+        )
     if reimbursement_point.managingOffererId != venue.managingOffererId:
         raise ApiErrors(
             errors={
