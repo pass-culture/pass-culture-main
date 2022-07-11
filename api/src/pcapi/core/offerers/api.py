@@ -63,6 +63,7 @@ def update_venue(
     update_reimbursement_point_id = "reimbursementPointId" in attrs
     reimbursement_point_id = attrs.pop("reimbursementPointId", None)
     collectiveDomains = attrs.pop("collectiveDomains", None)
+    collectiveLegalStatus = attrs.pop("collectiveLegalStatus", None)
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
     validation.check_venue_edition(modifications, venue)
@@ -94,6 +95,9 @@ def update_venue(
 
     if collectiveDomains:
         venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains)  # type: ignore [assignment]
+
+    if collectiveLegalStatus:
+        venue.venueEducationalStatusId = collectiveLegalStatus
 
     venue.populate_from_dict(modifications)
 
