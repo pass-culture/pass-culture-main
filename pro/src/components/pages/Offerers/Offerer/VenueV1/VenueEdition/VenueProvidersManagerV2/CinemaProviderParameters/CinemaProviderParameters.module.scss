@@ -1,0 +1,27 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
+.cinema-provider-parameters {
+  width: 100%;
+  margin-top: 1rem;
+
+  .title {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .cinema-provider-parameters-list {
+    color: colors.$grey-dark;
+    margin-top: 0.5rem;
+
+    span {
+      color: colors.$black;
+      font-weight: 600;
+    }
+  }
+
+  .edit-parameters-btn {
+    margin-top: 1rem;
+  }
+}
