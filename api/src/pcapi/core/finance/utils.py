@@ -37,7 +37,7 @@ def install_template_filters(app) -> None:  # type: ignore [no-untyped-def]
     app.jinja_env.filters["fr_currency"] = fr_currency_filter
 
 
-def format_raw_iban_and_bic(raw_data: str) -> typing.Optional[str]:
+def format_raw_iban_and_bic(raw_data: str | None) -> typing.Optional[str]:
     if not raw_data:
         return None
 

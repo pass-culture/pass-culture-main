@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.dms import api as api_dms
@@ -36,12 +35,12 @@ class ApplicationDetail:
         siren: str,
         status: BankInformationStatus,
         application_id: int,
-        iban: str,
-        bic: str,
         modification_date: datetime,
-        siret: Optional[str] = None,
-        venue_name: Optional[str] = None,
-        annotation_id: Optional[str] = None,
+        iban: str | None = None,
+        bic: str | None = None,
+        siret: str | None = None,
+        venue_name: str | None = None,
+        annotation_id: str | None = None,
         dossier_id: str = None,
     ):
         self.siren = siren
@@ -100,14 +99,14 @@ def get_venue_bank_information_application_details_by_application_id(
                 response_application_details["dossier"]["state"]
             ),
             application_id=int(response_application_details["dossier"]["id"]),
-            iban=format_raw_iban_and_bic(  # type: ignore [arg-type]
-                _find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")  # type: ignore [arg-type]
+            iban=format_raw_iban_and_bic(
+                _find_value_in_fields(response_application_details["dossier"]["champs"], "IBAN")
             ),
-            bic=format_raw_iban_and_bic(  # type: ignore [arg-type]
-                _find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")  # type: ignore [arg-type]
+            bic=format_raw_iban_and_bic(
+                _find_value_in_fields(response_application_details["dossier"]["champs"], "BIC")
             ),
-            siret=_find_value_in_fields(response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITH_SIRET),  # type: ignore [arg-type]
-            venue_name=_find_value_in_fields(  # type: ignore [arg-type]
+            siret=_find_value_in_fields(response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITH_SIRET),
+            venue_name=_find_value_in_fields(
                 response_application_details["dossier"]["champs"], FIELD_FOR_VENUE_WITHOUT_SIRET
             ),
             modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
@@ -162,7 +161,7 @@ def _get_status_from_demarches_simplifiees_application_state_v2(
     }[state]
 
 
-def _find_value_in_fields(fields: list[dict], value_name: str) -> Optional[dict]:
+def _find_value_in_fields(fields: list[dict], value_name: str) -> str | None:
     for field in fields:
         if field["type_de_champ"]["libelle"] == value_name:
             return field["value"]
