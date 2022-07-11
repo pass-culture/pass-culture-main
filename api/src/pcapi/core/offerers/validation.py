@@ -1,5 +1,7 @@
 import decimal
 
+import sqlalchemy.orm as sqla_orm
+
 import pcapi.core.finance.models as finance_models
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
@@ -148,22 +150,21 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
 
 
 def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbursement_point_id: int) -> None:
-    reimbursement_point = models.Venue.query.filter_by(id=reimbursement_point_id).one_or_none()
+    reimbursement_point = (
+        models.Venue.query.filter_by(id=reimbursement_point_id)
+        .options(sqla_orm.joinedload(models.Venue.bankInformation))
+        .one_or_none()
+    )
     if not reimbursement_point:
         raise ApiErrors(errors={"reimbursementPointId": ["Ce lieu n'existe pas."]})
+    error_with_name = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
     if not reimbursement_point.siret:
-        raise ApiErrors(
-            errors={
-                "reimbursementPointId": [
-                    f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
-                ]
-            }
-        )
+        raise ApiErrors(errors={"reimbursementPointId": [error_with_name]})
+    error_with_siret = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements."
+    if (
+        not reimbursement_point.bankInformation
+        or reimbursement_point.bankInformation.status != finance_models.BankInformationStatus.ACCEPTED
+    ):
+        raise ApiErrors(errors={"reimbursementPointId": [error_with_siret]})
     if reimbursement_point.managingOffererId != venue.managingOffererId:
-        raise ApiErrors(
-            errors={
-                "reimbursementPointId": [
-                    f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements de ce lieu."
-                ]
-            }
-        )
+        raise ApiErrors(errors={"reimbursementPointId": [error_with_siret]})
