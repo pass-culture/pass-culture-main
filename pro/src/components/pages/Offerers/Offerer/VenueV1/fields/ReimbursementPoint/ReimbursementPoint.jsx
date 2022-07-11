@@ -46,7 +46,7 @@ const ReimbursementPoint = ({
   }, [])
 
   const openDMSApplication = useCallback(() => {
-    if (venueHasPricingPoint) {
+    if (venueHasPricingPoint || venue.siret) {
       window.open(
         DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
         '_blank'
