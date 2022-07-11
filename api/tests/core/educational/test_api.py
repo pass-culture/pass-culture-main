@@ -1,7 +1,9 @@
 import datetime
+import json
 from unittest import mock
 
 import dateutil
+from flask import current_app
 from freezegun.api import freeze_time
 import pytest
 
@@ -57,7 +59,7 @@ SIMPLE_OFFER_VALIDATION_CONFIG = """
 # @freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class EditCollectiveOfferStocksTest:
-    def test_should_update_all_fields_when_all_changed(self):
+    def test_should_update_all_fields_when_all_changed(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
@@ -88,7 +90,7 @@ class EditCollectiveOfferStocksTest:
         assert stock.price == 1500
         assert stock.numberOfTickets == 35
 
-    def test_should_update_some_fields_and_keep_non_edited_ones(self):
+    def test_should_update_some_fields_and_keep_non_edited_ones(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
@@ -116,7 +118,7 @@ class EditCollectiveOfferStocksTest:
         assert stock.price == 1200
         assert stock.numberOfTickets == 35
 
-    def test_should_replace_bookingLimitDatetime_with_new_event_datetime_if_provided_but_none(self):
+    def test_should_replace_bookingLimitDatetime_with_new_event_datetime_if_provided_but_none(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
@@ -143,7 +145,7 @@ class EditCollectiveOfferStocksTest:
 
     def test_should_replace_bookingLimitDatetime_with_old_event_datetime_if_provided_but_none_and_event_date_unchanged(
         self,
-    ):
+    ) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
         initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
@@ -164,9 +166,9 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.bookingLimitDatetime == initial_event_date
 
-    # FIXME (rpaoloni, 2022-03-09): Uncomment for when pc-13428 is merged
+    # FIXME (rpaoloni, 2022-03-09) -> None: Uncomment for when pc-13428 is merged
     # @mock.patch("pcapi.core.search.async_index_offer_ids")
-    # def test_should_reindex_offer_on_algolia(self, mocked_async_index_offer_ids):
+    # def test_should_reindex_offer_on_algolia(self, mocked_async_index_offer_ids) -> None:
     #     # Given
     #     initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
     #     initial_booking_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=3)
@@ -190,7 +192,7 @@ class EditCollectiveOfferStocksTest:
     #     stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
     #     mocked_async_index_offer_ids.assert_called_once_with([stock.collectiveOfferId])
 
-    def test_should_not_allow_stock_edition_when_booking_status_is_not_PENDING(self):
+    def test_should_not_allow_stock_edition_when_booking_status_is_not_PENDING(self) -> None:
         # Given
         stock_to_be_updated = educational_factories.CollectiveStockFactory(price=1200)
         educational_factories.CollectiveBookingFactory(
@@ -213,7 +215,7 @@ class EditCollectiveOfferStocksTest:
         assert stock.price == 1200
 
     @freeze_time("2020-11-17 15:00:00")
-    def should_update_bookings_cancellation_limit_date_if_event_postponed(self):
+    def should_update_bookings_cancellation_limit_date_if_event_postponed(self) -> None:
         # Given
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
@@ -248,7 +250,7 @@ class EditCollectiveOfferStocksTest:
         )
 
     @freeze_time("2020-11-17 15:00:00")
-    def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self):
+    def should_update_bookings_cancellation_limit_date_if_beginningDatetime_earlier(self) -> None:
         # Given
         educational_year = educational_factories.EducationalYearFactory(
             beginningDate=datetime.datetime(2020, 9, 1), expirationDate=datetime.datetime(2021, 8, 31)
@@ -283,7 +285,7 @@ class EditCollectiveOfferStocksTest:
         assert booking_updated.cancellationLimitDate == datetime.datetime.utcnow()
 
     @freeze_time("2020-11-17 15:00:00")
-    def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self):
+    def test_should_allow_stock_edition_and_not_modify_cancellation_limit_date_when_booking_cancelled(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() + datetime.timedelta(days=20)
         cancellation_limit_date = datetime.datetime.utcnow() + datetime.timedelta(days=5)
@@ -315,7 +317,7 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).one()
         assert stock.beginningDatetime == new_event_date.replace(tzinfo=None)
 
-    def test_does_not_allow_edition_of_an_expired_event_stock(self):
+    def test_does_not_allow_edition_of_an_expired_event_stock(self) -> None:
         # Given
         initial_event_date = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         initial_booking_limit_date = datetime.datetime.utcnow() - datetime.timedelta(days=10)
@@ -342,7 +344,7 @@ class EditCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_to_be_updated.id).first()
         assert stock.numberOfTickets == 30
 
-    def test_edit_stock_of_non_approved_offer_fails(self):
+    def test_edit_stock_of_non_approved_offer_fails(self) -> None:
         # Given
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
@@ -370,7 +372,7 @@ class EditCollectiveOfferStocksTest:
     @freeze_time("2020-11-17 15:00:00")
     def test_should_not_allow_stock_edition_when_beginningDatetime_not_provided_and_bookingLimitDatetime_set_after_existing_event_datetime(
         self,
-    ):
+    ) -> None:
         # Given
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.datetime(2021, 12, 10), bookingLimitDatetime=datetime.datetime(2021, 12, 5)
@@ -392,7 +394,7 @@ class EditCollectiveOfferStocksTest:
     @freeze_time("2020-11-17 15:00:00")
     def test_should_not_allow_stock_edition_when_bookingLimitDatetime_not_provided_and_beginningDatetime_set_before_existing_event_datetime(
         self,
-    ):
+    ) -> None:
         # Given
         stock_to_be_updated = educational_factories.CollectiveStockFactory(
             beginningDatetime=datetime.datetime(2021, 12, 10), bookingLimitDatetime=datetime.datetime(2021, 12, 5)
@@ -415,7 +417,7 @@ class EditCollectiveOfferStocksTest:
 @freeze_time("2020-11-17 15:00:00")
 @pytest.mark.usefixtures("db_session")
 class CreateCollectiveOfferStocksTest:
-    def should_create_one_stock_on_collective_offer_stock_creation(self):
+    def should_create_one_stock_on_collective_offer_stock_creation(self) -> None:
         # Given
         user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
@@ -441,7 +443,7 @@ class CreateCollectiveOfferStocksTest:
         search.index_collective_offers_in_queue()
         assert offer.id in search_testing.search_store["collective-offers"]
 
-    def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self):
+    def should_set_booking_limit_datetime_to_beginning_datetime_when_not_provided(self) -> None:
         # Given
         user_pro = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory()
@@ -459,7 +461,7 @@ class CreateCollectiveOfferStocksTest:
         stock = CollectiveStock.query.filter_by(id=stock_created.id).one()
         assert stock.bookingLimitDatetime == dateutil.parser.parse("2021-12-15T20:00:00")
 
-    def test_create_stock_for_non_approved_offer_fails(self):
+    def test_create_stock_for_non_approved_offer_fails(self) -> None:
         # Given
         user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING)
@@ -485,7 +487,7 @@ class CreateCollectiveOfferStocksTest:
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_not_send_email_when_offer_pass_to_pending_based_on_fraud_criteria(
         self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
-    ):
+    ) -> None:
         # Given
         user = users_factories.ProFactory()
         offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
@@ -512,7 +514,7 @@ class EditEducationalInstitutionTest:
     @mock.patch("pcapi.core.offers.api.set_offer_status_based_on_fraud_criteria")
     def test_send_email_when_offer_automatically_approved_based_on_fraud_criteria(
         self, mocked_set_offer_status_based_on_fraud_criteria, mocked_offer_creation_notification_to_admin
-    ):
+    ) -> None:
         # Given
         user = users_factories.ProFactory()
         stock = educational_factories.CollectiveStockFactory(collectiveOffer__validation=OfferValidationStatus.DRAFT)
@@ -532,7 +534,7 @@ class EditEducationalInstitutionTest:
 class UnindexExpiredOffersTest:
     @override_settings(ALGOLIA_DELETING_COLLECTIVE_OFFERS_CHUNK_SIZE=2)
     @mock.patch("pcapi.core.search.unindex_collective_offer_ids")
-    def test_default_run(self, mock_unindex_collective_offer_ids):
+    def test_default_run(self, mock_unindex_collective_offer_ids) -> None:
         # Given
         educational_factories.CollectiveStockFactory(bookingLimitDatetime=datetime.datetime(2020, 1, 2, 12, 0))
         collective_stock1 = educational_factories.CollectiveStockFactory(
@@ -556,7 +558,7 @@ class UnindexExpiredOffersTest:
         ]
 
     @mock.patch("pcapi.core.search.unindex_collective_offer_ids")
-    def test_run_unlimited(self, mock_unindex_collective_offer_ids):
+    def test_run_unlimited(self, mock_unindex_collective_offer_ids) -> None:
         # more than 2 days ago, must be processed
         collective_stock = educational_factories.CollectiveStockFactory(
             bookingLimitDatetime=datetime.datetime(2020, 1, 2, 12, 0)
@@ -571,3 +573,241 @@ class UnindexExpiredOffersTest:
         assert mock_unindex_collective_offer_ids.mock_calls == [
             mock.call([collective_stock.collectiveOfferId]),
         ]
+
+
+class GetCulturalPartnersTest:
+    def test_cultural_partners_no_cache(self) -> None:
+        # given
+        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        redis_client.delete("api:adage_cultural_partner:cache")
+
+        # when
+        result = educational_api.get_cultural_partners()
+
+        # then
+        assert json.loads(result.json()) == {
+            "partners": [
+                {
+                    "id": 128029,
+                    "venueId": None,
+                    "siret": "21260324500011",
+                    "regionId": None,
+                    "academieId": None,
+                    "statutId": None,
+                    "labelId": 4,
+                    "typeId": 4,
+                    "communeId": "26324",
+                    "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
+                    "adresse": "Place de Castellane",
+                    "siteWeb": "http://www.musat.fr/",
+                    "latitude": 44.349098,
+                    "longitude": 4.768178,
+                    "actif": 1,
+                    "dateModification": "2021-09-01T00:00:00",
+                    "statutLibelle": None,
+                    "labelLibelle": "Musée de France",
+                    "typeIcone": "museum",
+                    "typeLibelle": "Musée, domaine ou monument",
+                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                    "communeDepartement": "026",
+                    "academieLibelle": "GRENOBLE",
+                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+                    "domaines": "Patrimoine, mémoire, archéologie",
+                },
+                {
+                    "id": 128028,
+                    "venueId": None,
+                    "siret": "",
+                    "regionId": None,
+                    "academieId": None,
+                    "statutId": None,
+                    "labelId": None,
+                    "typeId": 8,
+                    "communeId": "26324",
+                    "libelle": "Fête du livre jeunesse de St Paul les trois Châteaux",
+                    "adresse": "Place Charles Chausy",
+                    "siteWeb": "http://www.fetedulivrejeunesse.fr/",
+                    "latitude": 44.350457,
+                    "longitude": 4.765918,
+                    "actif": 1,
+                    "dateModification": "2021-09-01T00:00:00",
+                    "statutLibelle": None,
+                    "labelLibelle": None,
+                    "typeIcone": "town",
+                    "typeLibelle": "Association ou fondation pour la promotion, le développement et la diffusion d\u0027oeuvres",
+                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                    "communeDepartement": "026",
+                    "academieLibelle": "GRENOBLE",
+                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+                    "domaines": "Univers du livre, de la lecture et des écritures",
+                },
+            ]
+        }
+
+    def test_cultural_partners_get_cache(self) -> None:
+        # given
+        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        data = [
+            {
+                "id": 23,
+                "venueId": None,
+                "siret": "21260324500011",
+                "regionId": None,
+                "academieId": None,
+                "statutId": None,
+                "labelId": 4,
+                "typeId": 4,
+                "communeId": "26324",
+                "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
+                "adresse": "Place de Castellane",
+                "siteWeb": "http://www.musat.fr/",
+                "latitude": 44.349098,
+                "longitude": 4.768178,
+                "actif": 1,
+                "dateModification": "2021-09-01T00:00:00",
+                "statutLibelle": None,
+                "labelLibelle": "Musée de France",
+                "typeIcone": "museum",
+                "typeLibelle": "Musée, domaine ou monument",
+                "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                "communeDepartement": "026",
+                "academieLibelle": "GRENOBLE",
+                "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+                "domaines": "Patrimoine, mémoire, archéologie",
+            },
+        ]
+        redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
+
+        # when
+        result = educational_api.get_cultural_partners()
+
+        # then
+        assert json.loads(result.json()) == {
+            "partners": [
+                {
+                    "id": 23,
+                    "venueId": None,
+                    "siret": "21260324500011",
+                    "regionId": None,
+                    "academieId": None,
+                    "statutId": None,
+                    "labelId": 4,
+                    "typeId": 4,
+                    "communeId": "26324",
+                    "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
+                    "adresse": "Place de Castellane",
+                    "siteWeb": "http://www.musat.fr/",
+                    "latitude": 44.349098,
+                    "longitude": 4.768178,
+                    "actif": 1,
+                    "dateModification": "2021-09-01T00:00:00",
+                    "statutLibelle": None,
+                    "labelLibelle": "Musée de France",
+                    "typeIcone": "museum",
+                    "typeLibelle": "Musée, domaine ou monument",
+                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                    "communeDepartement": "026",
+                    "academieLibelle": "GRENOBLE",
+                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+                    "domaines": "Patrimoine, mémoire, archéologie",
+                },
+            ]
+        }
+
+    def test_cultural_partners_force_update(self) -> None:
+        # given
+        redis_client = current_app.redis_client  # type: ignore [attr-defined]
+        data = [
+            {
+                "id": 23,
+                "venueId": None,
+                "siret": "21260324500011",
+                "regionId": None,
+                "academieId": None,
+                "statutId": None,
+                "labelId": 4,
+                "typeId": 4,
+                "communeId": "26324",
+                "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
+                "adresse": "Place de Castellane",
+                "siteWeb": "http://www.musat.fr/",
+                "latitude": 44.349098,
+                "longitude": 4.768178,
+                "actif": 1,
+                "dateModification": "2021-09-01T00:00:00",
+                "statutLibelle": None,
+                "labelLibelle": "Musée de France",
+                "typeIcone": "museum",
+                "typeLibelle": "Musée, domaine ou monument",
+                "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                "communeDepartement": "026",
+                "academieLibelle": "GRENOBLE",
+                "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+                "domaines": "Patrimoine, mémoire, archéologie",
+            },
+        ]
+        redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
+
+        # when
+        result = educational_api.get_cultural_partners(force_update=True)
+
+        # then
+        # then
+        assert json.loads(result.json()) == {
+            "partners": [
+                {
+                    "id": 128029,
+                    "venueId": None,
+                    "siret": "21260324500011",
+                    "regionId": None,
+                    "academieId": None,
+                    "statutId": None,
+                    "labelId": 4,
+                    "typeId": 4,
+                    "communeId": "26324",
+                    "libelle": "Musée de St Paul Les trois Châteaux : Le musat Musée d'Archéologie Tricastine",
+                    "adresse": "Place de Castellane",
+                    "siteWeb": "http://www.musat.fr/",
+                    "latitude": 44.349098,
+                    "longitude": 4.768178,
+                    "actif": 1,
+                    "dateModification": "2021-09-01T00:00:00",
+                    "statutLibelle": None,
+                    "labelLibelle": "Musée de France",
+                    "typeIcone": "museum",
+                    "typeLibelle": "Musée, domaine ou monument",
+                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                    "communeDepartement": "026",
+                    "academieLibelle": "GRENOBLE",
+                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+                    "domaines": "Patrimoine, mémoire, archéologie",
+                },
+                {
+                    "id": 128028,
+                    "venueId": None,
+                    "siret": "",
+                    "regionId": None,
+                    "academieId": None,
+                    "statutId": None,
+                    "labelId": None,
+                    "typeId": 8,
+                    "communeId": "26324",
+                    "libelle": "Fête du livre jeunesse de St Paul les trois Châteaux",
+                    "adresse": "Place Charles Chausy",
+                    "siteWeb": "http://www.fetedulivrejeunesse.fr/",
+                    "latitude": 44.350457,
+                    "longitude": 4.765918,
+                    "actif": 1,
+                    "dateModification": "2021-09-01T00:00:00",
+                    "statutLibelle": None,
+                    "labelLibelle": None,
+                    "typeIcone": "town",
+                    "typeLibelle": "Association ou fondation pour la promotion, le développement et la diffusion d\u0027oeuvres",
+                    "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
+                    "communeDepartement": "026",
+                    "academieLibelle": "GRENOBLE",
+                    "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+                    "domaines": "Univers du livre, de la lecture et des écritures",
+                },
+            ]
+        }

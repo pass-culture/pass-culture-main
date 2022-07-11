@@ -1,12 +1,15 @@
 import datetime
 import decimal
+import json
 import logging
 from operator import or_
 from typing import Iterable
 from typing import Optional
 from typing import cast
 
+from flask import current_app
 from flask_sqlalchemy import BaseQuery
+from pydantic import parse_obj_as
 from pydantic.error_wrappers import ValidationError
 import sqlalchemy as sqla
 from sqlalchemy.orm import joinedload
@@ -56,6 +59,7 @@ from pcapi.repository import transaction
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
+from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
 from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_excel_report
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
@@ -875,3 +879,23 @@ def update_collective_offer_educational_institution(
 
 def get_collective_stock(collective_stock_id: int) -> Optional[educational_models.CollectiveStock]:
     return educational_repository.get_collective_stock(collective_stock_id)
+
+
+def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.AdageCulturalPartners:
+    CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
+    CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
+
+    redis_client = current_app.redis_client  # type: ignore [attr-defined]
+    cultural_partners_json = None
+    if not force_update:
+        cultural_partners_json = redis_client.get(CULTURAL_PARTNERS_CACHE_KEY)
+
+    if not cultural_partners_json:
+        # update path
+        adage_data = adage_client.get_cultural_partners()
+        cultural_partners_raw_json = json.dumps(adage_data).encode("utf-8")
+        redis_client.set(CULTURAL_PARTNERS_CACHE_KEY, cultural_partners_raw_json, ex=CULTURAL_PARTNERS_CACHE_TIMEOUT)
+        cultural_partners_json = cultural_partners_raw_json.decode("utf-8")
+
+    cultural_partners = json.loads(cultural_partners_json)
+    return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": cultural_partners})

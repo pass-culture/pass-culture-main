@@ -3,7 +3,6 @@ import math
 
 from flask_login import login_required
 
-from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import api
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
@@ -56,5 +55,5 @@ def get_educational_institutions(
     api=blueprint.pro_private_schema,
 )
 def get_educational_partners() -> venues_serialize.AdageCulturalPartnersResponseModel:
-    data = adage_client.get_cultural_partners()
+    data = api.get_cultural_partners()
     return venues_serialize.AdageCulturalPartnersResponseModel.from_orm(data)
