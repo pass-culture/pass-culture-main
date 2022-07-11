@@ -70,6 +70,7 @@ class SaveVenueBankInformations:
                 raise api_errors
             return None
 
+        assert venue
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
         if not bank_information:
             bank_information = self.bank_informations_repository.find_by_venue(venue.identifier)
@@ -109,6 +110,9 @@ class SaveVenueBankInformations:
         else:
             raise NotImplementedError()
 
+        
+        assert updated_bank_information  # for typing purposes
+        business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
         # TODO(xordoquy): remove the siret condition once the old DMS procedure is dropped
         if siret:
             if not business_unit:
@@ -140,8 +144,8 @@ class SaveVenueBankInformations:
         return bank_information
 
     def get_referent_venue(
-        self, application_details: ApplicationDetail, offerer: Offerer, api_errors: CannotRegisterBankInformation
-    ) -> VenueWithBasicInformation:
+        self, application_details: ApplicationDetail, offerer: Offerer | None, api_errors: CannotRegisterBankInformation
+    ) -> VenueWithBasicInformation | None:
         siret = application_details.siret
         if siret:
             venue = self.venue_repository.find_by_siret(siret)
