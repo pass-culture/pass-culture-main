@@ -18,10 +18,13 @@ import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOffe
 import { IOfferSubCategory } from 'core/Offers/types'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
+import { RootState } from 'store/reducers'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { computeOffersUrl } from 'core/Offers'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 import styles from './Summary.module.scss'
 import useNotification from 'components/hooks/useNotification'
+import { useSelector } from 'react-redux'
 
 export interface ISummaryProps {
   offerId: string
@@ -85,6 +88,14 @@ const Summary = ({
     ...offerConditionalFields,
   ]
 
+  const offersSearchFilters = useSelector(
+    (state: RootState) => state.offers.searchFilters
+  )
+  const offersPageNumber = useSelector(
+    (state: RootState) => state.offers.pageNumber
+  )
+  const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
+
   return (
     <>
       {isCreation && <BannerSummary />}
@@ -111,7 +122,7 @@ const Summary = ({
           )}
 
           {formOfferV2 ? (
-            isCreation && (
+            isCreation ? (
               <div className={styles['offer-creation-preview-actions']}>
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
@@ -126,6 +137,12 @@ const Summary = ({
                 >
                   Publier l'offre
                 </Button>
+              </div>
+            ) : (
+              <div className={styles['offer-creation-preview-actions']}>
+                <ButtonLink variant={ButtonVariant.PRIMARY} to={backOfferUrl}>
+                  Voir la liste des offres
+                </ButtonLink>
               </div>
             )
           ) : (
