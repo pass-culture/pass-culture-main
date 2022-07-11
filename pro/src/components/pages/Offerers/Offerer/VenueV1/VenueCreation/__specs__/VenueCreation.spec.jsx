@@ -225,6 +225,45 @@ describe('venue form', () => {
       expect(contactMail).toHaveValue('test@test.com')
     })
   })
+  it('should display popin when quit button is clicked', async () => {
+    await renderVenueCreation({ props, storeOverrides })
+    const quitButton = screen.getByRole('button', { name: 'Quitter' })
+
+    await userEvent.click(quitButton)
+
+    expect(
+      screen.queryByText('Voulez-vous quitter la création de lieu ?')
+    ).toBeInTheDocument()
+  })
+  it('should display homepage when cancel popin is confirm', async () => {
+    await renderVenueCreation({ props, storeOverrides })
+    const quitButton = screen.getByRole('button', { name: 'Quitter' })
+
+    await userEvent.click(quitButton)
+
+    const quitDialogButton = screen.getByRole('button', {
+      name: 'Quitter sans enregister',
+    })
+    await userEvent.click(quitDialogButton)
+
+    expect(screen.queryByText("Bienvenue sur l'accueil")).toBeInTheDocument()
+  })
+
+  it('should close dialog when cancel button in popin is clicked', async () => {
+    await renderVenueCreation({ props, storeOverrides })
+    const quitButton = screen.getByRole('button', { name: 'Quitter' })
+
+    await userEvent.click(quitButton)
+
+    const cancelDialogButton = screen.getByRole('button', {
+      name: 'Annuler',
+    })
+    await userEvent.click(cancelDialogButton)
+
+    expect(
+      screen.queryByText('Voulez-vous quitter la création de lieu ?')
+    ).not.toBeInTheDocument()
+  })
 
   describe('business unit fileds', () => {
     storeOverrides = {
