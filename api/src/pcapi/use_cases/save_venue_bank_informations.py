@@ -30,6 +30,7 @@ PROCEDURE_ID_VERSION_MAP = {
     settings.DMS_VENUE_PROCEDURE_ID: 1,
     settings.DMS_VENUE_PROCEDURE_ID_V2: 2,
     settings.DMS_VENUE_PROCEDURE_ID_V3: 2,
+    settings.DMS_VENUE_PROCEDURE_ID_V4: 2,
 }
 
 
@@ -55,7 +56,6 @@ class SaveVenueBankInformations:
         offerer = Offerer.query.filter_by(siren=siren).one_or_none()
         check_offerer_presence(offerer, api_errors)
         venue = self.get_referent_venue(application_details, offerer, api_errors)
-        business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
 
         if api_errors.errors:
             if application_details.annotation_id is not None:
@@ -70,7 +70,7 @@ class SaveVenueBankInformations:
                 raise api_errors
             return None
 
-        assert venue
+        assert venue  # for typing purposes
         bank_information = self.bank_informations_repository.get_by_application(application_details.application_id)
         if not bank_information:
             bank_information = self.bank_informations_repository.find_by_venue(venue.identifier)
@@ -110,7 +110,6 @@ class SaveVenueBankInformations:
         else:
             raise NotImplementedError()
 
-        
         assert updated_bank_information  # for typing purposes
         business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
         # TODO(xordoquy): remove the siret condition once the old DMS procedure is dropped
@@ -143,11 +142,17 @@ class SaveVenueBankInformations:
             archive_dossier(application_details.dossier_id)  # type: ignore [arg-type]
         return bank_information
 
+    # TODO(fseguin, 2022-07-11): clean up when previous procedures are retired
     def get_referent_venue(
         self, application_details: ApplicationDetail, offerer: Offerer | None, api_errors: CannotRegisterBankInformation
     ) -> VenueWithBasicInformation | None:
-        siret = application_details.siret
-        if siret:
+        venue = None
+        if dms_token := application_details.dms_token:
+            venue = self.venue_repository.find_by_dms_token(dms_token)
+            if not venue:
+                api_errors.add_error("Venue", "Venue not found")
+
+        elif siret := application_details.siret:
             venue = self.venue_repository.find_by_siret(siret)
             if not venue:
                 api_errors.add_error("Venue", "Venue not found")
@@ -159,17 +164,14 @@ class SaveVenueBankInformations:
                 api_errors.add_error("Venue", "Error while checking SIRET on Api Entreprise")
 
         else:
-            if not offerer:
-                return None  # type: ignore [return-value]
-            name = application_details.venue_name
-            venues = self.venue_repository.find_by_name(name, offerer.id)  # type: ignore [arg-type]
-            if len(venues) == 0:
-                api_errors.add_error("Venue", "Venue name not found")
-            if len(venues) > 1:
-                api_errors.add_error("Venue", "Multiple venues found")
-            if api_errors.errors:
-                return None  # type: ignore [return-value]
-            venue = venues[0]
+            if offerer and (name := application_details.venue_name):
+                venues = self.venue_repository.find_by_name(name, offerer.id)
+                if len(venues) == 0:
+                    api_errors.add_error("Venue", "Venue name not found")
+                elif len(venues) > 1:
+                    api_errors.add_error("Venue", "Multiple venues found")
+                else:
+                    venue = venues[0]
         return venue
 
     def create_new_bank_informations(self, application_details: ApplicationDetail, venue_id: int) -> BankInformations:
