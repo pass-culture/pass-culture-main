@@ -375,3 +375,16 @@ class SynchronizeStocksTest:
     )
     def should_reindex_offers(self, new_quantity, new_price, existing_stock, expected_result):
         assert api._should_reindex_offer(new_quantity, new_price, existing_stock) == expected_result
+
+
+class DeleteVenueProviderTest:
+    @pytest.mark.usefixtures("db_session")
+    @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
+    def test_delete_venue_provider(self, mocked_update_all_offers_active_status_job):
+        venue_provider = providers_factories.VenueProviderFactory()
+        venue = venue_provider.venue
+
+        api.delete_venue_provider(venue_provider)
+
+        assert not venue.venueProviders
+        mocked_update_all_offers_active_status_job.assert_called_once_with(venue.id, venue_provider.providerId, False)
