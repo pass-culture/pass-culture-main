@@ -33,6 +33,7 @@ import ReimbursementFields from '../fields/ReimbursementFields/ReimbursementFiel
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import Titles from 'components/layout/Titles/Titles'
 import VenueProvidersManager from './VenueProvidersManager'
+import VenueProvidersManagerV2 from './VenueProvidersManagerV2'
 import VenueType from '../ValueObjects/VenueType'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
@@ -67,6 +68,9 @@ const VenueEdition = () => {
   )
   const enableAdageVenueInformation = useActiveFeature(
     'ENABLE_ADAGE_VENUE_INFORMATION'
+  )
+  const isEnabledNewVenueProviderSection = useActiveFeature(
+    'ENABLE_PRO_NEW_VENUE_PROVIDER_UI'
   )
 
   const onImageUpload = useCallback(
@@ -495,7 +499,13 @@ const VenueEdition = () => {
         subtitle={pageSubtitle}
         title="Lieu"
       />
-      {venue && !initialIsVirtual && <VenueProvidersManager venue={venue} />}
+      {venue &&
+        !initialIsVirtual &&
+        (isEnabledNewVenueProviderSection ? (
+          <VenueProvidersManagerV2 venue={venue} />
+        ) : (
+          <VenueProvidersManager venue={venue} />
+        ))}
       {venue && offerer && isReady && renderForm()}
     </div>
   )

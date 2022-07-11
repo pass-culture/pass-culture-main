@@ -19,7 +19,7 @@ const AllocineProviderFormDialog = ({
       onDismiss={onCancel}
     >
       <div className="title">
-        <strong>Modifier mes offres</strong>
+        <strong>Modifier les paramètres de mes offres</strong>
       </div>
       <div className="explanation">
         Les modifications s’appliqueront uniquement aux nouvelles offres créées.

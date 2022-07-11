@@ -15,6 +15,7 @@ interface IConfirmDialogProps {
   isLoading?: boolean
   children: React.ReactNode | React.ReactNode[]
   icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
+  hideIcon?: boolean
 }
 
 const ConfirmDialog = ({
@@ -27,6 +28,7 @@ const ConfirmDialog = ({
   isLoading = false,
   children,
   icon,
+  hideIcon = false,
 }: IConfirmDialogProps): JSX.Element => {
   const buttonRef = useRef<HTMLButtonElement | null>(null)
 
@@ -40,7 +42,7 @@ const ConfirmDialog = ({
       labelledBy={title}
       onDismiss={onCancel}
     >
-      <Icon className={styles['confirm-dialog-icon']} />
+      {!hideIcon && <Icon className={styles['confirm-dialog-icon']} />}
       <div className={styles['confirm-dialog-title']}>
         <strong>{title}</strong>
         <strong>{secondTitle}</strong>
