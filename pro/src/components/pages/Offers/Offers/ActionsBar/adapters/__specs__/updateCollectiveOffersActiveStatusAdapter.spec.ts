@@ -49,7 +49,7 @@ describe('updateCollectiveOffersActiveStatusAdapter', () => {
 
     // then
     expect(response.isOk).toBeTruthy()
-    expect(response.message).toBe('2 offres ont bien été activées')
+    expect(response.message).toBe('2 offres ont bien été publiées')
     expect(api.patchCollectiveOffersActiveStatus).toHaveBeenCalledWith({
       ids: ['A1'],
       isActive: true,

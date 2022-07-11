@@ -81,7 +81,7 @@ const OfferLayout = () => {
   }
 
   if (!isCreatingOffer) {
-    pageTitle = 'Éditer une offre'
+    pageTitle = "Éditer l'offre"
   }
 
   const offerHeader =
