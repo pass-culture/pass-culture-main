@@ -1600,7 +1600,9 @@ describe('offerDetails - Edition', () => {
 
       // When
       await userEvent.click(
-        await screen.findByRole('link', { name: 'Annuler et quitter' })
+        await screen.findByRole('link', {
+          name: `Voir le détail de l'offre`,
+        })
       )
 
       // Then
@@ -1641,7 +1643,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       const cancelLink = await screen.findByRole('link', {
-        name: 'Annuler et quitter',
+        name: `Voir le détail de l'offre`,
       })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres')

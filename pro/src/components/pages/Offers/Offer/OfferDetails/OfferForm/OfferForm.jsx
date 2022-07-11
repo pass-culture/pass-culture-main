@@ -1125,7 +1125,7 @@ const OfferForm = ({
 
       <section className="actions-section">
         <Link className="secondary-link" to={backUrl}>
-          Annuler et quitter
+          {isEdition ? `Voir le détail de l'offre` : 'Annuler et quitter'}
         </Link>
         <SubmitButton
           className="primary-button"
