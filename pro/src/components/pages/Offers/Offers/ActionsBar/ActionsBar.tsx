@@ -187,7 +187,7 @@ const ActionsBar = ({
           type="button"
         >
           <Icon svg="ico-status-validated" />
-          Activer
+          Publier
         </button>
         <button
           className="secondary-button"

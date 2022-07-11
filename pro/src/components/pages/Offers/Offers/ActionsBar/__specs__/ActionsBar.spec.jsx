@@ -65,7 +65,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
 
     // then
     expect(
-      screen.queryByText('Activer', { selector: 'button' })
+      screen.queryByText('Publier', { selector: 'button' })
     ).toBeInTheDocument()
     expect(
       screen.queryByText('Désactiver', { selector: 'button' })
@@ -105,7 +105,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
     expect(screen.queryByText('500+ offres sélectionnées')).toBeInTheDocument()
   })
 
-  describe('on click on "Activer" button', () => {
+  describe('on click on "Publier" button', () => {
     it('should activate selected offers', async () => {
       // given
       const notifySuccess = jest.fn()
@@ -115,7 +115,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
       renderActionsBar(props, store)
 
       // when
-      await userEvent.click(screen.queryByText('Activer'))
+      await userEvent.click(screen.queryByText('Publier'))
 
       // then
       await waitFor(() => {
@@ -127,7 +127,7 @@ describe('src | components | pages | Offers | ActionsBar', () => {
         expect(props.refreshOffers).toHaveBeenCalled()
       })
       expect(notifySuccess).toHaveBeenCalledWith(
-        '2 offres ont bien été activées'
+        '2 offres ont bien été publiées'
       )
     })
   })
@@ -182,12 +182,12 @@ describe('src | components | pages | Offers | ActionsBar', () => {
   })
 
   describe('when all offers are selected', () => {
-    it('should activate all offers on click on "Activer" button', async () => {
+    it('should activate all offers on click on "Publier" button', async () => {
       // given
       props.areAllOffersSelected = true
 
       renderActionsBar(props, store)
-      const activateButton = screen.getByText('Activer')
+      const activateButton = screen.getByText('Publier')
       const expectedBody = {
         isActive: true,
         nameOrIsbn: 'keyword',
