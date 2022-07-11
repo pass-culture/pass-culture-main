@@ -24,7 +24,7 @@ const editVenueCollectiveDataAdapter: EditVenueCollectiveDataAdapter = async ({
     })
     return {
       isOk: true,
-      message: '',
+      message: 'Vos informations ont bien été enregistrées',
       payload: response,
     }
   } catch (e) {
