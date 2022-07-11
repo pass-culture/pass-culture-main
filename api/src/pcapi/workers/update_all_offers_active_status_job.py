@@ -72,3 +72,12 @@ def update_all_collective_offers_active_status_job(filters: dict, is_active: boo
     )
     offers_api.batch_update_collective_offers(collective_offer_query, {"isActive": is_active})
     offers_api.batch_update_collective_offers_template(collective_offer_template_query, {"isActive": is_active})
+
+
+@job(worker.low_queue)
+def update_venue_synchronized_offers_active_status_job(venue_id: int, provider_id: int, is_active: bool) -> None:
+    venue_synchronized_offers_query = offers_repository.get_synchronized_offers_with_provider_for_venue(
+        venue_id, provider_id
+    )
+
+    offers_api.batch_update_offers(venue_synchronized_offers_query, {"isActive": is_active})

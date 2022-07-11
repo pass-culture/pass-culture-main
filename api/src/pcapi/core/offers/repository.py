@@ -628,3 +628,9 @@ def get_offer_by_id(offer_id: int) -> Offer:
         )
     except NoResultFound:
         raise OfferNotFound()
+
+
+def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: int) -> BaseQuery:
+    return Offer.query.filter(Offer.venueId == venue_id).filter(
+        Offer.lastProviderId == provider_id  # pylint: disable=comparison-with-callable
+    )
