@@ -106,8 +106,8 @@ for FILE in $STAGED_FILES; do
   LINTED_FILES+=" ${FILE}"
 done
 
-if [[ ! -z "$STAGED_FILES" ]] 
-then 
+if [[ ! -z "$STAGED_FILES" ]]
+then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",isort," ]]
   then
       echo -ne "\033[0;96mRunning isort to organize imports...\033[0m"
@@ -143,7 +143,7 @@ then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]
   then
       echo -e "\033[0;96mRunning mypy for type checking...\033[0m"
-      mypy $LINTED_FILES --pretty --show-error-codes --config-file mypy.ini
+      mypy $LINTED_FILES --pretty --show-error-codes
       if [[ "$?" != 0 ]]; then
           counter=$((counter + 1))
       fi
@@ -152,7 +152,7 @@ then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",pylint," ]]
   then
       echo -e "\033[0;96mRunning pylint for code linting...\033[0m"
-      pylint $LINTED_FILES --output-format="colorized" --score=no --rcfile=.pylintrc --jobs=0
+      pylint $LINTED_FILES --output-format="colorized" --score=no --jobs=0
       if [[ "$?" != 0 ]]; then
           counter=$((counter + 1))
       fi
