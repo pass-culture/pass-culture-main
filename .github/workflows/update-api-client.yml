@@ -12,19 +12,29 @@ jobs:
           persist-credentials: false
           ref: ${{ github.head_ref }}
           fetch-depth: 2
+      - name: Check changes in API
+        uses: dorny/paths-filter@v2
+        id: changesApi
+        with:
+          filters: |
+            src:
+              - 'api/**'
       - uses: actions/setup-node@v2
+        if: steps.changesApi.outputs.src == 'true'
         with:
           node-version: "14"
       - name: Install dockerize
+        if: steps.changesApi.outputs.src == 'true'
         run: |
           sudo chown -R $USER .
           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
       - name: Run API
+        if: steps.changesApi.outputs.src == 'true'
         run: |
           sudo chown -R 1000:1000 .
           ./pc start-backend &
       - name: Run api client update
-        id: update
+        if: steps.changesApi.outputs.src == 'true'
         run: |
           cd pro
           sudo chown -R $USER .
@@ -32,6 +42,7 @@ jobs:
           yarn install
           yarn generate:api:client:local
       - name: Check if there are changes
+        if: steps.changesApi.outputs.src == 'true'
         id: changes
         run: |
           if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
