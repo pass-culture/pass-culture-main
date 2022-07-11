@@ -6,8 +6,6 @@ from flask_login import login_required
 from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import repository
-from pcapi.core.providers.api import update_allocine_venue_provider
-from pcapi.core.providers.api import update_cinema_venue_provider
 from pcapi.core.providers.models import AllocineVenueProvider
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.core.providers.repository import get_venue_provider_by_venue_and_provider_ids
@@ -124,12 +122,26 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
         raise ApiErrors({"provider": "Cannot update non-allocine provider or non-cinema provider"})
 
     if venue_provider.isFromAllocineProvider:
-        updated = update_allocine_venue_provider(venue_provider, body)
+        updated = api.update_allocine_venue_provider(venue_provider, body)
         updated.price = _allocine_venue_provider_price(updated)
     else:
-        updated = update_cinema_venue_provider(venue_provider, body)
+        updated = api.update_cinema_venue_provider(venue_provider, body)
 
     return VenueProviderResponse.from_orm(updated)
+
+
+@private_api.route("/venueProviders/<venue_provider_id>", methods=["DELETE"])
+@login_required
+@spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
+def delete_venue_provider(venue_provider_id: str) -> None:
+    dehumanized_venue_provider_id = dehumanize_id(venue_provider_id)
+    assert dehumanized_venue_provider_id is not None, "a not None provider_id is required"
+
+    venue_provider = repository.get_venue_provider_by_id(int(dehumanized_venue_provider_id))
+
+    check_user_can_alter_venue(current_user, venue_provider.venueId)
+
+    api.delete_venue_provider(venue_provider)
 
 
 def _allocine_venue_provider_price(venue_provider: AllocineVenueProvider) -> Union[float, None]:

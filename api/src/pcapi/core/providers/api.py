@@ -22,6 +22,7 @@ from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
 from pcapi.validation.models.entity_validator import validate
+from pcapi.workers.update_all_offers_active_status_job import update_venue_synchronized_offers_active_status_job
 
 
 logger = logging.getLogger(__name__)
@@ -101,6 +102,16 @@ def change_venue_provider(
     update_last_provider_id(venue_provider.venue, new_provider_id)
 
     return venue_provider
+
+
+def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> None:
+    update_venue_synchronized_offers_active_status_job.delay(venue_provider.venueId, venue_provider.providerId, False)
+
+    if venue_provider.isFromAllocineProvider:
+        for price_rule in venue_provider.priceRules:
+            repository.delete(price_rule)
+
+    repository.delete(venue_provider)
 
 
 def update_cinema_venue_provider(
