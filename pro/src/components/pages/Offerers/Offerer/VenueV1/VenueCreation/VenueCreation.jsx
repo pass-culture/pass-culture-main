@@ -10,7 +10,7 @@ import LocationFields, {
   bindGetSuggestionsToLongitude,
 } from '../fields/LocationFields'
 import { NavLink, useHistory, useParams } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import {
   createVenue,
@@ -22,10 +22,10 @@ import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 
 import BankInformation from '../fields/BankInformationFields'
 import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
+import ConfirmDialog from 'new_components/ConfirmDialog'
 import ContactInfosFields from '../fields/ContactInfosFields'
 import { Form } from 'react-final-form'
 import Icon from 'components/layout/Icon'
-import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import NotificationMessage from '../Notification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 /*eslint no-undef: 0*/
@@ -47,6 +47,7 @@ const VenueCreation = () => {
 
   const [venueTypes, setVenueTypes] = useState(null)
   const [venueLabels, setVenueLabels] = useState(null)
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
@@ -147,6 +148,16 @@ const VenueCreation = () => {
       })
     })
   }
+  const openCancelDialog = useCallback(() => {
+    setIsCancelDialogOpen(true)
+  }, [])
+
+  const closeCancelDialog = useCallback(() => {
+    setIsCancelDialogOpen(false)
+  }, [])
+  const handleCancelConfirm = () => {
+    history.replace(`/accueil?structure=${offererId}`)
+  }
 
   const onHandleRender = formProps => {
     const readOnly = false
@@ -200,13 +211,13 @@ const VenueCreation = () => {
           className="field is-grouped is-grouped-centered"
           style={{ justifyContent: 'space-between' }}
         >
-          <ModifyOrCancelControl
-            form={form}
-            history={history}
-            isCreatedEntity
-            offererId={offererId}
-            readOnly={readOnly}
-          />
+          <button
+            className="secondary-button"
+            onClick={openCancelDialog}
+            type="reset"
+          >
+            Quitter
+          </button>
 
           <ReturnOrSubmitControl
             canSubmit={canSubmit}
@@ -244,6 +255,20 @@ const VenueCreation = () => {
       <p className="advice">Ajoutez un lieu où accéder à vos offres.</p>
 
       {!isReady && <Spinner />}
+      {isCancelDialogOpen && (
+        <ConfirmDialog
+          cancelText="Annuler"
+          confirmText="Quitter sans enregister"
+          onCancel={closeCancelDialog}
+          onConfirm={handleCancelConfirm}
+          title="Voulez-vous quitter la création de lieu ?"
+        >
+          <p>
+            Votre lieu ne sera pas sauvegardé et toutes les informations seront
+            perdues.
+          </p>
+        </ConfirmDialog>
+      )}
 
       {isReady && (
         <Form
