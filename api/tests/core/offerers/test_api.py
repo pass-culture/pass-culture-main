@@ -818,7 +818,7 @@ def test_delete_business_unit():
 class LinkVenueToPricingPointTest:
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_no_pre_existing_link(self):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
         pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         assert offerers_models.VenuePricingPointLink.query.count() == 0
 
@@ -831,7 +831,7 @@ class LinkVenueToPricingPointTest:
 
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_raises_if_pre_existing_link(self):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
         pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         offerers_factories.VenuePricingPointLinkFactory(venue=venue, pricingPoint=pricing_point_1)
         pre_existing_link = offerers_models.VenuePricingPointLink.query.one()
@@ -840,6 +840,27 @@ class LinkVenueToPricingPointTest:
         with pytest.raises(offerers_exceptions.CannotLinkVenueToPricingPoint):
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
         assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
+
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_raises_if_venue_has_siret(self):
+        venue = offerers_factories.VenueFactory(siret="1234", pricing_point="self")
+        pre_existing_link = offerers_models.VenuePricingPointLink.query.one()
+        pricing_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+
+        with pytest.raises(api_errors.ApiErrors):
+            offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
+        assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
+
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_fails_if_venue_has_siret(self):
+        reimbursement_point = offerers_factories.VenueFactory()
+        offerer = reimbursement_point.managingOfferer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, siret="1234")
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            offerers_api.link_venue_to_pricing_point(venue, reimbursement_point.id)
+        msg = "Vous ne pouvez pas choisir un autre lieu pour le calcul du barème de remboursement de ce lieu."
+        assert error.value.errors == {"pricingPointId": [msg]}
 
 
 class LinkVenueToReimbursementPointTest:
