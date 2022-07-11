@@ -4,7 +4,7 @@ import { api } from 'apiClient/api'
 export type PatchEducationalInstitutionAdapter = Adapter<
   {
     offerId: string
-    institutionId: string
+    institutionId: string | null
     isCreatingOffer: boolean
   },
   GetCollectiveOfferResponseModel,
