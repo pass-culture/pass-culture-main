@@ -18,6 +18,9 @@ const editVenueCollectiveDataAdapter: EditVenueCollectiveDataAdapter = async ({
       collectiveDomains: values.collectiveDomains.map(stringId =>
         Number(stringId)
       ),
+      collectiveLegalStatus: values.collectiveLegalStatus
+        ? Number(values.collectiveLegalStatus)
+        : undefined,
     })
     return {
       isOk: true,
