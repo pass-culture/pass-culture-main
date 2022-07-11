@@ -23,7 +23,7 @@ export type PostOfferBodyModel = {
   name?: string | null;
   offererId?: string | null;
   productId?: string | null;
-  subcategoryId?: string | null;
+  subcategoryId: string;
   url?: string | null;
   venueId: string;
   visualDisabilityCompliant?: boolean;
