@@ -1435,6 +1435,28 @@ export class DefaultService {
   }
 
   /**
+   * delete_venue_provider <DELETE>
+   * @param venueProviderId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteVenueProvider(
+    venueProviderId: string,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/venueProviders/{venue_provider_id}',
+      path: {
+        'venue_provider_id': venueProviderId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
    * get_venues_educational_statuses <GET>
    * @returns VenuesEducationalStatusesResponseModel OK
    * @throws ApiError

@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
+import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 
 export type EditVenueBodyModel = {
@@ -10,6 +11,16 @@ export type EditVenueBodyModel = {
   bookingEmail?: string | null;
   businessUnitId?: number | null;
   city?: string | null;
+  collectiveAccessInformation?: string | null;
+  collectiveDescription?: string | null;
+  collectiveDomains?: Array<number> | null;
+  collectiveEmail?: string | null;
+  collectiveInterventionArea?: Array<string> | null;
+  collectiveLegalStatus?: string | null;
+  collectiveNetwork?: Array<string> | null;
+  collectivePhone?: string | null;
+  collectiveStudents?: Array<StudentLevels> | null;
+  collectiveWebsite?: string | null;
   comment?: string | null;
   contact?: VenueContactModel | null;
   description?: string | null;

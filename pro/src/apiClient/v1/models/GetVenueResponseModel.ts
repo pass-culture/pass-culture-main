@@ -4,8 +4,10 @@
 
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { BusinessUnitResponseModel } from './BusinessUnitResponseModel';
+import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
+import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 
@@ -19,6 +21,16 @@ export type GetVenueResponseModel = {
   businessUnit?: BusinessUnitResponseModel | null;
   businessUnitId?: number | null;
   city?: string | null;
+  collectiveAccessInformation?: string | null;
+  collectiveDescription?: string | null;
+  collectiveDomains: Array<GetVenueDomainResponseModel>;
+  collectiveEmail?: string | null;
+  collectiveInterventionArea?: Array<string> | null;
+  collectiveLegalStatus?: string | null;
+  collectiveNetwork?: Array<string> | null;
+  collectivePhone?: string | null;
+  collectiveStudents?: Array<StudentLevels> | null;
+  collectiveWebsite?: string | null;
   comment?: string | null;
   contact?: VenueContactModel | null;
   dateCreated: string;

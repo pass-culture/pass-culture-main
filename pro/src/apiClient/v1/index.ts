@@ -77,6 +77,7 @@ export type { GetOfferMediationResponseModel } from './models/GetOfferMediationR
 export type { GetOfferProductResponseModel } from './models/GetOfferProductResponseModel';
 export type { GetOfferStockResponseModel } from './models/GetOfferStockResponseModel';
 export type { GetOfferVenueResponseModel } from './models/GetOfferVenueResponseModel';
+export type { GetVenueDomainResponseModel } from './models/GetVenueDomainResponseModel';
 export type { GetVenueManagingOffererResponseModel } from './models/GetVenueManagingOffererResponseModel';
 export type { GetVenuePricingPointResponseModel } from './models/GetVenuePricingPointResponseModel';
 export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
