@@ -12,9 +12,14 @@ import { Title } from 'ui-kit'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
+import { useParams } from 'react-router'
 
 const CollectiveDataEdition = (): JSX.Element => {
   const notify = useNotification()
+  const { offererId, venueId } = useParams<{
+    offererId: string
+    venueId: string
+  }>()
 
   const [domains, setDomains] = useState<SelectOption[]>([])
   const [statuses, setStatuses] = useState<SelectOption[]>([])
@@ -60,6 +65,8 @@ const CollectiveDataEdition = (): JSX.Element => {
           statuses={statuses}
           domains={domains}
           culturalPartners={culturalPartners}
+          venueId={venueId}
+          offererId={offererId}
         />
       )}
     </>

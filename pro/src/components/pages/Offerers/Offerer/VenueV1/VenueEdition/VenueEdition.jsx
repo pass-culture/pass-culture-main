@@ -44,6 +44,7 @@ import { showNotification } from 'store/reducers/notificationReducer'
 import { sortByLabel } from 'utils/strings'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useDispatch } from 'react-redux'
+import useNotification from 'components/hooks/useNotification'
 
 const VenueEdition = () => {
   const [isRequestPending, setIsRequestPending] = useState(false)
@@ -55,11 +56,14 @@ const VenueEdition = () => {
   const [venueLabels, setVenueLabels] = useState(null)
   const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
     useState(false)
+
   const deleteBusinessUnitConfirmed = useRef(false)
   const { offererId, venueId } = useParams()
   const history = useHistory()
   const dispatch = useDispatch()
   const location = useLocation()
+  const notify = useNotification()
+
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
@@ -202,6 +206,14 @@ const VenueEdition = () => {
       return null
     }
   }, [venue?.initialIsVirtual, history, isBankInformationWithSiretActive])
+
+  useEffect(() => {
+    if (history.location.state?.collectiveDataEditionSuccess) {
+      notify.success(history.location.state.collectiveDataEditionSuccess)
+      // remove state to avoid notification in case of page reload
+      history.replace()
+    }
+  }, [history.location.state?.collectiveDataEditionSuccess])
 
   const onConfirmDeleteBusinessUnit = submit => {
     deleteBusinessUnitConfirmed.current = true
