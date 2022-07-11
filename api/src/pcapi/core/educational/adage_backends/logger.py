@@ -1,14 +1,11 @@
 import logging
 
-from pydantic import parse_obj_as
-
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.models import AdageApiResult
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
-from pcapi.routes.serialization import venues_serialize
 
 
 logger = logging.getLogger(__name__)
@@ -37,9 +34,9 @@ class AdageLoggerClient(AdageClient):
         )
         return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
 
-    def get_cultural_partners(self) -> venues_serialize.AdageCulturalPartners:
+    def get_cultural_partners(self) -> list[dict[str, str | int | float | None]]:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/partenaire-culturel")
-        data = [
+        return [
             {
                 "id": 1,
                 "venueId": 12,
@@ -95,4 +92,3 @@ class AdageLoggerClient(AdageClient):
                 "dateModification": "2022-06-27T08:52:27.597Z",
             },
         ]
-        return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": data})
