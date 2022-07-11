@@ -17,7 +17,15 @@ FIELD_FOR_VENUE_WITH_SIRET = (
     "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu avec SIRET, merci de saisir son SIRET :"
 )
 FIELD_FOR_VENUE_WITHOUT_SIRET = "Si vous souhaitez renseigner les coordonn\u00e9es bancaires d'un lieu sans SIRET, merci de saisir le \"Nom du lieu\", \u00e0 l'identique de celui dans le pass Culture Pro :"
-
+# These base64 str are the field ids received from DMS. They are NOT unique across procedures, beware !
+ID_TO_NAME_MAPPING = {
+    "Q2hhbXAtNDA3ODg5": "firstname",
+    "Q2hhbXAtNDA3ODkw": "lastname",
+    "Q2hhbXAtNDA3ODky": "phone_number",
+    "Q2hhbXAtMzUyNzIy": "iban",
+    "Q2hhbXAtMzUyNzI3": "bic",
+    "Q2hhbXAtMjY3NDMyMQ==": "dms_token",
+}
 ACCEPTED_DMS_STATUS = (dms_models.DmsApplicationStates.closed,)
 DRAFT_DMS_STATUS = (
     dms_models.DmsApplicationStates.received,
@@ -40,6 +48,7 @@ class ApplicationDetail:
         bic: str | None = None,
         siret: str | None = None,
         venue_name: str | None = None,
+        dms_token: str | None = None,
         annotation_id: str | None = None,
         dossier_id: str = None,
     ):
@@ -50,6 +59,7 @@ class ApplicationDetail:
         self.bic = format_raw_iban_and_bic(bic)
         self.siret = siret
         self.venue_name = venue_name
+        self.dms_token = dms_token
         self.modification_date = modification_date
         self.annotation_id = annotation_id
         self.dossier_id = dossier_id
@@ -60,13 +70,6 @@ def parse_raw_bic_data(data: dict) -> dict:
         "status": data["dossier"]["state"],
         "updated_at": data["dossier"]["dateDerniereModification"],
         "dossier_id": data["dossier"]["id"],
-    }
-    ID_TO_NAME_MAPPING = {
-        "Q2hhbXAtNDA3ODg5": "firstname",
-        "Q2hhbXAtNDA3ODkw": "lastname",
-        "Q2hhbXAtNDA3ODky": "phone_number",
-        "Q2hhbXAtMzUyNzIy": "iban",
-        "Q2hhbXAtMzUyNzI3": "bic",
     }
     for field in data["dossier"]["champs"]:
         if field["id"] in ID_TO_NAME_MAPPING:
@@ -125,6 +128,7 @@ def get_venue_bank_information_application_details_by_application_id(
             iban=data["iban"],
             bic=data["bic"],
             siret=data["siret"],
+            dms_token=data.get("dms_token", None),
             modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
             annotation_id=data["annotation_id"],
             dossier_id=data["dossier_id"],

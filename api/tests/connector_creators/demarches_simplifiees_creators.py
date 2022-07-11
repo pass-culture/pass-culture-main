@@ -140,6 +140,12 @@ def venue_demarche_simplifiee_get_bic_response_v2(annotation: dict):
                     "value": "FR7630007000111234567890144",
                 },
                 {"id": "Q2hhbXAtMzUyNzI3", "label": "BIC", "stringValue": "SOGEFRPP", "value": "SOGEFRPP"},
+                {
+                    "id": "Q2hhbXAtNDA3ODk1",
+                    "label": "N° d'identifiant du lieu",
+                    "stringValue": "60a7536a21c8",
+                    "value": "60a7536a21c8",
+                },
             ],
             "dateDerniereModification": "2020-01-03T01:00:00+01:00",
             "state": "accepte",
