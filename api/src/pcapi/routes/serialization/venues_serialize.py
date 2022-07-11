@@ -280,7 +280,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     collectiveWebsite: str | None
     collectiveDomains: list[int] | None
     collectiveInterventionArea: list[str] | None
-    collectiveLegalStatus: str | None
+    collectiveLegalStatus: int | None
     collectiveNetwork: list[str] | None
     collectiveAccessInformation: str | None
     collectivePhone: str | None
@@ -289,7 +289,6 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
     _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
-    _validate_collectiveLegalStatus = string_length_validator("collectiveLegalStatus", length=50)
     _validate_collectiveAccessInformation = string_length_validator("collectiveAccessInformation", length=500)
     _validate_collectivePhone = string_length_validator("collectivePhone", length=50)
     _validate_collectiveEmail = string_length_validator("collectiveEmail", length=150)
