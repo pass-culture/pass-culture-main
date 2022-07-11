@@ -18,7 +18,7 @@ describe('updateOffersActiveStatusAdapter', () => {
     expect(response.message).toBe('3 offres ont bien été désactivées')
   })
 
-  it('should activate all offers and confirm', async () => {
+  it('should publish all offers and confirm', async () => {
     // given
     // @ts-ignore
     jest
@@ -32,7 +32,7 @@ describe('updateOffersActiveStatusAdapter', () => {
 
     // then
     expect(response.isOk).toBeTruthy()
-    expect(response.message).toBe('3 offres ont bien été activées')
+    expect(response.message).toBe('3 offres ont bien été publiées')
   })
 
   it('should return an error when the update has failed', async () => {

@@ -15,14 +15,16 @@ import useNotification from 'components/hooks/useNotification'
 const StatusToggleButton = ({ offer, reloadOffer }) => {
   const notification = useNotification()
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-
+  const activatedState = useSummaryPage ? 'publiée' : 'activée'
   const toggleOfferActiveStatus = useCallback(() => {
     pcapi
       .updateOffersActiveStatus([offer.id], !offer.isActive)
       .then(() => {
         reloadOffer()
         notification.success(
-          `L’offre a bien été ${offer.isActive ? 'désactivée' : 'activée'}.`
+          `L’offre a bien été ${
+            offer.isActive ? 'désactivée' : activatedState
+          }.`
         )
       })
       .catch(() => {
