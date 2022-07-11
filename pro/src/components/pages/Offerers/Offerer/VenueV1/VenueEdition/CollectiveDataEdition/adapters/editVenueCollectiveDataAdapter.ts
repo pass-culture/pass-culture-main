@@ -5,7 +5,7 @@ import { api } from 'apiClient/api'
 type EditVenueCollectiveDataAdapter = Adapter<
   { venueId: string; values: CollectiveDataFormValues },
   GetVenueResponseModel,
-  GetVenueResponseModel[]
+  null
 >
 
 const editVenueCollectiveDataAdapter: EditVenueCollectiveDataAdapter = async ({
@@ -31,7 +31,7 @@ const editVenueCollectiveDataAdapter: EditVenueCollectiveDataAdapter = async ({
     return {
       isOk: false,
       message: 'Une erreur est surevenue lors de l’enregistrement des données',
-      payload: [],
+      payload: null,
     }
   }
 }
