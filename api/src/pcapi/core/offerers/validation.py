@@ -116,6 +116,14 @@ def _validate_latitude(api_errors, raw_latitude):  # type: ignore [no-untyped-de
 
 
 def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_point_id: int) -> None:
+    if venue.siret and venue.id != pricing_point_id:
+        raise ApiErrors(
+            errors={
+                "pricingPointId": [
+                    "Vous ne pouvez pas choisir un autre lieu pour le calcul du barème de remboursement de ce lieu."
+                ]
+            }
+        )
     pricing_point = models.Venue.query.filter_by(id=pricing_point_id).one_or_none()
     if not pricing_point:
         raise ApiErrors(errors={"pricingPointId": ["Ce lieu n'existe pas."]})

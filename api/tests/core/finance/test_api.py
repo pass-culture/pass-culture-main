@@ -1082,7 +1082,7 @@ class PriceBookingsTest:
         assert pricing.booking == booking2
 
         # Make booking1 priceable.
-        offerers_api.link_venue_to_pricing_point(venue1, pricing_point_id=venue2.id)
+        offerers_api.link_venue_to_pricing_point(venue1, pricing_point_id=venue1.id)
         api.price_bookings()
 
         pricings = models.Pricing.query.all()
