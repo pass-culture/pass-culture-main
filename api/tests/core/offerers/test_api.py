@@ -868,6 +868,7 @@ class LinkVenueToReimbursementPointTest:
     def test_no_pre_existing_link(self):
         venue = offerers_factories.VenueFactory()
         reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offers_factories.BankInformationFactory(venue=reimbursement_point)
         assert offerers_models.VenueReimbursementPointLink.query.count() == 0
 
         offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
@@ -881,22 +882,12 @@ class LinkVenueToReimbursementPointTest:
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_end_pre_existing_link(self):
         now = datetime.datetime.utcnow()
-        venue = offerers_factories.VenueFactory()
-        reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
-        offerers_factories.VenueReimbursementPointLinkFactory(
-            venue=venue,
-            reimbursementPoint=reimbursement_point,
-            timespan=[
-                now - datetime.timedelta(days=10),
-                None,
-            ],
-        )
-
+        venue = offerers_factories.VenueFactory(reimbursement_point="self")
         offerers_api.link_venue_to_reimbursement_point(venue, None)
 
         former_link = offerers_models.VenueReimbursementPointLink.query.one()
         assert former_link.venue == venue
-        assert former_link.reimbursementPoint == reimbursement_point
+        assert former_link.reimbursementPoint == venue
         assert former_link.timespan.upper == now
 
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
@@ -904,6 +895,7 @@ class LinkVenueToReimbursementPointTest:
         now = datetime.datetime.utcnow()
         venue = offerers_factories.VenueFactory()
         reimbursement_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offers_factories.BankInformationFactory(venue=reimbursement_point_1)
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=venue,
             reimbursementPoint=reimbursement_point_1,
@@ -913,6 +905,7 @@ class LinkVenueToReimbursementPointTest:
             ],
         )
         reimbursement_point_2 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offers_factories.BankInformationFactory(venue=reimbursement_point_2)
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=venue,
             reimbursementPoint=reimbursement_point_2,
@@ -923,6 +916,7 @@ class LinkVenueToReimbursementPointTest:
         )
         current_link = offerers_models.VenueReimbursementPointLink.query.order_by(sa.desc("id")).first()
         reimbursement_point_3 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
+        offers_factories.BankInformationFactory(venue=reimbursement_point_3)
 
         offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point_3.id)
 
@@ -936,12 +930,24 @@ class LinkVenueToReimbursementPointTest:
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_fails_if_reimbursement_point_has_no_siret(self):
         reimbursement_point = offerers_factories.VenueFactory(siret=None, comment="no siret")
+        offers_factories.BankInformationFactory(venue=reimbursement_point)
         offerer = reimbursement_point.managingOfferer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
         msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
+        assert error.value.errors == {"reimbursementPointId": [msg]}
+
+    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    def test_fails_if_reimbursement_point_has_no_bank_information(self):
+        reimbursement_point = offerers_factories.VenueFactory()
+        offerer = reimbursement_point.managingOfferer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
+        msg = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements."
         assert error.value.errors == {"reimbursementPointId": [msg]}
 
 

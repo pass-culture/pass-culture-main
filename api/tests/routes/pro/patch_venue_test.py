@@ -7,7 +7,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.finance.factories import BusinessUnitFactory
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-from pcapi.core.offerers.models import Venue
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.utils.human_ids import humanize
@@ -68,7 +68,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        venue = Venue.query.get(venue_id)
+        venue = offerers_models.Venue.query.get(venue_id)
         assert venue.name == "Ma librairie"
         assert venue.venueTypeCode == "BOOKSTORE"
         json = response.json
@@ -257,6 +257,7 @@ class Returns200Test:
         new_reimbursement_point = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
+        offers_factories.BankInformationFactory(venue=new_reimbursement_point)
         venue_data = populate_missing_data_from_venue(
             {"reimbursementPointId": new_reimbursement_point.id},
             venue,
@@ -334,6 +335,7 @@ class Returns400Test:
         )
         another_offerer = offerers_factories.OffererFactory()
         new_reimbursement_point = offerers_factories.VenueFactory(managingOfferer=another_offerer)
+        offers_factories.BankInformationFactory(venue=new_reimbursement_point)
 
         venue_data = populate_missing_data_from_venue(
             {"reimbursementPointId": new_reimbursement_point.id},
@@ -345,5 +347,5 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["reimbursementPointId"] == [
-            f"Le SIRET {new_reimbursement_point.siret} ne peut pas être utilisé pour les remboursements de ce lieu."
+            f"Le SIRET {new_reimbursement_point.siret} ne peut pas être utilisé pour les remboursements."
         ]
