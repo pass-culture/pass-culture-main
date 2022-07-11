@@ -25,7 +25,11 @@ const FormActions = ({
     <>
       {cancelUrl && (
         <ButtonLink variant={ButtonVariant.SECONDARY} to={cancelUrl}>
-          {isDraft ? 'Étape précédente' : 'Annuler et quitter'}
+          {isDraft
+            ? 'Étape précédente'
+            : useSummaryPage
+            ? `Voir le détail de l'offre`
+            : 'Annuler et quitter'}
         </ButtonLink>
       )}
 
