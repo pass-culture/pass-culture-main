@@ -49,9 +49,8 @@ jobs:
             then
               echo ::set-output name=changed::'false'
             else
-              echo "1"
+              echo ::set-output name=changed::'true'
             fi
-          echo ::set-output name=changed::'true'
       - name: Commit
         if: steps.changes.outputs.changed == 'true'
         run: |
