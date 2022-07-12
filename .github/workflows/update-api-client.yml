@@ -28,6 +28,8 @@ jobs:
         run: |
           sudo chown -R $USER .
           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+      - name: Cache
+        uses: satackey/action-docker-layer-caching@v0.0.11
       - name: Run API
         if: steps.changesApi.outputs.src == 'true'
         run: |

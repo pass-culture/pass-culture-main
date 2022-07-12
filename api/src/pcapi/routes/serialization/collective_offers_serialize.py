@@ -317,7 +317,7 @@ class CollectiveOfferVenueBodyModel(BaseModel):
 class PostCollectiveOfferBodyModel(BaseModel):
     offerer_id: str
     venue_id: str
-    subcategory_id: str
+    subcategory_id: Optional[str]
     name: str
     booking_email: Optional[str]
     description: Optional[str]
