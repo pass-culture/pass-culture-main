@@ -47,6 +47,10 @@ const AllocineProviderParameters = ({
 
   const onConfirmDialog = useCallback(
     (payload: IAllocineProviderParametersValues) => {
+      payload = {
+        ...payload,
+        isActive: venueProvider.isActive,
+      }
       editVenueProvider(payload)
 
       closeFormDialog()
