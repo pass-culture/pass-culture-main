@@ -79,6 +79,7 @@ $buttonHeight: rem.torem(40px);
     padding-top: $actionsPaddingTop;
     position: sticky;
     z-index: 2;
+    justify-content: left;
 
     button,
     a {

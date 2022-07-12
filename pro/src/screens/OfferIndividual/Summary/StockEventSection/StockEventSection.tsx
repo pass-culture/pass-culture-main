@@ -32,7 +32,7 @@ const StockEventSection = ({
     )
   }, [showAllStocks, stocks])
 
-  const iconName = showAllStocks ? 'ico-arrow-up-r' : 'ico-arrow-down-r'
+  const iconName = showAllStocks ? 'ico-arrow-up-b' : 'ico-arrow-down-b'
   const editLink = isCreation
     ? `/offre/${offerId}/individuel/creation/stocks`
     : `/offre/${offerId}/individuel/stocks`
@@ -51,6 +51,7 @@ const StockEventSection = ({
 
       {stocks.length > NB_UNFOLDED_STOCK && (
         <Button
+          className={styles['stock-event-item-display-more']}
           Icon={() => <img src={`${ROOT_PATH}/icons/${iconName}.svg`} />}
           variant={ButtonVariant.TERNARY}
           onClick={() => setShowAllStocks(!showAllStocks)}

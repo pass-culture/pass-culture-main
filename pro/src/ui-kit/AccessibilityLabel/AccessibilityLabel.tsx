@@ -41,7 +41,7 @@ const AccessibilityLabel = ({
     },
   }[name]
   return (
-    <div className={cn(className, styles['accessibility-label'])}>
+    <div className={cn(styles['accessibility-label'], className)}>
       <labelData.svg className={styles['icon']} />
       <span className={styles['text']}>{labelData.label}</span>
     </div>
