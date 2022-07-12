@@ -23,6 +23,7 @@ class Returns200Test:
             provider=provider,
             isDuo=False,
             quantity=42,
+            isActive=True,
         )
         providers_factories.AllocineVenueProviderPriceRuleFactory(allocineVenueProvider=venue_provider, price=10)
 
@@ -32,6 +33,7 @@ class Returns200Test:
             "isDuo": True,
             "quantity": 77,
             "price": 64,
+            "isActive": False,
         }
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -46,6 +48,7 @@ class Returns200Test:
         assert response.json["quantity"] == updated_venue_provider_data["quantity"]
         assert response.json["price"] == updated_venue_provider_data["price"]
         assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
+        assert response.json["isActive"] == updated_venue_provider_data["isActive"]
 
     @pytest.mark.usefixtures("db_session")
     def test_cinema_venue_provider_is_successfully_updated(self, app):
@@ -54,12 +57,13 @@ class Returns200Test:
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         cds_provider = provider_models.Provider.query.filter(provider_models.Provider.localClass == "CDSStocks").one()
-        providers_factories.VenueProviderFactory(venue=venue, provider=cds_provider, isDuoOffers=False)
+        providers_factories.VenueProviderFactory(venue=venue, provider=cds_provider, isDuoOffers=False, isActive=False)
 
         updated_venue_provider_data = {
             "providerId": humanize(cds_provider.id),
             "venueId": humanize(venue.id),
             "isDuo": True,
+            "isActive": True,
         }
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
 
@@ -69,25 +73,22 @@ class Returns200Test:
         assert response.json["provider"]["id"] == humanize(cds_provider.id)
         assert response.json["venueId"] == humanize(venue.id)
         assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
+        assert response.json["isActive"] == updated_venue_provider_data["isActive"]
 
-
-class Returns400Test:
     @pytest.mark.usefixtures("db_session")
-    def test_provider_is_not_allocine(self, app):
+    def test_provider_is_not_allocine_and_not_cinema_provider(self, app):
         # Given
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.ProviderFactory()
-        providers_factories.VenueProviderFactory(venue=venue, provider=provider)
+        providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=True)
 
         updated_venue_provider_data = {
             "providerId": humanize(provider.id),
             "venueId": humanize(venue.id),
-            "isDuo": True,
-            "quantity": 77,
-            "price": 64,
+            "isActive": False,
         }
 
         auth_request = TestClient(app.test_client()).with_session_auth(email=user.email)
@@ -96,7 +97,8 @@ class Returns400Test:
         response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
 
         # then
-        assert response.status_code == 400
+        assert response.status_code == 200
+        assert not response.json["isActive"]
 
 
 class Returns401Test:
