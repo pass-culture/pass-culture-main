@@ -1,5 +1,9 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import React, {
   Fragment,
   useCallback,
@@ -18,6 +22,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { FormActions } from './FormActions'
 import { OFFER_STATUS_DRAFT } from 'core/Offers/constants'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PropTypes from 'prop-types'
@@ -27,6 +32,7 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
+import { useSelector } from 'react-redux'
 
 const EMPTY_STRING_VALUE = ''
 
@@ -44,6 +50,7 @@ const EventStocks = ({
   const isOfferSynchronized = Boolean(offer.lastProvider)
   const [formErrors, setFormErrors] = useState({})
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
+  const logEvent = useSelector(state => state.app.logEvent)
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
   const editionOfferLink = useOfferEditionURL(
     offer.isEducational,
@@ -164,6 +171,15 @@ const EventStocks = ({
     return !hasErrors
   }
 
+  const onCancelClick = () => {
+    if (isOfferDraft && !useSummaryPage) return
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.STOCKS,
+      to: OfferBreadcrumbStep.DETAILS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+    })
+  }
+
   const submitStocks = useCallback(() => {
     const updatedStocks = existingStocks.filter(stock => stock.updated)
     if (
@@ -205,7 +221,11 @@ const EventStocks = ({
             if (queryParams.lieu !== '') {
               queryString += `&lieu=${queryParams.lieu}`
             }
-
+            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.STOCKS,
+              to: OfferBreadcrumbStep.SUMMARY,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+            })
             history.push(
               useSummaryPage
                 ? `${summaryStepUrl}${queryString}`
@@ -350,6 +370,7 @@ const EventStocks = ({
               isDraft={isOfferDraft}
               isSubmiting={isSendingStocksOfferCreation}
               onSubmit={submitStocks}
+              onCancelClick={onCancelClick}
             />
           </section>
         </Fragment>

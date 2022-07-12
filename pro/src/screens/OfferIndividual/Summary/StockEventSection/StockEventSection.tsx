@@ -1,12 +1,19 @@
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import React, { useEffect, useState } from 'react'
 
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import type { IStockEventItemProps } from './StockEventItem'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { ROOT_PATH } from 'utils/config'
+import { RootState } from 'store/reducers'
 import { StockEventItem } from './StockEventItem'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import styles from './StockEventSection.module.scss'
+import { useSelector } from 'react-redux'
 
 const NB_UNFOLDED_STOCK = 2
 
@@ -36,8 +43,20 @@ const StockEventSection = ({
   const editLink = isCreation
     ? `/offre/${offerId}/individuel/creation/stocks`
     : `/offre/${offerId}/individuel/stocks`
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const logEditEvent = () => {
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.SUMMARY,
+      to: OfferBreadcrumbStep.STOCKS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
+    })
+  }
   return (
-    <SummaryLayout.Section title="Stocks et prix" editLink={editLink}>
+    <SummaryLayout.Section
+      title="Stocks et prix"
+      editLink={editLink}
+      onLinkClick={logEditEvent}
+    >
       {displayedStocks.map((s, k) => (
         <StockEventItem
           key={`stock-${k}`}
