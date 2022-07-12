@@ -15,17 +15,24 @@ ACCEPTABLE_GENERATION_DURATION = 2  # seconds. The CI might be quite slow.
 
 class GeneratePdfFromHtmlTest:
     @pytest.fixture(name="example_html")
-    def example_html_fixture(self):
-        with open(TEST_FILES_PATH / "pdf" / "example.html", "r", encoding="utf-8") as f:
-            example_html = f.read()
-        return example_html
+    def example_html_fixture(self) -> str:
+        path = TEST_FILES_PATH / "pdf" / "example.html"
+        return path.read_text()
 
-    def test_performance(self, example_html):
+    @pytest.fixture(name="expected_pdf")
+    def expected_pdf_fixture(self) -> bytes:
+        path = TEST_FILES_PATH / "pdf" / "expected_example.pdf"
+        return path.read_bytes()
+
+    def test_basics(self, example_html, expected_pdf):
         start = time.perf_counter()
-
-        pdf.generate_pdf_from_html(html_content=example_html)
-
+        out = pdf.generate_pdf_from_html(html_content=example_html)
         duration = time.perf_counter() - start
+        # Do not use `assert out == expected_pdf`: pytest would try to
+        # use a smart, but very slow algorithm to show diffs, which
+        # would produce garbage anyway because it's binary.
+        if out == expected_pdf:
+            assert False, "Output PDF is not as expected"
         assert duration < ACCEPTABLE_GENERATION_DURATION
 
     @freeze_time("2021-07-30 17:25:00")
