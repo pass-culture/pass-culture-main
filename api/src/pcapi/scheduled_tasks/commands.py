@@ -1,5 +1,6 @@
 import datetime
 import logging
+import typing
 
 import click
 import sqlalchemy.orm as sqla_orm
@@ -186,9 +187,9 @@ def send_today_events_notifications_metropolitan_france_command() -> None:
 
 @blueprint.cli.command("send_today_events_notifications_overseas_france")
 @log_cron_with_transaction
-@click.option("--utc-mean-offset", help="UTC offset to use (can be negative)", type=int)
-@click.option("--departments", help="target departments (list of str)", type=list)
-def send_today_events_notifications_overseas_france(utc_mean_offset: int, departments: list[str]) -> None:
+@click.option("--utc-mean-offset", help="UTC offset to use (can be negative)", type=int, required=True)
+@click.argument("departments", nargs=-1)
+def send_today_events_notifications_overseas_france(utc_mean_offset: int, departments: typing.Iterable[str]) -> None:
     """
     Find bookings (grouped by stocks) that occur today in overseas
     France departments and send notifications to remind the users
