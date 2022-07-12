@@ -2,7 +2,6 @@ import logging
 import os
 from pathlib import Path
 from pathlib import PurePath
-from typing import Optional
 
 from pcapi import settings
 
@@ -46,7 +45,7 @@ class LocalBackend(BaseBackend):
 
     def get_container(
         self,
-        container_name: Optional[str] = None,
+        container_name: str | None = None,
         marker: str = "",
         end_marker: str = "",
         full_listing: bool = True,

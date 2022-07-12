@@ -1,7 +1,6 @@
 import datetime
 import re
 from typing import Any
-from typing import Optional
 from uuid import UUID
 
 from dateutil.relativedelta import relativedelta
@@ -45,10 +44,10 @@ class AccountRequest(BaseModel):
     email: str
     password: str
     birthdate: datetime.date
-    marketing_email_subscription: Optional[bool] = False
+    marketing_email_subscription: bool | None = False
     token: str
-    apps_flyer_user_id: Optional[str] = None
-    apps_flyer_platform: Optional[str] = None
+    apps_flyer_user_id: str | None = None
+    apps_flyer_platform: str | None = None
 
     class Config:
         alias_generator = to_camel
@@ -56,7 +55,7 @@ class AccountRequest(BaseModel):
 
 class CulturalSurveyRequest(BaseModel):
     needs_to_fill_cultural_survey: bool
-    cultural_survey_id: Optional[UUID]
+    cultural_survey_id: UUID | None
 
     class Config:
         alias_generator = to_camel
@@ -85,17 +84,17 @@ class Credit(BaseModel):
 
 class DomainsCredit(BaseModel):
     all: Credit
-    digital: Optional[Credit]
-    physical: Optional[Credit]
+    digital: Credit | None
+    physical: Credit | None
 
     class Config:
         orm_mode = True
 
 
 class CallToActionMessage(BaseModel):
-    callToActionTitle: Optional[str]
-    callToActionLink: Optional[str]
-    callToActionIcon: Optional[subscription_models.CallToActionIcon]
+    callToActionTitle: str | None
+    callToActionLink: str | None
+    callToActionIcon: subscription_models.CallToActionIcon | None
 
     class Config:
         alias_generator = to_camel
@@ -105,8 +104,8 @@ class CallToActionMessage(BaseModel):
 
 class SubscriptionMessage(BaseModel):
     userMessage: str
-    callToAction: Optional[CallToActionMessage]
-    popOverIcon: Optional[subscription_models.PopOverIcon]
+    callToAction: CallToActionMessage | None
+    popOverIcon: subscription_models.PopOverIcon | None
     updatedAt: datetime.datetime
 
     class Config:
@@ -180,28 +179,28 @@ class ChangeEmailTokenContent(BaseModel):
 
 class UserProfileResponse(BaseModel):
     booked_offers: dict[str, int]
-    dateOfBirth: Optional[datetime.date]
-    deposit_expiration_date: Optional[datetime.datetime]
-    deposit_type: Optional[DepositType]
-    deposit_version: Optional[int]
-    domains_credit: Optional[DomainsCredit]
-    eligibility: Optional[EligibilityType]
-    eligibility_end_datetime: Optional[datetime.datetime]
-    eligibility_start_datetime: Optional[datetime.datetime]
+    dateOfBirth: datetime.date | None
+    deposit_expiration_date: datetime.datetime | None
+    deposit_type: DepositType | None
+    deposit_version: int | None
+    domains_credit: DomainsCredit | None
+    eligibility: EligibilityType | None
+    eligibility_end_datetime: datetime.datetime | None
+    eligibility_start_datetime: datetime.datetime | None
     email: str
-    firstName: Optional[str]
+    firstName: str | None
     id: int
     isBeneficiary: bool
     isEligibleForBeneficiaryUpgrade: bool
-    lastName: Optional[str]
+    lastName: str | None
     needsToFillCulturalSurvey: bool
-    phoneNumber: Optional[str]
-    publicName: Optional[str] = Field(None, alias="pseudo")
-    recreditAmountToShow: Optional[int]
+    phoneNumber: str | None
+    publicName: str | None = Field(None, alias="pseudo")
+    recreditAmountToShow: int | None
     roles: list[UserRole]
     show_eligible_card: bool
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
-    subscriptionMessage: Optional[SubscriptionMessage]
+    subscriptionMessage: SubscriptionMessage | None
 
     _convert_recredit_amount_to_show = validator("recreditAmountToShow", pre=True, allow_reuse=True)(convert_to_cent)
 
@@ -213,11 +212,11 @@ class UserProfileResponse(BaseModel):
         use_enum_values = True
 
     @validator("publicName", pre=True)
-    def format_public_name(cls, publicName: str) -> Optional[str]:  # pylint: disable=no-self-argument
+    def format_public_name(cls, publicName: str) -> str | None:  # pylint: disable=no-self-argument
         return publicName if publicName != VOID_PUBLIC_NAME else None
 
     @validator("firstName", pre=True)
-    def format_first_name(cls, firstName: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
+    def format_first_name(cls, firstName: str | None) -> str | None:  # pylint: disable=no-self-argument
         return firstName if firstName != VOID_FIRST_NAME else None
 
     @staticmethod
@@ -242,7 +241,7 @@ class UserProfileResponse(BaseModel):
         return {booking.stock.offer.id: booking.id for booking in not_cancelled_bookings}
 
     @classmethod
-    def _get_subscription_message(cls, user: User) -> Optional[SubscriptionMessage]:
+    def _get_subscription_message(cls, user: User) -> SubscriptionMessage | None:
         """
         Return the user's latest subscription message, regarding his
         signup process UNLESS the beneficiary signup process has been
@@ -284,7 +283,7 @@ def _should_prevent_from_filling_cultural_survey(user: User) -> bool:
 
 
 class UserProfileUpdateRequest(BaseModel):
-    subscriptions: Optional[NotificationSubscriptions]
+    subscriptions: NotificationSubscriptions | None
 
 
 class UserProfileEmailUpdate(BaseModel):
@@ -297,7 +296,7 @@ class ValidateEmailRequest(BaseModel):
 
 
 class UpdateEmailTokenExpiration(BaseModel):
-    expiration: Optional[datetime.datetime]
+    expiration: datetime.datetime | None
 
 
 class ResendEmailValidationRequest(BaseModel):
@@ -314,7 +313,7 @@ class SendPhoneValidationRequest(BaseModel):
 
 class PhoneValidationRemainingAttemptsRequest(BaseModel):
     remainingAttempts: int
-    counterResetDatetime: Optional[datetime.datetime]
+    counterResetDatetime: datetime.datetime | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}
@@ -323,9 +322,9 @@ class PhoneValidationRemainingAttemptsRequest(BaseModel):
 class UserProfilingFraudRequest(BaseModel):
     # Moving from session_id to sessionId - remove session_id and set sessionId not Optional when app version is forced
     # to a new minimal version. Also restore a simple validator session_id_alphanumerics for sessionId
-    session_id: Optional[str]
-    sessionId: Optional[str]
-    agentType: Optional[AgentType]
+    session_id: str | None
+    sessionId: str | None
+    agentType: AgentType | None
 
     @root_validator()
     def session_id_alphanumerics(cls, values: dict[str, Any]) -> dict[str, Any]:  # pylint: disable=no-self-argument
@@ -353,7 +352,7 @@ class UserProfilingSessionIdResponse(BaseModel):
 
 
 class UserSuspensionDateResponse(BaseModel):
-    date: Optional[datetime.datetime]
+    date: datetime.datetime | None
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}

@@ -4,7 +4,6 @@ import json
 import logging
 from operator import or_
 from typing import Iterable
-from typing import Optional
 from typing import cast
 
 from flask import current_app
@@ -329,7 +328,7 @@ def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     return [venue]
 
 
-def get_all_venues(page: Optional[int], per_page: Optional[int]) -> list[offerers_models.Venue]:
+def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_models.Venue]:
     page = 1 if page is None else page
     per_page = 1000 if per_page is None else per_page
 
@@ -501,9 +500,9 @@ def create_collective_stock(
     stock_data: CollectiveStockCreationBodyModel,
     user: User,
     *,
-    legacy_id: Optional[int] = None,
-    offer_id: Optional[int] = None,
-) -> Optional[CollectiveStock]:
+    legacy_id: int | None = None,
+    offer_id: int | None = None,
+) -> CollectiveStock | None:
     from pcapi.core.offers.api import update_offer_fraud_information
 
     offer_id = offer_id or stock_data.offer_id
@@ -589,11 +588,11 @@ def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: i
 
 def get_collective_booking_report(
     user: User,
-    booking_period: Optional[tuple[datetime.date, datetime.date]] = None,
-    status_filter: Optional[CollectiveBookingStatusFilter] = CollectiveBookingStatusFilter.BOOKED,
-    event_date: Optional[datetime.datetime] = None,
-    venue_id: Optional[int] = None,
-    export_type: Optional[BookingExportType] = BookingExportType.CSV,
+    booking_period: tuple[datetime.date, datetime.date] | None = None,
+    status_filter: CollectiveBookingStatusFilter | None = CollectiveBookingStatusFilter.BOOKED,
+    event_date: datetime.datetime | None = None,
+    venue_id: int | None = None,
+    export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
     bookings_query = get_filtered_collective_booking_report(
         pro_user=user,
@@ -611,13 +610,13 @@ def get_collective_booking_report(
 def list_collective_offers_for_pro_user(
     user_id: int,
     user_is_admin: bool,
-    category_id: Optional[str],
-    offerer_id: Optional[int],
-    venue_id: Optional[int] = None,
-    name_keywords: Optional[str] = None,
-    status: Optional[str] = None,
-    period_beginning_date: Optional[str] = None,
-    period_ending_date: Optional[str] = None,
+    category_id: str | None,
+    offerer_id: int | None,
+    venue_id: int | None = None,
+    name_keywords: str | None = None,
+    status: str | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
 ) -> list[CollectiveOffer | CollectiveOfferTemplate]:
     offers = get_collective_offers_for_filters(
         user_id=user_id,
@@ -678,7 +677,7 @@ def list_collective_offers_for_pro_user(
 
 
 def get_educational_domains_from_ids(
-    educational_domain_ids: Optional[list[int]],
+    educational_domain_ids: list[int] | None,
 ) -> list[educational_models.EducationalDomain]:
     if educational_domain_ids is None:
         return []
@@ -695,7 +694,7 @@ def get_educational_domains_from_ids(
 def create_collective_offer(
     offer_data: PostCollectiveOfferBodyModel | PostEducationalOfferBodyModel,
     user: User,
-    offer_id: Optional[int] = None,
+    offer_id: int | None = None,
 ) -> CollectiveOffer:
 
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
@@ -751,7 +750,7 @@ def get_collective_offer_template_by_id(offer_id: int) -> CollectiveOffer:
 
 
 def create_collective_offer_template_from_collective_offer(
-    price_detail: Optional[str], user: User, offer_id: int
+    price_detail: str | None, user: User, offer_id: int
 ) -> CollectiveOfferTemplate:
     from pcapi.core.offers.api import update_offer_fraud_information
 
@@ -823,12 +822,11 @@ def get_query_for_collective_offers_template_by_ids_for_user(user: User, ids: It
 def find_collective_bookings_for_adage(
     uai_code: str,
     year_id: str,
-    redactor_email: Optional[str] = None,
-    status: Optional[
-        educational_models.CollectiveBookingStatus
-        | educational_models.EducationalBookingStatus
-        | bookings_models.BookingStatus
-    ] = None,
+    redactor_email: str | None = None,
+    status: educational_models.CollectiveBookingStatus
+    | educational_models.EducationalBookingStatus
+    | bookings_models.BookingStatus
+    | None = None,
 ) -> list[educational_models.CollectiveBooking]:
     return educational_repository.find_collective_bookings_for_adage(
         uai_code=uai_code, year_id=year_id, redactor_email=redactor_email, status=status
@@ -838,7 +836,7 @@ def find_collective_bookings_for_adage(
 def find_educational_deposit_by_institution_id_and_year(
     educational_institution_id: int,
     educational_year_id: str,
-) -> Optional[educational_models.EducationalDeposit]:
+) -> educational_models.EducationalDeposit | None:
     return educational_repository.find_educational_deposit_by_institution_id_and_year(
         educational_institution_id=educational_institution_id, educational_year_id=educational_year_id
     )
@@ -854,7 +852,7 @@ def get_educational_institution_by_id(institution_id: int) -> educational_models
 
 
 def update_collective_offer_educational_institution(
-    offer_id: int, educational_institution_id: Optional[int], is_creating_offer: bool, user: User
+    offer_id: int, educational_institution_id: int | None, is_creating_offer: bool, user: User
 ) -> CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
@@ -877,7 +875,7 @@ def update_collective_offer_educational_institution(
     return offer
 
 
-def get_collective_stock(collective_stock_id: int) -> Optional[educational_models.CollectiveStock]:
+def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
     return educational_repository.get_collective_stock(collective_stock_id)
 
 

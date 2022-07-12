@@ -1,7 +1,6 @@
 from datetime import datetime
 from datetime import timedelta
 import logging
-import typing
 
 from flask import current_app as app
 
@@ -85,7 +84,7 @@ def check_no_active_token_exists(user: User, expiration_date: datetime) -> None:
     app.redis_client.expireat(key, expiration_date)  # type: ignore [attr-defined]
 
 
-def get_active_token_expiration(user) -> typing.Optional[datetime]:  # type: ignore [no-untyped-def]
+def get_active_token_expiration(user) -> datetime | None:  # type: ignore [no-untyped-def]
     key = get_no_active_token_key(user)
     ttl = app.redis_client.ttl(key)  # type: ignore [attr-defined]
 

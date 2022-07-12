@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import enum
-from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -66,7 +65,7 @@ class Movie:
     title: str
     duration: int  # duration in minutes
     description: str
-    posterpath: Optional[str]
+    posterpath: str | None
     visa: str
 
 
@@ -77,7 +76,7 @@ class Ticket:
 
 
 class BookingProviderClientAPI:
-    def __init__(self, cinema_id: str, api_url: str, token: Optional[str]):
+    def __init__(self, cinema_id: str, api_url: str, token: str | None):
         self.token = token
         self.api_url = api_url
         self.cinema_id = cinema_id

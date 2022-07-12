@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import Field
 from pydantic import condecimal
@@ -17,10 +16,10 @@ from pcapi.utils.date import format_into_utc_date
 
 
 class StockResponseModel(BaseModel):
-    activationCodesExpirationDatetime: Optional[datetime]
+    activationCodesExpirationDatetime: datetime | None
     hasActivationCodes: bool
-    beginningDatetime: Optional[datetime]
-    bookingLimitDatetime: Optional[datetime]
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
     dateCreated: datetime
     dateModified: datetime
@@ -29,10 +28,10 @@ class StockResponseModel(BaseModel):
     isEventExpired: bool
     offerId: str
     price: float
-    quantity: Optional[int]
-    numberOfTickets: Optional[int]
-    isEducationalStockEditable: Optional[bool]
-    educationalPriceDetail: Optional[str]
+    quantity: int | None
+    numberOfTickets: int | None
+    isEducationalStockEditable: bool | None
+    educationalPriceDetail: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_offer_id = humanize_field("offerId")
@@ -68,12 +67,12 @@ class StocksResponseModel(BaseModel):
 
 
 class StockCreationBodyModel(BaseModel):
-    activation_codes: Optional[list[str]]
-    activation_codes_expiration_datetime: Optional[datetime]
-    beginning_datetime: Optional[datetime]
-    booking_limit_datetime: Optional[datetime]
+    activation_codes: list[str] | None
+    activation_codes_expiration_datetime: datetime | None
+    beginning_datetime: datetime | None
+    booking_limit_datetime: datetime | None
     price: float
-    quantity: Optional[int]
+    quantity: int | None
 
     class Config:
         alias_generator = to_camel
@@ -81,11 +80,11 @@ class StockCreationBodyModel(BaseModel):
 
 
 class StockEditionBodyModel(BaseModel):
-    beginning_datetime: Optional[datetime]
-    booking_limit_datetime: Optional[datetime]
+    beginning_datetime: datetime | None
+    booking_limit_datetime: datetime | None
     id: int
     price: float
-    quantity: Optional[int]
+    quantity: int | None
 
     _dehumanize_id = dehumanize_field("id")
 

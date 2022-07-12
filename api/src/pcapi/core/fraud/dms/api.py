@@ -1,6 +1,4 @@
 import logging
-import typing
-from typing import Optional
 
 import pcapi.core.fraud.api as fraud_api
 import pcapi.core.fraud.models as fraud_models
@@ -11,7 +9,7 @@ from pcapi.repository import repository
 logger = logging.getLogger(__name__)
 
 
-def get_fraud_check(user: users_models.User, application_number: int) -> Optional[fraud_models.BeneficiaryFraudCheck]:
+def get_fraud_check(user: users_models.User, application_number: int) -> fraud_models.BeneficiaryFraudCheck | None:
     return (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,
@@ -26,7 +24,7 @@ def get_fraud_check(user: users_models.User, application_number: int) -> Optiona
 def create_fraud_check(
     user: users_models.User,
     application_number: int,
-    source_data: typing.Optional[fraud_models.DMSContent],
+    source_data: fraud_models.DMSContent | None,
 ) -> fraud_models.BeneficiaryFraudCheck:
     eligibility_type = (
         fraud_api.decide_eligibility(user, source_data.get_birth_date(), source_data.get_registration_datetime())
@@ -46,7 +44,7 @@ def create_fraud_check(
 
 
 def get_or_create_fraud_check(
-    user: users_models.User, application_number: int, result_content: typing.Optional[fraud_models.DMSContent] = None
+    user: users_models.User, application_number: int, result_content: fraud_models.DMSContent | None = None
 ) -> fraud_models.BeneficiaryFraudCheck:
     fraud_check = get_fraud_check(user, application_number)
     if fraud_check is None:

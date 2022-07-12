@@ -1,8 +1,7 @@
 from re import search as re_search
-from typing import Optional
 
 
-def get_cds_show_id_from_uuid(uuid: Optional[str]) -> str:
+def get_cds_show_id_from_uuid(uuid: str | None) -> str:
     """uuid pattern: "<movie.id>%<venue.siret>#<show.id>/<showtime>" return show_id"""
     if not uuid:
         return ""

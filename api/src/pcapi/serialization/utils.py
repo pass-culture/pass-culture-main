@@ -1,7 +1,6 @@
 import re
 from typing import Any
 from typing import Callable
-from typing import Optional
 
 from flask import Request
 from flask import Response
@@ -23,7 +22,7 @@ def to_camel(string: str) -> str:
 def before_handler(
     request: Request,  # pylint: disable=unused-argument
     response: Response,  # pylint: disable=unused-argument
-    pydantic_error: Optional[ValidationError],
+    pydantic_error: ValidationError | None,
     _: Any,
 ) -> None:
     """Raises an ``ApiErrors` exception if input validation fails.
@@ -56,7 +55,7 @@ def before_handler(
         raise api_errors
 
 
-def humanize_id(id_to_humanize: Optional[int | str]) -> Optional[str]:
+def humanize_id(id_to_humanize: int | str | None) -> str | None:
     if id_to_humanize is None:
         return None
 
@@ -68,7 +67,7 @@ def humanize_id(id_to_humanize: Optional[int | str]) -> Optional[str]:
     return str(id_to_humanize)
 
 
-def dehumanize_id(id_to_dehumanize: Optional[int | str]) -> Optional[int]:
+def dehumanize_id(id_to_dehumanize: int | str | None) -> int | None:
     if id_to_dehumanize is None:
         return None
 
@@ -105,7 +104,7 @@ def check_string_length_wrapper(length: int) -> Callable:
     return check_string_length
 
 
-def string_to_boolean(string: str) -> Optional[bool]:
+def string_to_boolean(string: str) -> bool | None:
     try:
         return {"true": True, "false": False}[string]
     except KeyError:

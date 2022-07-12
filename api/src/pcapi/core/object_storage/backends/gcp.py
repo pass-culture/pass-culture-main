@@ -1,5 +1,4 @@
 import logging
-import typing
 
 from google.cloud.exceptions import NotFound
 from google.cloud.storage import Client
@@ -20,8 +19,8 @@ class GCPBackend(BaseBackend):
 
     def __init__(
         self,
-        project_id: typing.Optional[str] = None,
-        bucket_name: typing.Optional[str] = None,
+        project_id: str | None = None,
+        bucket_name: str | None = None,
     ) -> None:
         self.project_id = project_id or self.bucket_credentials.get("project_id")
         self.bucket_name = bucket_name or self.default_bucket_name

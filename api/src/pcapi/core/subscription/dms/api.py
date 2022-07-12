@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 def get_dms_subscription_item_status(
     user: users_models.User,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
     dms_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
 ) -> subscription_models.SubscriptionItemStatus:
     if any(check.status == fraud_models.FraudCheckStatus.OK for check in dms_fraud_checks):
@@ -64,7 +64,7 @@ def try_dms_orphan_adoption(user: users_models.User) -> None:
 
 def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse,
-) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+) -> fraud_models.BeneficiaryFraudCheck | None:
     application_number = dms_application.number
     user_email = users_utils.sanitize_email(dms_application.profile.email)
     application_scalar_id = dms_application.id
@@ -137,9 +137,9 @@ def _notify_field_error(field_errors: list[dms_types.DmsFieldErrorDetails], appl
 
 
 def _notify_eligibility_error(
-    birth_date: typing.Optional[date],
+    birth_date: date | None,
     application_scalar_id: str,
-    extra_data: typing.Optional[dict] = None,
+    extra_data: dict | None = None,
 ) -> None:
     if not birth_date:
         logger.warning(
@@ -158,8 +158,8 @@ def _notify_eligibility_error(
 def _on_dms_eligibility_error(
     user: users_models.User,
     fraud_check: fraud_models.BeneficiaryFraudCheck,
-    fraud_check_birth_date: typing.Optional[date],
-    extra_data: typing.Optional[dict] = None,
+    fraud_check_birth_date: date | None,
+    extra_data: dict | None = None,
 ) -> None:
     logger.info(
         "Birthdate of DMS application %d shows that user is not eligible",
@@ -186,7 +186,7 @@ def _process_draft_application(
     current_fraud_check: fraud_models.BeneficiaryFraudCheck,
     application_scalar_id: str,
     field_errors: list[dms_types.DmsFieldErrorDetails],
-    log_extra_data: typing.Optional[dict],
+    log_extra_data: dict | None,
 ) -> None:
     draft_status = fraud_models.FraudCheckStatus.STARTED
     fraud_check_content = typing.cast(fraud_models.DMSContent, current_fraud_check.source_data())
@@ -221,7 +221,7 @@ def _update_fraud_check_with_field_errors(
 
 def _create_profile_completion_fraud_check_from_dms(
     user: users_models.User,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
     content: fraud_models.DMSContent,
     application_id: str,
 ) -> None:

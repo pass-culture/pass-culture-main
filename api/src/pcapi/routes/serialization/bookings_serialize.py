@@ -1,7 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-import typing
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
@@ -22,22 +21,22 @@ class BookingFormula(Enum):
 
 
 class LegacyBookingResponse(BaseModel):
-    bookingId: typing.Optional[str]
-    date: typing.Optional[str]
-    email: typing.Optional[str]
-    isUsed: typing.Optional[bool]
-    offerName: typing.Optional[str]
-    userName: typing.Optional[str]
-    venueDepartementCode: typing.Optional[str]
+    bookingId: str | None
+    date: str | None
+    email: str | None
+    isUsed: bool | None
+    offerName: str | None
+    userName: str | None
+    venueDepartementCode: str | None
 
 
 class GetBookingResponse(BaseModel):
     bookingId: str
     dateOfBirth: str  # avoid breaking legacy value "" returned for void date
     datetime: str  # avoid breaking legacy value "" returned for void date
-    ean13: typing.Optional[str]
+    ean13: str | None
     email: str
-    formula: typing.Optional[BookingFormula]
+    formula: BookingFormula | None
     isUsed: bool
     offerId: int
     publicOfferId: str
@@ -48,8 +47,8 @@ class GetBookingResponse(BaseModel):
     quantity: int
     theater: dict
     userName: str
-    venueAddress: typing.Optional[str]
-    venueDepartmentCode: typing.Optional[str]
+    venueAddress: str | None
+    venueDepartmentCode: str | None
     venueName: str
 
 
@@ -109,4 +108,4 @@ class PostBookingBodyModel(BaseModel):
 
 class ActivationCode(BaseModel):
     code: str
-    expirationDate: typing.Optional[datetime]
+    expirationDate: datetime | None

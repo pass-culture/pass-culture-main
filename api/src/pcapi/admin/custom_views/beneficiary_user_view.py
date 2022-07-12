@@ -1,5 +1,3 @@
-from typing import Optional
-
 from flask_admin.contrib.sqla import tools
 from flask_admin.contrib.sqla.filters import BaseSQLAFilter
 from flask_sqlalchemy import BaseQuery
@@ -25,7 +23,7 @@ from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 
 
-def filter_email(value: Optional[str]) -> Optional[str]:
+def filter_email(value: str | None) -> str | None:
     if not value:
         return value
     return sanitize_email(value)

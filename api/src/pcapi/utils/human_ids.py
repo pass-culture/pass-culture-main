@@ -1,7 +1,6 @@
 from base64 import b32decode
 from base64 import b32encode
 import binascii
-from typing import Optional
 
 import click
 
@@ -22,7 +21,7 @@ class NonDehumanizableId(Exception):
     pass
 
 
-def dehumanize(public_id: Optional[str]) -> Optional[int]:
+def dehumanize(public_id: str | None) -> int | None:
     if public_id is None:
         return None
     missing_padding = len(public_id) % 8
@@ -35,14 +34,14 @@ def dehumanize(public_id: Optional[str]) -> Optional[int]:
     return int_from_bytes(xbytes)
 
 
-def dehumanize_or_raise(public_id: Optional[str]) -> int:
+def dehumanize_or_raise(public_id: str | None) -> int:
     dehumanized_public_id = dehumanize(public_id)
     if dehumanized_public_id is None:
         raise ValueError()
     return dehumanized_public_id
 
 
-def humanize(integer: Optional[int]) -> Optional[str]:
+def humanize(integer: int | None) -> str | None:
     """Create a human-compatible ID from and integer"""
     if integer is None:
         return None
@@ -50,7 +49,7 @@ def humanize(integer: Optional[int]) -> Optional[str]:
     return b32.decode("ascii").replace("O", "8").replace("I", "9").rstrip("=")
 
 
-def dehumanize_ids_list(humanized_list: list[Optional[str]]) -> list[Optional[int]]:
+def dehumanize_ids_list(humanized_list: list[str | None]) -> list[int | None]:
     return list(map(dehumanize, humanized_list)) if humanized_list else []
 
 

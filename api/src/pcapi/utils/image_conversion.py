@@ -9,7 +9,6 @@ from dataclasses import dataclass
 import enum
 import io
 import math
-from typing import Optional
 from typing import TYPE_CHECKING
 
 import PIL
@@ -32,7 +31,7 @@ class CropParams:
     width_crop_percent: CropParam = 1.0
 
     @classmethod
-    def build(cls, **kwargs: Optional[CropParam]) -> "CropParams":
+    def build(cls, **kwargs: CropParam | None) -> "CropParams":
         return cls(**{k: v for k, v in kwargs.items() if v})
 
 
@@ -64,7 +63,7 @@ IMAGE_RATIO_PORTRAIT_DEFAULT = 6 / 9
 IMAGE_RATIO_LANDSCAPE_DEFAULT = 3 / 2
 
 
-def standardize_image(content: bytes, ratio: ImageRatio, crop_params: Optional[CropParams] = None) -> bytes:
+def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams | None = None) -> bytes:
     """
     Standardization steps are:
         * transpose image

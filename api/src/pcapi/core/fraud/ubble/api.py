@@ -1,6 +1,5 @@
 import logging
 import re
-import typing
 
 from pcapi import settings
 from pcapi.core.fraud import api as fraud_api
@@ -22,7 +21,7 @@ def on_ubble_result(fraud_check: fraud_models.BeneficiaryFraudCheck) -> None:
     fraud_api.on_identity_fraud_check_result(fraud_check.user, fraud_check)
 
 
-def _ubble_readable_score(score: typing.Optional[float]) -> str:
+def _ubble_readable_score(score: float | None) -> str:
     return ubble_fraud_models.UbbleScore(score).name if score is not None else "AUCUN"
 
 
@@ -114,7 +113,7 @@ def start_ubble_fraud_check(user: users_models.User, ubble_content: ubble_fraud_
     db.session.commit()
 
 
-def get_ubble_fraud_check(identification_id: str) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+def get_ubble_fraud_check(identification_id: str) -> fraud_models.BeneficiaryFraudCheck | None:
     fraud_check = (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.UBBLE,
@@ -125,7 +124,7 @@ def get_ubble_fraud_check(identification_id: str) -> typing.Optional[fraud_model
     return fraud_check
 
 
-def does_match_ubble_test_email(email: str) -> typing.Optional[re.Match]:
+def does_match_ubble_test_email(email: str) -> re.Match | None:
     # This function MUST ALWAYS return None in production environment
     if settings.IS_PROD:
         return None
@@ -134,7 +133,7 @@ def does_match_ubble_test_email(email: str) -> typing.Optional[re.Match]:
 
 
 def is_user_allowed_to_perform_ubble_check(
-    user: users_models.User, eligibility_type: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility_type: users_models.EligibilityType | None
 ) -> bool:
     from pcapi.core.subscription.ubble import api as ubble_subscription_api
 
@@ -153,7 +152,7 @@ def is_user_allowed_to_perform_ubble_check(
     return status == SubscriptionItemStatus.TODO
 
 
-def get_restartable_identity_checks(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+def get_restartable_identity_checks(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     started_fraud_check = (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,

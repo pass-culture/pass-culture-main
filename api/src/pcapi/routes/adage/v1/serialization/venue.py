@@ -1,5 +1,4 @@
 from typing import Any
-from typing import Optional
 
 from pydantic import PositiveInt
 
@@ -10,25 +9,25 @@ from pcapi.routes.serialization import BaseModel
 
 class BaseVenueModel(BaseModel):
     name: str
-    address: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
-    city: Optional[str]
-    publicName: Optional[str]
-    description: Optional[str]
+    address: str | None
+    latitude: float | None
+    longitude: float | None
+    city: str | None
+    publicName: str | None
+    description: str | None
     id: int
-    adageId: Optional[str]
-    email: Optional[str]
-    website: Optional[str]
-    phoneNumber: Optional[str]
-    audioDisabilityCompliant: Optional[bool]
-    mentalDisabilityCompliant: Optional[bool]
-    motorDisabilityCompliant: Optional[bool]
-    visualDisabilityCompliant: Optional[bool]
+    adageId: str | None
+    email: str | None
+    website: str | None
+    phoneNumber: str | None
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
     @classmethod
     def from_orm(cls: Any, venue: Venue):  # type: ignore
-        contact: Optional[VenueContact] = venue.contact
+        contact: VenueContact | None = venue.contact
         if contact is not None:
             venue.email = contact.email
             venue.website = contact.website
@@ -41,7 +40,7 @@ class BaseVenueModel(BaseModel):
 
 
 class VenueModelWithOptionalSiret(BaseVenueModel):
-    siret: Optional[str]
+    siret: str | None
 
 
 class VenueModelWithRequiredSiret(BaseVenueModel):
@@ -57,5 +56,5 @@ class GetVenuesWithOptionalSiretResponseModel(BaseModel):
 
 
 class GetAllVenuesQueryModel(BaseModel):
-    page: Optional[PositiveInt]
-    per_page: Optional[PositiveInt]
+    page: PositiveInt | None
+    per_page: PositiveInt | None

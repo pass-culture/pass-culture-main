@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi.core import mails
 import pcapi.core.bookings.api as bookings_api
 from pcapi.core.bookings.models import IndividualBooking
@@ -23,7 +21,7 @@ def send_individual_booking_event_reminder_email_to_beneficiary(individual_booki
 
 def get_booking_event_reminder_to_beneficiary_email_data(
     individual_booking: IndividualBooking,
-) -> Optional[SendinblueTransactionalEmailData]:
+) -> SendinblueTransactionalEmailData | None:
     if individual_booking.booking.stock.beginningDatetime is None:
         return None
 

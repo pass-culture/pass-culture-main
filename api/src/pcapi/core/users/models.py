@@ -7,7 +7,6 @@ from decimal import Decimal
 import enum
 from operator import attrgetter
 import typing
-from typing import Optional
 
 import flask
 import sqlalchemy as sa
@@ -57,7 +56,7 @@ class PhoneValidationStatusType(enum.Enum):
 
 @dataclass
 class TokenExtraData:
-    phone_number: Optional[str]
+    phone_number: str | None
 
 
 class Token(PcObject, Model):  # type: ignore [valid-type, misc]
@@ -81,7 +80,7 @@ class Token(PcObject, Model):  # type: ignore [valid-type, misc]
 
     extraData = sa.Column(MutableDict.as_mutable(postgresql.JSONB), nullable=True)
 
-    def get_extra_data(self) -> Optional[TokenExtraData]:
+    def get_extra_data(self) -> TokenExtraData | None:
         return TokenExtraData(**self.extraData) if self.extraData else None
 
 
@@ -339,33 +338,33 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         self.password = crypto.hash_password(newpass)
 
     @property
-    def age(self) -> Optional[int]:
+    def age(self) -> int | None:
         return users_utils.get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
 
     @property
-    def deposit(self) -> Optional["Deposit"]:
+    def deposit(self) -> typing.Optional["Deposit"]:
         if len(self.deposits) == 0:
             return None
         return sorted(self.deposits, key=attrgetter("expirationDate"), reverse=True)[0]
 
     @property
-    def deposit_activation_date(self) -> Optional[datetime]:
+    def deposit_activation_date(self) -> datetime | None:
         return self.deposit.dateCreated if self.deposit else None
 
     @property
-    def deposit_expiration_date(self) -> Optional[datetime]:
+    def deposit_expiration_date(self) -> datetime | None:
         return self.deposit.expirationDate if self.deposit else None
 
     @property
-    def deposit_type(self) -> Optional["DepositType"]:
+    def deposit_type(self) -> typing.Optional["DepositType"]:
         return self.deposit.type if self.deposit else None  # type: ignore [return-value]
 
     @property
-    def deposit_version(self) -> Optional[int]:
+    def deposit_version(self) -> int | None:
         return self.deposit.version if self.deposit else None
 
     @property
-    def eligibility(self) -> Optional[EligibilityType]:
+    def eligibility(self) -> EligibilityType | None:
         from pcapi.core.fraud import api as fraud_api
 
         return fraud_api.decide_eligibility(self, self.dateOfBirth, datetime.utcnow())
@@ -404,7 +403,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         return max(0, balance)
 
     @property
-    def suspension_reason(self) -> Optional[str]:
+    def suspension_reason(self) -> str | None:
         """
         Reason for the active suspension.
         suspension_history is sorted by ascending date so the last item is the most recent (see UserSuspension).
@@ -418,7 +417,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         return None
 
     @property
-    def suspension_date(self) -> Optional[datetime]:
+    def suspension_date(self) -> datetime | None:
         """
         Date and time when the inactive account was suspended for the last time.
         suspension_history is sorted by ascending date so the last item is the most recent (see UserSuspension).
@@ -588,8 +587,8 @@ class Credit:
 @dataclass
 class DomainsCredit:
     all: Credit
-    digital: Optional[Credit] = None
-    physical: Optional[Credit] = None
+    digital: Credit | None = None
+    physical: Credit | None = None
 
 
 class Favorite(PcObject, Model):  # type: ignore [valid-type, misc]

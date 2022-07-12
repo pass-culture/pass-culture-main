@@ -6,7 +6,6 @@ from io import StringIO
 import typing
 from typing import Callable
 from typing import Iterable
-from typing import Optional
 
 from pydantic.main import BaseModel
 import pytz
@@ -24,7 +23,7 @@ def format_number_as_french(num: int | float) -> str:
     return str(num).replace(".", ",")
 
 
-def _build_full_address(street: Optional[str], postal_code: Optional[str], city: Optional[str]) -> str:
+def _build_full_address(street: str | None, postal_code: str | None, city: str | None) -> str:
     return " ".join((street or "", postal_code or "", city or ""))
 
 
@@ -232,8 +231,8 @@ def generate_reimbursement_details_csv(reimbursement_details: Iterable[Reimburse
 
 def find_all_offerer_reimbursement_details(
     offerer_id: int,
-    reimbursements_period: tuple[Optional[datetime.date], Optional[datetime.date]],
-    venue_id: Optional[int] = None,
+    reimbursements_period: tuple[datetime.date | None, datetime.date | None],
+    venue_id: int | None = None,
 ) -> list[ReimbursementDetails]:
     return find_all_offerers_reimbursement_details(
         [offerer_id],
@@ -244,8 +243,8 @@ def find_all_offerer_reimbursement_details(
 
 def find_all_offerers_reimbursement_details(
     offerer_ids: list[int],
-    reimbursements_period: tuple[Optional[datetime.date], Optional[datetime.date]],
-    venue_id: Optional[int] = None,
+    reimbursements_period: tuple[datetime.date | None, datetime.date | None],
+    venue_id: int | None = None,
 ) -> list[ReimbursementDetails]:
     offerer_payments = finance_repository.find_all_offerers_payments(offerer_ids, reimbursements_period, venue_id)  # type: ignore [arg-type]
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerer_payments]
@@ -269,6 +268,6 @@ def validate_reimbursement_period(
 
 
 class ReimbursementCsvQueryModel(BaseModel):
-    venueId: Optional[str]
-    reimbursementPeriodBeginningDate: Optional[str]
-    reimbursementPeriodEndingDate: Optional[str]
+    venueId: str | None
+    reimbursementPeriodBeginningDate: str | None
+    reimbursementPeriodEndingDate: str | None

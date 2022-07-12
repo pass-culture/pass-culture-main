@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Optional
 
 import flask
 import semver
@@ -9,7 +8,7 @@ from pcapi import settings
 from pcapi.models.api_errors import ForbiddenError
 
 
-def convert_to_cent(amount: Optional[Decimal]) -> Optional[int]:
+def convert_to_cent(amount: Decimal | None) -> int | None:
     if amount is None:
         return None
     return int(amount * 100)

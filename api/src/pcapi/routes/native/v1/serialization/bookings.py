@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Any
-from typing import Optional
 
 from pydantic.class_validators import validator
 
@@ -31,11 +30,11 @@ class BookOfferResponse(BaseModel):
 
 class BookingVenueResponse(BaseModel):
     id: int
-    address: Optional[str]
-    postalCode: Optional[str]
-    city: Optional[str]
+    address: str | None
+    postalCode: str | None
+    city: str | None
     name: str
-    publicName: Optional[str]
+    publicName: str | None
     coordinates: Coordinates
 
     class Config:
@@ -49,22 +48,22 @@ class BookingVenueResponse(BaseModel):
 
 
 class BookingOfferExtraData(BaseModel):
-    isbn: Optional[str]
+    isbn: str | None
 
 
 class BookingOfferResponse(BaseModel):
     id: int
     name: str
-    extraData: Optional[BookingOfferExtraData]
-    image: Optional[OfferImageResponse]
+    extraData: BookingOfferExtraData | None
+    image: OfferImageResponse | None
     isDigital: bool
     isPermanent: bool
     subcategoryId: SubcategoryIdEnum
-    url: Optional[str]
+    url: str | None
     venue: BookingVenueResponse
-    withdrawalDetails: Optional[str]
-    withdrawalType: Optional[WithdrawalTypeEnum]
-    withdrawalDelay: Optional[int]
+    withdrawalDetails: str | None
+    withdrawalType: WithdrawalTypeEnum | None
+    withdrawalDelay: int | None
 
     class Config:
         orm_mode = True
@@ -72,7 +71,7 @@ class BookingOfferResponse(BaseModel):
 
 class BookingStockResponse(BaseModel):
     id: int
-    beginningDatetime: Optional[datetime]
+    beginningDatetime: datetime | None
     offer: BookingOfferResponse
 
     class Config:
@@ -81,7 +80,7 @@ class BookingStockResponse(BaseModel):
 
 class BookingActivationCodeResponse(BaseModel):
     code: str
-    expirationDate: Optional[datetime]
+    expirationDate: datetime | None
 
     class Config:
         orm_mode = True
@@ -89,7 +88,7 @@ class BookingActivationCodeResponse(BaseModel):
 
 class ExternalBookingResponse(BaseModel):
     barcode: str
-    seat: Optional[str]
+    seat: str | None
 
     class Config:
         orm_mode = True
@@ -97,19 +96,19 @@ class ExternalBookingResponse(BaseModel):
 
 class BookingReponse(BaseModel):
     id: int
-    cancellationDate: Optional[datetime]
-    cancellationReason: Optional[BookingCancellationReasons]
-    confirmationDate: Optional[datetime]
-    completedUrl: Optional[str]
-    dateUsed: Optional[datetime]
-    expirationDate: Optional[datetime]
-    qrCodeData: Optional[str]
+    cancellationDate: datetime | None
+    cancellationReason: BookingCancellationReasons | None
+    confirmationDate: datetime | None
+    completedUrl: str | None
+    dateUsed: datetime | None
+    expirationDate: datetime | None
+    qrCodeData: str | None
     quantity: int
     stock: BookingStockResponse
     total_amount: int
-    token: Optional[str]
-    activationCode: Optional[BookingActivationCodeResponse]
-    externalBookings: Optional[list[ExternalBookingResponse]]
+    token: str | None
+    activationCode: BookingActivationCodeResponse | None
+    externalBookings: list[ExternalBookingResponse] | None
 
     _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
 

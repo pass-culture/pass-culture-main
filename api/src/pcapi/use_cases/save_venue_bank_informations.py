@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi import settings
 from pcapi.connectors import api_entreprises
 from pcapi.core.finance.models import BankInformationStatus
@@ -43,7 +41,7 @@ class SaveVenueBankInformations:
         self.venue_repository = venue_repository
         self.bank_informations_repository = bank_informations_repository
 
-    def execute(self, application_id: str, procedure_id: Optional[str] = None) -> Optional[BankInformations]:
+    def execute(self, application_id: str, procedure_id: str | None = None) -> BankInformations | None:
         if not procedure_id:
             procedure_id = settings.DMS_VENUE_PROCEDURE_ID
         application_details = get_venue_bank_information_application_details_by_application_id(

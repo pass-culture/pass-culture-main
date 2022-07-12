@@ -1,7 +1,6 @@
 from datetime import date
 from enum import Enum
 import logging
-from typing import Optional
 
 from pcapi.core.bookings import exceptions
 from pcapi.core.bookings.models import Booking
@@ -22,17 +21,17 @@ class GroupId(Enum):
 
 class TransactionalNotificationMessage(BaseModel):
     body: str
-    title: Optional[str] = None
+    title: str | None = None
 
 
 class TransactionalNotificationData(BaseModel):
     group_id: str  # Name of the campaign, useful for analytics purpose
     user_ids: list[int]
     message: TransactionalNotificationMessage
-    extra: Optional[dict] = {}
+    extra: dict | None = {}
 
 
-def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optional[TransactionalNotificationData]:
+def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> TransactionalNotificationData | None:
     bookings = Booking.query.filter(Booking.id.in_(booking_ids))
 
     if not bookings:
@@ -51,9 +50,7 @@ def get_bookings_cancellation_notification_data(booking_ids: list[int]) -> Optio
     )
 
 
-def get_today_stock_booking_notification_data(
-    booking: Booking, offer: Offer
-) -> Optional[TransactionalNotificationData]:
+def get_today_stock_booking_notification_data(booking: Booking, offer: Offer) -> TransactionalNotificationData | None:
     return TransactionalNotificationData(
         group_id=GroupId.TODAY_STOCK.value,
         user_ids=[booking.userId],

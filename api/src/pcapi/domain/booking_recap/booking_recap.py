@@ -1,6 +1,5 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from pcapi.core.bookings import models as bookings_models
 from pcapi.domain.booking_recap import utils
@@ -24,10 +23,10 @@ class BookingRecapStatus(Enum):
 class BookingRecap:
     def __init__(
         self,
-        beneficiary_lastname: Optional[str],
-        beneficiary_firstname: Optional[str],
-        beneficiary_email: Optional[str],
-        beneficiary_phonenumber: Optional[str],
+        beneficiary_lastname: str | None,
+        beneficiary_firstname: str | None,
+        beneficiary_email: str | None,
+        beneficiary_phonenumber: str | None,
         booking_token: str,
         booking_date: datetime,
         booking_is_duo: bool,
@@ -36,21 +35,21 @@ class BookingRecap:
         booking_is_reimbursed: bool,
         booking_is_confirmed: bool,
         booking_raw_status: bookings_models.BookingStatus,
-        booking_confirmation_date: Optional[datetime],
+        booking_confirmation_date: datetime | None,
         booking_is_educational: bool,
         booking_is_external: bool,
         booking_amount: float,
-        cancellation_date: Optional[datetime],
-        cancellation_limit_date: Optional[datetime],
-        payment_date: Optional[datetime],
-        date_used: Optional[datetime],
+        cancellation_date: datetime | None,
+        cancellation_limit_date: datetime | None,
+        payment_date: datetime | None,
+        date_used: datetime | None,
         offer_identifier: int,
         offer_name: str,
-        offer_isbn: Optional[str],
-        redactor_lastname: Optional[str],
-        redactor_firstname: Optional[str],
-        redactor_email: Optional[str],
-        event_beginning_datetime: Optional[datetime],
+        offer_isbn: str | None,
+        redactor_lastname: str | None,
+        redactor_firstname: str | None,
+        redactor_email: str | None,
+        event_beginning_datetime: datetime | None,
         stock_identifier: int,
     ):
         self.booking_amount = booking_amount
@@ -89,7 +88,7 @@ class BookingRecap:
     def __new__(cls, *args, **kwargs):  # type: ignore [no-untyped-def]
         return object.__new__(cls)
 
-    def _get_booking_token(self) -> Optional[str]:
+    def _get_booking_token(self) -> str | None:
         return utils.get_booking_token(
             self._booking_token,
             self.booking_raw_status,
@@ -123,11 +122,11 @@ class BookingRecap:
     def build_status_history(
         self,
         booking_date: datetime,
-        cancellation_date: Optional[datetime],
-        cancellation_limit_date: Optional[datetime],
-        payment_date: Optional[datetime],
-        date_used: Optional[datetime],
-        confirmation_date: Optional[datetime],
+        cancellation_date: datetime | None,
+        cancellation_limit_date: datetime | None,
+        payment_date: datetime | None,
+        date_used: datetime | None,
+        confirmation_date: datetime | None,
     ) -> BookingRecapHistory:
         if self.booking_status == BookingRecapStatus.pending:
             return BookingRecapPendingHistory(booking_date=booking_date)

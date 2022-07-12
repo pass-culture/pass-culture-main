@@ -1,5 +1,3 @@
-import typing
-
 from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.models import Model
@@ -13,7 +11,7 @@ def create_thumb(
     model_with_thumb: Model,  # type: ignore [valid-type]
     image_as_bytes: bytes,
     image_index: int,
-    crop_params: typing.Optional[CropParams] = None,
+    crop_params: CropParams | None = None,
     ratio: ImageRatio = ImageRatio.PORTRAIT,
     keep_ratio: bool = False,
 ) -> None:

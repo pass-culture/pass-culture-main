@@ -1,7 +1,6 @@
 from datetime import date
 from datetime import datetime
 import logging
-from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 from google.cloud.storage import Client
@@ -20,7 +19,7 @@ ALGORITHM_HS_256 = "HS256"
 ALGORITHM_RS_256 = "RS256"
 
 
-def encode_jwt_payload(token_payload: dict, expiration_date: Optional[datetime] = None) -> str:
+def encode_jwt_payload(token_payload: dict, expiration_date: datetime | None = None) -> str:
     if expiration_date:
         # do not fill exp key if expiration_date is None or jwt.decode would fail
         token_payload["exp"] = int(expiration_date.timestamp())
@@ -54,7 +53,7 @@ def get_encrypted_gcp_storage_client_bucket() -> Bucket:
 
 
 def store_object(
-    bucket: str, object_id: str, blob: bytes, content_type: Optional[str] = None, metadata: Optional[dict] = None
+    bucket: str, object_id: str, blob: bytes, content_type: str | None = None, metadata: dict | None = None
 ) -> None:
     storage_path = bucket + "/" + object_id
     try:

@@ -134,7 +134,7 @@ def parse_beneficiary_information_graphql(
     return result_content, field_errors
 
 
-def _parse_dms_civility(civility: dms_models.Civility) -> typing.Optional[users_models.GenderEnum]:
+def _parse_dms_civility(civility: dms_models.Civility) -> users_models.GenderEnum | None:
     if civility == dms_models.Civility.M:
         return users_models.GenderEnum.M
     if civility == dms_models.Civility.MME:

@@ -285,4 +285,4 @@ def log_elapsed(
 
 # Do NOT use this logger outside of this module. It is used only to
 # report errors from this module.
-_internal_logger: typing.Optional[logging.Logger] = None
+_internal_logger: logging.Logger | None = None

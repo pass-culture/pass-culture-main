@@ -46,7 +46,7 @@ class FraudReviewStatus(enum.Enum):
     REDIRECTED_TO_DMS = "REDIRECTED_TO_DMS"
 
 
-def _parse_level(level: typing.Optional[str]) -> typing.Optional[int]:
+def _parse_level(level: str | None) -> int | None:
     if not level:
         return None
     try:
@@ -55,7 +55,7 @@ def _parse_level(level: typing.Optional[str]) -> typing.Optional[int]:
         return None
 
 
-def _parse_jouve_date(date: typing.Optional[str]) -> typing.Optional[datetime.datetime]:
+def _parse_jouve_date(date: str | None) -> datetime.datetime | None:
     if not date:
         return None
     # this function has to support two parsings string format:
@@ -77,7 +77,7 @@ def _parse_jouve_date(date: typing.Optional[str]) -> typing.Optional[datetime.da
         return None
 
 
-def _parse_jouve_datetime(date: typing.Optional[str]) -> typing.Optional[datetime.datetime]:
+def _parse_jouve_datetime(date: str | None) -> datetime.datetime | None:
     if not date:
         return None
     try:
@@ -101,8 +101,8 @@ class EduconnectContent(common_models.IdentityCheckContent):
     ine_hash: str
     last_name: str
     registration_datetime: datetime.datetime
-    school_uai: typing.Optional[str]
-    student_level: typing.Optional[str]
+    school_uai: str | None
+    student_level: str | None
 
     def get_registration_datetime(self) -> datetime.datetime:
         return self.registration_datetime
@@ -116,38 +116,38 @@ class EduconnectContent(common_models.IdentityCheckContent):
     def get_birth_date(self) -> datetime.date:
         return self.birth_date
 
-    def get_ine_hash(self) -> typing.Optional[str]:
+    def get_ine_hash(self) -> str | None:
         return self.ine_hash
 
 
 class JouveContent(common_models.IdentityCheckContent):
-    activity: typing.Optional[str]
-    address: typing.Optional[str]
-    birthDateTxt: typing.Optional[datetime.datetime]
-    birthLocationCtrl: typing.Optional[str]
-    bodyBirthDateCtrl: typing.Optional[str]
-    bodyBirthDateLevel: typing.Optional[int]
-    bodyFirstnameCtrl: typing.Optional[str]
-    bodyFirstnameLevel: typing.Optional[int]
-    bodyNameLevel: typing.Optional[int]
-    bodyNameCtrl: typing.Optional[str]
-    bodyPieceNumber: typing.Optional[str]
-    bodyPieceNumberCtrl: typing.Optional[str]
-    bodyPieceNumberLevel: typing.Optional[int]
-    city: typing.Optional[str]
-    creatorCtrl: typing.Optional[str]
+    activity: str | None
+    address: str | None
+    birthDateTxt: datetime.datetime | None
+    birthLocationCtrl: str | None
+    bodyBirthDateCtrl: str | None
+    bodyBirthDateLevel: int | None
+    bodyFirstnameCtrl: str | None
+    bodyFirstnameLevel: int | None
+    bodyNameLevel: int | None
+    bodyNameCtrl: str | None
+    bodyPieceNumber: str | None
+    bodyPieceNumberCtrl: str | None
+    bodyPieceNumberLevel: int | None
+    city: str | None
+    creatorCtrl: str | None
     id: int
-    email: typing.Optional[str]
-    firstName: typing.Optional[str]
-    gender: typing.Optional[str]
-    initialNumberCtrl: typing.Optional[str]
-    initialSizeCtrl: typing.Optional[str]
-    lastName: typing.Optional[str]
-    phoneNumber: typing.Optional[str]
-    postalCode: typing.Optional[str]
-    posteCodeCtrl: typing.Optional[str]
-    registrationDate: typing.Optional[datetime.datetime]
-    serviceCodeCtrl: typing.Optional[str]
+    email: str | None
+    firstName: str | None
+    gender: str | None
+    initialNumberCtrl: str | None
+    initialSizeCtrl: str | None
+    lastName: str | None
+    phoneNumber: str | None
+    postalCode: str | None
+    posteCodeCtrl: str | None
+    registrationDate: datetime.datetime | None
+    serviceCodeCtrl: str | None
 
     _parse_body_birth_date_level = validator("bodyBirthDateLevel", pre=True, allow_reuse=True)(_parse_level)
     _parse_body_first_name_level = validator("bodyFirstnameLevel", pre=True, allow_reuse=True)(_parse_level)
@@ -156,49 +156,49 @@ class JouveContent(common_models.IdentityCheckContent):
     _parse_birth_date = validator("birthDateTxt", pre=True, allow_reuse=True)(_parse_jouve_date)
     _parse_registration_date = validator("registrationDate", pre=True, allow_reuse=True)(_parse_jouve_datetime)
 
-    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
+    def get_registration_datetime(self) -> datetime.datetime | None:
         return self.registrationDate
 
-    def get_first_name(self) -> typing.Optional[str]:
+    def get_first_name(self) -> str | None:
         return self.firstName
 
-    def get_last_name(self) -> typing.Optional[str]:
+    def get_last_name(self) -> str | None:
         return self.lastName
 
     def get_married_name(self) -> None:
         return None
 
-    def get_birth_date(self) -> typing.Optional[datetime.date]:
+    def get_birth_date(self) -> datetime.date | None:
         return self.birthDateTxt.date() if self.birthDateTxt else None
 
-    def get_id_piece_number(self) -> typing.Optional[str]:
+    def get_id_piece_number(self) -> str | None:
         return self.bodyPieceNumber
 
 
 class DMSContent(common_models.IdentityCheckContent):
-    activity: typing.Optional[str]
-    address: typing.Optional[str]
+    activity: str | None
+    address: str | None
     application_number: int = pydantic.Field(..., alias="application_id")  # keep alias for old data
-    birth_date: typing.Optional[datetime.date]
-    city: typing.Optional[str]
-    civility: typing.Optional[users_models.GenderEnum]
-    deletion_datetime: typing.Optional[datetime.datetime]
-    department: typing.Optional[str]  # this field is not filled anymore
+    birth_date: datetime.date | None
+    city: str | None
+    civility: users_models.GenderEnum | None
+    deletion_datetime: datetime.datetime | None
+    department: str | None  # this field is not filled anymore
     email: str
     first_name: str
-    id_piece_number: typing.Optional[str]
+    id_piece_number: str | None
     last_name: str
-    phone: typing.Optional[str]
-    postal_code: typing.Optional[str]
+    phone: str | None
+    postal_code: str | None
     procedure_number: int = pydantic.Field(..., alias="procedure_id")  # keep alias for old data
-    processed_datetime: typing.Optional[datetime.datetime]
-    registration_datetime: typing.Optional[datetime.datetime]
-    state: typing.Optional[str]
+    processed_datetime: datetime.datetime | None
+    registration_datetime: datetime.datetime | None
+    state: str | None
 
     class Config:
         allow_population_by_field_name = True
 
-    def get_birth_date(self) -> typing.Optional[datetime.date]:
+    def get_birth_date(self) -> datetime.date | None:
         return self.birth_date
 
     def get_first_name(self) -> str:
@@ -207,28 +207,28 @@ class DMSContent(common_models.IdentityCheckContent):
     def get_last_name(self) -> str:
         return self.last_name
 
-    def get_activity(self) -> typing.Optional[str]:
+    def get_activity(self) -> str | None:
         return self.activity
 
-    def get_address(self) -> typing.Optional[str]:
+    def get_address(self) -> str | None:
         return self.address
 
-    def get_civility(self) -> typing.Optional[str]:
+    def get_civility(self) -> str | None:
         return self.civility.value if self.civility else None
 
-    def get_city(self) -> typing.Optional[str]:
+    def get_city(self) -> str | None:
         return self.city
 
-    def get_id_piece_number(self) -> typing.Optional[str]:
+    def get_id_piece_number(self) -> str | None:
         return self.id_piece_number
 
-    def get_phone_number(self) -> typing.Optional[str]:
+    def get_phone_number(self) -> str | None:
         return self.phone
 
-    def get_postal_code(self) -> typing.Optional[str]:
+    def get_postal_code(self) -> str | None:
         return self.postal_code
 
-    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
+    def get_registration_datetime(self) -> datetime.datetime | None:
         return dms_models.parse_dms_datetime(self.registration_datetime) if self.registration_datetime else None
 
 
@@ -242,18 +242,18 @@ class UserProfilingRiskRating(enum.Enum):
 
 class UserProfilingFraudData(pydantic.BaseModel):
     account_email: str
-    account_email_first_seen: typing.Optional[datetime.date]
+    account_email_first_seen: datetime.date | None
     account_email_result: str
-    account_email_score: typing.Optional[int]
-    account_telephone_result: typing.Optional[str]  # Optional because Phone Validation may be disabled by FF
-    account_telephone_first_seen: typing.Optional[datetime.date]
-    account_telephone_score: typing.Optional[int]
-    account_telephone_is_valid: typing.Optional[str]  # Optional because Phone Validation may be disabled by FF
+    account_email_score: int | None
+    account_telephone_result: str | None  # Optional because Phone Validation may be disabled by FF
+    account_telephone_first_seen: datetime.date | None
+    account_telephone_score: int | None
+    account_telephone_is_valid: str | None  # Optional because Phone Validation may be disabled by FF
     bb_bot_rating: str
     bb_bot_score: float
     bb_fraud_rating: str
     bb_fraud_score: float
-    device_id: typing.Optional[str]
+    device_id: str | None
     digital_id: str
     digital_id_result: str
     digital_id_trust_score: float
@@ -268,9 +268,9 @@ class UserProfilingFraudData(pydantic.BaseModel):
     risk_rating: UserProfilingRiskRating
     session_id: str
     tmx_risk_rating: str
-    tmx_summary_reason_code: typing.Optional[typing.List[str]]
+    tmx_summary_reason_code: typing.List[str] | None
     summary_risk_score: int
-    unknown_session: typing.Optional[str]
+    unknown_session: str | None
 
 
 IdCheckContent = typing.TypeVar(
@@ -292,9 +292,9 @@ class InternalReviewSource(enum.Enum):
 
 
 class PhoneValidationFraudData(pydantic.BaseModel):
-    source: typing.Optional[InternalReviewSource]  # legacy field, still present in database
-    message: typing.Optional[str]  # legacy field, still present in database
-    phone_number: typing.Optional[str]
+    source: InternalReviewSource | None  # legacy field, still present in database
+    message: str | None  # legacy field, still present in database
+    phone_number: str | None
 
 
 class ProfileCompletionContent(pydantic.BaseModel):
@@ -304,7 +304,7 @@ class ProfileCompletionContent(pydantic.BaseModel):
     last_name: str
     origin: str  # Where the profile was completed by the user. Can be the APP or DMS
     postalCode: str
-    school_type: typing.Optional[users_models.SchoolTypeEnum]
+    school_type: users_models.SchoolTypeEnum | None
 
 
 FRAUD_CHECK_MAPPING = {
@@ -463,7 +463,7 @@ class BeneficiaryFraudReview(PcObject, Model):  # type: ignore [valid-type, misc
 class FraudItem:
     status: FraudStatus
     detail: str
-    reason_code: typing.Optional[FraudReasonCode] = None
+    reason_code: FraudReasonCode | None = None
 
     def __bool__(self) -> bool:
         return self.status == FraudStatus.OK

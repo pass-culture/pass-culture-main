@@ -61,9 +61,7 @@ def create_email_validation_token(user: models.User) -> models.Token:
     )
 
 
-def create_reset_password_token(
-    user: models.User, expiration: typing.Optional[datetime.datetime] = None
-) -> models.Token:
+def create_reset_password_token(user: models.User, expiration: datetime.datetime | None = None) -> models.Token:
     return generate_and_save_token(
         user,
         models.TokenType.RESET_PASSWORD,
@@ -74,8 +72,8 @@ def create_reset_password_token(
 def create_phone_validation_token(
     user: models.User,
     phone_number: str,
-    expiration: typing.Optional[datetime.datetime] = None,
-) -> typing.Optional[models.Token]:
+    expiration: datetime.datetime | None = None,
+) -> models.Token | None:
     secret_code = "{:06}".format(secrets.randbelow(1_000_000))  # 6 digits
     return generate_and_save_token(
         user,
@@ -89,9 +87,9 @@ def create_phone_validation_token(
 def generate_and_save_token(
     user: models.User,
     token_type: models.TokenType,
-    expiration: typing.Optional[datetime.datetime] = None,
-    token_value: typing.Optional[str] = None,
-    extra_data: typing.Optional[models.TokenExtraData] = None,
+    expiration: datetime.datetime | None = None,
+    token_value: str | None = None,
+    extra_data: models.TokenExtraData | None = None,
 ) -> models.Token:
     assert token_type.name in models.TokenType.__members__, "Only registered token types are allowed"
 
@@ -187,18 +185,18 @@ def initialize_account(
 
 def update_user_information(
     user: models.User,
-    first_name: typing.Optional[str] = None,
-    last_name: typing.Optional[str] = None,
-    birth_date: typing.Optional[datetime.datetime] = None,
-    activity: typing.Optional[str] = None,
-    address: typing.Optional[str] = None,
-    city: typing.Optional[str] = None,
-    civility: typing.Optional[str] = None,
-    id_piece_number: typing.Optional[str] = None,
-    ine_hash: typing.Optional[str] = None,
-    married_name: typing.Optional[str] = None,
-    phone_number: typing.Optional[str] = None,
-    postal_code: typing.Optional[str] = None,
+    first_name: str | None = None,
+    last_name: str | None = None,
+    birth_date: datetime.datetime | None = None,
+    activity: str | None = None,
+    address: str | None = None,
+    city: str | None = None,
+    civility: str | None = None,
+    id_piece_number: str | None = None,
+    ine_hash: str | None = None,
+    married_name: str | None = None,
+    phone_number: str | None = None,
+    postal_code: str | None = None,
     commit: bool = False,
 ) -> models.User:
     if first_name is not None:
@@ -340,9 +338,7 @@ def check_can_unsuspend(user: models.User) -> None:
         raise exceptions.UnsuspensionTimeLimitExceeded()
 
 
-def suspend_account(
-    user: models.User, reason: constants.SuspensionReason, actor: typing.Optional[models.User]
-) -> dict[str, int]:
+def suspend_account(user: models.User, reason: constants.SuspensionReason, actor: models.User | None) -> dict[str, int]:
     """
     Suspend a user's account:
         * mark as inactive;
@@ -538,7 +534,7 @@ def update_user_info(  # type: ignore [no-untyped-def]
 
 def get_domains_credit(
     user: models.User, user_bookings: list[bookings_models.Booking] = None
-) -> typing.Optional[models.DomainsCredit]:
+) -> models.DomainsCredit | None:
     if not user.deposit:
         return None
 
@@ -712,7 +708,7 @@ def create_user_access_token(user: models.User) -> str:
 
 
 def update_notification_subscription(
-    user: models.User, subscriptions: "typing.Optional[account_serialization.NotificationSubscriptions]"
+    user: models.User, subscriptions: "account_serialization.NotificationSubscriptions | None"
 ) -> None:
     if subscriptions is None:
         return
@@ -735,8 +731,8 @@ def reset_recredit_amount_to_show(user: models.User) -> None:
 
 
 def get_eligibility_end_datetime(
-    date_of_birth: typing.Optional[datetime.date | datetime.datetime],
-) -> typing.Optional[datetime.datetime]:
+    date_of_birth: datetime.date | datetime.datetime | None,
+) -> datetime.datetime | None:
     if not date_of_birth:
         return None
 
@@ -746,8 +742,8 @@ def get_eligibility_end_datetime(
 
 
 def get_eligibility_start_datetime(
-    date_of_birth: typing.Optional[datetime.date | datetime.datetime],
-) -> typing.Optional[datetime.datetime]:
+    date_of_birth: datetime.date | datetime.datetime | None,
+) -> datetime.datetime | None:
     if not date_of_birth:
         return None
 
@@ -758,9 +754,9 @@ def get_eligibility_start_datetime(
 
 
 def get_eligibility_at_date(
-    date_of_birth: typing.Optional[datetime.date | datetime.datetime],
+    date_of_birth: datetime.date | datetime.datetime | None,
     specified_datetime: datetime.datetime,
-) -> typing.Optional[models.EligibilityType]:
+) -> models.EligibilityType | None:
     eligibility_start = get_eligibility_start_datetime(date_of_birth)
     eligibility_end = get_eligibility_end_datetime(date_of_birth)
 
@@ -780,17 +776,13 @@ def get_eligibility_at_date(
     return None
 
 
-def is_eligible_for_beneficiary_upgrade(
-    user: models.User, eligibility: typing.Optional[models.EligibilityType]
-) -> bool:
+def is_eligible_for_beneficiary_upgrade(user: models.User, eligibility: models.EligibilityType | None) -> bool:
     return (eligibility == models.EligibilityType.UNDERAGE and not user.has_underage_beneficiary_role) or (
         eligibility == models.EligibilityType.AGE18 and not user.has_beneficiary_role
     )
 
 
-def is_user_age_compatible_with_eligibility(
-    user_age: typing.Optional[int], eligibility: typing.Optional[models.EligibilityType]
-) -> bool:
+def is_user_age_compatible_with_eligibility(user_age: int | None, eligibility: models.EligibilityType | None) -> bool:
     if eligibility == models.EligibilityType.UNDERAGE:
         return user_age in constants.ELIGIBILITY_UNDERAGE_RANGE
     if eligibility == models.EligibilityType.AGE18:
@@ -798,7 +790,7 @@ def is_user_age_compatible_with_eligibility(
     return False
 
 
-def search_public_account(terms: typing.Iterable[str], order_by: typing.Optional[list[str]] = None) -> BaseQuery:
+def search_public_account(terms: typing.Iterable[str], order_by: list[str] | None = None) -> BaseQuery:
     order_by = order_by or []
     filters = []
 

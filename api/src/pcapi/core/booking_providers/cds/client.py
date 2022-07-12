@@ -1,7 +1,6 @@
 import datetime
 import math
 from operator import attrgetter
-from typing import Optional
 
 from pydantic.tools import parse_obj_as
 
@@ -20,7 +19,7 @@ CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
 class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
-    def __init__(self, cinema_id: str, api_url: str, cinema_api_token: Optional[str]):
+    def __init__(self, cinema_id: str, api_url: str, cinema_api_token: str | None):
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
         super().__init__(cinema_id, api_url, cinema_api_token)
@@ -259,7 +258,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
             voucher_type=cds_serializers.IdObjectCDS(id=show_voucher_type.id),
         )
 
-    def get_voucher_type_for_show(self, show: cds_serializers.ShowCDS) -> Optional[cds_serializers.VoucherTypeCDS]:
+    def get_voucher_type_for_show(self, show: cds_serializers.ShowCDS) -> cds_serializers.VoucherTypeCDS | None:
         pc_voucher_types = self.get_pc_voucher_types()
 
         show_pc_vouchers = []

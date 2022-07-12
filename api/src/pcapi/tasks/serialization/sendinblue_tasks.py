@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi.routes.serialization import BaseModel
 
 
@@ -12,13 +10,13 @@ class UpdateSendinblueContactRequest(BaseModel):
 
 class SendTransactionalEmailRequest(BaseModel):
     recipients: list[str]
-    params: Optional[dict] = None
-    template_id: Optional[int] = None
-    tags: Optional[list[str]] = None
+    params: dict | None = None
+    template_id: int | None = None
+    tags: list[str] | None = None
     sender: dict
-    subject: Optional[str] = None
-    html_content: Optional[str] = None
-    attachment: Optional[dict] = None
+    subject: str | None = None
+    html_content: str | None = None
+    attachment: dict | None = None
     reply_to: dict
 
 

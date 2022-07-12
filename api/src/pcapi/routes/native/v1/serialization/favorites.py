@@ -1,6 +1,5 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import Optional
 
 from pydantic.class_validators import validator
 
@@ -13,12 +12,12 @@ from pcapi.utils.date import format_into_utc_date
 
 
 class Coordinates(BaseModel):
-    latitude: Optional[Decimal]
-    longitude: Optional[Decimal]
+    latitude: Decimal | None
+    longitude: Decimal | None
 
 
 class FavoriteMediationResponse(BaseModel):
-    credit: Optional[str]
+    credit: str | None
     url: str
 
     class Config:
@@ -29,13 +28,13 @@ class FavoriteOfferResponse(BaseModel):
     id: int
     name: str
     subcategoryId: SubcategoryIdEnum
-    externalTicketOfficeUrl: Optional[str]
-    image: Optional[FavoriteMediationResponse]
+    externalTicketOfficeUrl: str | None
+    image: FavoriteMediationResponse | None
     coordinates: Coordinates
-    price: Optional[int] = None
-    startPrice: Optional[int] = None
-    date: Optional[datetime] = None
-    startDate: Optional[datetime] = None
+    price: int | None = None
+    startPrice: int | None = None
+    date: datetime | None = None
+    startDate: datetime | None = None
     isExpired: bool = False
     expenseDomains: list[ExpenseDomain]
     isReleased: bool

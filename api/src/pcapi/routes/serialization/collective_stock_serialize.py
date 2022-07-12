@@ -3,7 +3,6 @@ from datetime import timezone
 import logging
 from typing import Any
 from typing import Dict
-from typing import Optional
 
 from pydantic import Field
 from pydantic import validator
@@ -28,7 +27,7 @@ class CollectiveStockIdResponseModel(BaseModel):
         orm_mode = True
 
 
-def validate_number_of_tickets(number_of_tickets: Optional[int]) -> int:
+def validate_number_of_tickets(number_of_tickets: int | None) -> int:
     if number_of_tickets is None:
         raise ValueError("Le nombre de places ne peut pas être nul.")
     if number_of_tickets < 0:
@@ -36,7 +35,7 @@ def validate_number_of_tickets(number_of_tickets: Optional[int]) -> int:
     return number_of_tickets
 
 
-def validate_price(price: Optional[float]) -> float:
+def validate_price(price: float | None) -> float:
     if price is None:
         raise ValueError("Le prix ne peut pas être nul.")
     if price < 0:
@@ -44,9 +43,7 @@ def validate_price(price: Optional[float]) -> float:
     return price
 
 
-def validate_booking_limit_datetime(
-    booking_limit_datetime: Optional[datetime], values: Dict[str, Any]
-) -> Optional[datetime]:
+def validate_booking_limit_datetime(booking_limit_datetime: datetime | None, values: Dict[str, Any]) -> datetime | None:
     if (
         booking_limit_datetime
         and "beginning_datetime" in values
@@ -63,7 +60,7 @@ def validate_beginning_datetime(beginning_datetime: datetime, values: Dict[str, 
     return beginning_datetime
 
 
-def validate_price_detail(educational_price_detail: Optional[str]) -> Optional[str]:
+def validate_price_detail(educational_price_detail: str | None) -> str | None:
     if educational_price_detail and len(educational_price_detail) > 1000:
         raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
     return educational_price_detail
@@ -92,10 +89,10 @@ def price_detail_validator(field_name: str) -> classmethod:
 class CollectiveStockCreationBodyModel(BaseModel):
     offer_id: int
     beginning_datetime: datetime
-    booking_limit_datetime: Optional[datetime]
+    booking_limit_datetime: datetime | None
     total_price: float
     number_of_tickets: int
-    educational_price_detail: Optional[str]
+    educational_price_detail: str | None
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
     _validate_number_of_tickets = number_of_tickets_validator("number_of_tickets")
@@ -110,11 +107,11 @@ class CollectiveStockCreationBodyModel(BaseModel):
 
 
 class CollectiveStockEditionBodyModel(BaseModel):
-    beginningDatetime: Optional[datetime]
-    bookingLimitDatetime: Optional[datetime]
-    price: Optional[float] = Field(alias="totalPrice")
-    numberOfTickets: Optional[int]
-    educationalPriceDetail: Optional[str]
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
+    price: float | None = Field(alias="totalPrice")
+    numberOfTickets: int | None
+    educationalPriceDetail: str | None
 
     _validate_number_of_tickets = number_of_tickets_validator("numberOfTickets")
     _validate_total_price = price_validator("price")
@@ -125,8 +122,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
     # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("bookingLimitDatetime")
     def validate_booking_limit_datetime(  # pylint: disable=no-self-argument
-        cls, booking_limit_datetime: Optional[datetime], values: Dict[str, Any]
-    ) -> Optional[datetime]:
+        cls, booking_limit_datetime: datetime | None, values: Dict[str, Any]
+    ) -> datetime | None:
         if (
             booking_limit_datetime
             and values.get("beginningDatetime", None) is not None
@@ -139,8 +136,8 @@ class CollectiveStockEditionBodyModel(BaseModel):
     # we can use the same interface as for creation and thus reuse the validator defined above.
     @validator("beginningDatetime", pre=True)
     def validate_beginning_limit_datetime(  # pylint: disable=no-self-argument
-        cls, beginningDatetime: Optional[datetime]
-    ) -> Optional[datetime]:
+        cls, beginningDatetime: datetime | None
+    ) -> datetime | None:
         if beginningDatetime is None:
             raise ValueError("La date de début de l'événement ne peut pas être nulle.")
         return beginningDatetime
@@ -152,14 +149,14 @@ class CollectiveStockEditionBodyModel(BaseModel):
 
 class CollectiveStockResponseModel(BaseModel):
     id: str
-    beginningDatetime: Optional[datetime]
-    bookingLimitDatetime: Optional[datetime]
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
     price: float
-    numberOfTickets: Optional[int]
-    priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+    numberOfTickets: int | None
+    priceDetail: str | None = Field(alias="educationalPriceDetail")
     isEditable: bool = Field(alias="isEducationalStockEditable")
     # FIXME (cgaunet, 2022-04-22): Remove this field once ENABLE_NEW_EAC_MODEL is activated
-    stockId: Optional[str]
+    stockId: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_stock_id = humanize_field("stockId")

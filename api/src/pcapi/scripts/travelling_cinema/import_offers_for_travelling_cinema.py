@@ -1,7 +1,6 @@
 import csv
 import datetime
 import logging
-from typing import Optional
 
 from sqlalchemy import func
 
@@ -170,7 +169,7 @@ def _is_header_or_blank_row(row: list[str]) -> bool:
     return not row or not row[0] or row[0] == "Identifiant du compte (SIREN)"
 
 
-def _get_venue(infos: dict, offerer: offerers_models.Offerer) -> Optional[offerers_models.Venue]:
+def _get_venue(infos: dict, offerer: offerers_models.Offerer) -> offerers_models.Venue | None:
     return (
         offerers_models.Venue.query.filter(offerers_models.Venue.managingOffererId == offerer.id)
         .filter(func.lower(offerers_models.Venue.name) == func.lower(infos["venue_name"]))
@@ -313,7 +312,7 @@ def _create_stock(infos: dict, offer: offers_models.Offer, user: users_models.Us
     return offers_api.upsert_stocks(offer.id, [stock_serialize.StockCreationBodyModel(**stock_data)], user)[0]
 
 
-def _duration_str_to_minutes(duration: str) -> Optional[int]:
+def _duration_str_to_minutes(duration: str) -> int | None:
     if not duration:
         return None
     hours = 0

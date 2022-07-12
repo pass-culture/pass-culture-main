@@ -4,7 +4,6 @@ from datetime import datetime
 from io import TextIOWrapper
 import logging
 from typing import Iterable
-from typing import Optional
 
 from pcapi import settings
 from pcapi.connectors.googledrive import GoogleDriveBackend
@@ -32,7 +31,7 @@ def _get_password(row: dict) -> str:
     return settings.TEST_DEFAULT_PASSWORD
 
 
-def _create_beneficiary(row: dict, role: Optional[UserRole]) -> User:
+def _create_beneficiary(row: dict, role: UserRole | None) -> User:
     user = users_api.create_account(
         email=sanitize_email(row["Mail"]),
         password=_get_password(row),
@@ -83,7 +82,7 @@ def _create_pro_user(row: dict) -> User:
     return user
 
 
-def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> Optional[User]:
+def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | None:
     user = find_user_by_email(row["Mail"])
     if user and not update_if_exists:
         return None

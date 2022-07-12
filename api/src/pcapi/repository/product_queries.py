@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
@@ -49,7 +47,7 @@ def delete_unwanted_existing_product(isbn: str) -> None:
     repository.delete(*objects_to_delete)
 
 
-def find_active_book_product_by_isbn(isbn: str) -> Optional[Product]:
+def find_active_book_product_by_isbn(isbn: str) -> Product | None:
     return (
         Product.query.filter(Product.can_be_synchronized)
         .filter(Product.subcategoryId == subcategories.LIVRE_PAPIER.id)

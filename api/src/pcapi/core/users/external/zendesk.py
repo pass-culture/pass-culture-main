@@ -9,7 +9,6 @@ is limited to 14 days after creation.
 from datetime import datetime
 import logging
 from typing import Iterable
-from typing import Optional
 from urllib.parse import quote
 
 from markupsafe import Markup
@@ -58,16 +57,16 @@ def _get_backoffice_venues_link(venues_ids: Iterable[int]) -> str:
     return f"{settings.API_URL}/pc/back-office/venue/?flt3_26={'%2C'.join(sorted_venues_ids)}"
 
 
-def _format_list(raw_list: Optional[Iterable[str]]) -> Optional[str]:
+def _format_list(raw_list: Iterable[str] | None) -> str | None:
     return ", ".join(raw_list) if raw_list else None
 
 
 def update_contact_attributes(
-    is_new_ticket: bool, ticket_id: int, zendesk_user_id: int, email: Optional[str], phone_number: Optional[str]
+    is_new_ticket: bool, ticket_id: int, zendesk_user_id: int, email: str | None, phone_number: str | None
 ) -> None:
 
     # First search for user by email (unique in "user" table)
-    user: Optional[User] = find_user_by_email(email) if email else None
+    user: User | None = find_user_by_email(email) if email else None
 
     # Then search by phone number, which is NOT unique in user database
     # TODO(prouzet) Should we search by phone number in venues?

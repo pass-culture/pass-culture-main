@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pcapi.connectors.beneficiaries import exceptions as beneficiaries_exceptions
 from pcapi.core.fraud import api as fraud_api
@@ -28,7 +27,7 @@ logger = logging.getLogger(__name__)
 @authenticated_and_active_user_required
 def next_subscription_step(
     user: users_models.User,
-) -> Optional[serializers.NextSubscriptionStepResponse]:
+) -> serializers.NextSubscriptionStepResponse | None:
     next_step = subscription_api.get_next_subscription_step(user)
     logger.info("next_subscription_step: %s", next_step.value if next_step else None, extra={"user_id": user.id})
     return serializers.NextSubscriptionStepResponse(

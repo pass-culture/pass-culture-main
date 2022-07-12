@@ -2,13 +2,12 @@
 # Please do not import other pcapi modules as it may lead to
 # circular imports resulting in environ variables not be loaded.
 import logging
-from typing import Optional
 
 
 logger = logging.getLogger(__name__)
 
 
-def parse_str_to_list(content: Optional[str]) -> list[str]:
+def parse_str_to_list(content: str | None) -> list[str]:
     if not content:
         return []
     if "," in content:
@@ -21,7 +20,7 @@ def parse_str_to_list(content: Optional[str]) -> list[str]:
     return [a for a in result if a]
 
 
-def parse_phone_numbers(phone_numbers: Optional[str]) -> list[str]:
+def parse_phone_numbers(phone_numbers: str | None) -> list[str]:
     """expects a string with format like 'name:3360102030405;name:3360102030405'"""
 
     if not phone_numbers:

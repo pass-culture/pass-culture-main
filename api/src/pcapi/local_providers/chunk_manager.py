@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.repository.providable_queries import get_existing_object
@@ -9,7 +7,7 @@ from pcapi.repository.providable_queries import update_chunk
 
 def get_existing_pc_obj(
     providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
-) -> Optional[Model]:  # type: ignore [valid-type]
+) -> Model | None:  # type: ignore [valid-type]
     object_in_current_chunk = get_object_from_current_chunks(providable_info, chunk_to_insert, chunk_to_update)
     if object_in_current_chunk is None:
         return get_existing_object(providable_info.type, providable_info.id_at_providers)
@@ -19,7 +17,7 @@ def get_existing_pc_obj(
 
 def get_object_from_current_chunks(
     providable_info: ProvidableInfo, chunk_to_insert: dict, chunk_to_update: dict
-) -> Optional[Model]:  # type: ignore [valid-type]
+) -> Model | None:  # type: ignore [valid-type]
     chunk_key = f"{providable_info.id_at_providers}|{providable_info.type.__name__}"  # type: ignore [attr-defined]
     pc_object = chunk_to_insert.get(chunk_key)
     if isinstance(pc_object, providable_info.type):

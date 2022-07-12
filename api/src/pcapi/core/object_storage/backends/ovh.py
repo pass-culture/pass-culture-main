@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 import swiftclient
 from swiftclient.client import Connection
@@ -43,7 +42,7 @@ class OVHBackend(BaseBackend):
 
     def get_container(
         self,
-        container_name: Optional[str] = settings.SWIFT_BUCKET_NAME,
+        container_name: str | None = settings.SWIFT_BUCKET_NAME,
         marker: str = None,
         end_marker: str = None,
         full_listing: bool = True,

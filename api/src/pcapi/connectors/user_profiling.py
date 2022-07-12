@@ -1,7 +1,6 @@
 import datetime
 import enum
 import logging
-import typing
 
 import pydantic
 
@@ -65,8 +64,8 @@ class UserProfilingClient:
         session_id: str,
         user_id: int,
         user_email: str,
-        birth_date: typing.Optional[datetime.date],
-        phone_number: typing.Optional[str],
+        birth_date: datetime.date | None,
+        phone_number: str | None,
         workflow_type: WorkflowType,
         ip_address: str,
         line_of_business: LineOfBusiness,

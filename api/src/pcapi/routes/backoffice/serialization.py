@@ -18,7 +18,7 @@ class Permission(BaseModel):
 
     id: int
     name: str
-    category: typing.Optional[str]
+    category: str | None
 
 
 class Role(BaseModel):
@@ -55,22 +55,22 @@ class PublicAccount(BaseModel):
         use_enum_values = True
 
     id: int
-    firstName: typing.Optional[str]
-    lastName: typing.Optional[str]
-    dateOfBirth: typing.Optional[datetime.datetime]
+    firstName: str | None
+    lastName: str | None
+    dateOfBirth: datetime.datetime | None
     email: str
-    phoneNumber: typing.Optional[str]
+    phoneNumber: str | None
     roles: list[users_models.UserRole]
     isActive: bool
-    address: typing.Optional[str]
-    postalCode: typing.Optional[str]
-    city: typing.Optional[str]
+    address: str | None
+    postalCode: str | None
+    city: str | None
 
 
 class PaginableQuery(BaseModel):
-    page: typing.Optional[int] = 1
-    perPage: typing.Optional[int] = 20
-    sort: typing.Optional[str] = None
+    page: int | None = 1
+    perPage: int | None = 20
+    sort: str | None = None
 
 
 class PublicAccountSearchQuery(PaginableQuery):
@@ -82,7 +82,7 @@ class PaginatedResponse(BaseModel):
     total: int
     page: int
     size: int
-    sort: typing.Optional[str]
+    sort: str | None
     data: typing.Any
 
 
@@ -91,15 +91,15 @@ class ListPublicAccountsResponseModel(PaginatedResponse):
 
 
 class PublicAccountUpdateRequest(BaseModel):
-    firstName: typing.Optional[str]
-    lastName: typing.Optional[str]
-    dateOfBirth: typing.Optional[datetime.datetime]
-    idPieceNumber: typing.Optional[str]
-    email: typing.Optional[pydantic.EmailStr]
-    phoneNumber: typing.Optional[str]
-    address: typing.Optional[str]
-    postalCode: typing.Optional[str]
-    city: typing.Optional[str]
+    firstName: str | None
+    lastName: str | None
+    dateOfBirth: datetime.datetime | None
+    idPieceNumber: str | None
+    email: pydantic.EmailStr | None
+    phoneNumber: str | None
+    address: str | None
+    postalCode: str | None
+    city: str | None
 
     @pydantic.validator("email", pre=True)
     def validate_email(cls, email: str) -> str:  # pylint: disable=no-self-argument
@@ -123,7 +123,7 @@ class GetBeneficiaryCreditResponseModel(BaseModel):
     initialCredit: float
     remainingCredit: float
     remainingDigitalCredit: float
-    dateCreated: typing.Optional[datetime.datetime]
+    dateCreated: datetime.datetime | None
 
 
 class AuthTokenQuery(BaseModel):
@@ -161,11 +161,11 @@ class IdCheckItemModel(BaseModel):
     type: fraud_models.FraudCheckType
     dateCreated: datetime.datetime
     thirdPartyId: str
-    status: typing.Optional[fraud_models.FraudCheckStatus]
-    reason: typing.Optional[str]
-    reasonCodes: typing.Optional[list[fraud_models.FraudReasonCode]]
-    technicalDetails: typing.Optional[dict]
-    sourceId: typing.Optional[str] = None  # DMS only
+    status: fraud_models.FraudCheckStatus | None
+    reason: str | None
+    reasonCodes: list[fraud_models.FraudReasonCode] | None
+    technicalDetails: dict | None
+    sourceId: str | None = None  # DMS only
 
 
 class EligibilitySubscriptionHistoryModel(BaseModel):
@@ -183,7 +183,7 @@ class BeneficiaryReviewRequestModel(BaseModel):
 
     reason: str
     review: fraud_models.FraudReviewStatus
-    eligibility: typing.Optional[str]
+    eligibility: str | None
 
 
 class BeneficiaryReviewResponseModel(BeneficiaryReviewRequestModel):

@@ -2,7 +2,6 @@ from dataclasses import asdict
 from datetime import datetime
 import logging
 from typing import Iterable
-from typing import Optional
 
 from pcapi.core import search
 from pcapi.core.logging import log_elapsed
@@ -214,7 +213,7 @@ def _siret_can_be_synchronized(
 
 
 def synchronize_stocks(
-    stock_details: Iterable[providers_models.StockDetail], venue: Venue, provider_id: Optional[int] = None
+    stock_details: Iterable[providers_models.StockDetail], venue: Venue, provider_id: int | None = None
 ) -> dict[str, int]:
     products_provider_references = [stock_detail.products_provider_reference for stock_detail in stock_details]
     # here product.id_at_providers is the "ref" field that provider api gives use.
@@ -297,7 +296,7 @@ def _build_new_offers_from_stock_details(
     products_by_provider_reference: dict[str, Product],
     existing_offers_by_venue_reference: dict[str, int],
     venue: Venue,
-    provider_id: Optional[int],
+    provider_id: int | None,
 ) -> list[offers_models.Offer]:
     new_offers = []
     for stock_detail in stock_details:
@@ -335,7 +334,7 @@ def _get_stocks_to_upsert(
     stocks_by_provider_reference: dict[str, dict],
     offers_by_provider_reference: dict[str, int],
     products_by_provider_reference: dict[str, Product],
-    provider_id: Optional[int],
+    provider_id: int | None,
 ) -> tuple[list[dict], list[offers_models.Stock], set[int]]:
     update_stock_mapping = []
     new_stocks = []
@@ -400,7 +399,7 @@ def _get_stocks_to_upsert(
 
 
 def _build_stock_from_stock_detail(
-    stock_detail: providers_models.StockDetail, offers_id: int, price: float, provider_id: Optional[int]
+    stock_detail: providers_models.StockDetail, offers_id: int, price: float, provider_id: int | None
 ) -> offers_models.Stock:
     return offers_models.Stock(
         quantity=stock_detail.available_quantity,
@@ -428,7 +427,7 @@ def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -
 
 
 def _build_new_offer(
-    venue: Venue, product: Product, id_at_providers: str, id_at_provider: str, provider_id: Optional[int]
+    venue: Venue, product: Product, id_at_providers: str, id_at_provider: str, provider_id: int | None
 ) -> offers_models.Offer:
     return offers_models.Offer(
         bookingEmail=venue.bookingEmail,
@@ -459,7 +458,7 @@ def _should_reindex_offer(new_quantity: int, new_price: float, existing_stock: d
     return is_existing_stock_empty is not is_new_quantity_stock_empty
 
 
-def _get_siret(venue_id_at_offer_provider: Optional[str], siret: Optional[str]) -> str:
+def _get_siret(venue_id_at_offer_provider: str | None, siret: str | None) -> str:
     if venue_id_at_offer_provider is not None:
         return venue_id_at_offer_provider
     if siret is not None:

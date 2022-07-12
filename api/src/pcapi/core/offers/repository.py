@@ -4,7 +4,6 @@ from datetime import timedelta
 from operator import attrgetter
 import typing
 from typing import List
-from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import and_
@@ -51,14 +50,14 @@ def get_capped_offers_for_filters(
     user_id: int,
     user_is_admin: bool,
     offers_limit: int,
-    offerer_id: Optional[int] = None,
-    status: Optional[str] = None,
-    venue_id: Optional[int] = None,
-    category_id: Optional[str] = None,
-    name_keywords_or_isbn: Optional[str] = None,
-    creation_mode: Optional[str] = None,
-    period_beginning_date: Optional[str] = None,
-    period_ending_date: Optional[str] = None,
+    offerer_id: int | None = None,
+    status: str | None = None,
+    venue_id: int | None = None,
+    category_id: str | None = None,
+    name_keywords_or_isbn: str | None = None,
+    creation_mode: str | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
 ) -> OffersRecap:
     query = get_offers_by_filters(
         user_id=user_id,
@@ -123,14 +122,14 @@ def get_collective_offers_template_by_offer_ids(user: User, offer_ids: list[int]
 def get_offers_by_filters(
     user_id: int,
     user_is_admin: bool,
-    offerer_id: Optional[int] = None,
-    status: Optional[str] = None,
-    venue_id: Optional[int] = None,
-    category_id: Optional[str] = None,
-    name_keywords_or_isbn: Optional[str] = None,
-    creation_mode: Optional[str] = None,
-    period_beginning_date: Optional[datetime] = None,
-    period_ending_date: Optional[datetime] = None,
+    offerer_id: int | None = None,
+    status: str | None = None,
+    venue_id: int | None = None,
+    category_id: str | None = None,
+    name_keywords_or_isbn: str | None = None,
+    creation_mode: str | None = None,
+    period_beginning_date: datetime | None = None,
+    period_ending_date: datetime | None = None,
 ) -> BaseQuery:
     query = Offer.query.filter(Offer.validation != OfferValidationStatus.DRAFT)
 
@@ -206,13 +205,13 @@ def get_offers_by_filters(
 def get_collective_offers_by_filters(
     user_id: int,
     user_is_admin: bool,
-    offerer_id: Optional[int] = None,
-    status: Optional[str] = None,
-    venue_id: Optional[int] = None,
-    category_id: Optional[str] = None,
-    name_keywords: Optional[str] = None,
-    period_beginning_date: Optional[datetime] = None,
-    period_ending_date: Optional[datetime] = None,
+    offerer_id: int | None = None,
+    status: str | None = None,
+    venue_id: int | None = None,
+    category_id: str | None = None,
+    name_keywords: str | None = None,
+    period_beginning_date: datetime | None = None,
+    period_ending_date: datetime | None = None,
 ) -> BaseQuery:
     query = CollectiveOffer.query.filter(CollectiveOffer.validation != OfferValidationStatus.DRAFT)
 
@@ -283,13 +282,13 @@ def get_collective_offers_by_filters(
 def get_collective_offers_template_by_filters(
     user_id: int,
     user_is_admin: bool,
-    offerer_id: Optional[int] = None,
-    status: Optional[str] = None,
-    venue_id: Optional[int] = None,
-    category_id: Optional[str] = None,
-    name_keywords: Optional[str] = None,
-    period_beginning_date: Optional[datetime] = None,
-    period_ending_date: Optional[datetime] = None,
+    offerer_id: int | None = None,
+    status: str | None = None,
+    venue_id: int | None = None,
+    category_id: str | None = None,
+    name_keywords: str | None = None,
+    period_beginning_date: datetime | None = None,
+    period_ending_date: datetime | None = None,
 ) -> BaseQuery:
     query = CollectiveOfferTemplate.query
 
@@ -512,7 +511,7 @@ def find_event_stocks_day(start: datetime, end: datetime) -> BaseQuery:
     )
 
 
-def get_current_offer_validation_config() -> Optional[OfferValidationConfig]:
+def get_current_offer_validation_config() -> OfferValidationConfig | None:
     return OfferValidationConfig.query.order_by(OfferValidationConfig.id.desc()).first()
 
 
@@ -598,7 +597,7 @@ def delete_past_draft_collective_offers() -> None:
     db.session.commit()
 
 
-def get_available_activation_code(stock: Stock) -> Optional[ActivationCode]:
+def get_available_activation_code(stock: Stock) -> ActivationCode | None:
     return ActivationCode.query.filter(
         ActivationCode.stockId == stock.id,
         ActivationCode.bookingId.is_(None),

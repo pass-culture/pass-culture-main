@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 from typing import cast
 
 from dateutil import parser
@@ -58,8 +57,8 @@ BASE_CODE_DESCRIPTIONS = {
     on_success_status=200,
     on_empty_status=204,
 )
-def get_booking_by_token(token: str) -> Optional[LegacyBookingResponse]:
-    email: Optional[str] = request.args.get("email", None)
+def get_booking_by_token(token: str) -> LegacyBookingResponse | None:
+    email: str | None = request.args.get("email", None)
     offer_id = dehumanize(request.args.get("offer_id", None))
 
     check_user_is_logged_in_or_email_is_provided(current_user, email)

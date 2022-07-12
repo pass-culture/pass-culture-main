@@ -1,12 +1,10 @@
-from typing import Optional
-
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 from . import models
 
 
-def get_last_user_profiling_fraud_check(user: users_models.User) -> Optional[models.BeneficiaryFraudCheck]:
+def get_last_user_profiling_fraud_check(user: users_models.User) -> models.BeneficiaryFraudCheck | None:
     # User profiling is not performed for UNDERAGE credit, no need to filter on eligibilityType here
     return (
         models.BeneficiaryFraudCheck.query.filter(

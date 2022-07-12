@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pcapi.core.educational.api import find_collective_bookings_for_adage
 from pcapi.core.educational.api import find_educational_deposit_by_institution_id_and_year
@@ -29,7 +28,7 @@ educational_institution_path = "years/<string:year_id>/educational_institution/<
 )
 @adage_api_key_required
 def get_educational_institution(year_id: str, uai_code: str) -> EducationalInstitutionResponse:
-    educational_institution: Optional[EducationalInstitution] = find_educational_institution_by_uai_code(uai_code)
+    educational_institution: EducationalInstitution | None = find_educational_institution_by_uai_code(uai_code)
 
     if not educational_institution:
         raise ApiErrors({"code": "EDUCATIONAL_INSTITUTION_NOT_FOUND"}, status_code=404)
