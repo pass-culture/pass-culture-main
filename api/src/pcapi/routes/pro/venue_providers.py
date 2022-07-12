@@ -116,14 +116,10 @@ def update_venue_provider(body: PostVenueProviderBody) -> VenueProviderResponse:
     check_user_can_alter_venue(current_user, venue_id)
 
     venue_provider = get_venue_provider_by_venue_and_provider_ids(venue_id, provider_id)
-    if not venue_provider.isFromAllocineProvider and not venue_provider.provider.isCinemaProvider:
-        raise ApiErrors({"provider": "Cannot update non-allocine provider or non-cinema provider"})
 
-    if venue_provider.isFromAllocineProvider:
-        updated = api.update_allocine_venue_provider(venue_provider, body)
+    updated = api.update_venue_provider(venue_provider, body)
+    if updated.isFromAllocineProvider:
         updated.price = _allocine_venue_provider_price(updated)
-    else:
-        updated = api.update_cinema_venue_provider(venue_provider, body)
 
     return VenueProviderResponse.from_orm(updated)
 

@@ -113,11 +113,28 @@ def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> Non
     repository.delete(venue_provider)
 
 
+def update_venue_provider(
+    venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
+) -> providers_models.VenueProvider:
+    if venue_provider.isActive != venue_provider_payload.isActive:
+        venue_provider.isActive = bool(venue_provider_payload.isActive)
+        update_venue_synchronized_offers_active_status_job.delay(
+            venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
+        )
+
+    if venue_provider.isFromAllocineProvider:
+        venue_provider = update_allocine_venue_provider(venue_provider, venue_provider_payload)
+    else:
+        if venue_provider.provider.isCinemaProvider:
+            venue_provider = update_cinema_venue_provider(venue_provider, venue_provider_payload)
+        repository.save(venue_provider)
+    return venue_provider
+
+
 def update_cinema_venue_provider(
     venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.VenueProvider:
     venue_provider.isDuoOffers = bool(venue_provider_payload.isDuo)
-    repository.save(venue_provider)
 
     return venue_provider
 

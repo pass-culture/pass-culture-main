@@ -19,6 +19,7 @@ class PostVenueProviderBody(BaseModel):
     price: Optional[str]
     isDuo: Optional[bool]
     quantity: Optional[int]
+    isActive: Optional[bool]
 
 
 # TODO(asaunier): We usually exposed every field from ORM but some mightbe unecessary
