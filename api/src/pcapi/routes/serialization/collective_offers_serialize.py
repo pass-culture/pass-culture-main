@@ -329,7 +329,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     visual_disability_compliant: bool = False
     students: list[StudentLevels]
     offer_venue: CollectiveOfferVenueBodyModel
-    contact_email: str
+    contact_email: Optional[str]
     contact_phone: str
 
     @validator("name", pre=True)
