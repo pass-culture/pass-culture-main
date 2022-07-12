@@ -12,7 +12,7 @@ import { Title } from 'ui-kit'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 const CollectiveDataEdition = (): JSX.Element => {
   const notify = useNotification()
