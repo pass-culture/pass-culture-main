@@ -574,9 +574,12 @@ describe('test page : VenueEdition', () => {
       it('should display EAC Information block when FF is enabled and offerer can create collective offer', async () => {
         await renderVenueEdition({ props, storeOverrides })
 
-        const eacSection = await screen.findByText('Mes informations EAC', {
-          selector: 'h2',
-        })
+        const eacSection = await screen.findByText(
+          'Mes informations pour les enseignants',
+          {
+            selector: 'h2',
+          }
+        )
         expect(eacSection).toBeInTheDocument()
       })
 
@@ -584,18 +587,24 @@ describe('test page : VenueEdition', () => {
         pcapi.canOffererCreateEducationalOffer.mockRejectedValueOnce()
         await renderVenueEdition({ props, storeOverrides })
 
-        const eacSection = screen.queryByText('Mes informations EAC', {
-          selector: 'h2',
-        })
+        const eacSection = screen.queryByText(
+          'Mes informations pour les enseignants',
+          {
+            selector: 'h2',
+          }
+        )
         expect(eacSection).not.toBeInTheDocument()
       })
 
       it('should not display EAC Information block when FF is disabled', async () => {
         await renderVenueEdition({ props })
 
-        const eacSection = screen.queryByText('Mes informations EAC', {
-          selector: 'h2',
-        })
+        const eacSection = screen.queryByText(
+          'Mes informations pour les enseignants',
+          {
+            selector: 'h2',
+          }
+        )
         expect(eacSection).not.toBeInTheDocument()
       })
     })

@@ -86,7 +86,7 @@ describe('CollectiveDataEdition', () => {
       await waitForLoader()
 
       const descriptionField = screen.queryByLabelText(
-        'Ajoutez des informations complémentaires concernant l’EAC.',
+        'Démarche d’éducation artistique et culturelle',
         { exact: false }
       )
       const studentsField = screen.getByLabelText(/Public cible/)
@@ -167,7 +167,7 @@ describe('CollectiveDataEdition', () => {
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
-      const title = screen.getByText('Mes informations EAC')
+      const title = screen.getByText('Présentation pour les enseignants')
 
       await userEvent.type(websiteField, 'wrong url')
       await userEvent.type(phoneField, 'not a valid phone')
@@ -194,7 +194,7 @@ describe('CollectiveDataEdition', () => {
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
-      const title = screen.getByText('Mes informations EAC')
+      const title = screen.getByText('Présentation pour les enseignants')
 
       await userEvent.type(websiteField, 'https://mon-site.com')
       await userEvent.type(phoneField, '0600000000')
@@ -223,7 +223,7 @@ describe('CollectiveDataEdition', () => {
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const phoneField = screen.getByLabelText(/Téléphone/)
       const emailField = screen.getByLabelText(/E-mail/)
-      const title = screen.getByText('Mes informations EAC')
+      const title = screen.getByText('Présentation pour les enseignants')
 
       fireEvent.click(websiteField)
       fireEvent.click(phoneField)
