@@ -3,13 +3,13 @@ import '@testing-library/jest-dom'
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as useNotification from 'components/hooks/useNotification'
 
+import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import {
   domtomOptions,
   mainlandOptions,
 } from '../CollectiveDataForm/interventionOptions'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
-import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import CollectiveDataEdition from '../CollectiveDataEdition'
@@ -31,8 +31,24 @@ jest.mock('apiClient/api', () => ({
   api: {
     getVenuesEducationalStatuses: jest.fn(),
     getEducationalPartners: jest.fn(),
+    editVenue: jest.fn(),
   },
 }))
+
+const mockHistoryPush = jest.fn()
+
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useParams: () => ({
+    offererId: 'O1',
+    venueId: 'V1',
+  }),
+  useHistory: () => ({
+    push: mockHistoryPush,
+  }),
+}))
+
+jest.mock('components/hooks/useNotification')
 
 const waitForLoader = () =>
   waitFor(() => {
@@ -50,6 +66,8 @@ const renderCollectiveDataEdition = (history: History) =>
 
 describe('CollectiveDataEdition', () => {
   const history = createBrowserHistory()
+  const notifyErrorMock = jest.fn()
+  const notifySuccessMock = jest.fn()
 
   beforeAll(() => {
     jest.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
@@ -71,6 +89,17 @@ describe('CollectiveDataEdition', () => {
     jest
       .spyOn(api, 'getEducationalPartners')
       .mockResolvedValue({ partners: [] })
+    jest
+      .spyOn(api, 'editVenue')
+      .mockResolvedValue({ id: 'A1' } as GetVenueResponseModel)
+
+    jest.spyOn(useNotification, 'default').mockImplementation(() => ({
+      success: notifySuccessMock,
+      error: notifyErrorMock,
+      information: jest.fn(),
+      pending: jest.fn(),
+      close: jest.fn(),
+    }))
   })
 
   describe('render', () => {
@@ -125,14 +154,6 @@ describe('CollectiveDataEdition', () => {
             ''
           )
         )
-      const notifyErrorMock = jest.fn()
-      jest.spyOn(useNotification, 'default').mockImplementation(() => ({
-        success: jest.fn,
-        error: notifyErrorMock,
-        information: jest.fn(),
-        pending: jest.fn(),
-        close: jest.fn(),
-      }))
 
       renderCollectiveDataEdition(history)
 
@@ -361,6 +382,53 @@ describe('CollectiveDataEdition', () => {
       await waitFor(() =>
         expect(screen.getByLabelText('France métropolitaine')).not.toBeChecked()
       )
+    })
+  })
+
+  describe('submit', () => {
+    it('should display error toast when adapter call failed', async () => {
+      jest
+        .spyOn(api, 'editVenue')
+        .mockRejectedValueOnce(
+          new ApiError(
+            {} as ApiRequestOptions,
+            { status: 500 } as ApiResult,
+            ''
+          )
+        )
+      renderCollectiveDataEdition(history)
+      await waitForLoader()
+
+      const emailField = screen.getByLabelText(/E-mail/)
+      await userEvent.type(emailField, 'email@domain.com')
+
+      const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
+      await userEvent.click(submitButton)
+
+      await waitFor(() =>
+        expect(notifyErrorMock).toHaveBeenCalledWith(
+          'Une erreur est surevenue lors de l’enregistrement des données'
+        )
+      )
+    })
+  })
+
+  it('shoud redirect to venue edition page with state', async () => {
+    renderCollectiveDataEdition(history)
+    await waitForLoader()
+
+    const emailField = screen.getByLabelText(/E-mail/)
+    await userEvent.type(emailField, 'email@domain.com')
+
+    const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
+    await userEvent.click(submitButton)
+
+    expect(mockHistoryPush).toHaveBeenCalledWith({
+      pathname: '/structures/O1/lieux/V1',
+      state: {
+        collectiveDataEditionSuccess:
+          'Vos informations ont bien été enregistrées',
+      },
     })
   })
 })
