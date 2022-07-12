@@ -32,7 +32,7 @@ def notify_booking_cancellation_by_offerer(data: EducationalBookingResponse) -> 
     return result
 
 
-def get_cultural_partners() -> venues_serialize.AdageCulturalPartners:
+def get_cultural_partners() -> list[dict[str, str | int | float | None]]:
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().get_cultural_partners()
     return result
@@ -41,4 +41,10 @@ def get_cultural_partners() -> venues_serialize.AdageCulturalPartners:
 def notify_institution_association(data: AdageCollectiveOffer) -> AdageApiResult:
     backend = import_string(settings.ADAGE_BACKEND)
     result = backend().notify_institution_association(data=data)
+    return result
+
+
+def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartner:
+    backend = import_string(settings.ADAGE_BACKEND)
+    result = backend().get_cultural_partner(siret)
     return result

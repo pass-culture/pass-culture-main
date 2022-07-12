@@ -3,6 +3,7 @@ from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.models import AdageApiResult
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
+from pcapi.routes.serialization import venues_serialize
 
 from .. import testing
 
@@ -85,3 +86,33 @@ class AdageSpyClient(AdageClient):
     def notify_institution_association(self, data: AdageCollectiveOffer) -> AdageApiResult:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-assoc", "sent_data": data})
         return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)
+
+    def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
+        testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel/{siret}", "sent_data": ""})
+        return venues_serialize.AdageCulturalPartner(
+            id="128028",
+            venueId=None,
+            siret=siret,
+            regionId=None,
+            academieId=None,
+            statutId=None,
+            labelId=None,
+            typeId="8",
+            communeId="26324",
+            libelle="Fête du livre jeunesse de St Paul les trois Châteaux",
+            adresse="Place Charles Chausy",
+            siteWeb="http://www.fetedulivrejeunesse.fr/",
+            latitude="44.350457",
+            longitude="4.765918",
+            actif="1",
+            dateModification="2021-09-01 00:00:00",
+            statutLibelle=None,
+            labelLibelle=None,
+            typeIcone="town",
+            typeLibelle="Association ou fondation pour la promotion, le développement et la diffusion d\u0027oeuvres",
+            communeLibelle="SAINT-PAUL-TROIS-CHATEAUX",
+            communeDepartement="026",
+            academieLibelle="GRENOBLE",
+            regionLibelle="AUVERGNE-RHÔNE-ALPES",
+            domaines="Univers du livre, de la lecture et des écritures",
+        )
