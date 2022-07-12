@@ -3,6 +3,7 @@ from datetime import datetime
 from datetime import time
 from datetime import timedelta
 import logging
+import typing
 
 from pcapi import settings
 from pcapi.core.bookings.exceptions import BookingIsExpired
@@ -39,7 +40,7 @@ def send_today_events_notifications_metropolitan_france() -> None:
             logger.exception("Could not send today stock notification", extra={"stock": stock_id})
 
 
-def send_today_events_notifications_overseas(utc_mean_offset: int, departments: list[str]) -> None:
+def send_today_events_notifications_overseas(utc_mean_offset: int, departments: typing.Iterable[str]) -> None:
     """
     Find bookings (grouped by stocks) that occur today in overseas
     french departments but not the morning (11h UTC), and send
