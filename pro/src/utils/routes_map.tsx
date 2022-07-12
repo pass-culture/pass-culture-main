@@ -1,5 +1,5 @@
 import Bookings from 'routes/Bookings'
-import BusinessUnitList from 'screens/BusinessUnitList'
+import BusinessUnitList from 'routes/BusinessUnitList'
 import CollectiveBookings from 'routes/CollectiveBookings'
 import CollectiveDataEdition from 'components/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition'
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
