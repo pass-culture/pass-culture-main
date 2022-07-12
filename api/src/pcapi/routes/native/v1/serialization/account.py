@@ -316,6 +316,9 @@ class PhoneValidationRemainingAttemptsRequest(BaseModel):
     remainingAttempts: int
     counterResetDatetime: Optional[datetime.datetime]
 
+    class Config:
+        json_encoders = {datetime.datetime: format_into_utc_date}
+
 
 class UserProfilingFraudRequest(BaseModel):
     # Moving from session_id to sessionId - remove session_id and set sessionId not Optional when app version is forced
