@@ -158,7 +158,7 @@ def on_identity_fraud_check_result(
     return validate_frauds(fraud_items, beneficiary_fraud_check)
 
 
-def validate_id_piece_number_format_fraud_item(id_piece_number: typing.Optional[str]) -> models.FraudItem:
+def validate_id_piece_number_format_fraud_item(id_piece_number: str | None) -> models.FraudItem:
     if not id_piece_number or not id_piece_number.strip():
         return models.FraudItem(
             status=models.FraudStatus.SUSPICIOUS,
@@ -196,7 +196,7 @@ def validate_id_piece_number_format_fraud_item(id_piece_number: typing.Optional[
 def _duplicate_user_fraud_item(
     first_name: str,
     last_name: str,
-    married_name: typing.Optional[str],
+    married_name: str | None,
     birth_date: datetime.date,
     excluded_user_id: int,
 ) -> models.FraudItem:
@@ -223,10 +223,10 @@ def _missing_data_fraud_item() -> models.FraudItem:
 def find_duplicate_beneficiary(
     first_name: str,
     last_name: str,
-    married_name: typing.Optional[str],
+    married_name: str | None,
     birth_date: datetime.date,
     excluded_user_id: int,
-) -> typing.Optional[users_models.User]:
+) -> users_models.User | None:
     base_query = users_models.User.query.filter(
         matching(users_models.User.firstName, first_name)
         & (sqlalchemy.func.DATE(users_models.User.dateOfBirth) == birth_date)
@@ -263,9 +263,7 @@ def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_numbe
     return models.FraudItem(status=models.FraudStatus.OK, detail="La pièce d'identité n'est pas déjà utilisée")
 
 
-def find_duplicate_id_piece_number_user(
-    id_piece_number: typing.Optional[str], excluded_user_id: int
-) -> typing.Optional[users_models.User]:
+def find_duplicate_id_piece_number_user(id_piece_number: str | None, excluded_user_id: int) -> users_models.User | None:
     if not id_piece_number:
         return None
     return users_models.User.query.filter(
@@ -293,7 +291,7 @@ def _duplicate_ine_hash_fraud_item(ine_hash: str, excluded_user_id: int) -> mode
     return models.FraudItem(status=models.FraudStatus.OK, detail="L'INE n'est pas déjà pris")
 
 
-def find_duplicate_ine_hash_user(ine_hash: str, excluded_user_id: int) -> typing.Optional[users_models.User]:
+def find_duplicate_ine_hash_user(ine_hash: str, excluded_user_id: int) -> users_models.User | None:
     return users_models.User.query.filter(
         users_models.User.id != excluded_user_id, users_models.User.ineHash == ine_hash
     ).first()
@@ -315,7 +313,7 @@ def _check_user_has_no_active_deposit(
 
 
 def _check_user_eligibility(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.FraudItem:
     if not eligibility:
         return models.FraudItem(
@@ -336,7 +334,7 @@ def _check_user_eligibility(
     )
 
 
-def is_subscription_name_valid(name: typing.Optional[str]) -> bool:
+def is_subscription_name_valid(name: str | None) -> bool:
     if (
         FeatureToggle.DISABLE_USER_NAME_AND_FIRST_NAME_VALIDATION_IN_TESTING_AND_STAGING.is_active()
         and not settings.IS_PROD
@@ -348,7 +346,7 @@ def is_subscription_name_valid(name: typing.Optional[str]) -> bool:
     return is_latin(stripped_name)
 
 
-def _check_user_names_valid(first_name: typing.Optional[str], last_name: typing.Optional[str]):  # type: ignore [no-untyped-def]
+def _check_user_names_valid(first_name: str | None, last_name: str | None):  # type: ignore [no-untyped-def]
     incorrect_fields = None
     is_valid_first_name = is_subscription_name_valid(first_name)
     is_valid_last_name = is_subscription_name_valid(last_name)
@@ -549,7 +547,7 @@ def has_user_performed_identity_check(user: users_models.User) -> bool:
     )
 
 
-def get_last_filled_identity_fraud_check(user: users_models.User) -> typing.Optional[models.BeneficiaryFraudCheck]:
+def get_last_filled_identity_fraud_check(user: users_models.User) -> models.BeneficiaryFraudCheck | None:
     user_identity_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
@@ -568,7 +566,7 @@ def get_last_filled_identity_fraud_check(user: users_models.User) -> typing.Opti
 
 
 def create_honor_statement_fraud_check(
-    user: users_models.User, origin: str, eligibility_type: typing.Optional[users_models.EligibilityType] = None
+    user: users_models.User, origin: str, eligibility_type: users_models.EligibilityType | None = None
 ) -> None:
     fraud_check = models.BeneficiaryFraudCheck(
         user=user,
@@ -595,8 +593,8 @@ def has_performed_honor_statement(user: users_models.User, eligibility_type: use
 def decide_eligibility(
     user: users_models.User,
     birth_date: datetime.date | datetime.datetime | None,
-    registration_datetime: typing.Optional[datetime.datetime],
-) -> typing.Optional[users_models.EligibilityType]:
+    registration_datetime: datetime.datetime | None,
+) -> users_models.EligibilityType | None:
     """Returns the applicable eligibility of the user.
     It may be the current eligibility of the user if the age is between 15 and 18, or it may be the eligibility AGE18
     if the user is over 19 and had previously tried to register when the age was 18.
@@ -667,7 +665,7 @@ def get_suspended_upon_user_request_accounts_since(expiration_delta_in_days: int
 def handle_ok_manual_review(
     user: users_models.User,
     _review: models.BeneficiaryFraudReview,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
 ) -> None:
     fraud_check = get_last_filled_identity_fraud_check(user)
     if not fraud_check:
@@ -722,7 +720,7 @@ def handle_ok_manual_review(
 def handle_dms_redirection_review(
     user: users_models.User,
     review: models.BeneficiaryFraudReview,
-    _eligibility: typing.Optional[users_models.EligibilityType],
+    _eligibility: users_models.EligibilityType | None,
 ) -> None:
     if review.reason is None:
         review.reason = "Redirigé vers DMS"
@@ -736,7 +734,7 @@ def handle_dms_redirection_review(
 def handle_ko_review(
     user: users_models.User,
     _review: models.BeneficiaryFraudReview,
-    _eligibility: typing.Optional[users_models.EligibilityType],
+    _eligibility: users_models.EligibilityType | None,
 ) -> None:
     subscription_messages.on_fraud_review_ko(user)
 
@@ -753,7 +751,7 @@ def validate_beneficiary(
     reviewer: users_models.User,
     reason: str,
     review: models.FraudReviewStatus,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
 ) -> models.BeneficiaryFraudReview:
     if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
         raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
@@ -769,7 +767,7 @@ def validate_beneficiary(
     return review
 
 
-def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: typing.Optional[str]) -> None:
+def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: str | None) -> None:
     if not id_piece_number:
         return
 
@@ -779,7 +777,7 @@ def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: typ
         raise DuplicateIdPieceNumber(id_piece_number, duplicate_user.id)
 
 
-def _check_ine_hash_unicity(user: users_models.User, ine_hash: typing.Optional[str]) -> None:
+def _check_ine_hash_unicity(user: users_models.User, ine_hash: str | None) -> None:
     if not ine_hash:
         return
 
@@ -791,7 +789,7 @@ def _check_ine_hash_unicity(user: users_models.User, ine_hash: typing.Optional[s
 
 def create_profile_completion_fraud_check(
     user: users_models.User,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
     fraud_check_content: models.ProfileCompletionContent,
 ) -> None:
     existing_profile_completion_fraud_check = models.BeneficiaryFraudCheck.query.filter(

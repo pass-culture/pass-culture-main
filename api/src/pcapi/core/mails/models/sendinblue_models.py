@@ -1,6 +1,5 @@
 import dataclasses
 from enum import Enum
-from typing import Optional
 
 from pcapi import settings
 
@@ -28,7 +27,7 @@ class SendinblueTransactionalWithoutTemplateEmailData:
     subject: str
     html_content: str
     sender: SendinblueTransactionalSender = SendinblueTransactionalSender.SUPPORT_PRO
-    attachment: Optional[SendinblueTransactionalAttachment] = None
+    attachment: SendinblueTransactionalAttachment | None = None
     reply_to: EmailInfo = None  # type: ignore [assignment]
 
     def __post_init__(self):  # type: ignore [no-untyped-def]

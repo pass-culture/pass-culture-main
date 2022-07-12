@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pcapi.core.fraud import models
 from pcapi.core.fraud.models import BeneficiaryFraudCheck
@@ -20,7 +19,7 @@ class UbbleIdentificationPicturesArchiveResult:
         self.errors: int = 0
         self.total: int = 0
 
-    def add_result(self, result: Optional[bool] = None) -> int:
+    def add_result(self, result: bool | None = None) -> int:
         if result is True:
             self.pictures_archived += 1
         elif result is False:
@@ -45,7 +44,7 @@ def archive_past_identification_pictures(
     start_date: datetime,
     end_date: datetime,
     limit: int = DEFAULT_LIMIT,
-    status: Optional[bool] = DEFAULT_ID_PICTURE_STORE_STATUS,
+    status: bool | None = DEFAULT_ID_PICTURE_STORE_STATUS,
 ) -> UbbleIdentificationPicturesArchiveResult:
     if start_date > end_date:
         raise ValueError('"start date" must be before "end date"')
@@ -76,7 +75,7 @@ def archive_past_identification_pictures(
 
 
 def get_fraud_check_to_archive(
-    start_date: datetime, end_date: datetime, status: Optional[bool], limit: int = DEFAULT_LIMIT, offset: int = 0
+    start_date: datetime, end_date: datetime, status: bool | None, limit: int = DEFAULT_LIMIT, offset: int = 0
 ) -> list[BeneficiaryFraudCheck]:
     query = (
         models.BeneficiaryFraudCheck.query.filter(

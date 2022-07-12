@@ -1,7 +1,6 @@
 import logging
 import sys
 import time
-import typing
 
 from authlib.integrations.flask_client import OAuth
 from flask import Flask
@@ -156,7 +155,7 @@ rate_limiter.init_app(app)
 
 @app.teardown_request  # type: ignore [arg-type]
 def remove_db_session(
-    exc: typing.Optional[Exception] = None,  # pylint: disable=unused-argument
+    exc: Exception | None = None,  # pylint: disable=unused-argument
 ) -> None:
     try:
         db.session.remove()

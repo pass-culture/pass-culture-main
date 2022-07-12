@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Iterable
-from typing import Optional
 
 from pydantic import PositiveInt
 from pydantic.fields import Field
@@ -20,8 +19,8 @@ from pcapi.serialization.utils import to_camel
 
 
 class GetEducationalBookingsRequest(BaseModel):
-    redactorEmail: Optional[str] = Field(description="Email of querying redactor")
-    status: Optional[BookingStatus | CollectiveBookingStatus | EducationalBookingStatus] = Field(
+    redactorEmail: str | None = Field(description="Email of querying redactor")
+    status: BookingStatus | CollectiveBookingStatus | EducationalBookingStatus | None = Field(
         description="Status of retrieved preboookings"
     )
 
@@ -31,39 +30,39 @@ class GetEducationalBookingsRequest(BaseModel):
 
 class Redactor(AdageBaseResponseModel):
     email: str
-    redactorFirstName: Optional[str]
-    redactorLastName: Optional[str]
-    redactorCivility: Optional[str]
+    redactorFirstName: str | None
+    redactorLastName: str | None
+    redactorCivility: str | None
 
     class Config:
         alias_generator = to_camel
 
 
 class Contact(AdageBaseResponseModel):
-    email: Optional[str]
-    phone: Optional[str]
+    email: str | None
+    phone: str | None
 
 
 class EducationalBookingResponse(AdageBaseResponseModel):
     accessibility: str = Field(description="Accessibility of the offer")
     address: str = Field(description="Adresse of event")
     beginningDatetime: datetime = Field(description="Beginnning date of event")
-    cancellationDate: Optional[datetime] = Field(description="Date of cancellation if prebooking is cancelled")
-    cancellationLimitDate: Optional[datetime] = Field(description="Limit date to cancel the prebooking")
+    cancellationDate: datetime | None = Field(description="Date of cancellation if prebooking is cancelled")
+    cancellationLimitDate: datetime | None = Field(description="Limit date to cancel the prebooking")
     city: str
-    confirmationDate: Optional[datetime] = Field(description="Date of confirmation if prebooking is confirmed")
+    confirmationDate: datetime | None = Field(description="Date of confirmation if prebooking is confirmed")
     confirmationLimitDate: datetime = Field(description="Limit date to confirm the prebooking")
     contact: Contact = Field(description="Contact of the prebooking")
     coordinates: Coordinates
     creationDate: datetime
-    description: Optional[str] = Field(description="Offer description")
-    durationMinutes: Optional[int] = Field(description="Offer's duration in minutes")
-    expirationDate: Optional[datetime] = Field(description="Expiration date after which booking is cancelled")
+    description: str | None = Field(description="Offer description")
+    durationMinutes: int | None = Field(description="Offer's duration in minutes")
+    expirationDate: datetime | None = Field(description="Expiration date after which booking is cancelled")
     id: int = Field(description="pass Culture's prebooking id")
     isDigital: bool = Field(description="If true the event is accessed digitally")
     venueName: str = Field(description="Name of cultural venue proposing the event")
     name: str = Field(description="Name of event")
-    numberOfTickets: Optional[int] = Field(description="Number of tickets")
+    numberOfTickets: int | None = Field(description="Number of tickets")
     postalCode: str
     price: float
     quantity: int = Field(description="Number of place prebooked")
@@ -72,12 +71,12 @@ class EducationalBookingResponse(AdageBaseResponseModel):
     yearId: int = Field(description="Shared year id")
     status: EducationalBookingStatus | BookingStatus
     participants: list[str] = Field(description="List of class levels which can participate")
-    priceDetail: Optional[str] = Field(description="Offer's stock price detail")
+    priceDetail: str | None = Field(description="Offer's stock price detail")
     venueTimezone: str
     subcategoryLabel: str = Field(description="Subcategory label")
     totalAmount: float = Field(description="Total price of the prebooking")
-    url: Optional[str] = Field(description="Url to access the offer")
-    withdrawalDetails: Optional[str]
+    url: str | None = Field(description="Url to access the offer")
+    withdrawalDetails: str | None
     domain_ids: list[int]
     domain_labels: list[str]
 
@@ -135,8 +134,8 @@ class EducationalBookingsPerYearResponse(AdageBaseResponseModel):
 
 
 class GetAllBookingsPerYearQueryModel(BaseModel):
-    page: Optional[PositiveInt]
-    per_page: Optional[PositiveInt]
+    page: PositiveInt | None
+    per_page: PositiveInt | None
 
 
 class EducationalBookingEdition(EducationalBookingResponse):

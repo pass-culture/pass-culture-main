@@ -2,7 +2,6 @@ from datetime import datetime
 import logging
 import secrets
 import typing
-from typing import Optional
 
 import sqlalchemy as sa
 
@@ -186,9 +185,9 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
 
 # TODO(fseguin, 2022-06-26, FUTURE-NEW-BANK-DETAILS): remove when new bank details journey is complete
 def set_business_unit_to_venue_id(
-    business_unit_id: Optional[int],
+    business_unit_id: int | None,
     venue_id: int,
-    timestamp: Optional[datetime] = None,
+    timestamp: datetime | None = None,
 ) -> None:
     if not timestamp:
         timestamp = datetime.utcnow()
@@ -214,7 +213,7 @@ def set_business_unit_to_venue_id(
 def link_venue_to_pricing_point(
     venue: models.Venue,
     pricing_point_id: int,
-    timestamp: Optional[datetime] = None,
+    timestamp: datetime | None = None,
     force_link: bool = False,
 ) -> None:
     """
@@ -259,8 +258,8 @@ def link_venue_to_pricing_point(
 
 def link_venue_to_reimbursement_point(
     venue: models.Venue,
-    reimbursement_point_id: Optional[int],
-    timestamp: Optional[datetime] = None,
+    reimbursement_point_id: int | None,
+    timestamp: datetime | None = None,
 ) -> None:
     if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
         raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
@@ -311,7 +310,7 @@ def _generate_api_key_prefix() -> str:
     raise exceptions.ApiKeyPrefixGenerationError()
 
 
-def find_api_key(key: str) -> Optional[models.ApiKey]:
+def find_api_key(key: str) -> models.ApiKey | None:
     try:
         env, prefix_identifier, clear_secret = key.split(API_KEY_SEPARATOR)
         prefix = _create_prefix(env, prefix_identifier)
@@ -445,7 +444,7 @@ def save_venue_banner(
     venue: models.Venue,
     content: bytes,
     image_credit: str,
-    crop_params: Optional[image_conversion.CropParams] = None,
+    crop_params: image_conversion.CropParams | None = None,
 ) -> None:
     """
     Save the new venue's new banner: crop it and resize it if asked
@@ -494,7 +493,7 @@ def delete_venue_banner(venue: models.Venue) -> None:
     search.async_index_venue_ids([venue.id])
 
 
-def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:
+def can_offerer_create_educational_offer(offerer_id: int | None) -> None:
     import pcapi.core.educational.adage_backends as adage_client
 
     if offerer_id is None:
@@ -517,7 +516,7 @@ def can_offerer_create_educational_offer(offerer_id: Optional[int]) -> None:
         raise exception
 
 
-def get_educational_offerers(offerer_id: Optional[str], current_user: users_models.User) -> list[models.Offerer]:
+def get_educational_offerers(offerer_id: str | None, current_user: users_models.User) -> list[models.Offerer]:
     if current_user.has_admin_role and offerer_id is None:
         logger.info("Admin user must provide offerer_id as a query parameter")
         raise exceptions.MissingOffererIdQueryParameter
@@ -542,7 +541,7 @@ def get_educational_offerers(offerer_id: Optional[str], current_user: users_mode
 
 
 def get_eligible_for_search_venues(
-    max_venues: typing.Optional[int] = None,
+    max_venues: int | None = None,
 ) -> typing.Generator[models.Venue, None, None]:
     query = models.Venue.query.options(
         # needed by is_eligible_for_search

@@ -2,7 +2,6 @@ from datetime import datetime
 import logging
 from typing import Any
 from typing import Callable
-from typing import Optional
 
 from pydantic.class_validators import validator
 from pydantic.fields import Field
@@ -39,20 +38,20 @@ class OfferOffererResponse(BaseModel):
 
 
 class OfferStockActivationCodeResponse(BaseModel):
-    expirationDate: Optional[datetime]
+    expirationDate: datetime | None
 
 
 class OfferStockResponse(BaseModel):
     id: int
-    beginningDatetime: Optional[datetime]
-    bookingLimitDatetime: Optional[datetime]
-    cancellation_limit_datetime: Optional[datetime]
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
+    cancellation_limit_datetime: datetime | None
     isBookable: bool
     is_forbidden_to_underage: bool
     isSoldOut: bool
     isExpired: bool
     price: int
-    activationCode: Optional[OfferStockActivationCodeResponse]
+    activationCode: OfferStockActivationCodeResponse | None
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
 
@@ -62,12 +61,12 @@ class OfferStockResponse(BaseModel):
         allow_population_by_field_name = True
 
     @staticmethod
-    def _get_cancellation_limit_datetime(stock: Stock) -> Optional[datetime]:
+    def _get_cancellation_limit_datetime(stock: Stock) -> datetime | None:
         # compute date as if it were booked now
         return compute_cancellation_limit_date(stock.beginningDatetime, datetime.utcnow())
 
     @staticmethod
-    def _get_non_scrappable_activation_code(stock: Stock) -> Optional[dict]:
+    def _get_non_scrappable_activation_code(stock: Stock) -> dict | None:
         if not stock.canHaveActivationCodes:
             return None
         # here we have N+1 requests (for each stock we query an activation code)
@@ -94,12 +93,12 @@ class OfferVenueResponse(BaseModel):
         return result
 
     id: int
-    address: Optional[str]
-    city: Optional[str]
+    address: str | None
+    city: str | None
     managingOfferer: OfferOffererResponse = Field(..., alias="offerer")
     name: str
-    postalCode: Optional[str]
-    publicName: Optional[str]
+    postalCode: str | None
+    publicName: str | None
     coordinates: Coordinates
     isPermanent: bool
 
@@ -111,8 +110,8 @@ class OfferVenueResponse(BaseModel):
 LABELS_BY_DICT_MAPPING = {"musicSubType": ""}
 
 
-def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[Optional[str]], Optional[str]]:
-    def convert_id_into_label(value_id: Optional[str]) -> Optional[str]:
+def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | None], str | None]:
+    def convert_id_into_label(value_id: str | None) -> str | None:
         try:
             return labels_by_id[int(value_id)] if value_id else None
         except ValueError:  # on the second time this function is called twice, the field is already converted
@@ -125,17 +124,17 @@ def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[Optional[
 
 
 class OfferExtraData(BaseModel):
-    author: Optional[str]
-    durationMinutes: Optional[int]
-    isbn: Optional[str]
-    musicSubType: Optional[str]
-    musicType: Optional[str]
-    performer: Optional[str]
-    showSubType: Optional[str]
-    showType: Optional[str]
-    stageDirector: Optional[str]
-    speaker: Optional[str]
-    visa: Optional[str]
+    author: str | None
+    durationMinutes: int | None
+    isbn: str | None
+    musicSubType: str | None
+    musicType: str | None
+    performer: str | None
+    showSubType: str | None
+    showType: str | None
+    stageDirector: str | None
+    speaker: str | None
+    visa: str | None
 
     _convert_music_sub_type = validator("musicSubType", pre=True, allow_reuse=True)(
         get_id_converter(MUSIC_SUB_TYPES_DICT, "musicSubType")
@@ -152,15 +151,15 @@ class OfferExtraData(BaseModel):
 
 
 class OfferAccessibilityResponse(BaseModel):
-    audioDisability: Optional[bool]
-    mentalDisability: Optional[bool]
-    motorDisability: Optional[bool]
-    visualDisability: Optional[bool]
+    audioDisability: bool | None
+    mentalDisability: bool | None
+    motorDisability: bool | None
+    visualDisability: bool | None
 
 
 class OfferImageResponse(BaseModel):
     url: str
-    credit: Optional[str]
+    credit: str | None
 
     class Config:
         orm_mode = True
@@ -189,10 +188,10 @@ class OfferResponse(BaseModel):
 
     id: int
     accessibility: OfferAccessibilityResponse
-    description: Optional[str]
+    description: str | None
     expense_domains: list[ExpenseDomain]
-    externalTicketOfficeUrl: Optional[str]
-    extraData: Optional[OfferExtraData]
+    externalTicketOfficeUrl: str | None
+    extraData: OfferExtraData | None
     isExpired: bool
     is_forbidden_to_underage: bool
     isReleased: bool
@@ -203,9 +202,9 @@ class OfferResponse(BaseModel):
     name: str
     stocks: list[OfferStockResponse]
     subcategoryId: subcategories.SubcategoryIdEnum
-    image: Optional[OfferImageResponse]
+    image: OfferImageResponse | None
     venue: OfferVenueResponse
-    withdrawalDetails: Optional[str]
+    withdrawalDetails: str | None
 
     class Config:
         orm_mode = True
@@ -219,12 +218,10 @@ class OfferReportRequest(BaseModel):
         alias_generator = to_camel
 
     reason: str
-    custom_reason: Optional[str]
+    custom_reason: str | None
 
     @validator("custom_reason")
-    def custom_reason_must_not_be_too_long(  # pylint: disable=no-self-argument
-        cls, content: Optional[str]
-    ) -> Optional[str]:
+    def custom_reason_must_not_be_too_long(cls, content: str | None) -> str | None:  # pylint: disable=no-self-argument
         if not content:
             return None
 
@@ -284,7 +281,7 @@ class SubcategoryResponseModel(BaseModel):
 
 class SearchGroupResponseModel(BaseModel):
     name: subcategories.SearchGroupNameEnum
-    value: Optional[str]
+    value: str | None
 
     class Config:
         alias_generator = to_camel
@@ -294,7 +291,7 @@ class SearchGroupResponseModel(BaseModel):
 
 class HomepageLabelResponseModel(BaseModel):
     name: subcategories.HomepageLabelNameEnum
-    value: Optional[str]
+    value: str | None
 
     class Config:
         alias_generator = to_camel

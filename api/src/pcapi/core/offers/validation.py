@@ -2,7 +2,6 @@ from datetime import datetime
 from datetime import timedelta
 from io import BytesIO
 import logging
-from typing import Optional
 
 from PIL import Image
 
@@ -151,8 +150,8 @@ def check_stock_price(price: float, offer: Offer) -> None:
 
 def check_required_dates_for_stock(
     offer: Offer,
-    beginning: Optional[datetime],
-    booking_limit_datetime: Optional[datetime],
+    beginning: datetime | None,
+    booking_limit_datetime: datetime | None,
 ) -> None:
     if offer.isThing:
         if beginning:
@@ -247,8 +246,8 @@ def check_offer_is_digital(offer: Offer) -> None:
 
 
 def check_activation_codes_expiration_datetime(
-    activation_codes_expiration_datetime: Optional[datetime],
-    booking_limit_datetime: Optional[datetime],
+    activation_codes_expiration_datetime: datetime | None,
+    booking_limit_datetime: datetime | None,
 ) -> None:
     if activation_codes_expiration_datetime is None:
         return
@@ -280,8 +279,8 @@ def check_activation_codes_expiration_datetime(
 
 
 def check_activation_codes_expiration_datetime_on_stock_edition(
-    activation_codes: Optional[list[ActivationCode]],
-    booking_limit_datetime: Optional[datetime],
+    activation_codes: list[ActivationCode] | None,
+    booking_limit_datetime: datetime | None,
 ) -> None:
     if activation_codes is None or len(activation_codes) == 0:
         return
@@ -323,7 +322,7 @@ def check_offer_is_eligible_for_educational(subcategory_id: str, is_educational:
 
 
 def check_offer_withdrawal(
-    withdrawal_type: Optional[WithdrawalTypeEnum], withdrawal_delay: Optional[int], subcategory_id: str
+    withdrawal_type: WithdrawalTypeEnum | None, withdrawal_delay: int | None, subcategory_id: str
 ) -> None:
     if subcategory_id not in WITHDRAWABLE_SUBCATEGORIES and withdrawal_type is not None:
         raise exceptions.NonWithdrawableEventOfferCantHaveWithdrawal()
@@ -350,9 +349,9 @@ def check_offer_subcategory_is_valid(offer_subcategory_id: str) -> None:
 
 
 def check_booking_limit_datetime(
-    stock: Optional[CollectiveStock | Stock],
-    beginning: Optional[datetime],
-    booking_limit_datetime: Optional[datetime],
+    stock: CollectiveStock | Stock | None,
+    beginning: datetime | None,
+    booking_limit_datetime: datetime | None,
 ) -> None:
     if stock:
         if beginning is None:
@@ -380,7 +379,7 @@ def check_booking_limit_datetime(
         raise exceptions.BookingLimitDatetimeTooLate()
 
 
-def check_offer_extra_data(offer: Optional[Offer], subcategory_id: str, extra_data: dict) -> dict:
+def check_offer_extra_data(offer: Offer | None, subcategory_id: str, extra_data: dict) -> dict:
     api_errors = ApiErrors()
     subcategory = ALL_SUBCATEGORIES_DICT[subcategory_id]
     mandatory_fields = OFFER_EXTRA_DATA_MANDATORY_FIELDS & set(subcategory.conditional_fields)

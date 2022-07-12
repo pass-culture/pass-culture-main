@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pcapi.routes.serialization import BaseModel
 from pcapi.settings import GCP_ZENDESK_ATTRIBUTES_QUEUE_NAME
@@ -13,8 +12,8 @@ class UpdateZendeskAttributesRequest(BaseModel):
     is_new_ticket: bool
     ticket_id: int
     zendesk_user_id: int
-    email: Optional[str]
-    phone_number: Optional[str]
+    email: str | None
+    phone_number: str | None
 
 
 @task(GCP_ZENDESK_ATTRIBUTES_QUEUE_NAME, "/zendesk/update_user_attributes")  # type: ignore [arg-type]

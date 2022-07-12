@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
@@ -13,7 +12,7 @@ class BusinessUnitListQueryModel(BaseModel):
         extra = "forbid"
 
     _dehumanize_id = serialization_utils.dehumanize_field("offerer_id")
-    offerer_id: Optional[int]
+    offerer_id: int | None
 
 
 class BusinessUnitResponseModel(BaseModel):
@@ -21,13 +20,13 @@ class BusinessUnitResponseModel(BaseModel):
         orm_mode = True
 
     id: int
-    iban: Optional[str]
-    bic: Optional[str]
+    iban: str | None
+    bic: str | None
     name: str
     # FIXME (dbaty, 2021-12-15): SIRET may be NULL while we initialize
     # business units. In a few months, all business units should have
     # a SIRET and we should remove `Optional`.
-    siret: Optional[str]
+    siret: str | None
 
     @classmethod
     def from_orm(cls, business_unit: finance_models.BusinessUnit):  # type: ignore [no-untyped-def]
@@ -48,9 +47,9 @@ class InvoiceListQueryModel(BaseModel):
     class Config:
         orm_mode = True
 
-    businessUnitId: Optional[int]
-    periodBeginningDate: Optional[datetime.date]
-    periodEndingDate: Optional[datetime.date]
+    businessUnitId: int | None
+    periodBeginningDate: datetime.date | None
+    periodEndingDate: datetime.date | None
 
 
 class InvoiceResponseModel(BaseModel):

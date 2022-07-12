@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from typing import Optional
 
 import click
 
@@ -20,7 +19,7 @@ blueprint = Blueprint(__name__, __name__)
 @click.argument("limit", type=int, required=False)
 @click.argument("status", type=bool, required=False)
 def ubble_archive_past_identifications(
-    start_date: datetime, end_date: datetime, limit: int, status: Optional[bool]
+    start_date: datetime, end_date: datetime, limit: int, status: bool | None
 ) -> None:
     result = archive_past_identification_pictures(start_date, end_date, limit, status)
     print("Done :")

@@ -1,6 +1,5 @@
 import logging
 from typing import Callable
-from typing import Optional
 
 import pcapi.connectors.notion as notion_connector
 from pcapi.core.providers.models import VenueProvider
@@ -15,7 +14,7 @@ from pcapi.scheduled_tasks.logger import build_cron_log_message
 logger = logging.getLogger(__name__)
 
 
-def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = None) -> None:
+def synchronize_data_for_provider(provider_name: str, limit: int | None = None) -> None:
     provider_class = get_local_provider_class_by_name(provider_name)
     try:
         provider = provider_class()
@@ -24,7 +23,7 @@ def synchronize_data_for_provider(provider_name: str, limit: Optional[int] = Non
         logger.exception(build_cron_log_message(name=provider_name, status=CronStatus.FAILED))
 
 
-def synchronize_venue_providers_for_provider(provider_id: int, limit: Optional[int] = None) -> None:
+def synchronize_venue_providers_for_provider(provider_id: int, limit: int | None = None) -> None:
     venue_providers = providers_repository.get_active_venue_providers_by_provider(provider_id)
     for venue_provider in venue_providers:
         try:
@@ -52,7 +51,7 @@ def get_local_provider_class_by_name(class_name: str) -> Callable:
     return getattr(pcapi.local_providers, class_name)
 
 
-def synchronize_venue_provider(venue_provider: VenueProvider, limit: Optional[int] = None) -> None:
+def synchronize_venue_provider(venue_provider: VenueProvider, limit: int | None = None) -> None:
     if venue_provider.provider.implements_provider_api and not venue_provider.provider.isCinemaProvider:
         synchronize_provider_api.synchronize_venue_provider(venue_provider)
 

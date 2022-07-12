@@ -4,8 +4,6 @@ import os
 import pathlib
 import shutil
 import tempfile
-import typing
-from typing import Optional
 
 import flask
 from pydantic.networks import HttpUrl
@@ -158,7 +156,7 @@ def handle_validation_errors(  # type: ignore [no-untyped-def]
 
 def get_ubble_subscription_item_status(
     user: users_models.User,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
     ubble_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
 ) -> subscription_models.SubscriptionItemStatus:
     """
@@ -268,7 +266,7 @@ def download_ubble_document_pictures(
 
 def _download_ubble_picture(
     fraud_check: fraud_models.BeneficiaryFraudCheck, http_url: HttpUrl, face_name: str
-) -> Optional[dict]:
+) -> dict | None:
     response = requests.get(http_url, stream=True)
 
     if response.status_code == 403:
@@ -304,7 +302,7 @@ def _download_ubble_picture(
 
 
 def _generate_storable_picture_filename(
-    fraud_check: fraud_models.BeneficiaryFraudCheck, face_name: str, mime_type: Optional[str]
+    fraud_check: fraud_models.BeneficiaryFraudCheck, face_name: str, mime_type: str | None
 ) -> str:
     if mime_type is None:
         mime_type = "image/png"  # ubble default picture type is png

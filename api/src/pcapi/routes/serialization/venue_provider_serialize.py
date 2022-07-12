@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Any
 from typing import List
-from typing import Optional
 
 from pydantic.main import BaseModel
 
@@ -15,11 +14,11 @@ from pcapi.utils.date import format_into_utc_date
 class PostVenueProviderBody(BaseModel):
     venueId: str
     providerId: str
-    venueIdAtOfferProvider: Optional[str]
-    price: Optional[str]
-    isDuo: Optional[bool]
-    quantity: Optional[int]
-    isActive: Optional[bool]
+    venueIdAtOfferProvider: str | None
+    price: str | None
+    isDuo: bool | None
+    quantity: int | None
+    isActive: bool | None
 
 
 # TODO(asaunier): We usually exposed every field from ORM but some mightbe unecessary
@@ -28,7 +27,7 @@ class ProviderResponse(BaseModel):
     enabledForPro: bool
     id: str
     isActive: bool
-    localClass: Optional[str]
+    localClass: str | None
 
     _humanize_id = humanize_field("id")
 
@@ -38,12 +37,12 @@ class ProviderResponse(BaseModel):
 
 class VenueProviderResponse(BaseModel):
     id: str
-    idAtProviders: Optional[str]
-    dateModifiedAtLastProvider: Optional[datetime]
+    idAtProviders: str | None
+    dateModifiedAtLastProvider: datetime | None
     isActive: bool
     isFromAllocineProvider: bool
-    lastProviderId: Optional[str]
-    lastSyncDate: Optional[datetime]
+    lastProviderId: str | None
+    lastSyncDate: datetime | None
     nOffers: int
     providerId: str
     venueId: str
@@ -51,9 +50,9 @@ class VenueProviderResponse(BaseModel):
     provider: ProviderResponse
     # TODO(asaunier): Check if this field is necessary
     fieldsUpdated: List[str]
-    quantity: Optional[int]
-    isDuo: Optional[bool]
-    price: Optional[float]
+    quantity: int | None
+    isDuo: bool | None
+    price: float | None
 
     _humanize_id = humanize_field("id")
     _humanize_venue_id = humanize_field("venueId")

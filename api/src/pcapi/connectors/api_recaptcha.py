@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Optional
 
 from pcapi import settings
 from pcapi.models.api_errors import ApiErrors
@@ -39,8 +38,8 @@ def check_recaptcha_token_is_valid(
     token: str,
     secret: str,
     version: ReCaptchaVersion,
-    original_action: Optional[str] = None,
-    minimal_score: Optional[float] = None,
+    original_action: str | None = None,
+    minimal_score: float | None = None,
 ) -> None:
     # This is to prevent E2E tests from being flaky
     if settings.IS_DEV:

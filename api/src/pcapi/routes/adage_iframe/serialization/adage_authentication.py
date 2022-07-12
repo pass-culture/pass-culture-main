@@ -1,6 +1,5 @@
 import enum
 import logging
-from typing import Optional
 
 from pydantic import ValidationError
 
@@ -17,25 +16,25 @@ class AdageFrontRoles(enum.Enum):
 
 
 class AuthenticatedInformation(BaseModel):
-    civility: Optional[str]
-    lastname: Optional[str]
-    firstname: Optional[str]
+    civility: str | None
+    lastname: str | None
+    firstname: str | None
     email: str
-    uai: Optional[str]
+    uai: str | None
 
 
 class AuthenticatedResponse(BaseModel):
     role: AdageFrontRoles
-    uai: Optional[str]
+    uai: str | None
 
     class Config:
         use_enum_values = True
 
 
 class RedactorInformation(BaseModel):
-    civility: Optional[str]
-    lastname: Optional[str]
-    firstname: Optional[str]
+    civility: str | None
+    lastname: str | None
+    firstname: str | None
     email: str
     uai: str
 

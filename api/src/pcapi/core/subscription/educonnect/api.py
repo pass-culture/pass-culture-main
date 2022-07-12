@@ -1,6 +1,5 @@
 import datetime
 import logging
-import typing
 
 from pcapi.connectors.beneficiaries.educonnect import models as educonnect_models
 from pcapi.core.fraud import api as fraud_api
@@ -94,7 +93,7 @@ def _handle_validation_errors(
 
 def get_educonnect_subscription_item_status(
     user: users_models.User,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
     educonnect_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
 ) -> subscription_models.SubscriptionItemStatus:
     """

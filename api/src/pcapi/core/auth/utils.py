@@ -31,7 +31,7 @@ def _set_current_user(user: users_models.User) -> None:
 
 
 @app.teardown_appcontext
-def teardown_current_user(_exception: typing.Optional[BaseException] = None) -> None:
+def teardown_current_user(_exception: BaseException | None = None) -> None:
     __teardown_global(CURRENT_USER_GLOBAL_NAME)
 
 
@@ -44,5 +44,5 @@ def _set_current_permissions(permissions: typing.Iterable[str]) -> None:
 
 
 @app.teardown_appcontext
-def teardown_current_permissions(_exception: typing.Optional[BaseException] = None) -> None:
+def teardown_current_permissions(_exception: BaseException | None = None) -> None:
     __teardown_global(CURRENT_PERMISSIONS_GLOBAL_NAME)

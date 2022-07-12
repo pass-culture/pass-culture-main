@@ -1,7 +1,6 @@
 from functools import wraps
 import logging
 from typing import Callable
-from typing import Optional
 
 from flask import _request_ctx_stack
 from flask import g
@@ -24,7 +23,7 @@ from pcapi.serialization.spec_tree import add_security_scheme
 logger = logging.getLogger(__name__)
 
 
-def check_user_is_logged_in_or_email_is_provided(user: User, email: Optional[str]) -> None:
+def check_user_is_logged_in_or_email_is_provided(user: User, email: str | None) -> None:
     if not (user.is_authenticated or email):
         api_errors = ApiErrors()
         api_errors.add_error("email", "Vous devez préciser l'email de l'utilisateur quand vous n'êtes pas connecté(e)")
@@ -71,7 +70,7 @@ def _fill_current_api_key() -> None:
         g.current_api_key = find_api_key(app_authorization_credentials)
 
 
-def _get_current_api_key() -> Optional[ApiKey]:
+def _get_current_api_key() -> ApiKey | None:
     assert "current_api_key" in g, "Can only be used in a route wrapped with api_key_required"
     return g.current_api_key
 
@@ -79,7 +78,7 @@ def _get_current_api_key() -> Optional[ApiKey]:
 current_api_key = LocalProxy(_get_current_api_key)
 
 
-def basic_authentication() -> Optional[User]:
+def basic_authentication() -> User | None:
     # `pcapi.utis.login_manager` cannot be imported at module-scope,
     # because the application context may not be available and that
     # module needs it.

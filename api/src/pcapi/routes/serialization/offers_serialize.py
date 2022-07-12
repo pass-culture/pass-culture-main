@@ -1,7 +1,6 @@
 from datetime import datetime
 import enum
 from typing import Any
-from typing import Optional
 
 from pydantic import Field
 from pydantic import HttpUrl
@@ -33,7 +32,7 @@ class SubcategoryResponseModel(BaseModel):
     category_id: str
     pro_label: str
     app_label: str
-    search_group_name: Optional[str]
+    search_group_name: str | None
     is_event: bool
     conditional_fields: list[str]
     can_expire: bool
@@ -64,24 +63,24 @@ class CategoryResponseModel(BaseModel):
 
 class PostOfferBodyModel(BaseModel):
     venue_id: str
-    product_id: Optional[str]
+    product_id: str | None
     subcategory_id: str
-    name: Optional[str]
-    booking_email: Optional[str]
-    external_ticket_office_url: Optional[HttpUrl]
-    url: Optional[HttpUrl]
-    media_urls: Optional[list[str]]
-    description: Optional[str]
-    withdrawal_details: Optional[str]
-    withdrawal_type: Optional[WithdrawalTypeEnum]
-    withdrawal_delay: Optional[int]
-    conditions: Optional[str]
-    age_min: Optional[int]
-    age_max: Optional[int]
-    duration_minutes: Optional[int]
-    is_national: Optional[bool]
-    is_duo: Optional[bool]
-    is_educational: Optional[bool]
+    name: str | None
+    booking_email: str | None
+    external_ticket_office_url: HttpUrl | None
+    url: HttpUrl | None
+    media_urls: list[str] | None
+    description: str | None
+    withdrawal_details: str | None
+    withdrawal_type: WithdrawalTypeEnum | None
+    withdrawal_delay: int | None
+    conditions: str | None
+    age_min: int | None
+    age_max: int | None
+    duration_minutes: int | None
+    is_national: bool | None
+    is_duo: bool | None
+    is_educational: bool | None
     # TODO (schable, 2021-01-14): remove the default value for the 4 following accessibility fields
     #  when new offer creation will be activated in pro app (current offer creation does not send those fields)
     audio_disability_compliant: bool = False
@@ -92,7 +91,7 @@ class PostOfferBodyModel(BaseModel):
     # FIXME (viconnex, 2020-12-02): this field is actually
     # unused for the offer creation. But the webapp does send it so
     # we must list them here.
-    offererId: Optional[str]
+    offererId: str | None
 
     @validator("name", pre=True)
     def validate_name(cls, name, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -147,16 +146,16 @@ class PostEducationalOfferBodyModel(BaseModel):
     venue_id: str
     subcategory_id: str
     name: str
-    booking_email: Optional[str]
-    description: Optional[str]
-    duration_minutes: Optional[int]
+    booking_email: str | None
+    description: str | None
+    duration_minutes: int | None
     audio_disability_compliant: bool = False
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
     extra_data: PostEducationalOfferExtraDataBodyModel
-    withdrawal_type: Optional[WithdrawalTypeEnum]
-    withdrawal_delay: Optional[int]
+    withdrawal_type: WithdrawalTypeEnum | None
+    withdrawal_delay: int | None
 
     @validator("name", pre=True)
     def validate_name(cls, name, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -179,29 +178,29 @@ class EducationalOfferBodyModel(PostEducationalOfferBodyModel):
 class CompletedEducationalOfferModel(EducationalOfferBodyModel):
     is_duo: bool = False
     is_educational: bool = True
-    external_ticket_office_url: Optional[str] = None
+    external_ticket_office_url: str | None = None
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmail: Optional[str]
-    description: Optional[str]
-    isNational: Optional[bool]
-    name: Optional[str]
+    bookingEmail: str | None
+    description: str | None
+    isNational: bool | None
+    name: str | None
     extraData: Any
-    externalTicketOfficeUrl: Optional[HttpUrl]
-    url: Optional[HttpUrl]
-    withdrawalDetails: Optional[str]
-    withdrawalType: Optional[WithdrawalTypeEnum]
-    withdrawalDelay: Optional[int]
-    isActive: Optional[bool]
-    isDuo: Optional[bool]
-    durationMinutes: Optional[int]
-    mediaUrls: Optional[list[str]]
-    ageMin: Optional[int]
-    ageMax: Optional[int]
-    conditions: Optional[str]
-    venueId: Optional[str]
-    productId: Optional[str]
+    externalTicketOfficeUrl: HttpUrl | None
+    url: HttpUrl | None
+    withdrawalDetails: str | None
+    withdrawalType: WithdrawalTypeEnum | None
+    withdrawalDelay: int | None
+    isActive: bool | None
+    isDuo: bool | None
+    durationMinutes: int | None
+    mediaUrls: list[str] | None
+    ageMin: int | None
+    ageMax: int | None
+    conditions: str | None
+    venueId: str | None
+    productId: str | None
 
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -215,10 +214,10 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class EducationalOfferPartialExtraDataBodyModel(BaseModel):
-    students: Optional[list[str]]
-    offerVenue: Optional[EducationalOfferExtraDataOfferVenueBodyModel]
-    contactEmail: Optional[str]
-    contactPhone: Optional[str]
+    students: list[str] | None
+    offerVenue: EducationalOfferExtraDataOfferVenueBodyModel | None
+    contactEmail: str | None
+    contactPhone: str | None
 
     class Config:
         alias_generator = to_camel
@@ -226,12 +225,12 @@ class EducationalOfferPartialExtraDataBodyModel(BaseModel):
 
 
 class PatchEducationalOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmail: Optional[str]
-    description: Optional[str]
-    name: Optional[str]
-    extraData: Optional[EducationalOfferPartialExtraDataBodyModel]
-    durationMinutes: Optional[int]
-    subcategoryId: Optional[SubcategoryIdEnum]
+    bookingEmail: str | None
+    description: str | None
+    name: str | None
+    extraData: EducationalOfferPartialExtraDataBodyModel | None
+    durationMinutes: int | None
+    subcategoryId: SubcategoryIdEnum | None
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -272,14 +271,14 @@ class PatchOfferActiveStatusBodyModel(BaseModel):
 
 class PatchAllOffersActiveStatusBodyModel(BaseModel):
     is_active: bool
-    offerer_id: Optional[int]
-    venue_id: Optional[int]
-    name_or_isbn: Optional[str]
-    category_id: Optional[str]
-    creation_mode: Optional[str]
-    status: Optional[str]
-    period_beginning_date: Optional[datetime]
-    period_ending_date: Optional[datetime]
+    offerer_id: int | None
+    venue_id: int | None
+    name_or_isbn: str | None
+    category_id: str | None
+    creation_mode: str | None
+    status: str | None
+    period_beginning_date: datetime | None
+    period_ending_date: datetime | None
 
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
     _dehumanize_venue_id = dehumanize_field("venue_id")
@@ -298,8 +297,8 @@ class ListOffersVenueResponseModel(BaseModel):
     managingOffererId: str
     name: str
     offererName: str
-    publicName: Optional[str]
-    departementCode: Optional[str]
+    publicName: str | None
+    departementCode: str | None
 
 
 class ListOffersStockResponseModel(BaseModel):
@@ -307,7 +306,7 @@ class ListOffersStockResponseModel(BaseModel):
     hasBookingLimitDatetimePassed: bool
     offerId: str
     remainingQuantity: int | str
-    beginningDatetime: Optional[datetime]
+    beginningDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -326,13 +325,13 @@ class ListOffersOfferResponseModel(BaseModel):
     isEducational: bool
     name: str
     stocks: list[ListOffersStockResponseModel]
-    thumbUrl: Optional[str]
-    productIsbn: Optional[str]
+    thumbUrl: str | None
+    productIsbn: str | None
     subcategoryId: SubcategoryIdEnum
     venue: ListOffersVenueResponseModel
     status: str
     venueId: str
-    isShowcase: Optional[bool]
+    isShowcase: bool | None
 
 
 class ListOffersResponseModel(BaseModel):
@@ -343,14 +342,14 @@ class ListOffersResponseModel(BaseModel):
 
 
 class ListOffersQueryModel(BaseModel):
-    nameOrIsbn: Optional[str]
-    offerer_id: Optional[int]
-    status: Optional[str]
-    venue_id: Optional[int]
-    categoryId: Optional[str]
-    creation_mode: Optional[str]
-    period_beginning_date: Optional[str]
-    period_ending_date: Optional[str]
+    nameOrIsbn: str | None
+    offerer_id: int | None
+    status: str | None
+    venue_id: int | None
+    categoryId: str | None
+    creation_mode: str | None
+    period_beginning_date: str | None
+    period_ending_date: str | None
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
@@ -362,24 +361,24 @@ class ListOffersQueryModel(BaseModel):
 
 
 class GetOfferProductResponseModel(BaseModel):
-    ageMax: Optional[int]
-    ageMin: Optional[int]
-    conditions: Optional[str]
-    dateModifiedAtLastProvider: Optional[datetime]
-    description: Optional[str]
-    durationMinutes: Optional[int]
+    ageMax: int | None
+    ageMin: int | None
+    conditions: str | None
+    dateModifiedAtLastProvider: datetime | None
+    description: str | None
+    durationMinutes: int | None
     extraData: Any
     fieldsUpdated: list[str]
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isGcuCompatible: bool
     isNational: bool
-    lastProviderId: Optional[str]
+    lastProviderId: str | None
     mediaUrls: list[str]
     name: str
-    owningOffererId: Optional[str]
+    owningOffererId: str | None
     thumbCount: int
-    url: Optional[str]
+    url: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_last_provider_id = humanize_field("lastProviderId")
@@ -391,26 +390,26 @@ class GetOfferProductResponseModel(BaseModel):
 
 
 class GetOfferStockResponseModel(BaseModel):
-    beginningDatetime: Optional[datetime]
-    bookingLimitDatetime: Optional[datetime]
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
     dnBookedQuantity: int = Field(alias="bookingsQuantity")
-    cancellationLimitDate: Optional[datetime]
+    cancellationLimitDate: datetime | None
     dateCreated: datetime
     dateModified: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
+    dateModifiedAtLastProvider: datetime | None
     fieldsUpdated: list[str]
     hasActivationCode: bool
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isBookable: bool
     isEventDeletable: bool
     isEventExpired: bool
     isSoftDeleted: bool
-    lastProviderId: Optional[str]
+    lastProviderId: str | None
     offerId: str
     price: float
-    quantity: Optional[int]
-    remainingQuantity: Optional[int | str]
+    quantity: int | None
+    remainingQuantity: int | str | None
 
     _humanize_id = humanize_field("id")
     _humanize_last_provider_id = humanize_field("lastProviderId")
@@ -436,20 +435,20 @@ class GetOfferStockResponseModel(BaseModel):
 
 
 class GetOfferManagingOffererResponseModel(BaseModel):
-    address: Optional[str]
+    address: str | None
     city: str
     dateCreated: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
+    dateModifiedAtLastProvider: datetime | None
     fieldsUpdated: list[str]
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isActive: bool
     isValidated: bool
-    lastProviderId: Optional[str]
+    lastProviderId: str | None
     name: str
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    siren: Optional[str]
+    siren: str | None
     thumbCount: int
 
     _humanize_id = humanize_field("id")
@@ -460,29 +459,29 @@ class GetOfferManagingOffererResponseModel(BaseModel):
 
 
 class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: Optional[str]
-    bookingEmail: Optional[str]
-    city: Optional[str]
-    comment: Optional[str]
-    dateCreated: Optional[datetime]
-    dateModifiedAtLastProvider: Optional[datetime]
-    departementCode: Optional[str]
+    address: str | None
+    bookingEmail: str | None
+    city: str | None
+    comment: str | None
+    dateCreated: datetime | None
+    dateModifiedAtLastProvider: datetime | None
+    departementCode: str | None
     fieldsUpdated: list[str]
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isValidated: bool
     isVirtual: bool
-    lastProviderId: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
+    lastProviderId: str | None
+    latitude: float | None
+    longitude: float | None
     managingOfferer: GetOfferManagingOffererResponseModel
     managingOffererId: str
     name: str
-    postalCode: Optional[str]
-    publicName: Optional[str]
-    siret: Optional[str]
+    postalCode: str | None
+    publicName: str | None
+    siret: str | None
     thumbCount: int
-    venueLabelId: Optional[str]
+    venueLabelId: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -501,7 +500,7 @@ class GetOfferLastProviderResponseModel(BaseModel):
     enabledForPro: bool
     id: str
     isActive: bool
-    localClass: Optional[str]
+    localClass: str | None
     name: str
 
     _humanize_id = humanize_field("id")
@@ -511,18 +510,18 @@ class GetOfferLastProviderResponseModel(BaseModel):
 
 
 class GetOfferMediationResponseModel(BaseModel):
-    authorId: Optional[str]
-    credit: Optional[str]
+    authorId: str | None
+    credit: str | None
     dateCreated: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
+    dateModifiedAtLastProvider: datetime | None
     fieldsUpdated: list[str]
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isActive: bool
-    lastProviderId: Optional[str]
+    lastProviderId: str | None
     offerId: str
     thumbCount: int
-    thumbUrl: Optional[str]
+    thumbUrl: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_offer_id = humanize_field("offerId")
@@ -534,16 +533,16 @@ class GetOfferMediationResponseModel(BaseModel):
 
 
 class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
-    activeMediation: Optional[GetOfferMediationResponseModel]
-    ageMax: Optional[int]
-    ageMin: Optional[int]
-    bookingEmail: Optional[str]
-    conditions: Optional[str]
+    activeMediation: GetOfferMediationResponseModel | None
+    ageMax: int | None
+    ageMin: int | None
+    bookingEmail: str | None
+    conditions: str | None
     dateCreated: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
+    dateModifiedAtLastProvider: datetime | None
     dateRange: list[datetime]
-    description: Optional[str]
-    durationMinutes: Optional[int]
+    description: str | None
+    durationMinutes: int | None
     extraData: Any
     fieldsUpdated: list[str]
     hasBookingLimitDatetimesPassed: bool
@@ -558,8 +557,8 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isNational: bool
     isThing: bool
     nonHumanizedId: int
-    lastProvider: Optional[GetOfferLastProviderResponseModel]
-    lastProviderId: Optional[str]
+    lastProvider: GetOfferLastProviderResponseModel | None
+    lastProviderId: str | None
     mediaUrls: list[str]
     mediations: list[GetOfferMediationResponseModel]
     name: str
@@ -567,12 +566,12 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     productId: str
     stocks: list[GetOfferStockResponseModel]
     subcategoryId: SubcategoryIdEnum
-    thumbUrl: Optional[str]
-    externalTicketOfficeUrl: Optional[str]
-    url: Optional[str]
+    thumbUrl: str | None
+    externalTicketOfficeUrl: str | None
+    url: str | None
     venue: GetOfferVenueResponseModel
     venueId: str
-    withdrawalDetails: Optional[str]
+    withdrawalDetails: str | None
     status: OfferStatus
 
     _humanize_id = humanize_field("id")
@@ -600,8 +599,8 @@ class GetOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class GetIndividualOfferResponseModel(GetOfferResponseModel):
-    withdrawalType: Optional[WithdrawalTypeEnum]
-    withdrawalDelay: Optional[int]
+    withdrawalType: WithdrawalTypeEnum | None
+    withdrawalDelay: int | None
 
 
 class ImageBodyModel(BaseModel):

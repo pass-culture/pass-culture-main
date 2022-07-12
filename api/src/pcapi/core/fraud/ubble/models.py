@@ -1,6 +1,5 @@
 import datetime
 import enum
-import typing
 
 import pydantic
 import pytz
@@ -25,7 +24,7 @@ class UbbleScore(enum.Enum):
     UNDECIDABLE = -1.0
 
 
-def _parse_ubble_gender(ubble_gender: typing.Optional[str]) -> typing.Optional[users_models.GenderEnum]:
+def _parse_ubble_gender(ubble_gender: str | None) -> users_models.GenderEnum | None:
     if ubble_gender == "M":
         return users_models.GenderEnum.M
     if ubble_gender == "F":
@@ -34,51 +33,51 @@ def _parse_ubble_gender(ubble_gender: typing.Optional[str]) -> typing.Optional[u
 
 
 class UbbleContent(IdentityCheckContent):
-    birth_date: typing.Optional[datetime.date]
-    comment: typing.Optional[str]
-    document_type: typing.Optional[str]
-    expiry_date_score: typing.Optional[float]
-    first_name: typing.Optional[str]
-    gender: typing.Optional[users_models.GenderEnum]
-    id_document_number: typing.Optional[str]
-    identification_id: typing.Optional[pydantic.UUID4]
-    identification_url: typing.Optional[pydantic.HttpUrl]
-    last_name: typing.Optional[str]
-    married_name: typing.Optional[str]
-    reference_data_check_score: typing.Optional[float]
-    registration_datetime: typing.Optional[datetime.datetime]
-    score: typing.Optional[float]
-    status: typing.Optional[UbbleIdentificationStatus]
-    supported: typing.Optional[float]
-    signed_image_front_url: typing.Optional[pydantic.HttpUrl]
-    signed_image_back_url: typing.Optional[pydantic.HttpUrl]
+    birth_date: datetime.date | None
+    comment: str | None
+    document_type: str | None
+    expiry_date_score: float | None
+    first_name: str | None
+    gender: users_models.GenderEnum | None
+    id_document_number: str | None
+    identification_id: pydantic.UUID4 | None
+    identification_url: pydantic.HttpUrl | None
+    last_name: str | None
+    married_name: str | None
+    reference_data_check_score: float | None
+    registration_datetime: datetime.datetime | None
+    score: float | None
+    status: UbbleIdentificationStatus | None
+    supported: float | None
+    signed_image_front_url: pydantic.HttpUrl | None
+    signed_image_back_url: pydantic.HttpUrl | None
 
     _parse_birth_date = pydantic.validator("birth_date", pre=True, allow_reuse=True)(
         lambda d: datetime.datetime.strptime(d, "%Y-%m-%d").date() if d is not None else None
     )
     _parse_gender = pydantic.validator("gender", pre=True, allow_reuse=True)(_parse_ubble_gender)
 
-    def get_birth_date(self) -> typing.Optional[datetime.date]:
+    def get_birth_date(self) -> datetime.date | None:
         return self.birth_date
 
-    def get_registration_datetime(self) -> typing.Optional[datetime.datetime]:
+    def get_registration_datetime(self) -> datetime.datetime | None:
         return (
             self.registration_datetime.astimezone(pytz.utc).replace(tzinfo=None) if self.registration_datetime else None
         )
 
-    def get_first_name(self) -> typing.Optional[str]:
+    def get_first_name(self) -> str | None:
         return self.first_name
 
-    def get_last_name(self) -> typing.Optional[str]:
+    def get_last_name(self) -> str | None:
         return self.last_name
 
-    def get_civility(self) -> typing.Optional[str]:
+    def get_civility(self) -> str | None:
         return self.gender.value if self.gender else None
 
-    def get_married_name(self) -> typing.Optional[str]:
+    def get_married_name(self) -> str | None:
         return self.married_name
 
-    def get_id_piece_number(self) -> typing.Optional[str]:
+    def get_id_piece_number(self) -> str | None:
         return self.id_document_number
 
 
@@ -89,20 +88,20 @@ class UbbleIdentificationObject(pydantic.BaseModel):
 
 class UbbleIdentificationAttributes(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#identifications
-    comment: typing.Optional[str]
+    comment: str | None
     created_at: datetime.datetime = pydantic.Field(alias="created-at")
-    ended_at: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="ended-at")
+    ended_at: datetime.datetime | None = pydantic.Field(None, alias="ended-at")
     identification_id: str = pydantic.Field(alias="identification-id")
     identification_url: str = pydantic.Field(alias="identification-url")
     number_of_attempts: int = pydantic.Field(alias="number-of-attempts")
     redirect_url: str = pydantic.Field(alias="redirect-url")
-    score: typing.Optional[float]
-    started_at: typing.Optional[datetime.datetime] = pydantic.Field(None, alias="started-at")
+    score: float | None
+    started_at: datetime.datetime | None = pydantic.Field(None, alias="started-at")
     status: UbbleIdentificationStatus
     status_updated_at: datetime.datetime = pydantic.Field(alias="status-updated-at")
     updated_at: datetime.datetime = pydantic.Field(alias="updated-at")
-    user_agent: typing.Optional[str] = pydantic.Field(None, alias="user-agent")
-    user_ip_address: typing.Optional[str] = pydantic.Field(None, alias="user-ip-address")
+    user_agent: str | None = pydantic.Field(None, alias="user-agent")
+    user_ip_address: str | None = pydantic.Field(None, alias="user-ip-address")
     webhook: str
 
 
@@ -128,45 +127,45 @@ class UbbleIdentificationDocuments(UbbleIdentificationObject):
 
 class UbbleIdentificationDocumentChecks(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#document-checks
-    data_extracted_score: typing.Optional[float] = pydantic.Field(None, alias="data-extracted-score")
-    expiry_date_score: typing.Optional[float] = pydantic.Field(None, alias="expiry-date-score")
-    issue_date_score: typing.Optional[float] = pydantic.Field(None, alias="issue-date-score")
-    live_video_capture_score: typing.Optional[float] = pydantic.Field(None, alias="live-video-capture-score")
-    mrz_validity_score: typing.Optional[float] = pydantic.Field(None, alias="mrz-validity-score")
-    mrz_viz_score: typing.Optional[float] = pydantic.Field(None, alias="mrz-viz-score")
-    ove_back_score: typing.Optional[float] = pydantic.Field(None, alias="ove-back-score")
-    ove_front_score: typing.Optional[float] = pydantic.Field(None, alias="ove-front-score")
-    ove_score: typing.Optional[float] = pydantic.Field(None, alias="ove-score")
-    quality_score: typing.Optional[float] = pydantic.Field(None, alias="quality-score")
-    score: typing.Optional[float] = pydantic.Field(None, alias="score")
-    supported: typing.Optional[float] = None
-    visual_back_score: typing.Optional[float] = pydantic.Field(None, alias="visual-back-score")
-    visual_front_score: typing.Optional[float] = pydantic.Field(None, alias="visual-front-score")
+    data_extracted_score: float | None = pydantic.Field(None, alias="data-extracted-score")
+    expiry_date_score: float | None = pydantic.Field(None, alias="expiry-date-score")
+    issue_date_score: float | None = pydantic.Field(None, alias="issue-date-score")
+    live_video_capture_score: float | None = pydantic.Field(None, alias="live-video-capture-score")
+    mrz_validity_score: float | None = pydantic.Field(None, alias="mrz-validity-score")
+    mrz_viz_score: float | None = pydantic.Field(None, alias="mrz-viz-score")
+    ove_back_score: float | None = pydantic.Field(None, alias="ove-back-score")
+    ove_front_score: float | None = pydantic.Field(None, alias="ove-front-score")
+    ove_score: float | None = pydantic.Field(None, alias="ove-score")
+    quality_score: float | None = pydantic.Field(None, alias="quality-score")
+    score: float | None = pydantic.Field(None, alias="score")
+    supported: float | None = None
+    visual_back_score: float | None = pydantic.Field(None, alias="visual-back-score")
+    visual_front_score: float | None = pydantic.Field(None, alias="visual-front-score")
 
 
 class UbbleIdentificationFaceChecks(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#face-checks
-    active_liveness_score: typing.Optional[float] = pydantic.Field(None, alias="active-liveness-score")
-    live_video_capture_score: typing.Optional[float] = pydantic.Field(None, alias="live-video-capture-score")
-    quality_score: typing.Optional[float] = pydantic.Field(None, alias="quality-score")
-    score: typing.Optional[float] = None
+    active_liveness_score: float | None = pydantic.Field(None, alias="active-liveness-score")
+    live_video_capture_score: float | None = pydantic.Field(None, alias="live-video-capture-score")
+    quality_score: float | None = pydantic.Field(None, alias="quality-score")
+    score: float | None = None
 
 
 class UbbleIdentificationReferenceDataChecks(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#reference-data-check
-    score: typing.Optional[float] = None
+    score: float | None = None
 
 
 class UbbleIdentificationDocFaceMatches(UbbleIdentificationObject):
     # https://ubbleai.github.io/developer-documentation/#doc-face-matches
-    score: typing.Optional[float] = None
+    score: float | None = None
 
 
 class UbbleIdentificationIncluded(pydantic.BaseModel):
     type: str
     id: int
     attributes: UbbleIdentificationObject
-    relationships: typing.Optional[dict]
+    relationships: dict | None
 
 
 class UbbleIdentificationIncludedDocuments(UbbleIdentificationIncluded):

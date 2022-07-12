@@ -18,8 +18,8 @@ def is_dms_content(obj: typing.Any) -> TypeGuard[fraud_models.DMSContent]:
     return isinstance(obj, fraud_models.DMSContent)
 
 
-def get_latest_deleted_application_datetime(procedure_number: int) -> typing.Optional[datetime.datetime]:
-    fraud_check: typing.Optional[fraud_models.BeneficiaryFraudCheck] = (
+def get_latest_deleted_application_datetime(procedure_number: int) -> datetime.datetime | None:
+    fraud_check: fraud_models.BeneficiaryFraudCheck | None = (
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.type == fraud_models.FraudCheckType.DMS,
             fraud_models.BeneficiaryFraudCheck.status == fraud_models.FraudCheckStatus.CANCELED,

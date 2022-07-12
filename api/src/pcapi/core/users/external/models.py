@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Iterable
-from typing import Optional
 
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
@@ -12,15 +11,15 @@ class UserAttributes:
     booking_categories: list[str]
     booking_count: int
     booking_subcategories: list[str]
-    city: Optional[str]
+    city: str | None
     date_created: datetime
     date_of_birth: datetime
-    departement_code: Optional[str]
-    deposit_activation_date: Optional[datetime]
-    deposit_expiration_date: Optional[datetime]
-    domains_credit: Optional[DomainsCredit]
-    eligibility: Optional[EligibilityType]
-    first_name: Optional[str]
+    departement_code: str | None
+    deposit_activation_date: datetime | None
+    deposit_expiration_date: datetime | None
+    domains_credit: DomainsCredit | None
+    eligibility: EligibilityType | None
+    first_name: str | None
     has_completed_id_check: bool
     user_id: int
     is_active: bool  # Added for Zendesk
@@ -31,19 +30,19 @@ class UserAttributes:
     is_email_validated: bool
     is_phone_validated: bool  # Added for Zendesk
     is_pro: bool
-    last_booking_date: Optional[datetime]
-    last_favorite_creation_date: Optional[datetime]
-    last_name: Optional[str]
-    last_visit_date: Optional[datetime]
+    last_booking_date: datetime | None
+    last_favorite_creation_date: datetime | None
+    last_name: str | None
+    last_visit_date: datetime | None
     marketing_email_subscription: bool
     marketing_push_subscription: bool
-    most_booked_subcategory: Optional[str]  # Single subcategory most frequently booked by the user
-    phone_number: Optional[str]  # Added for Zendesk
-    postal_code: Optional[str]
+    most_booked_subcategory: str | None  # Single subcategory most frequently booked by the user
+    phone_number: str | None  # Added for Zendesk
+    postal_code: str | None
     products_use_date: dict
     roles: list[str]
-    suspension_date: Optional[datetime]  # Added for Zendesk
-    suspension_reason: Optional[str]  # Added for Zendesk
+    suspension_date: datetime | None  # Added for Zendesk
+    suspension_reason: str | None  # Added for Zendesk
 
 
 @dataclass
@@ -62,18 +61,18 @@ class ProAttributes:
     postal_code: Iterable[str]  # Distinct postal codes of all these venues; keep same name as UserAttributes
 
     # Attributes set when is_user_email is True:
-    user_id: Optional[int] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    user_is_attached: Optional[bool] = None  # User is attached to at least one active offerer, he is not the creator
-    user_is_creator: Optional[bool] = None  # User is the creator of at least one active offerer
-    is_eac: Optional[bool] = None
+    user_id: int | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    user_is_attached: bool | None = None  # User is attached to at least one active offerer, he is not the creator
+    user_is_creator: bool | None = None  # User is the creator of at least one active offerer
+    is_eac: bool | None = None
 
     # Attributes set when is_booking_email is True,
     # which only take venues in which contact email is set as bookingEmail into account:
-    dms_application_submitted: Optional[bool] = None  # At last one bank info is waiting for approval in DMS in venues
-    dms_application_approved: Optional[bool] = None  # All venues have bank information approved
-    isVirtual: Optional[bool] = None  # At least one venue is virtual
-    isPermanent: Optional[bool] = None  # At least one venue is permanent
-    has_offers: Optional[bool] = None  # At least one venue has at least one active offer
-    has_bookings: Optional[bool] = None  # At least one venue has at least one booking not canceled, at least once
+    dms_application_submitted: bool | None = None  # At last one bank info is waiting for approval in DMS in venues
+    dms_application_approved: bool | None = None  # All venues have bank information approved
+    isVirtual: bool | None = None  # At least one venue is virtual
+    isPermanent: bool | None = None  # At least one venue is permanent
+    has_offers: bool | None = None  # At least one venue has at least one active offer
+    has_bookings: bool | None = None  # At least one venue has at least one booking not canceled, at least once

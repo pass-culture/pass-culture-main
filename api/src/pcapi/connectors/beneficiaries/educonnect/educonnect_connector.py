@@ -3,7 +3,6 @@ import logging
 from os import path
 import random
 import string
-from typing import Optional
 
 from flask import current_app as app
 from saml2 import BINDING_HTTP_POST
@@ -158,7 +157,7 @@ def _get_mocked_user_for_performance_tests(user_id: str) -> models.EduconnectUse
     )
 
 
-def _get_connexion_datetime(educonnect_identity: dict) -> Optional[datetime]:
+def _get_connexion_datetime(educonnect_identity: dict) -> datetime | None:
     return (
         datetime.strptime(educonnect_identity[_get_field_oid("6")][0], "%Y-%m-%d %H:%M:%S.%f")
         if _get_field_oid("6") in educonnect_identity

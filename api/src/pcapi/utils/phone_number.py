@@ -1,5 +1,3 @@
-from typing import Optional
-
 import phonenumbers
 from phonenumbers import PhoneNumber
 from phonenumbers.phonenumberutil import NumberParseException
@@ -8,13 +6,13 @@ from pcapi.core.subscription.phone_validation import exceptions as phone_validat
 
 
 class ParsedPhoneNumber:
-    def __init__(self, base_phone_number: str, region: Optional[str] = None):
+    def __init__(self, base_phone_number: str, region: str | None = None):
         self.parsed_phone_number = parse_phone_number(base_phone_number, region)
         self.phone_number = get_formatted_phone_number(self.parsed_phone_number)
         self.country_code = self.parsed_phone_number.country_code
 
 
-def parse_phone_number(phone_number: Optional[str], region: Optional[str] = None) -> PhoneNumber:
+def parse_phone_number(phone_number: str | None, region: str | None = None) -> PhoneNumber:
     """
     Phone number must be correctly formatted in international format (E.164)
     and be valid (number of digits, digit sequence)

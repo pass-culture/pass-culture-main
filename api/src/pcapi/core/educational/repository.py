@@ -4,7 +4,6 @@ from datetime import datetime
 from datetime import time
 from decimal import Decimal
 from typing import Iterable
-from typing import Optional
 from typing import Tuple
 
 from flask_sqlalchemy import BaseQuery
@@ -126,7 +125,7 @@ def get_confirmed_collective_bookings_amount(
     return query.first().amount or Decimal(0)
 
 
-def find_collective_booking_by_id(booking_id: int) -> Optional[educational_models.CollectiveBooking]:
+def find_collective_booking_by_id(booking_id: int) -> educational_models.CollectiveBooking | None:
     return (
         CollectiveBooking.query.filter(educational_models.CollectiveBooking.id == booking_id)
         .options(
@@ -148,14 +147,14 @@ def find_collective_booking_by_id(booking_id: int) -> Optional[educational_model
     )
 
 
-def find_educational_year_by_date(date_searched: datetime) -> Optional[educational_models.EducationalYear]:
+def find_educational_year_by_date(date_searched: datetime) -> educational_models.EducationalYear | None:
     return educational_models.EducationalYear.query.filter(
         date_searched >= educational_models.EducationalYear.beginningDate,
         date_searched <= educational_models.EducationalYear.expirationDate,
     ).one_or_none()
 
 
-def find_educational_institution_by_uai_code(uai_code: str) -> Optional[educational_models.EducationalInstitution]:
+def find_educational_institution_by_uai_code(uai_code: str) -> educational_models.EducationalInstitution | None:
     return educational_models.EducationalInstitution.query.filter_by(institutionId=uai_code).one_or_none()
 
 
@@ -166,7 +165,7 @@ def find_all_educational_institution() -> list[educational_models.EducationalIns
 def find_educational_deposit_by_institution_id_and_year(
     educational_institution_id: int,
     educational_year_id: str,
-) -> Optional[educational_models.EducationalDeposit]:
+) -> educational_models.EducationalDeposit | None:
     return educational_models.EducationalDeposit.query.filter(
         educational_models.EducationalDeposit.educationalInstitutionId == educational_institution_id,
         educational_models.EducationalDeposit.educationalYearId == educational_year_id,
@@ -185,10 +184,11 @@ def get_educational_year_beginning_at_given_year(year: int) -> educational_model
 def find_collective_bookings_for_adage(
     uai_code: str,
     year_id: str,
-    redactor_email: Optional[str] = None,
-    status: Optional[
-        educational_models.CollectiveBookingStatus | educational_models.EducationalBookingStatus | BookingStatus
-    ] = None,
+    redactor_email: str | None = None,
+    status: educational_models.CollectiveBookingStatus
+    | educational_models.EducationalBookingStatus
+    | BookingStatus
+    | None = None,
 ) -> list[educational_models.CollectiveBooking]:
 
     query = educational_models.CollectiveBooking.query
@@ -216,7 +216,7 @@ def find_collective_bookings_for_adage(
     return query.all()
 
 
-def find_redactor_by_email(redactor_email: str) -> Optional[educational_models.EducationalRedactor]:
+def find_redactor_by_email(redactor_email: str) -> educational_models.EducationalRedactor | None:
     return educational_models.EducationalRedactor.query.filter(
         educational_models.EducationalRedactor.email == redactor_email
     ).one_or_none()
@@ -224,7 +224,7 @@ def find_redactor_by_email(redactor_email: str) -> Optional[educational_models.E
 
 def find_active_collective_booking_by_offer_id(
     collective_offer_id: int,
-) -> Optional[educational_models.CollectiveBooking]:
+) -> educational_models.CollectiveBooking | None:
     return (
         educational_models.CollectiveBooking.query.filter(
             educational_models.CollectiveBooking.status.in_(
@@ -251,8 +251,8 @@ def find_active_collective_booking_by_offer_id(
 
 def get_paginated_collective_bookings_for_educational_year(
     educational_year_id: str,
-    page: Optional[int],
-    per_page: Optional[int],
+    page: int | None,
+    per_page: int | None,
 ) -> list[educational_models.CollectiveBooking]:
     page = 1 if page is None else page
     per_page = 1000 if per_page is None else per_page
@@ -389,7 +389,7 @@ def get_collective_stock_from_stock_id(stock_id: int | str) -> educational_model
     ).one_or_none()
 
 
-def get_collective_stock(collective_stock_id: int) -> Optional[educational_models.CollectiveStock]:
+def get_collective_stock(collective_stock_id: int) -> educational_models.CollectiveStock | None:
     query = educational_models.CollectiveStock.query.filter(
         educational_models.CollectiveStock.id == collective_stock_id
     )
@@ -401,13 +401,13 @@ def get_collective_offers_for_filters(
     user_id: int,
     user_is_admin: bool,
     offers_limit: int,
-    offerer_id: Optional[int] = None,
-    status: Optional[str] = None,
-    venue_id: Optional[int] = None,
-    category_id: Optional[str] = None,
-    name_keywords: Optional[str] = None,
-    period_beginning_date: Optional[str] = None,
-    period_ending_date: Optional[str] = None,
+    offerer_id: int | None = None,
+    status: str | None = None,
+    venue_id: int | None = None,
+    category_id: str | None = None,
+    name_keywords: str | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
 ) -> list[educational_models.CollectiveOffer]:
     query = offers_repository.get_collective_offers_by_filters(
         user_id=user_id,
@@ -442,13 +442,13 @@ def get_collective_offers_template_for_filters(
     user_id: int,
     user_is_admin: bool,
     offers_limit: int,
-    offerer_id: Optional[int] = None,
-    status: Optional[str] = None,
-    venue_id: Optional[int] = None,
-    category_id: Optional[str] = None,
-    name_keywords: Optional[str] = None,
-    period_beginning_date: Optional[str] = None,
-    period_ending_date: Optional[str] = None,
+    offerer_id: int | None = None,
+    status: str | None = None,
+    venue_id: int | None = None,
+    category_id: str | None = None,
+    name_keywords: str | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
 ) -> list[educational_models.CollectiveOfferTemplate]:
     query = offers_repository.get_collective_offers_template_by_filters(
         user_id=user_id,
@@ -481,11 +481,11 @@ def get_collective_offers_template_for_filters(
 
 def _get_filtered_collective_bookings_query(
     pro_user: User,
-    period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[CollectiveBookingStatusFilter] = None,
-    event_date: Optional[date] = None,
-    venue_id: Optional[int] = None,
-    extra_joins: Optional[Iterable[Column]] = None,
+    period: tuple[date, date] | None = None,
+    status_filter: CollectiveBookingStatusFilter | None = None,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    extra_joins: Iterable[Column] | None = None,
 ) -> Query:
     extra_joins = extra_joins or tuple()
 
@@ -527,10 +527,10 @@ def _get_filtered_collective_bookings_query(
 
 def _get_filtered_collective_bookings_pro(
     pro_user: User,
-    period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
-    event_date: Optional[datetime] = None,
-    venue_id: Optional[int] = None,
+    period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: datetime | None = None,
+    venue_id: int | None = None,
 ) -> Query:
     bookings_query = (
         _get_filtered_collective_bookings_query(
@@ -572,13 +572,13 @@ def _get_filtered_collective_bookings_pro(
 
 def find_collective_bookings_by_pro_user(
     user: User,
-    booking_period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[CollectiveBookingStatusFilter] = None,
-    event_date: Optional[datetime] = None,
-    venue_id: Optional[int] = None,
+    booking_period: tuple[date, date] | None = None,
+    status_filter: CollectiveBookingStatusFilter | None = None,
+    event_date: datetime | None = None,
+    venue_id: int | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
-) -> Tuple[Optional[int], list[CollectiveBookingNamedTuple]]:
+) -> Tuple[int | None, list[CollectiveBookingNamedTuple]]:
     # FIXME (gvanneste, 2022-04-01): Ne calculer le total que la première fois. À faire quand on branchera le front
     total_collective_bookings = (
         _get_filtered_collective_bookings_query(
@@ -634,8 +634,8 @@ def get_filtered_collective_booking_report(
     pro_user: User,
     period: tuple[date, date],
     status_filter: CollectiveBookingStatusFilter,
-    event_date: Optional[datetime] = None,
-    venue_id: Optional[int] = None,
+    event_date: datetime | None = None,
+    venue_id: int | None = None,
 ) -> str:
     bookings_query = (
         _get_filtered_collective_bookings_query(
@@ -717,7 +717,7 @@ def user_has_bookings(user: User) -> bool:
     return db.session.query(bookings_query.filter(UserOfferer.userId == user.id).exists()).scalar()
 
 
-def get_collective_stock_for_offer(offer_id: int) -> Optional[CollectiveStock]:
+def get_collective_stock_for_offer(offer_id: int) -> CollectiveStock | None:
     return (
         CollectiveStock.query.options(
             joinedload(CollectiveStock.collectiveBookings).load_only(CollectiveBooking.status)

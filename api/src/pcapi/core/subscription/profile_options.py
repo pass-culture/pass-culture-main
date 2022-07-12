@@ -1,6 +1,5 @@
 import dataclasses
 import enum
-import typing
 
 from pcapi.core.users import models as users_models
 
@@ -8,10 +7,10 @@ from pcapi.core.users import models as users_models
 @dataclasses.dataclass()
 class SchoolType:
     id: str
-    description: typing.Optional[str]
+    description: str | None
     label: str
 
-    def __init__(self, school_type: users_models.SchoolTypeEnum, description: typing.Optional[str] = None) -> None:
+    def __init__(self, school_type: users_models.SchoolTypeEnum, description: str | None = None) -> None:
         self.id = school_type.name
         self.description = description
         self.label = school_type.value
@@ -27,14 +26,14 @@ SCHOOL_TYPE_ID_ENUM = enum.Enum(  # type: ignore [misc]
 class Activity:
     id: str
     label: str
-    description: typing.Optional[str]
-    associated_school_types_ids: typing.Optional[list[SCHOOL_TYPE_ID_ENUM]]
+    description: str | None
+    associated_school_types_ids: list[SCHOOL_TYPE_ID_ENUM] | None
 
     def __init__(
         self,
         activity: users_models.ActivityEnum,
-        description: typing.Optional[str] = None,
-        associated_school_types_ids: typing.Optional[list[SCHOOL_TYPE_ID_ENUM]] = None,
+        description: str | None = None,
+        associated_school_types_ids: list[SCHOOL_TYPE_ID_ENUM] | None = None,
     ) -> None:
         self.id = activity.name
         self.label = activity.value

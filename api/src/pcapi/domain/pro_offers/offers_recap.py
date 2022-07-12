@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 
 class OfferRecapStock:
@@ -25,7 +24,7 @@ class OfferRecapVenue:
         name: str,
         public_name: str,
         offerer_name: str,
-        venue_departement_code: Optional[str],
+        venue_departement_code: str | None,
     ):
         self.id = id
         self.is_virtual = is_virtual
@@ -46,17 +45,17 @@ class OfferRecap:
         is_event: bool,
         is_thing: bool,
         is_educational: bool,
-        product_isbn: Optional[str],
+        product_isbn: str | None,
         name: str,
         thumb_url: str,
-        subcategory_id: Optional[str],
+        subcategory_id: str | None,
         venue_id: int,
         venue_is_virtual: bool,
         venue_managing_offerer_id: int,
         venue_name: str,
         venue_offerer_name: str,
         venue_public_name: str,
-        venue_departement_code: Optional[str],
+        venue_departement_code: str | None,
         stocks: list[dict],
         status: str,
         is_showcase: bool,

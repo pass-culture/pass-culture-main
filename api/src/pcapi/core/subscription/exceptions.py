@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 class SubscriptionException(Exception):
     pass
 
@@ -10,7 +7,7 @@ class InvalidEligibilityTypeException(SubscriptionException):
 
 
 class InvalidAgeException(SubscriptionException):
-    def __init__(self, age: Optional[int]) -> None:
+    def __init__(self, age: int | None) -> None:
         super().__init__()
         self.age = age
 

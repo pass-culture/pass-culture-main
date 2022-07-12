@@ -1,6 +1,5 @@
 import logging
 from typing import Dict
-from typing import Optional
 
 from alembic import context
 from sqlalchemy import create_engine
@@ -26,7 +25,7 @@ def include_object(
     name: str,
     type_: str,
     reflected: bool,
-    compare_to: Optional[schema.SchemaItem],
+    compare_to: schema.SchemaItem | None,
 ) -> bool:
     # Don't generate DROP tables with autogenerate
     # https://alembic.sqlalchemy.org/en/latest/cookbook.html#don-t-generate-any-drop-table-directives-with-autogenerate

@@ -4,7 +4,6 @@ import logging
 from typing import Any
 from typing import Callable
 from typing import Iterable
-from typing import Optional
 from typing import Type
 
 from flask import Response
@@ -24,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 def _make_json_response(
-    content: Optional[BaseModel],
+    content: BaseModel | None,
     status_code: int,
     by_alias: bool,
     exclude_none: bool = False,
@@ -44,7 +43,7 @@ def _make_json_response(
     return response
 
 
-def _make_string_response(content: Optional[BaseModel], status_code: int, headers: dict = None) -> Response:
+def _make_string_response(content: BaseModel | None, status_code: int, headers: dict = None) -> Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
         return make_response("", 204)
@@ -66,12 +65,12 @@ def spectree_serialize(
     response_by_alias: bool = True,
     exclude_none: bool = False,
     on_success_status: int = 200,
-    on_empty_status: Optional[int] = None,
-    on_error_statuses: Optional[list[int]] = None,
+    on_empty_status: int | None = None,
+    on_error_statuses: list[int] | None = None,
     api: ExtendedSpecTree = default_api,
     json_format: bool = True,
-    response_headers: Optional[dict[str, str]] = None,
-    resp: Optional[SpectreeResponse] = None,
+    response_headers: dict[str, str] | None = None,
+    resp: SpectreeResponse | None = None,
 ) -> Callable[[Any], Any]:
     """A decorator that serialize/deserialize and validate input/output
 

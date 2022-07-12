@@ -1,6 +1,5 @@
 from datetime import datetime
 import typing
-from typing import Optional
 
 from pydantic import EmailStr
 from pydantic.class_validators import validator
@@ -16,10 +15,10 @@ from pcapi.utils.date import format_into_utc_date
 
 
 class PatchProUserBodyModel(BaseModel):
-    first_name: Optional[str]
-    last_name: Optional[str]
-    email: Optional[EmailStr]
-    phone_number: Optional[str]
+    first_name: str | None
+    last_name: str | None
+    email: EmailStr | None
+    phone_number: str | None
 
     _validate_first_name = validate_not_empty_string_when_provided("first_name")
     _validate_last_name = validate_not_empty_string_when_provided("last_name")
@@ -33,10 +32,10 @@ class PatchProUserBodyModel(BaseModel):
 
 
 class PatchProUserResponseModel(BaseModel):
-    firstName: Optional[str]
-    lastName: Optional[str]
+    firstName: str | None
+    lastName: str | None
     email: EmailStr
-    phoneNumber: Optional[str]
+    phoneNumber: str | None
 
     class Config:
         orm_mode = True
@@ -44,20 +43,20 @@ class PatchProUserResponseModel(BaseModel):
 
 
 class ProUserCreationBodyModel(BaseModel):
-    address: Optional[str]
-    city: Optional[str]
+    address: str | None
+    city: str | None
     email: EmailStr
-    first_name: Optional[str]
-    last_name: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
-    name: Optional[str]
+    first_name: str | None
+    last_name: str | None
+    latitude: float | None
+    longitude: float | None
+    name: str | None
     password: str
     phone_number: str
-    postal_code: Optional[str]
-    public_name: Optional[str]
-    siren: Optional[str]
-    contact_ok: Optional[bool]
+    postal_code: str | None
+    public_name: str | None
+    siren: str | None
+    contact_ok: bool | None
 
     @validator("password")
     def validate_password_strength(cls, password: str) -> str:  # typing: ignore # pylint: disable=no-self-argument
@@ -66,7 +65,7 @@ class ProUserCreationBodyModel(BaseModel):
 
     @validator("contact_ok", pre=True, always=True)
     def cast_contact_ok_to_bool(  # typing: ignore # pylint: disable=no-self-argument
-        cls, contact_ok: Optional[bool]
+        cls, contact_ok: bool | None
     ) -> bool:
         return bool(contact_ok)
 
@@ -83,29 +82,29 @@ class LoginUserBodyModel(BaseModel):
 
 
 class SharedLoginUserResponseModel(BaseModel):
-    activity: Optional[str]
-    address: Optional[str]
-    city: Optional[str]
-    civility: Optional[user_models.GenderEnum]
+    activity: str | None
+    address: str | None
+    city: str | None
+    civility: user_models.GenderEnum | None
     dateCreated: datetime
-    dateOfBirth: Optional[datetime]
-    departementCode: Optional[str]
+    dateOfBirth: datetime | None
+    departementCode: str | None
     email: str
-    firstName: Optional[str]
-    hasPhysicalVenues: Optional[bool]
-    hasSeenProTutorials: Optional[bool]
+    firstName: str | None
+    hasPhysicalVenues: bool | None
+    hasSeenProTutorials: bool | None
     # FIXME (mageoffray, 2022-04-04): Optional can be removed after
     # post-deploy migrations have been done
-    hasSeenProRgs: Optional[bool]
+    hasSeenProRgs: bool | None
     id: str
     isAdmin: bool
     isEmailValidated: bool
-    lastConnectionDate: Optional[datetime]
-    lastName: Optional[str]
-    needsToFillCulturalSurvey: Optional[bool]
-    phoneNumber: Optional[str]
-    postalCode: Optional[str]
-    publicName: Optional[str]
+    lastConnectionDate: datetime | None
+    lastName: str | None
+    needsToFillCulturalSurvey: bool | None
+    phoneNumber: str | None
+    postalCode: str | None
+    publicName: str | None
     roles: list[user_models.UserRole]
 
     _normalize_id = humanize_field("id")
@@ -127,33 +126,33 @@ class SharedLoginUserResponseModel(BaseModel):
 
 class SharedCurrentUserResponseModel(BaseModel):
 
-    activity: Optional[str]
-    address: Optional[str]
-    city: Optional[str]
-    civility: Optional[user_models.GenderEnum]
+    activity: str | None
+    address: str | None
+    city: str | None
+    civility: user_models.GenderEnum | None
     dateCreated: datetime
-    dateOfBirth: Optional[datetime]
-    departementCode: Optional[str]
+    dateOfBirth: datetime | None
+    departementCode: str | None
     email: str
-    externalIds: Optional[typing.Dict]
-    firstName: Optional[str]
-    hasPhysicalVenues: Optional[bool]
-    hasSeenProTutorials: Optional[bool]
-    hasSeenProRgs: Optional[bool]
+    externalIds: typing.Dict | None
+    firstName: str | None
+    hasPhysicalVenues: bool | None
+    hasSeenProTutorials: bool | None
+    hasSeenProRgs: bool | None
     # FIXME (mageoffray, 2022-04-04): Optional can be removed after
     # post-deploy migrations have been done
     id: str
-    idPieceNumber: Optional[str]
+    idPieceNumber: str | None
     isAdmin: bool
     isEmailValidated: bool
-    lastConnectionDate: Optional[datetime]
-    lastName: Optional[str]
-    needsToFillCulturalSurvey: Optional[bool]
-    notificationSubscriptions: Optional[typing.Dict]
-    phoneNumber: Optional[str]
-    phoneValidationStatus: Optional[user_models.PhoneValidationStatusType]
-    postalCode: Optional[str]
-    publicName: Optional[str]
+    lastConnectionDate: datetime | None
+    lastName: str | None
+    needsToFillCulturalSurvey: bool | None
+    notificationSubscriptions: typing.Dict | None
+    phoneNumber: str | None
+    phoneValidationStatus: user_models.PhoneValidationStatusType | None
+    postalCode: str | None
+    publicName: str | None
     roles: list[user_models.UserRole]
 
     _normalize_id = humanize_field("id")

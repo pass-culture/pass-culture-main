@@ -1,5 +1,4 @@
 from typing import Iterable
-from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
 import sqlalchemy as sqla
@@ -124,9 +123,9 @@ def get_offer_counts_by_venue(venue_ids: Iterable[int]) -> dict[int, int]:
 def get_filtered_venues(
     pro_user_id: int,
     user_is_admin: bool,
-    active_offerers_only: Optional[bool] = False,
-    offerer_id: Optional[int] = None,
-    validated_offerer: Optional[bool] = None,
+    active_offerers_only: bool | None = False,
+    offerer_id: int | None = None,
+    validated_offerer: bool | None = None,
 ) -> list[models.Venue]:
     query = (
         models.Venue.query.join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
@@ -182,15 +181,15 @@ def get_api_key_prefixes(offerer_id: int) -> list[str]:
     ]
 
 
-def find_offerer_by_siren(siren: str) -> Optional[models.Offerer]:
+def find_offerer_by_siren(siren: str) -> models.Offerer | None:
     return models.Offerer.query.filter_by(siren=siren).one_or_none()
 
 
-def find_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
+def find_offerer_by_validation_token(token: str) -> models.UserOfferer | None:
     return models.Offerer.query.filter_by(validationToken=token).one_or_none()
 
 
-def find_user_offerer_by_validation_token(token: str) -> Optional[models.UserOfferer]:
+def find_user_offerer_by_validation_token(token: str) -> models.UserOfferer | None:
     return models.UserOfferer.query.filter_by(validationToken=token).one_or_none()
 
 
@@ -202,19 +201,19 @@ def filter_query_where_user_is_user_offerer_and_is_validated(query, user):  # ty
     return query.join(models.UserOfferer).filter_by(user=user).filter(models.UserOfferer.isValidated)
 
 
-def find_venue_by_id(venue_id: int) -> Optional[models.Venue]:
+def find_venue_by_id(venue_id: int) -> models.Venue | None:
     return models.Venue.query.filter_by(id=venue_id).one_or_none()
 
 
-def find_venue_by_siret(siret: str) -> Optional[models.Venue]:
+def find_venue_by_siret(siret: str) -> models.Venue | None:
     return models.Venue.query.filter_by(siret=siret).one_or_none()
 
 
-def find_venue_by_managing_offerer_id(offerer_id: int) -> Optional[models.Venue]:
+def find_venue_by_managing_offerer_id(offerer_id: int) -> models.Venue | None:
     return models.Venue.query.filter_by(managingOffererId=offerer_id).first()
 
 
-def find_virtual_venue_by_offerer_id(offerer_id: int) -> Optional[models.Venue]:
+def find_virtual_venue_by_offerer_id(offerer_id: int) -> models.Venue | None:
     return models.Venue.query.filter_by(managingOffererId=offerer_id, isVirtual=True).first()
 
 

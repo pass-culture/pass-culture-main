@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 import pytz
@@ -28,9 +27,9 @@ def _compute_eighteenth_birthday(birth_date: datetime.datetime) -> datetime.date
 def get_granted_deposit(
     beneficiary: users_models.User,
     eligibility: users_models.EligibilityType,
-    age_at_registration: Optional[int] = None,
-    version: Optional[int] = None,
-) -> Optional[GrantedDeposit]:
+    age_at_registration: int | None = None,
+    version: int | None = None,
+) -> GrantedDeposit | None:
     if eligibility == users_models.EligibilityType.UNDERAGE:
         if age_at_registration not in constants.ELIGIBILITY_UNDERAGE_RANGE:
             raise exceptions.UserNotGrantable("User is not eligible for underage deposit")
@@ -59,8 +58,8 @@ def create_deposit(
     beneficiary: users_models.User,
     deposit_source: str,
     eligibility: users_models.EligibilityType,
-    version: Optional[int] = None,
-    age_at_registration: Optional[int] = None,
+    version: int | None = None,
+    age_at_registration: int | None = None,
 ) -> Deposit:
     """Create a new deposit for the user if there is no deposit yet.
 

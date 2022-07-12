@@ -2,7 +2,6 @@ from datetime import date
 from datetime import datetime
 import logging
 import typing
-from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 from sqlalchemy.sql.functions import func
@@ -23,7 +22,7 @@ logger = logging.getLogger(__name__)
 HASHED_PLACEHOLDER = crypto.hash_password("placeholder")
 
 
-def check_user_and_credentials(user: Optional[models.User], password: str, allow_inactive: bool = False) -> None:
+def check_user_and_credentials(user: models.User | None, password: str, allow_inactive: bool = False) -> None:
     # Order is important to prevent end-user to guess user emails
     # We need to check email and password before checking email validation
     if not user:
@@ -55,17 +54,17 @@ def _find_user_by_email_query(email: str):  # type: ignore [no-untyped-def]
     return models.User.query.filter(func.lower(models.User.email) == utils.sanitize_email(email))
 
 
-def find_user_by_email(email: str) -> Optional[models.User]:
+def find_user_by_email(email: str) -> models.User | None:
     return _find_user_by_email_query(email).one_or_none()
 
 
-def find_pro_user_by_email(email: str) -> Optional[models.User]:
+def find_pro_user_by_email(email: str) -> models.User | None:
     return _find_user_by_email_query(email).filter(models.User.has_pro_role.is_(True)).one_or_none()  # type: ignore [attr-defined]
 
 
 def get_user_with_valid_token(
     token_value: str, token_types: list[models.TokenType], use_token: bool = True
-) -> Optional[models.User]:
+) -> models.User | None:
     token = models.Token.query.filter(
         models.Token.value == token_value, models.Token.type.in_(token_types), models.Token.isUsed == False
     ).one_or_none()

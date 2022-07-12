@@ -300,12 +300,12 @@ def _cancel_bookings_from_stock(stock: offers_models.Stock, reason: BookingCance
 
 def _cancel_collective_booking_from_stock(
     collective_stock: CollectiveStock, reason: CollectiveBookingCancellationReasons
-) -> typing.Optional[CollectiveBooking]:
+) -> CollectiveBooking | None:
     """
     Cancel booking.
     Note that this will not reindex the stock.offer in Algolia
     """
-    booking_to_cancel: typing.Optional[CollectiveBooking] = next(
+    booking_to_cancel: CollectiveBooking | None = next(
         (
             collective_booking
             for collective_booking in collective_stock.collectiveBookings
@@ -344,7 +344,7 @@ def cancel_bookings_from_stock_by_offerer(stock: offers_models.Stock) -> list[Bo
 
 def cancel_collective_booking_from_stock_by_offerer(
     collective_stock: CollectiveStock,
-) -> typing.Optional[CollectiveBooking]:
+) -> CollectiveBooking | None:
     cancelled_booking = _cancel_collective_booking_from_stock(
         collective_stock, CollectiveBookingCancellationReasons.OFFERER
     )
@@ -465,8 +465,8 @@ def get_qr_code_data(booking_token: str) -> str:
 
 
 def compute_cancellation_limit_date(
-    event_beginning: typing.Optional[datetime.datetime], booking_creation_or_event_edition: datetime.datetime
-) -> typing.Optional[datetime.datetime]:
+    event_beginning: datetime.datetime | None, booking_creation_or_event_edition: datetime.datetime
+) -> datetime.datetime | None:
     if event_beginning:
         if event_beginning.tzinfo:
             tz_naive_event_beginning = event_beginning.astimezone(pytz.utc)

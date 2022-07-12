@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 import enum
-import typing
 
 
 class DmsFieldErrorKeyEnum(enum.Enum):
@@ -23,7 +22,7 @@ FIELD_LABEL = {
 @dataclass
 class DmsFieldErrorDetails:
     key: DmsFieldErrorKeyEnum
-    value: typing.Optional[str]
+    value: str | None
 
     def get_field_label(self) -> str:
         return FIELD_LABEL.get(self.key, self.key.value)

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
@@ -13,23 +12,23 @@ import pcapi.utils.date as date_utils
 
 
 class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: Optional[str]
-    bookingEmail: Optional[str]
-    businessUnitId: Optional[int]
-    city: Optional[str]
-    comment: Optional[str]
-    departementCode: Optional[str]
+    address: str | None
+    bookingEmail: str | None
+    businessUnitId: int | None
+    city: str | None
+    comment: str | None
+    departementCode: str | None
     id: str
     isValidated: bool
     isVirtual: bool
     managingOffererId: str
     name: str
     nonHumanizedId: int
-    postalCode: Optional[str]
-    publicName: Optional[str]
-    siret: Optional[str]
-    venueLabelId: Optional[str]
-    withdrawalDetails: Optional[str]
+    postalCode: str | None
+    publicName: str | None
+    siret: str | None
+    venueLabelId: str | None
+    withdrawalDetails: str | None
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
     _humanize_venue_label_id = humanize_field("venueLabelId")
@@ -50,34 +49,34 @@ class OffererApiKey(BaseModel):
 
 
 class GetOffererResponseModel(BaseModel):
-    address: Optional[str]
+    address: str | None
     apiKey: OffererApiKey
-    bic: Optional[str]
+    bic: str | None
     city: str
     dateCreated: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
-    demarchesSimplifieesApplicationId: Optional[str]
+    dateModifiedAtLastProvider: datetime | None
+    demarchesSimplifieesApplicationId: str | None
     fieldsUpdated: list[str]
     hasAvailablePricingPoints: bool
     hasDigitalVenueAtLeastOneOffer: bool
     hasMissingBankInformation: bool
-    iban: Optional[str]
+    iban: str | None
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isValidated: bool
     isActive: bool
-    lastProviderId: Optional[str]
+    lastProviderId: str | None
     managedVenues: list[GetOffererVenueResponseModel]
     name: str
     nonHumanizedId: int
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    siren: Optional[str]
+    siren: str | None
 
     _humanize_id = humanize_field("id")
 
     @classmethod
-    def from_orm(cls, offerer: offerers_models.Offerer, venue_stats_by_ids: Optional[dict[int, venues_serialize.VenueStatsResponseModel]] = None):  # type: ignore
+    def from_orm(cls, offerer: offerers_models.Offerer, venue_stats_by_ids: dict[int, venues_serialize.VenueStatsResponseModel] | None = None):  # type: ignore
         offerer.apiKey = {
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
@@ -121,22 +120,22 @@ class GetOfferersNamesResponseModel(BaseModel):
 
 
 class GetOfferersNamesQueryModel(BaseModel):
-    validated: Optional[bool]
+    validated: bool | None
     # FIXME (dbaty, 2022-05-04): rename to something clearer, e.g. `include_non_validated_user_offerers`
-    validated_for_user: Optional[bool]
+    validated_for_user: bool | None
 
     class Config:
         extra = "forbid"
 
 
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: Optional[str]
-    city: Optional[str]
+    address: str | None
+    city: str | None
     id: str
     isVirtual: bool
-    publicName: Optional[str]
+    publicName: str | None
     name: str
-    postalCode: Optional[str]
+    postalCode: str | None
     _humanize_id = humanize_field("id")
 
     class Config:
@@ -162,7 +161,7 @@ class GetEducationalOfferersResponseModel(BaseModel):
 
 
 class GetEducationalOfferersQueryModel(BaseModel):
-    offerer_id: Optional[str]
+    offerer_id: str | None
 
     class Config:
         extra = "forbid"
@@ -173,10 +172,10 @@ class GenerateOffererApiKeyResponse(BaseModel):
 
 
 class CreateOffererQueryModel(BaseModel):
-    address: Optional[str]
+    address: str | None
     city: str
-    latitude: Optional[float]
-    longitude: Optional[float]
+    latitude: float | None
+    longitude: float | None
     name: str
     postalCode: str
     siren: str
@@ -199,7 +198,7 @@ class GetOfferersResponseModel(BaseModel):
     id: str
     name: str
     # FIXME (mageoffray, 2021-12-27): optional until we populate the database (PC-5693)
-    siren: Optional[str]
+    siren: str | None
     isValidated: bool
     userHasAccess: bool
     nOffers: int  # possibly `-1` for offerers with too much offers.
@@ -231,9 +230,9 @@ class GetOfferersListResponseModel(BaseModel):
 
 
 class GetOffererListQueryModel(BaseModel):
-    keywords: Optional[str]
-    page: Optional[int] = 1
-    paginate: Optional[int] = 10
+    keywords: str | None
+    page: int | None = 1
+    paginate: int | None = 10
 
 
 class ReimbursementPointResponseModel(BaseModel):

@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi.core.offers import validation
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import dehumanize_field
@@ -10,11 +8,11 @@ from pcapi.utils.image_conversion import CropParams
 
 class CreateThumbnailBodyModel(BaseModel):
     offer_id: int
-    credit: Optional[str]
-    cropping_rect_x: Optional[float]
-    cropping_rect_y: Optional[float]
-    cropping_rect_height: Optional[float]
-    cropping_rect_width: Optional[float]
+    credit: str | None
+    cropping_rect_x: float | None
+    cropping_rect_y: float | None
+    cropping_rect_height: float | None
+    cropping_rect_width: float | None
 
     _dehumanize_offer_id = dehumanize_field("offer_id")
 
@@ -22,7 +20,7 @@ class CreateThumbnailBodyModel(BaseModel):
         alias_generator = to_camel
 
     @property
-    def crop_params(self) -> Optional[CropParams]:
+    def crop_params(self) -> CropParams | None:
         if {self.cropping_rect_x, self.cropping_rect_y, self.cropping_rect_height, self.cropping_rect_width} == {None}:
             return None
 

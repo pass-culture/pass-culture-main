@@ -1,7 +1,6 @@
 from datetime import date
 from datetime import datetime
 from datetime import time
-from typing import Optional
 from zoneinfo import ZoneInfo
 
 from babel.dates import format_date
@@ -94,13 +93,13 @@ def get_postal_code_timezone(postal_code: str) -> str:
     return get_department_timezone(PostalCode(postal_code).get_departement_code())
 
 
-def get_department_timezone(departement_code: Optional[str]) -> str:
+def get_department_timezone(departement_code: str | None) -> str:
     return (
         METROPOLE_TIMEZONE if departement_code is None else CUSTOM_TIMEZONES.get(departement_code, METROPOLE_TIMEZONE)
     )
 
 
-def utc_datetime_to_department_timezone(date_time: Optional[datetime], departement_code: str) -> datetime:
+def utc_datetime_to_department_timezone(date_time: datetime | None, departement_code: str) -> datetime:
     from_zone = ZoneInfo(DEFAULT_STORED_TIMEZONE)
     to_zone = ZoneInfo(get_department_timezone(departement_code))
     utc_datetime = date_time.replace(tzinfo=from_zone)  # type: ignore [union-attr]
@@ -137,7 +136,7 @@ def get_day_start(dt: date, timezone: pytz_BaseTzInfo) -> datetime:
     return timezone.localize(datetime.combine(dt, time(0, 0)))
 
 
-def format_time_in_second_to_human_readable(time_in_second: int) -> Optional[str]:
+def format_time_in_second_to_human_readable(time_in_second: int) -> str | None:
     INTERVALS = [60 * 60 * 24 * 7, 60 * 60 * 24, 60 * 60, 60, 1]
     NAMES = [
         ("semaine", "semaines"),

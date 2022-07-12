@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from operator import or_
-from typing import Optional
 from typing import cast
 
 from flask_sqlalchemy import BaseQuery
@@ -32,7 +31,7 @@ def get_venue_provider_by_venue_and_provider_ids(venue_id: int, provider_id: int
     return VenueProvider.query.filter_by(venueId=venue_id, providerId=provider_id).one()
 
 
-def get_provider_enabled_for_pro_by_id(provider_id: int) -> Optional[Provider]:
+def get_provider_enabled_for_pro_by_id(provider_id: int) -> Provider | None:
     return Provider.query.filter_by(id=provider_id, isActive=True, enabledForPro=True).one_or_none()
 
 
@@ -62,15 +61,15 @@ def get_providers_enabled_for_pro_excluding_specific_providers(providers_to_excl
     )
 
 
-def get_allocine_theater(venue: Venue) -> Optional[AllocineTheater]:
+def get_allocine_theater(venue: Venue) -> AllocineTheater | None:
     return AllocineTheater.query.filter_by(siret=venue.siret).one_or_none()
 
 
-def get_allocine_pivot(venue: Venue) -> Optional[AllocinePivot]:
+def get_allocine_pivot(venue: Venue) -> AllocinePivot | None:
     return AllocinePivot.query.filter_by(venue=venue).one_or_none()
 
 
-def get_cinema_provider_pivot_for_venue(venue: Venue) -> Optional[CinemaProviderPivot]:
+def get_cinema_provider_pivot_for_venue(venue: Venue) -> CinemaProviderPivot | None:
     return CinemaProviderPivot.query.filter_by(venue=venue).one_or_none()
 
 
@@ -91,7 +90,7 @@ def get_providers_to_exclude(venue: Venue) -> list[str]:
     return providers_to_exclude
 
 
-def get_cds_cinema_api_token(cinema_id: str) -> Optional[str]:
+def get_cds_cinema_api_token(cinema_id: str) -> str | None:
     cinema_details = (
         CDSCinemaDetails.query.join(CinemaProviderPivot)
         .filter(CinemaProviderPivot.idAtProvider == cinema_id)
@@ -115,8 +114,8 @@ class AllocineVenue:
         if not self.has_pivot() and not self.has_theater():
             raise providers_exceptions.UnknownVenueToAlloCine()
 
-    allocine_pivot: Optional[AllocinePivot]
-    allocine_theater: Optional[AllocineTheater]
+    allocine_pivot: AllocinePivot | None
+    allocine_theater: AllocineTheater | None
 
     def has_pivot(self) -> bool:
         return self.allocine_pivot is not None

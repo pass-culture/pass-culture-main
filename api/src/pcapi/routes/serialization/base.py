@@ -1,6 +1,5 @@
 import re
 import typing
-from typing import Optional
 
 import pydantic
 from pydantic import validator
@@ -22,10 +21,10 @@ class VenueContactModel(BaseModel):
         anystr_strip_whitespace = True
         extra = pydantic.Extra.forbid
 
-    email: Optional[pydantic.EmailStr]
-    website: Optional[str]
-    phone_number: Optional[str]
-    social_medias: Optional[SocialMedias]
+    email: pydantic.EmailStr | None
+    website: str | None
+    phone_number: str | None
+    social_medias: SocialMedias | None
 
     @validator("phone_number")
     def validate_phone_number(cls, phone_number: str) -> str:  # pylint: disable=no-self-argument
@@ -54,14 +53,14 @@ class BaseVenueResponse(BaseModel):
     isVirtual: bool
     name: str
 
-    address: typing.Optional[str]
-    bannerUrl: typing.Optional[str]
-    contact: typing.Optional[VenueContactModel]
-    city: typing.Optional[str]
-    description: typing.Optional[VenueDescription]  # type: ignore
-    isPermanent: typing.Optional[bool]
-    latitude: typing.Optional[float]
-    longitude: typing.Optional[float]
-    postalCode: typing.Optional[str]
-    publicName: typing.Optional[str]
-    withdrawalDetails: typing.Optional[str]
+    address: str | None
+    bannerUrl: str | None
+    contact: VenueContactModel | None
+    city: str | None
+    description: VenueDescription | None  # type: ignore
+    isPermanent: bool | None
+    latitude: float | None
+    longitude: float | None
+    postalCode: str | None
+    publicName: str | None
+    withdrawalDetails: str | None

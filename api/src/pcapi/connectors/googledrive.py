@@ -22,7 +22,6 @@ proper backend is chosen depending on the environment (see
 
 from io import BytesIO
 import pathlib
-import typing
 
 import googleapiclient.discovery
 from googleapiclient.http import MediaFileUpload
@@ -38,7 +37,7 @@ def get_backend() -> "BaseBackend":
 
 
 class BaseBackend:
-    def get_folder(self, parent_folder_id: str, name: str) -> typing.Optional[str]:
+    def get_folder(self, parent_folder_id: str, name: str) -> str | None:
         """Return folder id if it exists, None otherwise."""
         raise NotImplementedError()
 
@@ -52,13 +51,13 @@ class BaseBackend:
         """Create a new file and return its id."""
         raise NotImplementedError()
 
-    def download_file(self, file_id: str, content_type: typing.Optional[str] = None) -> BytesIO:
+    def download_file(self, file_id: str, content_type: str | None = None) -> BytesIO:
         """Download a file and return its content"""
         raise NotImplementedError()
 
 
 class TestingBackend(BaseBackend):
-    def get_folder(self, parent_folder_id: str, name: str) -> typing.Optional[str]:
+    def get_folder(self, parent_folder_id: str, name: str) -> str | None:
         """Return folder id if it exists, None otherwise."""
         return parent_folder_id + name
 
@@ -74,7 +73,7 @@ class TestingBackend(BaseBackend):
             raise ValueError("The given local path should exist.")
         return parent_folder_id + name
 
-    def download_file(self, file_id: str, content_type: typing.Optional[str] = None) -> BytesIO:
+    def download_file(self, file_id: str, content_type: str | None = None) -> BytesIO:
         """Download a file and return its content"""
         return BytesIO()
 
@@ -86,7 +85,7 @@ class GoogleDriveBackend(BaseBackend):
         # through a Kubernetes "workload identity".
         return googleapiclient.discovery.build("drive", "v3")
 
-    def get_folder(self, parent_folder_id: str, name: str) -> typing.Optional[str]:
+    def get_folder(self, parent_folder_id: str, name: str) -> str | None:
         """Return folder id if it exists, None otherwise."""
         quoted_name = name.replace("'", "\\'")
         request = self.service.files().list(
@@ -137,7 +136,7 @@ class GoogleDriveBackend(BaseBackend):
         response = request.execute()
         return response["id"]
 
-    def download_file(self, file_id: str, content_type: typing.Optional[str] = None) -> BytesIO:
+    def download_file(self, file_id: str, content_type: str | None = None) -> BytesIO:
         """Download a file and return its content"""
         request = self.service.files().export_media(fileId=file_id, mimeType=content_type)
         bytes_io = BytesIO()

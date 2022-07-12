@@ -2,7 +2,6 @@ from io import BytesIO
 from io import TextIOWrapper
 import logging
 import re
-from typing import Optional
 
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
@@ -95,7 +94,7 @@ class TiteLiveThings(LocalProvider):
         self.products_file = None
         self.product_extra_data = {}
 
-    def __next__(self) -> Optional[list[ProvidableInfo]]:
+    def __next__(self) -> list[ProvidableInfo] | None:
         if self.data_lines is None:
             self.open_next_file()
 
@@ -151,7 +150,7 @@ class TiteLiveThings(LocalProvider):
         )
         return [providable_info]
 
-    def get_ineligibility_reason(self) -> Optional[str]:
+    def get_ineligibility_reason(self) -> str | None:
         if self.product_infos["is_scolaire"] == "1" or self.product_infos["code_csr"] in SCHOOL_RELATED_CSR_CODE:
             return "school"
 

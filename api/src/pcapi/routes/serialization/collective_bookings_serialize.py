@@ -3,7 +3,6 @@ from datetime import datetime
 from enum import Enum
 from io import BytesIO
 from io import StringIO
-from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
 from pydantic import root_validator
@@ -34,11 +33,11 @@ class CollectiveBookingRecapStatus(Enum):
 
 class ListCollectiveBookingsQueryModel(BaseModel):
     page: int = 1
-    venue_id: Optional[int]
-    event_date: Optional[str]
-    booking_status_filter: Optional[CollectiveBookingStatusFilter]
-    booking_period_beginning_date: Optional[str]
-    booking_period_ending_date: Optional[str]
+    venue_id: int | None
+    event_date: str | None
+    booking_status_filter: CollectiveBookingStatusFilter | None
+    booking_period_beginning_date: str | None
+    booking_period_ending_date: str | None
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
 
@@ -72,7 +71,7 @@ class CollectiveBookingCollectiveStockResponseModel(BaseModel):
     offer_name: str
     offer_identifier: str
     event_beginning_datetime: str
-    offer_isbn: Optional[str]
+    offer_isbn: str | None
     offer_is_educational = True
 
 
@@ -80,13 +79,13 @@ class EducationalRedactorResponseModel(BaseModel):
     lastname: str
     firstname: str
     email: str
-    phonenumber: Optional[str]
+    phonenumber: str | None
 
 
 class CollectiveBookingResponseModel(BaseModel):
     stock: CollectiveBookingCollectiveStockResponseModel
     beneficiary: EducationalRedactorResponseModel
-    booking_token: Optional[str]
+    booking_token: str | None
     booking_date: str
     booking_status: str
     booking_is_duo = False
@@ -115,12 +114,12 @@ def _get_booking_status(status: CollectiveBookingStatus, is_confirmed: bool) -> 
 def build_status_history(
     booking_status: CollectiveBookingStatus,
     booking_date: datetime,
-    cancellation_date: Optional[datetime],
-    cancellation_limit_date: Optional[datetime],
-    payment_date: Optional[datetime],
-    date_used: Optional[datetime],
-    confirmation_date: Optional[datetime],
-    is_confirmed: Optional[bool],
+    cancellation_date: datetime | None,
+    cancellation_limit_date: datetime | None,
+    payment_date: datetime | None,
+    date_used: datetime | None,
+    confirmation_date: datetime | None,
+    is_confirmed: bool | None,
 ) -> list[BookingStatusHistoryResponseModel]:
 
     if booking_status == CollectiveBookingStatus.PENDING:
@@ -161,7 +160,7 @@ def build_status_history(
 
 
 def _serialize_collective_booking_status_info(
-    collective_booking_status: CollectiveBookingRecapStatus, collective_booking_status_date: Optional[datetime]
+    collective_booking_status: CollectiveBookingRecapStatus, collective_booking_status_date: datetime | None
 ) -> BookingStatusHistoryResponseModel:
 
     serialized_collective_booking_status_date = (

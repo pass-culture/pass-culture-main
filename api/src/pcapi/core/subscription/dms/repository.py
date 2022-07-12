@@ -1,5 +1,3 @@
-import typing
-
 from sqlalchemy import Integer
 from sqlalchemy import or_
 
@@ -8,7 +6,7 @@ from pcapi.models import db
 
 
 def create_orphan_dms_application_if_not_exists(
-    application_number: int, procedure_number: int, email: typing.Optional[str] = None
+    application_number: int, procedure_number: int, email: str | None = None
 ) -> None:
     if db.session.query(
         fraud_models.OrphanDmsApplication.query.filter_by(application_id=application_number, email=email).exists()

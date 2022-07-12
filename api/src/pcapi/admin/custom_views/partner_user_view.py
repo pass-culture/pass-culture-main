@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from flask.helpers import flash
 from flask_sqlalchemy import BaseQuery
@@ -26,7 +25,7 @@ from pcapi.core.users.utils import sanitize_email
 from pcapi.utils.mailing import build_pc_webapp_reset_password_link
 
 
-def filter_email(value: Optional[str]) -> Optional[str]:
+def filter_email(value: str | None) -> str | None:
     if not value:
         return value
     return sanitize_email(value)

@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 from urllib.parse import urlencode
 
 from flask import current_app as app
@@ -134,7 +133,7 @@ def on_educonnect_authentication_response() -> Response:
     return redirect(SUCCESS_PAGE_URL + urlencode(success_query_params), code=302)
 
 
-def _user_id_from_saml_request_id(saml_request_id: str) -> Optional[int]:
+def _user_id_from_saml_request_id(saml_request_id: str) -> int | None:
     key = educonnect_connector.build_saml_request_id_key(saml_request_id)
     return app.redis_client.get(key)  # type: ignore [attr-defined]
 

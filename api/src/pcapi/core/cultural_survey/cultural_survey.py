@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from pcapi.core.cultural_survey.models import CulturalSurveyAnswerEnum
 from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
@@ -9,8 +8,8 @@ from pcapi.core.cultural_survey.models import CulturalSurveyQuestionEnum
 class CulturalSurveyAnswer:
     id: CulturalSurveyAnswerEnum
     title: str
-    subtitle: Optional[str] = None
-    sub_question: Optional[CulturalSurveyQuestionEnum] = None
+    subtitle: str | None = None
+    sub_question: CulturalSurveyQuestionEnum | None = None
 
 
 @dataclass()

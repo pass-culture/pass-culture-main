@@ -3,7 +3,6 @@ from decimal import Decimal
 from decimal import InvalidOperation
 from io import BytesIO
 import typing
-from typing import Optional
 
 from PIL import Image
 import pydantic
@@ -37,21 +36,21 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     address: pydantic.constr(max_length=200)  # type: ignore
     bookingEmail: pydantic.constr(max_length=120)  # type: ignore
     city: pydantic.constr(max_length=50)  # type: ignore
-    comment: Optional[str]
+    comment: str | None
     latitude: float
     longitude: float
     managingOffererId: str
     name: pydantic.constr(max_length=140)  # type: ignore
-    publicName: Optional[pydantic.constr(max_length=255)]  # type: ignore
+    publicName: pydantic.constr(max_length=255) | None  # type: ignore
     postalCode: pydantic.constr(min_length=4, max_length=6)  # type: ignore
-    siret: Optional[pydantic.constr(min_length=14, max_length=14)]  # type: ignore
-    venueLabelId: Optional[str]
+    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore
+    venueLabelId: str | None
     venueTypeCode: str
-    withdrawalDetails: Optional[str]
-    description: Optional[base.VenueDescription]  # type: ignore
-    contact: Optional[base.VenueContactModel]
+    withdrawalDetails: str | None
+    description: base.VenueDescription | None  # type: ignore
+    contact: base.VenueContactModel | None
     # FUTURE-NEW-BANK-DETAILS: remove businessUnitId when new bank details journey is complete
-    businessUnitId: Optional[int]
+    businessUnitId: int | None
 
     class Config:
         extra = "forbid"
@@ -107,22 +106,22 @@ class VenueStatsResponseModel(BaseModel):
 
 
 class GetVenueManagingOffererResponseModel(BaseModel):
-    address: Optional[str]
-    bic: Optional[str]
+    address: str | None
+    bic: str | None
     city: str
     dateCreated: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
-    demarchesSimplifieesApplicationId: Optional[str]
+    dateModifiedAtLastProvider: datetime | None
+    demarchesSimplifieesApplicationId: str | None
     fieldsUpdated: list[str]
-    iban: Optional[str]
+    iban: str | None
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isValidated: bool
-    lastProviderId: Optional[str]
+    lastProviderId: str | None
     name: str
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    siren: Optional[str]
+    siren: str | None
 
     _humanize_id = humanize_field("id")
 
@@ -132,13 +131,13 @@ class GetVenueManagingOffererResponseModel(BaseModel):
 
 
 class BannerMetaModel(BaseModel):
-    image_credit: Optional[base.VenueImageCredit]  # type: ignore [valid-type]
-    original_image_url: Optional[str]
+    image_credit: base.VenueImageCredit | None  # type: ignore [valid-type]
+    original_image_url: str | None
     crop_params: CropParams = CropParams()
 
     @validator("crop_params", pre=True)
     @classmethod
-    def validate_crop_params(cls, raw_crop_params: Optional[CropParams]) -> CropParams:
+    def validate_crop_params(cls, raw_crop_params: CropParams | None) -> CropParams:
         """
         Old venues might have a crop_params key with a null value
         """
@@ -176,37 +175,37 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     managingOffererId: str
     nonHumanizedId: int
 
-    bannerMeta: Optional[BannerMetaModel]
-    bic: Optional[str]
-    bookingEmail: Optional[str]
-    businessUnitId: Optional[int]
-    businessUnit: Optional[BusinessUnitResponseModel]
-    comment: Optional[str]
-    dateModifiedAtLastProvider: Optional[datetime]
-    demarchesSimplifieesApplicationId: Optional[str]
-    departementCode: Optional[str]
-    dmsToken: Optional[str]
+    bannerMeta: BannerMetaModel | None
+    bic: str | None
+    bookingEmail: str | None
+    businessUnitId: int | None
+    businessUnit: BusinessUnitResponseModel | None
+    comment: str | None
+    dateModifiedAtLastProvider: datetime | None
+    demarchesSimplifieesApplicationId: str | None
+    departementCode: str | None
+    dmsToken: str | None
     fieldsUpdated: list[str]
-    iban: Optional[str]
-    idAtProviders: Optional[str]
-    isBusinessUnitMainVenue: Optional[bool]
-    lastProviderId: Optional[str]
+    iban: str | None
+    idAtProviders: str | None
+    isBusinessUnitMainVenue: bool | None
+    lastProviderId: str | None
     managingOfferer: GetVenueManagingOffererResponseModel
-    pricingPoint: Optional[GetVenuePricingPointResponseModel]
-    reimbursementPointId: Optional[int]
-    siret: Optional[str]
-    venueLabelId: Optional[str]
-    venueTypeCode: Optional[offerers_models.VenueTypeCode]
-    collectiveDescription: Optional[str]
-    collectiveStudents: Optional[list[educational_models.StudentLevels]]
-    collectiveWebsite: Optional[str]
+    pricingPoint: GetVenuePricingPointResponseModel | None
+    reimbursementPointId: int | None
+    siret: str | None
+    venueLabelId: str | None
+    venueTypeCode: offerers_models.VenueTypeCode | None
+    collectiveDescription: str | None
+    collectiveStudents: list[educational_models.StudentLevels] | None
+    collectiveWebsite: str | None
     collectiveDomains: list[GetVenueDomainResponseModel]
-    collectiveInterventionArea: Optional[list[str]]
-    collectiveLegalStatus: Optional[str]
-    collectiveNetwork: Optional[list[str]]
-    collectiveAccessInformation: Optional[str]
-    collectivePhone: Optional[str]
-    collectiveEmail: Optional[str]
+    collectiveInterventionArea: list[str] | None
+    collectiveLegalStatus: str | None
+    collectiveNetwork: list[str] | None
+    collectiveAccessInformation: str | None
+    collectivePhone: str | None
+    collectiveEmail: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -218,7 +217,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
 
     @validator("bannerMeta")
     @classmethod
-    def validate_banner_meta(cls, meta: Optional[BannerMetaModel], values: dict) -> Optional[BannerMetaModel]:
+    def validate_banner_meta(cls, meta: BannerMetaModel | None, values: dict) -> BannerMetaModel | None:
         """
         Old venues might have a banner url without banner meta, or an
         incomplete banner meta.
@@ -256,36 +255,36 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    name: Optional[pydantic.constr(max_length=140)]  # type: ignore
-    address: Optional[pydantic.constr(max_length=200)]  # type: ignore
-    siret: Optional[pydantic.constr(min_length=14, max_length=14)]  # type: ignore
-    latitude: Optional[float | str]
-    longitude: Optional[float | str]
-    bookingEmail: Optional[pydantic.constr(max_length=120)]  # type: ignore
-    postalCode: Optional[pydantic.constr(min_length=4, max_length=6)]  # type: ignore
-    city: Optional[pydantic.constr(max_length=50)]  # type: ignore
-    publicName: Optional[pydantic.constr(max_length=255)]  # type: ignore
-    comment: Optional[str]
-    venueTypeCode: Optional[str]
-    venueLabelId: Optional[int]
-    withdrawalDetails: Optional[str]
-    isAccessibilityAppliedOnAllOffers: Optional[bool]
-    isWithdrawalAppliedOnAllOffers: Optional[bool]
-    isEmailAppliedOnAllOffers: Optional[bool]
-    description: Optional[base.VenueDescription]  # type: ignore
-    contact: Optional[base.VenueContactModel]
-    businessUnitId: Optional[int]
-    reimbursementPointId: Optional[int]
-    collectiveDescription: Optional[str]
-    collectiveStudents: Optional[list[educational_models.StudentLevels]]
-    collectiveWebsite: Optional[str]
-    collectiveDomains: Optional[list[int]]
-    collectiveInterventionArea: Optional[list[str]]
-    collectiveLegalStatus: Optional[str]
-    collectiveNetwork: Optional[list[str]]
-    collectiveAccessInformation: Optional[str]
-    collectivePhone: Optional[str]
-    collectiveEmail: Optional[str]
+    name: pydantic.constr(max_length=140) | None  # type: ignore
+    address: pydantic.constr(max_length=200) | None  # type: ignore
+    siret: pydantic.constr(min_length=14, max_length=14) | None  # type: ignore
+    latitude: float | str | None
+    longitude: float | str | None
+    bookingEmail: pydantic.constr(max_length=120) | None  # type: ignore
+    postalCode: pydantic.constr(min_length=4, max_length=6) | None  # type: ignore
+    city: pydantic.constr(max_length=50) | None  # type: ignore
+    publicName: pydantic.constr(max_length=255) | None  # type: ignore
+    comment: str | None
+    venueTypeCode: str | None
+    venueLabelId: int | None
+    withdrawalDetails: str | None
+    isAccessibilityAppliedOnAllOffers: bool | None
+    isWithdrawalAppliedOnAllOffers: bool | None
+    isEmailAppliedOnAllOffers: bool | None
+    description: base.VenueDescription | None  # type: ignore
+    contact: base.VenueContactModel | None
+    businessUnitId: int | None
+    reimbursementPointId: int | None
+    collectiveDescription: str | None
+    collectiveStudents: list[educational_models.StudentLevels] | None
+    collectiveWebsite: str | None
+    collectiveDomains: list[int] | None
+    collectiveInterventionArea: list[str] | None
+    collectiveLegalStatus: str | None
+    collectiveNetwork: list[str] | None
+    collectiveAccessInformation: str | None
+    collectivePhone: str | None
+    collectiveEmail: str | None
 
     _dehumanize_venue_label_id = dehumanize_field("venueLabelId")
     _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
@@ -301,14 +300,14 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     managingOffererId: str
     name: str
     offererName: str
-    publicName: Optional[str]
+    publicName: str | None
     isVirtual: bool
-    bookingEmail: Optional[str]
-    withdrawalDetails: Optional[str]
-    businessUnitId: Optional[int]
-    businessUnit: Optional[BusinessUnitResponseModel]
-    siret: Optional[str]
-    isBusinessUnitMainVenue: Optional[bool]
+    bookingEmail: str | None
+    withdrawalDetails: str | None
+    businessUnitId: int | None
+    businessUnit: BusinessUnitResponseModel | None
+    siret: str | None
+    isBusinessUnitMainVenue: bool | None
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -320,10 +319,10 @@ class GetVenueListResponseModel(BaseModel):
 
 class VenueListQueryModel(BaseModel):
     # FIXME (dbaty, 2022-05-04): this is a no-op, remove this argument.
-    validated_for_user: Optional[bool]
-    validated: Optional[bool]
-    active_offerers_only: Optional[bool]
-    offerer_id: Optional[int]
+    validated_for_user: bool | None
+    validated: bool | None
+    active_offerers_only: bool | None
+    offerer_id: int | None
 
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
     _string_to_boolean_validated_for_user = string_to_boolean_field("validated_for_user")
@@ -337,7 +336,7 @@ class VenueListQueryModel(BaseModel):
 
 class VenueBannerContentModel(BaseModel):
     content: pydantic.conbytes(min_length=2, max_length=VENUE_BANNER_MAX_SIZE)  # type: ignore
-    image_credit: Optional[base.VenueImageCredit]  # type: ignore
+    image_credit: base.VenueImageCredit | None  # type: ignore
 
     # cropping parameters must be a % (between 0 and 1) of the original
     # bottom right corner and the original height
@@ -403,7 +402,7 @@ class VenueBannerContentModel(BaseModel):
         return request
 
     @property
-    def crop_params(self) -> Optional[CropParams]:
+    def crop_params(self) -> CropParams | None:
         if {self.x_crop_percent, self.y_crop_percent, self.height_crop_percent, self.width_crop_percent} == {None}:
             return None
 
@@ -437,29 +436,29 @@ class VenuesEducationalStatusesResponseModel(BaseModel):
 
 class AdageCulturalPartner(BaseModel):
     id: int
-    venueId: Optional[int]
-    siret: Optional[str]
-    regionId: Optional[int]
-    academieId: Optional[str]
-    statutId: Optional[int]
-    labelId: Optional[int]
-    typeId: Optional[int]
-    communeId: Optional[str]
+    venueId: int | None
+    siret: str | None
+    regionId: int | None
+    academieId: str | None
+    statutId: int | None
+    labelId: int | None
+    typeId: int | None
+    communeId: str | None
     libelle: str
-    adresse: Optional[str]
-    siteWeb: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
-    statutLibelle: Optional[str]
-    labelLibelle: Optional[str]
-    typeIcone: Optional[str]
-    typeLibelle: Optional[str]
-    communeLibelle: Optional[str]
-    communeDepartement: Optional[str]
-    academieLibelle: Optional[str]
-    regionLibelle: Optional[str]
-    domaines: Optional[str]
-    actif: Optional[int]
+    adresse: str | None
+    siteWeb: str | None
+    latitude: float | None
+    longitude: float | None
+    statutLibelle: str | None
+    labelLibelle: str | None
+    typeIcone: str | None
+    typeLibelle: str | None
+    communeLibelle: str | None
+    communeDepartement: str | None
+    academieLibelle: str | None
+    regionLibelle: str | None
+    domaines: str | None
+    actif: int | None
     dateModification: datetime
 
 
@@ -469,9 +468,9 @@ class AdageCulturalPartners(BaseModel):
 
 class AdageCulturalPartnerResponseModel(BaseModel):
     id: int
-    communeLibelle: Optional[str]
+    communeLibelle: str | None
     libelle: str
-    regionLibelle: Optional[str]
+    regionLibelle: str | None
 
     class Config:
         orm_mode = True
