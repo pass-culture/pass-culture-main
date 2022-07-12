@@ -9,6 +9,7 @@ from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.models import AdageApiResult
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
+from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import requests
 
 
@@ -90,7 +91,7 @@ class AdageHttpClient(AdageClient):
         )
 
         if api_response.status_code == 404:
-            raise CulturalPartnerNotFoundException("Requested  cultural partners not found for Adage")
+            raise CulturalPartnerNotFoundException("Requested cultural partners not found for Adage")
         if api_response.status_code != 200:
             raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
@@ -104,3 +105,22 @@ class AdageHttpClient(AdageClient):
             raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         return AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
+
+    def get_cultural_partner(self, siret: str) -> venues_serialize.AdageCulturalPartner:
+        api_url = f"{self.base_url}/v1/etablissement-culturel/{siret}"
+        api_response = requests.get(
+            api_url,
+            headers={self.header_key: self.api_key},
+        )
+
+        if api_response.status_code == 404:
+            raise CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
+        if api_response.status_code != 200:
+            raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+
+        response_content = api_response.json()
+
+        if len(response_content) == 0:
+            raise CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
+
+        return parse_obj_as(venues_serialize.AdageCulturalPartner, response_content[0])
