@@ -251,6 +251,49 @@ describe('src | VenueProvidersManager', () => {
       })
     })
 
+    it('should be possible to edit parameters when has cinema provider', async () => {
+      // Given
+      venueProviders = [
+        {
+          id: 'AD',
+          nOffers: 1,
+          provider: { id: 'BC', name: 'ciné office' },
+          providerId: 'BC',
+          venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
+          isDuo: false,
+          isActive: true,
+        },
+      ]
+      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      pcapi.editVenueProvider.mockResolvedValue()
+
+      // When
+      await renderVenueProvidersManager(props)
+      const editParametersButton = screen.getByText('Modifier les paramètres', {
+        selector: 'button',
+      })
+      fireEvent.click(editParametersButton)
+
+      // Then
+      const isDuoCheckbox = screen.getByLabelText(
+        'Accepter les réservations DUO'
+      )
+      fireEvent.click(isDuoCheckbox)
+      const saveEditionButton = screen.getByText('Modifier', {
+        selector: 'button',
+      })
+      await act(async () => {
+        fireEvent.click(saveEditionButton)
+      })
+      expect(pcapi.editVenueProvider).toBeCalledWith({
+        isDuo: true,
+        venueId: 'venueId',
+        providerId: 'BC',
+        isActive: true,
+      })
+    })
+
     it('should display synchronization parameters when has Ciné office provider', async () => {
       // Given
       venueProviders = [
