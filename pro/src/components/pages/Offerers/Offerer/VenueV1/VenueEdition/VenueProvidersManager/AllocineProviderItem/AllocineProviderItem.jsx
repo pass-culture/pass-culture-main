@@ -63,6 +63,7 @@ const AllocineProviderItem = ({
     price: venueProvider.price,
     quantity: venueProvider.quantity,
     isDuo: venueProvider.isDuo,
+    isActive: venueProvider.isActive,
   }
 
   return (
