@@ -3,6 +3,7 @@
 /* eslint-disable */
 
 export type PostVenueProviderBody = {
+  isActive?: boolean;
   isDuo?: boolean;
   price?: string;
   providerId: string;
