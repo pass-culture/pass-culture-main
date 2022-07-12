@@ -45,12 +45,13 @@ const CollectiveDataEdition = (): JSX.Element => {
 
   return (
     <>
-      <Title level={1}>Mes informations EAC</Title>
+      <Title level={1}>Mes informations pour les enseignants</Title>
       <p className={styles.description}>
-        Il s'agit d'un formulaire vous permettant de renseigner vos
-        informattions EAC. Les informations renseignées seront visibles par les
-        enseignants et chefs d'établissement sur Adage (Application Dédiée A la
-        Généralisation de l'Education artistique et culturelle).
+        Ce formulaire vous permet de renseigner des informations complémentaires
+        concernant votre établissement et les actions menées auprès du public
+        scolaire. Ces informations seront visibles par les enseignants et chefs
+        d'établissement sur ADAGE. Cela leur permettra de mieux comprendre votre
+        démarche d'éducation artistique et culturelle.
       </p>
       {isLoading ? (
         <Spinner className={styles.spinner} />
