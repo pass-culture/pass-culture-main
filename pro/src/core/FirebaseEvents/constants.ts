@@ -21,6 +21,7 @@ export enum Events {
   CLICKED_LOGOUT = 'hasClickedLogout',
   CLICKED_MODIFY_OFFERER = 'hasClickedModifyOfferer',
   CLICKED_OFFER = 'hasClickedOffer',
+  CLICKED_OFFER_FORM_NAVIGATION = 'hasClickedOfferFormNavigation',
   CLICKED_PERSONAL_DATA = 'hasClickedConsultPersonalData',
   CLICKED_PRO = 'hasClickedPro',
   CLICKED_REIMBURSEMENT = 'hasClickedReimbursement',
@@ -32,4 +33,14 @@ export enum Events {
   SIGNUP_FORM_ABORT = 'signupFormAbort',
   SIGNUP_FORM_SUCCESS = 'signupFormSuccess',
   TUTO_PAGE_VIEW = 'tutoPageView',
+}
+
+export enum OFFER_FORM_NAVIGATION_MEDIUM {
+  RECAP_LINK = 'RecapLink',
+  STICKY_BUTTONS = 'StickyButtons',
+  BREADCRUMB = 'Breadcrumb',
+}
+
+export enum OFFER_FORM_NAVIGATION_OUT {
+  OFFER = 'Offer',
 }

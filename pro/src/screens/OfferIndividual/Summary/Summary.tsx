@@ -2,6 +2,11 @@ import * as pcapi from 'repository/pcapi/pcapi'
 
 import { Button, ButtonLink } from 'ui-kit'
 import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+  OFFER_FORM_NAVIGATION_OUT,
+} from 'core/FirebaseEvents/constants'
+import {
   IOfferAppPreviewProps,
   OfferAppPreview,
 } from 'new_components/OfferAppPreview'
@@ -16,6 +21,7 @@ import { BannerSummary } from 'new_components/Banner'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import { IOfferSubCategory } from 'core/Offers/types'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { RootState } from 'store/reducers'
@@ -50,6 +56,7 @@ const Summary = ({
   const [isDisabled, setIsDisabled] = useState(false)
   const location = useLocation()
   const notification = useNotification()
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const handleOfferPublication = () => {
     setIsDisabled(true)
     const url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
@@ -57,6 +64,11 @@ const Summary = ({
       .publishOffer(offerId)
       .then(() => {
         setIsDisabled(false)
+        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OfferBreadcrumbStep.SUMMARY,
+          to: OfferBreadcrumbStep.CONFIRMATION,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        })
         history.push(url)
       })
       .catch(() => {
@@ -67,9 +79,19 @@ const Summary = ({
 
   const history = useHistory()
   const handleNextStep = () => {
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.SUMMARY,
+      to: OfferBreadcrumbStep.CONFIRMATION,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+    })
     history.push(`/offre/${offerId}/v3/creation/individuelle/confirmation`)
   }
   const handlePreviousStep = () => {
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.SUMMARY,
+      to: 'THIS ONE?',
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+    })
     history.push(`/offre/${offerId}/v3/creation/individuelle/stocks`)
   }
   const offerSubCategory = subCategories.find(s => s.id === offer.subcategoryId)
@@ -127,6 +149,13 @@ const Summary = ({
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
                   to={`/offre/${offerId}/individuel/creation/stocks`}
+                  onClick={() =>
+                    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                      from: OfferBreadcrumbStep.SUMMARY,
+                      to: 'orthisone?',
+                      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                    })
+                  }
                 >
                   Étape précédente
                 </ButtonLink>
@@ -140,7 +169,17 @@ const Summary = ({
               </div>
             ) : (
               <div className={styles['offer-creation-preview-actions']}>
-                <ButtonLink variant={ButtonVariant.PRIMARY} to={backOfferUrl}>
+                <ButtonLink
+                  variant={ButtonVariant.PRIMARY}
+                  to={backOfferUrl}
+                  onClick={() =>
+                    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                      from: OfferBreadcrumbStep.SUMMARY,
+                      to: OFFER_FORM_NAVIGATION_OUT.OFFER,
+                      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                    })
+                  }
+                >
                   Voir la liste des offres
                 </ButtonLink>
               </div>

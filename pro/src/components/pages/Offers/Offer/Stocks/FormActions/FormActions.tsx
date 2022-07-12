@@ -10,6 +10,7 @@ interface IFormActionsProps {
   isDraft: boolean
   isSubmiting: boolean
   onSubmit: () => void
+  onCancelClick?: () => void
 }
 
 const FormActions = ({
@@ -18,13 +19,18 @@ const FormActions = ({
   canSubmit,
   isSubmiting,
   onSubmit,
+  onCancelClick,
 }: IFormActionsProps): JSX.Element => {
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
   return (
     <>
       {cancelUrl && (
-        <ButtonLink variant={ButtonVariant.SECONDARY} to={cancelUrl}>
+        <ButtonLink
+          variant={ButtonVariant.SECONDARY}
+          to={cancelUrl}
+          onClick={onCancelClick ? onCancelClick : undefined}
+        >
           {isDraft
             ? 'Étape précédente'
             : useSummaryPage

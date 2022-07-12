@@ -2240,59 +2240,6 @@ describe('offerDetails - Creation - pro user', () => {
       )
       expect(isbnError).toBeInTheDocument()
     })
-
-    it('should show an error notification and display an error message on the placeholder', async () => {
-      // Given
-      const offerValues = {
-        name: 'Ma petite offre',
-        venueId: venues[0].id,
-        audioDisabilityCompliant: false,
-        visualDisabilityCompliant: true,
-        motorDisabilityCompliant: false,
-        mentalDisabilityCompliant: false,
-      }
-
-      jest.spyOn(Object, 'values').mockReturnValue(['item'])
-      pcapi.postThumbnail.mockRejectedValue({
-        errors: {
-          errors: [
-            'Utilisez une image plus grande (supérieure à 400px par 400px)',
-          ],
-        },
-      })
-      const createdOffer = {
-        ...offerValues,
-        venueId: venues[0].id,
-        id: 'AA',
-        stocks: [],
-        venue: venues[0],
-      }
-      pcapi.createOffer.mockResolvedValue(createdOffer)
-      await renderOffers(props, store)
-      jest.spyOn(api, 'getOffer').mockResolvedValue(createdOffer)
-
-      await setOfferValues({ categoryId: 'CINEMA' })
-      await setOfferValues({ subcategoryId: 'CARTE_CINE_MULTISEANCES' })
-
-      pcapi.getVenue.mockResolvedValue(venues[0])
-      await setOfferValues(offerValues)
-      await sidebarDisplayed()
-
-      // When
-      await userEvent.click(screen.getByText('Étape suivante'))
-
-      // Then
-      await sidebarDisplayed()
-      const errorNotification = await screen.findByText(
-        'Une ou plusieurs erreurs sont présentes dans le formulaire'
-      )
-      expect(errorNotification).toBeInTheDocument()
-
-      const thumbnailUploadError = await screen.findByText(
-        'Utilisez une image plus grande (supérieure à 400px par 400px)'
-      )
-      expect(thumbnailUploadError).toBeInTheDocument()
-    })
   })
 
   describe('when quitting offer creation', () => {

@@ -1,6 +1,10 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
+import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_STATUS_DRAFT,
 } from 'core/Offers/constants'
@@ -15,6 +19,7 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
 import { FormActions } from './FormActions'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PriceErrorHTMLNotification from './PriceErrorHTMLNotification'
@@ -25,6 +30,7 @@ import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
+import { useSelector } from 'react-redux'
 
 const EMPTY_STRING_VALUE = ''
 
@@ -130,6 +136,16 @@ const ThingStocks = ({
     return !stockHasErrors
   }
 
+  const logEvent = useSelector(state => state.app.logEvent)
+  const onCancelClick = () => {
+    if (isOfferDraft && !useSummaryPage) return
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.STOCKS,
+      to: OfferBreadcrumbStep.DETAILS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+    })
+  }
+
   const submitStocks = useCallback(() => {
     if (checkStockIsValid(stock, offer.isEvent, offer.isEducational)) {
       setEnableSubmitButtonSpinner(true)
@@ -168,7 +184,11 @@ const ThingStocks = ({
             if (queryParams.lieu !== '') {
               queryString += `&lieu=${queryParams.lieu}`
             }
-
+            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OfferBreadcrumbStep.STOCKS,
+              to: OfferBreadcrumbStep.SUMMARY,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+            })
             history.push(
               useSummaryPage
                 ? `${summaryStepUrl}${queryString}`
@@ -313,6 +333,7 @@ const ThingStocks = ({
               isDraft={isOfferDraft}
               isSubmiting={enableSubmitButtonSpinner}
               onSubmit={submitStocks}
+              onCancelClick={onCancelClick}
             />
           </section>
         </Fragment>
