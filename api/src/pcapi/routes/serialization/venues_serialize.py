@@ -256,6 +256,31 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         return super().from_orm(venue)
 
 
+class GetcollectiveVenueResponseModel(BaseModel):
+    id: str
+    collectiveDescription: Optional[str]
+    collectiveStudents: Optional[list[educational_models.StudentLevels]]
+    collectiveWebsite: Optional[str]
+    collectiveDomains: list[GetVenueDomainResponseModel]
+    collectiveInterventionArea: Optional[list[str]]
+    collectiveLegalStatus: Optional[str]
+    collectiveNetwork: Optional[list[str]]
+    collectiveAccessInformation: Optional[str]
+    collectivePhone: Optional[str]
+    collectiveEmail: Optional[str]
+
+    _humanize_id = humanize_field("id")
+
+    class Config:
+        orm_mode = True
+        json_encoders = {datetime: format_into_utc_date}
+
+    @classmethod
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetcollectiveVenueResponseModel":
+        venue.collectiveLegalStatus = venue.venueEducationalStatus.name if venue.venueEducationalStatus else None
+        return super().from_orm(venue)
+
+
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     name: pydantic.constr(max_length=140) | None  # type: ignore
     address: pydantic.constr(max_length=200) | None  # type: ignore
