@@ -147,8 +147,12 @@ const VenueEdition = () => {
         .getVenueLabels()
         .then(labels => sortByLabel(labels))
       const canOffererCreateCollectiveOfferRequest = enableAdageVenueInformation
-        ? canOffererCreateCollectiveOfferAdapter()
-        : () => Promise.resolve({ payload: false, isOk: true, message: null })
+        ? canOffererCreateCollectiveOfferAdapter(offererId)
+        : Promise.resolve({
+            payload: { isOffererEligibleToEducationalOffer: false },
+            isOk: true,
+            message: null,
+          })
 
       const [
         offerer,
@@ -170,7 +174,8 @@ const VenueEdition = () => {
         venueTypes,
         venueLabels,
         canOffererCreateCollectiveOffer:
-          canOffererCreateCollectiveOfferResponse.payload,
+          canOffererCreateCollectiveOfferResponse.payload
+            .isOffererEligibleToEducationalOffer,
       }
     }
     handleInitialRequest().then(
