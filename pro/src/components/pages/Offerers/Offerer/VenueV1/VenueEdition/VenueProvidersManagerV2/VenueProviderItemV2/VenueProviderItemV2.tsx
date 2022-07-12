@@ -3,13 +3,11 @@ import {
   isCinemaProvider,
 } from 'components/pages/Offers/domain/localProvider'
 import AllocineProviderParameters from '../AllocineProviderParamaters/AllocineProviderParameters'
-import { Button } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import CinemaProviderParameters from '../CinemaProviderParameters/CinemaProviderParameters'
 import DeleteVenueProviderButton from '../DeleteVenueProviderButton/DeleteVenueProviderButton'
 import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
-import Icon from 'components/layout/Icon'
 import React from 'react'
+import ToggleVenueProviderStatusButton from '../ToggleVenueProviderStatusButton/ToggleVenueProviderStatusButton'
 import { formatLocalTimeDateString } from 'utils/timezone'
 import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import { pluralize } from 'utils/pluralize'
@@ -41,17 +39,10 @@ const VenueProviderItemV2 = ({
             {providerInfo?.name ?? provider.name}
           </div>
           <div className={style['provider-actions']}>
-            <Button
-              onClick={() => alert('Mettre en pause la synchronisation')}
-              variant={ButtonVariant.TERNARY}
-            >
-              <Icon
-                alt="Mettre en pause la synchronisation"
-                className={style['provider-action-icon']}
-                svg="ico-action-pause"
-              />
-              Mettre en pause
-            </Button>
+            <ToggleVenueProviderStatusButton
+              venueProvider={venueProvider}
+              afterEdit={afterSubmit}
+            />
             <DeleteVenueProviderButton
               afterDelete={afterDelete}
               venueProviderId={venueProvider.id}

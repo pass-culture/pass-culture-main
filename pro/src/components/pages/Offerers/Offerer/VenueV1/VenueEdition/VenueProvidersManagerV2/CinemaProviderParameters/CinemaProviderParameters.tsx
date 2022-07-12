@@ -47,6 +47,10 @@ const CinemaProviderParameters = ({
 
   const onConfirmDialog = useCallback(
     (payload: ICinemaProviderParametersValues) => {
+      payload = {
+        ...payload,
+        isActive: venueProvider.isActive,
+      }
       editVenueProvider(payload)
 
       closeFormDialog()

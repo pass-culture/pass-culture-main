@@ -37,6 +37,7 @@ export const CinemaProviderForm = ({
       providerId,
       venueId,
       isDuo: values.isDuo,
+      isActive: values.isActive,
     }
 
     setIsLoading(true)
