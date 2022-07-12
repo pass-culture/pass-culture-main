@@ -59,14 +59,7 @@ exclude = """
 
 [tool.pylint.MASTER]
 extension-pkg-whitelist = [
-    "binascii",
-    "lxml",
-    "math",
-    "netifaces",
-    "posix_ipc",
     "pydantic",
-    "spidev",
-    "unicodedata",
 ]
 load-plugins = [
     "pcapi.utils.pylint",
