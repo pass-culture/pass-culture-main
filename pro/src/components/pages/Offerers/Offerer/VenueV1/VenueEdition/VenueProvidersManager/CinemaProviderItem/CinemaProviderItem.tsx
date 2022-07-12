@@ -66,6 +66,7 @@ export const CinemaProviderItem = ({
 
   const initialValues = {
     isDuo: venueProvider.isDuo,
+    isActive: venueProvider.isActive,
   }
 
   return (

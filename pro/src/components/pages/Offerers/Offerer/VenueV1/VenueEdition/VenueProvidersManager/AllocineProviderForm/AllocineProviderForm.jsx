@@ -34,6 +34,7 @@ const AllocineProviderForm = ({
         price,
         providerId,
         venueId,
+        isActive: initialValues.isActive,
       }
 
       setIsLoading(true)

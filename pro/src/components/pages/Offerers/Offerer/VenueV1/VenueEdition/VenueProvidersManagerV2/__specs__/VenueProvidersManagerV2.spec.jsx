@@ -274,6 +274,85 @@ describe('src | VenueProvidersManager', () => {
       const isDuo = queryByTextTrimHtml(screen, 'Accepter les offres DUO : Non')
       expect(isDuo).toBeInTheDocument()
     })
+
+    it('should display pause synchronisation button when venueProvider isActive', async () => {
+      //Given
+      venueProviders = [
+        {
+          id: 'AD',
+          nOffers: 1,
+          provider: { id: 'providerId', name: 'TiteLive' },
+          venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
+          isActive: true,
+        },
+      ]
+      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      pcapi.editVenueProvider.mockResolvedValue()
+
+      // When
+      await renderVenueProvidersManager(props)
+
+      // Then
+      const pauseVenueProviderButton = screen.queryByText('Mettre en pause')
+      expect(pauseVenueProviderButton).toBeInTheDocument()
+
+      // When
+      fireEvent.click(pauseVenueProviderButton)
+
+      expect(
+        screen.queryByText(
+          'Voulez-vous mettre en pause la synchronisation de vos offres ?'
+        )
+      ).toBeInTheDocument()
+      const confirmPauseButton = screen.queryByText(
+        'Mettre en pause la synchronisation'
+      )
+      expect(confirmPauseButton).toBeInTheDocument()
+      fireEvent.click(confirmPauseButton)
+
+      // Then
+      expect(pcapi.editVenueProvider).toHaveBeenCalledTimes(1)
+    })
+
+    it('should display reactivate synchronisation button when venueProvider is not active', async () => {
+      //Given
+      venueProviders = [
+        {
+          id: 'AD',
+          nOffers: 1,
+          provider: { id: 'providerId', name: 'TiteLive' },
+          venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
+          isActive: false,
+        },
+      ]
+      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+      pcapi.editVenueProvider.mockResolvedValue()
+
+      // When
+      await renderVenueProvidersManager(props)
+
+      // Then
+      const reactivateVenueProviderButton = screen.queryByText('Réactiver')
+      expect(reactivateVenueProviderButton).toBeInTheDocument()
+
+      // When
+      fireEvent.click(reactivateVenueProviderButton)
+      expect(
+        screen.queryByText(
+          'Vous êtes sur le point de réactiver la synchronisation de vos offres.'
+        )
+      ).toBeInTheDocument()
+      const confirmPauseButton = screen.queryByText(
+        'Réactiver la synchronisation'
+      )
+      expect(confirmPauseButton).toBeInTheDocument()
+      fireEvent.click(confirmPauseButton)
+
+      // Then
+      expect(pcapi.editVenueProvider).toHaveBeenCalledTimes(1)
+    })
   })
 
   describe('when venue has no providers synchronized', () => {
