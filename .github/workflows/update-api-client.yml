@@ -12,6 +12,7 @@ jobs:
           persist-credentials: false
           ref: ${{ github.head_ref }}
           fetch-depth: 2
+
       - name: Check changes in API
         uses: dorny/paths-filter@v2
         id: changesApi
@@ -19,28 +20,43 @@ jobs:
           filters: |
             src:
               - 'api/**'
+
       - uses: actions/setup-node@v2
         if: steps.changesApi.outputs.src == 'true'
         with:
           node-version: "14"
+
       - name: Install dockerize
         if: steps.changesApi.outputs.src == 'true'
         run: |
           sudo chown -R $USER .
           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+
       - name: Run API
         if: steps.changesApi.outputs.src == 'true'
         run: |
           sudo chown -R 1000:1000 .
           ./pc start-backend &
-      - name: Run api client update
+
+      - name: Install dependencies
         if: steps.changesApi.outputs.src == 'true'
         run: |
           cd pro
           sudo chown -R $USER .
-          dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
           yarn install
+
+      - name: Wait for backend
+        if: steps.changesApi.outputs.src == 'true'
+        run: |
+          cd pro
+          dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
+
+      - name: Update api client
+        if: steps.changesApi.outputs.src == 'true'
+        run: |
+          cd pro
           yarn generate:api:client:local
+
       - name: Check if there are changes
         if: steps.changesApi.outputs.src == 'true'
         id: changes
@@ -51,6 +67,7 @@ jobs:
             else
               echo ::set-output name=changed::'true'
             fi
+
       - name: Commit
         if: steps.changes.outputs.changed == 'true'
         run: |
@@ -59,6 +76,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git add .
           git commit -m "(BSR)[PRO] chore: update api client"
+
       - name: Push changes
         if: steps.changes.outputs.changed == 'true'
         uses: ad-m/github-push-action@master
