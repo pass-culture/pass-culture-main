@@ -73,13 +73,13 @@ const CollectiveDataForm = ({
       <FormikProvider value={formik}>
         <form onSubmit={formik.handleSubmit}>
           <div className={styles.section}>
-            Présentation de votre démarche EAC
+            Présentation pour les enseignants
           </div>
           <FormLayout.Row>
             <TextArea
               name="collectiveDescription"
-              label="Ajoutez des informations complémentaires  concernant l’EAC."
-              placeholder="Détaillez ici des informations complémentaires"
+              label="Démarche d’éducation artistique et culturelle"
+              placeholder="Présenter la démarche d’éducation artistique et culturelle : présentation du lieu, actions menées auprès du public scolaire..."
               maxLength={500}
               countCharacters
             />
@@ -104,9 +104,7 @@ const CollectiveDataForm = ({
               className={styles.row}
             />
           </FormLayout.Row>
-          <div className={styles.section}>
-            Informations du lieu relatives à l’EAC
-          </div>
+          <div className={styles.section}>Informations du lieu</div>
           <FormLayout.Row>
             <MultiSelectAutocomplete
               hideTags
@@ -124,7 +122,7 @@ const CollectiveDataForm = ({
               options={interventionOptions}
               fieldName="collectiveInterventionArea"
               label="Périmètre d’intervention :"
-              placeholder="Séléctionner un territoire cible"
+              placeholder="Sélectionner un ou plusieurs territoire(s) d'intervention"
               className={styles.row}
               inline
             />
@@ -148,18 +146,18 @@ const CollectiveDataForm = ({
               fieldName="collectiveNetwork"
               label="Réseaux partenaires EAC  :"
               className={styles.row}
-              placeholder="Sélectionner un ou plusieurs réseaux partenaires"
+              placeholder="Sélectionner un ou plusieurs réseau(x) partenaire(s)"
               inline
               maxDisplayOptions={20}
               maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
             />
           </FormLayout.Row>
-          <div className={styles.section}>Contact pour les scolaires</div>
+          <div className={styles.section}>Contact pour les enseignants</div>
           <FormLayout.Row>
             <TextInput
               name="collectivePhone"
               label="Téléphone :"
-              placeholder="0648592819"
+              placeholder="0612345678"
               inline
               className={styles.row}
             />
