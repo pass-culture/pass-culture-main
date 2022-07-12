@@ -1,7 +1,6 @@
 import datetime
 import logging
 from typing import List
-from typing import Optional
 
 from psycopg2.errorcodes import CHECK_VIOLATION
 from psycopg2.errorcodes import UNIQUE_VIOLATION
@@ -115,14 +114,14 @@ UNCHANGED = object()
 def list_offers_for_pro_user(
     user_id: int,
     user_is_admin: bool,
-    category_id: Optional[str],
-    offerer_id: Optional[int],
-    venue_id: Optional[int] = None,
-    name_keywords_or_isbn: Optional[str] = None,
-    status: Optional[str] = None,
-    creation_mode: Optional[str] = None,
-    period_beginning_date: Optional[str] = None,
-    period_ending_date: Optional[str] = None,
+    category_id: str | None,
+    offerer_id: int | None,
+    venue_id: int | None = None,
+    name_keywords_or_isbn: str | None = None,
+    status: str | None = None,
+    creation_mode: str | None = None,
+    period_beginning_date: str | None = None,
+    period_ending_date: str | None = None,
 ) -> OffersRecap:
     return offers_repository.get_capped_offers_for_filters(
         user_id=user_id,
@@ -733,7 +732,7 @@ def create_mediation(
     offer: Offer,
     credit: str,
     image_as_bytes: bytes,
-    crop_params: Optional[image_conversion.CropParams] = None,
+    crop_params: image_conversion.CropParams | None = None,
     keep_ratio: bool = False,
 ) -> Mediation:
     # checks image type, min dimensions
@@ -825,8 +824,8 @@ def get_expense_domains(offer: Offer) -> list[ExpenseDomain]:
 
 def add_criteria_to_offers(
     criteria: list[criteria_models.Criterion],
-    isbn: Optional[str] = None,
-    visa: Optional[str] = None,
+    isbn: str | None = None,
+    visa: str | None = None,
 ) -> bool:
     if not isbn and not visa:
         return False
@@ -1050,7 +1049,7 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
         page += 1
 
 
-def report_offer(user: User, offer: Offer, reason: str, custom_reason: Optional[str]) -> None:
+def report_offer(user: User, offer: Offer, reason: str, custom_reason: str | None) -> None:
     try:
         # transaction() handles the commit/rollback operations
         #

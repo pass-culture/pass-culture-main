@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import datetime
 import enum
-from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -223,10 +222,10 @@ class AllocineVenueProviderPriceRule(PcObject, Model):  # type: ignore [valid-ty
 
 @dataclass
 class VenueProviderCreationPayload:
-    isDuo: Optional[bool] = None
-    price: Optional[str] = None
-    quantity: Optional[int] = None
-    venueIdAtOfferProvider: Optional[str] = None
+    isDuo: bool | None = None
+    price: str | None = None
+    quantity: int | None = None
+    venueIdAtOfferProvider: str | None = None
 
 
 @dataclass
@@ -236,7 +235,7 @@ class StockDetail:
     venue_reference: str
     stocks_provider_reference: str
     available_quantity: int
-    price: Optional[float]
+    price: float | None
 
 
 class AllocinePivot(PcObject, Model):  # type: ignore [valid-type, misc]

@@ -1,5 +1,4 @@
 from typing import Callable
-from typing import Optional
 
 from flask import request
 from flask_limiter import Limiter
@@ -12,7 +11,7 @@ def get_email_from_request() -> str:
     return request.json["identifier"]  # type: ignore [index]
 
 
-def get_basic_auth_from_request() -> Optional[str]:
+def get_basic_auth_from_request() -> str | None:
     # `pcapi.utis.login_manager` cannot be imported at module-scope,
     # because the application context may not be available and that
     # module needs it.

@@ -10,7 +10,6 @@ from operator import and_
 import typing
 from typing import Iterable
 from typing import List
-from typing import Optional
 
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy import Column
@@ -128,11 +127,11 @@ def find_by(token: str, email: str = None, offer_id: int = None) -> Booking:
 
 def find_by_pro_user(
     user: User,
-    booking_period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
-    event_date: Optional[datetime] = None,
-    venue_id: Optional[int] = None,
-    offer_type: Optional[OfferType] = None,
+    booking_period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: datetime | None = None,
+    venue_id: int | None = None,
+    offer_type: OfferType | None = None,
     page: int = 1,
     per_page_limit: int = 1000,
 ) -> BookingsRecapPaginated:
@@ -417,12 +416,12 @@ def get_bookings_from_deposit(deposit_id: int) -> list[Booking]:
 
 def get_export(
     user: User,
-    booking_period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = BookingStatusFilter.BOOKED,
-    event_date: Optional[datetime] = None,
-    venue_id: Optional[int] = None,
-    offer_type: Optional[OfferType] = None,
-    export_type: Optional[BookingExportType] = BookingExportType.CSV,
+    booking_period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = BookingStatusFilter.BOOKED,
+    event_date: datetime | None = None,
+    venue_id: int | None = None,
+    offer_type: OfferType | None = None,
+    export_type: BookingExportType | None = BookingExportType.CSV,
 ) -> str | bytes:
     bookings_query = _get_filtered_booking_report(
         pro_user=user,
@@ -445,12 +444,12 @@ def field_to_venue_timezone(field: InstrumentedAttribute) -> cast:
 
 def _get_filtered_bookings_query(
     pro_user: User,
-    period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
-    event_date: Optional[date] = None,
-    venue_id: Optional[int] = None,
-    offer_type: Optional[OfferType] = None,
-    extra_joins: Optional[Iterable[Column]] = None,
+    period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    offer_type: OfferType | None = None,
+    extra_joins: Iterable[Column] | None = None,
 ) -> BaseQuery:
     extra_joins = extra_joins or tuple()
 
@@ -496,11 +495,11 @@ def _get_filtered_bookings_query(
 
 def _get_filtered_bookings_count(
     pro_user: User,
-    period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
-    event_date: Optional[date] = None,
-    venue_id: Optional[int] = None,
-    offer_type: Optional[OfferType] = None,
+    period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: date | None = None,
+    venue_id: int | None = None,
+    offer_type: OfferType | None = None,
 ) -> int:
     bookings = (
         _get_filtered_bookings_query(pro_user, period, status_filter, event_date, venue_id, offer_type)
@@ -517,9 +516,9 @@ def _get_filtered_booking_report(
     pro_user: User,
     period: tuple[date, date],
     status_filter: BookingStatusFilter,
-    event_date: Optional[datetime] = None,
-    venue_id: Optional[int] = None,
-    offer_type: Optional[OfferType] = None,
+    event_date: datetime | None = None,
+    venue_id: int | None = None,
+    offer_type: OfferType | None = None,
 ) -> str:
     bookings_query = (
         _get_filtered_bookings_query(
@@ -568,11 +567,11 @@ def _get_filtered_booking_report(
 
 def _get_filtered_booking_pro(
     pro_user: User,
-    period: Optional[tuple[date, date]] = None,
-    status_filter: Optional[BookingStatusFilter] = None,
-    event_date: Optional[datetime] = None,
-    venue_id: Optional[int] = None,
-    offer_type: Optional[OfferType] = None,
+    period: tuple[date, date] | None = None,
+    status_filter: BookingStatusFilter | None = None,
+    event_date: datetime | None = None,
+    venue_id: int | None = None,
+    offer_type: OfferType | None = None,
 ) -> BaseQuery:
     bookings_query = (
         _get_filtered_bookings_query(

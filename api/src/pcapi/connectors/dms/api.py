@@ -4,7 +4,6 @@ import os
 import pathlib
 from typing import Any
 from typing import Generator
-from typing import Optional
 
 import gql
 from gql.transport.requests import RequestsHTTPTransport
@@ -93,7 +92,7 @@ class DMSGraphQLClient:
             )
 
     def get_deleted_applications(
-        self, procedure_id: int, page_token: Optional[str] = None, deletedSince: Optional[datetime.datetime] = None
+        self, procedure_id: int, page_token: str | None = None, deletedSince: datetime.datetime | None = None
     ) -> Generator[dms_models.DmsDeletedApplication, None, None]:
         variables: dict[str, Any] = {"demarcheNumber": procedure_id}
         if page_token:
@@ -136,7 +135,7 @@ class DMSGraphQLClient:
         )
 
     def make_on_going(
-        self, application_techid: str, instructeur_techid: str, disable_notification: Optional[bool] = False
+        self, application_techid: str, instructeur_techid: str, disable_notification: bool | None = False
     ) -> Any:
         try:
             response = self.execute_query(

@@ -89,7 +89,7 @@ class MagicEnum(sqla_types.TypeDecorator):
         self,
         value: typing.Any,
         dialect: sqla_engine.Dialect,
-    ) -> typing.Optional[str]:
+    ) -> str | None:
         if value is None:
             return None
         return value.value
@@ -98,7 +98,7 @@ class MagicEnum(sqla_types.TypeDecorator):
         self,
         value: typing.Any,
         dialect: sqla_engine.Dialect,
-    ) -> typing.Optional[enum.Enum]:
+    ) -> enum.Enum | None:
         if value is None:
             return None
         return self.enum_class(value)
@@ -109,7 +109,7 @@ SafeJsonB = sqla_mutable.MutableDict.as_mutable(sqla_json.JSONB)
 
 def make_timerange(
     start: datetime.datetime,
-    end: typing.Optional[datetime.datetime] = None,
+    end: datetime.datetime | None = None,
     bounds: str = "[)",
 ) -> psycopg2.extras.DateTimeRange:
     return psycopg2.extras.DateTimeRange(

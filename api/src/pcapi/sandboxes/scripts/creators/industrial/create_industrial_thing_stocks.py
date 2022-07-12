@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from pcapi.core.offers.models import Offer
 from pcapi.model_creators.specific_creators import create_stock_from_offer
@@ -20,7 +19,7 @@ def create_industrial_thing_stocks(thing_offers_by_name: dict[str, Offer]) -> No
     logger.info("create_industrial_thing_stocks")
 
     thing_stocks_by_name = {}
-    short_names_to_increase_price: list[Optional[str]] = []
+    short_names_to_increase_price: list[str | None] = []
 
     thing_offer_items = list(thing_offers_by_name.items())
 

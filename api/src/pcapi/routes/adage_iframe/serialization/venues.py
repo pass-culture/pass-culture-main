@@ -1,11 +1,9 @@
-from typing import Optional
-
 from pcapi.routes.serialization import BaseModel
 
 
 class VenueResponse(BaseModel):
     id: int
-    publicName: Optional[str]
+    publicName: str | None
     name: str
 
     class Config:

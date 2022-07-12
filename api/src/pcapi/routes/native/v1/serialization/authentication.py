@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi.core.users.models import AccountState
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
@@ -30,7 +28,7 @@ class RefreshResponse(BaseModel):
 
 class RequestPasswordResetRequest(BaseModel):
     email: str
-    token: Optional[str] = None
+    token: str | None = None
 
 
 class ResetPasswordRequest(BaseModel):

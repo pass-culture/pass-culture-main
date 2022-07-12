@@ -1,7 +1,6 @@
 from datetime import datetime
 import enum
 import typing
-from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy import BigInteger
@@ -257,15 +256,15 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         self.departementCode = PostalCode(self.postalCode).get_departement_code()
 
     @property
-    def bic(self) -> Optional[str]:
+    def bic(self) -> str | None:
         return self.bankInformation.bic if self.bankInformation else None
 
     @property
-    def iban(self) -> Optional[str]:
+    def iban(self) -> str | None:
         return self.bankInformation.iban if self.bankInformation else None
 
     @property
-    def demarchesSimplifieesApplicationId(self) -> Optional[int]:
+    def demarchesSimplifieesApplicationId(self) -> int | None:
         if not self.bankInformation:
             return None
 
@@ -350,7 +349,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         return getattr(self, field) != value
 
     @property
-    def current_pricing_point_id(self) -> Optional[int]:
+    def current_pricing_point_id(self) -> int | None:
         now = datetime.utcnow()
         timespan = db_utils.make_timerange(start=now, end=None)
         return (
@@ -360,7 +359,7 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         )
 
     @property
-    def current_reimbursement_point_id(self) -> Optional[int]:
+    def current_reimbursement_point_id(self) -> int | None:
         now = datetime.utcnow()
         timespan = db_utils.make_timerange(start=now, end=None)
         return (

@@ -5,7 +5,6 @@ from datetime import datetime
 import hashlib
 import json
 import logging
-from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 from google.api_core import retry
@@ -36,8 +35,8 @@ def get_client():  # type: ignore [no-untyped-def]
 class CloudTaskHttpRequest:
     http_method: tasks_v2.HttpMethod
     url: str
-    headers: Optional[dict] = None
-    body: Optional[bytes] = None
+    headers: dict | None = None
+    body: bytes | None = None
     json: InitVar[bytes] = None
 
     def __post_init__(self, json_param):  # type: ignore [no-untyped-def]
@@ -47,7 +46,7 @@ class CloudTaskHttpRequest:
 
 def enqueue_task(
     queue: str, http_request: CloudTaskHttpRequest, task_id: str = None, schedule_time: datetime = None
-) -> Optional[str]:
+) -> str | None:
 
     client = get_client()
     parent = client.queue_path(settings.GCP_PROJECT, settings.GCP_REGION_CLOUD_TASK, queue)

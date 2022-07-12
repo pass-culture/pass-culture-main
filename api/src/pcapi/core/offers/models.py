@@ -3,7 +3,6 @@ from datetime import datetime
 from datetime import timedelta
 import enum
 import logging
-from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy import and_
@@ -253,7 +252,7 @@ sa.event.listen(Stock.__table__, "after_create", sa.DDL(Stock.trig_update_date_d
 @dataclass
 class OfferImage:
     url: str
-    credit: Optional[str] = None
+    credit: str | None = None
 
 
 class WithdrawalTypeEnum(enum.Enum):
@@ -372,7 +371,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
         )
 
     @property
-    def activeMediation(self) -> Optional[Mediation]:
+    def activeMediation(self) -> Mediation | None:
         sorted_by_date_desc = sorted(self.mediations, key=lambda m: m.dateCreated, reverse=True)
         only_active = list(filter(lambda m: m.isActive, sorted_by_date_desc))
         return only_active[0] if only_active else None
@@ -513,7 +512,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
             raise ValueError(f"Unexpected category_id '{category_id}' for offer {self.id}")
 
     @property
-    def image(self) -> Optional[OfferImage]:
+    def image(self) -> OfferImage | None:
         activeMediation = self.activeMediation
         if activeMediation:
             url = activeMediation.thumbUrl

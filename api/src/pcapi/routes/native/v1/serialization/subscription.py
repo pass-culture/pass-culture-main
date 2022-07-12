@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pydantic import validator
 
 from pcapi.core.fraud.utils import has_latin_or_numeric_chars
@@ -11,9 +9,9 @@ from pcapi.serialization.utils import to_camel
 
 
 class NextSubscriptionStepResponse(BaseModel):
-    next_subscription_step: Optional[subscription_models.SubscriptionStep]
+    next_subscription_step: subscription_models.SubscriptionStep | None
     stepper_includes_phone_validation: bool
-    maintenance_page_type: Optional[subscription_models.MaintenancePageType]
+    maintenance_page_type: subscription_models.MaintenancePageType | None
     allowed_identity_check_methods: list[subscription_models.IdentityCheckMethod]
     has_identity_check_pending: bool
 
@@ -29,7 +27,7 @@ class ProfileUpdateRequest(BaseModel):
     first_name: str
     last_name: str
     postal_code: str
-    school_type_id: Optional[profile_options.SCHOOL_TYPE_ID_ENUM]
+    school_type_id: profile_options.SCHOOL_TYPE_ID_ENUM | None
 
     class Config:
         alias_generator = to_camel
@@ -57,7 +55,7 @@ class ProfileUpdateRequest(BaseModel):
 
 class SchoolTypeResponseModel(BaseModel):
     id: profile_options.SCHOOL_TYPE_ID_ENUM
-    description: Optional[str]
+    description: str | None
     label: str
 
     class Config:
@@ -69,8 +67,8 @@ class SchoolTypeResponseModel(BaseModel):
 class ActivityResponseModel(BaseModel):
     id: profile_options.ACTIVITY_ID_ENUM
     label: str
-    description: Optional[str]
-    associated_school_types_ids: Optional[list[profile_options.SCHOOL_TYPE_ID_ENUM]]
+    description: str | None
+    associated_school_types_ids: list[profile_options.SCHOOL_TYPE_ID_ENUM] | None
 
     class Config:
         alias_generator = to_camel

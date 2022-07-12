@@ -1,15 +1,14 @@
 from datetime import datetime
-from typing import Optional
 
 
 class BookingRecapHistory:
-    def __init__(self, booking_date: datetime, confirmation_date: Optional[datetime] = None):
+    def __init__(self, booking_date: datetime, confirmation_date: datetime | None = None):
         self.booking_date = booking_date
         self.confirmation_date = confirmation_date
 
 
 class BookingRecapConfirmedHistory(BookingRecapHistory):
-    def __init__(self, cancellation_limit_date: Optional[datetime], **kwargs):  # type: ignore [no-untyped-def]
+    def __init__(self, cancellation_limit_date: datetime | None, **kwargs):  # type: ignore [no-untyped-def]
         super().__init__(**kwargs)
         self.date_confirmed = cancellation_limit_date
 

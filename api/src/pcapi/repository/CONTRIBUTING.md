@@ -16,7 +16,7 @@ en entrée et en sortie.
 Par exemple :
 
 ```python
-def get_offerer_by_offer_id(offer_id: int) -> Optional[Offerer]:
+def get_offerer_by_offer_id(offer_id: int) -> Offerer | None:
     return Offerer.query \
         .join(Venue) \
         .join(Offer) \

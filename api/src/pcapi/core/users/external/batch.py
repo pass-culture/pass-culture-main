@@ -1,6 +1,5 @@
 from datetime import datetime
 import logging
-from typing import Optional
 
 from pcapi.core.users.external.models import UserAttributes
 from pcapi.tasks import batch_tasks
@@ -56,5 +55,5 @@ def format_user_attributes(user_attributes: UserAttributes) -> dict:
     return attributes
 
 
-def _format_date(date: Optional[datetime]) -> Optional[str]:
+def _format_date(date: datetime | None) -> str | None:
     return date.strftime(BATCH_DATETIME_FORMAT) if date else None

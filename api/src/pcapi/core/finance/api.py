@@ -376,7 +376,7 @@ def lock_business_unit(business_unit_id: int) -> None:
 
 def get_non_cancelled_pricing_from_booking(
     booking: bookings_models.Booking | educational_models.CollectiveBooking,
-) -> typing.Optional[models.Pricing]:
+) -> models.Pricing | None:
     if isinstance(booking, bookings_models.Booking):
         pricing_query = models.Pricing.query.filter_by(booking=booking)
     else:
@@ -393,7 +393,7 @@ def get_non_cancelled_pricing_from_booking(
 def price_booking(
     booking: bookings_models.Booking | CollectiveBooking,
     use_pricing_point: bool,
-) -> typing.Optional[models.Pricing]:
+) -> models.Pricing | None:
     if use_pricing_point:
         if not booking.venue.pricing_point_links:
             return None
@@ -798,7 +798,7 @@ def _delete_dependent_pricings(
 
 def cancel_pricing(
     booking: bookings_models.Booking | CollectiveBooking, reason: models.PricingLogReason
-) -> typing.Optional[models.Pricing]:
+) -> models.Pricing | None:
     use_pricing_point = FeatureToggle.USE_PRICING_POINT_FOR_PRICING.is_active()
 
     if use_pricing_point:

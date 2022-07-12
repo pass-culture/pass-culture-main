@@ -2,7 +2,6 @@ from copy import deepcopy
 from typing import Any
 from typing import Callable
 from typing import Dict
-from typing import Optional
 
 from pydantic import BaseModel  # pylint: disable=wrong-pydantic-base-model-import
 from spectree import Response
@@ -21,7 +20,7 @@ def get_model_schema(model):  # type: ignore [no-untyped-def]
     )
 
 
-def add_security_scheme(route_function: Callable, auth_key: str, scopes: Optional[list[str]] = None) -> None:
+def add_security_scheme(route_function: Callable, auth_key: str, scopes: list[str] | None = None) -> None:
     """Declare a sufficient security scheme to access the route.
     The 'auth_key' should correspond to a scheme declared in
     the SpecTree initialization of the route's BluePrint.

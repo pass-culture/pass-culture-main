@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offers.models import Offer
@@ -17,7 +16,7 @@ def create_offerer(
     last_provider_id: int = None,
     name: str = "Test Offerer",
     postal_code: str = "93100",
-    siren: Optional[str] = "123456789",
+    siren: str | None = "123456789",
     thumb_count: int = 0,
     validation_token: str = None,
     date_validated: datetime = None,
@@ -42,18 +41,18 @@ def create_offerer(
 
 
 def create_stock(
-    beginning_datetime: Optional[datetime] = None,
-    booking_limit_datetime: Optional[datetime] = None,
+    beginning_datetime: datetime | None = None,
+    booking_limit_datetime: datetime | None = None,
     date_created: datetime = datetime.utcnow(),
     date_modified: datetime = datetime.utcnow(),
-    date_modified_at_last_provider: Optional[datetime] = None,
-    idx: Optional[int] = None,
-    id_at_providers: Optional[str] = None,
+    date_modified_at_last_provider: datetime | None = None,
+    idx: int | None = None,
+    id_at_providers: str | None = None,
     is_soft_deleted: bool = False,
-    last_provider_id: Optional[int] = None,
-    offer: Optional[Offer] = None,
+    last_provider_id: int | None = None,
+    offer: Offer | None = None,
     price: float = 10,
-    quantity: Optional[int] = None,
+    quantity: int | None = None,
 ) -> Stock:
     stock = Stock()
     stock.quantity = quantity

@@ -1,11 +1,10 @@
 import json
-from typing import Optional
 
 
 class ApiErrors(Exception):
     status_code: int = 400
 
-    def __init__(self, errors: dict = None, status_code: Optional[int] = None):
+    def __init__(self, errors: dict = None, status_code: int | None = None):
         self.errors = errors if errors else {}
         if status_code:
             self.status_code = status_code

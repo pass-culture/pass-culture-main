@@ -67,7 +67,7 @@ def subscription_status_format(subscription_status: subscription_models.Subscrip
     )
 
 
-def fraud_check_status_format(status: typing.Optional[fraud_models.FraudCheckStatus]) -> str:
+def fraud_check_status_format(status: fraud_models.FraudCheckStatus | None) -> str:
     if status is None:
         css_class = "void"
         text = "vide"
@@ -100,6 +100,6 @@ def suspension_event_format(event_type: users_constants.SuspensionEventType) -> 
     return Markup("<span>{text}</span>").format(text=dict(users_constants.SUSPENSION_EVENT_TYPE_CHOICES)[event_type])
 
 
-def suspension_reason_format(suspension_reason: typing.Optional[users_constants.SuspensionReason]) -> str:
+def suspension_reason_format(suspension_reason: users_constants.SuspensionReason | None) -> str:
     text = dict(users_constants.SUSPENSION_REASON_CHOICES)[suspension_reason] if suspension_reason else ""
     return Markup("<span>{text}</span>").format(text=text)

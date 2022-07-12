@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from flask import flash
 from flask import redirect
@@ -57,7 +56,7 @@ def _format_bookings_link(view: BaseAdminView, context: Context, model: Venue, n
     return Markup('<a href="{}">Réservations</a>').format(escape(url))
 
 
-def _format_venue_provider(view: BaseAdminView, context: Context, model: Venue, name: str) -> Optional[Markup]:
+def _format_venue_provider(view: BaseAdminView, context: Context, model: Venue, name: str) -> Markup | None:
     if not model.venueProviders:
         return None
     url = url_for("venue_providers.index_view", id=model.id)

@@ -8,7 +8,6 @@ from time import sleep
 from typing import Any
 from typing import Callable
 from typing import Iterable
-from typing import Optional
 
 import sib_api_v3_sdk
 from sib_api_v3_sdk.api.contacts_api import ContactsApi
@@ -272,7 +271,7 @@ def send_import_contacts_request(
         logger.exception("Exception when calling ContactsApi->import_contacts: %s", e)
 
 
-def format_file_value(value: Optional[str | bool | int | datetime]) -> str:
+def format_file_value(value: str | bool | int | datetime | None) -> str:
     if value is None:
         return ""
     if isinstance(value, datetime):

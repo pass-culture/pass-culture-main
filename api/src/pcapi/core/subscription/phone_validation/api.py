@@ -1,6 +1,5 @@
 import datetime
 import logging
-import typing
 
 from flask import current_app as app
 from redis import Redis
@@ -118,8 +117,8 @@ def _check_and_update_phone_validation_attempts(redis: Redis, user: users_models
 
 def send_phone_validation_code(
     user: users_models.User,
-    phone_number: typing.Optional[str],
-    expiration: typing.Optional[datetime.datetime] = None,
+    phone_number: str | None,
+    expiration: datetime.datetime | None = None,
     ignore_limit: bool = False,
 ) -> None:
     if not phone_number:

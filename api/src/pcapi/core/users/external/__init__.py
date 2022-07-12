@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
 from typing import List
-from typing import Optional
 
 from sqlalchemy.orm import joinedload
 
@@ -41,7 +40,7 @@ class BookingsAttributes:
 
     booking_categories: list[str]
     booking_subcategories: list[str]
-    most_booked_subcategory: Optional[str] = None
+    most_booked_subcategory: str | None = None
 
 
 def update_external_user(user: User, skip_batch: bool = False, skip_sendinblue: bool = False) -> None:
@@ -58,7 +57,7 @@ def update_external_user(user: User, skip_batch: bool = False, skip_sendinblue: 
             update_sendinblue_user(user.email, user_attributes)
 
 
-def update_external_pro(email: Optional[str]) -> None:
+def update_external_pro(email: str | None) -> None:
     # Call this function instead of update_external_user in actions which are only available for pro
     # ex. updating a venue, in which bookingEmail is not a User parameter
     from pcapi.tasks.sendinblue_tasks import update_pro_attributes_task

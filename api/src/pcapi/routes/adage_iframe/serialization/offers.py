@@ -2,7 +2,6 @@ from datetime import datetime
 import enum
 import logging
 from typing import Any
-from typing import Optional
 
 from pydantic import Field
 from pydantic.class_validators import validator
@@ -30,12 +29,12 @@ class OfferManagingOffererResponse(BaseModel):
 
 class OfferStockResponse(BaseModel):
     id: int
-    beginningDatetime: Optional[datetime]
-    bookingLimitDatetime: Optional[datetime]
+    beginningDatetime: datetime | None
+    bookingLimitDatetime: datetime | None
     isBookable: bool
     price: int
-    numberOfTickets: Optional[int]
-    educationalPriceDetail: Optional[str]
+    numberOfTickets: int | None
+    educationalPriceDetail: str | None
 
     _convert_price = validator("price", pre=True, allow_reuse=True)(convert_to_cent)
 
@@ -53,11 +52,11 @@ class OfferVenueResponse(BaseModel):
         return result
 
     id: int
-    address: Optional[str]
-    city: Optional[str]
+    address: str | None
+    city: str | None
     name: str
-    postalCode: Optional[str]
-    publicName: Optional[str]
+    postalCode: str | None
+    publicName: str | None
     coordinates: Coordinates
     managingOfferer: OfferManagingOffererResponse
 
@@ -133,7 +132,7 @@ class EducationalInstitutionResponseModel(BaseModel):
 class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin):
     id: int
     subcategoryLabel: str
-    description: Optional[str]
+    description: str | None
     isExpired: bool
     isSoldOut: bool
     name: str
@@ -143,11 +142,11 @@ class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
     contactPhone: str
-    durationMinutes: Optional[int]
-    offerId: Optional[str]
-    educationalPriceDetail: Optional[str]
+    durationMinutes: int | None
+    offerId: str | None
+    educationalPriceDetail: str | None
     domains: list[OfferDomain]
-    institution: Optional[EducationalInstitutionResponseModel] = Field(alias="educationalInstitution")
+    institution: EducationalInstitutionResponseModel | None = Field(alias="educationalInstitution")
 
     @classmethod
     def from_orm(cls: Any, offer: CollectiveOffer):  # type: ignore
@@ -173,7 +172,7 @@ class CollectiveOfferResponseModel(BaseModel, AccessibilityComplianceStrictMixin
 class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStrictMixin):
     id: int
     subcategoryLabel: str
-    description: Optional[str]
+    description: str | None
     isExpired: bool
     isSoldOut: bool
     name: str
@@ -182,9 +181,9 @@ class CollectiveOfferTemplateResponseModel(BaseModel, AccessibilityComplianceStr
     offerVenue: CollectiveOfferOfferVenue
     contactEmail: str
     contactPhone: str
-    durationMinutes: Optional[int]
-    educationalPriceDetail: Optional[str]
-    offerId: Optional[str]
+    durationMinutes: int | None
+    educationalPriceDetail: str | None
+    offerId: str | None
     domains: list[OfferDomain]
 
     @classmethod

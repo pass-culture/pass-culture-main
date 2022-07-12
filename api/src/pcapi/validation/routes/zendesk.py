@@ -1,5 +1,3 @@
-from typing import Optional
-
 import pydantic
 
 
@@ -21,8 +19,8 @@ class WebhookRequest(pydantic.BaseModel):
     is_new_ticket: bool
     ticket_id: str
     requester_id: str
-    requester_email: Optional[pydantic.EmailStr]
-    requester_phone: Optional[str]
+    requester_email: pydantic.EmailStr | None
+    requester_phone: str | None
 
     @pydantic.validator("requester_phone")
     def check_email_or_phone(cls, requester_phone, values):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument

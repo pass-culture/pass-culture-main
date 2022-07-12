@@ -1,6 +1,5 @@
 import enum
 from typing import Any
-from typing import Optional
 
 from pcapi import settings
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
@@ -41,9 +40,9 @@ MOCKS: dict[ResourceCDS, dict | list[dict] | list] = {
 def get_resource(
     api_url: str,
     cinema_id: str,
-    cinema_api_token: Optional[str],
+    cinema_api_token: str | None,
     resource: ResourceCDS,
-    path_params: Optional[dict[str, Any]] = None,
+    path_params: dict[str, Any] | None = None,
 ) -> dict | list[dict] | list:
 
     if settings.IS_DEV:
@@ -64,8 +63,8 @@ def get_resource(
 
 
 def put_resource(
-    api_url: str, cinema_id: str, cinema_api_token: Optional[str], resource: ResourceCDS, body: BaseModel
-) -> Optional[dict | list[dict] | list]:
+    api_url: str, cinema_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
+) -> dict | list[dict] | list | None:
     if settings.IS_DEV:
         return MOCKS[resource]
 
@@ -88,7 +87,7 @@ def put_resource(
 
 
 def post_resource(
-    api_url: str, cinema_id: str, cinema_api_token: Optional[str], resource: ResourceCDS, body: BaseModel
+    api_url: str, cinema_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
 ) -> dict:
     try:
         url = _build_url(api_url, cinema_id, cinema_api_token, resource)
@@ -119,9 +118,9 @@ def get_movie_poster_from_api(image_url: str) -> bytes:
 def _build_url(
     api_url: str,
     cinema_id: str,
-    cinema_api_token: Optional[str],
+    cinema_api_token: str | None,
     resource: ResourceCDS,
-    path_params: Optional[dict[str, Any]] = None,
+    path_params: dict[str, Any] | None = None,
 ) -> str:
     resource_url = resource.value
     if path_params:
@@ -130,7 +129,7 @@ def _build_url(
     return f"https://{cinema_id}.{api_url}{resource_url}?api_token={cinema_api_token}"
 
 
-def _filter_token(error_message: str, token: Optional[str]) -> str:
+def _filter_token(error_message: str, token: str | None) -> str:
     if isinstance(token, str) and token in error_message:
         error_message = error_message.replace(token, "")
     return error_message

@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from pcapi.core.offers.models import Offer
 from pcapi.models import Model
@@ -37,7 +36,7 @@ def _extract_dict_values_from_chunk(matching_tuples_in_chunk: list[Model]) -> li
     return list(dictify_pc_object(pc_object_item) for pc_object_key, pc_object_item in matching_tuples_in_chunk)  # type: ignore [misc, has-type]
 
 
-def get_existing_object(model_type: Model, id_at_providers: str) -> Optional[dict]:  # type: ignore [valid-type]
+def get_existing_object(model_type: Model, id_at_providers: str) -> dict | None:  # type: ignore [valid-type]
     # exception to the ProvidableMixin because Offer no longer extends this class
     # idAtProviders has been replaced by idAtProvider property
     if model_type == Offer:

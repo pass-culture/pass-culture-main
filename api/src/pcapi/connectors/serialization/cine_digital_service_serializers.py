@@ -1,6 +1,5 @@
 import datetime
 from typing import Dict
-from typing import Optional
 
 from pydantic import Field
 
@@ -38,7 +37,7 @@ class MediaCDS(BaseModel):
     id: int
     title: str
     duration: int  # CDS api returns duration in seconds
-    posterpath: Optional[str]
+    posterpath: str | None
     storyline: str
     visanumber: str
 
@@ -78,7 +77,7 @@ class TariffCDS(BaseModel):
 class VoucherTypeCDS(BaseModel):
     id: int
     code: str
-    tariff: Optional[TariffCDS] = Field(alias="tariffid")
+    tariff: TariffCDS | None = Field(alias="tariffid")
 
     class Config:
         allow_population_by_field_name = True
@@ -124,9 +123,9 @@ class TicketSaleCDS(BaseModel):
     cinema_id: str = Field(alias="cinemaid")
     operation_date: str = Field(alias="operationdate")
     is_cancelled: bool = Field(alias="canceled")
-    seat_col: Optional[int] = Field(alias="seatcol")
-    seat_row: Optional[int] = Field(alias="seatrow")
-    seat_number: Optional[str] = Field(alias="seatnumber")
+    seat_col: int | None = Field(alias="seatcol")
+    seat_row: int | None = Field(alias="seatrow")
+    seat_number: str | None = Field(alias="seatnumber")
     tariff: IdObjectCDS = Field(alias="tariffid")
     show: IdObjectCDS = Field(alias="showid")
     disabled_person: bool = Field(alias="disabledperson")
@@ -158,7 +157,7 @@ class CreateTransactionBodyCDS(BaseModel):
 
 class TicketResponseCDS(BaseModel):
     barcode: str
-    seat_number: Optional[str] = Field(alias="seatnumber")
+    seat_number: str | None = Field(alias="seatnumber")
 
     class Config:
         allow_population_by_field_name = True

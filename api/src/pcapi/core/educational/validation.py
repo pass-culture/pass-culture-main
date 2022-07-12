@@ -1,5 +1,4 @@
 from decimal import Decimal
-from typing import Optional
 
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.educational import exceptions
@@ -28,12 +27,12 @@ def check_institution_fund(
     deposit.check_has_enough_fund(total_amount)
 
 
-def check_institution_exists(educational_institution: Optional[EducationalInstitution]) -> None:
+def check_institution_exists(educational_institution: EducationalInstitution | None) -> None:
     if not educational_institution:
         raise exceptions.EducationalInstitutionUnknown()
 
 
-def check_educational_year_exists(educational_year: Optional[EducationalYear]) -> None:
+def check_educational_year_exists(educational_year: EducationalYear | None) -> None:
     if not educational_year:
         raise exceptions.EducationalYearNotFound()
 
@@ -67,14 +66,14 @@ def check_collective_stock_is_editable(stock: CollectiveStock) -> None:
     offers_validation.check_event_expiration(stock)
 
 
-def check_collective_booking_status_pending(booking: CollectiveBooking) -> Optional[Exception]:
+def check_collective_booking_status_pending(booking: CollectiveBooking) -> Exception | None:
     if booking.status is not CollectiveBookingStatus.PENDING:
         raise exceptions.CollectiveOfferStockBookedAndBookingNotPending(booking.status, booking.id)
 
 
 def check_collective_offer_number_of_collective_stocks(  # type: ignore [return]
     collective_offer: CollectiveOffer,
-) -> Optional[CollectiveStockAlreadyExists]:
+) -> CollectiveStockAlreadyExists | None:
     if collective_offer.collectiveStock:
         raise exceptions.CollectiveStockAlreadyExists()
 

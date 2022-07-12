@@ -1,6 +1,5 @@
 import datetime
 import logging
-import typing
 
 from pcapi import settings
 import pcapi.core.fraud.api as fraud_api
@@ -30,7 +29,7 @@ from . import models
 logger = logging.getLogger(__name__)
 
 
-def get_latest_subscription_message(user: users_models.User) -> typing.Optional[models.SubscriptionMessage]:
+def get_latest_subscription_message(user: users_models.User) -> models.SubscriptionMessage | None:
     return models.SubscriptionMessage.query.filter_by(user=user).order_by(models.SubscriptionMessage.id.desc()).first()
 
 
@@ -78,7 +77,7 @@ def activate_beneficiary_for_eligibility(
     return user
 
 
-def get_activable_identity_fraud_check(user: users_models.User) -> typing.Optional[fraud_models.BeneficiaryFraudCheck]:
+def get_activable_identity_fraud_check(user: users_models.User) -> fraud_models.BeneficiaryFraudCheck | None:
     """Finds latest created activable identity fraud check for a user."""
     user_identity_fraud_checks = [
         fraud_check
@@ -108,7 +107,7 @@ def activate_beneficiary(user: users_models.User) -> users_models.User:
     return activate_beneficiary_for_eligibility(user, fraud_check.get_detailed_source(), eligibility)  # type: ignore [arg-type]
 
 
-def _has_completed_profile(user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]) -> bool:
+def _has_completed_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     return db.session.query(
         fraud_models.BeneficiaryFraudCheck.query.filter(
             fraud_models.BeneficiaryFraudCheck.user == user,
@@ -133,15 +132,11 @@ def _has_completed_profile_in_dms_form(user: users_models.User) -> bool:
     return bool(user_pending_dms_fraud_checks)
 
 
-def should_complete_profile(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
-) -> bool:
+def should_complete_profile(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     return not _has_completed_profile(user, eligibility) and not _has_completed_profile_in_dms_form(user)
 
 
-def is_eligibility_activable(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
-) -> bool:
+def is_eligibility_activable(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
     return (
         user.eligibility == eligibility
         and users_api.is_eligible_for_beneficiary_upgrade(user, eligibility)
@@ -150,7 +145,7 @@ def is_eligibility_activable(
 
 
 def get_email_validation_subscription_item(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     if user.isEmailValidated:
         status = models.SubscriptionItemStatus.OK
@@ -164,7 +159,7 @@ def get_email_validation_subscription_item(
 
 
 def get_phone_validation_subscription_item(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     if eligibility != users_models.EligibilityType.AGE18:
         status = models.SubscriptionItemStatus.NOT_APPLICABLE
@@ -186,7 +181,7 @@ def get_phone_validation_subscription_item(
 
 
 def get_user_profiling_subscription_item(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     if eligibility != users_models.EligibilityType.AGE18:
         status = models.SubscriptionItemStatus.NOT_APPLICABLE
@@ -215,7 +210,7 @@ def get_user_profiling_subscription_item(
 
 
 def get_profile_completion_subscription_item(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     if not should_complete_profile(user, eligibility):
         status = models.SubscriptionItemStatus.OK
@@ -228,7 +223,7 @@ def get_profile_completion_subscription_item(
 
 
 def get_identity_check_subscription_status(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     """
     eligibility may be the current user.eligibility or a specific eligibility.
@@ -269,14 +264,14 @@ def get_identity_check_subscription_status(
 
 
 def get_identity_check_subscription_item(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     status = get_identity_check_subscription_status(user, eligibility)
     return models.SubscriptionItem(type=models.SubscriptionStep.IDENTITY_CHECK, status=status)  # type: ignore [arg-type]
 
 
 def get_honor_statement_subscription_item(
-    user: users_models.User, eligibility: typing.Optional[users_models.EligibilityType]
+    user: users_models.User, eligibility: users_models.EligibilityType | None
 ) -> models.SubscriptionItem:
     if fraud_api.has_performed_honor_statement(user, eligibility):  # type: ignore [arg-type]
         status = models.SubscriptionItemStatus.OK
@@ -289,7 +284,7 @@ def get_honor_statement_subscription_item(
     return models.SubscriptionItem(type=models.SubscriptionStep.HONOR_STATEMENT, status=status)
 
 
-def get_next_subscription_step(user: users_models.User) -> typing.Optional[models.SubscriptionStep]:
+def get_next_subscription_step(user: users_models.User) -> models.SubscriptionStep | None:
     if not user.isEmailValidated:
         return models.SubscriptionStep.EMAIL_VALIDATION
 
@@ -336,7 +331,7 @@ def complete_profile(
     activity: str,
     first_name: str,
     last_name: str,
-    school_type: typing.Optional[users_models.SchoolTypeEnum] = None,
+    school_type: users_models.SchoolTypeEnum | None = None,
 ) -> None:
     update_payload = {
         "address": address,
@@ -428,7 +423,7 @@ def _is_ubble_allowed_if_subscription_overflow(user: users_models.User) -> bool:
     return False
 
 
-def get_maintenance_page_type(user: users_models.User) -> typing.Optional[models.MaintenancePageType]:
+def get_maintenance_page_type(user: users_models.User) -> models.MaintenancePageType | None:
     allowed_identity_check_methods = get_allowed_identity_check_methods(user)
     if allowed_identity_check_methods:
         return None
@@ -530,12 +525,12 @@ def handle_eligibility_difference_between_declaration_and_identity_provider(
     return new_fraud_check
 
 
-def update_user_birth_date(user: users_models.User, birth_date: typing.Optional[datetime.date]) -> None:
+def update_user_birth_date(user: users_models.User, birth_date: datetime.date | None) -> None:
     """Updates the user birth date based on data received from the identity provider.
 
     Args:
         user (users_models.User): The user to update.
-        birth_date (typing.Optional[datetime.date]): The birth date to set.
+        birth_date (datetime.date | None): The birth date to set.
     """
     if user.is_beneficiary:
         return
@@ -572,7 +567,7 @@ def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool
 
 def _get_jouve_subscription_item_status(
     user: users_models.User,
-    eligibility: typing.Optional[users_models.EligibilityType],
+    eligibility: users_models.EligibilityType | None,
     jouve_fraud_checks: list[fraud_models.BeneficiaryFraudCheck],
 ) -> models.SubscriptionItemStatus:
     if any(check.status == fraud_models.FraudCheckStatus.OK for check in jouve_fraud_checks):
@@ -592,7 +587,7 @@ def _get_jouve_subscription_item_status(
 
 def get_first_registration_date(
     user: users_models.User, eligibility: users_models.EligibilityType
-) -> typing.Optional[datetime.datetime]:
+) -> datetime.datetime | None:
     fraud_checks = user.beneficiaryFraudChecks
     if not fraud_checks or not user.dateOfBirth:
         return None
@@ -610,9 +605,7 @@ def get_first_registration_date(
     return min(registration_dates_when_eligible) if registration_dates_when_eligible else None
 
 
-def get_age_at_first_registration(
-    user: users_models.User, eligibility: users_models.EligibilityType
-) -> typing.Optional[int]:
+def get_age_at_first_registration(user: users_models.User, eligibility: users_models.EligibilityType) -> int | None:
     first_registration_date = get_first_registration_date(user, eligibility)
     if not first_registration_date or not user.dateOfBirth:
         return None

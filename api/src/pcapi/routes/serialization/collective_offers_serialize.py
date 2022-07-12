@@ -1,6 +1,5 @@
 from datetime import datetime
 import enum
-from typing import Optional
 
 from pydantic import Field
 from pydantic import validator
@@ -26,14 +25,14 @@ from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
 class ListCollectiveOffersQueryModel(BaseModel):
-    nameOrIsbn: Optional[str]
-    offerer_id: Optional[int]
-    status: Optional[str]
-    venue_id: Optional[int]
-    categoryId: Optional[str]
-    creation_mode: Optional[str]
-    period_beginning_date: Optional[str]
-    period_ending_date: Optional[str]
+    nameOrIsbn: str | None
+    offerer_id: int | None
+    status: str | None
+    venue_id: int | None
+    categoryId: str | None
+    creation_mode: str | None
+    period_beginning_date: str | None
+    period_ending_date: str | None
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
@@ -49,7 +48,7 @@ class CollectiveOffersStockResponseModel(BaseModel):
     hasBookingLimitDatetimePassed: bool
     offerId: str
     remainingQuantity: int | str
-    beginningDatetime: Optional[datetime]
+    beginningDatetime: datetime | None
 
     @validator("remainingQuantity", pre=True)
     def validate_remaining_quantity(cls, remainingQuantity):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -68,15 +67,15 @@ class CollectiveOfferResponseModel(BaseModel):
     isEducational: bool
     name: str
     stocks: list[CollectiveOffersStockResponseModel]
-    thumbUrl: Optional[str]
-    productIsbn: Optional[str]
+    thumbUrl: str | None
+    productIsbn: str | None
     subcategoryId: SubcategoryIdEnum
     venue: ListOffersVenueResponseModel
     status: str
     venueId: str
-    isShowcase: Optional[bool]
-    offerId: Optional[str]
-    educationalInstitution: Optional[EducationalInstitutionResponseModel]
+    isShowcase: bool | None
+    offerId: str | None
+    educationalInstitution: EducationalInstitutionResponseModel | None
 
 
 class ListCollectiveOffersResponseModel(BaseModel):
@@ -121,7 +120,7 @@ def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate)
     )
 
 
-def _serialize_stock(offer_id: int, stock: Optional[CollectiveStock] = None) -> dict:
+def _serialize_stock(offer_id: int, stock: CollectiveStock | None = None) -> dict:
     if stock:
         return {
             "id": humanize(stock.id),
@@ -161,19 +160,19 @@ class OfferDomain(BaseModel):
 
 
 class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
-    address: Optional[str]
+    address: str | None
     city: str
     dateCreated: datetime
-    dateModifiedAtLastProvider: Optional[datetime]
+    dateModifiedAtLastProvider: datetime | None
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isActive: bool
     isValidated: bool
-    lastProviderId: Optional[str]
+    lastProviderId: str | None
     name: str
     postalCode: str
     # FIXME (dbaty, 2020-11-09): optional until we populate the database (PC-5693)
-    siren: Optional[str]
+    siren: str | None
     thumbCount: int
 
     _humanize_id = humanize_field("id")
@@ -184,29 +183,29 @@ class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
 
 
 class GetCollectiveOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
-    address: Optional[str]
-    bookingEmail: Optional[str]
-    city: Optional[str]
-    comment: Optional[str]
-    dateCreated: Optional[datetime]
-    dateModifiedAtLastProvider: Optional[datetime]
-    departementCode: Optional[str]
+    address: str | None
+    bookingEmail: str | None
+    city: str | None
+    comment: str | None
+    dateCreated: datetime | None
+    dateModifiedAtLastProvider: datetime | None
+    departementCode: str | None
     fieldsUpdated: list[str]
     id: str
-    idAtProviders: Optional[str]
+    idAtProviders: str | None
     isValidated: bool
     isVirtual: bool
-    lastProviderId: Optional[str]
-    latitude: Optional[float]
-    longitude: Optional[float]
+    lastProviderId: str | None
+    latitude: float | None
+    longitude: float | None
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
     managingOffererId: str
     name: str
-    postalCode: Optional[str]
-    publicName: Optional[str]
-    siret: Optional[str]
+    postalCode: str | None
+    publicName: str | None
+    siret: str | None
     thumbCount: int
-    venueLabelId: Optional[str]
+    venueLabelId: str | None
 
     _humanize_id = humanize_field("id")
     _humanize_managing_offerer_id = humanize_field("managingOffererId")
@@ -244,16 +243,16 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
 
 class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):
     id: str
-    bookingEmail: Optional[str]
+    bookingEmail: str | None
     dateCreated: datetime
-    description: Optional[str]
-    durationMinutes: Optional[int]
+    description: str | None
+    durationMinutes: int | None
     students: list[StudentLevels]
     offerVenue: CollectiveOfferOfferVenueResponseModel
     contactEmail: str
     contactPhone: str
     hasBookingLimitDatetimesPassed: bool
-    offerId: Optional[str]
+    offerId: str | None
     isActive: bool
     isEditable: bool
     nonHumanizedId: int
@@ -280,7 +279,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
 
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
-    priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+    priceDetail: str | None = Field(alias="educationalPriceDetail")
 
     class Config:
         orm_mode = True
@@ -289,8 +288,8 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
-    collectiveStock: Optional[GetCollectiveOfferCollectiveStockResponseModel]
-    institution: Optional[EducationalInstitutionResponseModel]
+    collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
+    institution: EducationalInstitutionResponseModel | None
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
@@ -319,10 +318,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
     venue_id: str
     subcategory_id: str
     name: str
-    booking_email: Optional[str]
-    description: Optional[str]
-    domains: Optional[list[int]]
-    duration_minutes: Optional[int]
+    booking_email: str | None
+    description: str | None
+    domains: list[int] | None
+    duration_minutes: int | None
     audio_disability_compliant: bool = False
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
@@ -340,8 +339,8 @@ class PostCollectiveOfferBodyModel(BaseModel):
     @validator("domains", pre=True)
     def validate_domains(  # pylint: disable=no-self-argument
         cls: "PostCollectiveOfferBodyModel",
-        domains: Optional[list[str]],
-    ) -> Optional[list[str]]:
+        domains: list[str] | None,
+    ) -> list[str] | None:
         if domains is not None and len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
@@ -353,10 +352,10 @@ class PostCollectiveOfferBodyModel(BaseModel):
 
 
 class CollectiveOfferTemplateBodyModel(BaseModel):
-    price_detail: Optional[str] = Field(alias="educationalPriceDetail")
+    price_detail: str | None = Field(alias="educationalPriceDetail")
 
     @validator("price_detail")
-    def validate_price_detail(cls, price_detail: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
+    def validate_price_detail(cls, price_detail: str | None) -> str | None:  # pylint: disable=no-self-argument
         if price_detail and len(price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return price_detail
@@ -378,16 +377,16 @@ class CollectiveOfferTemplateResponseIdModel(BaseModel):
 
 
 class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    bookingEmail: Optional[str]
-    description: Optional[str]
-    name: Optional[str]
-    students: Optional[list[StudentLevels]]
-    offerVenue: Optional[CollectiveOfferVenueBodyModel]
-    contactEmail: Optional[str]
-    contactPhone: Optional[str]
-    durationMinutes: Optional[int]
-    subcategoryId: Optional[SubcategoryIdEnum]
-    domains: Optional[list[int]]
+    bookingEmail: str | None
+    description: str | None
+    name: str | None
+    students: list[StudentLevels] | None
+    offerVenue: CollectiveOfferVenueBodyModel | None
+    contactEmail: str | None
+    contactPhone: str | None
+    durationMinutes: int | None
+    subcategoryId: SubcategoryIdEnum | None
+    domains: list[int] | None
 
     @validator("name", allow_reuse=True)
     def validate_name(cls, name):  # type: ignore [no-untyped-def] # pylint: disable=no-self-argument
@@ -398,8 +397,8 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("domains")
     def validate_domains_collective_offer_edition(  # pylint: disable=no-self-argument
         cls: "PatchCollectiveOfferBodyModel",
-        domains: Optional[list[int]],
-    ) -> Optional[list[int]]:
+        domains: list[int] | None,
+    ) -> list[int] | None:
         if domains is not None and len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
@@ -411,11 +410,11 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
-    priceDetail: Optional[str]
-    domains: Optional[list[int]]
+    priceDetail: str | None
+    domains: list[int] | None
 
     @validator("priceDetail")
-    def validate_price_detail(cls, price_detail: Optional[str]) -> Optional[str]:  # pylint: disable=no-self-argument
+    def validate_price_detail(cls, price_detail: str | None) -> str | None:  # pylint: disable=no-self-argument
         if price_detail and len(price_detail) > 1000:
             raise ValueError("Le détail du prix ne doit pas excéder 1000 caractères.")
         return price_detail
@@ -423,8 +422,8 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     @validator("domains")
     def validate_domains_collective_offer_template_edition(  # pylint: disable=no-self-argument
         cls: "PatchCollectiveOfferTemplateBodyModel",
-        domains: Optional[list[int]],
-    ) -> Optional[list[int]]:
+        domains: list[int] | None,
+    ) -> list[int] | None:
         if domains is not None and len(domains) == 0:
             raise ValueError("domains must have at least one value")
 
@@ -440,10 +439,10 @@ class CollectiveOfferFromTemplateResponseModel(BaseModel):
     beginningDatetime: datetime
     bookingLimitDatetime: datetime
     isEducationalStockEditable: bool = True
-    numberOfTickets: Optional[int]
+    numberOfTickets: int | None
     offerId: str
     price: float
-    priceDetail: Optional[str] = Field(alias="educationalPriceDetail")
+    priceDetail: str | None = Field(alias="educationalPriceDetail")
 
     _humanize_id = humanize_field("id")
 
@@ -470,14 +469,14 @@ class PatchCollectiveOfferActiveStatusBodyModel(BaseModel):
 
 class PatchAllCollectiveOffersActiveStatusBodyModel(BaseModel):
     is_active: bool
-    offerer_id: Optional[int]
-    venue_id: Optional[int]
-    name_or_isbn: Optional[str]
-    category_id: Optional[str]
-    creation_mode: Optional[str]
-    status: Optional[str]
-    period_beginning_date: Optional[datetime]
-    period_ending_date: Optional[datetime]
+    offerer_id: int | None
+    venue_id: int | None
+    name_or_isbn: str | None
+    category_id: str | None
+    creation_mode: str | None
+    status: str | None
+    period_beginning_date: datetime | None
+    period_ending_date: datetime | None
 
     _dehumanize_offerer_id = dehumanize_field("offerer_id")
     _dehumanize_venue_id = dehumanize_field("venue_id")
@@ -487,7 +486,7 @@ class PatchAllCollectiveOffersActiveStatusBodyModel(BaseModel):
 
 
 class PatchCollectiveOfferEducationalInstitution(BaseModel):
-    educational_institution_id: Optional[int]
+    educational_institution_id: int | None
     is_creating_offer: bool
 
     class Config:

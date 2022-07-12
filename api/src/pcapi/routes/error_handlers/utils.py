@@ -19,7 +19,7 @@ def _format_statement_value(value: typing.Any) -> typing.Any:
     return str(value)
 
 
-def format_sql_statement_params(params: typing.Optional[dict]) -> typing.Optional[dict]:
+def format_sql_statement_params(params: dict | None) -> dict | None:
     if params is None:
         return None
     return {key: _format_statement_value(value) for key, value in params.items()}

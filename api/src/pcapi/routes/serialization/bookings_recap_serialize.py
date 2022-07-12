@@ -1,6 +1,5 @@
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
 from pydantic import root_validator
 
@@ -29,24 +28,24 @@ class OfferType(Enum):
 
 
 class BookingRecapResponseBeneficiaryModel(BaseModel):
-    email: Optional[str]
-    firstname: Optional[str]
-    lastname: Optional[str]
-    phonenumber: Optional[str]
+    email: str | None
+    firstname: str | None
+    lastname: str | None
+    phonenumber: str | None
 
 
 class BookingRecapResponseStockModel(BaseModel):
-    event_beginning_datetime: Optional[datetime]
+    event_beginning_datetime: datetime | None
     offer_identifier: str
     stock_identifier: str
     offer_is_educational: bool
-    offer_isbn: Optional[str]
+    offer_isbn: str | None
     offer_name: str
 
 
 class BookingRecapResponseBookingStatusHistoryModel(BaseModel):
     status: BookingRecapStatus
-    date: Optional[datetime]
+    date: datetime | None
 
 
 class BookingRecapResponseModel(BaseModel):
@@ -56,7 +55,7 @@ class BookingRecapResponseModel(BaseModel):
     booking_is_duo: bool
     booking_status: BookingRecapStatus
     booking_status_history: list[BookingRecapResponseBookingStatusHistoryModel]
-    booking_token: Optional[str]
+    booking_token: str | None
     stock: BookingRecapResponseStockModel
 
 
@@ -68,8 +67,8 @@ class ListBookingsResponseModel(BaseModel):
 
 
 class PatchBookingByTokenQueryModel(BaseModel):
-    email: Optional[str]
-    offer_id: Optional[str]
+    email: str | None
+    offer_id: str | None
 
 
 def serialize_bookings_recap_paginated(bookings_recap_paginated: BookingsRecapPaginated) -> ListBookingsResponseModel:
@@ -164,13 +163,13 @@ def _serialize_booking_recap(booking_recap: BookingRecap) -> BookingRecapRespons
 
 class ListBookingsQueryModel(BaseModel):
     page: int = 1
-    venue_id: Optional[int]
-    event_date: Optional[str]
-    booking_status_filter: Optional[BookingStatusFilter]
-    booking_period_beginning_date: Optional[str]
-    booking_period_ending_date: Optional[str]
-    offer_type: Optional[OfferType]
-    export_type: Optional[BookingExportType]
+    venue_id: int | None
+    event_date: str | None
+    booking_status_filter: BookingStatusFilter | None
+    booking_period_beginning_date: str | None
+    booking_period_ending_date: str | None
+    offer_type: OfferType | None
+    export_type: BookingExportType | None
 
     _dehumanize_venue_id = dehumanize_field("venue_id")
 

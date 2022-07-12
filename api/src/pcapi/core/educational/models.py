@@ -5,7 +5,6 @@ from datetime import datetime
 from decimal import Decimal
 import enum
 import typing
-from typing import Optional
 
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
@@ -143,7 +142,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
 
-    institution: RelationshipProperty[Optional["EducationalInstitution"]] = relationship(
+    institution: RelationshipProperty[typing.Optional["EducationalInstitution"]] = relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 
@@ -646,7 +645,7 @@ class EducationalBooking(PcObject, Model):  # type: ignore[valid-type, misc]
         nullable=True,
     )
 
-    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)  # type: ignore [assignment]
+    confirmationDate: datetime | None = sa.Column(sa.DateTime, nullable=True)  # type: ignore [assignment]
     confirmationLimitDate = sa.Column(sa.DateTime, nullable=True)
 
     booking: RelationshipProperty["Booking"] = relationship(
@@ -753,7 +752,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
 
     Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
-    confirmationDate: Optional[datetime] = sa.Column(sa.DateTime, nullable=True)  # type: ignore [assignment]
+    confirmationDate: datetime | None = sa.Column(sa.DateTime, nullable=True)  # type: ignore [assignment]
     confirmationLimitDate = sa.Column(sa.DateTime, nullable=False)
 
     educationalRedactorId = sa.Column(
@@ -824,7 +823,7 @@ class CollectiveBooking(PcObject, Model):  # type: ignore[valid-type, misc]
         return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
     @property
-    def userName(self) -> Optional[str]:
+    def userName(self) -> str | None:
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
 
     def has_confirmation_limit_date_passed(self) -> bool:

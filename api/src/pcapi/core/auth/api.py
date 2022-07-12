@@ -54,7 +54,7 @@ def get_google_token_id_info(google_token_id: str) -> dict:
     return response.json()
 
 
-def get_user_from_google_id(token: str) -> typing.Optional[users_models.User]:
+def get_user_from_google_id(token: str) -> users_models.User | None:
     google_user = get_google_token_id_info(token)
     google_email = google_user.get("email", "")
     db_user = users_repository.find_user_by_email(google_email)

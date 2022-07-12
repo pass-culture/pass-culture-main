@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 import datetime
 from decimal import Decimal
-from typing import Optional
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.categories import subcategories
@@ -233,7 +232,7 @@ class CustomRuleFinder:
             cache.setdefault(getattr(rule, field), []).append(rule)
         return cache
 
-    def get_rule(self, booking: Booking) -> Optional[payments_models.CustomReimbursementRule]:
+    def get_rule(self, booking: Booking) -> payments_models.CustomReimbursementRule | None:
         for rule in self.rules_by_offer.get(booking.stock.offerId, ()):
             if rule.matches(booking):
                 return rule

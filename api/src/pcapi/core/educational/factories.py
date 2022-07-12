@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 import factory
@@ -64,7 +63,7 @@ class CollectiveOfferFactory(BaseFactory):
     def educational_domains(
         self,
         create: bool,
-        extracted: Optional[list[models.EducationalDomain]] = None,
+        extracted: list[models.EducationalDomain] | None = None,
     ) -> None:
         if not create or not extracted:
             return
@@ -113,7 +112,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     def educational_domains(
         self,
         create: bool,
-        extracted: Optional[list[models.EducationalDomain]] = None,
+        extracted: list[models.EducationalDomain] | None = None,
     ) -> None:
         if not create or not extracted:
             self.domains = [EducationalDomainFactory(name="Danse", collectiveOfferTemplates=[self])]

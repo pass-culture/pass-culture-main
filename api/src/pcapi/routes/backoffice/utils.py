@@ -19,7 +19,7 @@ def build_paginated_response(
     page: int,
     pages: int,
     total: int,
-    sort: typing.Optional[str],
+    sort: str | None,
     data: list[BaseModel],
     response_model: typing.Type[PaginatedResponse] = PaginatedResponse,
 ) -> PaginatedResponse:

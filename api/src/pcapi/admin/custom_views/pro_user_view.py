@@ -1,5 +1,4 @@
 import datetime
-from typing import Optional
 
 from flask.helpers import flash
 from flask_admin.form import rules
@@ -37,7 +36,7 @@ def unique_siren(form: Form, field: Field) -> None:
         raise ValidationError("Une structure avec le même Siren existe déjà.")
 
 
-def filter_email(value: Optional[str]) -> Optional[str]:
+def filter_email(value: str | None) -> str | None:
     if not value:
         return value
     return sanitize_email(value)

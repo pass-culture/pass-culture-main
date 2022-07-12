@@ -1,5 +1,4 @@
 import datetime
-import typing
 
 import pytz
 import sqlalchemy as sqla
@@ -45,7 +44,7 @@ def get_business_units_query(  # type: ignore [no-untyped-def]
     return query
 
 
-def find_business_unit_by_siret(siret: str) -> typing.Optional[models.BusinessUnit]:
+def find_business_unit_by_siret(siret: str) -> models.BusinessUnit | None:
     return models.BusinessUnit.query.filter_by(siret=siret).one_or_none()
 
 
@@ -125,7 +124,7 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
 def find_all_offerer_payments(
     offerer_id: int,
     reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: typing.Optional[int] = None,
+    venue_id: int | None = None,
 ) -> list[tuple]:
     return find_all_offerers_payments(
         offerer_ids=[offerer_id],
@@ -137,7 +136,7 @@ def find_all_offerer_payments(
 def find_all_offerers_payments(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: typing.Optional[int] = None,
+    venue_id: int | None = None,
 ) -> list[tuple]:
     payment_date = sqla.cast(models.PaymentStatus.date, sqla.Date)
     sent_payments = (
@@ -214,7 +213,7 @@ def find_all_offerers_payments(
 def _get_sent_pricings_for_collective_bookings(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: typing.Optional[int] = None,
+    venue_id: int | None = None,
 ) -> list[tuple]:
     BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
     return (
@@ -310,7 +309,7 @@ def _get_sent_pricings_for_collective_bookings(
 def _get_sent_pricings_for_individual_bookings(
     offerer_ids: list[int],
     reimbursement_period: tuple[datetime.date, datetime.date],
-    venue_id: typing.Optional[int] = None,
+    venue_id: int | None = None,
 ) -> list[tuple]:
     BusinessUnitVenue = sqla_orm.aliased(offerers_models.Venue)
     return (

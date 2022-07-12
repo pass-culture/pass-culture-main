@@ -1,5 +1,3 @@
-from typing import Optional
-
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
@@ -10,7 +8,7 @@ from pcapi.core.users.models import User
 from pcapi.utils.mailing import build_pc_pro_offer_link
 
 
-def send_email_reported_offer_by_user(user: User, offer: Offer, reason: str, custom_reason: Optional[str]) -> bool:
+def send_email_reported_offer_by_user(user: User, offer: Offer, reason: str, custom_reason: str | None) -> bool:
     data = get_reported_offer_email_data(user, offer, reason, custom_reason)
     recipients = [settings.REPORT_OFFER_EMAIL_ADDRESS]
     if reason == Reason.OTHER.value:
@@ -19,7 +17,7 @@ def send_email_reported_offer_by_user(user: User, offer: Offer, reason: str, cus
 
 
 def get_reported_offer_email_data(
-    user: User, offer: Offer, reason: str, custom_reason: Optional[str] = None
+    user: User, offer: Offer, reason: str, custom_reason: str | None = None
 ) -> SendinblueTransactionalEmailData:
     reason = Reason.get_meta(reason).title
     if custom_reason:

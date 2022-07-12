@@ -3,7 +3,6 @@ from datetime import datetime
 import logging
 import pathlib
 from typing import Iterable
-from typing import Optional
 
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
@@ -20,7 +19,7 @@ def import_educational_institutions_and_deposits(
     filename: str,
     ministry: Ministry,
     path: str = DEFAULT_FILEPATH,
-    educational_year_beginning: Optional[int] = None,
+    educational_year_beginning: int | None = None,
 ) -> None:
     if path is not None and path != DEFAULT_FILEPATH and not path.endswith("/"):
         path += "/"
@@ -42,7 +41,7 @@ def import_educational_institutions_and_deposits(
 def _process_educational_csv(
     educational_institutions_rows: Iterable[dict],
     ministry: Ministry,
-    educational_year_beginning: Optional[int] = None,
+    educational_year_beginning: int | None = None,
 ) -> None:
     current_year = educational_year_beginning if educational_year_beginning is not None else datetime.utcnow().year
     try:

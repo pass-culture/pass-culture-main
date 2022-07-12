@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pcapi.core.bookings.models import BookingStatus
 
@@ -9,8 +8,8 @@ def get_booking_token(
     booking_status: BookingStatus,
     booking_is_educational: bool,
     booking_is_external: bool,
-    event_beginning_datetime: Optional[datetime],
-) -> Optional[str]:
+    event_beginning_datetime: datetime | None,
+) -> str | None:
     if (
         not event_beginning_datetime
         and booking_status

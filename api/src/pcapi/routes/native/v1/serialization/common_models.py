@@ -1,5 +1,4 @@
 from decimal import Decimal
-import typing
 
 
 # fmt: off
@@ -12,15 +11,15 @@ from pcapi.routes.serialization import BaseModel
 
 
 class Coordinates(BaseModel):
-    latitude: typing.Optional[Decimal]
-    longitude: typing.Optional[Decimal]
+    latitude: Decimal | None
+    longitude: Decimal | None
 
 
 class AccessibilityComplianceMixin(PydanticBaseModel):
-    audioDisabilityCompliant: typing.Optional[bool]
-    mentalDisabilityCompliant: typing.Optional[bool]
-    motorDisabilityCompliant: typing.Optional[bool]
-    visualDisabilityCompliant: typing.Optional[bool]
+    audioDisabilityCompliant: bool | None
+    mentalDisabilityCompliant: bool | None
+    motorDisabilityCompliant: bool | None
+    visualDisabilityCompliant: bool | None
 
 
 class AccessibilityComplianceStrictMixin(PydanticBaseModel):

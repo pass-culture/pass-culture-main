@@ -1,8 +1,7 @@
 from decimal import Decimal
-from typing import Optional
 
 
-def get_occurrence_short_name_or_none(concatened_names_with_a_date: str) -> Optional[str]:
+def get_occurrence_short_name_or_none(concatened_names_with_a_date: str) -> str | None:
     splitted_names = concatened_names_with_a_date.split(" / ")
 
     if len(splitted_names) > 0:

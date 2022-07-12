@@ -1,5 +1,4 @@
 import logging
-import typing
 
 from pcapi.core import search
 from pcapi.core.offerers import api as offerers_api
@@ -26,7 +25,7 @@ def batch_indexing_offers_in_algolia_from_database(
         page += 1
 
 
-def batch_indexing_venues_in_algolia_from_database(algolia_batch_size: int, max_venues: typing.Optional[int]) -> None:
+def batch_indexing_venues_in_algolia_from_database(algolia_batch_size: int, max_venues: int | None) -> None:
     venues = offerers_api.get_eligible_for_search_venues(max_venues)
     for page, venue_chunk in enumerate(get_chunks(venues, algolia_batch_size), start=1):  # type: ignore [var-annotated]
         venue_ids = [venue.id for venue in venue_chunk]

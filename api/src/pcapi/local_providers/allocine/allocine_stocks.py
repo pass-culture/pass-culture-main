@@ -1,6 +1,5 @@
 from datetime import datetime
 import re
-from typing import Optional
 
 from dateutil.parser import parse
 from sqlalchemy import Sequence
@@ -45,8 +44,8 @@ class AllocineStocks(LocalProvider):
         self.quantity = allocine_venue_provider.quantity
         self.room_internal_id = allocine_venue_provider.internalId
 
-        self.movie_information: Optional[dict] = None
-        self.filtered_movie_showtimes: Optional[list[dict]] = None
+        self.movie_information: dict | None = None
+        self.filtered_movie_showtimes: list[dict] | None = None
         self.last_product_id = None
         self.last_vf_offer_id = None
         self.last_vo_offer_id = None
@@ -297,7 +296,7 @@ def _format_poster_url(url: str) -> str:
     return url.replace(r"\/", "/")
 
 
-def _get_operating_visa(movie_info: dict) -> Optional[str]:
+def _get_operating_visa(movie_info: dict) -> str | None:
     return movie_info["releases"][0]["data"]["visa_number"]
 
 
@@ -307,7 +306,7 @@ def _build_stage_director_full_name(movie_info: dict) -> str:
     return f"{stage_director_first_name} {stage_director_last_name}"
 
 
-def _parse_movie_duration(duration: Optional[str]) -> Optional[int]:
+def _parse_movie_duration(duration: str | None) -> int | None:
     if not duration:
         return None
     hours_minutes = "([0-9]+)H([0-9]+)"
@@ -355,7 +354,7 @@ def _build_countries_list(movie_info: dict) -> list[str]:
     return [country["name"] for country in movie_info["countries"]]
 
 
-def _build_cast_list(movie_info: dict) -> list[Optional[str]]:
+def _build_cast_list(movie_info: dict) -> list[str | None]:
     cast_list = []
     edges = movie_info["cast"]["edges"]
     for edge in edges:

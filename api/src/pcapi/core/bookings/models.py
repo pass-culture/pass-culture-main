@@ -2,7 +2,6 @@ from datetime import datetime
 from decimal import Decimal
 import enum
 import typing
-from typing import Optional
 
 from sqlalchemy import BigInteger
 from sqlalchemy import Boolean
@@ -162,7 +161,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         unique=True,
         index=True,
     )
-    educationalBooking: Optional["EducationalBooking"] = relationship(  # type: ignore [assignment]
+    educationalBooking: typing.Optional["EducationalBooking"] = relationship(  # type: ignore [assignment]
         "EducationalBooking",
         back_populates="booking",
         uselist=False,
@@ -175,7 +174,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         unique=True,
         index=True,
     )
-    individualBooking: Optional[IndividualBooking] = relationship(  # type: ignore [assignment]
+    individualBooking: IndividualBooking | None = relationship(  # type: ignore [assignment]
         IndividualBooking,
         back_populates="booking",
         uselist=False,
@@ -223,7 +222,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         self.educationalBooking.confirmationDate = datetime.utcnow()
 
     @property
-    def expirationDate(self) -> Optional[datetime]:
+    def expirationDate(self) -> datetime | None:
         if self.status == BookingStatus.CANCELLED or self.is_used_or_reimbursed:
             return None
         if not self.stock.offer.canExpire:
@@ -240,7 +239,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
     # bookings in the web API. They can be moved elsewhere once we
     # have replaced the auto-magic serialization ("includes").
     @property
-    def completedUrl(self) -> Optional[str]:
+    def completedUrl(self) -> str | None:
         offer = self.stock.offer
         url = offer.url
         if url is None:
@@ -277,7 +276,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
 
     @property
-    def firstName(self) -> Optional[str]:
+    def firstName(self) -> str | None:
         if self.individualBooking is not None:
             return self.individualBooking.user.firstName
 
@@ -287,7 +286,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         return None
 
     @property
-    def lastName(self) -> Optional[str]:
+    def lastName(self) -> str | None:
         if self.individualBooking is not None:
             return self.individualBooking.user.lastName
 
@@ -297,7 +296,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         return None
 
     @property
-    def userName(self) -> Optional[str]:
+    def userName(self) -> str | None:
         if self.individualBooking is not None:
             return f"{self.individualBooking.user.firstName} {self.individualBooking.user.lastName}"
 
@@ -307,7 +306,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         return None
 
     @property
-    def email(self) -> Optional[str]:
+    def email(self) -> str | None:
         if self.individualBooking is not None:
             return self.individualBooking.user.email
 

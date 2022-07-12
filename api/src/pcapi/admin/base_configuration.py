@@ -1,7 +1,6 @@
 import datetime
 import logging
 import secrets
-from typing import Optional
 
 from flask import session
 from flask import url_for
@@ -103,7 +102,7 @@ class BaseCustomSuperAdminView(BaseSuperAdminMixin, BaseView):
 
 class AdminIndexView(AdminIndexBaseView):
     def _create_local_admin_user(
-        self, email: str, first_name: str, last_name: str, given_name: Optional[str] = None
+        self, email: str, first_name: str, last_name: str, given_name: str | None = None
     ) -> users_models.User:
         local_admin = users_api.create_account(
             email=email, password="not-so-secret-password", birthdate=datetime.date(1990, 1, 1), is_email_validated=True
