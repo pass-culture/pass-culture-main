@@ -57,6 +57,7 @@ export type { GetCollectiveOfferManagingOffererResponseModel } from './models/Ge
 export type { GetCollectiveOfferResponseModel } from './models/GetCollectiveOfferResponseModel';
 export type { GetCollectiveOfferTemplateResponseModel } from './models/GetCollectiveOfferTemplateResponseModel';
 export type { GetCollectiveOfferVenueResponseModel } from './models/GetCollectiveOfferVenueResponseModel';
+export type { GetcollectiveVenueResponseModel } from './models/GetcollectiveVenueResponseModel';
 export type { GetEducationalOffererResponseModel } from './models/GetEducationalOffererResponseModel';
 export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOfferersQueryModel';
 export type { GetEducationalOfferersResponseModel } from './models/GetEducationalOfferersResponseModel';
