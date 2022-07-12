@@ -1,11 +1,18 @@
 import { AccessibilityLabel, AccessiblityLabelEnum } from 'ui-kit'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 
 import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import React from 'react'
+import { RootState } from 'store/reducers'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 import humanizeDelay from './utils'
 import styles from './OfferSummary.module.scss'
+import { useSelector } from 'react-redux'
 
 export interface IOfferSectionProps {
   id: string
@@ -61,8 +68,20 @@ const OfferSummary = ({
   const editLink = isCreation
     ? `/offre/${offer.id}/individuel/creation`
     : `/offre/${offer.id}/individuel/edition`
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
+  const logEditEvent = () => {
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.SUMMARY,
+      to: OfferBreadcrumbStep.DETAILS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
+    })
+  }
   return (
-    <SummaryLayout.Section title="Détails de l'offre" editLink={editLink}>
+    <SummaryLayout.Section
+      title="Détails de l'offre"
+      editLink={editLink}
+      onLinkClick={logEditEvent}
+    >
       <SummaryLayout.SubSection title="Type d'offre">
         <SummaryLayout.Row title="Catégorie" description={offer.categoryName} />
         <SummaryLayout.Row

@@ -10,6 +10,7 @@ interface ISummaryLayoutSectionProps {
   children: React.ReactNode | React.ReactNode[]
   className?: string
   editLink: string
+  onLinkClick?: () => void
 }
 
 const Section = ({
@@ -17,6 +18,7 @@ const Section = ({
   children,
   className,
   editLink,
+  onLinkClick,
 }: ISummaryLayoutSectionProps): JSX.Element => (
   <div className={cn(style['summary-layout-section'], className)}>
     <div className={style['summary-layout-section-header']}>
@@ -28,6 +30,7 @@ const Section = ({
           to={editLink}
           className={style['summary-layout-section-header-edit-link']}
           Icon={BlackPen}
+          onClick={onLinkClick ? onLinkClick : undefined}
         >
           Modifier
         </ButtonLink>

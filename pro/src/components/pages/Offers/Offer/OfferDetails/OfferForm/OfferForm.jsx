@@ -14,6 +14,10 @@ import {
   WITHDRAWAL_ON_SITE_DELAY_OPTIONS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from '../_constants'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import React, {
   Fragment,
   useCallback,
@@ -27,6 +31,7 @@ import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
 import InternalBanner from 'components/layout/InternalBanner'
 import { Link } from 'react-router-dom'
 import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
 import { OfferRefundWarning } from 'new_components/Banner'
@@ -45,6 +50,7 @@ import isEqual from 'lodash.isequal'
 import { isUrlValid } from './validators'
 import { sortByDisplayName } from 'utils/strings'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import { useSelector } from 'react-redux'
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
 
@@ -88,6 +94,7 @@ const OfferForm = ({
   const formRef = useRef(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+  const logEvent = useSelector(state => state.app.logEvent)
 
   const isIsbnRequiredInLivreEditionEnabled = useActiveFeature(
     'ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION'
@@ -541,6 +548,11 @@ const OfferForm = ({
 
         const nextStepRedirect = await onSubmit(submittedValues)
         if (nextStepRedirect !== null) {
+          logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+            from: OfferBreadcrumbStep.DETAILS,
+            to: OfferBreadcrumbStep.STOCKS,
+            used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+          })
           await nextStepRedirect()
           return
         }
@@ -559,6 +571,15 @@ const OfferForm = ({
       showErrorNotification,
     ]
   )
+
+  const onCancelClick = () => {
+    if (isEdition)
+      logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+        from: OfferBreadcrumbStep.DETAILS,
+        to: OfferBreadcrumbStep.SUMMARY,
+        used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      })
+  }
 
   const handleChangeVenue = useCallback(
     event => {
@@ -1124,7 +1145,7 @@ const OfferForm = ({
         )}
 
       <section className="actions-section">
-        <Link className="secondary-link" to={backUrl}>
+        <Link className="secondary-link" to={backUrl} onClick={onCancelClick}>
           {isEdition ? `Voir le détail de l'offre` : 'Annuler et quitter'}
         </Link>
         <SubmitButton

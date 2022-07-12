@@ -2,13 +2,19 @@ import Breadcrumb, {
   BreadcrumbStyle,
 } from 'new_components/Breadcrumb/Breadcrumb'
 import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
+import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
 
 import React from 'react'
+import { RootState } from 'store/reducers'
 import type { Step } from 'new_components/Breadcrumb'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import { useSelector } from 'react-redux'
 
 export enum OfferBreadcrumbStep {
   DETAILS = 'details',
@@ -39,6 +45,7 @@ const OfferBreadcrumb = ({
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const offerEditionUrl = useOfferEditionURL(isOfferEducational, offerId, false)
   const stockEditionUrl = useOfferStockEditionURL(isOfferEducational, offerId)
 
@@ -132,6 +139,18 @@ const OfferBreadcrumb = ({
 
     steps = Object.values(stepList)
   }
+
+  // Add firebase tracking only on individual offers
+  if (!isOfferEducational)
+    steps.map((step, index) => {
+      steps[index].onClick = () => {
+        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: activeStep,
+          to: step.id,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
+        })
+      }
+    })
 
   return (
     <Breadcrumb
