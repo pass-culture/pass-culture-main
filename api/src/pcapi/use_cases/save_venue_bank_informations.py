@@ -49,10 +49,17 @@ class SaveVenueBankInformations:
         )
 
         api_errors = CannotRegisterBankInformation()
-        siret = application_details.siret
-        siren = application_details.siren
-        offerer = Offerer.query.filter_by(siren=siren).one_or_none()
-        check_offerer_presence(offerer, api_errors)
+
+        if procedure_id in (
+            settings.DMS_VENUE_PROCEDURE_ID,
+            settings.DMS_VENUE_PROCEDURE_ID_V2,
+            settings.DMS_VENUE_PROCEDURE_ID_V3,
+        ):
+            siret = application_details.siret
+            siren = application_details.siren
+            offerer = Offerer.query.filter_by(siren=siren).one_or_none()
+            check_offerer_presence(offerer, api_errors)
+
         venue = self.get_referent_venue(application_details, offerer, api_errors)
 
         if api_errors.errors:
