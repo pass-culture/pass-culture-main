@@ -25,10 +25,10 @@ from pcapi.repository import repository
 
 
 PROCEDURE_ID_VERSION_MAP = {
-    settings.DMS_VENUE_PROCEDURE_ID: 1,
-    settings.DMS_VENUE_PROCEDURE_ID_V2: 2,
-    settings.DMS_VENUE_PROCEDURE_ID_V3: 2,
-    settings.DMS_VENUE_PROCEDURE_ID_V4: 2,
+    settings.DMS_VENUE_PROCEDURE_ID: {"dms_api_version": 1, "procedure_version": 1},
+    settings.DMS_VENUE_PROCEDURE_ID_V2: {"dms_api_version": 2, "procedure_version": 2},
+    settings.DMS_VENUE_PROCEDURE_ID_V3: {"dms_api_version": 2, "procedure_version": 3},
+    settings.DMS_VENUE_PROCEDURE_ID_V4: {"dms_api_version": 2, "procedure_version": 4},
 }
 
 
@@ -44,8 +44,11 @@ class SaveVenueBankInformations:
     def execute(self, application_id: str, procedure_id: str | None = None) -> BankInformations | None:
         if not procedure_id:
             procedure_id = settings.DMS_VENUE_PROCEDURE_ID
+        assert procedure_id
         application_details = get_venue_bank_information_application_details_by_application_id(
-            application_id, version=PROCEDURE_ID_VERSION_MAP[procedure_id]
+            application_id=application_id,
+            procedure_version=PROCEDURE_ID_VERSION_MAP[procedure_id]["procedure_version"],
+            dms_api_version=PROCEDURE_ID_VERSION_MAP[procedure_id]["dms_api_version"],
         )
 
         api_errors = CannotRegisterBankInformation()

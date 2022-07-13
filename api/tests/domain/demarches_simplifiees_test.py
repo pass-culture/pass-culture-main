@@ -65,7 +65,7 @@ class GetVenueBankInformation_applicationDetailsByApplicationIdTest:
         DMSGraphQLClient.return_value.get_bic.return_value = venue_demarche_simplifiee_get_bic_response_v2(annotation)
 
         # When
-        application_details = get_venue_bank_information_application_details_by_application_id(8, 2)
+        application_details = get_venue_bank_information_application_details_by_application_id(8, 2, 3)
 
         # Then
         assert isinstance(application_details, ApplicationDetail)
@@ -185,23 +185,44 @@ VENUE_DMS_TOKEN_FIELD = {
     "stringValue": "50a7536a21c8",
     "value": "50a7536a21c8",
 }
-
-COMPANY_FIELD = {
-    "capitalSocial": "38130",
-    "codeEffectifEntreprise": "12",
-    "dateCreation": "2001-06-27",
-    "formeJuridique": "SAS, société par actions simplifiée",
-    "formeJuridiqueCode": "5710",
-    "inlineAdresse": "2 RUE LAMENNAIS, 75008 PARIS 8",
-    "nom": None,
-    "nomCommercial": "",
-    "numeroTvaIntracommunautaire": "FR67438391195",
-    "prenom": None,
-    "raisonSociale": "GAUMONT ALESIA",
-    "siren": "438391195",
-    "siretSiegeSocial": "43839119500056",
+VENUE_FIELD = {
+    "address": {
+        "cityCode": "75108",
+        "cityName": "PARIS 8",
+        "departmentCode": None,
+        "departmentName": None,
+        "geometry": None,
+        "label": "GAUMONT ALESIA\r\n2 RUE LAMENNAIS\r\n75008 PARIS 8\r\nFRANCE",
+        "postalCode": "75008",
+        "regionCode": None,
+        "regionName": None,
+        "streetAddress": "2 RUE LAMENNAIS",
+        "streetName": "LAMENNAIS",
+        "streetNumber": "2",
+        "type": "housenumber",
+    },
+    "association": None,
+    "entreprise": {
+        "capitalSocial": "38130",
+        "codeEffectifEntreprise": "12",
+        "dateCreation": "2001-06-27",
+        "formeJuridique": "SAS, société par actions simplifiée",
+        "formeJuridiqueCode": "5710",
+        "inlineAdresse": "2 RUE LAMENNAIS, 75008 PARIS 8",
+        "nom": None,
+        "nomCommercial": "",
+        "numeroTvaIntracommunautaire": "FR67438391195",
+        "prenom": None,
+        "raisonSociale": "GAUMONT ALESIA",
+        "siren": "438391195",
+        "siretSiegeSocial": "43839119500056",
+    },
+    "libelleNaf": "Projection de films cinématographiques",
+    "naf": "5914Z",
+    "siegeSocial": True,
+    "siret": "43839119500056",
 }
-EXPECTED_RESULT = {
+EXPECTED_RESULT_WITH_SIRET_V3 = {
     "status": "en_construction",
     "updated_at": "2021-11-12T14:51:42+01:00",
     "firstname": "John",
@@ -214,20 +235,30 @@ EXPECTED_RESULT = {
     "annotation_id": "InterestingId",
     "dossier_id": "Q2zzbXAtNzgyODAw",
 }
-DMS_TOKEN_FIELD_RESULT = {"dms_token": "50a7536a21c8"}
+EXPECTED_RESULT_V4 = {
+    "status": "en_construction",
+    "updated_at": "2021-11-12T14:51:42+01:00",
+    "dms_token": "50a7536a21c8",
+    "firstname": "John",
+    "lastname": "Doe",
+    "phone_number": "0102030405",
+    "iban": "FR7630001007941234567890185",
+    "bic": "QSDFGH8Z",
+    "annotation_id": "InterestingId",
+    "dossier_id": "Q2zzbXAtNzgyODAw",
+}
 
 
 class ParseRawBicDataTest:
     @pytest.mark.parametrize(
-        "entreprise, identifiant_du_lieu, expected_result",
+        "procedure_version, etablissement, identifiant_du_lieu, expected_result",
         [
-            (COMPANY_FIELD, None, EXPECTED_RESULT),
-            (COMPANY_FIELD, VENUE_DMS_TOKEN_FIELD, {**EXPECTED_RESULT, **DMS_TOKEN_FIELD_RESULT}),
-            (None, None, EXPECTED_RESULT),
-            (None, VENUE_DMS_TOKEN_FIELD, {**EXPECTED_RESULT, **DMS_TOKEN_FIELD_RESULT}),
+            (3, VENUE_FIELD, None, EXPECTED_RESULT_WITH_SIRET_V3),
+            (4, None, VENUE_DMS_TOKEN_FIELD, EXPECTED_RESULT_V4),
+            (4, VENUE_FIELD, VENUE_DMS_TOKEN_FIELD, EXPECTED_RESULT_V4),
         ],
     )
-    def test_parsing_works(self, entreprise, identifiant_du_lieu, expected_result):
+    def test_parsing_works(self, procedure_version, etablissement, identifiant_du_lieu, expected_result):
         champs = [
             {"id": "Q2hhbXAtNDA3ODk1", "label": "Mes informations", "stringValue": "", "value": None},
             {"id": "Q2hhbXAtNDA3ODg5", "label": "Mon prénom", "stringValue": "John", "value": "John"},
@@ -279,29 +310,7 @@ class ParseRawBicDataTest:
                 "value": None,
             },
             {
-                "etablissement": {
-                    "address": {
-                        "cityCode": "75108",
-                        "cityName": "PARIS 8",
-                        "departmentCode": None,
-                        "departmentName": None,
-                        "geometry": None,
-                        "label": "GAUMONT ALESIA\r\n2 RUE LAMENNAIS\r\n75008 PARIS 8\r\nFRANCE",
-                        "postalCode": "75008",
-                        "regionCode": None,
-                        "regionName": None,
-                        "streetAddress": "2 RUE LAMENNAIS",
-                        "streetName": "LAMENNAIS",
-                        "streetNumber": "2",
-                        "type": "housenumber",
-                    },
-                    "association": None,
-                    "entreprise": entreprise,
-                    "libelleNaf": "Projection de films cinématographiques",
-                    "naf": "5914Z",
-                    "siegeSocial": True,
-                    "siret": "43839119500056",
-                },
+                "etablissement": etablissement,
                 "id": "Q2hhbXAtNzgyODAw",
                 "label": "SIRET",
                 "stringValue": "43839119500056",
@@ -341,6 +350,6 @@ class ParseRawBicDataTest:
             }
         }
 
-        result = parse_raw_bic_data(input_data)
+        result = parse_raw_bic_data(input_data, procedure_version)
 
         assert result == expected_result

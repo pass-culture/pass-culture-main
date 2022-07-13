@@ -40,10 +40,10 @@ REJECTED_DMS_STATUS = (
 class ApplicationDetail:
     def __init__(
         self,
-        siren: str,
         status: BankInformationStatus,
         application_id: int,
         modification_date: datetime,
+        siren: str | None = None,
         iban: str | None = None,
         bic: str | None = None,
         siret: str | None = None,
@@ -65,7 +65,7 @@ class ApplicationDetail:
         self.dossier_id = dossier_id
 
 
-def parse_raw_bic_data(data: dict) -> dict:
+def parse_raw_bic_data(data: dict, procedure_version: int) -> dict:
     result = {
         "status": data["dossier"]["state"],
         "updated_at": data["dossier"]["dateDerniereModification"],
@@ -74,7 +74,7 @@ def parse_raw_bic_data(data: dict) -> dict:
     for field in data["dossier"]["champs"]:
         if field["id"] in ID_TO_NAME_MAPPING:
             result[ID_TO_NAME_MAPPING[field["id"]]] = field["value"]
-        elif field["id"] == "Q2hhbXAtNzgyODAw":
+        elif field["id"] == "Q2hhbXAtNzgyODAw" and procedure_version in (2, 3):
             result["siret"] = field["etablissement"]["siret"]
             result["siren"] = field["etablissement"]["siret"][:9]
 
@@ -87,9 +87,11 @@ def parse_raw_bic_data(data: dict) -> dict:
 
 
 def get_venue_bank_information_application_details_by_application_id(
-    application_id: str, version: int = 1
+    application_id: str,
+    dms_api_version: int = 1,
+    procedure_version: int = 1,
 ) -> ApplicationDetail:
-    if version == 1:
+    if dms_api_version == 1:
         assert settings.DMS_VENUE_PROCEDURE_ID
         assert settings.DMS_TOKEN
         response_application_details = api_dms.get_application_details(
@@ -115,25 +117,25 @@ def get_venue_bank_information_application_details_by_application_id(
             modification_date=datetime.strptime(response_application_details["dossier"]["updated_at"], DATE_ISO_FORMAT),
         )
         return application_details
-    if version == 2:
+    if dms_api_version == 2:
         client = api_dms.DMSGraphQLClient()
         raw_data = client.get_bic(int(application_id))
-        data = parse_raw_bic_data(raw_data)
+        data = parse_raw_bic_data(raw_data, procedure_version)
         return ApplicationDetail(
-            siren=data["siren"],
+            siren=data.get("siren", None),
             status=_get_status_from_demarches_simplifiees_application_state_v2(
                 dms_models.GraphQLApplicationStates(data["status"])
             ),
             application_id=int(application_id),
             iban=data["iban"],
             bic=data["bic"],
-            siret=data["siret"],
-            dms_token=data.get("dms_token", None),
+            siret=data.get("siret", None),
+            dms_token=data["dms_token"] if procedure_version == 4 else None,
             modification_date=datetime.fromisoformat(data["updated_at"]).astimezone().replace(tzinfo=None),
             annotation_id=data["annotation_id"],
             dossier_id=data["dossier_id"],
         )
-    raise ValueError("Unknown version %s" % version)
+    raise ValueError("Unknown dms_api_version %s" % dms_api_version)
 
 
 def _get_status_from_demarches_simplifiees_application_state(state: str) -> BankInformationStatus:
