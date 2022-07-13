@@ -49,7 +49,7 @@ const ReimbursementFields = ({
             linkTitle="Créer un lieu avec SIRET"
           >
             Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
-            devez avoir minimum un lieu rattaché à un SIRET.
+            devez avoir, au minimum, un lieu rattaché à un SIRET.
           </InternalBanner>
         ) : (
           <>
