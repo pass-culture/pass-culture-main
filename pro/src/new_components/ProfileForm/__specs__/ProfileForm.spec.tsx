@@ -41,7 +41,7 @@ describe('new_components:ProfileForm', () => {
       },
       banner: <Banner>Banner test text</Banner>,
       shouldDisplayBanner: false,
-      onSubmit: onProfileFormSubmit,
+      onFormSubmit: onProfileFormSubmit,
     }
   })
   it('renders component successfully', () => {
