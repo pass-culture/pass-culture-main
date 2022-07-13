@@ -7,7 +7,6 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.models import EducationalBooking
 from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalYear
@@ -56,7 +55,7 @@ def check_collective_booking_status(collective_booking: CollectiveBooking) -> No
         raise exceptions.BookingIsCancelled()
 
 
-def check_confirmation_limit_date_has_not_passed(booking: EducationalBooking | CollectiveBooking) -> None:
+def check_confirmation_limit_date_has_not_passed(booking: CollectiveBooking) -> None:
     if booking.has_confirmation_limit_date_passed():
         raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
