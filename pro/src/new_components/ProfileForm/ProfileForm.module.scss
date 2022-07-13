@@ -26,6 +26,17 @@
 .profile-form-content {
     margin: rem.torem(16px);
 }
+.profile-form-field {
+    width: rem.torem(400px);
+    margin-bottom: rem.torem(32px);
+}
+.profile-form-edit-button {
+    &> img {
+        width: rem.torem(24px);
+        height: rem.torem(24px);
+        margin-right: rem.torem(8px);
+    }
+}
 
 .buttons-field {
     & > button:nth-child(2) {

@@ -15,7 +15,7 @@ export interface IProfileFormProps {
   validationSchema: AnySchema
   banner?: JSX.Element
   shouldDisplayBanner: boolean
-  onSubmit: (values: any) => void
+  onFormSubmit: (values: any) => void
   initialValues: { [id: string]: string }
 }
 
@@ -27,12 +27,18 @@ const ProfileForm = ({
   initialValues,
   shouldDisplayBanner = false,
   banner,
-  onSubmit,
+  onFormSubmit,
 }: IProfileFormProps): JSX.Element => {
   const [isFormVisible, setIsFormVisible] = useState(false)
   const toggleFormVisible = () => {
     setIsFormVisible(oldValue => !oldValue)
   }
+  const onSubmit = (values: any) => {
+    onFormSubmit(values)
+    formik.setSubmitting(false)
+    toggleFormVisible()
+  }
+
   const formik = useFormik({
     initialValues: initialValues,
     onSubmit: onSubmit,
@@ -53,9 +59,10 @@ const ProfileForm = ({
         <div className={styles['profile-form-description-column']}>
           {!isFormVisible && (
             <Button
+              className={styles['profile-form-edit-button']}
               variant={ButtonVariant.TERNARY}
               onClick={toggleFormVisible}
-              Icon={() => <Icon svg="ico-outer-pen" />}
+              Icon={() => <Icon svg="ico-pen-black" />}
             >
               Modifier
             </Button>
@@ -71,7 +78,7 @@ const ProfileForm = ({
         <div className={styles['profile-form-content']}>
           <FormikProvider value={formik}>
             <Form onSubmit={formik.handleSubmit}>
-              <FormLayout>
+              <FormLayout className={styles['profile-form-field']}>
                 {fields.map((item, index) => (
                   <FormLayout.Row key={index}>{item}</FormLayout.Row>
                 ))}
@@ -87,7 +94,6 @@ const ProfileForm = ({
                 <SubmitButton
                   className="primary-button"
                   isLoading={formik.isSubmitting}
-                  disabled={!formik.dirty || !formik.isValid}
                 >
                   Enregistrer
                 </SubmitButton>

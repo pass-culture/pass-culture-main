@@ -19,7 +19,7 @@ const validationSchema = yup.object().shape({
   lastName: yup.string().max(128).required(),
 })
 
-const onSubmit = (values: any) => {
+const onFormSubmit = (values: any) => {
   alert(Object.values(values))
 }
 
@@ -31,7 +31,7 @@ BasicProfileForm.args = {
   title: 'Are you a wizard ?',
   subtitle: 'Harry Potter',
   fields: fields,
-  onSubmit: onSubmit,
+  onFormSubmit: onFormSubmit,
   validationSchema: validationSchema,
   initialValues: { firstName: 'Harry', lastName: 'Potter' },
 }
@@ -42,7 +42,7 @@ BanneredProfileForm.args = {
   title: 'Are you a wizard ?',
   subtitle: 'Harry Potter',
   fields: fields,
-  onSubmit: onSubmit,
+  onFormSubmit: onFormSubmit,
   validationSchema: validationSchema,
   initialValues: { firstName: 'Harry', lastName: 'Potter' },
   shouldDisplayBanner: true,
