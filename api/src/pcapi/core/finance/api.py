@@ -1461,10 +1461,12 @@ def generate_invoices() -> None:
                     "exc": str(exc),
                 },
             )
-    path = generate_invoice_file(datetime.date.today())
+    with log_elapsed(logger, "Generated CSV invoices file"):
+        path = generate_invoice_file(datetime.date.today())
     batch_id = models.CashflowBatch.query.order_by(models.CashflowBatch.cutoff.desc()).first().id
     drive_folder_name = _get_drive_folder_name(batch_id)
-    _upload_files_to_google_drive(drive_folder_name, [path])
+    with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
+        _upload_files_to_google_drive(drive_folder_name, [path])
 
 
 def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
