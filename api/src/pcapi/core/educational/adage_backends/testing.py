@@ -1,5 +1,6 @@
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.models import AdageApiResult
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingResponse
 
@@ -80,3 +81,7 @@ class AdageSpyClient(AdageClient):
                 "domaines": "Univers du livre, de la lecture et des écritures",
             },
         ]
+
+    def notify_institution_association(self, data: AdageCollectiveOffer) -> AdageApiResult:
+        testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-assoc", "sent_data": data})
+        return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)

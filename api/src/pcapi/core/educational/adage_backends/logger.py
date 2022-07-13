@@ -2,6 +2,7 @@ import logging
 
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.models import AdageApiResult
 from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
@@ -92,3 +93,7 @@ class AdageLoggerClient(AdageClient):
                 "dateModification": "2022-06-27T08:52:27.597Z",
             },
         ]
+
+    def notify_institution_association(self, data: AdageCollectiveOffer) -> AdageApiResult:
+        logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/offre-assoc", data)
+        return AdageApiResult(sent_data=data.dict(), response={"status_code": 201}, success=True)

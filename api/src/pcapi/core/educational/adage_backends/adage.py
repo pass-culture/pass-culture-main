@@ -3,6 +3,7 @@ from pydantic import parse_obj_as
 from pcapi import settings
 from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends.base import AdageClient
+from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.exceptions import CulturalPartnerNotFoundException
 from pcapi.core.educational.models import AdageApiResult
@@ -94,3 +95,12 @@ class AdageHttpClient(AdageClient):
             raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         return api_response.json()
+
+    def notify_institution_association(self, data: AdageCollectiveOffer) -> AdageApiResult:
+        api_url = f"{self.base_url}/v1/offre-assoc"
+        api_response = requests.post(api_url, headers={self.header_key: self.api_key}, data=data.json())
+
+        if api_response.status_code != 200:
+            raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
+
+        return AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
