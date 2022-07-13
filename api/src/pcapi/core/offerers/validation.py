@@ -122,7 +122,7 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
         raise ApiErrors(
             errors={
                 "pricingPointId": [
-                    "Vous ne pouvez pas choisir un autre lieu pour le calcul du barème de remboursement de ce lieu."
+                    "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
                 ]
             }
         )
@@ -143,7 +143,8 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
             errors={
                 "pricingPointId": [
                     f"Le SIRET {pricing_point.siret} ne peut pas être utilisé pour calculer"
-                    f" le barème de remboursement de ce lieu."
+                    f"le barème de remboursement de ce lieu, "
+                    f"car il n'appartient pas à la même structure."
                 ]
             }
         )
@@ -157,14 +158,15 @@ def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbu
     )
     if not reimbursement_point:
         raise ApiErrors(errors={"reimbursementPointId": ["Ce lieu n'existe pas."]})
-    error_with_name = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
     if not reimbursement_point.siret:
-        raise ApiErrors(errors={"reimbursementPointId": [error_with_name]})
-    error_with_siret = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements."
+        error = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de SIRET."
+        raise ApiErrors(errors={"reimbursementPointId": [error]})
     if (
         not reimbursement_point.bankInformation
         or reimbursement_point.bankInformation.status != finance_models.BankInformationStatus.ACCEPTED
     ):
-        raise ApiErrors(errors={"reimbursementPointId": [error_with_siret]})
+        error = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
+        raise ApiErrors(errors={"reimbursementPointId": [error]})
     if reimbursement_point.managingOffererId != venue.managingOffererId:
-        raise ApiErrors(errors={"reimbursementPointId": [error_with_siret]})
+        error = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
+        raise ApiErrors(errors={"reimbursementPointId": [error]})
