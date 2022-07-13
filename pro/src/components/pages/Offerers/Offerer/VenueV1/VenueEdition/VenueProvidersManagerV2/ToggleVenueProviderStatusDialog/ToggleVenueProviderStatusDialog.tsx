@@ -20,6 +20,7 @@ const ToggleVenueProviderStatusDialog = ({
       onConfirm={onConfirm}
       onCancel={onCancel}
       isLoading={isLoading}
+      extraClassNames={style['toggle-venue-provider-status-dialog']}
       title={
         isActive
           ? 'Voulez-vous mettre en pause la synchronisation de vos offres ?'
