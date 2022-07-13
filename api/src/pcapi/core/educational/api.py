@@ -890,3 +890,7 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
 
     cultural_partners = json.loads(cultural_partners_json)
     return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": cultural_partners})
+
+
+def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartner:
+    return adage_client.get_cultural_partner(siret)
