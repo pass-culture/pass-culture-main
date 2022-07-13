@@ -500,7 +500,6 @@ def create_collective_stock(
     stock_data: CollectiveStockCreationBodyModel,
     user: User,
     *,
-    legacy_id: int | None = None,
     offer_id: int | None = None,
 ) -> CollectiveStock | None:
     from pcapi.core.offers.api import update_offer_fraud_information
@@ -512,18 +511,9 @@ def create_collective_stock(
     number_of_tickets = stock_data.number_of_tickets
     educational_price_detail = stock_data.educational_price_detail
 
-    if legacy_id:  # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
-        collective_offer = (
-            CollectiveOffer.query.filter_by(offerId=offer_id)
-            .options(joinedload(CollectiveOffer.collectiveStock))
-            .one_or_none()
-        )
-        if not collective_offer:
-            return None
-    else:
-        collective_offer = (
-            CollectiveOffer.query.filter_by(id=offer_id).options(joinedload(CollectiveOffer.collectiveStock)).one()
-        )
+    collective_offer = (
+        CollectiveOffer.query.filter_by(id=offer_id).options(joinedload(CollectiveOffer.collectiveStock)).one()
+    )
 
     validation.check_collective_offer_number_of_collective_stocks(collective_offer)
     offer_validation.check_validation_status(collective_offer)
@@ -537,7 +527,6 @@ def create_collective_stock(
         price=total_price,
         numberOfTickets=number_of_tickets,
         priceDetail=educational_price_detail,
-        stockId=legacy_id if legacy_id else None,  # FIXME (rpaoloni, 2022-03-7): Remove legacy support layer
     )
     db.session.add(collective_stock)
     db.session.commit()
