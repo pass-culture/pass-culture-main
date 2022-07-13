@@ -142,7 +142,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     institutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=True)
 
-    institution: RelationshipProperty[typing.Optional["EducationalInstitution"]] = relationship(
+    institution: RelationshipProperty["EducationalInstitution | None"] = relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collectiveOffers"
     )
 

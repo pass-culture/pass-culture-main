@@ -161,7 +161,7 @@ class Booking(PcObject, Model):  # type: ignore [valid-type, misc]
         unique=True,
         index=True,
     )
-    educationalBooking: typing.Optional["EducationalBooking"] = relationship(  # type: ignore [assignment]
+    educationalBooking: "EducationalBooking | None" = relationship(  # type: ignore [assignment]
         "EducationalBooking",
         back_populates="booking",
         uselist=False,

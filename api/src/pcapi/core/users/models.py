@@ -342,7 +342,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         return users_utils.get_age_from_birth_date(self.dateOfBirth.date()) if self.dateOfBirth is not None else None
 
     @property
-    def deposit(self) -> typing.Optional["Deposit"]:
+    def deposit(self) -> "Deposit | None":
         if len(self.deposits) == 0:
             return None
         return sorted(self.deposits, key=attrgetter("expirationDate"), reverse=True)[0]
@@ -356,7 +356,7 @@ class User(PcObject, Model, NeedsValidationMixin, DeactivableMixin):  # type: ig
         return self.deposit.expirationDate if self.deposit else None
 
     @property
-    def deposit_type(self) -> typing.Optional["DepositType"]:
+    def deposit_type(self) -> "DepositType | None":
         return self.deposit.type if self.deposit else None  # type: ignore [return-value]
 
     @property
