@@ -1,17 +1,23 @@
+from typing import Any
+
 import pytest
 
+from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveStockFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveOffer
+import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
+from pcapi.core.testing import override_settings
 from pcapi.utils.human_ids import humanize
 
 
 @pytest.mark.usefixtures("db_session")
+@override_settings(ADAGE_API_URL="https://adage_base_url")
 class Returns200Test:
-    def test_create_offer_institution_link(self, client):
+    def test_create_offer_institution_link(self, client: Any) -> None:
         # Given
         institution = EducationalInstitutionFactory()
         stock = CollectiveStockFactory()
@@ -28,7 +34,11 @@ class Returns200Test:
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution
 
-    def test_change_offer_institution_link(self, client):
+        expected_payload = serialize_collective_offer(offer)
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
+
+    def test_change_offer_institution_link(self, client: Any) -> None:
         # Given
         institution1 = EducationalInstitutionFactory()
         stock = CollectiveStockFactory(collectiveOffer__institution=institution1)
@@ -46,7 +56,7 @@ class Returns200Test:
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution2
 
-    def test_delete_offer_institution_link(self, client):
+    def test_delete_offer_institution_link(self, client: Any) -> None:
         # Given
         institution = EducationalInstitutionFactory()
         stock = CollectiveStockFactory(collectiveOffer__institution=institution)
@@ -63,7 +73,9 @@ class Returns200Test:
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution is None
 
-    def test_add_institution_link_on_pending_offer(self, client):
+        assert len(adage_api_testing.adage_requests) == 0
+
+    def test_add_institution_link_on_pending_offer(self, client: Any) -> None:
         # Given
         institution = EducationalInstitutionFactory()
         stock = CollectiveStockFactory(collectiveOffer__validation="PENDING")
@@ -80,10 +92,13 @@ class Returns200Test:
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution
 
+        assert len(adage_api_testing.adage_requests) == 0
+
 
 @pytest.mark.usefixtures("db_session")
+@override_settings(ADAGE_API_URL="https://adage_base_url")
 class Returns404Test:
-    def test_offer_not_found(self, client):
+    def test_offer_not_found(self, client: Any) -> None:
         # Given
         institution = EducationalInstitutionFactory()
         stock = CollectiveStockFactory()
@@ -100,7 +115,7 @@ class Returns404Test:
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == None
 
-    def test_institution_not_found(self, client):
+    def test_institution_not_found(self, client: Any) -> None:
         # Given
         stock = CollectiveStockFactory()
         offer = stock.collectiveOffer
@@ -118,8 +133,9 @@ class Returns404Test:
 
 
 @pytest.mark.usefixtures("db_session")
+@override_settings(ADAGE_API_URL="https://adage_base_url")
 class Returns403Test:
-    def test_change_institution_on_uneditable_offer_booking_confirmed(self, client):
+    def test_change_institution_on_uneditable_offer_booking_confirmed(self, client: Any) -> None:
         # Given
         institution1 = EducationalInstitutionFactory()
         booking = CollectiveBookingFactory(
@@ -139,7 +155,7 @@ class Returns403Test:
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
-    def test_change_institution_on_uneditable_offer_booking_reimbused(self, client):
+    def test_change_institution_on_uneditable_offer_booking_reimbused(self, client: Any) -> None:
         # Given
         institution1 = EducationalInstitutionFactory()
         booking = CollectiveBookingFactory(
@@ -159,7 +175,7 @@ class Returns403Test:
         offer_db = CollectiveOffer.query.filter(CollectiveOffer.id == offer.id).one()
         assert offer_db.institution == institution1
 
-    def test_change_institution_on_uneditable_offer_booking_used(self, client):
+    def test_change_institution_on_uneditable_offer_booking_used(self, client: Any) -> None:
         # Given
         institution1 = EducationalInstitutionFactory()
         booking = CollectiveBookingFactory(
