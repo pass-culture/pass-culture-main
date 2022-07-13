@@ -1238,7 +1238,8 @@ class ValidatePhoneNumberTest:
         client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33607080900"})
 
         response = client.get("/native/v1/phone_validation/remaining_attempts")
-        assert response.json["counterResetDatetime"] == "2022-05-18T03:00:00Z"
+        # the test can take more than a second to run, so we need to check the date against an interval
+        assert "2022-05-18T02:50:00Z" <= response.json["counterResetDatetime"] <= "2022-05-18T03:00:00Z"
         assert response.json["remainingAttempts"] == 0
 
     def test_wrong_code(self, client):
