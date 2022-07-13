@@ -1,3 +1,4 @@
+from collections.abc import Collection
 import logging
 from typing import Iterable
 
@@ -229,8 +230,8 @@ def index_venues_in_queue(from_error_queue: bool = False) -> None:
         logger.exception("Could not index venues from queue", extra={"exc": str(exc)})
 
 
-def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) -> None:
-    logger.info("Starting to index venues", extra={"count": len(venue_ids)})  # type: ignore [arg-type]
+def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Collection[int]) -> None:
+    logger.info("Starting to index venues", extra={"count": len(venue_ids)})
     venues = Venue.query.filter(Venue.id.in_(venue_ids)).options(joinedload(Venue.managingOfferer))
 
     to_add = [venue for venue in venues if venue.is_eligible_for_search]
@@ -254,8 +255,8 @@ def _reindex_venue_ids(backend: base.SearchBackend, venue_ids: Iterable[int]) ->
         logger.info("Finished unindexing venues", extra={"count": len(to_delete_ids)})
 
 
-def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_ids: Iterable[int]) -> None:
-    logger.info("Starting to index collective offers", extra={"count": len(collective_offer_ids)})  # type: ignore [arg-type]
+def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_ids: Collection[int]) -> None:
+    logger.info("Starting to index collective offers", extra={"count": len(collective_offer_ids)})
     collective_offers = educational_models.CollectiveOffer.query.filter(
         educational_models.CollectiveOffer.id.in_(collective_offer_ids)
     ).options(
@@ -291,9 +292,9 @@ def _reindex_collective_offer_ids(backend: base.SearchBackend, collective_offer_
 
 
 def _reindex_collective_offer_template_ids(
-    backend: base.SearchBackend, collective_offer_template_ids: Iterable[int]
+    backend: base.SearchBackend, collective_offer_template_ids: Collection[int]
 ) -> None:
-    logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})  # type: ignore [arg-type]
+    logger.info("Starting to index collective offers templates", extra={"count": len(collective_offer_template_ids)})
     collective_offers_templates = educational_models.CollectiveOfferTemplate.query.filter(
         educational_models.CollectiveOfferTemplate.id.in_(collective_offer_template_ids)
     ).options(
@@ -453,7 +454,7 @@ def _reindex_venues_from_offers(offer_ids: Iterable[int]) -> None:
     async_index_venue_ids(venue_ids)
 
 
-def reindex_venue_ids(venue_ids: Iterable[int]) -> None:
+def reindex_venue_ids(venue_ids: Collection[int]) -> None:
     """Given a list of `Venue.id`, reindex or unindex each venue
     (i.e. request the external indexation service an update or a
     removal).

@@ -40,7 +40,7 @@ DEFAULT_LATITUDE = 47.158459
 WORD_SPLITTER = re.compile(r"\W+")
 
 
-def url_path(url):  # type: ignore [no-untyped-def]
+def url_path(url: str) -> str | None:
     """Return the path component of a URL.
 
     Example::
@@ -74,7 +74,7 @@ def remove_stopwords(s: str) -> str:
 
 
 class AlgoliaBackend(base.SearchBackend):
-    def __init__(self):  # type: ignore [no-untyped-def]
+    def __init__(self) -> None:
         super().__init__()
         client = algoliasearch.search_client.SearchClient.create(
             app_id=settings.ALGOLIA_APPLICATION_ID, api_key=settings.ALGOLIA_API_KEY
@@ -85,7 +85,7 @@ class AlgoliaBackend(base.SearchBackend):
             settings.ALGOLIA_COLLECTIVE_OFFERS_INDEX_NAME
         )
         self.algolia_venues_client = client.init_index(settings.ALGOLIA_VENUES_INDEX_NAME)
-        self.redis_client = current_app.redis_client
+        self.redis_client = current_app.redis_client  # type: ignore[attr-defined]
 
     def enqueue_offer_ids(self, offer_ids: Iterable[int]) -> None:
         if not offer_ids:
@@ -386,9 +386,9 @@ class AlgoliaBackend(base.SearchBackend):
         dates = []
         times = []
         if offer.isEvent:
-            dates = [stock.beginningDatetime.timestamp() for stock in offer.bookableStocks]  # type: ignore [union-attr]
+            dates = [stock.beginningDatetime.timestamp() for stock in offer.bookableStocks]  # type: ignore[union-attr]
             times = [
-                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore [arg-type]
+                date_utils.get_time_in_seconds_from_datetime(stock.beginningDatetime) for stock in offer.bookableStocks  # type: ignore[arg-type]
             ]
         date_created = offer.dateCreated.timestamp()  # type: ignore [union-attr]
         stocks_date_created = [stock.dateCreated.timestamp() for stock in offer.bookableStocks]  # type: ignore [union-attr]
@@ -450,6 +450,7 @@ class AlgoliaBackend(base.SearchBackend):
             "city": venue.city,
             "name": venue.publicName or venue.name,
             "offerer_name": venue.managingOfferer.name,
+            # FIXME (dbaty, 2022-07-13): remove "type: ignore" once column has been set to NOT NULL
             "venue_type": venue.venueTypeCode.name,  # type: ignore [union-attr]
             "description": venue.description,
             "audio_disability": venue.audioDisabilityCompliant,
@@ -567,7 +568,7 @@ class AlgoliaBackend(base.SearchBackend):
         return obj_ids
 
 
-def position(venue):  # type: ignore [no-untyped-def]
+def position(venue: offerers_models.Venue) -> dict[str, float]:
     latitude = venue.latitude or DEFAULT_LATITUDE
     longitude = venue.longitude or DEFAULT_LONGITUDE
     return {"lat": float(latitude), "lng": float(longitude)}

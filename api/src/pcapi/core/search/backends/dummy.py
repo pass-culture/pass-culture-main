@@ -1,4 +1,5 @@
 import logging
+import typing
 
 from flask import current_app
 
@@ -9,16 +10,16 @@ logger = logging.getLogger(__name__)
 
 
 class FakeClient:
-    def save_objects(self, objects):  # type: ignore [no-untyped-def]
+    def save_objects(self, objects: typing.Iterable[dict]) -> None:
         logger.info(
             "Dummy indexation of objects",
             extra={"object_ids": [o["objectID"] for o in objects]},
         )
 
-    def delete_objects(self, object_ids):  # type: ignore [no-untyped-def]
+    def delete_objects(self, object_ids: typing.Iterable[int]) -> None:
         logger.info("Dummy deletion of objects", extra={"object_ids": object_ids})
 
-    def clear_objects(self):  # type: ignore [no-untyped-def]
+    def clear_objects(self) -> None:
         logger.info("Dummy clear of all objects")
 
 
@@ -34,9 +35,9 @@ class DummyBackend(AlgoliaBackend):
     Redis-related functions as no-op, but it's not worth.
     """
 
-    def __init__(self):  # type: ignore [no-untyped-def] # pylint: disable=super-init-not-called
+    def __init__(self) -> None:  # pylint: disable=super-init-not-called
         self.algolia_offers_client = FakeClient()
         self.algolia_venues_client = FakeClient()
         self.algolia_collective_offers_client = FakeClient()
         self.algolia_collective_offers_templates_client = FakeClient()
-        self.redis_client = current_app.redis_client
+        self.redis_client = current_app.redis_client  # type: ignore[attr-defined]
