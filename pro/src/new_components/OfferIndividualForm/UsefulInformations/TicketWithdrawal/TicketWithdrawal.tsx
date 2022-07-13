@@ -66,7 +66,7 @@ const TicketWithdrawal = (): JSX.Element => {
         <FormLayout.Row>
           <Select
             label="Date d’envoi"
-            description="avant le début de l'événement"
+            description="avant le début de l'évènement"
             name="withdrawalDelay"
             options={ticketSentDateOptions}
           />
@@ -77,7 +77,7 @@ const TicketWithdrawal = (): JSX.Element => {
         <FormLayout.Row>
           <Select
             label="Heure de retrait"
-            description="avant le début de l'événement"
+            description="avant le début de l'évènement"
             name="withdrawalDelay"
             options={ticketWithdrawalHourOptions}
           />

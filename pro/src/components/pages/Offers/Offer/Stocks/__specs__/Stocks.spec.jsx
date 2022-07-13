@@ -173,9 +173,9 @@ describe('stocks page', () => {
 
       // then
       const beginningDatetimeFields = await screen.findAllByLabelText(
-        'Date de l’événement'
+        'Date de l’évènement'
       )
-      const hourFields = await screen.findAllByLabelText('Heure de l’événement')
+      const hourFields = await screen.findAllByLabelText('Heure de l’évènement')
       expect(beginningDatetimeFields[0].value).toBe('25/12/2020')
       expect(beginningDatetimeFields[1].value).toBe('20/12/2020')
       expect(hourFields[1].value).toBe('19:00')
@@ -335,8 +335,8 @@ describe('stocks page', () => {
           )
         ).toBeInTheDocument()
         expect(screen.getByText('Ajouter une date')).toBeDisabled()
-        expect(screen.getByLabelText('Date de l’événement')).toBeDisabled()
-        expect(screen.getByLabelText('Heure de l’événement')).toBeDisabled()
+        expect(screen.getByLabelText('Date de l’évènement')).toBeDisabled()
+        expect(screen.getByLabelText('Heure de l’évènement')).toBeDisabled()
         expect(screen.getByLabelText('Prix')).toBeDisabled()
         expect(
           screen.getByLabelText('Date limite de réservation')
@@ -366,8 +366,8 @@ describe('stocks page', () => {
           )
         ).toBeInTheDocument()
         expect(screen.getByText('Ajouter une date')).toBeDisabled()
-        expect(screen.getByLabelText('Date de l’événement')).toBeDisabled()
-        expect(screen.getByLabelText('Heure de l’événement')).toBeDisabled()
+        expect(screen.getByLabelText('Date de l’évènement')).toBeDisabled()
+        expect(screen.getByLabelText('Heure de l’évènement')).toBeDisabled()
         expect(screen.getByLabelText('Prix')).toBeDisabled()
         expect(
           screen.getByLabelText('Date limite de réservation')
@@ -403,7 +403,7 @@ describe('stocks page', () => {
 
         // then
         const informationMessage = await screen.findByText(
-          'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’événement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
+          'Les utilisateurs ont un délai de 48h pour annuler leur réservation mais ne peuvent pas le faire moins de 48h avant le début de l’évènement. Si la date limite de réservation n’est pas encore passée, la place est alors automatiquement remise en vente.'
         )
         expect(informationMessage).toBeInTheDocument()
       })
@@ -656,9 +656,9 @@ describe('stocks page', () => {
         await renderOffers(props, store)
 
         await userEvent.click(await screen.findByText('Ajouter une date'))
-        await userEvent.click(screen.getByLabelText('Date de l’événement'))
+        await userEvent.click(screen.getByLabelText('Date de l’évènement'))
         await userEvent.click(screen.getByText('26'))
-        await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+        await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
         const submitButton = screen.getByText('Enregistrer', {
           selector: 'button',
@@ -692,7 +692,7 @@ describe('stocks page', () => {
 
       await userEvent.click(await screen.findByText('Ajouter une date'))
 
-      await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+      await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
       await userEvent.click(screen.getByText('20:00'))
 
       fireEvent.change(screen.getByLabelText('Prix'), {
@@ -715,7 +715,7 @@ describe('stocks page', () => {
 
       await userEvent.click(await screen.findByText('Ajouter une date'))
 
-      await userEvent.click(screen.getByLabelText('Date de l’événement'))
+      await userEvent.click(screen.getByLabelText('Date de l’évènement'))
       await userEvent.click(screen.getByText('26'))
 
       fireEvent.change(screen.getByLabelText('Prix'), {
@@ -738,10 +738,10 @@ describe('stocks page', () => {
 
       await userEvent.click(await screen.findByText('Ajouter une date'))
 
-      await userEvent.click(screen.getByLabelText('Date de l’événement'))
+      await userEvent.click(screen.getByLabelText('Date de l’évènement'))
       await userEvent.click(screen.getByText('26'))
 
-      await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+      await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
       await userEvent.click(screen.getByText('20:00'))
 
       // When
@@ -837,8 +837,8 @@ describe('stocks page', () => {
 
           // Then
           expect(await screen.findByLabelText('Prix')).toBeDisabled()
-          expect(screen.getByLabelText('Date de l’événement')).toBeDisabled()
-          expect(screen.getByLabelText('Heure de l’événement')).toBeDisabled()
+          expect(screen.getByLabelText('Date de l’évènement')).toBeDisabled()
+          expect(screen.getByLabelText('Heure de l’évènement')).toBeDisabled()
           expect(
             screen.getByLabelText('Date limite de réservation')
           ).toBeDisabled()
@@ -969,14 +969,14 @@ describe('stocks page', () => {
 
             // when
             fireEvent.change(
-              await screen.findByLabelText('Date de l’événement'),
+              await screen.findByLabelText('Date de l’évènement'),
               {
                 target: { value: null },
               }
             )
 
             // then
-            expect(screen.getByLabelText('Date de l’événement')).toBeEnabled()
+            expect(screen.getByLabelText('Date de l’évènement')).toBeEnabled()
           })
 
           it('should be able to edit hour field', async () => {
@@ -1142,12 +1142,12 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               await userEvent.click(
-                await screen.findByLabelText('Date de l’événement')
+                await screen.findByLabelText('Date de l’évènement')
               )
               await userEvent.click(screen.getByText('26'))
 
               await userEvent.click(
-                screen.getByLabelText('Heure de l’événement')
+                screen.getByLabelText('Heure de l’évènement')
               )
               await userEvent.click(screen.getByText('20:00'))
 
@@ -1180,10 +1180,10 @@ describe('stocks page', () => {
                   },
                 ]
               )
-              expect(screen.getByLabelText('Date de l’événement').value).toBe(
+              expect(screen.getByLabelText('Date de l’évènement').value).toBe(
                 '26/12/2020'
               )
-              expect(screen.getByLabelText('Heure de l’événement').value).toBe(
+              expect(screen.getByLabelText('Heure de l’évènement').value).toBe(
                 '20:00'
               )
               expect(screen.getByLabelText('Prix').value).toBe('14.01')
@@ -1321,12 +1321,12 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               await userEvent.click(
-                await screen.findByLabelText('Date de l’événement')
+                await screen.findByLabelText('Date de l’évènement')
               )
               await userEvent.click(screen.getByText('26'))
 
               await userEvent.click(
-                screen.getByLabelText('Heure de l’événement')
+                screen.getByLabelText('Heure de l’évènement')
               )
               await userEvent.click(screen.getByText('20:00'))
 
@@ -1415,7 +1415,7 @@ describe('stocks page', () => {
 
               await renderOffers(props, store)
               await userEvent.click(
-                await screen.findByLabelText('Heure de l’événement')
+                await screen.findByLabelText('Heure de l’évènement')
               )
               await userEvent.click(screen.getByText('20:00'))
 
@@ -1434,12 +1434,12 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               await userEvent.click(
-                await screen.findByLabelText('Date de l’événement')
+                await screen.findByLabelText('Date de l’évènement')
               )
               await userEvent.click(screen.getByText('26'))
 
               await userEvent.click(
-                screen.getByLabelText('Heure de l’événement')
+                screen.getByLabelText('Heure de l’évènement')
               )
               await userEvent.click(screen.getByText('20:00'))
 
@@ -1466,12 +1466,12 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               await userEvent.click(
-                await screen.findByLabelText('Date de l’événement')
+                await screen.findByLabelText('Date de l’évènement')
               )
               await userEvent.click(screen.getByText('26'))
 
               await userEvent.click(
-                screen.getByLabelText('Heure de l’événement')
+                screen.getByLabelText('Heure de l’évènement')
               )
               await userEvent.click(screen.getByText('20:00'))
 
@@ -1755,9 +1755,9 @@ describe('stocks page', () => {
 
             // Then
             expect(
-              await screen.findByLabelText('Date de l’événement')
+              await screen.findByLabelText('Date de l’évènement')
             ).toBeDisabled()
-            expect(screen.getByLabelText('Heure de l’événement')).toBeDisabled()
+            expect(screen.getByLabelText('Heure de l’évènement')).toBeDisabled()
             expect(
               screen.getByLabelText('Date limite de réservation')
             ).toBeEnabled()
@@ -2336,7 +2336,7 @@ describe('stocks page', () => {
 
         // then
         expect(screen.getAllByRole('row')).toHaveLength(4)
-        const eventsDates = screen.getAllByLabelText('Date de l’événement')
+        const eventsDates = screen.getAllByLabelText('Date de l’évènement')
         expect(eventsDates[0].value).toBe('')
         expect(eventsDates[1].value).toBe('')
         expect(eventsDates[2].value).toBe('20/12/2020')
@@ -2350,8 +2350,8 @@ describe('stocks page', () => {
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         // then
-        expect(screen.getByLabelText('Date de l’événement').value).toBe('')
-        expect(screen.getByLabelText('Heure de l’événement').value).toBe('')
+        expect(screen.getByLabelText('Date de l’évènement').value).toBe('')
+        expect(screen.getByLabelText('Heure de l’évènement').value).toBe('')
         expect(screen.getByLabelText('Prix').value).toBe('')
         expect(screen.getByLabelText('Date limite de réservation').value).toBe(
           ''
@@ -2418,12 +2418,12 @@ describe('stocks page', () => {
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
         await userEvent.click(
-          screen.getAllByLabelText('Date de l’événement')[0]
+          screen.getAllByLabelText('Date de l’évènement')[0]
         )
         await userEvent.click(screen.getByText('24'))
 
         await userEvent.click(
-          screen.getAllByLabelText('Heure de l’événement')[0]
+          screen.getAllByLabelText('Heure de l’évènement')[0]
         )
         await userEvent.click(screen.getByText('20:00'))
 
@@ -2443,12 +2443,12 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('Ajouter une date'))
 
         await userEvent.click(
-          screen.getAllByLabelText('Date de l’événement')[0]
+          screen.getAllByLabelText('Date de l’évènement')[0]
         )
         await userEvent.click(screen.getByText('25'))
 
         await userEvent.click(
-          screen.getAllByLabelText('Heure de l’événement')[0]
+          screen.getAllByLabelText('Heure de l’évènement')[0]
         )
         await userEvent.click(screen.getByText('20:00'))
 
@@ -2515,10 +2515,10 @@ describe('stocks page', () => {
         await renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
-        await userEvent.click(screen.getByLabelText('Date de l’événement'))
+        await userEvent.click(screen.getByLabelText('Date de l’évènement'))
         await userEvent.click(screen.getByText('24'))
 
-        await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+        await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
         // When
@@ -2553,10 +2553,10 @@ describe('stocks page', () => {
         await renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
-        await userEvent.click(screen.getByLabelText('Date de l’événement'))
+        await userEvent.click(screen.getByLabelText('Date de l’évènement'))
         await userEvent.click(screen.getByText('26'))
 
-        await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+        await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
         fireEvent.change(screen.getByLabelText('Prix'), {
@@ -2578,10 +2578,10 @@ describe('stocks page', () => {
         await renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
-        await userEvent.click(screen.getByLabelText('Date de l’événement'))
+        await userEvent.click(screen.getByLabelText('Date de l’évènement'))
         await userEvent.click(screen.getByText('26'))
 
-        await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+        await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
         fireEvent.change(screen.getByLabelText('Prix'), {
@@ -2610,10 +2610,10 @@ describe('stocks page', () => {
         await renderOffers(props, store)
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
-        await userEvent.click(screen.getByLabelText('Date de l’événement'))
+        await userEvent.click(screen.getByLabelText('Date de l’évènement'))
         await userEvent.click(screen.getByText('26'))
 
-        await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+        await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
         fireEvent.change(screen.getByLabelText('Prix'), {
@@ -2656,10 +2656,10 @@ describe('stocks page', () => {
         )
         await userEvent.click(await screen.findByText('Ajouter une date'))
 
-        await userEvent.click(screen.getByLabelText('Date de l’événement'))
+        await userEvent.click(screen.getByLabelText('Date de l’évènement'))
         await userEvent.click(screen.getByText('26'))
 
-        await userEvent.click(screen.getByLabelText('Heure de l’événement'))
+        await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
         fireEvent.change(screen.getByLabelText('Prix'), {
