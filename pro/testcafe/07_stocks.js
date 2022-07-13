@@ -18,7 +18,7 @@ const submitSuccess = Selector('.notification.is-success').withText(
 
 fixture('En étant sur la page des stocks d’une offre,')
 
-test("je peux créer un stock pour un événement en passant par la page de l'offre", async t => {
+test("je peux créer un stock pour un évènement en passant par la page de l'offre", async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_no_stock'
@@ -60,7 +60,7 @@ test('je ne peux pas créer un nouveau stock pour un objet ayant déjà un stock
   await t.expect(addThingStockButton.exists).notOk({ timeout: 200 })
 })
 
-test('je peux modifier un stock pour un événement', async t => {
+test('je peux modifier un stock pour un évènement', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'
@@ -110,7 +110,7 @@ test('je peux modifier un stock pour un événement', async t => {
     .eql(1)
 })
 
-test('je peux supprimer un stock pour un événement', async t => {
+test('je peux supprimer un stock pour un évènement', async t => {
   const { offer, user } = await fetchSandbox(
     'pro_08_stocks',
     'get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_user_offerer_with_event_offer_with_stock'

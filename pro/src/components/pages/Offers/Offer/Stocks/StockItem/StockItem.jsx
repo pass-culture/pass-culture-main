@@ -225,7 +225,7 @@ const StockItem = ({
         <Fragment>
           <td>
             <DateInput
-              ariaLabel="Date de l’événement"
+              ariaLabel="Date de l’évènement"
               dateTime={beginningDate}
               disabled={
                 isOfferDisabled || isOfferSynchronized || !isStockEditable
@@ -238,7 +238,7 @@ const StockItem = ({
           </td>
           <td className="resized-input">
             <TimeInput
-              ariaLabel="Heure de l’événement"
+              ariaLabel="Heure de l’évènement"
               dateTime={beginningTime}
               disabled={
                 isOfferDisabled || isOfferSynchronized || !isStockEditable

@@ -146,7 +146,7 @@ const serializerStockEventSectionProps = (
     quantity: stock.quantity,
     price: stock.price,
     bookingLimitDatetime: stock.bookingLimitDatetime,
-    beginningDateTime: stock.bookingLimitDatetime,
+    beginningDateTime: stock.beginningDatetime,
   }))
 }
 

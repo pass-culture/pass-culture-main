@@ -157,7 +157,7 @@ const OfferEducationalStock = ({
               ) : (
                 <>
                   <p className={styles['description-text']}>
-                    Indiquez le prix total de l’événement et le nombre de
+                    Indiquez le prix total de l’évènement et le nombre de
                     personnes qui y participeront.
                     <br />
                     <span className={styles['description-text-italic']}>

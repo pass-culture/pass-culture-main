@@ -10,9 +10,9 @@ describe('src | components | layout | Insert', () => {
     props = {
       children: `{'Les'}
         <b>
-          {' réservations d’événements '}
+          {' réservations d’évènements '}
         </b>
-        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’évènement.'}
         <p />
         <p />
         {'La contremarque ne peut être validée qu’après ce délai.'}`,
@@ -38,9 +38,9 @@ describe('src | components | layout | Insert', () => {
       const span = wrapper.find('span')
       const expected = `{'Les'}
         <b>
-          {' réservations d’événements '}
+          {' réservations d’évènements '}
         </b>
-        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’événement.'}
+        {'sont annulables par les utilisateurs jusqu’à 72h avant la date d’évènement.'}
         <p />
         <p />
         {'La contremarque ne peut être validée qu’après ce délai.'}`

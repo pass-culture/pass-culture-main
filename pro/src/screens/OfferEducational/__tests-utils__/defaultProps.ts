@@ -25,7 +25,7 @@ const mockEducationalSubcategories = subCategoriesFactory([
   {
     id: 'EVENEMENT_CINE',
     categoryId: 'CINEMA',
-    label: 'Événement cinématographique',
+    label: 'Évènement cinématographique',
   },
   {
     id: 'VISITE_GUIDEE',

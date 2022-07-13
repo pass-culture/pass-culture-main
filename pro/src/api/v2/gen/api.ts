@@ -271,7 +271,7 @@ export const APIContremarqueApiFetchParamCreator = function (
       }
     },
     /**
-     * Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
+     * Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
      * @summary Annulation d'une réservation.
      * @param {string} token
      * @param {*} [options] Override http request option.
@@ -396,7 +396,7 @@ export const APIContremarqueApiFp = function (
       return handleGeneratedApiResponse(response)
     },
     /**
-     * Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
+     * Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
      * @summary Annulation d'une réservation.
      * @param {string} token
      * @param {*} [options] Override http request option.
@@ -462,7 +462,7 @@ export interface APIContremarqueApiInterface {
   patchBookingsPatchBookingUseByToken(token: string, options?: any): Promise<{}>
 
   /**
-   * Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
+   * Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
    * @summary Annulation d'une réservation.
    * @param {string} token
    * @param {*} [options] Override http request option.
@@ -540,7 +540,7 @@ export class APIContremarqueApi
     )
   }
   /**
-   * Bien que, dans le cas d’un événement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
+   * Bien que, dans le cas d’un évènement, l’utilisateur ne peut plus annuler sa réservation 72h avant le début de ce dernier, cette API permet d’annuler la réservation d’un utilisateur si elle n’a pas encore été validé.
    * @summary Annulation d'une réservation.
    * @param {string} token
    * @param {*} [options] Override http request option.

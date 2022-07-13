@@ -13,7 +13,7 @@ const CreateVenue = ({
         visibles sur l’application publique.
       </p>
       <p>
-        Vous pouvez créer dans vos lieux des événements, des visites, des offres
+        Vous pouvez créer dans vos lieux des évènements, des visites, des offres
         pour des livres, des instruments de musique, etc.
       </p>
       <p>

@@ -155,7 +155,7 @@ const OfferSummary = ({
             title="Heure de retrait"
             description={`${humanizeDelay(
               offer.withdrawalDelay
-            )} avant le début de l'événement`}
+            )} avant le début de l'évènement`}
           />
         )}
 
@@ -196,7 +196,7 @@ const OfferSummary = ({
       </SummaryLayout.SubSection>
 
       {conditionalFields.includes('isDuo') && (
-        <SummaryLayout.SubSection title="Autres caractèristiques">
+        <SummaryLayout.SubSection title="Autres caractéristiques">
           <SummaryLayout.Row
             description={
               offer.isDuo === true

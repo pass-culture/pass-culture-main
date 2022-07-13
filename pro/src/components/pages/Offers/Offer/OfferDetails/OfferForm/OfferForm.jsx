@@ -973,7 +973,7 @@ const OfferForm = ({
                         label="Heure de retrait"
                         name="withdrawalDelay"
                         options={WITHDRAWAL_ON_SITE_DELAY_OPTIONS}
-                        rightLabel="avant le début de l’événement"
+                        rightLabel="avant le début de l’évènement"
                         selectedValue={formValues.withdrawalDelay}
                       />
                     </div>
@@ -987,7 +987,7 @@ const OfferForm = ({
                         label="Date d'envoi"
                         name="withdrawalDelay"
                         options={WITHDRAWAL_BY_EMAIL_DELAY_OPTIONS}
-                        rightLabel="avant le début de l’événement"
+                        rightLabel="avant le début de l’évènement"
                         selectedValue={formValues.withdrawalDelay}
                       />
                     </div>

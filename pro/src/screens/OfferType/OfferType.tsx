@@ -43,7 +43,7 @@ const OfferType = (): JSX.Element => {
 
   return (
     <div>
-      <h1 className={styles['offer-type-title']}>Créer une nouvelle offre</h1>
+      <h1 className={styles['offer-type-title']}>Créer une offre</h1>
       <FormLayout>
         <FormLayout.Section title="À qui destinez-vous cette offre ? ">
           <FormLayout.Row inline>
