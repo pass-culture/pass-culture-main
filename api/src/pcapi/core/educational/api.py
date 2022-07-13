@@ -26,6 +26,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational import validation
 import pcapi.core.educational.adage_backends as adage_client
+from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
 from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
@@ -860,6 +861,9 @@ def update_collective_offer_educational_institution(
         update_offer_fraud_information(offer, user)
 
     search.async_index_collective_offer_ids([offer_id])
+
+    if educational_institution_id is not None and offer.validation == OfferValidationStatus.APPROVED:
+        adage_client.notify_institution_association(serialize_collective_offer(offer))
 
     return offer
 
