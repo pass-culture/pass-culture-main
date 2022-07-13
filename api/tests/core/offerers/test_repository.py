@@ -8,6 +8,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
 from pcapi.core.users import factories as users_factories
+from pcapi.models.offer_mixin import OfferStatus
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -363,6 +364,13 @@ class HasDigitalVenueWithAtLeastOneOfferTest:
     def test_digital_venue_without_offer(self):
         offerer = offerers_factories.OffererFactory()
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+
+        assert not repository.has_digital_venue_with_at_least_one_offer(offerer.id)
+
+    def test_digital_venue_with_draft_offer(self):
+        offerer = offerers_factories.OffererFactory()
+        digital_venue = offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
+        offers_factories.DigitalOfferFactory(venue=digital_venue, validation=OfferStatus.DRAFT.name)
 
         assert not repository.has_digital_venue_with_at_least_one_offer(offerer.id)
 

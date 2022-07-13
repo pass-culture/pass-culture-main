@@ -246,6 +246,7 @@ def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
         models.Venue.query.join(Offer, models.Venue.id == Offer.venueId)
         .filter(models.Venue.managingOffererId == offerer_id)
         .filter(models.Venue.isVirtual.is_(True))
+        .filter(Offer.status != OfferValidationStatus.DRAFT.name)
         .exists()
     ).scalar()
 
