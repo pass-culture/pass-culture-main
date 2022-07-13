@@ -12,7 +12,7 @@ export const WITHDRAWAL_TYPE = {
 
 export const ticketWithdrawalTypeRadios = [
   {
-    label: 'Événement sans billet',
+    label: 'Évènement sans billet',
     value: WITHDRAWAL_TYPE.withoutTicket,
   },
   {

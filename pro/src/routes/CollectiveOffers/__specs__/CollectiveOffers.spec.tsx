@@ -54,7 +54,7 @@ const categoriesAndSubcategories = {
   subcategories: [
     {
       id: 'EVENEMENT_CINE',
-      proLabel: 'Evénement ciné',
+      proLabel: 'Evènement ciné',
       canBeEducational: true,
       categoryId: 'CINEMA',
       isSelectable: true,
