@@ -326,10 +326,6 @@ def update_collective_offer(
 
     offer_to_update = cls.query.filter(cls.id == offer_id).first()  # type: ignore [attr-defined]
 
-    if offer_to_update is None:
-        # FIXME (MathildeDuboille - 2022-03-07): raise an error once all data has been migrated (PC-13427)
-        return
-
     updated_fields = _update_collective_offer(offer=offer_to_update, new_values=new_values)
 
     if is_offer_showcase:

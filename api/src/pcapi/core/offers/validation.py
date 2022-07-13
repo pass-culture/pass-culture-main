@@ -183,7 +183,7 @@ def check_stock_is_updatable(stock: Stock) -> None:
     check_event_expiration(stock)
 
 
-def check_event_expiration(stock: CollectiveStock | Stock):  # type: ignore [no-untyped-def]
+def check_event_expiration(stock: CollectiveStock | Stock) -> None:
     if stock.isEventExpired:
         api_errors = ApiErrors()
         api_errors.add_error("global", "Les événements passés ne sont pas modifiables")
