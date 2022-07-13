@@ -100,7 +100,7 @@ const FormEventAddress = ({
       <FormLayout.Row>
         <RadioGroup
           group={adressTypeRadios}
-          legend="Adresse où se déroulera l’événement :"
+          legend="Adresse où se déroulera l’évènement :"
           name="eventAddress.addressType"
           disabled={disableForm}
         />

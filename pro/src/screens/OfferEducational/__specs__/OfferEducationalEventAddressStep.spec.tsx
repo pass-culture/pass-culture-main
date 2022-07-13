@@ -59,7 +59,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).not.toBeInTheDocument()
 
       expect(
-        screen.getByLabelText('Adresse de l’événement')
+        screen.getByLabelText('Adresse de l’évènement')
       ).toBeInTheDocument()
     })
 
@@ -78,7 +78,7 @@ describe('screens | OfferEducational : event address step', () => {
       ).not.toBeInTheDocument()
 
       expect(
-        screen.queryByLabelText('Adresse de l’événement')
+        screen.queryByLabelText('Adresse de l’évènement')
       ).not.toBeInTheDocument()
     })
   })

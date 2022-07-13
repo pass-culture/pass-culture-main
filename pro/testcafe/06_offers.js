@@ -278,7 +278,7 @@ test.skip('je suis redirigé sur la liste des offres si je clique sur retour à 
   await t.expect(getPathname()).eql('/offres')
 })
 
-test('je peux créer une offre de type événement', async t => {
+test('je peux créer une offre de type évènement', async t => {
   const eventDescription = [
     'Alors que les licenciements sont devenus des plans de sauvegarde de l’emploi, ',
     'ou que votre banquier se veut votre partenaire, ',
