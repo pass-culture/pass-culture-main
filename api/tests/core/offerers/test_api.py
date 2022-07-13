@@ -867,7 +867,7 @@ class LinkVenueToPricingPointTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.link_venue_to_pricing_point(venue, reimbursement_point.id)
-        msg = "Vous ne pouvez pas choisir un autre lieu pour le calcul du barème de remboursement de ce lieu."
+        msg = "Ce lieu a un SIRET, vous ne pouvez donc pas choisir un autre lieu pour le calcul du barème de remboursement."
         assert error.value.errors == {"pricingPointId": [msg]}
 
 
@@ -940,7 +940,7 @@ class LinkVenueToReimbursementPointTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
-        msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
+        msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de SIRET."
         assert error.value.errors == {"reimbursementPointId": [msg]}
 
     def test_fails_if_reimbursement_point_has_no_bank_information(self):
@@ -950,7 +950,7 @@ class LinkVenueToReimbursementPointTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
-        msg = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements."
+        msg = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
         assert error.value.errors == {"reimbursementPointId": [msg]}
 
 
