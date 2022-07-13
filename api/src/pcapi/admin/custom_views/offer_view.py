@@ -40,6 +40,9 @@ from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.api as criteria_api
 import pcapi.core.criteria.models as criteria_models
+import pcapi.core.educational.adage_backends as adage_client
+from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
+from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.mails.transactional.pro.offer_validation_to_pro import send_offer_validation_status_update_email
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
@@ -460,6 +463,9 @@ class ValidationBaseView(BaseAdminView):
                     )
                     send_offer_validation_status_update_email(offer, validation_status, recipients)
                     send_offer_validation_notification_to_administration(validation_status, offer)
+
+                    if isinstance(offer, CollectiveOffer) and offer.institutionId is not None:
+                        adage_client.notify_institution_association(serialize_collective_offer(offer))
                 else:
                     not_updated_offers.append(offer)
             except Exception as exc:  # pylint: disable=broad-except
@@ -510,6 +516,10 @@ class ValidationBaseView(BaseAdminView):
 
                     send_offer_validation_status_update_email(offer, validation_status, recipients)
                     send_offer_validation_notification_to_administration(validation_status, offer)
+
+                    if isinstance(offer, CollectiveOffer) and offer.institutionId is not None:
+                        adage_client.notify_institution_association(serialize_collective_offer(offer))
+
                     if request.form["action"] == "save-and-go-next":
                         next_offer_query = (
                             self.model.query.filter(self.model.validation == OfferValidationStatus.PENDING)
