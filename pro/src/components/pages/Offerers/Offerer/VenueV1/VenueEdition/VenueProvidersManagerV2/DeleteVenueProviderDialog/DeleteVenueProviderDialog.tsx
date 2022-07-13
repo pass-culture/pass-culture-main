@@ -17,6 +17,7 @@ const DeleteVenueProviderDialog = ({
     <ConfirmDialog
       onConfirm={onConfirm}
       onCancel={onCancel}
+      extraClassNames={style['delete-venue-provider-dialog']}
       isLoading={isLoading}
       title="Voulez-vous supprimer la synchronisation de vos offres ?"
       confirmText="Supprimer la synchronisation"

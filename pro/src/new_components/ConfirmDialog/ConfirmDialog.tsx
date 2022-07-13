@@ -16,6 +16,7 @@ interface IConfirmDialogProps {
   children: React.ReactNode | React.ReactNode[]
   icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
   hideIcon?: boolean
+  extraClassNames?: string
 }
 
 const ConfirmDialog = ({
@@ -29,6 +30,7 @@ const ConfirmDialog = ({
   children,
   icon,
   hideIcon = false,
+  extraClassNames,
 }: IConfirmDialogProps): JSX.Element => {
   const buttonRef = useRef<HTMLButtonElement | null>(null)
 
@@ -36,7 +38,7 @@ const ConfirmDialog = ({
 
   return (
     <DialogBox
-      extraClassNames={styles['confirm-dialog']}
+      extraClassNames={`${styles['confirm-dialog']} ${extraClassNames}`}
       hasCloseButton
       initialFocusRef={buttonRef}
       labelledBy={title}
