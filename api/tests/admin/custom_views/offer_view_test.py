@@ -16,12 +16,15 @@ from pcapi.core.bookings.models import BookingStatus
 import pcapi.core.criteria.factories as criteria_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
+import pcapi.core.educational.testing as adage_api_testing
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.api import import_offer_validation_config
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationType
 
@@ -677,8 +680,6 @@ class OfferValidationViewTest:
             in get_response.data.decode("utf8")
         )
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
@@ -729,8 +730,6 @@ class OfferValidationViewTest:
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
@@ -781,8 +780,6 @@ class OfferValidationViewTest:
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_access_to_collective_offer_template_validation_page_with_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="super_admin@example.com")
@@ -793,8 +790,6 @@ class OfferValidationViewTest:
 
         assert response.status_code == 200
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_access_to_collective_offer_templayte_validation_page_with_none_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="simple_admin@example.com")
@@ -806,8 +801,6 @@ class OfferValidationViewTest:
         assert response.status_code == 302
         assert url_for("admin.index") in response.location
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     def test_get_collective_offer_template_query_and_count(self, db_session):
         offer_view = ValidationCollectiveOfferTemplateView(
             model=educational_models.CollectiveOfferTemplate, session=db_session
@@ -829,8 +822,6 @@ class OfferValidationViewTest:
         assert get_query_offers_list == [offer_1]
         assert get_count_query_scalar == 1
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @pytest.mark.parametrize(
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
@@ -876,8 +867,6 @@ class OfferValidationViewTest:
         get_response = client.get(response.location)
         assert "2 offres ont été modifiées avec succès" in get_response.data.decode("utf8")
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @pytest.mark.parametrize("action", ["approve", "reject"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
@@ -928,13 +917,12 @@ class OfferValidationViewTest:
             in get_response.data.decode("utf8")
         )
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @freeze_time("2020-11-17 15:00:00")
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     @patch("pcapi.admin.custom_views.offer_view.send_offer_validation_notification_to_administration")
-    def test_approve_collective_offer_and_send_mail_to_administration(
+    def test_approve_collective_offer_and_send_mail_to_administration_and_notify_adage(
         self,
         mocked_send_offer_validation_notification_to_administration,
         mocked_get_offerer_legal_category,
@@ -956,7 +944,12 @@ class OfferValidationViewTest:
                     """
         import_offer_validation_config(config_yaml)
         users_factories.AdminFactory(email="admin@example.com")
-        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.PENDING, isActive=True)
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        offer = educational_factories.CollectiveStockFactory(
+            collectiveOffer__validation=OfferValidationStatus.PENDING,
+            collectiveOffer__isActive=True,
+            collectiveOffer__institution=educational_institution,
+        ).collectiveOffer
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
             "legal_category_label": "Société en nom collectif",
@@ -978,8 +971,10 @@ class OfferValidationViewTest:
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
+        expected_payload = serialize_collective_offer(offer)
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
+
     @freeze_time("2020-11-17 15:00:00")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
@@ -1030,8 +1025,6 @@ class OfferValidationViewTest:
         assert offer.lastValidationDate == datetime.datetime(2020, 11, 17, 15)
         assert offer.lastValidationType == OfferValidationType.MANUAL
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_access_to_collective_offer_validation_page_with_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="super_admin@example.com")
@@ -1042,8 +1035,6 @@ class OfferValidationViewTest:
 
         assert response.status_code == 200
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["super_admin@example.com"])
     def test_access_to_collectve_offer_validation_page_with_none_super_admin_user_on_prod_env(self, client):
         users_factories.AdminFactory(email="simple_admin@example.com")
@@ -1055,8 +1046,6 @@ class OfferValidationViewTest:
         assert response.status_code == 302
         assert url_for("admin.index") in response.location
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     def test_get_query_and_count_on_collective_offer(self, db_session):
         offer_view = ValidationCollectiveOfferView(model=educational_models.CollectiveOffer, session=db_session)
         validated_offerer = offerers_factories.OffererFactory()
@@ -1076,8 +1065,6 @@ class OfferValidationViewTest:
         assert get_query_offers_list == [offer_1]
         assert get_count_query_scalar == 1
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @clean_database
     @testing.override_settings(IS_PROD=True, SUPER_ADMIN_EMAIL_ADDRESSES=["superadmin@example.com"])
     def test_number_of_queries_for_collective_offer_list(self, client):
@@ -1115,11 +1102,10 @@ class OfferValidationViewTest:
         assert response.status_code == 200
         assert b"<h2>Validation des offres</h2>" in response.data
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
     @pytest.mark.parametrize(
         "action,expected", [("approve", OfferValidationStatus.APPROVED), ("reject", OfferValidationStatus.REJECTED)]
     )
+    @override_settings(ADAGE_API_URL="https://adage_base_url")
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
     def test_batch_approve_collective_offers(
@@ -1130,18 +1116,20 @@ class OfferValidationViewTest:
         offerer = venue.managingOfferer
         pro_user = users_factories.ProFactory(email="pro@example.com")
         offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
-        offer1 = educational_factories.CollectiveOfferFactory(
-            validation=OfferValidationStatus.PENDING,
-            isActive=True,
-            venue__bookingEmail="email1@example.com",
-            venue=venue,
-        )
-        offer2 = educational_factories.CollectiveOfferFactory(
-            validation=OfferValidationStatus.PENDING,
-            isActive=True,
-            venue__bookingEmail="email1@example.com",
-            venue=venue,
-        )
+        educational_institution = educational_factories.EducationalInstitutionFactory()
+        offer1 = educational_factories.CollectiveStockFactory(
+            collectiveOffer__validation=OfferValidationStatus.PENDING,
+            collectiveOffer__isActive=True,
+            collectiveOffer__venue__bookingEmail="email1@example.com",
+            collectiveOffer__venue=venue,
+            collectiveOffer__institution=educational_institution,
+        ).collectiveOffer
+        offer2 = educational_factories.CollectiveStockFactory(
+            collectiveOffer__validation=OfferValidationStatus.PENDING,
+            collectiveOffer__isActive=True,
+            collectiveOffer__venue__bookingEmail="email1@example.com",
+            collectiveOffer__venue=venue,
+        ).collectiveOffer
 
         mocked_get_offerer_legal_category.return_value = {
             "legal_category_code": 5202,
@@ -1162,8 +1150,11 @@ class OfferValidationViewTest:
         get_response = client.get(response.location)
         assert "2 offres ont été modifiées avec succès" in get_response.data.decode("utf8")
 
-    # FIXME (rpaoloni, 2022-04-20): remove when new collective models are in use in production
-    @pytest.mark.skip
+        expected_payload_1 = serialize_collective_offer(offer1)
+        assert len(adage_api_testing.adage_requests) == 1
+        assert adage_api_testing.adage_requests[0]["sent_data"] == expected_payload_1
+        assert adage_api_testing.adage_requests[0]["url"] == "https://adage_base_url/v1/offre-assoc"
+
     @pytest.mark.parametrize("action", ["approve", "reject"])
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     @patch("pcapi.connectors.api_entreprises.get_offerer_legal_category")
