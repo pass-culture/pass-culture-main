@@ -28,7 +28,7 @@ export const ManualReviewModal = ({
   checkHistory: CheckHistory[]
 }) => {
   const [openModal, setOpenModal] = useState(false)
-  const [noFraudCheck, setNoFraudCheck] = useState(checkHistory.length <= 0)
+  const noFraudCheck = checkHistory.length <= 0
   const notify = useNotify()
 
   const styleModal = {
