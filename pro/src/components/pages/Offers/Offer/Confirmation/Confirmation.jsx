@@ -1,16 +1,25 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
 import { Link } from 'react-router-dom'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import PropTypes from 'prop-types'
+import Spinner from 'components/layout/Spinner'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 
-const Confirmation = ({ offer, setOffer }) => {
+const Confirmation = ({ offer, setOffer, reloadOffer }) => {
+  const [isLoading, setIsLoading] = useState(true)
   const resetOffer = useCallback(() => {
     setOffer(null)
   }, [setOffer])
+
+  useEffect(() => {
+    reloadOffer()
+    setIsLoading(false)
+  }, [])
+
+  if (isLoading) return <Spinner />
 
   const isPendingOffer = offer.status === OFFER_STATUS_PENDING
 
