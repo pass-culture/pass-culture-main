@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import {
-  getCulturalPartnersAdapter,
-  getVenueEducationalStatusesAdapter,
-} from './adapters'
 
 import CollectiveDataForm from './CollectiveDataForm'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
+import { getCulturalPartnersAdapter } from '../adapters'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
+import { getVenueEducationalStatusesAdapter } from './adapters'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import { useParams } from 'react-router-dom'
