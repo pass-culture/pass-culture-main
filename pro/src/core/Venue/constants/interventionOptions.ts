@@ -110,14 +110,21 @@ export const domtomOptions: SelectOption[] = [
 
 export const ALL_FRANCE_OPTION_VALUE = 'all'
 export const MAINLAND_OPTION_VALUE = 'mainland'
+export const CULTURAL_PARTNER_OPTION_VALUE = 'culturalPartner'
+export const ALL_FRANCE_OPTION_LABEL = 'France métropolitaine et d’outre-mer'
+export const MAINLAND_OPTION_LABEL = 'France métropolitaine'
+export const CULTURAL_PARTNER_OPTION_LABEL = 'Uniquement dans mon lieu'
 
 export const otherInterventionOptions: SelectOption[] = [
-  { value: 'culturalPartner', label: 'Uniquement dans mon lieu' },
+  {
+    value: CULTURAL_PARTNER_OPTION_VALUE,
+    label: CULTURAL_PARTNER_OPTION_LABEL,
+  },
   {
     value: ALL_FRANCE_OPTION_VALUE,
-    label: 'France métropolitaine et d’outre-mer',
+    label: ALL_FRANCE_OPTION_LABEL,
   },
-  { value: MAINLAND_OPTION_VALUE, label: 'France métropolitaine' },
+  { value: MAINLAND_OPTION_VALUE, label: MAINLAND_OPTION_LABEL },
 ]
 
 export const interventionOptions: SelectOption[] = [
