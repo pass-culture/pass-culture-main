@@ -10,6 +10,10 @@
       opacity: 0;
     }
 
+    &-disabled:hover {
+      background-color: white;
+    }
+
     span {
       position: absolute;
     }
