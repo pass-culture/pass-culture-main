@@ -11,7 +11,6 @@ import LocationFields, {
 } from '../fields/LocationFields'
 import { NavLink, useHistory, useParams } from 'react-router-dom'
 import React, { useCallback, useEffect, useState } from 'react'
-
 import {
   createVenue,
   getOfferer,
@@ -24,6 +23,7 @@ import BankInformation from '../fields/BankInformationFields'
 import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import ContactInfosFields from '../fields/ContactInfosFields'
+import EACInformation from '../VenueEdition/EACInformation'
 import { Form } from 'react-final-form'
 import Icon from 'components/layout/Icon'
 import NotificationMessage from '../Notification'
@@ -34,6 +34,7 @@ import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import VenueType from '../ValueObjects/VenueType'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
 import { sortByLabel } from 'utils/strings'
 import { unhumanizeSiret } from 'core/Venue/utils'
@@ -44,17 +45,22 @@ import useNotification from 'components/hooks/useNotification'
 const VenueCreation = () => {
   const [isReady, setIsReady] = useState(false)
   const [offerer, setOfferer] = useState(null)
-
   const [venueTypes, setVenueTypes] = useState(null)
   const [venueLabels, setVenueLabels] = useState(null)
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
   const [isSiretValued, setIsSiretValued] = useState(true)
+  const [canOffererCreateCollectiveOffer, setCanOffererCreateCollectiveOffer] =
+    useState(false)
+
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
   )
   const isEntrepriseApiDisabled = useActiveFeature('DISABLE_ENTERPRISE_API')
   const isNewBankInformationCreation = useActiveFeature(
     'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
+  )
+  const enableAdageVenueInformation = useActiveFeature(
+    'ENABLE_ADAGE_VENUE_INFORMATION'
   )
   const { offererId } = useParams()
   const history = useHistory()
@@ -75,23 +81,44 @@ const VenueCreation = () => {
       const venueLabelsRequest = getVenueLabels().then(labels =>
         sortByLabel(labels)
       )
-      const [offerer, venueTypes, venueLabels] = await Promise.all([
+      const canOffererCreateCollectiveOfferRequest = enableAdageVenueInformation
+        ? canOffererCreateCollectiveOfferAdapter(offererId).then(
+            ({ payload }) => payload.isOffererEligibleToEducationalOffer
+          )
+        : Promise.resolve(false)
+
+      const [
+        offerer,
+        venueTypes,
+        venueLabels,
+        canOffererCreateCollectiveOffer,
+      ] = await Promise.all([
         offererRequest,
         venueTypesRequest,
         venueLabelsRequest,
+        canOffererCreateCollectiveOfferRequest,
       ])
       return {
         offerer,
         venueTypes,
         venueLabels,
+        canOffererCreateCollectiveOffer,
       }
     }
-    handleInitialRequest().then(({ offerer, venueTypes, venueLabels }) => {
-      setOfferer(offerer)
-      setVenueTypes(venueTypes)
-      setVenueLabels(venueLabels)
-      setIsReady(true)
-    })
+    handleInitialRequest().then(
+      ({
+        offerer,
+        venueTypes,
+        venueLabels,
+        canOffererCreateCollectiveOffer,
+      }) => {
+        setOfferer(offerer)
+        setVenueTypes(venueTypes)
+        setVenueLabels(venueLabels)
+        setCanOffererCreateCollectiveOffer(canOffererCreateCollectiveOffer)
+        setIsReady(true)
+      }
+    )
   }, [offererId])
 
   const handleSubmitRequest = async ({
@@ -200,6 +227,14 @@ const VenueCreation = () => {
         <AccessibilityFields />
         <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         <ContactInfosFields readOnly={false} />
+        {enableAdageVenueInformation && (
+          <EACInformation
+            venue={null}
+            offererId={offererId}
+            isCreatingVenue
+            canOffererCreateCollectiveOffer={canOffererCreateCollectiveOffer}
+          />
+        )}
         {!isNewBankInformationCreation &&
           (isBankInformationWithSiretActive ? (
             <BusinessUnitFields isCreatingVenue offerer={offerer} />
