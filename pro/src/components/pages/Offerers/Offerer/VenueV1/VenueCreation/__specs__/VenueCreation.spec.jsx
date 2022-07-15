@@ -84,6 +84,7 @@ describe('venue form', () => {
     pcapi.getVenueLabels.mockResolvedValue([])
     pcapi.getBusinessUnits.mockResolvedValue([])
     pcapi.getUserInformations.mockResolvedValue(storeOverrides.data.users[0])
+    pcapi.canOffererCreateEducationalOffer.mockResolvedValue(false)
   })
 
   describe('when submiting a valide form', () => {
@@ -322,6 +323,37 @@ describe('venue form', () => {
           'Coordonnées bancaires pour vos remboursements :'
         )
       ).not.toBeInTheDocument()
+    })
+  })
+
+  describe('Collective data', () => {
+    it('should not render button when FF is off', async () => {
+      await renderVenueCreation({ props, storeOverrides })
+
+      expect(
+        screen.queryByText('Renseigner mes informations')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render button when FF is on', async () => {
+      await renderVenueCreation({
+        props,
+        storeOverrides: {
+          ...storeOverrides,
+          features: {
+            list: [
+              {
+                isActive: true,
+                nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
+              },
+            ],
+          },
+        },
+      })
+
+      expect(
+        await screen.findByText('Renseigner mes informations')
+      ).toBeInTheDocument()
     })
   })
 })
