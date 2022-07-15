@@ -170,7 +170,13 @@ const OfferLayout = () => {
             )}
           </Route>
           <Route exact path={`${match.url}/creation/confirmation`}>
-            {() => <Confirmation offer={offer} setOffer={setOffer} />}
+            {() => (
+              <Confirmation
+                offer={offer}
+                setOffer={setOffer}
+                reloadOffer={reloadOffer}
+              />
+            )}
           </Route>
         </Switch>
       </div>
