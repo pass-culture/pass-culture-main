@@ -16,7 +16,7 @@ const LeavingGuardDialog = ({
     <div className={styles['dialog']}>
       <InfoIcon className={styles['dialog-icon']} />
       <Title level={3}>{title}</Title>
-      <p>{message}</p>
+      <p className={styles['dialog-text']}>{message}</p>
     </div>
   )
 }
