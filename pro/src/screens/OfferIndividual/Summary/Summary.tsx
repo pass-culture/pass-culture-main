@@ -152,7 +152,7 @@ const Summary = ({
                   onClick={() =>
                     logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
                       from: OfferBreadcrumbStep.SUMMARY,
-                      to: 'orthisone?',
+                      to: OfferBreadcrumbStep.STOCKS,
                       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
                     })
                   }
