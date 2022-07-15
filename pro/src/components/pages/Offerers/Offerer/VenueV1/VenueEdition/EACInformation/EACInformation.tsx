@@ -1,14 +1,20 @@
-import { ButtonLink } from 'ui-kit'
+import { Banner, ButtonLink } from 'ui-kit'
+
 import { ButtonVariant } from 'ui-kit/Button/types'
+import { GetVenueResponseModel } from 'apiClient/v1'
 import React from 'react'
 import styles from './EACInformation.module.scss'
 
 const EACInformation = ({
-  venueId,
+  venue,
   offererId,
+  isCreatingVenue = false,
+  canOffererCreateCollectiveOffer = false,
 }: {
-  venueId: string
+  venue: GetVenueResponseModel | null
   offererId: string
+  isCreatingVenue?: boolean
+  canOffererCreateCollectiveOffer?: boolean
 }): JSX.Element => {
   return (
     <div className="section">
@@ -20,9 +26,35 @@ const EACInformation = ({
         (Application dédiée à la généralisation de l'éducation artistique et
         culturelle).
       </p>
+
+      {isCreatingVenue && !canOffererCreateCollectiveOffer && (
+        <Banner
+          type="attention"
+          href="https://passculture.typeform.com/to/VtKospEg"
+          linkTitle="Faire une demande de référencement"
+        >
+          Pour proposer des informations à destination d’un groupe scolaire,
+          vous devez être référencé auprès du ministère de l’Éducation Nationale
+          et du ministère de la Culture.
+        </Banner>
+      )}
+
+      {isCreatingVenue && canOffererCreateCollectiveOffer && (
+        <Banner
+          type="notification-info"
+          href="https://passculture.typeform.com/to/VtKospEg"
+          linkTitle="Faire une demande de référencement"
+        >
+          Une fois votre lieu créé, vous pourrez renseigner des informations
+          pour les enseignants en revenant sur cette page.
+        </Banner>
+      )}
+
       <ButtonLink
-        to={`/structures/${offererId}/lieux/${venueId}/eac`}
+        to={`/structures/${offererId}/lieux/${venue?.id}/eac`}
         variant={ButtonVariant.SECONDARY}
+        isDisabled={isCreatingVenue}
+        className={styles['button']}
       >
         Renseigner mes informations
       </ButtonLink>
