@@ -13,7 +13,7 @@ const submitButton = Selector('button').withText('Enregistrer')
 const priceInput = Selector('input[name="price"]')
 const stockItem = Selector('tbody').find('tr')
 const submitSuccess = Selector('.notification.is-success').withText(
-  'Vos stocks ont bien été sauvegardés.'
+  'Vos modifications ont bien été enregistrées'
 )
 
 fixture('En étant sur la page des stocks d’une offre,')
@@ -25,7 +25,7 @@ test("je peux créer un stock pour un évènement en passant par la page de l'of
   )
   const stocksAnchor = Selector(
     `a[href^="/offre/${offer.id}/individuel/stocks"]`
-  ).withText('Stock et prix')
+  ).withText('Stocks et prix')
 
   const dateInput = Selector('.react-datepicker-wrapper').nth(0)
   const hourInput = Selector('.react-datepicker-wrapper').nth(1)

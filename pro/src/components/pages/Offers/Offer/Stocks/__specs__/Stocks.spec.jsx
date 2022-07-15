@@ -118,7 +118,9 @@ describe('stocks page', () => {
 
         // then
         expect(screen.queryByText('Annuler et quitter')).not.toBeInTheDocument()
-        expect(screen.queryByText('Enregistrer')).not.toBeInTheDocument()
+        expect(
+          screen.queryByText('Enregistrer les modifacations')
+        ).not.toBeInTheDocument()
       })
 
       it('should display add stock button', async () => {
@@ -346,7 +348,7 @@ describe('stocks page', () => {
           'aria-disabled',
           'true'
         )
-        expect(screen.getByText('Enregistrer')).toBeDisabled()
+        expect(screen.getByText('Enregistrer les modifications')).toBeDisabled()
       })
 
       it('should display status informative message and disable all fields when offer is pending for validation', async () => {
@@ -377,7 +379,7 @@ describe('stocks page', () => {
           'aria-disabled',
           'true'
         )
-        expect(screen.getByText('Enregistrer')).toBeDisabled()
+        expect(screen.getByText('Enregistrer les modifications')).toBeDisabled()
       })
     })
 
@@ -631,7 +633,7 @@ describe('stocks page', () => {
         await renderOffers(props, store)
         const submitButton = await screen.findByRole('button', {
           type: 'submit',
-          name: 'Enregistrer',
+          name: 'Enregistrer les modifications',
         })
 
         // When
@@ -660,7 +662,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('26'))
         await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
-        const submitButton = screen.getByText('Enregistrer', {
+        const submitButton = screen.getByText('Enregistrer les modifications', {
           selector: 'button',
         })
 
@@ -700,7 +702,7 @@ describe('stocks page', () => {
       })
 
       // When
-      await userEvent.click(screen.getByText('Enregistrer'))
+      await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
       // Then
       const errorMessage = await screen.findByText(
@@ -723,7 +725,7 @@ describe('stocks page', () => {
       })
 
       // When
-      await userEvent.click(screen.getByText('Enregistrer'))
+      await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
       // Then
       const errorMessage = await screen.findByText(
@@ -745,7 +747,7 @@ describe('stocks page', () => {
       await userEvent.click(screen.getByText('20:00'))
 
       // When
-      await userEvent.click(screen.getByText('Enregistrer'))
+      await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
       // Then
       const errorMessage = await screen.findByText(
@@ -801,12 +803,14 @@ describe('stocks page', () => {
 
       // When
       await userEvent.click(
-        await screen.findByText('Enregistrer', { selector: 'button' })
+        await screen.findByText('Enregistrer les modifications', {
+          selector: 'button',
+        })
       )
 
       // Then
       expect(
-        screen.getByText('Stock et prix', { selector: 'h3' })
+        screen.getByText('Stocks et prix', { selector: 'h3' })
       ).toBeInTheDocument()
     })
 
@@ -1165,7 +1169,9 @@ describe('stocks page', () => {
               fireEvent.change(quantityField, { target: { value: '6' } })
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
@@ -1213,7 +1219,9 @@ describe('stocks page', () => {
               await renderOffers(props, store)
 
               // When
-              await userEvent.click(await screen.findByText('Enregistrer'))
+              await userEvent.click(
+                await screen.findByText('Enregistrer les modifications')
+              )
 
               // Then
               expect(pcapi.loadStocks).toHaveBeenCalledTimes(2)
@@ -1230,7 +1238,9 @@ describe('stocks page', () => {
               )
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1248,7 +1258,9 @@ describe('stocks page', () => {
               await userEvent.click(screen.getByText('20'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1266,7 +1278,9 @@ describe('stocks page', () => {
               await userEvent.click(screen.getByText('19'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1286,7 +1300,9 @@ describe('stocks page', () => {
               await userEvent.click(screen.getByText('17'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1303,7 +1319,9 @@ describe('stocks page', () => {
               })
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1331,7 +1349,9 @@ describe('stocks page', () => {
               await userEvent.click(screen.getByText('20:00'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const errorMessage = await screen.findByText(
@@ -1349,7 +1369,9 @@ describe('stocks page', () => {
               fireEvent.change(beginningDateField, { target: { value: null } })
 
               // when
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // then
               const errorMessage = await screen.findByText(
@@ -1368,7 +1390,9 @@ describe('stocks page', () => {
               fireEvent.change(beginningHourField, { target: { value: null } })
 
               // when
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // then
               const errorMessage = await screen.findByText(
@@ -1386,7 +1410,9 @@ describe('stocks page', () => {
               })
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               expect(
@@ -1420,11 +1446,13 @@ describe('stocks page', () => {
               await userEvent.click(screen.getByText('20:00'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const errorMessage = await screen.findByText(
-                'Vos stocks ont bien été sauvegardés.'
+                'Vos modifications ont bien été enregistrées'
               )
               expect(errorMessage).toBeInTheDocument()
             })
@@ -1451,7 +1479,9 @@ describe('stocks page', () => {
               })
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const errorMessage = await screen.findByText(
@@ -1476,11 +1506,13 @@ describe('stocks page', () => {
               await userEvent.click(screen.getByText('20:00'))
 
               // When
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               // Then
               const errorMessage = await screen.findByText(
-                'Vos stocks ont bien été sauvegardés.'
+                'Vos modifications ont bien été enregistrées'
               )
               expect(errorMessage).toBeInTheDocument()
             })
@@ -1504,7 +1536,9 @@ describe('stocks page', () => {
               api.getOffer.mockClear()
 
               // When
-              await userEvent.click(await screen.findByText('Enregistrer'))
+              await userEvent.click(
+                await screen.findByText('Enregistrer les modifications')
+              )
 
               // Then
               expect(api.getOffer).toHaveBeenCalledTimes(1)
@@ -1533,10 +1567,12 @@ describe('stocks page', () => {
               const soldOutOfferStatus = await screen.findByText('épuisée')
               expect(soldOutOfferStatus).toBeInTheDocument()
 
-              await userEvent.click(screen.getByText('Enregistrer'))
+              await userEvent.click(
+                screen.getByText('Enregistrer les modifications')
+              )
 
               const successMessage = await screen.findByText(
-                'Vos stocks ont bien été sauvegardés.'
+                'Vos modifications ont bien été enregistrées'
               )
               expect(successMessage).toBeInTheDocument()
 
@@ -1894,7 +1930,9 @@ describe('stocks page', () => {
             fireEvent.change(quantityField, { target: { value: '6' } })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
@@ -1932,7 +1970,9 @@ describe('stocks page', () => {
             await renderOffers(props, store)
 
             // When
-            await userEvent.click(await screen.findByText('Enregistrer'))
+            await userEvent.click(
+              await screen.findByText('Enregistrer les modifications')
+            )
 
             // Then
             expect(pcapi.loadStocks).toHaveBeenCalledTimes(2)
@@ -1948,7 +1988,9 @@ describe('stocks page', () => {
             await userEvent.click(screen.getByText('19'))
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1969,7 +2011,9 @@ describe('stocks page', () => {
             await userEvent.click(screen.getByText('17'))
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -1991,7 +2035,9 @@ describe('stocks page', () => {
             )
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
@@ -2007,7 +2053,9 @@ describe('stocks page', () => {
             })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
             // Then
             const savedStocks = pcapi.bulkCreateOrEditStock.mock.calls[0][1]
             expect(savedStocks[0].quantity).toBeNull()
@@ -2021,7 +2069,9 @@ describe('stocks page', () => {
             })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             expect(
@@ -2047,7 +2097,9 @@ describe('stocks page', () => {
             })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             const errorMessage = await screen.findByText(
@@ -2068,7 +2120,9 @@ describe('stocks page', () => {
             })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             const errorMessage = await screen.findByText(
@@ -2087,11 +2141,13 @@ describe('stocks page', () => {
             })
 
             // When
-            await userEvent.click(screen.getByText('Enregistrer'))
+            await userEvent.click(
+              screen.getByText('Enregistrer les modifications')
+            )
 
             // Then
             const errorMessage = await screen.findByText(
-              'Vos stocks ont bien été sauvegardés.'
+              'Vos modifications ont bien été enregistrées'
             )
             expect(errorMessage).toBeInTheDocument()
           })
@@ -2464,7 +2520,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByText('23'))
 
         // when
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // then
         expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
@@ -2527,7 +2583,7 @@ describe('stocks page', () => {
         fireEvent.change(screen.getByLabelText('Prix'), {
           target: { value: '301' },
         })
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         expect(
@@ -2566,7 +2622,7 @@ describe('stocks page', () => {
         })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2594,7 +2650,7 @@ describe('stocks page', () => {
         })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2623,11 +2679,11 @@ describe('stocks page', () => {
         })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         const errorMessage = await screen.findByText(
-          'Vos stocks ont bien été sauvegardés.'
+          'Vos modifications ont bien été enregistrées'
         )
         expect(errorMessage).toBeInTheDocument()
       })
@@ -2822,7 +2878,7 @@ describe('stocks page', () => {
         })
 
         // when
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // then
         expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith('AG3A', [
@@ -2844,7 +2900,7 @@ describe('stocks page', () => {
         })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         expect(
@@ -2871,7 +2927,7 @@ describe('stocks page', () => {
         })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2893,7 +2949,7 @@ describe('stocks page', () => {
         })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         const errorMessage = await screen.findByText(
@@ -2919,11 +2975,11 @@ describe('stocks page', () => {
         })
 
         // When
-        await userEvent.click(screen.getByText('Enregistrer'))
+        await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
         // Then
         const errorMessage = await screen.findByText(
-          'Vos stocks ont bien été sauvegardés.'
+          'Vos modifications ont bien été enregistrées'
         )
         expect(errorMessage).toBeInTheDocument()
       })
@@ -3122,7 +3178,9 @@ describe('stocks page', () => {
           fireEvent.change(priceField, { target: { value: null } })
           fireEvent.change(priceField, { target: { value: '14.01' } })
 
-          await userEvent.click(screen.getByText('Enregistrer'))
+          await userEvent.click(
+            screen.getByText('Enregistrer les modifications')
+          )
 
           // Then
           expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
@@ -3170,7 +3228,9 @@ describe('stocks page', () => {
           fireEvent.change(priceField, { target: { value: null } })
           fireEvent.change(priceField, { target: { value: '14.01' } })
 
-          await userEvent.click(screen.getByText('Enregistrer'))
+          await userEvent.click(
+            screen.getByText('Enregistrer les modifications')
+          )
 
           // Then
           expect(pcapi.bulkCreateOrEditStock).toHaveBeenCalledWith(
@@ -3392,7 +3452,7 @@ describe('stocks page', () => {
 
           // then
           await expect(
-            screen.findByText('Enregistrer')
+            screen.findByText('Enregistrer les modifications')
           ).resolves.toBeInTheDocument()
           expect(screen.getByLabelText('Quantité').value).toBe('15')
           expect(screen.getByLabelText('Quantité')).toBeDisabled()

@@ -30,6 +30,12 @@ const mapPathToStep = {
   confirmation: OfferBreadcrumbStep.CONFIRMATION,
 }
 
+const editPageTitleByStep = {
+  [OfferBreadcrumbStep.DETAILS]: 'Modifier le détail de l’offre',
+  [OfferBreadcrumbStep.STOCKS]: 'Modifier les stocks et prix',
+  [OfferBreadcrumbStep.SUMMARY]: 'Récapitulatif',
+}
+
 const getActiveStepFromLocation = location => {
   let urlMatch = location.pathname.match(/[a-z]+$/)
   let stepName = urlMatch && urlMatch[0]
@@ -82,6 +88,8 @@ const OfferLayout = () => {
 
   if (!isCreatingOffer) {
     pageTitle = "Éditer l'offre"
+    if (activeStep in editPageTitleByStep)
+      pageTitle = editPageTitleByStep[activeStep]
   }
 
   const offerHeader =

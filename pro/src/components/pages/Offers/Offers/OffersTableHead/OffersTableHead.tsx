@@ -70,7 +70,7 @@ const OffersTableHead = ({
           {audience === Audience.COLLECTIVE &&
           enableEducationalInstitutionAssociation
             ? 'Etablissement'
-            : 'Stock'}
+            : 'Stocks'}
         </th>
         <th className="th-with-filter">
           <StatusFiltersButton

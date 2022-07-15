@@ -34,7 +34,7 @@ const FormActions = ({
           {isDraft
             ? 'Étape précédente'
             : useSummaryPage
-            ? `Voir le détail de l'offre`
+            ? `Voir le récapitulatif`
             : 'Annuler et quitter'}
         </ButtonLink>
       )}
@@ -48,7 +48,7 @@ const FormActions = ({
           ? useSummaryPage
             ? 'Étape suivante'
             : 'Valider et créer l’offre'
-          : 'Enregistrer'}
+          : 'Enregistrer les modifications'}
       </SubmitButton>
     </>
   )
