@@ -157,7 +157,9 @@ const CollectiveOfferVisibility = ({
               />
             </FormLayout.Row>
             {institutionsOptions && formik.values.visibility === 'one' && (
-              <FormLayout.Row className={styles['row-layout']}>
+              <FormLayout.Row
+                className={(styles['row-layout'], styles['row-layout-large'])}
+              >
                 <fieldset className={styles['legend']}>
                   2. Choix de l’établissement
                 </fieldset>
