@@ -17,6 +17,7 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import VenueEditon from '../VenueEdition'
 import VenueType from '../../ValueObjects/VenueType'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { getContactInputs } from './helpers'
 import userEvent from '@testing-library/user-event'
@@ -39,11 +40,16 @@ jest.mock('repository/pcapi/pcapi', () => ({
   loadProviders: jest.fn().mockResolvedValue([]),
   loadVenueProviders: jest.fn().mockResolvedValue([]),
   getOfferer: jest.fn().mockResolvedValue([]),
-  getVenue: jest.fn().mockResolvedValue([]),
   getVenueTypes: jest.fn().mockResolvedValue([]),
   getVenueLabels: jest.fn().mockResolvedValue([]),
   editVenue: jest.fn(),
   canOffererCreateEducationalOffer: jest.fn(),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getVenue: jest.fn().mockResolvedValue({}),
+  },
 }))
 
 jest.mock('utils/config', () => ({
@@ -129,12 +135,12 @@ describe('test page : VenueEdition', () => {
 
   beforeEach(() => {
     pcapi.getOfferer.mockResolvedValue(offerer)
-    pcapi.getVenue.mockResolvedValue(venue)
+    api.getVenue.mockResolvedValue(venue)
     pcapi.getVenueTypes.mockResolvedValue(venueTypes)
     pcapi.getVenueLabels.mockResolvedValue(venueLabels)
 
     pcapi.getOfferer.mockResolvedValue(offerer)
-    pcapi.getVenue.mockResolvedValue(venue)
+    api.getVenue.mockResolvedValue(venue)
     pcapi.loadProviders.mockResolvedValue([
       {
         id: 'providerId',
@@ -166,7 +172,7 @@ describe('test page : VenueEdition', () => {
 
     it('should not render a Form when venue is virtual', async () => {
       // given
-      pcapi.getVenue.mockResolvedValue({ ...venue, isVirtual: true })
+      api.getVenue.mockResolvedValue({ ...venue, isVirtual: true })
 
       // when
       await renderVenueEdition({ props, waitFormRender: false })
@@ -183,7 +189,7 @@ describe('test page : VenueEdition', () => {
 
     it('should render readonly form when venue is virtual and feature flag active', async () => {
       // given
-      pcapi.getVenue.mockResolvedValue({
+      api.getVenue.mockResolvedValue({
         ...venue,
         isVirtual: true,
         businessUnit: true,
@@ -313,7 +319,7 @@ describe('test page : VenueEdition', () => {
         .spyOn(usersSelectors, 'selectCurrentUser')
         .mockReturnValue({ currentUser: 'fakeUser', publicName: 'fakeName' })
 
-      pcapi.getVenue.mockResolvedValue({
+      api.getVenue.mockResolvedValue({
         ...venue,
         siret: null,
       })
@@ -444,7 +450,7 @@ describe('test page : VenueEdition', () => {
 
       it('should display confirmation dialog when edit business unit main venue', async () => {
         // Given
-        pcapi.getVenue.mockResolvedValue({
+        api.getVenue.mockResolvedValue({
           ...venue,
           isBusinessUnitMainVenue: true,
         })
@@ -490,7 +496,7 @@ describe('test page : VenueEdition', () => {
             siret: '22222222311222',
           },
         ])
-        pcapi.getVenue.mockResolvedValue({
+        api.getVenue.mockResolvedValue({
           ...venue,
           isBusinessUnitMainVenue: true,
         })
@@ -547,7 +553,7 @@ describe('test page : VenueEdition', () => {
       })
 
       it('displays when feature flag is enabled and venue is permanent', async () => {
-        pcapi.getVenue.mockResolvedValue({
+        api.getVenue.mockResolvedValue({
           ...venue,
           isPermanent: true,
         })
@@ -647,7 +653,7 @@ describe('test page : VenueEdition', () => {
 
     describe('create new offer link', () => {
       it('should redirect to offer creation page', async () => {
-        pcapi.getVenue.mockResolvedValue({ ...venue, id: 'CM' })
+        api.getVenue.mockResolvedValue({ ...venue, id: 'CM' })
         window.history.pushState({}, 'Test page', '/structures/AE/lieux/AE')
         // given
         await renderVenueEdition({})

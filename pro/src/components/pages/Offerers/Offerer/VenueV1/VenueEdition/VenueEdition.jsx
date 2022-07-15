@@ -36,6 +36,7 @@ import VenueProvidersManager from './VenueProvidersManager'
 import VenueProvidersManagerV2 from './VenueProvidersManagerV2'
 import VenueType from '../ValueObjects/VenueType'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields/WithdrawalDetailsFields'
+import { api } from 'apiClient/api'
 import bindGetSuggestionsToLatitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLatitude'
 import bindGetSuggestionsToLongitude from '../fields/LocationFields/decorators/bindGetSuggestionsToLongitude'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
@@ -143,7 +144,7 @@ const VenueEdition = () => {
   useEffect(() => {
     const handleInitialRequest = async () => {
       const offererRequest = pcapi.getOfferer(offererId)
-      const venueRequest = pcapi.getVenue(venueId)
+      const venueRequest = api.getVenue(venueId)
       const venueTypesRequest = pcapi.getVenueTypes().then(venueTypes => {
         return venueTypes.map(type => new VenueType(type))
       })
@@ -361,7 +362,7 @@ const VenueEdition = () => {
             </>
           )}
           {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
-            <EACInformation venueId={venueId} offererId={offererId} />
+            <EACInformation venue={venue} offererId={offererId} />
           )}
           {isNewBankInformationCreation ? (
             <ReimbursementFields
