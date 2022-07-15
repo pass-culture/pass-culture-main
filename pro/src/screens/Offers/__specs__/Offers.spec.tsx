@@ -170,7 +170,7 @@ describe('screen Offers', () => {
       await expect(
         screen.findByText('Lieu', { selector: 'th' })
       ).resolves.toBeInTheDocument()
-      expect(screen.getByText('Stock', { selector: 'th' })).toBeInTheDocument()
+      expect(screen.getByText('Stocks', { selector: 'th' })).toBeInTheDocument()
     })
 
     it('should render as much offers as returned by the api', async () => {

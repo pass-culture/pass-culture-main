@@ -122,7 +122,7 @@ describe('offerLayout', () => {
       renderOfferDetails(store, '/offre/AB/individuel/edition')
 
       // Then
-      const title = await screen.findByText("Éditer l'offre", {
+      const title = await screen.findByText('Modifier le détail de l’offre', {
         selector: 'h1',
       })
       expect(title).toBeInTheDocument()

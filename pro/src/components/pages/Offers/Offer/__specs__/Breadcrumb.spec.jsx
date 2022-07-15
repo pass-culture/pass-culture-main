@@ -37,7 +37,7 @@ describe('offer step', () => {
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
       expect(detailTab.closest('.bc-step')).toHaveClass('active')
-      const stockTab = screen.getByText('Stock et prix')
+      const stockTab = screen.getByText('Stocks et prix')
       expect(stockTab).toBeInTheDocument()
       expect(stockTab).not.toHaveAttribute('href')
       const confirmationTab = screen.getByText('Confirmation')
@@ -65,7 +65,7 @@ describe('offer step', () => {
       expect(detailTab).toBeInTheDocument()
       expect(detailTab.closest('.bc-step')).toHaveClass('active')
       expect(
-        screen.getByText('Stock et prix', { selector: 'a' })
+        screen.getByText('Stocks et prix', { selector: 'a' })
       ).toBeInTheDocument()
       expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()
     })
@@ -92,7 +92,7 @@ describe('stocks step', () => {
       const detailTab = await screen.findByText("Détails de l'offre")
       expect(detailTab).toBeInTheDocument()
       expect(detailTab).not.toHaveAttribute('href')
-      const stockTab = queryByTextTrimHtml(screen, 'Stock et prix', {
+      const stockTab = queryByTextTrimHtml(screen, 'Stocks et prix', {
         selector: 'li',
         leafOnly: false,
       })
@@ -124,7 +124,7 @@ describe('stocks step', () => {
         selector: 'a',
       })
       expect(detailTab).toBeInTheDocument()
-      const stockTab = screen.getByText('Stock et prix', { selector: 'a' })
+      const stockTab = screen.getByText('Stocks et prix', { selector: 'a' })
       expect(stockTab).toBeInTheDocument()
       expect(stockTab.closest('.bc-step')).toHaveClass('active')
       expect(screen.queryByText('Confirmation')).not.toBeInTheDocument()

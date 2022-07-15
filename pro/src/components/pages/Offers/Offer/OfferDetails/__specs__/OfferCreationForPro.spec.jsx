@@ -1965,7 +1965,7 @@ describe('offerDetails - Creation - pro user', () => {
       // Then
       await waitFor(() =>
         expect(
-          screen.getByRole('heading', { name: 'Stock et prix', level: 3 })
+          screen.getByRole('heading', { name: 'Stocks et prix', level: 3 })
         ).toBeInTheDocument()
       )
       expect(
