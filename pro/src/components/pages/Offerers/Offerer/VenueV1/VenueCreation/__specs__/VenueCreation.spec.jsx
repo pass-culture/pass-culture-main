@@ -242,7 +242,7 @@ describe('venue form', () => {
     await userEvent.click(quitButton)
 
     const quitDialogButton = screen.getByRole('button', {
-      name: 'Quitter sans enregister',
+      name: 'Quitter sans enregistrer',
     })
     await userEvent.click(quitDialogButton)
 
