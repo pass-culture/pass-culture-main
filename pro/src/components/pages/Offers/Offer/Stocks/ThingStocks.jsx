@@ -206,7 +206,9 @@ const ThingStocks = ({
                 }`
               )
             } else {
-              showSuccessNotification('Vos stocks ont bien été sauvegardés.')
+              showSuccessNotification(
+                'Vos modifications ont bien été enregistrées'
+              )
             }
           }
         })
@@ -248,7 +250,7 @@ const ThingStocks = ({
 
       {isDisabled && <OfferStatusBanner status={offer.status} />}
 
-      <h3 className="section-title">Stock et prix</h3>
+      <h3 className="section-title">Stocks et prix</h3>
 
       <div className="cancellation-information">
         {!offer.isDigital &&

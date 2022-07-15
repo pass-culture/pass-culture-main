@@ -1146,7 +1146,7 @@ const OfferForm = ({
 
       <section className="actions-section">
         <Link className="secondary-link" to={backUrl} onClick={onCancelClick}>
-          {isEdition ? `Voir le détail de l'offre` : 'Annuler et quitter'}
+          {isEdition ? `Voir le récapitulatif` : 'Annuler et quitter'}
         </Link>
         <SubmitButton
           className="primary-button"
@@ -1154,7 +1154,7 @@ const OfferForm = ({
           isLoading={isSubmitLoading}
           onClick={submitForm}
         >
-          {isEdition ? 'Enregistrer' : 'Étape suivante'}
+          {isEdition ? 'Enregistrer les modifications' : 'Étape suivante'}
         </SubmitButton>
       </section>
     </form>

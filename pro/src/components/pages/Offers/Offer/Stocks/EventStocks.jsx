@@ -234,7 +234,9 @@ const EventStocks = ({
           } else {
             loadStocks()
             reloadOffer()
-            showSuccessNotification('Vos stocks ont bien été sauvegardés.')
+            showSuccessNotification(
+              'Vos modifications ont bien été enregistrées'
+            )
             setIsSendingStocksOfferCreation(false)
           }
         })
@@ -278,7 +280,7 @@ const EventStocks = ({
 
       {isDisabled && <OfferStatusBanner status={offer.status} />}
 
-      <h3 className="section-title">Stock et prix</h3>
+      <h3 className="section-title">Stocks et prix</h3>
 
       <div className="cancellation-information">
         Les utilisateurs ont un délai de 48h pour annuler leur réservation mais

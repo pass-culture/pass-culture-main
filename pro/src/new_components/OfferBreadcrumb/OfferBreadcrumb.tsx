@@ -65,7 +65,7 @@ const OfferBreadcrumb = ({
       },
       {
         id: OfferBreadcrumbStep.STOCKS,
-        label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
+        label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
         url: stockEditionUrl,
       },
       ...(isOfferEducational &&
@@ -97,7 +97,7 @@ const OfferBreadcrumb = ({
       },
       [OfferBreadcrumbStep.STOCKS]: {
         id: OfferBreadcrumbStep.STOCKS,
-        label: isOfferEducational ? 'Date et prix' : 'Stock et prix',
+        label: isOfferEducational ? 'Date et prix' : 'Stocks et prix',
       },
       ...(isOfferEducational && enableEducationalInstitutionAssociation
         ? {

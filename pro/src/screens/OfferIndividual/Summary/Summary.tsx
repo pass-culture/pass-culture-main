@@ -180,7 +180,7 @@ const Summary = ({
                     })
                   }
                 >
-                  Voir la liste des offres
+                  Retourner à mes offres
                 </ButtonLink>
               </div>
             )
