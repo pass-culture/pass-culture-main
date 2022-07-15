@@ -1,12 +1,12 @@
+import { Location, LocationListener } from 'history'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import { Location } from 'history'
 import { RootState } from 'store/reducers'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
-const useLogNavigation = (): void => {
+const useLogNavigation = (): LocationListener | void => {
   const history = useHistory()
   const location = useLocation()
   const logEvent = useSelector((state: RootState) => state.app.logEvent)
