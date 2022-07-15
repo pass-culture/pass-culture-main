@@ -20,6 +20,8 @@ export type SelectAutocompleteProps = {
   onSearchChange?: () => void
   options: SelectOption[]
   smallLabel?: boolean
+  placeholder?: string
+  hideArrow?: boolean
 }
 
 const SelectAutocomplete = ({
@@ -34,6 +36,8 @@ const SelectAutocomplete = ({
   onSearchChange,
   options,
   smallLabel = false,
+  placeholder,
+  hideArrow = false,
 }: SelectAutocompleteProps): JSX.Element => {
   const { setFieldValue, setFieldTouched } = useFormikContext<any>()
   const [field, meta, helpers] = useField(fieldName)
@@ -98,7 +102,7 @@ const SelectAutocomplete = ({
             }
             setFieldTouched(fieldName, true)
           }}
-          placeholder={label}
+          placeholder={placeholder ?? label}
           hasError={meta.touched && !!meta.error}
           type="text"
           disabled={disabled}
@@ -153,6 +157,7 @@ const SelectAutocomplete = ({
               }}
             />
           )}
+          hideArrow={hideArrow}
         />
       </div>
     </FieldLayout>

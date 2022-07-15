@@ -171,9 +171,11 @@ const CollectiveOfferVisibility = ({
                       fieldName="institution"
                       options={institutionsOptions}
                       label="Établissement scolaire"
+                      placeholder="Saisir l’établissement scolaire"
                       maxDisplayOptions={20}
                       maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
                       maxHeight={100}
+                      hideArrow
                     />
                     {selectedInstitution && (
                       <Banner type="light" className={styles['institution']}>
