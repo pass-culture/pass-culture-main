@@ -18,6 +18,7 @@ type AutocompleteListProps = {
     option: SelectOption & { disabled?: boolean }
   ) => React.ReactNode
   disabled?: boolean
+  hideArrow?: boolean
 }
 
 const AutocompleteList = ({
@@ -30,22 +31,25 @@ const AutocompleteList = ({
   numberOfSelectedOptions,
   className,
   disabled,
+  hideArrow = false,
 }: AutocompleteListProps): JSX.Element => {
   return (
     <div className={styles['field-overlay']}>
-      <button
-        onClick={onButtonClick}
-        className={cx(styles['dropdown-indicator'], {
-          [styles['dropdown-indicator-is-closed']]: !isOpen,
-        })}
-        type="button"
-        disabled={disabled}
-      >
-        <Icon
-          svg="open-dropdown"
-          alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
-        />
-      </button>
+      {!hideArrow && (
+        <button
+          onClick={onButtonClick}
+          className={cx(styles['dropdown-indicator'], {
+            [styles['dropdown-indicator-is-closed']]: !isOpen,
+          })}
+          type="button"
+          disabled={disabled}
+        >
+          <Icon
+            svg="open-dropdown"
+            alt={`${isOpen ? 'Masquer' : 'Afficher'} les options`}
+          />
+        </button>
+      )}
       {displayNumberOfSelectedValues && (
         <div onClick={onButtonClick} className={styles['pellet']}>
           {numberOfSelectedOptions}
