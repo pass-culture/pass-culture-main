@@ -57,7 +57,7 @@ describe('new_components | RouteLeavingGuardOfferIndividual', () => {
       ).toBeInTheDocument()
       await userEvent.click(screen.getByText('Quitter'))
       expect(spyHistory).toHaveBeenLastCalledWith(
-        expect.objectContaining({ pathname: '/about' })
+        expect.objectContaining({ pathname: '/offres' })
       )
     })
 
