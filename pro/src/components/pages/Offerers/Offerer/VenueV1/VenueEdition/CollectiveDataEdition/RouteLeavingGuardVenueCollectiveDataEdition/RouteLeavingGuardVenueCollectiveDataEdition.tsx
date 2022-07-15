@@ -23,9 +23,8 @@ const RouteLeavingGuardVenueCollectiveDataEdition = ({
       when
     >
       <LeavingGuardDialog
-        title="Voulez-vous quitter la page d’informations EAC ?"
-        message="Vos informations ne seront pas sauvegardés et toutes les informations
-      seront perdues."
+        title="Voulez vous quitter la page d’informations pour les enseignants ?"
+        message="Vos informations ne seront pas sauvegardées et toutes les informations seront perdues."
       />
     </RouteLeavingGuard>
   )
