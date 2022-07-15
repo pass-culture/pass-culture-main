@@ -2,9 +2,10 @@
 
 .dialog {
   text-align: center;
+  max-width: rem.torem(576px);
 
-  p {
-    margin-top: rem.torem(16px);
+  &-text {
+    margin: rem.torem(16px) auto 0;
     width: rem.torem(500px);
   }
 }
