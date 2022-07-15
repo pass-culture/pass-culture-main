@@ -3,7 +3,7 @@ import {
   MAINLAND_OPTION_VALUE,
   allDepartmentValues,
   mainlandValues,
-} from '../interventionOptions'
+} from 'core/Venue'
 
 import { CollectiveDataFormValues } from '../type'
 import type { FormikErrors } from 'formik'

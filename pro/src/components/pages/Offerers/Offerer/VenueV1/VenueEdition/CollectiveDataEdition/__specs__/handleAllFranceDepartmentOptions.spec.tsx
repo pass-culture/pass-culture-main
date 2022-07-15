@@ -2,7 +2,7 @@ import {
   ALL_FRANCE_OPTION_VALUE,
   MAINLAND_OPTION_VALUE,
   allDepartmentValues,
-} from '../CollectiveDataForm/interventionOptions'
+} from 'core/Venue'
 
 import { handleAllFranceDepartmentOptions } from '../CollectiveDataForm/utils/handleAllFranceDepartmentOptions'
 
