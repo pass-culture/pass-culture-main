@@ -1,9 +1,13 @@
 import { Banner, ButtonLink } from 'ui-kit'
 
 import { ButtonVariant } from 'ui-kit/Button/types'
+import CollectiveData from './CollectiveData'
+import { ReactComponent as EditIcon } from 'icons/ico-pen.svg'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import React from 'react'
+import cn from 'classnames'
 import styles from './EACInformation.module.scss'
+import { venueHasCollectiveInformation } from './utils/venueHasCollectiveInformation'
 
 const EACInformation = ({
   venue,
@@ -16,16 +20,21 @@ const EACInformation = ({
   isCreatingVenue?: boolean
   canOffererCreateCollectiveOffer?: boolean
 }): JSX.Element => {
+  const collectiveDataIsNotEmpty = venue && venueHasCollectiveInformation(venue)
   return (
     <div className="section">
       <h2 className="main-list-title">Mes informations pour les enseignants</h2>
-      <p className={styles['description']}>
-        Il s'agit d'un formulaire vous permettant de renseigner vos informations
-        à destination du public scolaire. Les informations renseignées seront
-        visibles par les enseignants et chefs d'établissement sur Adage
-        (Application dédiée à la généralisation de l'éducation artistique et
-        culturelle).
-      </p>
+      {collectiveDataIsNotEmpty ? (
+        <CollectiveData venue={venue} />
+      ) : (
+        <p className={styles['description']}>
+          Il s'agit d'un formulaire vous permettant de renseigner vos
+          informations à destination du public scolaire. Les informations
+          renseignées seront visibles par les enseignants et chefs
+          d'établissement sur Adage (Application dédiée à la généralisation de
+          l'éducation artistique et culturelle).
+        </p>
+      )}
 
       {isCreatingVenue && !canOffererCreateCollectiveOffer && (
         <Banner
@@ -54,9 +63,16 @@ const EACInformation = ({
         to={`/structures/${offererId}/lieux/${venue?.id}/eac`}
         variant={ButtonVariant.SECONDARY}
         isDisabled={isCreatingVenue}
-        className={styles['button']}
+        className={cn({ [styles['button']]: collectiveDataIsNotEmpty })}
       >
-        Renseigner mes informations
+        {collectiveDataIsNotEmpty ? (
+          <>
+            <EditIcon className={styles['edit-icon']} />
+            Modifier mes informations
+          </>
+        ) : (
+          'Renseigner mes informations'
+        )}
       </ButtonLink>
     </div>
   )
