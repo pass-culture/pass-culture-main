@@ -216,10 +216,13 @@ describe('venue form', () => {
     const contactMail = await screen.findByLabelText('Mail :')
     const contactUrl = await screen.findByLabelText('URL de votre site web :')
 
-    await userEvent.paste(contactPhoneNumber, '0606060606')
-    await userEvent.paste(contactMail, 'test@test.com')
-    await userEvent.paste(contactUrl, 'https://some-url-test.com')
-    waitFor(() => {
+    contactPhoneNumber.focus()
+    await userEvent.paste('0606060606')
+    contactMail.focus()
+    await userEvent.paste('test@test.com')
+    contactUrl.focus()
+    await userEvent.paste('https://some-url-test.com')
+    await waitFor(() => {
       expect(contactUrl).toHaveValue('https://some-url-test.com')
       expect(contactPhoneNumber).toHaveValue('0606060606')
       expect(contactMail).toHaveValue('test@test.com')
