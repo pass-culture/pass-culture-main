@@ -258,7 +258,7 @@ const VenueCreation = () => {
       {isCancelDialogOpen && (
         <ConfirmDialog
           cancelText="Annuler"
-          confirmText="Quitter sans enregister"
+          confirmText="Quitter sans enregistrer"
           onCancel={closeCancelDialog}
           onConfirm={handleCancelConfirm}
           title="Voulez-vous quitter la création de lieu ?"
