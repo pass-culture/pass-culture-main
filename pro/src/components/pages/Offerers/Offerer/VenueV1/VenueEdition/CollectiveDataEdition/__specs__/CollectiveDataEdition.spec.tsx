@@ -173,7 +173,9 @@ describe('CollectiveDataEdition', () => {
       history.push('/')
       await waitFor(() =>
         expect(
-          screen.getByText('Voulez-vous quitter la page d’informations EAC ?')
+          screen.getByText(
+            'Voulez vous quitter la page d’informations pour les enseignants ?'
+          )
         ).toBeInTheDocument()
       )
     })
