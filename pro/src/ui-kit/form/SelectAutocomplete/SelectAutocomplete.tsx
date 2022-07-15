@@ -142,7 +142,9 @@ const SelectAutocomplete = ({
             <BaseCheckbox
               label={label}
               key={`${fieldName}-${value}`}
-              className={styles['option']}
+              className={cx(styles['option'], {
+                [styles['option-disabled']]: disabled,
+              })}
               value={value}
               id={`${fieldName}-${value}`}
               name={fieldName}
