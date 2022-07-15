@@ -4,10 +4,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import * as useNotification from 'components/hooks/useNotification'
 
 import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
-import {
-  domtomOptions,
-  mainlandOptions,
-} from '../CollectiveDataForm/interventionOptions'
+import { domtomOptions, mainlandOptions } from 'core/Venue'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
