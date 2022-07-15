@@ -149,7 +149,7 @@ const OfferDetails = ({
         if (offer) {
           await pcapi.updateOffer(offer.id, offerValues)
           if (!isCreatingOffer)
-            notification.success('Votre offre a bien été modifiée')
+            notification.success('Vos modifications ont bien été enregistrées')
           reloadOffer()
           setFormErrors({})
           setThumbnailError(false)

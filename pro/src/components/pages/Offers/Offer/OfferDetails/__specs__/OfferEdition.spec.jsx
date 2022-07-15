@@ -212,7 +212,9 @@ describe('offerDetails - Edition', () => {
 
         it('should display error when submitting empty values', async () => {
           // When
-          await userEvent.click(await screen.findByText('Enregistrer'))
+          await userEvent.click(
+            await screen.findByText('Enregistrer les modifications')
+          )
 
           // Then
           const errorNotification = await screen.findByText(
@@ -458,7 +460,9 @@ describe('offerDetails - Edition', () => {
             ).toBeDisabled()
           }
           expect(screen.getByLabelText('Aucune')).toBeDisabled()
-          expect(screen.getByText('Enregistrer')).toBeDisabled()
+          expect(
+            screen.getByText('Enregistrer les modifications')
+          ).toBeDisabled()
           expect(screen.getByTitle('Ajouter une image')).toBeDisabled()
         })
 
@@ -488,7 +492,9 @@ describe('offerDetails - Edition', () => {
             ).toBeDisabled()
           }
           expect(screen.getByLabelText('Aucune')).toBeDisabled()
-          expect(screen.getByText('Enregistrer')).toBeDisabled()
+          expect(
+            screen.getByText('Enregistrer les modifications')
+          ).toBeDisabled()
           expect(screen.getByTitle('Ajouter une image')).toBeDisabled()
         })
       })
@@ -1159,8 +1165,10 @@ describe('offerDetails - Edition', () => {
 
       const newEditedOffer = { ...editedOffer, ...editValues }
       jest.spyOn(api, 'getOffer').mockResolvedValue(newEditedOffer)
-      await userEvent.click(await screen.findByText('Enregistrer'))
-      await userEvent.click(screen.getByText('Stock et prix'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
+      await userEvent.click(screen.getByText('Stocks et prix'))
       await userEvent.click(await screen.findByText("Détails de l'offre"))
 
       // Then
@@ -1222,7 +1230,9 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
 
       // Then
       await waitFor(() =>
@@ -1279,7 +1289,9 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
 
       // Then
       await waitFor(() =>
@@ -1326,7 +1338,9 @@ describe('offerDetails - Edition', () => {
       await renderOffers(props, store)
 
       // When
-      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
 
       // Then
       await waitFor(() =>
@@ -1368,7 +1382,9 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ author: DEFAULT_FORM_VALUES['author'] })
 
       // // Then
-      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
       await waitFor(() =>
         expect(pcapi.updateOffer).toHaveBeenCalledWith(
           editedOffer.id,
@@ -1421,7 +1437,9 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ author: DEFAULT_FORM_VALUES.author })
 
       // Then
-      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
 
       await waitFor(() =>
         expect(pcapi.updateOffer).toHaveBeenCalledWith(
@@ -1461,7 +1479,9 @@ describe('offerDetails - Edition', () => {
       await setOfferValues({ receiveNotificationEmails: false })
 
       // When
-      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
 
       // Then
       await waitFor(() =>
@@ -1497,7 +1517,9 @@ describe('offerDetails - Edition', () => {
       await userEvent.clear(emailInput)
 
       // When
-      await userEvent.click(await screen.findByText('Enregistrer'))
+      await userEvent.click(
+        await screen.findByText('Enregistrer les modifications')
+      )
 
       // Then
       const bookingEmailInput = await findInputErrorForField('bookingEmail')
@@ -1544,7 +1566,7 @@ describe('offerDetails - Edition', () => {
       )
 
       // When
-      await userEvent.click(screen.getByText('Enregistrer'))
+      await userEvent.click(screen.getByText('Enregistrer les modifications'))
 
       // Then
       expect(
@@ -1601,7 +1623,7 @@ describe('offerDetails - Edition', () => {
       // When
       await userEvent.click(
         await screen.findByRole('link', {
-          name: `Voir le détail de l'offre`,
+          name: `Voir le récapitulatif`,
         })
       )
 
@@ -1643,7 +1665,7 @@ describe('offerDetails - Edition', () => {
 
       // Then
       const cancelLink = await screen.findByRole('link', {
-        name: `Voir le détail de l'offre`,
+        name: `Voir le récapitulatif`,
       })
       expect(cancelLink).toBeInTheDocument()
       expect(cancelLink).toHaveAttribute('href', '/offres')

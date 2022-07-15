@@ -308,7 +308,7 @@ describe('offerCreation - navigate backward', () => {
 
     // TODO: expect: creation route with offer id submit should call the right api route (patch all fields)
     expect(
-      await screen.findByRole('heading', { name: 'Stock et prix' })
+      await screen.findByRole('heading', { name: 'Stocks et prix' })
     ).toBeInTheDocument()
   })
 
@@ -316,7 +316,7 @@ describe('offerCreation - navigate backward', () => {
     pcapi.loadStocks.mockResolvedValue({ stocks: [] })
     await renderOfferCreation(props, '/offre/ABC12/individuel/creation/stocks')
     await screen.findByRole('heading', {
-      name: 'Stock et prix',
+      name: 'Stocks et prix',
     })
 
     await userEvent.click(screen.getByText("Détails de l'offre"))

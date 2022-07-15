@@ -51,7 +51,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
       expect(listItems).toHaveLength(3)
       expect(listItems[0]).toHaveTextContent("Détails de l'offre")
-      expect(listItems[1]).toHaveTextContent('Stock et prix')
+      expect(listItems[1]).toHaveTextContent('Stocks et prix')
       expect(listItems[2]).toHaveTextContent('Confirmation')
     })
 
