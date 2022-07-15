@@ -50,6 +50,15 @@ const RouteLeavingGuardOfferIndividual = ({
         to = toMatchs.reverse()[0]
       }
 
+      if (from == STEP_OFFER) {
+        if (to === undefined) {
+          return {
+            redirectPath: '/offres',
+            shouldBlock: true,
+          }
+        }
+      }
+
       // going from confirmation to summary
       if (from === STEP_CONFIRMATION) {
         if (to === STEP_SUMMARY) {
