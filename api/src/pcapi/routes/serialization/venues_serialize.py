@@ -251,6 +251,8 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
                 continue
             if not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now:
                 venue.reimbursementPointId = reimbursement_link.reimbursementPointId
+
+        venue.collectiveLegalStatus = venue.venueEducationalStatus.name if venue.venueEducationalStatus else None
         return super().from_orm(venue)
 
 
