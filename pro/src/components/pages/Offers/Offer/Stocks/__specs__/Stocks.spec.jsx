@@ -2243,6 +2243,7 @@ describe('stocks page', () => {
         .spyOn(api, 'getOffer')
         .mockResolvedValueOnce(offerDraftStatus)
         .mockResolvedValueOnce(offerApprovedStatus)
+        .mockResolvedValueOnce(offerApprovedStatus)
       loadFakeApiStocks([])
       bulkFakeApiCreateOrEditStock({ id: 'createdStock' })
       await renderOffers(props, store)
@@ -2277,6 +2278,7 @@ describe('stocks page', () => {
       jest
         .spyOn(api, 'getOffer')
         .mockResolvedValueOnce(offerDraftStatus)
+        .mockResolvedValueOnce(offerPendingStatus)
         .mockResolvedValueOnce(offerPendingStatus)
       loadFakeApiStocks([])
       bulkFakeApiCreateOrEditStock({ id: 'createdStock' })
@@ -2646,6 +2648,7 @@ describe('stocks page', () => {
         jest
           .spyOn(api, 'getOffer')
           .mockResolvedValueOnce(offerDraftStatus)
+          .mockResolvedValueOnce(offerApprovedStatus)
           .mockResolvedValueOnce(offerApprovedStatus)
         loadFakeApiStocks([])
         bulkFakeApiCreateOrEditStock({ id: 'createdStock' })
