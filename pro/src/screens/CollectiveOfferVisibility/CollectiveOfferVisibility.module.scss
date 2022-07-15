@@ -12,6 +12,10 @@
 .row-layout {
   width: 310px;
   margin-bottom: rem.torem(32px);
+
+  &-large {
+    width: rem.torem(488px);
+  }
 }
 
 .legend {
