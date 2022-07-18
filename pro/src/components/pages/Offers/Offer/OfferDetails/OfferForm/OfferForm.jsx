@@ -1146,7 +1146,11 @@ const OfferForm = ({
           </Fragment>
         )}
 
-      <section className="actions-section">
+      <section
+        className={
+          isEdition ? 'actions-section edit-buttons' : 'actions-section'
+        }
+      >
         <Link className="secondary-link" to={backUrl} onClick={onCancelClick}>
           {isEdition ? `Voir le récapitulatif` : 'Annuler et quitter'}
         </Link>

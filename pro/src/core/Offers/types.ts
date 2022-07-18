@@ -111,6 +111,7 @@ export interface IOfferIndividualVenue {
   postalCode: string
   city: string
   offerer: IOfferIndividualOfferer
+  departmentCode: string
 }
 
 export interface IOfferIndividual {
