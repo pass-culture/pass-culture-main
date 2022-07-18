@@ -148,6 +148,7 @@ const OfferBreadcrumb = ({
           from: activeStep,
           to: step.id,
           used: OFFER_FORM_NAVIGATION_MEDIUM.BREADCRUMB,
+          isEdition: !isCreatingOffer,
         })
       }
     })

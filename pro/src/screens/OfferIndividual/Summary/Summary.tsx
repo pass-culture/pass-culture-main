@@ -68,6 +68,7 @@ const Summary = ({
           from: OfferBreadcrumbStep.SUMMARY,
           to: OfferBreadcrumbStep.CONFIRMATION,
           used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+          isEdition: !isCreation,
         })
         history.push(url)
       })
@@ -83,6 +84,7 @@ const Summary = ({
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.CONFIRMATION,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: !isCreation,
     })
     history.push(`/offre/${offerId}/v3/creation/individuelle/confirmation`)
   }
@@ -91,6 +93,7 @@ const Summary = ({
       from: OfferBreadcrumbStep.SUMMARY,
       to: 'THIS ONE?',
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: !isCreation,
     })
     history.push(`/offre/${offerId}/v3/creation/individuelle/stocks`)
   }
@@ -154,6 +157,7 @@ const Summary = ({
                       from: OfferBreadcrumbStep.SUMMARY,
                       to: OfferBreadcrumbStep.STOCKS,
                       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                      isEdition: !isCreation,
                     })
                   }
                 >
@@ -177,6 +181,7 @@ const Summary = ({
                       from: OfferBreadcrumbStep.SUMMARY,
                       to: OFFER_FORM_NAVIGATION_OUT.OFFER,
                       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                      isEdition: !isCreation,
                     })
                   }
                 >
