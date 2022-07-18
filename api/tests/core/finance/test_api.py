@@ -1136,9 +1136,9 @@ class GenerateCashflowsTest:
     def test_basics(self):
         now = datetime.datetime.utcnow()
         reimbursement_point1 = offerers_factories.VenueFactory()
-        bank_info1 = offers_factories.BankInformationFactory(venue=reimbursement_point1)
+        bank_info1 = factories.BankInformationFactory(venue=reimbursement_point1)
         reimbursement_point2 = offerers_factories.VenueFactory()
-        offers_factories.BankInformationFactory(venue=reimbursement_point2)
+        factories.BankInformationFactory(venue=reimbursement_point2)
         pricing11 = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
             booking__stock__offer__venue__reimbursement_point=reimbursement_point1,
@@ -1208,9 +1208,9 @@ class GenerateCashflowsTest:
     @auto_override_features
     def test_no_cashflow_if_no_accepted_bank_information(self):
         venue_ok = offerers_factories.VenueFactory(reimbursement_point="self")
-        offers_factories.BankInformationFactory(venue=venue_ok)
+        factories.BankInformationFactory(venue=venue_ok)
         venue_rejected_iban = offerers_factories.VenueFactory(reimbursement_point="self")
-        offers_factories.BankInformationFactory(
+        factories.BankInformationFactory(
             venue=venue_rejected_iban,
             status=models.BankInformationStatus.REJECTED,
         )
@@ -1241,7 +1241,7 @@ class GenerateCashflowsTest:
     @auto_override_features
     def test_no_cashflow_if_total_is_zero(self):
         venue = offerers_factories.VenueFactory(reimbursement_point="self")
-        offers_factories.BankInformationFactory(venue=venue)
+        factories.BankInformationFactory(venue=venue)
         _pricing_total_is_zero_1 = factories.PricingFactory(
             status=models.PricingStatus.VALIDATED,
             booking__stock__offer__venue=venue,
@@ -1265,9 +1265,9 @@ class GenerateCashflowsTest:
     def test_assert_num_queries(self):
         if self.use_reimbursement_point:
             venue1 = offerers_factories.VenueFactory(reimbursement_point="self")
-            offers_factories.BankInformationFactory(venue=venue1)
+            factories.BankInformationFactory(venue=venue1)
             venue2 = offerers_factories.VenueFactory(reimbursement_point="self")
-            offers_factories.BankInformationFactory(venue=venue2)
+            factories.BankInformationFactory(venue=venue2)
             factories.PricingFactory(
                 status=models.PricingStatus.VALIDATED,
                 booking__stock__offer__venue=venue1,
@@ -1497,7 +1497,7 @@ def test_generate_reimbursement_points_file():
         name='Name1\n "with double quotes"   ',
         siret='siret 1 "t"',
     )
-    offers_factories.BankInformationFactory(venue=point1, iban="some-iban", bic="some-bic")
+    factories.BankInformationFactory(venue=point1, iban="some-iban", bic="some-bic")
     offerers_factories.VenueReimbursementPointLinkFactory(reimbursementPoint=point1)
 
     n_queries = 1  # select business unit data
@@ -1576,7 +1576,7 @@ def test_generate_payments_file():
         pricing_point="self",
         reimbursement_point="self",
     )
-    offers_factories.BankInformationFactory(venue=venue1)
+    factories.BankInformationFactory(venue=venue1)
     factories.PricingFactory(
         amount=-1000,  # rate = 100 %
         booking__amount=10,
@@ -1600,7 +1600,7 @@ def test_generate_payments_file():
         siret="22222222233333",
         name="Point de remboursement du Gigantesque Cubitus\n",
     )
-    offers_factories.BankInformationFactory(venue=reimbursement_point_2)
+    factories.BankInformationFactory(venue=reimbursement_point_2)
     offer_venue2 = offerers_factories.VenueFactory(
         name="Le Gigantesque Cubitus\n",
         siret="99999999999999",

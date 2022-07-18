@@ -32,7 +32,7 @@ def create_industrial_invoices() -> None:
 
 def create_specific_invoice() -> None:
     logger.info("create_specific_invoice")
-    bank_info = offers_factories.BankInformationFactory()
+    bank_info = finance_factories.BankInformationFactory()
     business_unit = finance_factories.BusinessUnitFactory(
         name="0 - Point de remboursement avec justificatif copieux",
         bankAccount=bank_info,

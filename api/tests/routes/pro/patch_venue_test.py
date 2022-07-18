@@ -4,10 +4,9 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
-from pcapi.core.finance.factories import BusinessUnitFactory
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.utils.human_ids import humanize
@@ -217,7 +216,7 @@ class Returns200Test:
             businessUnit=None,
         )
 
-        new_business_unit = BusinessUnitFactory(siret=f"{venue.managingOfferer.siren}11111")
+        new_business_unit = finance_factories.BusinessUnitFactory(siret=f"{venue.managingOfferer.siren}11111")
         venue_data = populate_missing_data_from_venue(
             {"businessUnitId": new_business_unit.id},
             venue,
@@ -257,7 +256,7 @@ class Returns200Test:
         new_reimbursement_point = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
         )
-        offers_factories.BankInformationFactory(venue=new_reimbursement_point)
+        finance_factories.BankInformationFactory(venue=new_reimbursement_point)
         venue_data = populate_missing_data_from_venue(
             {"reimbursementPointId": new_reimbursement_point.id},
             venue,
@@ -302,7 +301,7 @@ class Returns400Test:
             businessUnit=None,
         )
 
-        new_business_unit = BusinessUnitFactory()
+        new_business_unit = finance_factories.BusinessUnitFactory()
         venue_data = populate_missing_data_from_venue(
             {"businessUnitId": new_business_unit.id},
             venue,
@@ -335,7 +334,7 @@ class Returns400Test:
         )
         another_offerer = offerers_factories.OffererFactory()
         new_reimbursement_point = offerers_factories.VenueFactory(managingOfferer=another_offerer)
-        offers_factories.BankInformationFactory(venue=new_reimbursement_point)
+        finance_factories.BankInformationFactory(venue=new_reimbursement_point)
 
         venue_data = populate_missing_data_from_venue(
             {"reimbursementPointId": new_reimbursement_point.id},

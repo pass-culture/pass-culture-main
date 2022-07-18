@@ -2,6 +2,7 @@ import logging
 import random
 import re
 
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
@@ -9,7 +10,6 @@ from pcapi.core.offerers.models import VENUE_TYPE_CODE_MAPPING
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueType
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
@@ -118,8 +118,11 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
             venue_by_name[venue_name] = venue
 
             if iban and venue.siret:
-                BankInformationFactory(
-                    venue=venue, bic=bic, iban=iban, applicationId=application_id_prefix + str(offerer_index)
+                finance_factories.BankInformationFactory(
+                    venue=venue,
+                    bic=bic,
+                    iban=iban,
+                    applicationId=application_id_prefix + str(offerer_index),
                 )
 
         bic_suffix += 1

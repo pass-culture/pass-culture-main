@@ -3,7 +3,7 @@ import decimal
 import secrets
 
 import factory
-from factory.declarations import LazyAttribute
+import schwifty
 
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
@@ -15,6 +15,17 @@ from pcapi.domain import reimbursement
 from . import models
 
 
+class BankInformationFactory(BaseFactory):
+    class Meta:
+        model = models.BankInformation
+
+    bic = "BDFEFRPP"
+    iban = factory.LazyAttributeSequence(
+        lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
+    )
+    status = models.BankInformationStatus.ACCEPTED
+
+
 class BusinessUnitFactory(BaseFactory):
     class Meta:
         model = models.BusinessUnit
@@ -23,7 +34,7 @@ class BusinessUnitFactory(BaseFactory):
     siret = factory.Sequence("{:014}".format)
     status = models.BusinessUnitStatus.ACTIVE
 
-    bankAccount = factory.SubFactory("pcapi.core.offers.factories.BankInformationFactory")
+    bankAccount = factory.SubFactory(BankInformationFactory)
 
 
 class BusinessUnitVenueLinkFactory(BaseFactory):
@@ -52,9 +63,9 @@ class PricingFactory(BaseFactory):
     )
     pricingPointId = factory.SelfAttribute("booking.venue.current_pricing_point_id")
     valueDate = factory.SelfAttribute("booking.dateUsed")
-    amount = LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
+    amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.booking.total_amount))
     standardRule = "Remboursement total pour les offres physiques"
-    revenue = LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
+    revenue = factory.LazyAttribute(lambda pricing: int(100 * pricing.booking.total_amount))
 
 
 class CollectivePricingFactory(BaseFactory):
@@ -66,9 +77,9 @@ class CollectivePricingFactory(BaseFactory):
     businessUnit = factory.SelfAttribute("collectiveBooking.venue.businessUnit")
     siret = factory.SelfAttribute("collectiveBooking.venue.siret")
     valueDate = factory.SelfAttribute("collectiveBooking.dateUsed")
-    amount = LazyAttribute(lambda pricing: -int(100 * pricing.collectiveBooking.collectiveStock.price))
+    amount = factory.LazyAttribute(lambda pricing: -int(100 * pricing.collectiveBooking.collectiveStock.price))
     standardRule = "Remboursement total pour les offres éducationnelles"
-    revenue = LazyAttribute(lambda pricing: int(100 * pricing.collectiveBooking.collectiveStock.price))
+    revenue = factory.LazyAttribute(lambda pricing: int(100 * pricing.collectiveBooking.collectiveStock.price))
 
 
 class PricingLineFactory(BaseFactory):
@@ -76,7 +87,7 @@ class PricingLineFactory(BaseFactory):
         model = models.PricingLine
 
     pricing = factory.SubFactory(PricingFactory)
-    amount = LazyAttribute(lambda line: -line.pricing.amount)
+    amount = factory.LazyAttribute(lambda line: -line.pricing.amount)
     category = models.PricingLineCategory.OFFERER_REVENUE
 
 

@@ -5,9 +5,9 @@ import pytest
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.finance import api
+from pcapi.core.finance import factories
 from pcapi.core.finance import models
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.testing import override_features
 from pcapi.models import db
 
@@ -47,7 +47,7 @@ def test_integration_legacy_with_business_unit():
 )
 def test_integration():
     venue = offerers_factories.VenueFactory(pricing_point="self", reimbursement_point="self")
-    offers_factories.BankInformationFactory(venue=venue)
+    factories.BankInformationFactory(venue=venue)
     booking = bookings_factories.IndividualBookingFactory(stock__offer__venue=venue)
 
     bookings_api.mark_as_used(booking)
