@@ -256,14 +256,22 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
         return super().from_orm(venue)
 
 
-class GetcollectiveVenueResponseModel(BaseModel):
+class GetCollectiveVenueLegalStatusResponseModel(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
+class GetCollectiveVenueResponseModel(BaseModel):
     id: str
     collectiveDescription: Optional[str]
     collectiveStudents: Optional[list[educational_models.StudentLevels]]
     collectiveWebsite: Optional[str]
     collectiveDomains: list[GetVenueDomainResponseModel]
     collectiveInterventionArea: Optional[list[str]]
-    collectiveLegalStatus: Optional[str]
+    collectiveLegalStatus: Optional[GetCollectiveVenueLegalStatusResponseModel]
     collectiveNetwork: Optional[list[str]]
     collectiveAccessInformation: Optional[str]
     collectivePhone: Optional[str]
@@ -276,8 +284,8 @@ class GetcollectiveVenueResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
     @classmethod
-    def from_orm(cls, venue: offerers_models.Venue) -> "GetcollectiveVenueResponseModel":
-        venue.collectiveLegalStatus = venue.venueEducationalStatus.name if venue.venueEducationalStatus else None
+    def from_orm(cls, venue: offerers_models.Venue) -> "GetCollectiveVenueResponseModel":
+        venue.collectiveLegalStatus = venue.venueEducationalStatus
         return super().from_orm(venue)
 
 
