@@ -66,6 +66,18 @@ class CreateVenueTest:
         assert venue.name == "La Venue"
         assert venue.bookingEmail == "venue@example.com"
         assert venue.dmsToken
+        assert venue.current_pricing_point_id == venue.id
+
+    def test_venue_with_no_siret_has_no_pricing_point(self):
+        offerer = offerers_factories.OffererFactory()
+        data = self.base_data(offerer) | {"siret": None, "comment": "no siret"}
+        data = venues_serialize.PostVenueBodyModel(**data)
+
+        offerers_api.create_venue(data)
+
+        venue = offerers_models.Venue.query.one()
+        assert venue.siret is None
+        assert venue.current_pricing_point_id is None
 
     def test_with_business_unit(self):
         offerer = offerers_factories.OffererFactory()

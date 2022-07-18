@@ -174,6 +174,8 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
 
     if venue_data.businessUnitId:
         set_business_unit_to_venue_id(venue_data.businessUnitId, venue.id)
+    if venue.siret:
+        link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
     search.async_index_venue_ids([venue.id])
 
