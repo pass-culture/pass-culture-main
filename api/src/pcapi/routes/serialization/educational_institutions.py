@@ -5,6 +5,7 @@ from pcapi.serialization.utils import to_camel
 class EducationalInstitutionResponseModel(BaseModel):
     id: int
     name: str
+    institutionType: str | None
     postalCode: str
     city: str
 

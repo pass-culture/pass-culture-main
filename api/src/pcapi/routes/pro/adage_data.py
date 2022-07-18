@@ -35,6 +35,7 @@ def get_educational_institutions(
             educational_institutions.EducationalInstitutionResponseModel.construct(
                 id=institution.id,
                 name=institution.name,
+                institutionType=institution.institutionType,
                 postalCode=institution.postalCode,
                 city=institution.city,
             )
