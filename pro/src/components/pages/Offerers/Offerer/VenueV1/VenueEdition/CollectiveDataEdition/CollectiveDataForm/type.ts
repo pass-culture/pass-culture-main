@@ -10,4 +10,8 @@ export type CollectiveDataFormValues = {
   collectiveLegalStatus: string
   collectiveNetwork: string[]
   collectiveInterventionArea: string[]
+  'search-collectiveStudents': string
+  'search-collectiveDomains': string
+  'search-collectiveNetwork': string
+  'search-collectiveInterventionArea': string
 }
