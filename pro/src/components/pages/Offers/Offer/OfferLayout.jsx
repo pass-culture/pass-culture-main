@@ -31,8 +31,8 @@ const mapPathToStep = {
 }
 
 const editPageTitleByStep = {
-  [OfferBreadcrumbStep.DETAILS]: 'Modifier le détail de l’offre',
-  [OfferBreadcrumbStep.STOCKS]: 'Modifier les stocks et prix',
+  [OfferBreadcrumbStep.DETAILS]: 'Modifier l’offre',
+  [OfferBreadcrumbStep.STOCKS]: 'Modifier l’offre',
   [OfferBreadcrumbStep.SUMMARY]: 'Récapitulatif',
 }
 

@@ -154,8 +154,14 @@ const OfferDetails = ({
           setFormErrors({})
           setThumbnailError(false)
           setThumbnailMsgError('')
-          if (useSummaryPage && isCreatingOffer) {
-            return Promise.resolve(() => goToStockAndPrice(offer.id))
+          if (useSummaryPage) {
+            if (isCreatingOffer) {
+              return Promise.resolve(() => goToStockAndPrice(offer.id))
+            } else {
+              return Promise.resolve(() =>
+                history.push(`/offre/${offer.id}/individuel/recapitulatif`)
+              )
+            }
           }
         } else {
           const response = await pcapi.createOffer(offerValues)
