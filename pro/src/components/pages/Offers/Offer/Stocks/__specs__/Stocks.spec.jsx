@@ -216,7 +216,7 @@ describe('stocks page', () => {
       await expect(screen.findByText('Illimité')).resolves.toBeInTheDocument()
     })
 
-    it('should have cancel link to go back to offer details', async () => {
+    it('should have cancel link to go back to offers list', async () => {
       // given
       const offer = {
         ...defaultOffer,
@@ -241,10 +241,7 @@ describe('stocks page', () => {
         name: 'Annuler et quitter',
       })
       expect(cancelLink).toBeInTheDocument()
-      expect(cancelLink).toHaveAttribute(
-        'href',
-        '/offre/AG3A/individuel/edition'
-      )
+      expect(cancelLink).toHaveAttribute('href', '/offres')
     })
 
     describe('when offer is being created (DRAFT status)', () => {
