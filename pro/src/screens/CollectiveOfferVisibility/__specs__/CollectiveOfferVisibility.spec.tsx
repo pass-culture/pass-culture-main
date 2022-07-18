@@ -97,7 +97,9 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
     )
-    await userEvent.click(await screen.findByAltText(/Afficher les options/))
+    await userEvent.click(
+      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+    )
     await userEvent.click(await screen.findByLabelText(/Institution 1/))
     expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
   })
@@ -108,7 +110,9 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
     )
-    await userEvent.click(await screen.findByAltText(/Afficher les options/))
+    await userEvent.click(
+      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+    )
     await userEvent.click(await screen.findByLabelText(/Institution 1/))
     await userEvent.click(
       screen.getByRole('button', { name: /Valider et créer l’offre/ })
@@ -130,7 +134,9 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
     )
-    await userEvent.click(await screen.findByAltText(/Afficher les options/))
+    await userEvent.click(
+      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+    )
     await userEvent.click(await screen.findByLabelText(/Institution 1/))
     await userEvent.click(
       screen.getByRole('button', { name: /Valider et créer l’offre/ })
@@ -144,7 +150,9 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
     )
-    await userEvent.click(await screen.findByAltText(/Afficher les options/))
+    await userEvent.click(
+      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+    )
     expect(
       await screen.findByLabelText(/Institution 1 - Gif-sur-Yvette/)
     ).toBeInTheDocument()
