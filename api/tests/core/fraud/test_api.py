@@ -320,6 +320,7 @@ class EduconnectFraudTest:
             user,
             fraud_models.EduconnectContent(
                 birth_date=birth_date,
+                civility=users_models.GenderEnum.F,
                 educonnect_id="id-1",
                 first_name="Lucy",
                 ine_hash="5ba682c0fc6a05edf07cd8ed0219258f",
@@ -340,6 +341,7 @@ class EduconnectFraudTest:
         assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
         assert fraud_check.status == fraud_models.FraudCheckStatus.OK
         assert fraud_check.source_data().__dict__ == {
+            "civility": users_models.GenderEnum.F,
             "educonnect_id": "id-1",
             "first_name": "Lucy",
             "ine_hash": "5ba682c0fc6a05edf07cd8ed0219258f",
@@ -355,6 +357,7 @@ class EduconnectFraudTest:
             user,
             fraud_models.EduconnectContent(
                 birth_date=birth_date,
+                civility=users_models.GenderEnum.M,
                 educonnect_id="id-1",
                 first_name="Lucille",
                 ine_hash="0000",
@@ -377,6 +380,7 @@ class EduconnectFraudTest:
         assert fraud_check.type == fraud_models.FraudCheckType.EDUCONNECT
         assert fraud_check.eligibilityType == users_models.EligibilityType.UNDERAGE
         assert fraud_check.source_data().__dict__ == {
+            "civility": users_models.GenderEnum.M,
             "educonnect_id": "id-1",
             "first_name": "Lucille",
             "ine_hash": "0000",
