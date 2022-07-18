@@ -29,6 +29,7 @@ jest.mock('apiClient/api', () => ({
     getVenuesEducationalStatuses: jest.fn(),
     getEducationalPartners: jest.fn(),
     editVenue: jest.fn(),
+    getVenueCollectiveData: jest.fn(),
   },
 }))
 
@@ -97,6 +98,19 @@ describe('CollectiveDataEdition', () => {
       pending: jest.fn(),
       close: jest.fn(),
     }))
+
+    jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
+      id: 'A1',
+      collectiveDomains: [],
+      collectiveDescription: '',
+      collectiveEmail: '',
+      collectiveInterventionArea: [],
+      collectiveLegalStatus: null,
+      collectiveNetwork: [],
+      collectivePhone: '',
+      collectiveStudents: [],
+      collectiveWebsite: '',
+    })
   })
 
   describe('render', () => {
@@ -429,5 +443,40 @@ describe('CollectiveDataEdition', () => {
           'Vos informations ont bien été enregistrées',
       },
     })
+  })
+
+  it('should prefill form with venue collective data', async () => {
+    jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
+      id: 'A1',
+      collectiveDomains: [{ id: 1, name: 'domain 1' }],
+      collectiveDescription: '',
+      collectiveEmail: 'toto@domain.com',
+      collectiveInterventionArea: [],
+      collectiveLegalStatus: { id: 1, name: 'statut 1' },
+      collectiveNetwork: [],
+      collectivePhone: '',
+      collectiveStudents: [],
+      collectiveWebsite: '',
+    })
+
+    renderCollectiveDataEdition(history)
+
+    await waitForLoader()
+
+    const emailField = screen.getByLabelText(/E-mail/)
+
+    const statusField = screen.getByLabelText(/Statut :/)
+
+    expect(emailField).toHaveValue('toto@domain.com')
+    expect(statusField).toHaveValue('1')
+
+    await userEvent.click(
+      await screen.findByLabelText(/Domaine artistique et culturel :/)
+    )
+    await waitFor(async () =>
+      expect(
+        await screen.findAllByRole('checkbox', { checked: true })
+      ).toHaveLength(1)
+    )
   })
 })
