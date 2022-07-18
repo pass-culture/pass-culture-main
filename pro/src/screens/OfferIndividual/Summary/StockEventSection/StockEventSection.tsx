@@ -49,6 +49,7 @@ const StockEventSection = ({
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.STOCKS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
+      isEdition: !isCreation,
     })
   }
   return (
