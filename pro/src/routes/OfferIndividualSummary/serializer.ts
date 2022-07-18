@@ -95,6 +95,7 @@ const serializerOfferSectionProps = (
 
     venueName: offer.venue.name,
     venuePublicName: offer.venue.publicName,
+    venueDepartmentCode: offer.venue.departmentCode,
     isVenueVirtual: offer.venue.isVirtual,
     offererName: offer.venue.offerer.name,
     bookingEmail: offer.bookingEmail,
@@ -146,7 +147,8 @@ const serializerStockEventSectionProps = (
     quantity: stock.quantity,
     price: stock.price,
     bookingLimitDatetime: stock.bookingLimitDatetime,
-    beginningDateTime: stock.beginningDatetime,
+    beginningDatetime: stock.beginningDatetime,
+    departmentCode: offer.venue.departmentCode,
   }))
 }
 

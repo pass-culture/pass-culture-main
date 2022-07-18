@@ -219,6 +219,7 @@ describe('useGetOffer', () => {
         },
         postalCode: '75000',
         publicName: 'Cinéma synchro avec booking provider',
+        departmentCode: '75',
       },
     }
 

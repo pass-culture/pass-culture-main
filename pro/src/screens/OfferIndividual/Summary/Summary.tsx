@@ -143,6 +143,7 @@ const Summary = ({
               stocks={stockEventList}
               isCreation={isCreation}
               offerId={offerId}
+              departmentCode={offer.venueDepartmentCode}
             />
           )}
 
