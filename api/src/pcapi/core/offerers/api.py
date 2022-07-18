@@ -59,8 +59,6 @@ def update_venue(
     **attrs: typing.Any,
 ) -> models.Venue:
     validation.validate_coordinates(attrs.get("latitude"), attrs.get("longitude"))
-    # FUTURE-NEW-BANK-DETAILS: clean up when new bank details journey is complete
-    update_reimbursement_point_id = "reimbursementPointId" in attrs
     reimbursement_point_id = attrs.pop("reimbursementPointId", None)
     collectiveDomains = attrs.pop("collectiveDomains", None)
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
@@ -84,11 +82,8 @@ def update_venue(
     if "businessUnitId" in modifications:
         set_business_unit_to_venue_id(modifications["businessUnitId"], venue.id)
 
-    if update_reimbursement_point_id:
-        if feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
-            link_venue_to_reimbursement_point(venue, reimbursement_point_id)
-        else:
-            raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
+    if feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+        link_venue_to_reimbursement_point(venue, reimbursement_point_id)
 
     old_booking_email = venue.bookingEmail if modifications.get("bookingEmail") else None
 
