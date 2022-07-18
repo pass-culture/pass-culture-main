@@ -1544,12 +1544,12 @@ export class DefaultService {
   }
 
   /**
-   * get_collective_venue <GET>
+   * get_venue_collective_data <GET>
    * @param venueId
    * @returns GetCollectiveVenueResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveVenue(
+  public getVenueCollectiveData(
     venueId: string,
   ): CancelablePromise<GetCollectiveVenueResponseModel> {
     return this.httpRequest.request({

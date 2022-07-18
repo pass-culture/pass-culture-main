@@ -2,8 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { GetCollectiveVenueLegalStatusResponseModel } from './GetCollectiveVenueLegalStatusResponseModel';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
+import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
 import type { StudentLevels } from './StudentLevels';
 
 export type GetCollectiveVenueResponseModel = {
@@ -12,7 +12,7 @@ export type GetCollectiveVenueResponseModel = {
   collectiveDomains: Array<GetVenueDomainResponseModel>;
   collectiveEmail?: string | null;
   collectiveInterventionArea?: Array<string> | null;
-  collectiveLegalStatus?: GetCollectiveVenueLegalStatusResponseModel | null;
+  collectiveLegalStatus?: LegalStatusResponseModel | null;
   collectiveNetwork?: Array<string> | null;
   collectivePhone?: string | null;
   collectiveStudents?: Array<StudentLevels> | null;

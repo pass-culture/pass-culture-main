@@ -57,7 +57,6 @@ export type { GetCollectiveOfferManagingOffererResponseModel } from './models/Ge
 export type { GetCollectiveOfferResponseModel } from './models/GetCollectiveOfferResponseModel';
 export type { GetCollectiveOfferTemplateResponseModel } from './models/GetCollectiveOfferTemplateResponseModel';
 export type { GetCollectiveOfferVenueResponseModel } from './models/GetCollectiveOfferVenueResponseModel';
-export type { GetCollectiveVenueLegalStatusResponseModel } from './models/GetCollectiveVenueLegalStatusResponseModel';
 export type { GetCollectiveVenueResponseModel } from './models/GetCollectiveVenueResponseModel';
 export type { GetEducationalOffererResponseModel } from './models/GetEducationalOffererResponseModel';
 export type { GetEducationalOfferersQueryModel } from './models/GetEducationalOfferersQueryModel';
@@ -86,6 +85,7 @@ export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { InvoiceListQueryModel } from './models/InvoiceListQueryModel';
 export type { InvoiceListResponseModel } from './models/InvoiceListResponseModel';
 export type { InvoiceResponseModel } from './models/InvoiceResponseModel';
+export type { LegalStatusResponseModel } from './models/LegalStatusResponseModel';
 export type { LinkVenueToPricingPointBodyModel } from './models/LinkVenueToPricingPointBodyModel';
 export type { ListBookingsQueryModel } from './models/ListBookingsQueryModel';
 export type { ListBookingsResponseModel } from './models/ListBookingsResponseModel';

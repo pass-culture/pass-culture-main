@@ -7,6 +7,7 @@ import type { BusinessUnitResponseModel } from './BusinessUnitResponseModel';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
+import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
@@ -26,7 +27,7 @@ export type GetVenueResponseModel = {
   collectiveDomains: Array<GetVenueDomainResponseModel>;
   collectiveEmail?: string | null;
   collectiveInterventionArea?: Array<string> | null;
-  collectiveLegalStatus?: string | null;
+  collectiveLegalStatus?: LegalStatusResponseModel | null;
   collectiveNetwork?: Array<string> | null;
   collectivePhone?: string | null;
   collectiveStudents?: Array<StudentLevels> | null;
