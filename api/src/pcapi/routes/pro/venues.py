@@ -53,7 +53,7 @@ def get_venue(venue_id: str) -> venues_serialize.GetVenueResponseModel:
 @private_api.route("/venues/<venue_id>/collective-data", methods=["GET"])
 @login_required
 @spectree_serialize(response_model=venues_serialize.GetCollectiveVenueResponseModel, api=blueprint.pro_private_schema)
-def get_collective_venue(venue_id: str) -> venues_serialize.GetCollectiveVenueResponseModel:
+def get_venue_collective_data(venue_id: str) -> venues_serialize.GetCollectiveVenueResponseModel:
     dehumanized_id = dehumanize(venue_id)
     venue = (
         models.Venue.query.filter(models.Venue.id == dehumanized_id)

@@ -168,6 +168,14 @@ class GetVenueDomainResponseModel(BaseModel):
         orm_mode = True
 
 
+class LegalStatusResponseModel(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
     id: str
     dateCreated: datetime
@@ -201,7 +209,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     collectiveWebsite: str | None
     collectiveDomains: list[GetVenueDomainResponseModel]
     collectiveInterventionArea: list[str] | None
-    collectiveLegalStatus: str | None
+    collectiveLegalStatus: LegalStatusResponseModel | None
     collectiveNetwork: list[str] | None
     collectiveAccessInformation: str | None
     collectivePhone: str | None
@@ -252,16 +260,8 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
             if not reimbursement_link.timespan.upper or reimbursement_link.timespan.upper > now:
                 venue.reimbursementPointId = reimbursement_link.reimbursementPointId
 
-        venue.collectiveLegalStatus = venue.venueEducationalStatus.name if venue.venueEducationalStatus else None
+        venue.collectiveLegalStatus = venue.venueEducationalStatus
         return super().from_orm(venue)
-
-
-class GetCollectiveVenueLegalStatusResponseModel(BaseModel):
-    id: int
-    name: str
-
-    class Config:
-        orm_mode = True
 
 
 class GetCollectiveVenueResponseModel(BaseModel):
@@ -271,7 +271,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
     collectiveWebsite: str | None
     collectiveDomains: list[GetVenueDomainResponseModel]
     collectiveInterventionArea: list[str] | None
-    collectiveLegalStatus: GetCollectiveVenueLegalStatusResponseModel | None
+    collectiveLegalStatus: LegalStatusResponseModel | None
     collectiveNetwork: list[str] | None
     collectiveAccessInformation: str | None
     collectivePhone: str | None
