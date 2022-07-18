@@ -74,6 +74,7 @@ const OfferSummary = ({
       from: OfferBreadcrumbStep.SUMMARY,
       to: OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.RECAP_LINK,
+      isEdition: !isCreation,
     })
   }
   return (

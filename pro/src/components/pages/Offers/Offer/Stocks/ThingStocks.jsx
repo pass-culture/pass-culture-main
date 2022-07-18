@@ -143,6 +143,7 @@ const ThingStocks = ({
       from: OfferBreadcrumbStep.STOCKS,
       to: OfferBreadcrumbStep.DETAILS,
       used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+      isEdition: !isOfferDraft,
     })
   }
 
@@ -188,6 +189,7 @@ const ThingStocks = ({
               from: OfferBreadcrumbStep.STOCKS,
               to: OfferBreadcrumbStep.SUMMARY,
               used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+              isEdition: !isOfferDraft,
             })
             history.push(
               useSummaryPage

@@ -552,6 +552,7 @@ const OfferForm = ({
             from: OfferBreadcrumbStep.DETAILS,
             to: OfferBreadcrumbStep.STOCKS,
             used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+            isEdition: isEdition,
           })
           await nextStepRedirect()
           return
@@ -578,6 +579,7 @@ const OfferForm = ({
         from: OfferBreadcrumbStep.DETAILS,
         to: OfferBreadcrumbStep.SUMMARY,
         used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+        isEdition: isEdition,
       })
   }
 
