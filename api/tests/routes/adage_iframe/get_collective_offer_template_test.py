@@ -45,7 +45,7 @@ class Returns200Test:
         client.auth_header = {"Authorization": f"Bearer {adage_jwt_fake_valid_token}"}
 
         # When
-        with assert_num_queries(1):
+        with assert_num_queries(2):
             response = client.get(f"/adage-iframe/collective/offers-template/{offer_id}")
 
         # Then
