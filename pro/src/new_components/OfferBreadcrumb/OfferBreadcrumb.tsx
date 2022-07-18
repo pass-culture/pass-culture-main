@@ -54,7 +54,13 @@ const OfferBreadcrumb = ({
 
   if (activeStep == OfferBreadcrumbStep.CONFIRMATION && !isOfferEducational)
     return <></>
-  if (useSummaryPage && !isCreatingOffer && !isOfferEducational) return <></>
+  if (
+    useSummaryPage &&
+    !isCreatingOffer &&
+    activeStep == OfferBreadcrumbStep.SUMMARY &&
+    !isOfferEducational
+  )
+    return <></>
 
   if (!isCreatingOffer) {
     steps = [
@@ -76,15 +82,6 @@ const OfferBreadcrumb = ({
               id: OfferBreadcrumbStep.VISIBILITY,
               label: 'Visibilité',
               url: `/offre/${offerId}/collectif/visibilite/edition`,
-            },
-          ]
-        : []),
-      ...(!isOfferEducational && useSummaryPage
-        ? [
-            {
-              id: OfferBreadcrumbStep.SUMMARY,
-              label: 'Récapitulatif',
-              url: `/offre/${offerId}/individuel/recapitulatif`,
             },
           ]
         : []),

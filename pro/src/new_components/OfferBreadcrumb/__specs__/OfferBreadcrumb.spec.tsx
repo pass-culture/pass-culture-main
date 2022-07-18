@@ -33,7 +33,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
       })
     })
 
-    it('should display breadcrumb for individual offer', async () => {
+    it('should display breadcrumb for individual offer in creation', async () => {
       render(
         <Router history={history}>
           <Provider store={store}>
@@ -53,6 +53,27 @@ describe('src | new_components | OfferBreadcrumb', () => {
       expect(listItems[0]).toHaveTextContent("Détails de l'offre")
       expect(listItems[1]).toHaveTextContent('Stocks et prix')
       expect(listItems[2]).toHaveTextContent('Confirmation')
+    })
+
+    it('should display breadcrumb for individual offer in edition', async () => {
+      render(
+        <Router history={history}>
+          <Provider store={store}>
+            <OfferBreadcrumb
+              activeStep={OfferBreadcrumbStep.DETAILS}
+              isCreatingOffer={false}
+              offerId="A1"
+              isOfferEducational={false}
+            />
+          </Provider>
+        </Router>
+      )
+
+      const listItems = await screen.findAllByRole('listitem')
+
+      expect(listItems).toHaveLength(2)
+      expect(listItems[0]).toHaveTextContent("Détails de l'offre")
+      expect(listItems[1]).toHaveTextContent('Stocks et prix')
     })
 
     it('should generate link with offerId when user is editing an offer', async () => {
