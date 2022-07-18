@@ -100,6 +100,7 @@ class EduconnectContent(common_models.IdentityCheckContent):
     birth_date: datetime.date
     educonnect_id: str
     first_name: str
+    civility: users_models.GenderEnum | None
     ine_hash: str
     last_name: str
     registration_datetime: datetime.datetime
@@ -111,6 +112,9 @@ class EduconnectContent(common_models.IdentityCheckContent):
 
     def get_first_name(self) -> str:
         return self.first_name
+
+    def get_civility(self) -> str | None:
+        return self.civility.value if self.civility else None
 
     def get_last_name(self) -> str:
         return self.last_name

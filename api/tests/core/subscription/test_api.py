@@ -84,6 +84,7 @@ class EduconnectFlowTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": [ine_hash],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.7": ["eleve1d"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.72": ["school_uai"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.76": ["Mme"],
         }
         mock_saml_response.in_response_to = request_id
 
@@ -99,6 +100,7 @@ class EduconnectFlowTest:
         assert user.lastName == "Wrong Lastname"
         assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
         assert user.ineHash is None
+        assert user.civility is None
 
         assert not user.is_beneficiary
         assert subscription_api.get_next_subscription_step(user) == subscription_models.SubscriptionStep.HONOR_STATEMENT
@@ -113,6 +115,7 @@ class EduconnectFlowTest:
         assert user.lastName == "SENS"
         assert user.ineHash == ine_hash
         assert user.dateOfBirth == datetime(2006, 8, 18, 0, 0)
+        assert user.civility == "Mme"
 
 
 @pytest.mark.usefixtures("db_session")

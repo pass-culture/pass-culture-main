@@ -107,6 +107,7 @@ def on_educonnect_authentication_response() -> Response:
             "educonnect_id": educonnect_user.educonnect_id,
             "ine_hash": educonnect_user.ine_hash,
             "first_name": educonnect_user.first_name,
+            "civility": educonnect_user.civility.value if educonnect_user.civility else None,
             "last_name": educonnect_user.last_name,
             "logout_url": educonnect_user.logout_url,
             "user_type": educonnect_user.user_type,

@@ -22,6 +22,7 @@ def handle_educonnect_authentication(
 ) -> list[fraud_models.FraudReasonCode]:
     educonnect_content = fraud_models.EduconnectContent(
         birth_date=educonnect_user.birth_date,
+        civility=educonnect_user.civility if educonnect_user.civility else None,
         educonnect_id=educonnect_user.educonnect_id,
         first_name=educonnect_user.first_name,
         ine_hash=educonnect_user.ine_hash,
