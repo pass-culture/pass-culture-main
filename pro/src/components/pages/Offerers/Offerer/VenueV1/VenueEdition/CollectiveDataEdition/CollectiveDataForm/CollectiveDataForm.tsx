@@ -91,6 +91,14 @@ const CollectiveDataForm = ({
   })
 
   useEffect(() => {
+    formik.resetForm({
+      values: venueCollectiveData
+        ? extractInitialValuesFromVenue(venueCollectiveData)
+        : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
+    })
+  }, [venueCollectiveData])
+
+  useEffect(() => {
     handleAllFranceDepartmentOptions(
       formik.values.collectiveInterventionArea,
       previousInterventionValues,
@@ -211,7 +219,9 @@ const CollectiveDataForm = ({
             >
               Annuler et quitter
             </Link>
-            <SubmitButton isLoading={isLoading}>Enregistrer</SubmitButton>
+            <SubmitButton isLoading={isLoading} disabled={!formik.dirty}>
+              Enregistrer
+            </SubmitButton>
           </FormLayout.Actions>
         </form>
       </FormikProvider>
