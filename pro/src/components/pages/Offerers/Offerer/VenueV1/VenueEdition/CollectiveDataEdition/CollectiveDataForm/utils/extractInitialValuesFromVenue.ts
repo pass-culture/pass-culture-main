@@ -2,7 +2,15 @@ import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
 import { CollectiveDataFormValues } from '../type'
 import { VenueCollectiveInformation } from 'core/Venue/types'
 
-const getValue = <T extends keyof CollectiveDataFormValues>(
+type CollectiveDataFormValuesWithoutSearchField = Omit<
+  CollectiveDataFormValues,
+  | 'search-collectiveStudents'
+  | 'search-collectiveDomains'
+  | 'search-collectiveNetwork'
+  | 'search-collectiveInterventionArea'
+>
+
+const getValue = <T extends keyof CollectiveDataFormValuesWithoutSearchField>(
   venue: VenueCollectiveInformation,
   key: T
 ): CollectiveDataFormValues[T] => {
@@ -32,4 +40,8 @@ export const extractInitialValuesFromVenue = (
   collectiveDomains: getValue(venue, 'collectiveDomains'),
   collectiveNetwork: getValue(venue, 'collectiveNetwork'),
   collectiveInterventionArea: getValue(venue, 'collectiveInterventionArea'),
+  'search-collectiveStudents': '',
+  'search-collectiveDomains': '',
+  'search-collectiveNetwork': '',
+  'search-collectiveInterventionArea': '',
 })

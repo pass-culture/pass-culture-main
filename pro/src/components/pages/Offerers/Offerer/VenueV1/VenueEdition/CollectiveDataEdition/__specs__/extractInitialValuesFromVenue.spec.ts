@@ -29,11 +29,15 @@ describe('extractInitialValuesFromVenue', () => {
       collectiveWebsite: COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveWebsite,
       collectivePhone: COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectivePhone,
       collectiveEmail: COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveEmail,
-      collectiveLegalStatus: 2,
+      collectiveLegalStatus: '2',
       collectiveDomains: ['1'],
       collectiveNetwork: [],
       collectiveInterventionArea:
         COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveInterventionArea,
+      'search-collectiveDomains': '',
+      'search-collectiveInterventionArea': '',
+      'search-collectiveNetwork': '',
+      'search-collectiveStudents': '',
     })
   })
 })
