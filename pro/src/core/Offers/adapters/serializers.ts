@@ -28,6 +28,7 @@ export const serializeVenueApi = (
     isVirtual: apiOffer.venue.isVirtual,
     address: apiOffer.venue.address || '',
     postalCode: apiOffer.venue.postalCode || '',
+    departmentCode: apiOffer.venue.departementCode || '',
     city: apiOffer.venue.city || '',
     offerer: serializeOffererApi(apiOffer),
   }

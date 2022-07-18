@@ -220,13 +220,14 @@ export const formatStock = (stock, departementCode) => {
     key: stock.id,
   }
   if (stock.beginningDatetime) {
-    formattedStock.beginningDatetime = getLocalDepartementDateTimeFromUtc(
+    formattedStock['beginningDatetime'] = getLocalDepartementDateTimeFromUtc(
       stock.beginningDatetime,
       departementCode
     )
   }
+
   if (stock.activationCodesExpirationDatetime) {
-    formattedStock.activationCodesExpirationDatetime =
+    formattedStock['activationCodesExpirationDatetime'] =
       getLocalDepartementDateTimeFromUtc(
         stock.activationCodesExpirationDatetime,
         departementCode
