@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type GetCollectiveVenueLegalStatusResponseModel = {
+export type LegalStatusResponseModel = {
   id: number;
   name: string;
 };
