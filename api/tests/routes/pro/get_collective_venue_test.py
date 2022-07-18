@@ -35,9 +35,12 @@ class Returns200Test:
             ],
             "collectiveEmail": venue.collectiveEmail,
             "collectiveInterventionArea": venue.collectiveInterventionArea,
-            "collectiveLegalStatus": venue.venueEducationalStatus.name,
             "collectiveNetwork": venue.collectiveNetwork,
             "collectivePhone": venue.collectivePhone,
+            "collectiveLegalStatus": {
+                "id": venue.venueEducationalStatus.id,
+                "name": venue.venueEducationalStatus.name,
+            },
             "collectiveStudents": [
                 educational_models.StudentLevels.COLLEGE3.value,
                 educational_models.StudentLevels.GENERAL1.value,
@@ -46,7 +49,7 @@ class Returns200Test:
         }
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        response = auth_request.get("collective/venues/%s" % humanize(venue.id))
+        response = auth_request.get("/venues/%s/collective-data" % humanize(venue.id))
 
         assert response.status_code == 200
         assert response.json == expected_serialized_venue
