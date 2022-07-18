@@ -12,8 +12,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class Return200Test:
     def test_get_educational_institutions(self, client: Any) -> None:
         # Given
-        institution1 = EducationalInstitutionFactory(name="aaaaaaaaaaaaaaaaa")
-        institution2 = EducationalInstitutionFactory(name="zzzzzzzzzzzzzzzzz")
+        institution1 = EducationalInstitutionFactory(
+            name="aaaaaaaaaaaaaaaaa",
+            institutionType="toto",
+        )
+        institution2 = EducationalInstitutionFactory(name="zzzzzzzzzzzzzzzzz", institutionType="tata")
         pro_user = users_factories.ProFactory()
 
         client.with_session_auth(pro_user.email)
@@ -26,12 +29,14 @@ class Return200Test:
                 {
                     "id": institution1.id,
                     "name": institution1.name,
+                    "institutionType": institution1.institutionType,
                     "city": institution1.city,
                     "postalCode": institution1.postalCode,
                 },
                 {
                     "id": institution2.id,
                     "name": institution2.name,
+                    "institutionType": institution2.institutionType,
                     "city": institution2.city,
                     "postalCode": institution2.postalCode,
                 },
@@ -73,6 +78,7 @@ class Return200Test:
                 {
                     "id": institution1.id,
                     "name": institution1.name,
+                    "institutionType": institution1.institutionType,
                     "city": institution1.city,
                     "postalCode": institution1.postalCode,
                 },
@@ -86,7 +92,10 @@ class Return200Test:
         # Given
         EducationalInstitutionFactory()
         EducationalInstitutionFactory()
-        institution3 = EducationalInstitutionFactory(name="zzzzzzzzzzzzzzz_last_institution")
+        institution3 = EducationalInstitutionFactory(
+            name="zzzzzzzzzzzzzzz_last_institution",
+            institutionType="pouet",
+        )
         pro_user = users_factories.ProFactory()
 
         client.with_session_auth(pro_user.email)
@@ -99,6 +108,7 @@ class Return200Test:
                 {
                     "id": institution3.id,
                     "name": institution3.name,
+                    "institutionType": institution3.institutionType,
                     "city": institution3.city,
                     "postalCode": institution3.postalCode,
                 },

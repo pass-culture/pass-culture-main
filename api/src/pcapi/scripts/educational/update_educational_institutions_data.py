@@ -4,6 +4,7 @@ from typing import Iterable
 
 from pcapi.core.educational import api
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import utils
 from pcapi.models import db
 
 
@@ -40,8 +41,10 @@ def _process_educational_csv(educational_institutions_rows: Iterable[dict]) -> N
 
     for row in educational_institutions_rows:
         institution_id = row["UAICode"]
+        institution_type, institution_name = utils.get_institution_type_and_name(row["name"])
         institution_data = {
-            "name": row["name"],
+            "name": institution_name,
+            "institutionType": institution_type,
             "city": row["city"],
             "postalCode": row["postalCode"],
             "phoneNumber": row["phoneNumber"],
