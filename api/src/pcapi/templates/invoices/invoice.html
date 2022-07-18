@@ -196,7 +196,9 @@
 {% if venue is not none %}
     <p><b>Adresse :</b> {{ venue.address }} - {{ venue.postalCode}} {{ venue.city }}</p>
 {% endif %}
+{% if not is_new_bank_information_enabled %}
     <p><b>SIRET :</b> {{ invoice.businessUnit.siret }}</p>
+{% endif %}
 </div>
 <h3 class="coloredTitle">
     Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels

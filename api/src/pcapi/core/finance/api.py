@@ -1845,6 +1845,7 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
         period_start=period_start,
         period_end=period_end,
         reimbursements_by_venue=reimbursements_by_venue,
+        is_new_bank_information_enabled=FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active(),
     )
 
 
