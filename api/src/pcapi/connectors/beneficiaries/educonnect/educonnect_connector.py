@@ -121,6 +121,7 @@ def get_educonnect_user(saml_response: str) -> models.EduconnectUser:
     try:
         return models.EduconnectUser(
             birth_date=datetime.strptime(educonnect_identity[_get_field_oid("67")][0], "%Y-%m-%d").date(),
+            civility=_get_civility(educonnect_identity),
             connection_datetime=_get_connexion_datetime(educonnect_identity),
             educonnect_id=educonnect_identity[_get_field_oid("57")][0],
             first_name=educonnect_identity["givenName"][0],
@@ -168,3 +169,12 @@ def _get_connexion_datetime(educonnect_identity: dict) -> datetime | None:
         if _get_field_oid("6") in educonnect_identity
         else None
     )
+
+
+def _get_civility(educonnect_identity: dict) -> users_models.GenderEnum | None:
+    oid = _get_field_oid("76")
+    if oid not in educonnect_identity:
+        logger.error("No civility in educonnect identity", extra={"educonnect_identity": educonnect_identity})
+        return None
+    educonnect_civility = educonnect_identity[_get_field_oid("76")][0]
+    return users_models.GenderEnum(educonnect_civility)

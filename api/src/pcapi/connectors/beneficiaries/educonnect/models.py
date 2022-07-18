@@ -1,10 +1,13 @@
 from dataclasses import dataclass
 import datetime
 
+from pcapi.core.users import models as users_models
+
 
 @dataclass
 class EduconnectUser:
     birth_date: datetime.date
+    civility: users_models.GenderEnum | None
     connection_datetime: datetime.datetime | None
     educonnect_id: str
     first_name: str

@@ -111,6 +111,7 @@ class EduconnectContentFactory(factory.Factory):
     ine_hash = factory.Sequence(lambda _: "".join(random.choices(string.ascii_lowercase + string.digits, k=32)))
     last_name = factory.Faker("last_name")
     registration_datetime = factory.LazyFunction(datetime.utcnow)
+    civility = users_models.GenderEnum.F
 
 
 class ProfileCompletionContentFactory(factory.Factory):

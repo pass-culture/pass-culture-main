@@ -107,6 +107,7 @@ class EduconnectTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.72": ["school_uai"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": [ine_hash],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.76": ["Mme"],
         }
         mock_saml_response.in_response_to = self.request_id
 
@@ -121,6 +122,7 @@ class EduconnectTest:
         )
 
         assert caplog.records[0].extra == {
+            "civility": "Mme",
             "date_of_birth": "2006-08-18",
             "educonnect_connection_date": "2021-10-08T11:51:33.437000",
             "educonnect_id": "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
@@ -144,6 +146,7 @@ class EduconnectTest:
 
         assert fraud_check.resultContent == {
             "birth_date": "2006-08-18",
+            "civility": "Mme",
             "educonnect_id": "e6759833fb379e0340322889f2a367a5a5150f1533f80dfe963d21e43e33f7164b76cc802766cdd33c6645e1abfd1875",
             "first_name": "Max",
             "ine_hash": ine_hash,
@@ -183,6 +186,7 @@ class EduconnectTest:
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.72": ["school_uai"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.73": ["2212"],
             "urn:oid:1.3.6.1.4.1.20326.10.999.1.64": ["ine_hash"],
+            "urn:oid:1.3.6.1.4.1.20326.10.999.1.76": ["Mme"],
         }
         mock_saml_response.in_response_to = self.request_id
 
