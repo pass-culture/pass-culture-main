@@ -11,6 +11,7 @@ from pcapi.core.offerers import exceptions
 from pcapi.core.offerers import models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offerers.models import Venue
+from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import as_dict
@@ -160,6 +161,8 @@ def edit_venue(venue_id: str, body: venues_serialize.EditVenueBodyModel) -> venu
 @login_required
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def link_venue_to_pricing_point(venue_id: str, body: venues_serialize.LinkVenueToPricingPointBodyModel) -> None:
+    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+        raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
     venue = load_or_404(Venue, venue_id)
     check_user_has_access_to_offerer(current_user, venue.managingOffererId)  # type: ignore [attr-defined]
     try:
