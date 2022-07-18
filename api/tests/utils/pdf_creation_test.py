@@ -35,9 +35,9 @@ class GeneratePdfFromHtmlTest:
             assert False, "Output PDF is not as expected"
         assert duration < ACCEPTABLE_GENERATION_DURATION
 
-    @pytest.mark.xfail(reason="Flaky test")
     def test_cache(self, example_html):
-        pdf.url_cache.clean_cache()
+        pdf.url_cache.delete_cache()
+        pdf.url_cache.tmp_dir.mkdir()
         start = time.perf_counter()
         out1 = pdf.generate_pdf_from_html(html_content=example_html)
         duration1 = time.perf_counter() - start

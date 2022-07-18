@@ -27,9 +27,9 @@ class CachingUrlFetcher:
         self.tmp_dir.mkdir()
 
     def __del__(self) -> None:
-        self.clean_cache()
+        self.delete_cache()
 
-    def clean_cache(self) -> None:
+    def delete_cache(self) -> None:
         try:
             shutil.rmtree(self.tmp_dir)
         except Exception:  # pylint: disable=broad-except
@@ -51,9 +51,11 @@ class CachingUrlFetcher:
             # File objects cannot be serialized, we serialize their
             # content instead.
             result["string"] = result.pop("file_obj").read()  # type: ignore[attr-defined]
-        content_path.write_bytes(result["string"])  # despite the name, it's bytes
+        with content_path.open("bx") as fp:
+            fp.write(result["string"])  # despite the name, it's bytes
         metadata = {key: value for key, value in result.items() if key != "string"}
-        metadata_path.write_text(json.dumps(metadata))
+        with metadata_path.open("tx", encoding="utf-8") as fp:
+            fp.write(json.dumps(metadata))
         return result
 
 
