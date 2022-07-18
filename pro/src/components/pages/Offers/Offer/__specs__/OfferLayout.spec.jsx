@@ -117,12 +117,12 @@ describe('offerLayout', () => {
       api.getOffer.mockResolvedValue(editedOffer)
     })
 
-    it("should have title `Éditer l'offre`", async () => {
+    it('should have title `Modifier l’offre`', async () => {
       // When
       renderOfferDetails(store, '/offre/AB/individuel/edition')
 
       // Then
-      const title = await screen.findByText('Modifier le détail de l’offre', {
+      const title = await screen.findByText('Modifier l’offre', {
         selector: 'h1',
       })
       expect(title).toBeInTheDocument()

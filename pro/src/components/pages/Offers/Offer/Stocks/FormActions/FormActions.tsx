@@ -31,11 +31,7 @@ const FormActions = ({
           to={cancelUrl}
           onClick={onCancelClick ? onCancelClick : undefined}
         >
-          {isDraft
-            ? 'Étape précédente'
-            : useSummaryPage
-            ? `Voir le récapitulatif`
-            : 'Annuler et quitter'}
+          {isDraft ? 'Étape précédente' : 'Annuler et quitter'}
         </ButtonLink>
       )}
 

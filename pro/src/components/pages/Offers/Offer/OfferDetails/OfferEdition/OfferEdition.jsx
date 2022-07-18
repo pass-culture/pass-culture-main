@@ -12,7 +12,6 @@ import OfferForm from '../OfferForm'
 import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'core/Offers/utils'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 
 const OfferEdition = ({
   categories,
@@ -70,10 +69,7 @@ const OfferEdition = ({
   if (isSynchronizedOffer(offer)) {
     providerName = offer.lastProvider.name
   }
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const backUrl = useSummaryPage
-    ? `/offre/${offer.id}/individuel/recapitulatif`
-    : computeOffersUrl(offersSearchFilters, offersPageNumber)
+  const backUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
   if (isLoading) {
     return <Spinner />
   }

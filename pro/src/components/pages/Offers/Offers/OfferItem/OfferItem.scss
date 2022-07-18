@@ -11,6 +11,11 @@
     display: block;
     margin-bottom: rem.torem(4px);
     overflow-wrap: break-word;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
   }
 
   .offer-thumb,

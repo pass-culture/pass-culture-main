@@ -27,11 +27,11 @@ import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferS
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PropTypes from 'prop-types'
 import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
+import { computeOffersUrl } from 'core/Offers/utils'
 import { v4 as generateRandomUuid } from 'uuid'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
 import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useOfferEditionURL } from 'components/hooks/useOfferEditionURL'
 import { useSelector } from 'react-redux'
 
 const EMPTY_STRING_VALUE = ''
@@ -52,17 +52,13 @@ const EventStocks = ({
   const isOfferDraft = offer.status === OFFER_STATUS_DRAFT
   const logEvent = useSelector(state => state.app.logEvent)
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
-  const editionOfferLink = useOfferEditionURL(
-    offer.isEducational,
-    offer.id,
-    useSummaryPage
-  )
   const history = useHistory()
   const location = useLocation()
   const summaryStepUrl = isOfferDraft
     ? `/offre/${offer.id}/individuel/creation/recapitulatif`
     : `/offre/${offer.id}/individuel/recapitulatif`
-
+  const offersSearchFilters = useSelector(state => state.offers.searchFilters)
+  const offersPageNumber = useSelector(state => state.offers.pageNumber)
   const loadStocks = useCallback(
     (keepCreationStocks = false) => {
       return pcapi.loadStocks(offerId).then(receivedStocks => {
@@ -204,6 +200,16 @@ const EventStocks = ({
       pcapi
         .bulkCreateOrEditStock(offer.id, [...stocksToCreate, ...stocksToUpdate])
         .then(() => {
+          const queryParams = queryParamsFromOfferer(location)
+          let queryString = ''
+
+          if (queryParams.structure !== '') {
+            queryString = `?structure=${queryParams.structure}`
+          }
+
+          if (queryParams.lieu !== '') {
+            queryString += `&lieu=${queryParams.lieu}`
+          }
           if (isOfferDraft) {
             reloadOffer(true)
             if (!useSummaryPage)
@@ -211,16 +217,6 @@ const EventStocks = ({
                 'Votre offre a bien été créée et vos stocks sauvegardés.'
               )
 
-            const queryParams = queryParamsFromOfferer(location)
-            let queryString = ''
-
-            if (queryParams.structure !== '') {
-              queryString = `?structure=${queryParams.structure}`
-            }
-
-            if (queryParams.lieu !== '') {
-              queryString += `&lieu=${queryParams.lieu}`
-            }
             logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
               from: OfferBreadcrumbStep.STOCKS,
               to: OfferBreadcrumbStep.SUMMARY,
@@ -238,6 +234,9 @@ const EventStocks = ({
               'Vos modifications ont bien été enregistrées'
             )
             setIsSendingStocksOfferCreation(false)
+            if (useSummaryPage) {
+              history.push(`${summaryStepUrl}${queryString}`)
+            }
           }
         })
         .catch(() => {
@@ -272,7 +271,7 @@ const EventStocks = ({
     ? useSummaryPage
       ? `/offre/${offerId}/individuel/creation`
       : undefined
-    : editionOfferLink
+    : computeOffersUrl(offersSearchFilters, offersPageNumber)
 
   return (
     <div className="stocks-page">
