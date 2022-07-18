@@ -38,20 +38,17 @@ class GeneratePdfFromHtmlTest:
     def test_cache(self, example_html):
         pdf.url_cache.delete_cache()
         pdf.url_cache.tmp_dir.mkdir()
-        start = time.perf_counter()
         out1 = pdf.generate_pdf_from_html(html_content=example_html)
-        duration1 = time.perf_counter() - start
-        start2 = time.perf_counter()
         out2 = pdf.generate_pdf_from_html(html_content=example_html)
-        duration2 = time.perf_counter() - start2
         # Do not use `assert out == expected_pdf`: pytest would try to
         # use a smart, but very slow algorithm to show diffs, which
         # would produce garbage anyway because it's binary.
         if out1 == out2:
             assert False, "Output PDF is not the same when the cache is used."
-        # This is not a particularly convincing check, but I don't
-        # know what else to do.
-        assert duration2 < duration1
+        # We have tried to check that the second run was quicker than
+        # the first run, but it often failed on CircleCI, even though
+        # debugging statements showed that the cache was used (and
+        # thus that the second run should be faster).
 
     @freeze_time("2021-07-30 17:25:00")
     def test_metadata(self, example_html):
