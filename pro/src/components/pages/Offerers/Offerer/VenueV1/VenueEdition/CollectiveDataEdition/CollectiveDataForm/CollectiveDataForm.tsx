@@ -182,6 +182,7 @@ const CollectiveDataForm = ({
               inline
               maxDisplayOptions={20}
               maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
+              hideTags
             />
           </FormLayout.Row>
           <div className={styles.section}>Contact pour les enseignants</div>
