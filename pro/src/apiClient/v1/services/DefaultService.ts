@@ -23,7 +23,7 @@ import type { EducationalInstitutionsResponseModel } from '../models/Educational
 import type { GenerateOffererApiKeyResponse } from '../models/GenerateOffererApiKeyResponse';
 import type { GetCollectiveOfferResponseModel } from '../models/GetCollectiveOfferResponseModel';
 import type { GetCollectiveOfferTemplateResponseModel } from '../models/GetCollectiveOfferTemplateResponseModel';
-import type { GetcollectiveVenueResponseModel } from '../models/GetcollectiveVenueResponseModel';
+import type { GetCollectiveVenueResponseModel } from '../models/GetCollectiveVenueResponseModel';
 import type { GetEducationalOfferersResponseModel } from '../models/GetEducationalOfferersResponseModel';
 import type { GetIndividualOfferResponseModel } from '../models/GetIndividualOfferResponseModel';
 import type { GetOffererResponseModel } from '../models/GetOffererResponseModel';
@@ -556,28 +556,6 @@ export class DefaultService {
         401: `Unauthorized`,
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
-   * get_collective_venue <GET>
-   * @param venueId
-   * @returns GetcollectiveVenueResponseModel OK
-   * @throws ApiError
-   */
-  public getCollectiveVenue(
-    venueId: string,
-  ): CancelablePromise<GetcollectiveVenueResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/venues/{venue_id}',
-      path: {
-        'venue_id': venueId,
-      },
-      errors: {
-        403: `Forbidden`,
         422: `Unprocessable Entity`,
       },
     });
@@ -1558,6 +1536,28 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_collective_venue <GET>
+   * @param venueId
+   * @returns GetCollectiveVenueResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveVenue(
+    venueId: string,
+  ): CancelablePromise<GetCollectiveVenueResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{venue_id}/collective-data',
+      path: {
+        'venue_id': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Entity`,
