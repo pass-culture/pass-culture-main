@@ -266,16 +266,16 @@ class GetCollectiveVenueLegalStatusResponseModel(BaseModel):
 
 class GetCollectiveVenueResponseModel(BaseModel):
     id: str
-    collectiveDescription: Optional[str]
-    collectiveStudents: Optional[list[educational_models.StudentLevels]]
-    collectiveWebsite: Optional[str]
+    collectiveDescription: str | None
+    collectiveStudents: list[educational_models.StudentLevels] | None
+    collectiveWebsite: str | None
     collectiveDomains: list[GetVenueDomainResponseModel]
-    collectiveInterventionArea: Optional[list[str]]
-    collectiveLegalStatus: Optional[GetCollectiveVenueLegalStatusResponseModel]
-    collectiveNetwork: Optional[list[str]]
-    collectiveAccessInformation: Optional[str]
-    collectivePhone: Optional[str]
-    collectiveEmail: Optional[str]
+    collectiveInterventionArea: list[str] | None
+    collectiveLegalStatus: GetCollectiveVenueLegalStatusResponseModel | None
+    collectiveNetwork: list[str] | None
+    collectiveAccessInformation: str | None
+    collectivePhone: str | None
+    collectiveEmail: str | None
 
     _humanize_id = humanize_field("id")
 
