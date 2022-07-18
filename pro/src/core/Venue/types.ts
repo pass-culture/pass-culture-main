@@ -1,3 +1,5 @@
+import { GetVenueResponseModel } from 'apiClient/v1'
+
 // TODO use api/gen types
 export interface IAPIVenue {
   address: string
@@ -50,3 +52,16 @@ export type TOfferIndividualVenue = {
   isVirtual: boolean
   withdrawalDetails: string | null
 }
+
+export type VenueCollectiveInformation = Pick<
+  GetVenueResponseModel,
+  | 'collectiveDescription'
+  | 'collectiveDomains'
+  | 'collectiveEmail'
+  | 'collectiveInterventionArea'
+  | 'collectiveLegalStatus'
+  | 'collectiveNetwork'
+  | 'collectivePhone'
+  | 'collectiveStudents'
+  | 'collectiveWebsite'
+>
