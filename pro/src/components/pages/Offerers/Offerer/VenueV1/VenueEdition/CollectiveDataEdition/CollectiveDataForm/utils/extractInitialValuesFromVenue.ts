@@ -1,9 +1,9 @@
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
 import { CollectiveDataFormValues } from '../type'
-import { GetVenueResponseModel } from 'apiClient/v1'
+import { VenueCollectiveInformation } from 'core/Venue/types'
 
 const getValue = <T extends keyof CollectiveDataFormValues>(
-  venue: GetVenueResponseModel,
+  venue: VenueCollectiveInformation,
   key: T
 ): CollectiveDataFormValues[T] => {
   if (key === 'collectiveDomains') {
@@ -11,12 +11,17 @@ const getValue = <T extends keyof CollectiveDataFormValues>(
       COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveDomains) as CollectiveDataFormValues[T]
   }
 
+  if (key === 'collectiveLegalStatus') {
+    return (venue.collectiveLegalStatus?.id?.toString() ??
+      COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveLegalStatus) as CollectiveDataFormValues[T]
+  }
+
   return (venue[key] ??
     COLLECTIVE_DATA_FORM_INITIAL_VALUES[key]) as CollectiveDataFormValues[T]
 }
 
 export const extractInitialValuesFromVenue = (
-  venue: GetVenueResponseModel
+  venue: VenueCollectiveInformation
 ): CollectiveDataFormValues => ({
   collectiveDescription: getValue(venue, 'collectiveDescription'),
   collectiveStudents: getValue(venue, 'collectiveStudents'),

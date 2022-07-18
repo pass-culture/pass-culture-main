@@ -1,4 +1,5 @@
 import { FormikProvider, useFormik } from 'formik'
+import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
 import { Link, useHistory } from 'react-router-dom'
 import {
   MultiSelectAutocomplete,
@@ -14,7 +15,6 @@ import { CollectiveDataFormValues } from './type'
 import FormLayout from 'new_components/FormLayout'
 import RouteLeavingGuardVenueCollectiveDataEdition from '../RouteLeavingGuardVenueCollectiveDataEdition'
 import { SelectOption } from 'custom_types/form'
-import { StudentLevels } from 'apiClient/v1'
 import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import { handleAllFranceDepartmentOptions } from './utils/handleAllFranceDepartmentOptions'
@@ -42,6 +42,7 @@ type CollectiveDataFormProps = {
   culturalPartners: SelectOption[]
   venueId: string
   offererId: string
+  venueCollectiveData: GetCollectiveVenueResponseModel | null
 }
 
 const CollectiveDataForm = ({
@@ -50,6 +51,7 @@ const CollectiveDataForm = ({
   culturalPartners,
   venueId,
   offererId,
+  venueCollectiveData,
 }: CollectiveDataFormProps): JSX.Element => {
   const notify = useNotification()
   const history = useHistory()
@@ -81,7 +83,9 @@ const CollectiveDataForm = ({
   }
 
   const formik = useFormik<CollectiveDataFormValues>({
-    initialValues: COLLECTIVE_DATA_FORM_INITIAL_VALUES,
+    initialValues: venueCollectiveData
+      ? extractInitialValuesFromVenue(venueCollectiveData)
+      : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
     onSubmit: onSubmit,
     validationSchema,
   })

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react'
 
 import CollectiveDataForm from './CollectiveDataForm'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
 import { getCulturalPartnersAdapter } from '../adapters'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
+import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
 import { getVenueEducationalStatusesAdapter } from './adapters'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
@@ -23,27 +25,41 @@ const CollectiveDataEdition = (): JSX.Element => {
   const [statuses, setStatuses] = useState<SelectOption[]>([])
   const [culturalPartners, setCulturalPartners] = useState<SelectOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [venueCollectiveData, setVenueCollectiveData] =
+    useState<GetCollectiveVenueResponseModel | null>(null)
 
   useEffect(() => {
     Promise.all([
       getEducationalDomainsAdapter(),
       getVenueEducationalStatusesAdapter(),
       getCulturalPartnersAdapter(),
-    ]).then(([domainsResponse, statusesResponse, culturalPartnersResponse]) => {
-      if (
-        [domainsResponse, statusesResponse, culturalPartnersResponse].some(
-          response => !response.isOk
-        )
-      ) {
-        notify.error(GET_DATA_ERROR_MESSAGE)
+      getVenueCollectiveDataAdapter(venueId),
+    ]).then(
+      ([
+        domainsResponse,
+        statusesResponse,
+        culturalPartnersResponse,
+        venueResponse,
+      ]) => {
+        if (
+          [
+            domainsResponse,
+            statusesResponse,
+            culturalPartnersResponse,
+            venueResponse,
+          ].some(response => !response.isOk)
+        ) {
+          notify.error(GET_DATA_ERROR_MESSAGE)
+        }
+
+        setDomains(domainsResponse.payload)
+        setStatuses(statusesResponse.payload)
+        setCulturalPartners(culturalPartnersResponse.payload)
+        setVenueCollectiveData(venueResponse.payload)
+
+        setIsLoading(false)
       }
-
-      setDomains(domainsResponse.payload)
-      setStatuses(statusesResponse.payload)
-      setCulturalPartners(culturalPartnersResponse.payload)
-
-      setIsLoading(false)
-    })
+    )
   }, [])
 
   return (
@@ -65,6 +81,7 @@ const CollectiveDataEdition = (): JSX.Element => {
           culturalPartners={culturalPartners}
           venueId={venueId}
           offererId={offererId}
+          venueCollectiveData={venueCollectiveData}
         />
       )}
     </>

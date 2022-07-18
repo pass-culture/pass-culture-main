@@ -73,7 +73,7 @@ const CollectiveData = ({
           <Title className={styles['collective-data-title']} level={4}>
             Statut :{' '}
           </Title>
-          {venue.collectiveLegalStatus}
+          <>{venue.collectiveLegalStatus.name}</>
         </div>
       )}
 
