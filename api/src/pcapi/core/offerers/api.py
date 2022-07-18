@@ -221,8 +221,6 @@ def link_venue_to_pricing_point(
     Creates a VenuePricingPointLink if the venue had not been previously linked to a pricing point.
     If it had, then it will raise an error, unless the force_link parameter is True, in exceptional circumstances.
     """
-    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
-        raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
     validation.check_venue_can_be_linked_to_pricing_point(venue, pricing_point_id)
     if not timestamp:
         timestamp = datetime.utcnow()
@@ -262,8 +260,6 @@ def link_venue_to_reimbursement_point(
     reimbursement_point_id: int | None,
     timestamp: datetime | None = None,
 ) -> None:
-    if not feature.FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
-        raise feature.DisabledFeatureError("This function is behind a deactivated feature flag.")
     if reimbursement_point_id:
         validation.check_venue_can_be_linked_to_reimbursement_point(venue, reimbursement_point_id)
     if not timestamp:

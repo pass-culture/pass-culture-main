@@ -828,7 +828,6 @@ def test_delete_business_unit():
 
 
 class LinkVenueToPricingPointTest:
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_no_pre_existing_link(self):
         venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
         pricing_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
@@ -841,7 +840,6 @@ class LinkVenueToPricingPointTest:
         assert new_link.pricingPoint == pricing_point
         assert new_link.timespan.upper is None
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_raises_if_pre_existing_link(self):
         venue = offerers_factories.VenueFactory(siret=None, comment="no siret")
         pricing_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
@@ -853,7 +851,6 @@ class LinkVenueToPricingPointTest:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
         assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_raises_if_venue_has_siret(self):
         venue = offerers_factories.VenueFactory(siret="1234", pricing_point="self")
         pre_existing_link = offerers_models.VenuePricingPointLink.query.one()
@@ -863,7 +860,6 @@ class LinkVenueToPricingPointTest:
             offerers_api.link_venue_to_pricing_point(venue, pricing_point_2.id)
         assert offerers_models.VenuePricingPointLink.query.one() == pre_existing_link
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_fails_if_venue_has_siret(self):
         reimbursement_point = offerers_factories.VenueFactory()
         offerer = reimbursement_point.managingOfferer
@@ -876,7 +872,6 @@ class LinkVenueToPricingPointTest:
 
 
 class LinkVenueToReimbursementPointTest:
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_no_pre_existing_link(self):
         venue = offerers_factories.VenueFactory()
         reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
@@ -891,7 +886,6 @@ class LinkVenueToReimbursementPointTest:
         assert new_link.timespan.upper is None
 
     @freeze_time()
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_end_pre_existing_link(self):
         now = datetime.datetime.utcnow()
         venue = offerers_factories.VenueFactory(reimbursement_point="self")
@@ -902,7 +896,6 @@ class LinkVenueToReimbursementPointTest:
         assert former_link.reimbursementPoint == venue
         assert former_link.timespan.upper == now
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_pre_existing_links(self):
         now = datetime.datetime.utcnow()
         venue = offerers_factories.VenueFactory()
@@ -939,7 +932,6 @@ class LinkVenueToReimbursementPointTest:
         assert new_link.timespan.lower == current_link.timespan.upper
         assert new_link.timespan.upper is None
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_fails_if_reimbursement_point_has_no_siret(self):
         reimbursement_point = offerers_factories.VenueFactory(siret=None, comment="no siret")
         finance_factories.BankInformationFactory(venue=reimbursement_point)
@@ -951,7 +943,6 @@ class LinkVenueToReimbursementPointTest:
         msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements."
         assert error.value.errors == {"reimbursementPointId": [msg]}
 
-    @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_fails_if_reimbursement_point_has_no_bank_information(self):
         reimbursement_point = offerers_factories.VenueFactory()
         offerer = reimbursement_point.managingOfferer

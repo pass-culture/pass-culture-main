@@ -504,7 +504,6 @@ def auto_override_features(test_method):
         with override_features(
             USE_PRICING_POINT_FOR_PRICING=active,
             USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=active,
-            ENABLE_NEW_BANK_INFORMATIONS_CREATION=active,
         ):
             return test_method(self_, *args, **kwargs)
 
@@ -610,7 +609,7 @@ class LegacyCancelCollectivePricingTest(CancelCollectivePricingTest):
 
 
 class DeleteDependentPricingsTest:
-    @override_features(USE_PRICING_POINT_FOR_PRICING=True, ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    @override_features(USE_PRICING_POINT_FOR_PRICING=True)
     def test_basics(self):
         used_date = datetime.datetime(2022, 1, 15)
         booking = bookings_factories.UsedBookingFactory(
@@ -644,7 +643,7 @@ class DeleteDependentPricingsTest:
         expected_kept = {earlier_pricing_previous_year, earlier_pricing, later_pricing_another_year}
         assert set(models.Pricing.query.all()) == expected_kept
 
-    @override_features(USE_PRICING_POINT_FOR_PRICING=True, ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    @override_features(USE_PRICING_POINT_FOR_PRICING=True)
     def test_scenario1(self):
         # 0. V2 is linked to a BU, V1 is not.
         # 1. B1 is marked as used. It cannot be priced yet.
@@ -668,7 +667,7 @@ class DeleteDependentPricingsTest:
         api._delete_dependent_pricings(b2, "dummy", use_pricing_point=True)
         assert not b1.pricings
 
-    @override_features(USE_PRICING_POINT_FOR_PRICING=True, ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    @override_features(USE_PRICING_POINT_FOR_PRICING=True)
     def test_scenario2(self):
         # 0. Venue has 2 bookings.
         # 1. B1 is a booking for event/stock S1.
@@ -703,7 +702,7 @@ class DeleteDependentPricingsTest:
         api._delete_dependent_pricings(b1, "dummy", use_pricing_point=True)
         assert not b2.pricings
 
-    @override_features(USE_PRICING_POINT_FOR_PRICING=True, ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    @override_features(USE_PRICING_POINT_FOR_PRICING=True)
     def test_scenario3(self):
         # 0. Venue has 2 bookings.
         # 1. B1 is a booking for a thing.
@@ -733,7 +732,7 @@ class DeleteDependentPricingsTest:
         api._delete_dependent_pricings(b1, "dummy", use_pricing_point=True)
         assert not b2.pricings
 
-    @override_features(USE_PRICING_POINT_FOR_PRICING=True, ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    @override_features(USE_PRICING_POINT_FOR_PRICING=True)
     def test_scenario4(self):
         # 0. Venue has 2 bookings.
         # 1. B1 is a booking for E1 (that happens on 15/02).
@@ -767,7 +766,7 @@ class DeleteDependentPricingsTest:
         api._delete_dependent_pricings(b1, "dummy", use_pricing_point=True)
         assert not b2.pricings
 
-    @override_features(USE_PRICING_POINT_FOR_PRICING=True, ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
+    @override_features(USE_PRICING_POINT_FOR_PRICING=True)
     def test_raise_if_a_pricing_is_not_deletable(self):
         booking = create_booking_with_undeletable_dependent(stock__offer__venue__pricing_point="self")
         pricing = models.Pricing.query.one()
