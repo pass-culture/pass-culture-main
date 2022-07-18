@@ -124,8 +124,8 @@ def test_delete_cascade_offerer_should_remove_products_owned_by_offerer():
 def test_delete_cascade_offerer_should_remove_bank_informations_of_offerer():
     # Given
     offerer_to_delete = offerers_factories.OffererFactory()
-    offers_factories.BankInformationFactory(offerer=offerer_to_delete)
-    offers_factories.BankInformationFactory()
+    finance_factories.BankInformationFactory(offerer=offerer_to_delete)
+    finance_factories.BankInformationFactory()
 
     # When
     delete_cascade_offerer_by_id(offerer_to_delete.id)
@@ -175,7 +175,7 @@ def test_delete_cascade_offerer_should_remove_bank_informations_of_managed_venue
     # Given
     venue = offerers_factories.VenueFactory()
     offerer_to_delete = venue.managingOfferer
-    offers_factories.BankInformationFactory()
+    finance_factories.BankInformationFactory()
     assert BankInformation.query.count() == 2
 
     # When

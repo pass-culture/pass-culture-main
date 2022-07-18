@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core import testing
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
@@ -36,9 +37,9 @@ class Returns200Test:
         offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="More venue withdrawal details")
         offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
         offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
-        offers_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
-        offers_factories.BankInformationFactory(venue=venue_1, applicationId=3)
-        offers_factories.BankInformationFactory(venue=venue_2, applicationId=4)
+        finance_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
+        finance_factories.BankInformationFactory(venue=venue_1, applicationId=3)
+        finance_factories.BankInformationFactory(venue=venue_2, applicationId=4)
 
         client = TestClient(app.test_client()).with_session_auth(pro.email)
         n_queries = (

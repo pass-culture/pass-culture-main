@@ -3,8 +3,8 @@ import datetime
 import pytest
 
 from pcapi.core import testing
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
@@ -51,7 +51,7 @@ class Returns200Test:
             timespan=[now - datetime.timedelta(days=14), None],
         )
         venue_id = venue.id
-        bank_information = offers_factories.BankInformationFactory(venue=venue)
+        bank_information = finance_factories.BankInformationFactory(venue=venue)
         expected_serialized_venue = {
             "address": venue.address,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,

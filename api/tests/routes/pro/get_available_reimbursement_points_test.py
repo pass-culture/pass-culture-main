@@ -1,9 +1,9 @@
 import pytest
 
 from pcapi.core import testing
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -17,11 +17,11 @@ class Returns200Test:
         offerer = user_offerer.offerer
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
         venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, name="Chez Toto")
-        offers_factories.BankInformationFactory(venue=venue_1, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue_1, status=BankInformationStatus.ACCEPTED)
         venue_2 = offerers_factories.VenueFactory(
             managingOfferer=offerer, name="Dans l'antre de la folie", publicName="Association des démons"
         )
-        offers_factories.BankInformationFactory(venue=venue_2, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue_2, status=BankInformationStatus.ACCEPTED)
         _venue_without_bank_info_nor_siret = offerers_factories.VenueFactory(
             siret=None, comment="Pas de SIRET", managingOfferer=offerer
         )
@@ -63,7 +63,7 @@ class Returns200Test:
             siret=None, comment="Pas de SIRET", managingOfferer=offerer
         )
         venue_with_pending_bank_info = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offers_factories.BankInformationFactory(venue=venue_with_pending_bank_info, status=BankInformationStatus.DRAFT)
+        finance_factories.BankInformationFactory(venue=venue_with_pending_bank_info, status=BankInformationStatus.DRAFT)
 
         client = client.with_session_auth("user.pro@example.com")
         response = client.get(f"/offerers/{offerer.id}/reimbursement-points")

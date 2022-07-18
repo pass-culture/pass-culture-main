@@ -2,12 +2,9 @@ import datetime
 import uuid
 
 import factory
-import schwifty
 
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.subcategories import ALL_SUBCATEGORIES
-from pcapi.core.finance.models import BankInformation
-from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
@@ -204,17 +201,6 @@ class MediationFactory(BaseFactory):
 
     offer = factory.SubFactory(OfferFactory)
     isActive = True
-
-
-class BankInformationFactory(BaseFactory):
-    class Meta:
-        model = BankInformation
-
-    bic = "BDFEFRPP"
-    iban = factory.LazyAttributeSequence(
-        lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
-    )
-    status = BankInformationStatus.ACCEPTED
 
 
 class OfferReportFactory(BaseFactory):

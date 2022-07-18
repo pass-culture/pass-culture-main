@@ -5,11 +5,11 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
-from pcapi.core.offers import factories as offers_factories
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.demarches_simplifiees import ApplicationDetail
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
@@ -703,7 +703,7 @@ class SaveVenueBankInformationsTest:
             self, mock_archive_dossier, mock_application_details, app
         ):
             # Given
-            bank_information = offers_factories.BankInformationFactory(
+            bank_information = finance_factories.BankInformationFactory(
                 applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
@@ -741,7 +741,7 @@ class SaveVenueBankInformationsTest:
                 siret="79387503012345",
                 managingOfferer__siren="793875030",
             )
-            bank_information = offers_factories.BankInformationFactory(
+            bank_information = finance_factories.BankInformationFactory(
                 applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
@@ -777,7 +777,7 @@ class SaveVenueBankInformationsTest:
                 siret="79387503012345",
                 managingOfferer__siren="793875030",
             )
-            offers_factories.BankInformationFactory(
+            finance_factories.BankInformationFactory(
                 applicationId=8,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
@@ -788,7 +788,7 @@ class SaveVenueBankInformationsTest:
                 siret="79387501912345",
                 managingOfferer__siren="793875019",
             )
-            offers_factories.BankInformationFactory(
+            finance_factories.BankInformationFactory(
                 applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
@@ -833,7 +833,7 @@ class SaveVenueBankInformationsTest:
                 siret="79387503012345",
                 managingOfferer__siren="793875030",
             )
-            bank_information = offers_factories.BankInformationFactory(
+            bank_information = finance_factories.BankInformationFactory(
                 applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
@@ -872,7 +872,7 @@ class SaveVenueBankInformationsTest:
                 managingOfferer__siren="793875030",
             )
             application_id = "8"
-            bank_information = offers_factories.BankInformationFactory(
+            bank_information = finance_factories.BankInformationFactory(
                 applicationId=79,
                 bic=None,
                 iban=None,
@@ -906,7 +906,7 @@ class SaveVenueBankInformationsTest:
                 siret="79387503012345",
                 managingOfferer__siren="793875030",
             )
-            bank_information = offers_factories.BankInformationFactory(
+            bank_information = finance_factories.BankInformationFactory(
                 applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
@@ -944,7 +944,7 @@ class SaveVenueBankInformationsTest:
                 siret="79387503012345",
                 managingOfferer__siren="793875030",
             )
-            bank_information = offers_factories.BankInformationFactory(
+            bank_information = finance_factories.BankInformationFactory(
                 applicationId=79,
                 bic="QSDFGH8Z555",
                 iban="NL36INGB2682297498",
@@ -1166,7 +1166,7 @@ class SaveVenueBankInformationsTest:
         ):
             offerers_factories.OffererFactory(siren="999999999")
             venue = offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
-            offers_factories.BankInformationFactory(dateModified=datetime.utcnow(), venue=venue)
+            finance_factories.BankInformationFactory(dateModified=datetime.utcnow(), venue=venue)
             yesterday = datetime.utcnow() - timedelta(days=1)
             mock_application_details.return_value = self.build_application_detail(
                 {"siret": "36252187900034", "modification_date": yesterday}
@@ -1187,7 +1187,7 @@ class SaveVenueBankInformationsTest:
         ):
             offerers_factories.OffererFactory(siren="999999999")
             venue = offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
-            offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
+            finance_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
             mock_application_details.return_value = self.build_application_detail(
                 {"siret": "36252187900034", "status": BankInformationStatus.DRAFT}
             )
@@ -1207,7 +1207,7 @@ class SaveVenueBankInformationsTest:
         ):
             offerers_factories.OffererFactory(siren="999999999")
             venue = offerers_factories.VenueFactory(name="venuedemo", siret="36252187900034")
-            offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
+            finance_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
             mock_application_details.return_value = self.build_application_detail(
                 {"siret": "36252187900034", "status": BankInformationStatus.REJECTED}
             )

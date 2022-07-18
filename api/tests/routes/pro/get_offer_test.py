@@ -6,6 +6,7 @@ import pytest
 
 from pcapi.core import testing
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -155,7 +156,7 @@ class Returns200Test:
         offer = stock.offer
         venue = offer.venue
         offerer = venue.managingOfferer
-        offers_factories.BankInformationFactory(venue=venue)
+        finance_factories.BankInformationFactory(venue=venue)
 
         # When
         client = TestClient(app.test_client()).with_session_auth(email=user_offerer.user.email)

@@ -1,3 +1,4 @@
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.sandboxes.scripts.utils.helpers import get_offer_helper
@@ -13,7 +14,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
         offerer__validationToken=None,
         user__validationToken=None,
     )
-    offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
+    finance_factories.BankInformationFactory(offerer=user_offerer.offerer)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.EventOfferFactory(venue=venue, isActive=True)
 
@@ -31,7 +32,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
         offerer__validationToken=None,
         user__validationToken=None,
     )
-    offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
+    finance_factories.BankInformationFactory(offerer=user_offerer.offerer)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.EventOfferFactory(venue=venue, isActive=True)
     stock = offers_factories.EventStockFactory(offer=offer)
@@ -51,7 +52,7 @@ def get_existing_pro_validated_user_with_validated_offerer_with_iban_validated_u
         offerer__validationToken=None,
         user__validationToken=None,
     )
-    offers_factories.BankInformationFactory(offerer=user_offerer.offerer)
+    finance_factories.BankInformationFactory(offerer=user_offerer.offerer)
     venue = offerers_factories.VirtualVenueFactory(managingOfferer=user_offerer.offerer)
     venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
     offer = offers_factories.ThingOfferFactory(venue=venue, isActive=True)

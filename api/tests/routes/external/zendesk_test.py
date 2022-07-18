@@ -3,9 +3,9 @@ from datetime import datetime
 import pytest
 
 from pcapi import settings
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.constants import SuspensionReason
@@ -201,7 +201,7 @@ class ZendeskWebhookTest:
 
     def test_webhook_update_pro_by_booking_email(self, client):
         venue = offerers_factories.VenueFactory(bookingEmail="venue@example.com", postalCode="06600")
-        offers_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue, status=BankInformationStatus.ACCEPTED)
 
         response = client.post(
             "/webhooks/zendesk/ticket_notification",

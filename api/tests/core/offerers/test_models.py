@@ -4,6 +4,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from pcapi.core.educational import factories as educational_factories
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
@@ -193,7 +194,7 @@ def test_save_user_offerer_raise_api_error_when_not_unique(app):
 class OffererBankInformationTest:
     def test_bic_property_returns_bank_information_bic_when_offerer_has_bank_information(self):
         offerer = factories.OffererFactory()
-        offers_factories.BankInformationFactory(offerer=offerer, bic="BDFEFR2LCCB")
+        finance_factories.BankInformationFactory(offerer=offerer, bic="BDFEFR2LCCB")
         assert offerer.bic == "BDFEFR2LCCB"
 
     def test_bic_property_returns_none_when_offerer_does_not_have_bank_information(self):
@@ -202,7 +203,7 @@ class OffererBankInformationTest:
 
     def test_iban_property_returns_bank_information_iban_when_offerer_has_bank_information(self):
         offerer = factories.OffererFactory()
-        offers_factories.BankInformationFactory(offerer=offerer, iban="FR7630007000111234567890144")
+        finance_factories.BankInformationFactory(offerer=offerer, iban="FR7630007000111234567890144")
         assert offerer.iban == "FR7630007000111234567890144"
 
     def test_iban_property_returns_none_when_offerer_does_not_have_bank_information(self):
@@ -211,7 +212,7 @@ class OffererBankInformationTest:
 
     def test_demarchesSimplifieesApplicationId_returns_id_if_status_is_draft(self):
         offerer = factories.OffererFactory()
-        offers_factories.BankInformationFactory(
+        finance_factories.BankInformationFactory(
             offerer=offerer,
             applicationId=12345,
             status=finance_models.BankInformationStatus.DRAFT,
@@ -220,7 +221,7 @@ class OffererBankInformationTest:
 
     def test_demarchesSimplifieesApplicationId_returns_none_if_status_is_rejected(self):
         offerer = factories.OffererFactory()
-        info = offers_factories.BankInformationFactory(
+        info = finance_factories.BankInformationFactory(
             offerer=offerer,
             applicationId=12345,
             status=finance_models.BankInformationStatus.REJECTED,

@@ -3,10 +3,10 @@ from dataclasses import asdict
 import pytest
 
 from pcapi.core.bookings.factories import BookingFactory
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import VenueTypeCode
-from pcapi.core.offers.factories import BankInformationFactory
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
 from pcapi.core.offers.models import OfferValidationStatus
@@ -98,8 +98,8 @@ def test_update_external_pro_user_attributes(
     )
 
     if create_dms_accepted:
-        BankInformationFactory(venue=venue1, status=BankInformationStatus.ACCEPTED)
-        BankInformationFactory(venue=venue1b, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue1, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue1b, status=BankInformationStatus.ACCEPTED)
 
     if create_virtual:
         offerer2 = offerers_factories.OffererFactory(siren="444555666", name="Culture en ligne")
@@ -121,7 +121,7 @@ def test_update_external_pro_user_attributes(
         )
 
         if create_dms_accepted:
-            BankInformationFactory(venue=venue2, status=BankInformationStatus.ACCEPTED)
+            finance_factories.BankInformationFactory(venue=venue2, status=BankInformationStatus.ACCEPTED)
 
     # Offerer not linked to user email but with the same booking email
     offerer3 = offerers_factories.OffererFactory(siren="777888999", name="Plage Events")
@@ -148,9 +148,9 @@ def test_update_external_pro_user_attributes(
                 BookingFactory(stock=stock1)
 
     if create_dms_draft:
-        BankInformationFactory(venue=venue3, status=BankInformationStatus.DRAFT)
+        finance_factories.BankInformationFactory(venue=venue3, status=BankInformationStatus.DRAFT)
     elif create_dms_accepted:
-        BankInformationFactory(venue=venue3, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue3, status=BankInformationStatus.ACCEPTED)
 
     # This offerer is managed by pro user but venue has a different email address
     offerer4 = offerers_factories.OffererFactory(siren="001002003", name="Juste Libraire")
@@ -171,12 +171,12 @@ def test_update_external_pro_user_attributes(
     )
 
     if create_dms_accepted:
-        BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
     else:
         # Bank information which do not make dms attributes return True: on offerer, on venue with other email, rejected
-        BankInformationFactory(offerer=offerer1, status=BankInformationStatus.ACCEPTED)
-        BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
-        BankInformationFactory(venue=venue1, status=BankInformationStatus.REJECTED)
+        finance_factories.BankInformationFactory(offerer=offerer1, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue4, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue1, status=BankInformationStatus.REJECTED)
 
     # Create inactive offerer and its venue, linked to email, which should not be taken into account in any attribute
     inactive_offerer = offerers_factories.OffererFactory(siren="999999999", name="Structure désactivée", isActive=False)

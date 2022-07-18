@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 import logging
 
+import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import VenueTypeCode
 from pcapi.core.offerers.repository import check_if_siren_already_exists
-import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import User
 from pcapi.model_creators.generic_creators import create_offerer
@@ -154,7 +154,7 @@ def create_industrial_offerers_with_pro_users() -> tuple[dict[str, Offerer], dic
 
         # create every OFFERERS_WITH_IBAN_REMOVE_MODULO an offerer with no iban
         if location_index % OFFERERS_WITH_IBAN_REMOVE_MODULO:
-            offers_factories.BankInformationFactory(
+            finance_factories.BankInformationFactory(
                 bic=bic_prefix + str(bic_suffix),
                 iban=iban_prefix,
                 offerer=offerer,

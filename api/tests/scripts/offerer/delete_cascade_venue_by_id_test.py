@@ -7,6 +7,7 @@ import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformation
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Offerer
@@ -117,8 +118,8 @@ def test_delete_cascade_venue_should_remove_collective_offers_stocks_and_templat
 def test_delete_cascade_venue_should_remove_bank_informations_of_venue():
     # Given
     venue_to_delete = offerers_factories.VenueFactory(businessUnit=None)
-    offers_factories.BankInformationFactory(venue=venue_to_delete)
-    offers_factories.BankInformationFactory()
+    finance_factories.BankInformationFactory(venue=venue_to_delete)
+    finance_factories.BankInformationFactory()
 
     # When
     delete_cascade_venue_by_id(venue_to_delete.id)

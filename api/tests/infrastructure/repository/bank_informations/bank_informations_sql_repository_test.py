@@ -2,10 +2,10 @@ from datetime import datetime
 
 import pytest
 
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformation as BankInformationsSQLEntity
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.domain.bank_informations.bank_informations import BankInformations
 from pcapi.infrastructure.repository.bank_informations import bank_informations_domain_converter
 from pcapi.infrastructure.repository.bank_informations.bank_informations_sql_repository import (
@@ -22,7 +22,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_bank_informations_when_offerer_has_bank_informations(self, app):
         # given
         offerer = offerers_factories.OffererFactory()
-        bank_informations = offers_factories.BankInformationFactory(offerer=offerer)
+        bank_informations = finance_factories.BankInformationFactory(offerer=offerer)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
@@ -40,7 +40,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_none_when_offerer_has_no_bank_informations(self, app):
         # given
         offerer = offerers_factories.OffererFactory()
-        bank_informations = offers_factories.BankInformationFactory(offerer=offerer)
+        bank_informations = finance_factories.BankInformationFactory(offerer=offerer)
 
         # when
         bank_informations = self.bank_informations_sql_repository.find_by_offerer(offerer_id=0)
@@ -52,7 +52,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_bank_informations_when_venue_has_bank_informations(self, app):
         # given
         venue = offerers_factories.VenueFactory()
-        bank_informations = offers_factories.BankInformationFactory(venue=venue)
+        bank_informations = finance_factories.BankInformationFactory(venue=venue)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
@@ -69,7 +69,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_none_when_venue_has_no_bank_informations(self, app):
         # given
         venue = offerers_factories.VenueFactory()
-        bank_informations = offers_factories.BankInformationFactory(venue=venue)
+        bank_informations = finance_factories.BankInformationFactory(venue=venue)
 
         # when
         bank_informations = self.bank_informations_sql_repository.find_by_venue(venue_id=0)
@@ -81,7 +81,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_bank_informations_when_there_is_bank_informations_associated_with_this_application_id(self, app):
         # given
         offerer = offerers_factories.OffererFactory()
-        bank_informations = offers_factories.BankInformationFactory(offerer=offerer, applicationId=2)
+        bank_informations = finance_factories.BankInformationFactory(offerer=offerer, applicationId=2)
 
         expected_bank_informations = bank_informations_domain_converter.to_domain(bank_informations)
 
@@ -99,7 +99,7 @@ class BankInformationsSQLRepositoryTest:
     def test_returns_none_when_there_is_no_bank_informations_associated_with_this_application_id(self, app):
         # given
         offerer = offerers_factories.OffererFactory()
-        bank_informations = offers_factories.BankInformationFactory(offerer=offerer, applicationId=2)
+        bank_informations = finance_factories.BankInformationFactory(offerer=offerer, applicationId=2)
 
         # when
         bank_informations = self.bank_informations_sql_repository.get_by_application(application_id=1)
@@ -159,7 +159,7 @@ class BankInformationsSQLRepositoryTest:
     ):
         # given
         offerer = offerers_factories.OffererFactory()
-        offers_factories.BankInformationFactory(offerer=offerer)
+        finance_factories.BankInformationFactory(offerer=offerer)
         bank_informations_to_save = BankInformations(offerer_id=offerer.id, status="ACCEPTED", application_id=8)
 
         # when
@@ -176,7 +176,7 @@ class BankInformationsSQLRepositoryTest:
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_offerer(self, app):
         # given
         offerer = offerers_factories.OffererFactory()
-        offers_factories.BankInformationFactory(
+        finance_factories.BankInformationFactory(
             offerer=offerer, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
 
@@ -231,7 +231,7 @@ class BankInformationsSQLRepositoryTest:
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_application(self, app):
         # given
         offerer = offerers_factories.OffererFactory()
-        offers_factories.BankInformationFactory(
+        finance_factories.BankInformationFactory(
             offerer=offerer, applicationId=9, status=BankInformationStatus.DRAFT, iban=None, bic=None
         )
 
@@ -288,7 +288,7 @@ class BankInformationsSQLRepositoryTest:
     def test_should_update_bank_informations_when_bank_informations_already_exist_for_venue(self, app):
         # given
         venue = offerers_factories.VenueFactory(businessUnit=None)
-        offers_factories.BankInformationFactory(
+        finance_factories.BankInformationFactory(
             venue=venue,
             applicationId=9,
             status=BankInformationStatus.DRAFT,

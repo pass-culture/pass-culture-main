@@ -1,10 +1,10 @@
-from pcapi.core.offers import factories as offers_factories
+import pcapi.core.finance.factories as finance_factories
 from pcapi.validation.models import entity_validator
 
 
 def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_empty():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic="", iban="")
+    bank_information = finance_factories.BankInformationFactory.build(bic="", iban="")
 
     # when
     errors = entity_validator.validate(bank_information)
@@ -16,7 +16,7 @@ def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_empty():
 
 def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_none():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic=None, iban=None)
+    bank_information = finance_factories.BankInformationFactory.build(bic=None, iban=None)
 
     # when
     errors = entity_validator.validate(bank_information)
@@ -28,7 +28,7 @@ def test_offerer_errors_raises_an_error_if_both_iban_and_bic_are_none():
 
 def test_validate_bank_information_raises_an_error_if_both_iban_and_bic_are_invalid():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic="fake_bic", iban="fake_iban")
+    bank_information = finance_factories.BankInformationFactory.build(bic="fake_bic", iban="fake_iban")
 
     # when
     errors = entity_validator.validate(bank_information)
@@ -40,7 +40,9 @@ def test_validate_bank_information_raises_an_error_if_both_iban_and_bic_are_inva
 
 def test_validate_bank_information_raises_an_error_if_iban_is_valid_but_bic_is_not():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic="fake_bic", iban="FR7630006000011234567890189")
+    bank_information = finance_factories.BankInformationFactory.build(
+        bic="fake_bic", iban="FR7630006000011234567890189"
+    )
 
     # when
     errors = entity_validator.validate(bank_information)
@@ -52,7 +54,7 @@ def test_validate_bank_information_raises_an_error_if_iban_is_valid_but_bic_is_n
 
 def test_validate_bank_information_raises_an_error_if_bic_is_valid_but_iban_is_not():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic="BDFEFR2LCCB", iban="fake_iban")
+    bank_information = finance_factories.BankInformationFactory.build(bic="BDFEFR2LCCB", iban="fake_iban")
 
     # when
     errors = entity_validator.validate(bank_information)
@@ -64,7 +66,7 @@ def test_validate_bank_information_raises_an_error_if_bic_is_valid_but_iban_is_n
 
 def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_does_not_pass_validation_algorithm():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(
+    bank_information = finance_factories.BankInformationFactory.build(
         bic="BDFEFR2LCCB", iban="FR7630006000011234567890180"
     )
 
@@ -77,7 +79,9 @@ def test_validate_bank_information_raises_an_error_if_iban_looks_correct_but_doe
 
 def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_11_but_is_unknown():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic="fake_bic", iban="FR7630006000011234567890189")
+    bank_information = finance_factories.BankInformationFactory.build(
+        bic="fake_bic", iban="FR7630006000011234567890189"
+    )
 
     # when
     errors = entity_validator.validate(bank_information)
@@ -88,7 +92,7 @@ def test_validate_bank_information_raises_an_error_if_bic_has_correct_length_of_
 
 def test_validate_bank_information_raises_an_error_if_bic_is_missing():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic=None, iban="FR7630006000011234567890189")
+    bank_information = finance_factories.BankInformationFactory.build(bic=None, iban="FR7630006000011234567890189")
 
     # when
     errors = entity_validator.validate(bank_information)
@@ -99,7 +103,7 @@ def test_validate_bank_information_raises_an_error_if_bic_is_missing():
 
 def test_validate_bank_information_raises_an_error_if_iban_is_missing():
     # given
-    bank_information = offers_factories.BankInformationFactory.build(bic="BDFEFR2LCCB", iban=None)
+    bank_information = finance_factories.BankInformationFactory.build(bic="BDFEFR2LCCB", iban=None)
 
     # when
     errors = entity_validator.validate(bank_information)

@@ -1,5 +1,5 @@
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
-from pcapi.core.offers import factories as offers_factories
 from pcapi.models.api_errors import ApiErrors
 from pcapi.validation.models.bank_information import validate
 
@@ -7,7 +7,7 @@ from pcapi.validation.models.bank_information import validate
 class BankInformationValidationTest:
     def test_should_return_error_message_when_iban_is_invalid(self):
         # Given
-        bank_information = offers_factories.BankInformationFactory.build(iban="FR76")
+        bank_information = finance_factories.BankInformationFactory.build(iban="FR76")
         api_errors = ApiErrors()
 
         # When
@@ -18,7 +18,7 @@ class BankInformationValidationTest:
 
     def test_should_return_error_message_when_bic_is_invalid(self):
         # Given
-        bank_information = offers_factories.BankInformationFactory.build(bic="1234")
+        bank_information = finance_factories.BankInformationFactory.build(bic="1234")
         api_errors = ApiErrors()
 
         # When
@@ -29,7 +29,7 @@ class BankInformationValidationTest:
 
     def test_should_return_error_messages_when_iban_and_bic_are_invalid(self):
         # Given
-        bank_information = offers_factories.BankInformationFactory.build(bic="1234", iban="1234")
+        bank_information = finance_factories.BankInformationFactory.build(bic="1234", iban="1234")
         api_errors = ApiErrors()
 
         # When
@@ -43,7 +43,7 @@ class BankInformationValidationTest:
 
     def test_should_return_no_error_message_when_iban_and_bic_are_valid_and_status_accepted(self):
         # Given
-        bank_information = offers_factories.BankInformationFactory.build()
+        bank_information = finance_factories.BankInformationFactory.build()
         api_errors = ApiErrors()
 
         # When
@@ -54,7 +54,7 @@ class BankInformationValidationTest:
 
     def test_should_return_an_error_if_status_is_not_accepted_and_bic_or_iban_is_present(self):
         # Given
-        bank_information = offers_factories.BankInformationFactory.build(status=BankInformationStatus.DRAFT)
+        bank_information = finance_factories.BankInformationFactory.build(status=BankInformationStatus.DRAFT)
         api_errors = ApiErrors()
 
         # When
@@ -68,7 +68,7 @@ class BankInformationValidationTest:
 
     def test_should_not_return_an_error_if_status_is_not_accepted_and_bic_and_iban_are_empty(self):
         # Given
-        bank_information = offers_factories.BankInformationFactory.build(
+        bank_information = finance_factories.BankInformationFactory.build(
             bic=None, iban=None, status=BankInformationStatus.DRAFT
         )
         api_errors = ApiErrors()

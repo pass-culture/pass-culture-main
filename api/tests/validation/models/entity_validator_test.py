@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 
 from pcapi.core.categories import subcategories
+import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformationStatus
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
@@ -71,7 +72,7 @@ class VenueValidationTest:
 
 class BankInformationValidationTest:
     def test_invalid_iban_and_bic(self):
-        bank_information = offers_factories.BankInformationFactory.build(bic="1234", iban="1234")
+        bank_information = finance_factories.BankInformationFactory.build(bic="1234", iban="1234")
         api_errors = validate(bank_information)
         assert api_errors.errors == {
             "bic": ['Le BIC renseigné ("1234") est invalide'],
@@ -79,7 +80,7 @@ class BankInformationValidationTest:
         }
 
     def test_valid_iban_and_bic(self):
-        bank_information = offers_factories.BankInformationFactory.build(
+        bank_information = finance_factories.BankInformationFactory.build(
             bic="AGFBFRCC",
             iban="FR7014508000301971798194B82",
         )
@@ -87,7 +88,7 @@ class BankInformationValidationTest:
         assert not api_errors.errors
 
     def test_non_empty_iban_and_bic_with_draft_status(self):
-        bank_information = offers_factories.BankInformationFactory.build(
+        bank_information = finance_factories.BankInformationFactory.build(
             bic="AGFBFRCC",
             iban="FR7014508000301971798194B82",
             status=BankInformationStatus.DRAFT,
