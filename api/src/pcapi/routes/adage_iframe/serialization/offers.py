@@ -123,6 +123,7 @@ class EducationalInstitutionResponseModel(BaseModel):
     name: str
     postalCode: str
     city: str
+    institutionType: str | None
 
     class Config:
         orm_mode = True

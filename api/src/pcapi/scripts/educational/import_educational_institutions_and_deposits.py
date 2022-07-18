@@ -7,6 +7,7 @@ from typing import Iterable
 from pcapi.core.educational import api
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import utils
 from pcapi.core.educational.models import Ministry
 
 
@@ -56,8 +57,10 @@ def _process_educational_csv(
     for row in educational_institutions_rows:
         institution_id = row["UAICode"]
         deposit_amount = row["depositAmount"]
+        institution_type, institution_name = utils.get_institution_type_and_name(row["name"])
         institution_data = {
-            "name": row["name"],
+            "name": institution_name,
+            "institutionType": institution_type,
             "city": row["city"],
             "postalCode": row["postalCode"],
             "phoneNumber": row["phoneNumber"],
