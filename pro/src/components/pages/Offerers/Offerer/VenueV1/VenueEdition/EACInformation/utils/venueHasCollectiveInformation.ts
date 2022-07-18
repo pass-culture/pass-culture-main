@@ -1,17 +1,5 @@
-import { GetVenueResponseModel } from 'apiClient/v1'
+import { VenueCollectiveInformation } from 'core/Venue/types'
 
-type VenueCollectiveInformation = Pick<
-  GetVenueResponseModel,
-  | 'collectiveDescription'
-  | 'collectiveDomains'
-  | 'collectiveEmail'
-  | 'collectiveInterventionArea'
-  | 'collectiveLegalStatus'
-  | 'collectiveNetwork'
-  | 'collectivePhone'
-  | 'collectiveStudents'
-  | 'collectiveWebsite'
->
 export const venueHasCollectiveInformation = (
   venue: VenueCollectiveInformation
 ): boolean => {
