@@ -130,6 +130,10 @@ describe('src | ui-kit | form | SelectAutocomplete', () => {
         )
         await userEvent.type(screen.getByRole('textbox'), 'al')
         expect(screen.getAllByRole('option')).toHaveLength(6) // Allier, Alpes, Hautes-Alpes, Alpes-Maritimes, Calvados, Cantal
+
+        await userEvent.clear(screen.getByRole('textbox'))
+        await userEvent.type(screen.getByRole('textbox'), 'bouches rhon')
+        expect(screen.getAllByRole('option')).toHaveLength(1) // Bouches-du-Rhône
       })
 
       it('should reset filter when the user closes the field', async () => {
