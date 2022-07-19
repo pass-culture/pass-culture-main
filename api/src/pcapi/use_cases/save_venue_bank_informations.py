@@ -53,6 +53,8 @@ class SaveVenueBankInformations:
 
         api_errors = CannotRegisterBankInformation()
 
+        siret = None
+        offerer = None
         if procedure_id in (
             settings.DMS_VENUE_PROCEDURE_ID,
             settings.DMS_VENUE_PROCEDURE_ID_V2,
