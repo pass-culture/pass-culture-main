@@ -10,13 +10,18 @@ import configureStore from 'store'
 import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi', () => ({
-  getUserInformations: jest.fn().mockResolvedValue({}),
   resetPassword: jest.fn().mockResolvedValue({}),
   submitResetPassword: jest.fn().mockResolvedValue({}),
 }))
 jest.mock('utils/recaptcha', () => ({
   initReCaptchaScript: jest.fn().mockReturnValue({ remove: jest.fn() }),
   getReCaptchaToken: jest.fn().mockResolvedValue({}),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getProfile: jest.fn().mockResolvedValue({}),
+  },
 }))
 
 const renderLostPassword = url => {

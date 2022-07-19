@@ -19,7 +19,11 @@ const mockLogEvent = jest.fn()
 jest.mock('core/Offerers/adapters/getSirenDataAdapter')
 jest.mock('repository/pcapi/pcapi', () => ({
   signup: jest.fn(),
-  getUserInformations: jest.fn().mockResolvedValue({}),
+}))
+jest.mock('apiClient/api', () => ({
+  api: {
+    getProfile: jest.fn().mockResolvedValue({}),
+  },
 }))
 
 const renderSignUp = storeOveride => {

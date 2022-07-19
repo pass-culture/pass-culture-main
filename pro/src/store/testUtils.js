@@ -1,7 +1,6 @@
 import { initialState as appInitialState } from 'store/app/reducer'
 import { initialState as bookingSummaryInitialState } from 'store/reducers/bookingSummary/bookingSummary'
 import configureStore from 'store'
-import { initialState as dataInitialState } from 'store/reducers/data'
 import { initialState as errorsInitialState } from 'store/reducers/errors'
 import { initialState as featuresInitialState } from 'store/features/reducer'
 import { initialState as maintenanceInitialState } from 'store/reducers/maintenanceReducer'
@@ -14,7 +13,6 @@ export const configureTestStore = overrideData => {
   const initialData = {
     app: { ...appInitialState, logEvent: jest.fn() },
     bookingSummary: bookingSummaryInitialState,
-    data: dataInitialState,
     features: { ...featuresInitialState, initialized: true },
     errors: errorsInitialState,
     maintenance: maintenanceInitialState,

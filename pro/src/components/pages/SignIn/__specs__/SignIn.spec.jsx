@@ -1,7 +1,5 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { MemoryRouter, Route } from 'react-router'
 import { fireEvent, render, screen } from '@testing-library/react'
 
@@ -11,12 +9,15 @@ import NotificationContainer from 'components/layout/Notification/NotificationCo
 import { Provider } from 'react-redux'
 import React from 'react'
 import SignIn from '../SignIn'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getUserInformations: jest.fn(),
-  signin: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: {
+    getProfile: jest.fn(),
+    signin: jest.fn(),
+  },
 }))
 
 const renderSignIn = storeOveride => {
@@ -56,8 +57,8 @@ describe('src | components | pages | SignIn', () => {
       },
     }
 
-    pcapi.getUserInformations.mockResolvedValue({})
-    pcapi.signin.mockResolvedValue({})
+    jest.spyOn(api, 'getProfile').mockResolvedValue({})
+    jest.spyOn(api, 'signin').mockResolvedValue({})
   })
 
   it('should display 2 inputs and one link to account creation and one button to login', () => {
@@ -173,7 +174,7 @@ describe('src | components | pages | SignIn', () => {
         })
       )
 
-      expect(pcapi.signin).toHaveBeenCalledWith({
+      expect(api.signin).toHaveBeenCalledWith({
         identifier: 'MonPetitEmail',
         password: 'MCSolar85',
       })
@@ -220,7 +221,7 @@ describe('src | components | pages | SignIn', () => {
         const password = screen.getByLabelText('Mot de passe')
         fireEvent.change(password, { target: { value: 'MCSolar85' } })
 
-        pcapi.signin.mockRejectedValue({
+        api.signin.mockRejectedValue({
           errors: { identifier: ['password is invalid'] },
           status: 401,
         })
@@ -245,7 +246,7 @@ describe('src | components | pages | SignIn', () => {
         const password = screen.getByLabelText('Mot de passe')
         fireEvent.change(password, { target: { value: 'MCSolar85' } })
 
-        pcapi.signin.mockRejectedValue({
+        api.signin.mockRejectedValue({
           errors: {},
           status: HTTP_STATUS.TOO_MANY_REQUESTS,
         })
