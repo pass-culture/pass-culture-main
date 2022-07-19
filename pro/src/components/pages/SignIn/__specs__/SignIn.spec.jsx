@@ -44,7 +44,6 @@ describe('src | components | pages | SignIn', () => {
   let store
   beforeEach(() => {
     store = {
-      data: {},
       user: {},
       app: {},
       features: {
