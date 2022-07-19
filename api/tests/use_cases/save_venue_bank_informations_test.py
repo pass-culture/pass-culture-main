@@ -21,12 +21,7 @@ from pcapi.infrastructure.repository.venue.venue_with_basic_information.venue_wi
 from pcapi.models.api_errors import ApiErrors
 from pcapi.use_cases.save_venue_bank_informations import SaveVenueBankInformations
 
-from tests.connector_creators.demarches_simplifiees_creators import (
-    venue_demarche_simplifiee_application_detail_response_with_siret,
-)
-from tests.connector_creators.demarches_simplifiees_creators import (
-    venue_demarche_simplifiee_application_detail_response_without_siret,
-)
+import tests.connector_creators.demarches_simplifiees_creators as dms_creators
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -144,7 +139,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -175,7 +170,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -206,7 +201,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -239,7 +234,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -270,7 +265,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = False  # that's the difference
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -297,7 +292,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -326,7 +321,7 @@ class SaveVenueBankInformationsTest:
                     siret="79387503012345", managingOfferer__siren="123456789", businessUnit=None
                 )
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -350,7 +345,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -373,7 +368,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -399,7 +394,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 mock_check_siret_is_still_active.return_value = True
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_with_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -437,7 +432,7 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -469,7 +464,7 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -501,7 +496,7 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -533,7 +528,7 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -565,7 +560,7 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -590,7 +585,7 @@ class SaveVenueBankInformationsTest:
                 # Given
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -611,7 +606,7 @@ class SaveVenueBankInformationsTest:
                 # Given
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -640,7 +635,7 @@ class SaveVenueBankInformationsTest:
                 )
                 application_id = "8"
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -664,7 +659,7 @@ class SaveVenueBankInformationsTest:
                 application_id = "8"
                 offerers_factories.OffererFactory(siren="793875030")
                 mock_application_details.return_value = (
-                    venue_demarche_simplifiee_application_detail_response_without_siret(
+                    dms_creators.venue_demarche_simplifiee_application_detail_response_without_siret(
                         siret="79387503012345",
                         bic="SOGEFRPP",
                         iban="FR7630007000111234567890144",
@@ -705,11 +700,13 @@ class SaveVenueBankInformationsTest:
                 siret="12345678912345",
                 managingOfferer__siren="123456789",
             )
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="12345678912345",
-                bic="SOGEFRPP",
-                iban="FR7630007000111234567890144",
-                idx=bank_information.applicationId,
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="12345678912345",
+                    bic="SOGEFRPP",
+                    iban="FR7630007000111234567890144",
+                    idx=bank_information.applicationId,
+                )
             )
 
             # When
@@ -739,12 +736,14 @@ class SaveVenueBankInformationsTest:
                 status=BankInformationStatus.ACCEPTED,
             )
             application_id = "8"
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="QSDFGH8Z555",
-                iban="NL36INGB2682297498",
-                idx=int(application_id),
-                state="initiated",
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="QSDFGH8Z555",
+                    iban="NL36INGB2682297498",
+                    idx=int(application_id),
+                    state="initiated",
+                )
             )
 
             # When
@@ -784,11 +783,13 @@ class SaveVenueBankInformationsTest:
                 venue=other_venue,
             )
             application_id = "8"
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387501912345",
-                bic="QSDFGH8Z555",
-                iban="NL36INGB2682297498",
-                idx=int(application_id),
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387501912345",
+                    bic="QSDFGH8Z555",
+                    iban="NL36INGB2682297498",
+                    idx=int(application_id),
+                )
             )
 
             # When
@@ -829,11 +830,13 @@ class SaveVenueBankInformationsTest:
                 dateModified=datetime(2018, 1, 1),
             )
             application_id = "8"
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="SOGEFRPP",
-                iban="FR7630007000111234567890144",
-                idx=int(application_id),
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="SOGEFRPP",
+                    iban="FR7630007000111234567890144",
+                    idx=int(application_id),
+                )
             )
 
             # When
@@ -866,12 +869,14 @@ class SaveVenueBankInformationsTest:
                 venue=venue,
                 status=BankInformationStatus.REJECTED,
             )
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="SOGEFRPP",
-                iban="FR7630007000111234567890144",
-                idx=int(application_id),
-                state="initiated",
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="SOGEFRPP",
+                    iban="FR7630007000111234567890144",
+                    idx=int(application_id),
+                    state="initiated",
+                )
             )
 
             # When
@@ -900,12 +905,14 @@ class SaveVenueBankInformationsTest:
                 status=BankInformationStatus.ACCEPTED,
             )
             application_id = "8"
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="SOGEFRPP",
-                iban="FR7630007000111234567890144",
-                idx=int(application_id),
-                state="initiated",
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="SOGEFRPP",
+                    iban="FR7630007000111234567890144",
+                    idx=int(application_id),
+                    state="initiated",
+                )
             )
 
             # When
@@ -937,11 +944,13 @@ class SaveVenueBankInformationsTest:
                 dateModified=datetime(2021, 1, 1),
             )
             application_id = "8"
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="SOGEFRPP",
-                iban="FR7630007000111234567890144",
-                idx=int(application_id),
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="SOGEFRPP",
+                    iban="FR7630007000111234567890144",
+                    idx=int(application_id),
+                )
             )
 
             # When
@@ -965,12 +974,14 @@ class SaveVenueBankInformationsTest:
             )
             application_id = "8"
             unknown_status = "unknown_status"
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="SOGEFRPP",
-                iban="FR7630007000111234567890144",
-                idx=int(application_id),
-                state=unknown_status,
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="SOGEFRPP",
+                    iban="FR7630007000111234567890144",
+                    idx=int(application_id),
+                    state=unknown_status,
+                )
             )
 
             # When
@@ -988,11 +999,13 @@ class SaveVenueBankInformationsTest:
                 managingOfferer__siren="793875030",
             )
             application_id = "8"
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="SOG",
-                iban="FR76",
-                idx=int(application_id),
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="SOG",
+                    iban="FR76",
+                    idx=int(application_id),
+                )
             )
             with pytest.raises(CannotRegisterBankInformation) as error:
                 self.save_venue_bank_informations.execute(application_id)
@@ -1007,11 +1020,13 @@ class SaveVenueBankInformationsTest:
             application_id = "8"
             offerer = offerers_factories.OffererFactory(siren="793875030")
             offerers_factories.VenueFactory(managingOfferer=offerer, siret="79387503012345", businessUnit=None)
-            mock_application_details.return_value = venue_demarche_simplifiee_application_detail_response_with_siret(
-                siret="79387503012345",
-                bic="",
-                iban="",
-                idx=int(application_id),
+            mock_application_details.return_value = (
+                dms_creators.venue_demarche_simplifiee_application_detail_response_with_siret(
+                    siret="79387503012345",
+                    bic="",
+                    iban="",
+                    idx=int(application_id),
+                )
             )
             with pytest.raises(CannotRegisterBankInformation) as error:
                 self.save_venue_bank_informations.execute(application_id)
