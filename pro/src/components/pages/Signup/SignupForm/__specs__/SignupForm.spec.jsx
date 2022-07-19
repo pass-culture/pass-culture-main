@@ -49,7 +49,6 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
   beforeEach(() => {
     store = {
-      data: {},
       user: { initialized: true },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],

@@ -1,7 +1,6 @@
 import { appReducer } from 'store/app/reducer'
 import bookingSummary from './bookingSummary/bookingSummary'
 import { combineReducers } from 'redux'
-import data from './data'
 import errors from './errors'
 import { featuresReducer } from 'store/features/reducer'
 import maintenanceReducer from './maintenanceReducer'
@@ -12,7 +11,6 @@ import { userReducer } from 'store/user/reducer'
 const rootReducer = combineReducers({
   app: appReducer,
   bookingSummary,
-  data,
   errors,
   features: featuresReducer,
   offers: offersReducer,
