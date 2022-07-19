@@ -34,6 +34,7 @@ const institutions: EducationalInstitutionResponseModel[] = [
     name: 'Institution 1',
     postalCode: '91190',
     city: 'Gif-sur-Yvette',
+    institutionType: 'Collège',
   },
   {
     id: 24,
@@ -97,11 +98,18 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
     )
+
     await userEvent.click(
       await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
     )
-    await userEvent.click(await screen.findByLabelText(/Institution 1/))
+    await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     expect(await screen.findByText(/91190 Gif-sur-Yvette/)).toBeInTheDocument()
+
+    await userEvent.click(
+      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
+    )
+    await userEvent.click(await screen.findByLabelText(/Institution 2/))
+    expect(await screen.findByText(/75005 Paris/)).toBeInTheDocument()
   })
 
   it('should save selected institution and call onSuccess props', async () => {
@@ -113,7 +121,7 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(
       await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
     )
-    await userEvent.click(await screen.findByLabelText(/Institution 1/))
+    await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     await userEvent.click(
       screen.getByRole('button', { name: /Valider et créer l’offre/ })
     )
@@ -137,7 +145,7 @@ describe('CollectiveOfferVisibility', () => {
     await userEvent.click(
       await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
     )
-    await userEvent.click(await screen.findByLabelText(/Institution 1/))
+    await userEvent.click(await screen.findByLabelText(/Collège Institution 1/))
     await userEvent.click(
       screen.getByRole('button', { name: /Valider et créer l’offre/ })
     )
@@ -145,7 +153,7 @@ describe('CollectiveOfferVisibility', () => {
     await waitFor(() => expect(notifyError).toHaveBeenNthCalledWith(1, 'Ooops'))
   })
 
-  it('should display institution name and city in select options', async () => {
+  it('should display institution type, name and city in select options', async () => {
     renderVisibilityStep(props)
     await userEvent.click(
       screen.getByLabelText(/Un établissement en particulier/)
@@ -154,7 +162,10 @@ describe('CollectiveOfferVisibility', () => {
       await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
     )
     expect(
-      await screen.findByLabelText(/Institution 1 - Gif-sur-Yvette/)
+      await screen.findByLabelText(/Collège Institution 1 - Gif-sur-Yvette/)
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByLabelText(/Institution 2 - Paris/)
     ).toBeInTheDocument()
   })
 
@@ -172,7 +183,9 @@ describe('CollectiveOfferVisibility', () => {
       expect(
         screen.getByLabelText(/Un établissement en particulier/)
       ).toBeChecked()
-      expect(await screen.findByText(/Institution 1/)).toBeInTheDocument()
+      expect(
+        await screen.findByText(/Collège Institution 1/)
+      ).toBeInTheDocument()
       expect(
         await screen.findByText(/91190 Gif-sur-Yvette/)
       ).toBeInTheDocument()
