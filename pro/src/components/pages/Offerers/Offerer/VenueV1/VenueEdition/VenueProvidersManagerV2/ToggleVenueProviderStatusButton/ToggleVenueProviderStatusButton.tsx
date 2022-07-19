@@ -47,7 +47,11 @@ const ToggleVenueProviderStatusButton = ({
   return (
     <>
       {venueProvider.isActive ? (
-        <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+        <Button
+          className={style['provider-action-button']}
+          onClick={showModal}
+          variant={ButtonVariant.TERNARY}
+        >
           <Icon
             alt="Mettre en pause la synchronisation"
             className={style['provider-action-icon']}
@@ -56,7 +60,11 @@ const ToggleVenueProviderStatusButton = ({
           Mettre en pause
         </Button>
       ) : (
-        <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+        <Button
+          className={style['provider-action-button']}
+          onClick={showModal}
+          variant={ButtonVariant.TERNARY}
+        >
           <Icon
             alt="Réactiver la synchronisation"
             className={style['provider-action-icon']}

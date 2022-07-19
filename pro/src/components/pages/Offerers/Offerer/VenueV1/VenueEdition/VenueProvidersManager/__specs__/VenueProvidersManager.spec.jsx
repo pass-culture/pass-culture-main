@@ -150,13 +150,13 @@ describe('src | VenueProvidersManager', () => {
       await renderVenueProvidersManager(props)
 
       // then
-      expect(screen.getByText('Importer des offres')).toBeInTheDocument()
+      expect(screen.getByText('Synchroniser des offres')).toBeInTheDocument()
     })
 
     it('should display a select input to choose a provider on import button click', async () => {
       // given
       await renderVenueProvidersManager(props)
-      const importOffersButton = screen.getByText('Importer des offres')
+      const importOffersButton = screen.getByText('Synchroniser des offres')
 
       // when
       fireEvent.click(importOffersButton)
@@ -173,7 +173,7 @@ describe('src | VenueProvidersManager', () => {
     it('should not display the stock form when no provider is selected', async () => {
       // given
       await renderVenueProvidersManager(props)
-      const importOffersButton = screen.getByText('Importer des offres')
+      const importOffersButton = screen.getByText('Synchroniser des offres')
 
       // when
       fireEvent.click(importOffersButton)
@@ -195,7 +195,7 @@ describe('src | VenueProvidersManager', () => {
         ]
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
-        const importOffersButton = screen.getByText('Importer des offres')
+        const importOffersButton = screen.getByText('Synchroniser des offres')
         fireEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 
@@ -217,7 +217,7 @@ describe('src | VenueProvidersManager', () => {
         providers = [{ id: 'providerId', name: 'My little provider' }]
         pcapi.loadProviders.mockResolvedValue(providers)
         await renderVenueProvidersManager(props)
-        const importOffersButton = screen.getByText('Importer des offres')
+        const importOffersButton = screen.getByText('Synchroniser des offres')
         fireEvent.click(importOffersButton)
         const providersSelect = screen.getByRole('combobox')
 

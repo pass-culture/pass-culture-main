@@ -7,7 +7,7 @@
   margin-top: 1rem;
 
   .title {
-    font-size: 1rem;
+    font-size: rem.torem(18px);
     font-weight: 600;
   }
 
@@ -20,7 +20,8 @@
 
     span {
       color: colors.$black;
-      font-weight: 600;
+      font-size: rem.torem(15px);
+      font-weight: 500;
     }
   }
 
