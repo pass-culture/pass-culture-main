@@ -1,6 +1,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { AdageCulturalPartnerResponseModel } from '../models/AdageCulturalPartnerResponseModel';
 import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
 import type { BookingStatusFilter } from '../models/BookingStatusFilter';
@@ -553,6 +554,30 @@ export class DefaultService {
       mediaType: 'application/json',
       errors: {
         400: `Bad Request`,
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_educational_partner <GET>
+   * @param siret
+   * @returns AdageCulturalPartnerResponseModel OK
+   * @throws ApiError
+   */
+  public getEducationalPartner(
+    siret: string,
+  ): CancelablePromise<AdageCulturalPartnerResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/cultural-partner/{siret}',
+      path: {
+        'siret': siret,
+      },
+      errors: {
         401: `Unauthorized`,
         403: `Forbidden`,
         404: `Not Found`,
