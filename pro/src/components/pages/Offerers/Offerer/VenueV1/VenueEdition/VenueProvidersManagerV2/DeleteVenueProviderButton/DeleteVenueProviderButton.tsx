@@ -38,8 +38,11 @@ const DeleteVenueProviderButton = ({
   }, [notification, hideModal])
   return (
     <>
-      {' '}
-      <Button onClick={showModal} variant={ButtonVariant.TERNARY}>
+      <Button
+        className={style['provider-action-button']}
+        onClick={showModal}
+        variant={ButtonVariant.TERNARY}
+      >
         <Icon
           alt="Supprimer la synchronisation"
           className={style['provider-action-icon']}
