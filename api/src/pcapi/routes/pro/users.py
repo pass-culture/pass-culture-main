@@ -59,6 +59,18 @@ def patch_profile(body: users_serializers.PatchProUserBodyModel) -> users_serial
     return users_serializers.PatchProUserResponseModel.from_orm(user)
 
 
+@blueprint.pro_private_api.route("/users/identity", methods=["PATCH"])
+@login_required
+@spectree_serialize(response_model=users_serializers.UserIdentityResponseModel, api=blueprint.pro_private_schema)
+def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_serializers.UserIdentityResponseModel:
+    user = current_user._get_current_object()
+    if not user.has_pro_role and not user.has_admin_role:
+        abort(400)
+    attributes = body.dict()
+    users_api.update_user_info(user, **attributes)
+    return users_serializers.UserIdentityResponseModel.from_orm(user)
+
+
 @blueprint.pro_private_api.route("/users/token/<token>", methods=["GET"])
 @spectree_serialize(on_error_statuses=[404], on_success_status=204, api=blueprint.pro_private_schema)
 def check_activation_token_exists(token: str) -> None:
