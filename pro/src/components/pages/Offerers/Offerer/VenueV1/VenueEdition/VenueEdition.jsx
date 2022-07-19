@@ -27,7 +27,6 @@ import Icon from 'components/layout/Icon'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
 import LocationFields from '../fields/LocationFields/LocationFields'
-import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import ReimbursementFields from '../fields/ReimbursementFields/ReimbursementFields'
 import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
@@ -267,8 +266,7 @@ const VenueEdition = () => {
   }
 
   const onHandleRender = formProps => {
-    const queryParams = new URLSearchParams(location.search)
-    const readOnly = queryParams.get('modification') === null
+    const readOnly = false
 
     const {
       siret: initialSiret,
@@ -391,13 +389,13 @@ const VenueEdition = () => {
             className="field is-grouped is-grouped-centered"
             style={{ justifyContent: 'space-between' }}
           >
-            <ModifyOrCancelControl
-              form={form}
-              history={history}
-              offererId={offererId}
-              readOnly={readOnly}
-              venueId={venueId}
-            />
+            <Link
+              className="secondary-link"
+              id="quit-venue-edition"
+              to={`/accueil?structure=${offererId}`}
+            >
+              Quitter
+            </Link>
             <ReturnOrSubmitControl
               canSubmit={canSubmit}
               isRequestPending={isRequestPending}
@@ -459,8 +457,6 @@ const VenueEdition = () => {
       />
     )
   }
-  const queryParams = new URLSearchParams(location.search)
-  const readOnly = queryParams.get('modification') === null
 
   const {
     id: initialId,
@@ -468,7 +464,7 @@ const VenueEdition = () => {
     name: initialName,
   } = venue || {}
 
-  const pageTitle = readOnly ? 'Détails de votre lieu' : 'Modifier votre lieu'
+  const pageTitle = 'Modifier votre lieu'
 
   const actionLink = !!initialId && (
     <Link

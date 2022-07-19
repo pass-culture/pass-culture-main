@@ -617,25 +617,6 @@ describe('test page : VenueEdition', () => {
   })
 
   describe('when reading', () => {
-    it('should display disabled contact fields', async () => {
-      window.history.pushState({}, 'Test page', '/structures/AE/lieux/AE')
-      await renderVenueEdition({})
-      const { contactPhoneNumber, contactMail, contactUrl } =
-        await getContactInputs()
-
-      expect(contactPhoneNumber).toBeInTheDocument()
-      expect(contactMail).toBeInTheDocument()
-      expect(contactUrl).toBeInTheDocument()
-
-      expect(contactPhoneNumber).toBeDisabled()
-      expect(contactMail).toBeDisabled()
-      expect(contactUrl).toBeDisabled()
-
-      expect(contactUrl).toHaveValue(venue.contact.website)
-      expect(contactPhoneNumber).toHaveValue(venue.contact.phoneNumber)
-      expect(contactMail).toHaveValue(venue.contact.email)
-    })
-
     it('should render component with correct state values', async () => {
       window.history.pushState({}, 'Test page', '/structures/AE/lieux/AE')
       // when
@@ -644,11 +625,8 @@ describe('test page : VenueEdition', () => {
       // then
       // todo: check submit button state
       expect(
-        await screen.findByRole('link', { name: 'Terminer' })
+        await screen.findByRole('link', { name: 'Quitter' })
       ).toBeInTheDocument()
-      expect(
-        screen.queryByRole('button', { name: 'Valider' })
-      ).not.toBeInTheDocument()
     })
 
     describe('create new offer link', () => {
