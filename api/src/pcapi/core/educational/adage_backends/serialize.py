@@ -2,30 +2,26 @@ from datetime import datetime
 
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import StudentLevels
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
+from pcapi.routes.native.v1.serialization.common_models import Coordinates
 
 
 class CollectiveOfferNotAssociatedToInstitution(Exception):
     pass
 
 
-class AdageCollectiveOfferContact(BaseModel):
+class AdageCollectiveOfferContact(AdageBaseResponseModel):
     email: str
     phone: str
 
 
-class AdageCollectiveOfferCoordinates(BaseModel):
-    latitude: str
-    longitude: str
-
-
-class AdageCollectiveOffer(BaseModel):
+class AdageCollectiveOffer(AdageBaseResponseModel):
     UAICode: str
     address: str
     beginningDatetime: datetime
     city: str
     contact: AdageCollectiveOfferContact
-    coordinates: AdageCollectiveOfferCoordinates
+    coordinates: Coordinates
     description: str | None
     durationMinutes: float | None
     id: int
@@ -78,7 +74,7 @@ def serialize_collective_offer(collective_offer: CollectiveOffer) -> AdageCollec
         beginningDatetime=stock.beginningDatetime,
         city=venue.city,
         contact=AdageCollectiveOfferContact(phone=collective_offer.contactPhone, email=collective_offer.contactEmail),
-        coordinates=AdageCollectiveOfferCoordinates(latitude=venue.latitude, longitude=venue.longitude),
+        coordinates=Coordinates(latitude=venue.latitude, longitude=venue.longitude),
         description=collective_offer.description,
         durationMinutes=collective_offer.durationMinutes,
         id=collective_offer.id,
