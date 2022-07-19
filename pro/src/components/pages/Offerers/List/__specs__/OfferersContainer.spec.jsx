@@ -7,7 +7,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         // given
         const props = {}
         const state = {
-          data: {},
           features: {
             list: [
               {
@@ -29,7 +28,6 @@ describe('src | components | pages | Offerers | OfferersContainer', () => {
         // given
         const props = {}
         const state = {
-          data: {},
           features: {
             list: [
               {
