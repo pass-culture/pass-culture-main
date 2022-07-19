@@ -29,6 +29,9 @@ from tests.connector_creators.demarches_simplifiees_creators import (
 )
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class SaveVenueBankInformationsTest:
     class GetReferentVenueTest:
         def setup_method(self):
@@ -38,7 +41,6 @@ class SaveVenueBankInformationsTest:
             )
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=False)
-        @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_no_venue_found_by_siret(self, siret_is_active):
             application_details = ApplicationDetail(
                 siren="999999999",
@@ -55,7 +57,6 @@ class SaveVenueBankInformationsTest:
             assert errors.errors["Venue"] == ["Venue not found", "SIRET is no longer active"]
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", side_effect=ApiEntrepriseException())
-        @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_api_entreprise_errored(self, siret_is_active):
             offerer = offerers_factories.OffererFactory()
             offerers_factories.VenueFactory(managingOfferer=offerer, siret="99999999900000")
@@ -73,7 +74,6 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
             assert errors.errors["Venue"] == ["Error while checking SIRET on Api Entreprise"]
 
-        @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_no_venue_found_by_name(self):
             offerer = offerers_factories.OffererFactory()
             application_details = ApplicationDetail(
@@ -90,7 +90,6 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.get_referent_venue(application_details, offerer, errors)
             assert errors.errors["Venue"] == ["Venue name not found"]
 
-        @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_if_more_than_one_venue_found(self):
             offerer = offerers_factories.OffererFactory()
             offerers_factories.VenueFactory.build_batch(
@@ -121,7 +120,6 @@ class SaveVenueBankInformationsTest:
                     bank_informations_repository=BankInformationsSQLRepository(),
                 )
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -153,7 +151,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -185,7 +182,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_closed_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -219,7 +215,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.status == BankInformationStatus.ACCEPTED
                 assert bank_information.dateModified == datetime(2020, 1, 1, 10, 10, 10, 100000)
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -251,7 +246,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_siret_is_not_active_should_not_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -279,7 +273,6 @@ class SaveVenueBankInformationsTest:
                 # Then
                 assert BankInformation.query.count() == 0
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -311,7 +304,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -339,7 +331,6 @@ class SaveVenueBankInformationsTest:
                 assert error.value.errors == {"Offerer": ["Offerer not found"]}
                 assert BankInformation.query.count() == 0
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -362,7 +353,6 @@ class SaveVenueBankInformationsTest:
                 # Then
                 assert BankInformation.query.count() == 0
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_and_status_is_closed_should_raise_and_not_create_bank_information(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -389,7 +379,6 @@ class SaveVenueBankInformationsTest:
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_create_bank_information_and_not_raise(
                 self, mock_archive_dossier, mock_application_details, mock_check_siret_is_still_active, app
             ):
@@ -423,7 +412,6 @@ class SaveVenueBankInformationsTest:
                     bank_informations_repository=BankInformationsSQLRepository(),
                 )
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_refused_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -456,7 +444,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_without_continuation_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -489,7 +476,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.REJECTED
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_closed_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -522,7 +508,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban == "FR7630007000111234567890144"
                 assert bank_information.status == BankInformationStatus.ACCEPTED
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_received_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -555,7 +540,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_dms_state_is_initiated_should_create_the_correct_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -588,7 +572,6 @@ class SaveVenueBankInformationsTest:
                 assert bank_information.iban is None
                 assert bank_information.status == BankInformationStatus.DRAFT
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_but_status_is_not_closed_should_not_raise(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -610,7 +593,6 @@ class SaveVenueBankInformationsTest:
                 # Then
                 assert BankInformation.query.count() == 0
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_offerer_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -634,7 +616,6 @@ class SaveVenueBankInformationsTest:
                 assert error.value.errors == {"Offerer": ["Offerer not found"]}
                 assert BankInformation.query.count() == 0
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_without_siret_is_found_and_state_is_closed_should_raise_and_not_create_bank_information(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -664,7 +645,6 @@ class SaveVenueBankInformationsTest:
                 assert error.value.errors["Venue"] == ["Venue name not found"]
                 assert BankInformation.query.count() == 0
 
-            @pytest.mark.usefixtures("db_session")
             def test_when_no_venue_is_found_but_status_is_not_closed_should_not_raise(
                 self, mock_archive_dossier, mock_application_details, app
             ):
@@ -698,7 +678,6 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_rib_and_offerer_change_everything_should_be_updated(
             self, mock_archive_dossier, mock_application_details, app
         ):
@@ -731,7 +710,6 @@ class SaveVenueBankInformationsTest:
             assert bank_information.offererId == None
             assert bank_information.venueId == new_venue.id
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_status_change_rib_should_be_correctly_updated(
             self, mock_archive_dossier, mock_application_details, app
         ):
@@ -767,7 +745,6 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban == None
             assert bank_information.status == BankInformationStatus.DRAFT
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_overriding_another_bank_information_should_raise(
             self, mock_archive_dossier, mock_application_details, app
         ):
@@ -822,7 +799,6 @@ class SaveVenueBankInformationsTest:
                 bank_informations_repository=BankInformationsSQLRepository(),
             )
 
-        @pytest.mark.usefixtures("db_session")
         @patch("pcapi.use_cases.save_venue_bank_informations.archive_dossier")
         def test_when_receive_new_closed_application_should_override_previous_one(
             self, mock_archive_dossier, mock_application_details, app
@@ -861,7 +837,6 @@ class SaveVenueBankInformationsTest:
             assert business_unit.bankAccountId == bank_information.id
             assert venue.businessUnitId == business_unit.id
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_application_with_draft_state_should_update_previously_rejected_bank_information(
             self, mock_application_details, app
         ):
@@ -898,7 +873,6 @@ class SaveVenueBankInformationsTest:
             assert bank_information.iban == None
             assert bank_information.status == BankInformationStatus.DRAFT
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_receive_new_application_with_lower_status_should_reject(self, mock_application_details, app):
             # Given
             venue = offerers_factories.VenueFactory(
@@ -936,7 +910,6 @@ class SaveVenueBankInformationsTest:
                 "BankInformation": ["Received dossier is in draft state. Move it to 'Accepté' to save it."]
             }
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_receive_older_application_should_reject(self, mock_application_details, app):
             # Given
             venue = offerers_factories.VenueFactory(
@@ -971,7 +944,6 @@ class SaveVenueBankInformationsTest:
             assert bank_information.applicationId == 79
             assert error.value.errors == {"BankInformation": ["Received application details are older than saved one"]}
 
-        @pytest.mark.usefixtures("db_session")
         def test_when_state_is_unknown(self, mock_application_details, app):
             # Given
             offerers_factories.VenueFactory(
@@ -997,7 +969,6 @@ class SaveVenueBankInformationsTest:
             assert error.value.errors == {"BankInformation": f"Unknown Demarches Simplifiées state {unknown_status}"}
             assert BankInformation.query.count() == 0
 
-        @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_when_bank_information_data_is_invalid(self, mock_application_details, app):
             offerers_factories.VenueFactory(
                 businessUnit=None,
@@ -1020,7 +991,6 @@ class SaveVenueBankInformationsTest:
             }
             assert BankInformation.query.count() == 0
 
-        @pytest.mark.usefixtures("db_session")
         def test_raises_an_error_when_no_bank_information_data_is_provided(self, mock_application_details, app):
             application_id = "8"
             offerer = offerers_factories.OffererFactory(siren="793875030")
@@ -1105,7 +1075,6 @@ class SaveVenueBankInformationsTest:
 
             mock_update_text_annotation.assert_not_called()
 
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_venue_not_found(self, mock_application_details, mock_update_text_annotation, app):
             offerers_factories.OffererFactory(siren="999999999")
             mock_application_details.return_value = self.build_application_detail()
@@ -1116,7 +1085,6 @@ class SaveVenueBankInformationsTest:
                 self.dossier_id, self.annotation_id, "Venue: Venue name not found"
             )
 
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_venue_multiple_found(self, mock_application_details, mock_update_text_annotation, app):
             offerer = offerers_factories.OffererFactory(siren="999999999")
             offerers_factories.VenueFactory.build_batch(
@@ -1130,7 +1098,6 @@ class SaveVenueBankInformationsTest:
                 self.dossier_id, self.annotation_id, "Venue: Multiple venues found"
             )
 
-        @pytest.mark.usefixtures("db_session")
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
         def test_update_text_no_venue_with_same_siret_found(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
@@ -1144,7 +1111,6 @@ class SaveVenueBankInformationsTest:
                 self.dossier_id, self.annotation_id, "Venue: Venue not found"
             )
 
-        @pytest.mark.usefixtures("db_session")
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=False)
         def test_update_text_siret_no_longer_active(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
@@ -1160,7 +1126,6 @@ class SaveVenueBankInformationsTest:
             )
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_application_details_older_than_saved(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
@@ -1181,7 +1146,6 @@ class SaveVenueBankInformationsTest:
             )
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_application_details_has_more_advanced_status(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
@@ -1201,7 +1165,6 @@ class SaveVenueBankInformationsTest:
             )
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_application_details_is_rejected_status(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
@@ -1221,7 +1184,6 @@ class SaveVenueBankInformationsTest:
             )
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_application_details_on_bank_information_error(
             self, siret_active, mock_application_details, mock_update_text_annotation, app
         ):
@@ -1269,7 +1231,6 @@ class SaveVenueBankInformationsTest:
             return ApplicationDetail(**application_data)
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_annotation_and_archive_on_validated_bank_information(
             self, siret_active, mock_application_details, mock_archive_dossier, mock_update_text_annotation, app
         ):
@@ -1289,7 +1250,6 @@ class SaveVenueBankInformationsTest:
             mock_archive_dossier.asserrt_called_once_with("DOSSIER_ID")
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @pytest.mark.usefixtures("db_session")
         def test_archive_dossier_on_refused_bank_information(
             self, siret_active, mock_application_details, mock_archive_dossier, mock_update_text_annotation, app
         ):
@@ -1305,7 +1265,6 @@ class SaveVenueBankInformationsTest:
             mock_archive_dossier.asserrt_called_once_with("DOSSIER_ID")
 
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
-        @pytest.mark.usefixtures("db_session")
         def test_update_text_application_details_on_draft_bank_information(
             self, siret_active, mock_application_details, mock_archive_dossier, mock_update_text_annotation, app
         ):
