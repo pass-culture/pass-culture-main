@@ -55,7 +55,7 @@ class GetInstitutionTypeAndNameTest:
         # Given
         test_cases = {
             "LG PR pouet": ("LYCEE GENERAL PRIVE", "pouet"),
-            "LGTA taça": ("LYC GEN TECHNO AGRI", "taça"),
+            "LGTA taça": ("LYCEE GENERAL TECHNOLOGIQUE AGRICOLE", "taça"),
         }
         for given, expected in test_cases.items():
             result = utils.get_institution_type_and_name(given)
