@@ -2,7 +2,6 @@ import { applyMiddleware, compose, createStore } from 'redux'
 
 import createSagaMiddleware from 'redux-saga'
 import rootReducer from './reducers'
-import rootSaga from './sagas'
 import thunk from 'redux-thunk'
 
 const buildStoreEnhancer = (middlewares = []) => {
@@ -26,8 +25,6 @@ const configureStore = (initialState = {}) => {
     initialState,
     buildStoreEnhancer([thunk, sagaMiddleware])
   )
-
-  sagaMiddleware.run(rootSaga)
 
   return { store }
 }
