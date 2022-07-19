@@ -102,7 +102,7 @@ class AdageHttpClient(AdageClient):
             api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
         )
 
-        if api_response.status_code != 200:
+        if api_response.status_code != 201:
             raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
 
         return AdageApiResult(sent_data=data.dict(), response=dict(api_response.json()), success=True)
