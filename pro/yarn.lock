@@ -9718,16 +9718,6 @@ fd-slicer@~1.1.0:
   dependencies:
     pend "~1.2.0"
 
-fetch-normalize-data@1.8.6:
-  version "1.8.6"
-  resolved "https://registry.yarnpkg.com/fetch-normalize-data/-/fetch-normalize-data-1.8.6.tgz#d83f490c79ee3b0eac1577047303a755773839bc"
-  integrity sha512-bejxIuMyOwox0nNUMqoLJDYNDCfP7yq+xi8p8DxI6cbmh+IoimdubiH+u9SuGM6Er3eFyROV9fXs2fbhWAVQMw==
-  dependencies:
-    lodash.uniqby "^4.7.0"
-    re-reselect "^3.4.0"
-    reselect "^3.0.1"
-    uuid "^3.3.2"
-
 fetch-retry@^5.0.2:
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/fetch-retry/-/fetch-retry-5.0.2.tgz#4c55663a7c056cb45f182394e479464f0ff8f3e3"
@@ -13349,11 +13339,6 @@ lodash.uniq@4.5.0, lodash.uniq@^4.5.0:
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
-lodash.uniqby@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/lodash.uniqby/-/lodash.uniqby-4.7.0.tgz#d99c07a669e9e6d24e1362dfe266c67616af1302"
-  integrity sha1-2ZwHpmnp5tJOE2Lf4mbGdhavEwI=
-
 "lodash@4.6.1 || ^4.16.1", lodash@^4.14.0, lodash@^4.17.11, lodash@^4.17.12, lodash@^4.17.13, lodash@^4.17.14, lodash@^4.17.15, lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -16791,11 +16776,6 @@ re-reselect@^2.1.0:
   resolved "https://registry.yarnpkg.com/re-reselect/-/re-reselect-2.3.0.tgz#96bb8dcb6d45b16902cea496b048e1fa00925490"
   integrity sha512-B3j54+0QyvAWGioJxeaq8BJ7XdwSuiyglbHgnWk6v5GpYJDlA8JvsGXixFOXF7txnEm3QuaCQ0LP1gUKR6Tc9w==
 
-re-reselect@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/re-reselect/-/re-reselect-3.4.0.tgz#0f2303f3c84394f57f0cd31fea08a1ca4840a7cd"
-  integrity sha512-JsecfN+JlckncVXTWFWjn0Vk6uInl8GSf4eEd9tTk5qXHlgqkPdILpnYpgZcISXNYAzvfvsCZviaDk8AxyS5sg==
-
 re-reselect@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/re-reselect/-/re-reselect-4.0.0.tgz#9ddec4c72c4d952f68caa5aa4b76a9ed38b75cac"
@@ -17481,15 +17461,7 @@ redeyed@~2.1.0:
   dependencies:
     esprima "~4.0.0"
 
-redux-saga-data@^3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/redux-saga-data/-/redux-saga-data-3.3.0.tgz#0aa5185e3a4e38315277edf0af5d45763cd1fbf9"
-  integrity sha512-SabBXs248Fpj1+MpEaHlajNsATLGvCpkExYeBNo1KJEYJm0iX66WuCOAHjK2Y088FUabDAjPdddBK67W64ondg==
-  dependencies:
-    fetch-normalize-data "1.8.6"
-    redux-saga "^1.1.1"
-
-redux-saga@^1.1.1, redux-saga@^1.1.3:
+redux-saga@^1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/redux-saga/-/redux-saga-1.1.3.tgz#9f3e6aebd3c994bbc0f6901a625f9a42b51d1112"
   integrity sha512-RkSn/z0mwaSa5/xH/hQLo8gNf4tlvT18qXDNvedihLcfzh+jMchDgaariQoehCpgRltEm4zHKJyINEz6aqswTw==
