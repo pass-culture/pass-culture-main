@@ -61,14 +61,14 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
   it('should redirect to accueil page if the user is logged in', async () => {
     // when the user is logged in and lands on signup validation page
-    store.data.users = [
-      {
+    store.user = {
+      currentUser: {
         id: 'user_id',
         publicName: 'François',
         isAdmin: false,
       },
-    ]
-    store.user.initialized = true
+      initialized: true,
+    }
     renderSignUp(store)
     await expect(
       screen.findByText("I'm logged in as a pro user")
@@ -77,14 +77,14 @@ describe('src | components | pages | Signup | SignupForm', () => {
 
   it('should redirect to structure page if the user is logged in as an Admin', async () => {
     // when the user is logged in and lands on signup validation page
-    store.data.users = [
-      {
+    store.user = {
+      currentUser: {
         id: 'user_id',
         publicName: 'François',
         isAdmin: true,
       },
-    ]
-    store.user.initialized = true
+      initialized: true,
+    }
     renderSignUp(store)
     await expect(
       screen.findByText("I'm logged in as an Admin")

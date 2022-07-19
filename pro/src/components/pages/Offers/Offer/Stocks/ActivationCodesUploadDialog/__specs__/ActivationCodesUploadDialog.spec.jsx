@@ -23,13 +23,11 @@ describe('activationCodesUploadDialog', () => {
 
     beforeEach(() => {
       store = configureTestStore({
-        data: {
-          users: [
-            {
-              id: 'test_id',
-              hasSeenProTutorials: true,
-            },
-          ],
+        user: {
+          currentUser: {
+            id: 'test_id',
+            hasSeenProTutorials: true,
+          },
         },
       })
     })

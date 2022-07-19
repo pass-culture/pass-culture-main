@@ -32,14 +32,12 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const initialStore = {
-  data: {
-    users: [
-      {
-        publicName: 'François',
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-    ],
+  user: {
+    currentUser: {
+      publicName: 'François',
+      isAdmin: false,
+      hasSeenProTutorials: true,
+    },
   },
 }
 
@@ -175,8 +173,8 @@ describe('reimbursementsWithFilters', () => {
 
   it('should display a refund invoices section', async () => {
     store = configureTestStore({
-      data: {
-        users: [{ publicName: 'Damien', isAdmin: false }],
+      user: {
+        currentUser: { publicName: 'Damien', isAdmin: false },
       },
     })
 

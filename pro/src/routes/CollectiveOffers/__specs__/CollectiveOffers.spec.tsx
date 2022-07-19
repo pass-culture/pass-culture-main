@@ -128,11 +128,9 @@ describe('route CollectiveOffers', () => {
       publicName: 'USER',
     }
     store = configureTestStore({
-      data: {
-        users: [currentUser],
-      },
       user: {
         initialized: true,
+        currentUser,
       },
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
@@ -227,11 +225,9 @@ describe('route CollectiveOffers', () => {
       describe('when user is admin', () => {
         beforeEach(() => {
           store = configureTestStore({
-            data: {
-              users: [{ ...currentUser, isAdmin: true }],
-            },
             user: {
               initialized: true,
+              currentUser: { ...currentUser, isAdmin: true },
             },
             offers: {
               searchFilters: DEFAULT_SEARCH_FILTERS,

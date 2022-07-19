@@ -125,8 +125,8 @@ describe('components | BookingsRecap | Pro user', () => {
       email: 'rené@example.com',
     }
     store = {
-      data: {
-        users: [user],
+      user: {
+        currentUser: user,
       },
     }
     jest.spyOn(pcapi, 'getUserInformations').mockResolvedValue(user)

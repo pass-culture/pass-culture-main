@@ -44,7 +44,7 @@ describe('src | components | Offerers', () => {
       showNotification: jest.fn(),
     }
     store = configureTestStore({
-      data: { users: [{ publicName: 'François', isAdmin: false }] },
+      user: { currentUser: { publicName: 'François', isAdmin: false } },
     })
     pcapi.getOfferers.mockResolvedValue({
       offerers: [offerer],

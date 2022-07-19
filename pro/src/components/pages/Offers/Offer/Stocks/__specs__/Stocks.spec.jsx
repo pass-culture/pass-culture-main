@@ -61,10 +61,10 @@ describe('stocks page', () => {
   let store
   beforeEach(() => {
     store = {
-      data: {
-        users: [{ publicName: 'François', isAdmin: false }],
+      user: {
+        currentUser: { publicName: 'François', isAdmin: false },
+        initialized: true,
       },
-      user: { initialized: true },
     }
     props = {}
 
@@ -599,8 +599,8 @@ describe('stocks page', () => {
 
       it('should display an information message regarding booking cancellation (when feature toggling)', async () => {
         store = configureTestStore({
-          data: {
-            users: [{ publicName: 'François', isAdmin: false }],
+          user: {
+            currentUser: { publicName: 'François', isAdmin: false },
           },
         })
 

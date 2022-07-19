@@ -181,14 +181,14 @@ describe('src | components | pages | SignIn', () => {
     })
     describe('when user is signed in', () => {
       it('should redirect to homepage if user is admin', async () => {
-        store.data.users = [
-          {
+        store.user = {
+          currentUser: {
             id: 'user_id',
             publicName: 'François',
             isAdmin: true,
           },
-        ]
-        store.user.initialized = true
+          initialized: true,
+        }
 
         renderSignIn(store)
         await expect(
@@ -196,14 +196,14 @@ describe('src | components | pages | SignIn', () => {
         ).resolves.toBeInTheDocument()
       })
       it('should redirect to offerers page if user is not admin', async () => {
-        store.data.users = [
-          {
+        store.user = {
+          currentUser: {
             id: 'user_id',
             publicName: 'François',
             isAdmin: false,
           },
-        ]
-        store.user.initialized = true
+          initialized: true,
+        }
 
         renderSignIn(store)
         await expect(

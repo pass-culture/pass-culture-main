@@ -45,10 +45,12 @@ describe('venue form', () => {
   let push
   let props
   let storeOverrides = {
-    data: {
-      users: [
-        { publicName: 'René', isAdmin: false, email: 'rené@example.com' },
-      ],
+    user: {
+      currentUser: {
+        publicName: 'René',
+        isAdmin: false,
+        email: 'rené@example.com',
+      },
     },
   }
 

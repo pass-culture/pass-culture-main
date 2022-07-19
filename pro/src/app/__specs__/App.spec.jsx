@@ -56,8 +56,7 @@ describe('src | App', () => {
       isAdmin: false,
     }
     store = configureTestStore({
-      data: { users: [{ ...user }] },
-      user: { initialized: true },
+      user: { initialized: true, currentUser: user },
     })
     props = {
       getCurrentUser,
