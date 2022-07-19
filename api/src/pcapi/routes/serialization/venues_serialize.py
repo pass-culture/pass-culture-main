@@ -194,6 +194,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     departementCode: str | None
     dmsToken: str | None
     fieldsUpdated: list[str]
+    hasPendingBankInformationApplication: bool | None
     iban: str | None
     idAtProviders: str | None
     isBusinessUnitMainVenue: bool | None

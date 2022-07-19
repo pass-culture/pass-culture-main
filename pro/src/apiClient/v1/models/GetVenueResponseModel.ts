@@ -41,6 +41,7 @@ export type GetVenueResponseModel = {
   description?: string | null;
   dmsToken?: string | null;
   fieldsUpdated: Array<string>;
+  hasPendingBankInformationApplication?: boolean | null;
   iban?: string | null;
   id: string;
   idAtProviders?: string | null;

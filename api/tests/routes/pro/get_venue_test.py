@@ -137,6 +137,7 @@ class Returns200Test:
             "collectivePhone": None,
             "collectiveStudents": [],
             "collectiveWebsite": None,
+            "hasPendingBankInformationApplication": False,
         }
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)

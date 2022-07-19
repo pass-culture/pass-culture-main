@@ -277,6 +277,10 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         return self.bankInformation.applicationId
 
     @property
+    def hasPendingBankInformationApplication(self) -> bool:
+        return bool(self.bankInformation) and self.bankInformation.status == BankInformationStatus.DRAFT
+
+    @property
     def demarchesSimplifieesIsDraft(self):  # type: ignore [no-untyped-def]
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.DRAFT
 
