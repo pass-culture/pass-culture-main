@@ -9,11 +9,17 @@ import { Provider } from 'react-redux'
 import React from 'react'
 import VenueCreation from '../VenueCreation'
 import VenueType from '../../ValueObjects/VenueType'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { setVenueValues } from './helpers'
 import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi')
+jest.mock('apiClient/api', () => ({
+  api: {
+    getProfile: jest.fn(),
+  },
+}))
 
 jest.mock(
   'components/pages/Offerers/Offerer/VenueV1/fields/LocationFields/utils/fetchAddressData.js',
@@ -85,7 +91,9 @@ describe('venue form', () => {
     ])
     pcapi.getVenueLabels.mockResolvedValue([])
     pcapi.getBusinessUnits.mockResolvedValue([])
-    pcapi.getUserInformations.mockResolvedValue(storeOverrides.data.users[0])
+    jest
+      .spyOn(api, 'getProfile')
+      .mockResolvedValue(storeOverrides.user.currentUser)
     pcapi.canOffererCreateEducationalOffer.mockResolvedValue(false)
   })
 

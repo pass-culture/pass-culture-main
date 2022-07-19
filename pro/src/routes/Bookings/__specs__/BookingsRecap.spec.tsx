@@ -21,6 +21,7 @@ import { MemoryRouter } from 'react-router'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import { Provider } from 'react-redux'
 import React from 'react'
+import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { getNthCallNthArg } from 'utils/testHelpers'
@@ -29,12 +30,12 @@ import userEvent from '@testing-library/user-event'
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),
   getFilteredBookingsCSV: jest.fn(),
-  getUserInformations: jest.fn(),
   getUserHasBookings: jest.fn(),
 }))
 
 jest.mock('apiClient/api', () => ({
   api: {
+    getProfile: jest.fn(),
     getBookingsPro: jest.fn(),
   },
 }))
@@ -123,13 +124,13 @@ describe('components | BookingsRecap | Pro user', () => {
       publicName: 'René',
       isAdmin: false,
       email: 'rené@example.com',
-    }
+    } as SharedCurrentUserResponseModel
     store = {
       user: {
         currentUser: user,
       },
     }
-    jest.spyOn(pcapi, 'getUserInformations').mockResolvedValue(user)
+    jest.spyOn(api, 'getProfile').mockResolvedValue(user)
     venue = venueFactory()
     jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue([venue])
     jest

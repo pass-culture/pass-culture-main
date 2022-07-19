@@ -13,7 +13,12 @@ import { configureTestStore } from 'store/testUtils'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   loadFeatures: jest.fn(),
-  getUserInformations: jest.fn().mockResolvedValue({}),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getProfile: jest.fn().mockResolvedValue({}),
+  },
 }))
 
 describe('src | components | pages | Signup', () => {

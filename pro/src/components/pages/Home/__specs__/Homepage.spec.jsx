@@ -9,6 +9,7 @@ import Homepage from '../Homepage'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import React from 'react'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
 import userEvent from '@testing-library/user-event'
@@ -22,10 +23,15 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn(),
   getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
-  getUserInformations: jest.fn(),
   getVenueStats: jest.fn(),
   setHasSeenRGSBanner: jest.fn(),
   updateUserInformations: jest.fn().mockResolvedValue({}),
+}))
+
+jest.mock('apiClient/api', () => ({
+  api: {
+    getProfile: jest.fn(),
+  },
 }))
 
 jest.mock('utils/windowMatchMedia', () => ({
@@ -226,9 +232,7 @@ describe('homepage', () => {
         expect(screen.queryByText(/Soyez vigilant/)).not.toBeInTheDocument()
       })
       it('should not display if user has already seen', () => {
-        jest
-          .spyOn(pcapi, 'getUserInformations')
-          .mockResolvedValue({ hasSeenProRgs: true })
+        jest.spyOn(api, 'getProfile').mockResolvedValue({ hasSeenProRgs: true })
         store = configureTestStore({
           user: {
             currentUser: {
