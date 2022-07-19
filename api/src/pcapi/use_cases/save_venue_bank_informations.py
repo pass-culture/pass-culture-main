@@ -120,19 +120,24 @@ class SaveVenueBankInformations:
         else:
             raise NotImplementedError()
 
-        assert updated_bank_information  # for typing purposes
-        business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
-        # TODO(xordoquy): remove the siret condition once the old DMS procedure is dropped
-        if siret:
-            if not business_unit:
-                business_unit = BusinessUnit(
-                    name=venue.publicName or venue.name,
-                    siret=siret,
-                    bankAccountId=updated_bank_information.id,
-                )
-            business_unit.bankAccountId = updated_bank_information.id
-            repository.save(business_unit)
-            offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
+        if procedure_id in (
+            settings.DMS_VENUE_PROCEDURE_ID,
+            settings.DMS_VENUE_PROCEDURE_ID_V2,
+            settings.DMS_VENUE_PROCEDURE_ID_V3,
+        ):
+            assert updated_bank_information  # for typing purposes
+            business_unit = BusinessUnit.query.filter(BusinessUnit.siret == siret).one_or_none()
+            # TODO(xordoquy): remove the siret condition once the old DMS procedure is dropped
+            if siret:
+                if not business_unit:
+                    business_unit = BusinessUnit(
+                        name=venue.publicName or venue.name,
+                        siret=siret,
+                        bankAccountId=updated_bank_information.id,
+                    )
+                business_unit.bankAccountId = updated_bank_information.id
+                repository.save(business_unit)
+                offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
 
         update_external_pro(venue.bookingEmail)
         if application_details.annotation_id is not None:
