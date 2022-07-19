@@ -16,8 +16,9 @@ const Homepage = (): JSX.Element => {
   const {
     currentUser: { hasSeenProRgs },
   } = useCurrentUser()
-  const [hasClosedRGSBanner, setHasClosedRGSBanner] =
-    useState<boolean>(hasSeenProRgs)
+  const [hasClosedRGSBanner, setHasClosedRGSBanner] = useState<boolean>(
+    Boolean(hasSeenProRgs)
+  )
   const handleCloseRGSBanner = () => {
     setHasSeenRGSBanner().finally(() => {
       setHasClosedRGSBanner(true)
