@@ -12,6 +12,7 @@ import NavigationLogger from 'components/router/NavigationLogger'
 import NotFound from 'components/pages/Errors/NotFound/NotFound'
 import { Provider } from 'react-redux'
 import Spinner from 'components/layout/Spinner'
+import UtmTracking from 'components/router/UtmTracker'
 import configureStore from 'store'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useSelector } from 'react-redux'
@@ -24,6 +25,7 @@ const Root = () => {
       <BrowserRouter>
         <AppContainer>
           <NavigationLogger />
+          <UtmTracking />
           <AppRouter />
         </AppContainer>
       </BrowserRouter>

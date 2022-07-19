@@ -33,6 +33,7 @@ export enum Events {
   SIGNUP_FORM_ABORT = 'signupFormAbort',
   SIGNUP_FORM_SUCCESS = 'signupFormSuccess',
   TUTO_PAGE_VIEW = 'tutoPageView',
+  UTM_TRACKING_CAMPAIGN = 'UtmTrackingCampaign',
 }
 
 export enum OFFER_FORM_NAVIGATION_MEDIUM {
