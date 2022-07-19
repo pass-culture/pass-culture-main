@@ -12,7 +12,6 @@ import { ROOT_PATH } from 'utils/config'
 import { RootState } from 'store/reducers'
 import { StockEventItem } from './StockEventItem'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { formatAndSortStocks } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
 import styles from './StockEventSection.module.scss'
 import { useSelector } from 'react-redux'
 
@@ -22,34 +21,23 @@ export interface IStockEventSectionProps {
   stocks: IStockEventItemProps[]
   isCreation: boolean
   offerId: string
-  departmentCode: string
 }
 
 const StockEventSection = ({
   stocks,
   isCreation,
   offerId,
-  departmentCode,
 }: IStockEventSectionProps): JSX.Element => {
-  const [formattedStocks, setFormattedStocks] = useState<
-    IStockEventItemProps[]
-  >(formatAndSortStocks(stocks, departmentCode))
   const [showAllStocks, setShowAllStocks] = useState(false)
-  const [displayedStocks, setDisplayedStocks] = useState<
-    IStockEventItemProps[]
-  >([])
-
-  useEffect(() => {
-    setFormattedStocks(formatAndSortStocks(stocks, departmentCode))
-  }, [stocks])
+  const [displayedStocks, setDisplayedStocks] = useState(
+    stocks.slice(0, NB_UNFOLDED_STOCK)
+  )
 
   useEffect(() => {
     setDisplayedStocks(
-      showAllStocks
-        ? formattedStocks
-        : formattedStocks.slice(0, NB_UNFOLDED_STOCK)
+      showAllStocks ? [...stocks] : stocks.slice(0, NB_UNFOLDED_STOCK)
     )
-  }, [showAllStocks, formattedStocks])
+  }, [showAllStocks])
 
   const iconName = showAllStocks ? 'ico-arrow-up-b' : 'ico-arrow-down-b'
   const editLink = isCreation
@@ -78,6 +66,7 @@ const StockEventSection = ({
           price={s.price}
           quantity={s.quantity}
           bookingLimitDatetime={s.bookingLimitDatetime}
+          departmentCode={s.departmentCode}
         />
       ))}
 

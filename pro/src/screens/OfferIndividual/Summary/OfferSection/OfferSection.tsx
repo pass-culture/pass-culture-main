@@ -46,7 +46,6 @@ export interface IOfferSectionProps {
 
   venueName: string
   venuePublicName: string
-  venueDepartmentCode: string
   isVenueVirtual: boolean
   offererName: string
   bookingEmail: string

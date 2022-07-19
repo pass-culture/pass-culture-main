@@ -46,6 +46,7 @@ export const venueFactory = (
     postalCode: '11100',
     publicName: 'Mon Lieu',
     offererName: 'Ma structure',
+    departementCode: '973',
     ...customVenue,
   }
 }
