@@ -38,8 +38,26 @@ class PatchProUserResponseModel(BaseModel):
     phoneNumber: str | None
 
     class Config:
-        orm_mode = True
         alias_generator = to_camel
+        orm_mode = True
+
+
+class UserIdentityResponseModel(BaseModel):
+    firstName: str
+    lastName: str
+
+    class Config:
+        alias_generator = to_camel
+        orm_mode = True
+
+
+class UserIdentityBodyModel(BaseModel):
+    first_name: str
+    last_name: str
+
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
 
 
 class ProUserCreationBodyModel(BaseModel):
@@ -139,8 +157,6 @@ class SharedCurrentUserResponseModel(BaseModel):
     hasPhysicalVenues: bool | None
     hasSeenProTutorials: bool | None
     hasSeenProRgs: bool | None
-    # FIXME (mageoffray, 2022-04-04): Optional can be removed after
-    # post-deploy migrations have been done
     id: str
     idPieceNumber: str | None
     isAdmin: bool
