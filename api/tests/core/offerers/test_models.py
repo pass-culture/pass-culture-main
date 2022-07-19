@@ -240,3 +240,35 @@ class IsValidatedTest:
         offerer = factories.OffererFactory(validationToken="token")
         factories.UserOffererFactory(offerer=offerer)
         assert not offerer.isValidated
+
+
+class HasPendingBankInformationApplicationTest:
+    def test_no_application(self):
+        venue = factories.VenueFactory()
+
+        assert venue.hasPendingBankInformationApplication is False
+
+    def test_draft_application(self):
+        venue = factories.VenueFactory()
+        finance_factories.BankInformationFactory(
+            venue=venue, status=finance_models.BankInformationStatus.DRAFT, bic=None, iban=None
+        )
+
+        assert venue.hasPendingBankInformationApplication is True
+
+    def test_accepted_application(self):
+        venue = factories.VenueFactory()
+        finance_factories.BankInformationFactory(
+            venue=venue,
+            status=finance_models.BankInformationStatus.ACCEPTED,
+        )
+
+        assert venue.hasPendingBankInformationApplication is False
+
+    def test_rejected_application(self):
+        venue = factories.VenueFactory()
+        finance_factories.BankInformationFactory(
+            venue=venue, status=finance_models.BankInformationStatus.REJECTED, bic=None, iban=None
+        )
+
+        assert venue.hasPendingBankInformationApplication is False
