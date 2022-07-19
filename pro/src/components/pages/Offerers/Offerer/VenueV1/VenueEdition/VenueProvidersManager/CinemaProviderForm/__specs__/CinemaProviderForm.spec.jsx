@@ -58,7 +58,7 @@ describe('components | CinemaProviderForm', () => {
   const renderCinemaProviderForm = async () => {
     await renderVenueProvidersManager(props)
 
-    const importOffersButton = screen.getByText('Importer des offres')
+    const importOffersButton = screen.getByText('Synchroniser des offres')
     fireEvent.click(importOffersButton)
     const providersSelect = screen.getByRole('combobox')
     fireEvent.change(providersSelect, { target: { value: provider.id } })

@@ -38,8 +38,8 @@ const ToggleVenueProviderStatusDialog = ({
         <div className={style['explanation']}>
           En mettant en pause la synchronisation de vos offres :
           <ul>
-            <li>Toutes vos offres sont désactivées</li>
-            <li>Les réservations en cours ne sont pas annulées</li>
+            <li>Toutes vos offres synchronisées seront désactivées</li>
+            <li>Les réservations en cours ne seront pas annulées</li>
           </ul>
           <br />
           N’oubliez pas de réactiver la synchronisation si vous souhaitez que

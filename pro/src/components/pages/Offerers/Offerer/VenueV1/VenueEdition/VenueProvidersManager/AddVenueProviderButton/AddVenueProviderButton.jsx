@@ -1,9 +1,11 @@
+import './AddVenueProviderButton.scss'
+
 import React, { useCallback, useMemo, useState } from 'react'
 
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
 import PropTypes from 'prop-types'
 import Select from 'components/layout/inputs/Select'
+import { ReactComponent as SynchronizeOffers } from 'icons/ico-more-circle.svg'
 import VenueProviderForm from '../VenueProviderForm'
 import { sortByDisplayName } from 'utils/strings'
 
@@ -58,8 +60,8 @@ const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
         onClick={setCreationMode}
         type="button"
       >
-        <AddOfferSvg />
-        <span>Importer des offres</span>
+        <SynchronizeOffers />
+        <span>Synchroniser des offres</span>
       </button>
     </div>
   )
