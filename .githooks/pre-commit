@@ -101,9 +101,13 @@ STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' | grep 
 
 
 LINTED_FILES=""
+MYPY_FILES=""
 
 for FILE in $STAGED_FILES; do
   LINTED_FILES+=" ${FILE}"
+  if [[ ! " ${FILE}" == *tests/* ]]; then
+    MYPY_FILES+=" ${FILE}"
+  fi
 done
 
 if [[ ! -z "$STAGED_FILES" ]]
@@ -143,7 +147,7 @@ then
   if [[ ! ",${DISABLED_API_PRE_COMMIT_CHECKS}," =~ ",mypy," ]]
   then
       echo -e "\033[0;96mRunning mypy for type checking...\033[0m"
-      mypy $LINTED_FILES --pretty --show-error-codes
+      mypy $MYPY_FILES --pretty --show-error-codes
       if [[ "$?" != 0 ]]; then
           counter=$((counter + 1))
       fi
