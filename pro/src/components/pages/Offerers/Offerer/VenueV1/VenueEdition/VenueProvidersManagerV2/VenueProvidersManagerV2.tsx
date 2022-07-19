@@ -5,6 +5,8 @@ import { IAPIVenue } from 'core/Venue/types'
 import { IVenueProviderApi } from '../VenueProvidersManager/CinemaProviderItem/types'
 import Spinner from 'components/layout/Spinner'
 import VenueProviderListV2 from './VenueProviderListV2/VenueProviderListV2'
+import VenueProviderStatus from './VenueProviderStatus/VenueProviderStatus'
+import styles from './VenueProvidersManagerV2.module.scss'
 
 export interface IVenueProvidersManagerV2Props {
   venue: IAPIVenue
@@ -49,9 +51,19 @@ const VenueProvidersManagerV2 = ({
     return null
   }
 
+  const isSynchronizationActive =
+    venueProviders.filter(venueProvider => venueProvider.isActive).length != 0
+
   return (
-    <div className="venue-providers-manager section">
-      <h2 className="main-list-title">Synchronisation des offres</h2>
+    <div className={`${styles['venue-providers-manager']} section`}>
+      <div className={styles['main-list-title']}>
+        <h2 className={styles['main-list-title-text']}>
+          Synchronisation des offres
+        </h2>
+        {!!venueProviders.length && (
+          <VenueProviderStatus isActive={isSynchronizationActive} />
+        )}
+      </div>
 
       {isLoading ? (
         <Spinner />
