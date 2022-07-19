@@ -98,7 +98,9 @@ class AdageHttpClient(AdageClient):
 
     def notify_institution_association(self, data: AdageCollectiveOffer) -> AdageApiResult:
         api_url = f"{self.base_url}/v1/offre-assoc"
-        api_response = requests.post(api_url, headers={self.header_key: self.api_key}, data=data.json())
+        api_response = requests.post(
+            api_url, headers={self.header_key: self.api_key, "Content-Type": "application/json"}, data=data.json()
+        )
 
         if api_response.status_code != 200:
             raise AdageException("Error getting Adage API", api_response.status_code, api_response.text)
