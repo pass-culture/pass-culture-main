@@ -24,14 +24,12 @@ jest.mock('repository/pcapi/pcapi', () => ({
 }))
 
 const initialStore = {
-  data: {
-    users: [
-      {
-        publicName: 'François',
-        isAdmin: false,
-        hasSeenProTutorials: true,
-      },
-    ],
+  user: {
+    currentUser: {
+      publicName: 'François',
+      isAdmin: false,
+      hasSeenProTutorials: true,
+    },
   },
 }
 

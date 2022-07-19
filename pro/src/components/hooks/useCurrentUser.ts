@@ -1,7 +1,8 @@
+import { setCurrentUser, setIsInitialized } from 'store/user/actions'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { loadUser } from 'store/user/thunks'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { api } from 'apiClient/api'
+import { selectCurrentUser } from 'store/user/selectors'
 import { selectUserInitialized } from 'store/user/selectors'
 import { useEffect } from 'react'
 
@@ -47,7 +48,15 @@ const useCurrentUser = (): IUseCurrentUserReturn => {
   const dispatch = useDispatch()
   useEffect(() => {
     if (!isUserInitialized) {
-      dispatch(loadUser())
+      api
+        .getProfile()
+        .then(user => {
+          dispatch(setCurrentUser(user ? user : null))
+        })
+        .catch(() => setCurrentUser(null))
+        .finally(() => {
+          dispatch(setIsInitialized())
+        })
     }
   }, [dispatch, isUserInitialized])
 

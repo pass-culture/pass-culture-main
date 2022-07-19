@@ -110,11 +110,9 @@ describe('screen Offers', () => {
       publicName: 'USER',
     }
     store = configureTestStore({
-      data: {
-        users: [currentUser],
-      },
       user: {
         initialized: true,
+        currentUser,
       },
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
@@ -518,11 +516,9 @@ describe('screen Offers', () => {
                 },
               },
               configureTestStore({
-                data: {
-                  users: [currentUser],
-                },
                 user: {
                   initialized: true,
+                  currentUser,
                 },
                 offers: {
                   searchFilters: { ...DEFAULT_SEARCH_FILTERS, venueId: 'JI' },
@@ -566,11 +562,9 @@ describe('screen Offers', () => {
                 },
               },
               configureTestStore({
-                data: {
-                  users: [currentUser],
-                },
                 user: {
                   initialized: true,
+                  currentUser,
                 },
                 offers: {
                   searchFilters: { ...DEFAULT_SEARCH_FILTERS, venueId: 'IJ' },
@@ -594,11 +588,9 @@ describe('screen Offers', () => {
                 },
               },
               configureTestStore({
-                data: {
-                  users: [currentUser],
-                },
                 user: {
                   initialized: true,
+                  currentUser,
                 },
                 offers: {
                   searchFilters: { ...DEFAULT_SEARCH_FILTERS, offererId: 'A4' },

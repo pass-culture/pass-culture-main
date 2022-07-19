@@ -20,8 +20,8 @@ describe('src | components | pages | Signup', () => {
   let store
   beforeEach(() => {
     store = configureTestStore({
-      data: {
-        users: null,
+      user: {
+        currentUser: null,
       },
       features: {
         list: [{ isActive: true, nameKey: 'ENABLE_PRO_ACCOUNT_CREATION' }],

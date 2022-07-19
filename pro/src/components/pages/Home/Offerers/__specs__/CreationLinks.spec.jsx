@@ -18,18 +18,16 @@ jest.mock('repository/pcapi/pcapi', () => ({
 
 const renderHomePage = async () => {
   const store = configureTestStore({
-    data: {
-      users: [
-        {
-          id: 'fake_id',
-          firstName: 'John',
-          lastName: 'Do',
-          email: 'john.do@dummy.xyz',
-          phoneNumber: '01 00 00 00 00',
-        },
-      ],
+    user: {
+      currentUser: {
+        id: 'fake_id',
+        firstName: 'John',
+        lastName: 'Do',
+        email: 'john.do@dummy.xyz',
+        phoneNumber: '01 00 00 00 00',
+      },
+      initialized: true,
     },
-    user: { initialized: true },
   })
 
   return await act(async () => {

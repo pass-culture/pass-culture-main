@@ -52,16 +52,14 @@ const renderOfferCreation = async (
         },
       ],
     },
-    data: {
-      users: [
-        {
-          publicName: 'François',
-          isAdmin: false,
-          email: 'francois@example.com',
-        },
-      ],
+    user: {
+      currentUser: {
+        publicName: 'François',
+        isAdmin: false,
+        email: 'francois@example.com',
+      },
+      initialized: true,
     },
-    user: { initialized: true },
   }
   const store = configureTestStore({
     ...defaultStore,

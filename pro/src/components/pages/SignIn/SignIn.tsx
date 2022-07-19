@@ -12,8 +12,9 @@ import { PasswordInput } from './PasswordInput'
 import { RootState } from 'store/reducers'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
+import { api } from 'apiClient/api'
 import { redirectLoggedUser } from 'components/router/helpers'
-import { signin } from 'store/user/thunks'
+import { setCurrentUser } from 'store/user/actions'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
@@ -70,10 +71,16 @@ const SignIn = (): JSX.Element => {
 
   const handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-
-    return dispatch(
-      signin(emailValue, passwordValue, onHandleSuccessRedirect, onHandleFail)
-    )
+    return api
+      .signin({ identifier: emailValue, password: passwordValue })
+      .then(user => {
+        dispatch(setCurrentUser(user ? user : null))
+        onHandleSuccessRedirect()
+      })
+      .catch(payload => {
+        setCurrentUser(null)
+        onHandleFail(payload)
+      })
   }
 
   return (

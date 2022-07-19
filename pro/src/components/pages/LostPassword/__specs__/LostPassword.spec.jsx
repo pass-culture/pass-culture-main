@@ -21,8 +21,8 @@ jest.mock('utils/recaptcha', () => ({
 
 const renderLostPassword = url => {
   const store = configureStore({
-    data: {
-      users: [{ id: 'CMOI' }],
+    user: {
+      currentUser: { id: 'CMOI' },
     },
   }).store
 
