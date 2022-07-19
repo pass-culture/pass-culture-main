@@ -21,6 +21,12 @@ def send_complete_subscription_after_dms_email(user_email: str) -> bool:
 def send_pre_subscription_from_dms_error_email_to_beneficiary(
     user_email: str, field_errors: list[dms_models.DmsFieldErrorDetails]
 ) -> bool:
+
+    if len(field_errors) == 0:
+        return False
+    data = SendinblueTransactionalEmailData(template=TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value)
+
+    ### ----- TODO: remove when PROD template is updated to use the new DMS_ERRORS param ------ ###
     postal_code_error = next(
         (error for error in field_errors if error.key == dms_models.DmsFieldErrorKeyEnum.postal_code), None
     )
@@ -28,14 +34,12 @@ def send_pre_subscription_from_dms_error_email_to_beneficiary(
         (error for error in field_errors if error.key == dms_models.DmsFieldErrorKeyEnum.id_piece_number),
         None,
     )
-    if postal_code_error == None and id_card_number_error == None:
-        return False
-
-    # TODO: print all errors in email, not only these two
-    data = SendinblueTransactionalEmailData(template=TransactionalEmail.PRE_SUBSCRIPTION_DMS_ERROR_TO_BENEFICIARY.value)
     if postal_code_error:
         data.params["POSTAL_CODE"] = postal_code_error.value
     if id_card_number_error:
         data.params["ID_CARD_NUMBER"] = id_card_number_error.value
+    ### --------------------------------------------------------------------------------------- ###
+
+    data.params["DMS_ERRORS"] = [{"name": error.get_field_label(), "value": error.value} for error in field_errors]
 
     return mails.send(recipients=[user_email], data=data)
