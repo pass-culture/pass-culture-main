@@ -31,13 +31,17 @@ const StockEventSection = ({
   offerId,
   departmentCode,
 }: IStockEventSectionProps): JSX.Element => {
-  const [formattedStocks] = useState<IStockEventItemProps[]>(
-    formatAndSortStocks(stocks, departmentCode)
-  )
+  const [formattedStocks, setFormattedStocks] = useState<
+    IStockEventItemProps[]
+  >(formatAndSortStocks(stocks, departmentCode))
   const [showAllStocks, setShowAllStocks] = useState(false)
   const [displayedStocks, setDisplayedStocks] = useState<
     IStockEventItemProps[]
   >([])
+
+  useEffect(() => {
+    setFormattedStocks(formatAndSortStocks(stocks, departmentCode))
+  }, [stocks])
 
   useEffect(() => {
     setDisplayedStocks(
