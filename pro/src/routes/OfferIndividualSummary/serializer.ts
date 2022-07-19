@@ -143,13 +143,21 @@ const serializerStockEventSectionProps = (
   if (!offer.isEvent || offer.stocks.length === 0) {
     return undefined
   }
-  return offer.stocks.map(stock => ({
-    quantity: stock.quantity,
-    price: stock.price,
-    bookingLimitDatetime: stock.bookingLimitDatetime,
-    beginningDatetime: stock.beginningDatetime,
-    departmentCode: offer.venue.departmentCode,
-  }))
+  return offer.stocks
+    .sort((a, b) => {
+      const aDate =
+        a.beginningDatetime !== null ? a.beginningDatetime : a.dateCreated
+      const bDate =
+        b.beginningDatetime !== null ? b.beginningDatetime : b.dateCreated
+      return new Date(aDate) < new Date(bDate) ? 1 : -1
+    })
+    .map(stock => ({
+      quantity: stock.quantity,
+      price: stock.price,
+      bookingLimitDatetime: stock.bookingLimitDatetime,
+      beginningDatetime: stock.beginningDatetime,
+      departmentCode: offer.venue.departmentCode,
+    }))
 }
 
 const serializerPreviewProps = (

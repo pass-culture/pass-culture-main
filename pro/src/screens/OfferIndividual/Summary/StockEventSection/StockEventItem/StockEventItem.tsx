@@ -2,7 +2,7 @@ import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 
 import React from 'react'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { format } from 'date-fns-tz'
+import { formatLocalTimeDateString } from 'utils/timezone'
 
 export interface IStockEventItemProps {
   className?: string
@@ -10,6 +10,8 @@ export interface IStockEventItemProps {
   price: number
   quantity?: number | null
   bookingLimitDatetime: string | Date | null
+  activationCodesExpirationDatetime?: Date | null
+  departmentCode: string
 }
 
 const StockEventItem = ({
@@ -18,26 +20,39 @@ const StockEventItem = ({
   price,
   quantity,
   bookingLimitDatetime,
+  departmentCode,
 }: IStockEventItemProps): JSX.Element => {
   return (
     <div className={className}>
       {beginningDatetime && (
         <SummaryLayout.Row
           title="Date"
-          description={format(beginningDatetime, FORMAT_DD_MM_YYYY)}
+          description={formatLocalTimeDateString(
+            beginningDatetime,
+            departmentCode,
+            FORMAT_DD_MM_YYYY
+          )}
         />
       )}
       {beginningDatetime && (
         <SummaryLayout.Row
           title="Horaire"
-          description={format(beginningDatetime, FORMAT_HH_mm)}
+          description={formatLocalTimeDateString(
+            beginningDatetime,
+            departmentCode,
+            FORMAT_HH_mm
+          )}
         />
       )}
       <SummaryLayout.Row title="Prix" description={`${price} €`} />
       {bookingLimitDatetime !== null && (
         <SummaryLayout.Row
           title="Date limite de réservation"
-          description={format(bookingLimitDatetime, FORMAT_DD_MM_YYYY)}
+          description={formatLocalTimeDateString(
+            bookingLimitDatetime,
+            departmentCode,
+            FORMAT_DD_MM_YYYY
+          )}
         />
       )}
       <SummaryLayout.Row
