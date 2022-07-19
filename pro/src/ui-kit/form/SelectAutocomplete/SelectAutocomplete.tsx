@@ -5,6 +5,7 @@ import { useField, useFormikContext } from 'formik'
 import AutocompleteList from '../shared/AutocompleteList/AutocompleteList'
 import cx from 'classnames'
 import styles from './SelectAutocomplete.module.scss'
+import { toLowerCaseWithoutAccents } from './utils/toLowerCaseWithoutAccents'
 
 export type SelectAutocompleteProps = {
   className?: string
@@ -71,11 +72,20 @@ const SelectAutocomplete = ({
       onSearchChange()
       return
     }
-    const regExp = new RegExp(searchField.value, 'i')
+
+    const formattedValue: string = toLowerCaseWithoutAccents(searchField.value)
+
+    const formattedValues = formattedValue.split(' ')
+
     setFilteredOptions(
-      options.filter(
-        option => searchField.value === '' || option.label.match(regExp)
-      )
+      options.filter(option => {
+        const formattedLabel = toLowerCaseWithoutAccents(option.label)
+
+        return (
+          formattedValues.length === 0 ||
+          formattedValues.every(word => formattedLabel.includes(word))
+        )
+      })
     )
   }, [searchField.value])
 
