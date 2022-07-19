@@ -56,6 +56,18 @@ class SaveVenueBankInformationsTest:
             self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
             assert errors.errors["Venue"] == ["Venue not found", "SIRET is no longer active"]
 
+        def test_raises_an_error_if_no_venue_found_by_dms_token(self):
+            application_details = ApplicationDetail(
+                status=BankInformationStatus.ACCEPTED,
+                application_id=1,
+                modification_date=datetime.utcnow(),
+                dms_token="1234567890abcdef",
+            )
+            errors = ApiErrors()
+
+            self.save_venue_bank_informations.get_referent_venue(application_details, None, errors)
+            assert errors.errors["Venue"] == ["Venue not found"]
+
         @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", side_effect=ApiEntrepriseException())
         def test_raises_an_error_if_api_entreprise_errored(self, siret_is_active):
             offerer = offerers_factories.OffererFactory()
