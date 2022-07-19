@@ -124,14 +124,12 @@ export const initialize = async ({
   }
 
   const store = configureTestStore({
-    data: {
-      users: [
-        {
-          publicName: 'François',
-          isAdmin: false,
-          email: 'francois@example.com',
-        },
-      ],
+    user: {
+      currentUser: {
+        publicName: 'François',
+        isAdmin: false,
+        email: 'francois@example.com',
+      },
     },
   })
 

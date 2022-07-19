@@ -17,11 +17,9 @@ const renderProfileAndSupport = () => {
     id: 'EY',
   }
   const store = configureTestStore({
-    data: {
-      users: [currentUser],
-    },
     user: {
       initialized: true,
+      currentUser,
     },
     app: {
       logEvent: mockLogEvent,

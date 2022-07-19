@@ -1,7 +1,4 @@
-import {
-  selectCurrentUser,
-  selectIsUserAdmin,
-} from 'store/selectors/data/usersSelectors'
+import { selectCurrentUser, selectIsUserAdmin } from 'store/user/selectors'
 
 import OfferDetails from './OfferDetails'
 import { connect } from 'react-redux'

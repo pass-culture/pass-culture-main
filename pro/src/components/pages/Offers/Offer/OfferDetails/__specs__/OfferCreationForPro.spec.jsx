@@ -86,14 +86,12 @@ describe('offerDetails - Creation - pro user', () => {
           },
         ],
       },
-      data: {
-        users: [
-          {
-            publicName: 'François',
-            isAdmin: false,
-            email: 'francois@example.com',
-          },
-        ],
+      user: {
+        currentUser: {
+          publicName: 'François',
+          isAdmin: false,
+          email: 'francois@example.com',
+        },
       },
     })
     props = {

@@ -1,6 +1,6 @@
 import Header from './Header'
 import { connect } from 'react-redux'
-import { selectCurrentUser } from 'store/selectors/data/usersSelectors'
+import { selectCurrentUser } from 'store/user/selectors'
 
 export const mapStateToProps = state => {
   const user = selectCurrentUser(state)

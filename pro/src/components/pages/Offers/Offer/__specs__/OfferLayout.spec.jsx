@@ -46,14 +46,12 @@ describe('offerLayout', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      data: {
-        users: [
-          {
-            publicName: 'François',
-            isAdmin: false,
-            email: 'email@example.com',
-          },
-        ],
+      user: {
+        currentUser: {
+          publicName: 'François',
+          isAdmin: false,
+          email: 'email@example.com',
+        },
       },
     })
     categories = {

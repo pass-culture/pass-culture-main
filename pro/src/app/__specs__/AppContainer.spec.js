@@ -4,11 +4,9 @@ describe('src | AppContainer', () => {
   it('should map maintenance status to App', () => {
     // Given
     const state = {
-      data: {
-        users: [],
-      },
       user: {
         initialized: false,
+        currentUser: null,
       },
       features: {
         list: [],

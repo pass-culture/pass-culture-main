@@ -27,7 +27,7 @@ describe('src | AppLayout', () => {
   beforeEach(() => {
     props = {}
     store = configureTestStore({
-      data: { users: [{ publicName: 'François', isAdmin: false }] },
+      user: { currentUser: { publicName: 'François', isAdmin: false } },
     })
   })
 

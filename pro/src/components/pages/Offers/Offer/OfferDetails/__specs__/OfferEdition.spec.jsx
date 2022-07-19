@@ -79,14 +79,12 @@ describe('offerDetails - Edition', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      data: {
-        users: [
-          {
-            publicName: 'François',
-            isAdmin: false,
-            email: 'francois@example.com',
-          },
-        ],
+      user: {
+        currentUser: {
+          publicName: 'François',
+          isAdmin: false,
+          email: 'francois@example.com',
+        },
       },
     })
 
@@ -1584,10 +1582,12 @@ describe('offerDetails - Edition', () => {
     it('should call computeOffersUrl with proper params', async () => {
       // Given
       const testStore = {
-        data: {
-          users: [
-            { publicName: 'François', isAdmin: false, email: 'test@toto.com' },
-          ],
+        user: {
+          currentUser: {
+            publicName: 'François',
+            isAdmin: false,
+            email: 'test@toto.com',
+          },
         },
         offers: {
           searchFilters: {
@@ -1637,10 +1637,12 @@ describe('offerDetails - Edition', () => {
     it('should redirect to offers page', async () => {
       // Given
       store = configureTestStore({
-        data: {
-          users: [
-            { publicName: 'François', isAdmin: false, email: 'test@toto.com' },
-          ],
+        user: {
+          currentUser: {
+            publicName: 'François',
+            isAdmin: false,
+            email: 'test@toto.com',
+          },
         },
         offers: {
           searchFilters: {},

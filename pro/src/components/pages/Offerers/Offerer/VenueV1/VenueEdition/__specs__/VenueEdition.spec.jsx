@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 import * as reactRouter from 'react-router-dom'
-import * as usersSelectors from 'store/selectors/data/usersSelectors'
+import * as usersSelectors from 'store/user/selectors'
 
 import {
   fireEvent,

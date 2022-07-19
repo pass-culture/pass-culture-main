@@ -43,15 +43,11 @@ describe('screens:OfferCreation::Informations', () => {
     store = {
       user: {
         initialized: true,
-      },
-      data: {
-        users: [
-          {
-            publicName: 'John Do',
-            isAdmin: false,
-            email: 'email@example.com',
-          },
-        ],
+        currentUser: {
+          publicName: 'John Do',
+          isAdmin: false,
+          email: 'email@example.com',
+        },
       },
     }
     const categories = [

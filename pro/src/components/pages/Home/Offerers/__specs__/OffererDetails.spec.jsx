@@ -84,19 +84,17 @@ describe('offererDetailsLegacy', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      data: {
-        users: [
-          {
-            id: 'fake_id',
-            firstName: 'John',
-            lastName: 'Do',
-            email: 'john.do@dummy.xyz',
-            phoneNumber: '01 00 00 00 00',
-          },
-        ],
-      },
       app: { logEvent: mockLogEvent },
-      user: { initialized: true },
+      user: {
+        currentUser: {
+          id: 'fake_id',
+          firstName: 'John',
+          lastName: 'Do',
+          email: 'john.do@dummy.xyz',
+          phoneNumber: '01 00 00 00 00',
+        },
+        initialized: true,
+      },
     })
 
     virtualVenue = {
@@ -818,18 +816,16 @@ describe('offererDetailsLegacy', () => {
   describe('when FF enforce siret is enabled', () => {
     beforeEach(() => {
       store = configureTestStore({
-        data: {
-          users: [
-            {
-              id: 'fake_id',
-              firstName: 'John',
-              lastName: 'Do',
-              email: 'john.do@dummy.xyz',
-              phoneNumber: '01 00 00 00 00',
-            },
-          ],
+        user: {
+          currentUser: {
+            id: 'fake_id',
+            firstName: 'John',
+            lastName: 'Do',
+            email: 'john.do@dummy.xyz',
+            phoneNumber: '01 00 00 00 00',
+          },
+          initialized: true,
         },
-        user: { initialized: true },
         features: {
           list: [
             { isActive: true, nameKey: 'ENFORCE_BANK_INFORMATION_WITH_SIRET' },

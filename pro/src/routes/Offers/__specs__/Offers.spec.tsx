@@ -116,11 +116,9 @@ describe('route Offers', () => {
       publicName: 'USER',
     }
     store = configureTestStore({
-      data: {
-        users: [currentUser],
-      },
       user: {
         initialized: true,
+        currentUser,
       },
       offers: {
         searchFilters: DEFAULT_SEARCH_FILTERS,
@@ -212,11 +210,9 @@ describe('route Offers', () => {
       describe('when user is admin', () => {
         beforeEach(() => {
           store = configureTestStore({
-            data: {
-              users: [{ ...currentUser, isAdmin: true }],
-            },
             user: {
               initialized: true,
+              currentUser: { ...currentUser, isAdmin: true },
             },
             offers: {
               searchFilters: DEFAULT_SEARCH_FILTERS,

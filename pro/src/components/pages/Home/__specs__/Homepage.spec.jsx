@@ -51,18 +51,16 @@ describe('homepage', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      data: {
-        users: [
-          {
-            id: 'fake_id',
-            firstName: 'John',
-            lastName: 'Do',
-            email: 'john.do@dummy.xyz',
-            phoneNumber: '01 00 00 00 00',
-          },
-        ],
+      user: {
+        currentUser: {
+          id: 'fake_id',
+          firstName: 'John',
+          lastName: 'Do',
+          email: 'john.do@dummy.xyz',
+          phoneNumber: '01 00 00 00 00',
+        },
+        initialized: true,
       },
-      user: { initialized: true },
       app: { logEvent: mockLogEvent },
     })
     baseOfferers = [
@@ -232,12 +230,10 @@ describe('homepage', () => {
           .spyOn(pcapi, 'getUserInformations')
           .mockResolvedValue({ hasSeenProRgs: true })
         store = configureTestStore({
-          data: {
-            users: [
-              {
-                hasSeenProRgs: true,
-              },
-            ],
+          user: {
+            currentUser: {
+              hasSeenProRgs: true,
+            },
           },
         })
         renderHomePage(store)

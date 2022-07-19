@@ -43,13 +43,11 @@ describe('tutorial modal', () => {
   })
   it('should trigger an event when the user arrive on /accueil for the first time', async () => {
     store = configureTestStore({
-      data: {
-        users: [
-          {
-            id: 'test_id',
-            hasSeenProTutorials: false,
-          },
-        ],
+      user: {
+        currentUser: {
+          id: 'test_id',
+          hasSeenProTutorials: false,
+        },
       },
       app: { logEvent: mockLogEvent },
     })
@@ -65,13 +63,11 @@ describe('tutorial modal', () => {
 
   it('should show tutorial dialog if user has not seen it yet', async () => {
     store = configureTestStore({
-      data: {
-        users: [
-          {
-            id: 'test_id',
-            hasSeenProTutorials: false,
-          },
-        ],
+      user: {
+        currentUser: {
+          id: 'test_id',
+          hasSeenProTutorials: false,
+        },
       },
     })
 
@@ -83,13 +79,11 @@ describe('tutorial modal', () => {
 
   it("shouldn't show tutorial dialog if user has already seen it", async () => {
     store = configureTestStore({
-      data: {
-        users: [
-          {
-            id: 'test_id',
-            hasSeenProTutorials: true,
-          },
-        ],
+      user: {
+        currentUser: {
+          id: 'test_id',
+          hasSeenProTutorials: true,
+        },
       },
     })
     const props = {}
@@ -103,13 +97,11 @@ describe('tutorial modal', () => {
     let buttonNext
     beforeEach(async () => {
       store = configureTestStore({
-        data: {
-          users: [
-            {
-              id: 'test_id',
-              hasSeenProTutorials: false,
-            },
-          ],
+        user: {
+          currentUser: {
+            id: 'test_id',
+            hasSeenProTutorials: false,
+          },
         },
       })
 

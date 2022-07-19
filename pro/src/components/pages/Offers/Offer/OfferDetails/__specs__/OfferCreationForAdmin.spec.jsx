@@ -50,7 +50,7 @@ describe('offerDetails - Creation - admin user', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      data: { users: [{ publicName: 'François', isAdmin: true }] },
+      user: { currentUser: { publicName: 'François', isAdmin: true } },
     })
 
     props = {
