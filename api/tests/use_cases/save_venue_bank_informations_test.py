@@ -4,7 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
+from pcapi import settings
 from pcapi.connectors.api_entreprises import ApiEntrepriseException
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
@@ -674,6 +676,99 @@ class SaveVenueBankInformationsTest:
                 # Then
                 bank_information_count = BankInformation.query.count()
                 assert bank_information_count == 0
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient")
+    class SaveBankInformationV4ProcedureTest:
+        def setup_method(self):
+            self.save_venue_bank_informations = SaveVenueBankInformations(
+                venue_repository=VenueWithBasicInformationSQLRepository(),
+                bank_informations_repository=BankInformationsSQLRepository(),
+            )
+
+        def test_draft_application(self, mock_dms_graphql_client, app):
+            venue = offerers_factories.VenueFactory(businessUnit=None)
+            application_id = "9"
+            mock_dms_graphql_client.return_value.get_bic.return_value = (
+                dms_creators.venue_application_detail_response_procedure_v4(
+                    state=GraphQLApplicationStates.draft.value, dms_token=venue.dmsToken
+                )
+            )
+
+            self.save_venue_bank_informations.execute(application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4)
+
+            bank_information = BankInformation.query.one()
+            assert bank_information.venue == venue
+            assert bank_information.bic is None
+            assert bank_information.iban is None
+            assert bank_information.status == BankInformationStatus.DRAFT
+
+        def test_on_going_application(self, mock_dms_graphql_client, app):
+            venue = offerers_factories.VenueFactory(businessUnit=None)
+            application_id = "9"
+            mock_dms_graphql_client.return_value.get_bic.return_value = (
+                dms_creators.venue_application_detail_response_procedure_v4(
+                    state=GraphQLApplicationStates.on_going.value, dms_token=venue.dmsToken
+                )
+            )
+
+            self.save_venue_bank_informations.execute(application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4)
+
+            bank_information = BankInformation.query.one()
+            assert bank_information.venue == venue
+            assert bank_information.bic is None
+            assert bank_information.iban is None
+            assert bank_information.status == BankInformationStatus.DRAFT
+
+        def test_accepted_application(self, mock_dms_graphql_client, app):
+            venue = offerers_factories.VenueFactory(businessUnit=None)
+            application_id = "9"
+            mock_dms_graphql_client.return_value.get_bic.return_value = (
+                dms_creators.venue_application_detail_response_procedure_v4(
+                    state=GraphQLApplicationStates.accepted.value, dms_token=venue.dmsToken
+                )
+            )
+
+            self.save_venue_bank_informations.execute(application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4)
+
+            bank_information = BankInformation.query.one()
+            assert bank_information.venue == venue
+            assert bank_information.bic == "SOGEFRPP"
+            assert bank_information.iban == "FR7630007000111234567890144"
+            assert bank_information.status == BankInformationStatus.ACCEPTED
+
+        def test_refused_application(self, mock_dms_graphql_client, app):
+            venue = offerers_factories.VenueFactory(businessUnit=None)
+            application_id = "9"
+            mock_dms_graphql_client.return_value.get_bic.return_value = (
+                dms_creators.venue_application_detail_response_procedure_v4(
+                    state=GraphQLApplicationStates.refused.value, dms_token=venue.dmsToken
+                )
+            )
+
+            self.save_venue_bank_informations.execute(application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4)
+
+            bank_information = BankInformation.query.one()
+            assert bank_information.venue == venue
+            assert bank_information.bic is None
+            assert bank_information.iban is None
+            assert bank_information.status == BankInformationStatus.REJECTED
+
+        def test_without_continuation_application(self, mock_dms_graphql_client, app):
+            venue = offerers_factories.VenueFactory(businessUnit=None)
+            application_id = "9"
+            mock_dms_graphql_client.return_value.get_bic.return_value = (
+                dms_creators.venue_application_detail_response_procedure_v4(
+                    state=GraphQLApplicationStates.without_continuation.value, dms_token=venue.dmsToken
+                )
+            )
+
+            self.save_venue_bank_informations.execute(application_id, procedure_id=settings.DMS_VENUE_PROCEDURE_ID_V4)
+
+            bank_information = BankInformation.query.one()
+            assert bank_information.venue == venue
+            assert bank_information.bic is None
+            assert bank_information.iban is None
+            assert bank_information.status == BankInformationStatus.REJECTED
 
     @patch("pcapi.connectors.api_entreprises.check_siret_is_still_active", return_value=True)
     @patch("pcapi.connectors.dms.api.get_application_details")
