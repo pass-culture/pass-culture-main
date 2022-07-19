@@ -112,6 +112,48 @@ describe('src | VenueProvidersManager', () => {
       ).not.toBeInTheDocument()
     })
 
+    it('should display synchronization activated status when venue provider isActive', async () => {
+      // given
+      venueProviders = [
+        {
+          id: 'AD',
+          nOffers: 0,
+          provider: { id: 'providerId', name: 'Allocine' },
+          venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
+          isActive: true,
+        },
+      ]
+      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+
+      // when
+      await renderVenueProvidersManager(props)
+
+      // then
+      expect(screen.getByText('Synchronisation activée')).toBeInTheDocument()
+    })
+
+    it('should display synchronization inactive status when venue provider is not active', async () => {
+      // given
+      venueProviders = [
+        {
+          id: 'AD',
+          nOffers: 0,
+          provider: { id: 'providerId', name: 'Allocine' },
+          venueId: props.venue.id,
+          lastSyncDate: '2018-01-01T10:00:00',
+          isActive: false,
+        },
+      ]
+      pcapi.loadVenueProviders.mockResolvedValue(venueProviders)
+
+      // when
+      await renderVenueProvidersManager(props)
+
+      // then
+      expect(screen.getByText('Synchronisation en pause')).toBeInTheDocument()
+    })
+
     it('should not show import button', async () => {
       // Given
       venueProviders = [

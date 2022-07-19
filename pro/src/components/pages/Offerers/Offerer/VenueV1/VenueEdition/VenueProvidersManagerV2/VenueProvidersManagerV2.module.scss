@@ -1,0 +1,20 @@
+@use 'styles/variables/_colors.scss' as colors;
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+
+.venue-providers-manager {
+  .main-list-title {
+    @include fonts.title4();
+
+    border-bottom: thin solid colors.$grey-medium;
+    margin: 0.75rem 0;
+    padding-bottom: 0.5rem;
+    display: flex;
+    flex-flow: row wrap;
+
+    .main-list-title-text {
+      @include fonts.title4();
+      flex: 1 1;
+    }
+  }
+}
