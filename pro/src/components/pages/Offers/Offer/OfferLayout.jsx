@@ -65,6 +65,7 @@ const OfferLayout = () => {
     } catch {
       history.push('/404')
     }
+    return Promise.resolve(null)
   }
   const activeStep = getActiveStepFromLocation(location)
 

@@ -22,6 +22,7 @@ const PARIS_FRANCE_DEPT = '75'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   deleteStock: jest.fn(),
+  loadCategories: jest.fn(),
   loadStocks: jest.fn(),
   bulkCreateOrEditStock: jest.fn(),
 }))
@@ -43,12 +44,10 @@ const renderOffers = async (
     <Provider store={store}>
       <MemoryRouter initialEntries={[{ pathname: pathname }]}>
         <Route path="/offre/:offerId([A-Z0-9]+)/individuel">
-          <>
-            <OfferLayout {...props} />
-            <NotificationContainer />
-          </>
+          {() => <OfferLayout {...props} />}
         </Route>
       </MemoryRouter>
+      <NotificationContainer />
     </Provider>
   )
 }
@@ -64,6 +63,10 @@ describe('stocks page', () => {
       user: {
         currentUser: { publicName: 'François', isAdmin: false },
         initialized: true,
+      },
+      features: {
+        initialized: true,
+        list: [],
       },
     }
     props = {}
@@ -92,6 +95,10 @@ describe('stocks page', () => {
     }
     jest.spyOn(api, 'getOffer').mockResolvedValue(defaultOffer)
     pcapi.loadStocks.mockResolvedValue({ stocks: [] })
+    pcapi.loadCategories.mockResolvedValue({
+      categories: [],
+      subcategories: [],
+    })
     pcapi.deleteStock.mockResolvedValue({ id: stockId })
     pcapi.bulkCreateOrEditStock.mockResolvedValue({})
   })
@@ -601,6 +608,10 @@ describe('stocks page', () => {
         store = configureTestStore({
           user: {
             currentUser: { publicName: 'François', isAdmin: false },
+          },
+          features: {
+            initialized: true,
+            list: [],
           },
         })
 
@@ -2247,6 +2258,7 @@ describe('stocks page', () => {
 
       // When
       await renderOffers(props, store)
+      await screen.findByRole('heading', { name: 'Stocks et prix' })
 
       // Then
       expect(screen.queryByText('brouillon')).not.toBeInTheDocument()
@@ -2697,6 +2709,7 @@ describe('stocks page', () => {
           name: 'mon offre',
           id: 'AG3A',
           status: 'APPROVED',
+          isEvent: true,
         })
         jest
           .spyOn(api, 'getOffer')
@@ -2718,9 +2731,7 @@ describe('stocks page', () => {
         await userEvent.click(screen.getByLabelText('Heure de l’évènement'))
         await userEvent.click(screen.getByText('20:00'))
 
-        fireEvent.change(screen.getByLabelText('Prix'), {
-          target: { value: '10' },
-        })
+        await userEvent.type(screen.getByLabelText('Prix'), '10')
 
         // When
         await userEvent.click(
@@ -2728,7 +2739,7 @@ describe('stocks page', () => {
         )
 
         // Then
-        const successMessage = screen.queryByText(
+        const successMessage = await screen.findByText(
           'Votre offre a bien été créée et vos stocks sauvegardés.'
         )
         expect(successMessage).toBeInTheDocument()

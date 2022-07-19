@@ -177,91 +177,99 @@ const EventStocks = ({
     })
   }
 
-  const submitStocks = useCallback(() => {
-    const updatedStocks = existingStocks.filter(stock => stock.updated)
-    if (
-      areValid(
-        [...stocksInCreation, ...updatedStocks],
-        offer.isEvent,
-        offer.isEducational
-      )
-    ) {
-      setIsSendingStocksOfferCreation(true)
-
-      const stocksToCreate = stocksInCreation.map(stockInCreation =>
-        createEventStockPayload(stockInCreation, offer.venue.departementCode)
-      )
-      const stocksToUpdate = updatedStocks.map(updatedStock => {
-        const payload = createEventStockPayload(
-          updatedStock,
-          offer.venue.departementCode
+  const submitStocks = useCallback(
+    e => {
+      e.preventDefault()
+      const updatedStocks = existingStocks.filter(stock => stock.updated)
+      if (
+        areValid(
+          [...stocksInCreation, ...updatedStocks],
+          offer.isEvent,
+          offer.isEducational
         )
-        payload.id = updatedStock.id
-        return payload
-      })
-      pcapi
-        .bulkCreateOrEditStock(offer.id, [...stocksToCreate, ...stocksToUpdate])
-        .then(() => {
-          const queryParams = queryParamsFromOfferer(location)
-          let queryString = ''
+      ) {
+        setIsSendingStocksOfferCreation(true)
 
-          if (queryParams.structure !== '') {
-            queryString = `?structure=${queryParams.structure}`
-          }
+        const stocksToCreate = stocksInCreation.map(stockInCreation =>
+          createEventStockPayload(stockInCreation, offer.venue.departementCode)
+        )
+        const stocksToUpdate = updatedStocks.map(updatedStock => {
+          const payload = createEventStockPayload(
+            updatedStock,
+            offer.venue.departementCode
+          )
+          payload.id = updatedStock.id
+          return payload
+        })
+        pcapi
+          .bulkCreateOrEditStock(offer.id, [
+            ...stocksToCreate,
+            ...stocksToUpdate,
+          ])
+          .then(async () => {
+            const queryParams = queryParamsFromOfferer(location)
+            let queryString = ''
 
-          if (queryParams.lieu !== '') {
-            queryString += `&lieu=${queryParams.lieu}`
-          }
-          if (isOfferDraft) {
-            reloadOffer(true)
-            if (!useSummaryPage)
-              showSuccessNotification(
-                'Votre offre a bien été créée et vos stocks sauvegardés.'
-              )
-
-            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-              from: OfferBreadcrumbStep.STOCKS,
-              to: OfferBreadcrumbStep.SUMMARY,
-              used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-              isEdition: !isOfferDraft,
-            })
-            history.push(
-              useSummaryPage
-                ? `${summaryStepUrl}${queryString}`
-                : `/offre/${offer.id}/individuel/creation/confirmation${queryString}`
-            )
-          } else {
-            loadStocks()
-            reloadOffer()
-            showSuccessNotification(
-              'Vos modifications ont bien été enregistrées'
-            )
-            setIsSendingStocksOfferCreation(false)
-            if (useSummaryPage) {
-              history.push(`${summaryStepUrl}${queryString}`)
+            if (queryParams.structure !== '') {
+              queryString = `?structure=${queryParams.structure}`
             }
-          }
-        })
-        .catch(() => {
-          showErrorNotification()
-          setIsSendingStocksOfferCreation(false)
-        })
-    }
-  }, [
-    existingStocks,
-    history,
-    location,
-    stocksInCreation,
-    offer.id,
-    offer.isEducational,
-    offer.isEvent,
-    isOfferDraft,
-    offer.venue.departementCode,
-    loadStocks,
-    reloadOffer,
-    showSuccessNotification,
-    showErrorNotification,
-  ])
+
+            if (queryParams.lieu !== '') {
+              queryString += `&lieu=${queryParams.lieu}`
+            }
+            if (isOfferDraft) {
+              await reloadOffer(true)
+              if (!useSummaryPage) {
+                await showSuccessNotification(
+                  'Votre offre a bien été créée et vos stocks sauvegardés.'
+                )
+              }
+
+              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OfferBreadcrumbStep.STOCKS,
+                to: OfferBreadcrumbStep.SUMMARY,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
+                isEdition: !isOfferDraft,
+              })
+              history.push(
+                useSummaryPage
+                  ? `${summaryStepUrl}${queryString}`
+                  : `/offre/${offer.id}/individuel/creation/confirmation${queryString}`
+              )
+            } else {
+              await loadStocks()
+              await reloadOffer()
+              await showSuccessNotification(
+                'Vos modifications ont bien été enregistrées'
+              )
+              setIsSendingStocksOfferCreation(false)
+              if (useSummaryPage) {
+                history.push(`${summaryStepUrl}${queryString}`)
+              }
+            }
+          })
+          .catch(() => {
+            showErrorNotification()
+            setIsSendingStocksOfferCreation(false)
+          })
+      }
+    },
+    [
+      existingStocks,
+      history,
+      location,
+      stocksInCreation,
+      offer.id,
+      offer.isEducational,
+      offer.isEvent,
+      isOfferDraft,
+      offer.venue.departementCode,
+      loadStocks,
+      reloadOffer,
+      showSuccessNotification,
+      showErrorNotification,
+    ]
+  )
 
   if (isLoading) {
     return null
