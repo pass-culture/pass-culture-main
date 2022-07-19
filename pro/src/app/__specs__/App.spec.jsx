@@ -1,7 +1,5 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { render, screen } from '@testing-library/react'
 
 import { App } from '../App'
@@ -9,11 +7,12 @@ import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import React from 'react'
 import { URL_FOR_MAINTENANCE } from 'utils/config'
+import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
 import { setUser } from '@sentry/browser'
 
-jest.mock('repository/pcapi/pcapi', () => ({
-  getUserInformations: jest.fn(),
+jest.mock('apiClient/api', () => ({
+  api: { getProfile: jest.fn() },
 }))
 
 const renderApp = ({ props, store }) => {
@@ -64,7 +63,7 @@ describe('src | App', () => {
       isMaintenanceActivated: false,
       loadFeatures,
     }
-    pcapi.getUserInformations.mockResolvedValue(user)
+    jest.spyOn(api, 'getProfile').mockResolvedValue(user)
   })
 
   it('should render App and children components when isMaintenanceActivated is false', () => {

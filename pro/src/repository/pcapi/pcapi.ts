@@ -352,9 +352,6 @@ export const postThumbnail = (
 //
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'user' implicitly has an 'any' type.
-export const signin = user => client.post('/users/signin', user)
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'user' implicitly has an 'any' type.
 export const signup = user => client.post('/users/signup/pro', user)
 
 export const signout = () => client.get('/users/signout')
@@ -362,10 +359,6 @@ export const signout = () => client.get('/users/signout')
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'body' implicitly has an 'any' type.
 export const updateUserInformations = body => {
   return client.patch('/users/current', body)
-}
-
-export const getUserInformations = () => {
-  return client.get('/users/current')
 }
 
 // @ts-expect-error ts-migrate(7006) FIXME: Parameter 'token' implicitly has an 'any' type.
