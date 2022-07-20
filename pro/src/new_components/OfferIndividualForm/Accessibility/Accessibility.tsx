@@ -1,10 +1,39 @@
+import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+
+import { CheckboxGroup } from 'ui-kit'
 import FormLayout from 'new_components/FormLayout'
+import { IOfferIndividualFormValues } from '../types'
 import React from 'react'
+import { accessibilityOptions } from 'core/shared/accessibilityOptions'
+import { useAccessibilityUpdates } from 'hooks'
+import { useFormikContext } from 'formik'
 
 const Accessibility = (): JSX.Element => {
+  const { values, setFieldValue } =
+    useFormikContext<IOfferIndividualFormValues>()
+
+  const accessibilityValues = {
+    [AccessiblityEnum.VISUAL]: values.accessibility[AccessiblityEnum.VISUAL],
+    [AccessiblityEnum.MENTAL]: values.accessibility[AccessiblityEnum.MENTAL],
+    [AccessiblityEnum.AUDIO]: values.accessibility[AccessiblityEnum.AUDIO],
+    [AccessiblityEnum.MOTOR]: values.accessibility[AccessiblityEnum.MOTOR],
+    [AccessiblityEnum.NONE]: values.accessibility[AccessiblityEnum.NONE],
+  }
+  const handleAccessibilityChange = (
+    newAccessibilityValues: IAccessibiltyFormValues
+  ) => setFieldValue('accessibility', newAccessibilityValues)
+
+  useAccessibilityUpdates(accessibilityValues, handleAccessibilityChange)
+
   return (
     <FormLayout.Section title="Accessibilité">
-      <p>TODO section accessibilité</p>
+      <FormLayout.Row>
+        <CheckboxGroup
+          group={accessibilityOptions}
+          groupName="accessibility"
+          legend="Cette offre est accessible au public en situation de handicap :"
+        />
+      </FormLayout.Row>
     </FormLayout.Section>
   )
 }
