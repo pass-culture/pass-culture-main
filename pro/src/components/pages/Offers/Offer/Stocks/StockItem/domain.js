@@ -19,7 +19,7 @@ const buildBeginningDatetime = (
   beginningDateIsoString,
   beginningTimeIsoString
 ) => {
-  if (beginningDateIsoString === null || beginningTimeIsoString === null) {
+  if (!beginningDateIsoString === null || beginningTimeIsoString === null) {
     return ''
   }
   return set(beginningDateIsoString, {
@@ -172,10 +172,7 @@ export const validateUpdatedStock = (
 }
 
 const hasBeginningDateTimeBeenUpdated = (originalStock, updatedStock) => {
-  if (
-    updatedStock.beginningDate === null ||
-    updatedStock.beginningTime === null
-  ) {
+  if (!updatedStock.beginningDate || !updatedStock.beginningTime) {
     return true
   }
 
