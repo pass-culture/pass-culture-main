@@ -30,7 +30,7 @@ const getAdapter = (educationalOfferType: EducationalOfferType) => {
   return patchCollectiveOfferTemplateAdapter
 }
 
-const OfferEducationalStockEdition = (): JSX.Element => {
+const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
   const history = useHistory()
 
   const [initialValues, setInitialValues] =
@@ -162,4 +162,4 @@ const OfferEducationalStockEdition = (): JSX.Element => {
   )
 }
 
-export default OfferEducationalStockEdition
+export default CollectiveOfferTemplateStockEdition
