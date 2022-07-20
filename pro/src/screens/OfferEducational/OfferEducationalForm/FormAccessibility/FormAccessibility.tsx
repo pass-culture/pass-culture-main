@@ -1,7 +1,7 @@
 import { CheckboxGroup } from 'ui-kit'
 import FormLayout from 'new_components/FormLayout'
 import React from 'react'
-import { accessibilityOptions } from './accessibilityOptions'
+import { accessibilityOptions } from 'core/shared/accessibilityOptions'
 import useAccessibilityUpdates from './useAccessibilityUpdates'
 
 const FormAccessibility = ({
