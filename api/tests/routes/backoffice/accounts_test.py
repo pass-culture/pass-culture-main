@@ -716,6 +716,7 @@ class GetUserHistoryTest:
                 "subscriptionItems": [
                     {"status": "ok", "type": "email-validation"},
                     {"status": "not-applicable", "type": "phone-validation"},
+                    {"status": "not-applicable", "type": "user-profiling"},
                     {"status": "todo", "type": "profile-completion"},
                     {"status": "todo", "type": "identity-check"},
                     {"status": "todo", "type": "honor-statement"},
@@ -726,6 +727,7 @@ class GetUserHistoryTest:
                 "subscriptionItems": [
                     {"status": "ok", "type": "email-validation"},
                     {"status": "void", "type": "phone-validation"},
+                    {"status": "not-enabled", "type": "user-profiling"},
                     {"status": "void", "type": "profile-completion"},
                     {"status": "void", "type": "identity-check"},
                     {"status": "void", "type": "honor-statement"},
@@ -748,6 +750,7 @@ class GetUserHistoryTest:
                 "subscriptionItems": [
                     {"status": "ok", "type": "email-validation"},
                     {"status": "not-applicable", "type": "phone-validation"},
+                    {"status": "not-applicable", "type": "user-profiling"},
                     {"status": "void", "type": "profile-completion"},
                     {"status": "void", "type": "identity-check"},
                     {"status": "void", "type": "honor-statement"},
@@ -758,6 +761,7 @@ class GetUserHistoryTest:
                 "subscriptionItems": [
                     {"status": "ok", "type": "email-validation"},
                     {"status": "todo", "type": "phone-validation"},
+                    {"status": "not-enabled", "type": "user-profiling"},
                     {"status": "todo", "type": "profile-completion"},
                     {"status": "todo", "type": "identity-check"},
                     {"status": "todo", "type": "honor-statement"},
@@ -797,6 +801,7 @@ class GetUserHistoryTest:
             "subscriptionItems": [
                 {"status": "ok", "type": "email-validation"},
                 {"status": "not-applicable", "type": "phone-validation"},
+                {"status": "not-applicable", "type": "user-profiling"},
                 {"status": "void", "type": "profile-completion"},
                 {"status": "void", "type": "identity-check"},
                 {"status": "void", "type": "honor-statement"},
@@ -806,6 +811,7 @@ class GetUserHistoryTest:
         assert data["AGE18"]["subscriptionItems"] == [
             {"status": "ok", "type": "email-validation"},
             {"status": "ok", "type": "phone-validation"},
+            {"status": "not-enabled", "type": "user-profiling"},
             {"status": "ok", "type": "profile-completion"},
             {"status": "todo", "type": "identity-check"},
             {"status": "ok", "type": "honor-statement"},
@@ -885,6 +891,7 @@ class GetUserHistoryTest:
             "subscriptionItems": [
                 {"status": "ok", "type": "email-validation"},
                 {"status": "void", "type": "phone-validation"},
+                {"status": "not-enabled", "type": "user-profiling"},
                 {"status": "void", "type": "profile-completion"},
                 {"status": "void", "type": "identity-check"},
                 {"status": "void", "type": "honor-statement"},
@@ -894,6 +901,7 @@ class GetUserHistoryTest:
         assert data["UNDERAGE"]["subscriptionItems"] == [
             {"status": "ok", "type": "email-validation"},
             {"status": "not-applicable", "type": "phone-validation"},
+            {"status": "not-applicable", "type": "user-profiling"},
             {"status": "ok", "type": "profile-completion"},
             {"status": "ok", "type": "identity-check"},
             {"status": "ok", "type": "honor-statement"},
