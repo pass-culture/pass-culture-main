@@ -346,5 +346,5 @@ class Returns400Test:
 
         assert response.status_code == 400
         assert response.json["reimbursementPointId"] == [
-            f"Le SIRET {new_reimbursement_point.siret} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
+            f"Le lieu {new_reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
         ]

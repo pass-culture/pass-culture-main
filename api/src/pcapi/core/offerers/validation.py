@@ -162,8 +162,8 @@ def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbu
         not reimbursement_point.bankInformation
         or reimbursement_point.bankInformation.status != finance_models.BankInformationStatus.ACCEPTED
     ):
-        error = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
+        error = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
         raise ApiErrors(errors={"reimbursementPointId": [error]})
     if reimbursement_point.managingOffererId != venue.managingOffererId:
-        error = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
+        error = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'appartient pas à la même structure."
         raise ApiErrors(errors={"reimbursementPointId": [error]})
