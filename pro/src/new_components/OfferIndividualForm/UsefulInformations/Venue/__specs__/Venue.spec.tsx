@@ -65,6 +65,13 @@ describe('OfferIndividual section: venue', () => {
         managingOffererId: 'AA',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
       {
         id: 'BBAA',
@@ -72,6 +79,13 @@ describe('OfferIndividual section: venue', () => {
         managingOffererId: 'BB',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
       {
         id: 'CCAA',
@@ -79,6 +93,13 @@ describe('OfferIndividual section: venue', () => {
         managingOffererId: 'CC',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
       {
         id: 'CCBB',
@@ -86,6 +107,13 @@ describe('OfferIndividual section: venue', () => {
         managingOffererId: 'CC',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
     ]
 

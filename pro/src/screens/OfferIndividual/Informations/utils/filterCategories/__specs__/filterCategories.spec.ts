@@ -17,6 +17,13 @@ describe('filterCategories', () => {
       name: 'Lieu A de la structure A',
       isVirtual: true,
       withdrawalDetails: '',
+      accessibility: {
+        visual: false,
+        mental: false,
+        audio: false,
+        motor: false,
+        none: true,
+      },
     }
     categories = [
       {

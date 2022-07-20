@@ -18,6 +18,13 @@ describe('useFilteredVenueList', () => {
       managingOffererId: 'A',
       isVirtual: true,
       withdrawalDetails: '',
+      accessibility: {
+        visual: false,
+        mental: false,
+        audio: false,
+        motor: false,
+        none: true,
+      },
     }
     const venueList = [
       {
@@ -26,6 +33,13 @@ describe('useFilteredVenueList', () => {
         managingOffererId: 'A',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
       {
         id: 'BB',
@@ -33,6 +47,13 @@ describe('useFilteredVenueList', () => {
         managingOffererId: 'A',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
     ]
     const subCategories = [
