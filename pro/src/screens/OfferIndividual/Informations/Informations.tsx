@@ -3,7 +3,7 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 
 import { TOffererName } from 'core/Offerers/types'
-import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
+import { createIndividualOffer } from 'core/Offers/adapters'
 import {
   IOfferCategory,
   IOfferSubCategory,
@@ -23,9 +23,6 @@ import { filterCategories } from './utils'
 
 export interface IInformationsProps {
   offer?: IOfferIndividual
-  createOfferAdapter: (
-    formValues: IOfferIndividualFormValues
-  ) => Promise<string | void>
   initialValues: IOfferIndividualFormValues
   offererNames: TOffererName[]
   venueList: TOfferIndividualVenue[]
@@ -34,8 +31,6 @@ export interface IInformationsProps {
 }
 
 const Informations = ({
-  offer,
-  createOfferAdapter,
   initialValues,
   offererNames,
   venueList,
@@ -44,17 +39,18 @@ const Informations = ({
 }: IInformationsProps): JSX.Element => {
   const history = useHistory()
 
-  // call getStep with offer when this screen get it as prop
-  const { activeSteps } = useOfferFormSteps(offer)
   const handleNextStep = async () => formik.handleSubmit()
 
   const onSubmit = async (formValues: IOfferIndividualFormValues) => {
-    const createdOfferId = await createOfferAdapter(formValues)
-    // TODO get a real id after offer creation form submit
-    history.push(`/offre/${createdOfferId}/v3/creation/individuelle/stocks`)
+    const { isOk, payload } = await createIndividualOffer(formValues)
+    if (isOk) {
+      history.push(`/offre/${payload.id}/v3/creation/individuelle/stocks`)
+    } else {
+      formik.setErrors(payload.errors)
+    }
   }
 
-  const { resetForm, ...formik } = useFormik({
+  const formik = useFormik({
     initialValues,
     onSubmit,
     validationSchema,
@@ -71,7 +67,7 @@ const Informations = ({
   )
 
   return (
-    <FormikProvider value={{ ...formik, resetForm }}>
+    <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
         <OfferIndividualForm
           offererNames={offererNames}
@@ -81,10 +77,7 @@ const Informations = ({
         />
 
         <OfferFormLayout.ActionBar>
-          <ActionBar
-            disableNext={!activeSteps.includes(OFFER_FORM_STEP_IDS.STOCKS)}
-            onClickNext={handleNextStep}
-          />
+          <ActionBar onClickNext={handleNextStep} />
         </OfferFormLayout.ActionBar>
       </form>
     </FormikProvider>

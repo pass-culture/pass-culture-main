@@ -11,7 +11,7 @@ const Informations = (): JSX.Element => {
           countCharacters
           label="Titre de l'offre"
           maxLength={90}
-          name="title"
+          name="name"
         />
       </FormLayout.Row>
       <FormLayout.Row>

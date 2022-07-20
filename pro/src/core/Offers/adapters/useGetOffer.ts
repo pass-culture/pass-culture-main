@@ -1,6 +1,6 @@
 import { api } from 'apiClient/api'
 import { IOfferIndividual } from 'core/Offers/types'
-import { TUseAdapterFailure, useAdapter } from 'hooks'
+import { useAdapter } from 'hooks'
 
 import { serializeOfferApi } from './serializers'
 

@@ -4,7 +4,7 @@ import { IAccessibiltyFormValues } from 'core/shared'
 export interface IOfferIndividualFormValues {
   isEvent?: boolean
   subCategoryFields: string[]
-  title: string
+  name: string
   description: string
   offererId: string
   venueId: string
@@ -19,4 +19,10 @@ export interface IOfferIndividualFormValues {
   withdrawalDelay?: number | null
   withdrawalType?: WithdrawalTypeEnum | null
   accessibility: IAccessibiltyFormValues
+  author?: string | null
+  isbn?: string | null
+  performer?: string | null
+  speaker?: string | null
+  stageDirector?: string | null
+  visa?: string | null
 }

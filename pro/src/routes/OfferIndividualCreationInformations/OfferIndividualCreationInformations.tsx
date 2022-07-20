@@ -1,11 +1,12 @@
 import React from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import { useGetOffererNames } from 'core/Offerers/adapters'
-import { useGetCategories, useGetOffer } from 'core/Offers/adapters'
+import { useGetCategories } from 'core/Offers/adapters'
+import { IOfferIndividual } from 'core/Offers/types'
 import { useGetOfferIndividualVenues } from 'core/Venue/adapters'
 import { useHomePath } from 'hooks'
 import {
@@ -15,21 +16,17 @@ import {
 } from 'new_components/OfferIndividualForm'
 import { Informations as InformationsScreen } from 'screens/OfferIndividual/Informations'
 
-import { createOfferAdapter } from './adapters'
+interface IOfferIndividualCreationInformationsProps {
+  offer?: IOfferIndividual
+}
 
-// TODO (rlecellier): rename into getOfferQueryParams
-
-const OfferIndividualCreationInformations = (): JSX.Element | null => {
-  const { offerId } = useParams<{ offerId?: string }>()
+const OfferIndividualCreationInformations = ({
+  offer,
+}: IOfferIndividualCreationInformationsProps): JSX.Element | null => {
   const homePath = useHomePath()
   const notify = useNotification()
   const history = useHistory()
 
-  const {
-    data: offer,
-    isLoading: offerIsLoading,
-    error: offerError,
-  } = useGetOffer(offerId)
   const {
     data: offererNames,
     isLoading: offererNamesIsLoading,
@@ -52,23 +49,16 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
   if (
     offererNamesIsLoading === true ||
     venueListIsLoading === true ||
-    categoriesStatus === true ||
-    offerIsLoading === true
+    categoriesStatus === true
   ) {
     return <Spinner />
   }
 
-  if (
-    offererNamesError ||
-    venueListError ||
-    categoriesError ||
-    (offerId && offerError)
-  ) {
+  if (offererNamesError || venueListError || categoriesError) {
     const loadingError = [
       offererNamesError,
       venueListError,
       categoriesError,
-      offerError,
     ].find(error => error !== undefined)
     if (loadingError !== undefined) {
       notify.error(loadingError.message)
@@ -90,12 +80,11 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
 
   return (
     <InformationsScreen
-      offer={offer || undefined}
+      offer={offer}
       offererNames={offererNames}
       categories={categories}
       subCategories={subCategories}
       venueList={venueList}
-      createOfferAdapter={createOfferAdapter}
       initialValues={initialValues}
     />
   )
