@@ -939,7 +939,7 @@ class LinkVenueToReimbursementPointTest:
 
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
-        msg = f"Le SIRET {reimbursement_point.siret} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
+        msg = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de coordonnées bancaires validées."
         assert error.value.errors == {"reimbursementPointId": [msg]}
 
 
