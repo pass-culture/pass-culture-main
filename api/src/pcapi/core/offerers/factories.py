@@ -46,10 +46,10 @@ class VenueFactory(BaseFactory):
         "pcapi.core.offerers.factories.VenueTypeFactory", label=factory.SelfAttribute("..venueTypeCode.value")
     )
     description = factory.Faker("text", max_nb_chars=64)
-    audioDisabilityCompliant = False
-    mentalDisabilityCompliant = False
-    motorDisabilityCompliant = False
-    visualDisabilityCompliant = False
+    audioDisabilityCompliant: bool | None = False
+    mentalDisabilityCompliant: bool | None = False
+    motorDisabilityCompliant: bool | None = False
+    visualDisabilityCompliant: bool | None = False
     businessUnit = factory.SubFactory(
         "pcapi.core.finance.factories.BusinessUnitFactory",
         name=factory.LazyAttribute(lambda bu: bu.factory_parent.name),
@@ -116,10 +116,10 @@ class VirtualVenueFactory(VenueFactory):
     latitude = None  # type: ignore [assignment]
     longitude = None  # type: ignore [assignment]
     siret = None
-    audioDisabilityCompliant = False
-    mentalDisabilityCompliant = False
-    motorDisabilityCompliant = False
-    visualDisabilityCompliant = False
+    audioDisabilityCompliant = None
+    mentalDisabilityCompliant = None
+    motorDisabilityCompliant = None
+    visualDisabilityCompliant = None
     venueTypeCode = models.VenueTypeCode.DIGITAL  # type: ignore[attr-defined]
 
 
