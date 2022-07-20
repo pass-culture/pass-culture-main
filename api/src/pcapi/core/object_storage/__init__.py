@@ -23,31 +23,25 @@ def _check_backends_module_paths() -> None:
 _check_backends_module_paths()
 
 
+def _get_backends() -> set:
+    providers = (settings.OBJECT_STORAGE_PROVIDER or "").split(",")
+    providers = [p.strip() for p in providers]
+    if not providers:
+        raise RuntimeError("The OBJECT_STORAGE_PROVIDER env var must be defined")
+    return {BACKENDS_MAPPING[p] for p in providers}
+
+
 def _check_backend_setting() -> None:
-    """When the app starts, this checks if the env variable is correct"""
-    if settings.OBJECT_STORAGE_PROVIDER:
-        providers = settings.OBJECT_STORAGE_PROVIDER.split(",")
-        if any(provider not in BACKENDS_MAPPING for provider in providers):
-            available_backends = ", ".join(str(var) for var in BACKENDS_MAPPING)
-            raise RuntimeError(
-                "Unknown storage provider(%s). Accepted values are: %s" % (providers, available_backends)
-            )
+    """When the app starts, check that the env variable is correct."""
+    try:
+        _get_backends()
+    except KeyError as exc:
+        value = exc.args[0]
+        available_backends = ", ".join(str(short_name) for short_name in BACKENDS_MAPPING)
+        raise RuntimeError(f'Unknown storage provider ("{value}"). Accepted values are: {available_backends}')
 
 
 _check_backend_setting()
-
-
-def _get_backends() -> set:
-    backends_set = set()
-    if settings.OBJECT_STORAGE_PROVIDER:
-        _providers = settings.OBJECT_STORAGE_PROVIDER.split(",")
-        for p in _providers:
-            backends_set.add(BACKENDS_MAPPING[p])
-    elif settings.IS_RUNNING_TESTS or settings.IS_DEV:
-        backends_set.add(BACKENDS_MAPPING["local"])
-    else:
-        backends_set.add(BACKENDS_MAPPING["OVH"])
-    return backends_set
 
 
 def store_public_object(folder: str, object_id: str, blob: bytes, content_type: str) -> None:

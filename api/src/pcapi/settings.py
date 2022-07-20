@@ -43,6 +43,7 @@ if IS_PROD or IS_INTEGRATION:
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.SendinblueBackend"
+    _default_object_storage_provider = None  # it must be explicitly set
 elif IS_STAGING or IS_TESTING:
     _default_search_backend = "pcapi.core.search.backends.algolia.AlgoliaBackend"
     _default_email_backend = "pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"
@@ -50,6 +51,7 @@ elif IS_STAGING or IS_TESTING:
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.slack.SlackBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.batch.BatchBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.sendinblue.ToDevSendinblueBackend"
+    _default_object_storage_provider = None  # it must be explicitly set
 elif IS_RUNNING_TESTS:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.testing.TestingBackend"
@@ -57,6 +59,7 @@ elif IS_RUNNING_TESTS:
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.testing.TestingBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.testing.TestingBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.testing.TestingBackend"
+    _default_object_storage_provider = "local"
 elif IS_DEV:
     _default_search_backend = "pcapi.core.search.backends.testing.TestingBackend"
     _default_email_backend = "pcapi.core.mails.backends.logger.LoggerBackend"
@@ -64,6 +67,7 @@ elif IS_DEV:
     _default_internal_notification_backend = "pcapi.notifications.internal.backends.logger.LoggerBackend"
     _default_push_notification_backend = "pcapi.notifications.push.backends.logger.LoggerBackend"
     _default_sms_notification_backend = "pcapi.notifications.sms.backends.logger.LoggerBackend"
+    _default_object_storage_provider = "local"
 else:
     raise RuntimeError("Unknown environment")
 
@@ -268,7 +272,7 @@ DMS_INSTRUCTOR_ID = os.environ.get("DEMARCHES_SIMPLIFIEES_INSTRUCTOR_ID", "")
 
 # OBJECT STORAGE
 OBJECT_STORAGE_URL = os.environ.get("OBJECT_STORAGE_URL")
-OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER", "")
+OBJECT_STORAGE_PROVIDER = os.environ.get("OBJECT_STORAGE_PROVIDER", _default_object_storage_provider)
 LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static" / "object_store_data"
 
 # THUMBS

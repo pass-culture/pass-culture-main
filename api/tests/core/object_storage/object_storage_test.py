@@ -45,10 +45,15 @@ class StorePublicObjectTest:
 class CheckBackendSettingTest:
     @override_settings(OBJECT_STORAGE_PROVIDER="")
     def test_empty_setting(self):
-        _check_backend_setting()
+        with pytest.raises(RuntimeError):
+            _check_backend_setting()
 
     @override_settings(OBJECT_STORAGE_PROVIDER="OVH")
     def test_correct_setting(self):
+        _check_backend_setting()
+
+    @override_settings(OBJECT_STORAGE_PROVIDER="local, GCP")
+    def test_correct_multi_values(self):
         _check_backend_setting()
 
     @override_settings(OBJECT_STORAGE_PROVIDER="AWS")
