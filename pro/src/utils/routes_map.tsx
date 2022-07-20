@@ -5,6 +5,7 @@ import CollectiveDataEdition from 'components/pages/Offerers/Offerer/VenueV1/Ven
 import CollectiveOfferConfirmation from 'routes/CollectiveOfferConfirmation'
 import CollectiveOfferCreationVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
 import CollectiveOfferEditionVisibility from 'routes/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
+import CollectiveOfferTemplateStockEdition from 'routes/CollectiveOfferTemplateStockEdition'
 import CollectiveOffers from 'routes/CollectiveOffers'
 import CsvDetailViewContainer from 'routes/CsvTable'
 import Desk from 'routes/Desk'
@@ -14,7 +15,6 @@ import OfferEducationalCreation from 'routes/OfferEducationalCreation'
 import OfferEducationalEdition from 'routes/OfferEducationalEdition'
 import OfferEducationalStockCreation from 'routes/OfferEducationalStockCreation'
 import OfferEducationalStockEdition from 'routes/OfferEducationalStockEdition/OfferEducationalStockEdition'
-import OfferEducationalStockTemplateEdition from 'routes/OfferEducationalStockTemplateEdition'
 import { OfferIndividualConfirmation } from 'routes/OfferIndividualConfirmation'
 import { OfferIndividualCreation } from 'routes/OfferIndividualCreation'
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
@@ -275,7 +275,7 @@ const routes = [
     title: 'Edition d’un stock d’une offre collective',
   },
   {
-    component: OfferEducationalStockTemplateEdition,
+    component: CollectiveOfferTemplateStockEdition,
     exact: true,
     path: '/offre/:offerId(T-[A-Z0-9]+)/collectif/stocks/edition',
     title: 'Edition d’un stock d’une offre collective',
