@@ -249,9 +249,7 @@ class Returns200Test:
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_add_reimbursement_point(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
 
         new_reimbursement_point = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
@@ -272,9 +270,7 @@ class Returns200Test:
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_remove_reimbursement_point_id(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
         current_reimbursement_point = offerers_factories.VenueFactory()
         offerers_factories.VenueReimbursementPointLinkFactory(
             venue=venue, reimbursementPoint=current_reimbursement_point
@@ -329,9 +325,7 @@ class Returns400Test:
     @override_features(ENABLE_NEW_BANK_INFORMATIONS_CREATION=True)
     def test_raises_if_different_offerer(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, pricing_point="self")
         another_offerer = offerers_factories.OffererFactory()
         new_reimbursement_point = offerers_factories.VenueFactory(managingOfferer=another_offerer)
         finance_factories.BankInformationFactory(venue=new_reimbursement_point)

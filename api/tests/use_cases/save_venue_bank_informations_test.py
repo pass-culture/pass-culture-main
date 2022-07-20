@@ -686,7 +686,7 @@ class SaveVenueBankInformationsTest:
             )
 
         def test_draft_application(self, mock_dms_graphql_client, app):
-            venue = offerers_factories.VenueFactory(businessUnit=None)
+            venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
             mock_dms_graphql_client.return_value.get_bic.return_value = (
                 dms_creators.venue_application_detail_response_procedure_v4(
@@ -703,7 +703,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         def test_on_going_application(self, mock_dms_graphql_client, app):
-            venue = offerers_factories.VenueFactory(businessUnit=None)
+            venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
             mock_dms_graphql_client.return_value.get_bic.return_value = (
                 dms_creators.venue_application_detail_response_procedure_v4(
@@ -720,7 +720,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.DRAFT
 
         def test_accepted_application(self, mock_dms_graphql_client, app):
-            venue = offerers_factories.VenueFactory(businessUnit=None)
+            venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
             mock_dms_graphql_client.return_value.get_bic.return_value = (
                 dms_creators.venue_application_detail_response_procedure_v4(
@@ -737,7 +737,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.ACCEPTED
 
         def test_refused_application(self, mock_dms_graphql_client, app):
-            venue = offerers_factories.VenueFactory(businessUnit=None)
+            venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
             mock_dms_graphql_client.return_value.get_bic.return_value = (
                 dms_creators.venue_application_detail_response_procedure_v4(
@@ -754,7 +754,7 @@ class SaveVenueBankInformationsTest:
             assert bank_information.status == BankInformationStatus.REJECTED
 
         def test_without_continuation_application(self, mock_dms_graphql_client, app):
-            venue = offerers_factories.VenueFactory(businessUnit=None)
+            venue = offerers_factories.VenueFactory(businessUnit=None, pricing_point="self")
             application_id = "9"
             mock_dms_graphql_client.return_value.get_bic.return_value = (
                 dms_creators.venue_application_detail_response_procedure_v4(
