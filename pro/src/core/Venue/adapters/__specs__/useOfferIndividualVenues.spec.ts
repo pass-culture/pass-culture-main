@@ -1,51 +1,32 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { VenueListItemResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react-hooks'
 import { useGetOfferIndividualVenues } from '..'
 
 describe('useOffererNames', () => {
   it('should return loading payload then success payload', async () => {
-    const apiVenue = {
-      address: 'test address',
+    const apiVenue: VenueListItemResponseModel = {
       audioDisabilityCompliant: false,
-      bannerMeta: null,
-      bannerUrl: null,
-      bic: '',
       bookingEmail: '',
-      businessUnitId: '',
-      city: 'test city',
-      comment: null,
-      dateCreated: '2022-05-18T08:25:27.466460Z',
-      dateModifiedAtLastProvider: '',
-      departementCode: '61',
-      description: 'test description',
-      fieldsUpdated: [],
-      iban: '',
+      businessUnit: null,
+      businessUnitId: null,
       id: 'AAAA',
-      isPermanent: true,
       isVirtual: false,
-      lastProviderId: null,
-      latitude: 48.87004,
-      longitude: 2.3785,
       managingOffererId: 'AA',
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: false,
-      nOffers: 0,
       name: 'Entreprise AA',
-      postalCode: '75001',
+      offererName: 'Structure AA',
       publicName: 'Entreprise AAAA public name',
       siret: '',
-      thumbCount: 1,
-      venueLabelId: null,
-      venueTypeCode: 'OTHER',
       visualDisabilityCompliant: false,
       withdrawalDetails: null,
     }
 
-    jest.spyOn(pcapi, 'getVenuesForOfferer').mockResolvedValue([apiVenue])
+    jest.spyOn(api, 'getVenues').mockResolvedValue({ venues: [apiVenue] })
 
     const { result, waitForNextUpdate } = renderHook(() =>
       useGetOfferIndividualVenues()
@@ -63,11 +44,18 @@ describe('useOffererNames', () => {
         managingOffererId: apiVenue.managingOffererId,
         name: apiVenue.publicName,
         withdrawalDetails: apiVenue.withdrawalDetails,
+        accessibility: {
+          audio: false,
+          mental: false,
+          motor: false,
+          visual: false,
+          none: true,
+        },
       },
     ]
 
     await waitForNextUpdate()
-    expect(pcapi.getVenuesForOfferer).toHaveBeenCalled()
+    expect(api.getVenues).toHaveBeenCalled()
     const updatedState = result.current
     expect(updatedState.isLoading).toBe(false)
     expect(updatedState.data).toEqual(offerIndividualVenues)
@@ -75,9 +63,7 @@ describe('useOffererNames', () => {
   })
 
   it('should return loading payload then failure payload', async () => {
-    jest
-      .spyOn(pcapi, 'getVenuesForOfferer')
-      .mockRejectedValue(new Error('Api error'))
+    jest.spyOn(api, 'getVenues').mockRejectedValue(new Error('Api error'))
 
     const { result, waitForNextUpdate } = renderHook(() =>
       useGetOfferIndividualVenues()
@@ -89,7 +75,7 @@ describe('useOffererNames', () => {
     expect(loadingState.error).toBeUndefined()
 
     await waitForNextUpdate()
-    expect(pcapi.getVenuesForOfferer).toHaveBeenCalled()
+    expect(api.getVenues).toHaveBeenCalled()
     const errorState = result.current
     expect(loadingState.data).toBeUndefined()
     expect(errorState.isLoading).toBe(false)

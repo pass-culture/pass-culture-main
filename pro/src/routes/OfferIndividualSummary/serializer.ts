@@ -102,12 +102,7 @@ const serializerOfferSectionProps = (
     withdrawalDetails: offer.withdrawalDetails || '',
     withdrawalType: offer.withdrawalType || null,
     withdrawalDelay: offer.withdrawalDelay || null,
-
-    visualDisabilityCompliant: offer.visualDisabilityCompliant || false,
-    mentalDisabilityCompliant: offer.mentalDisabilityCompliant || false,
-    motorDisabilityCompliant: offer.motorDisabilityCompliant || false,
-    audioDisabilityCompliant: offer.audioDisabilityCompliant || false,
-    noDisabilityCompliant: offer.noDisabilityCompliant || false,
+    accessibility: offer.accessibility,
 
     isDuo: offer.isDuo,
     url: offer.externalTicketOfficeUrl,

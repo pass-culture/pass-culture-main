@@ -1,8 +1,8 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import { AccessiblityEnum, GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
-import { IAPIVenue, TOfferIndividualVenue } from 'core/Venue/types'
-
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { VenueListItemResponseModel } from 'apiClient/v1'
+import { api } from 'apiClient/api'
 import { useAdapter } from 'hooks'
 
 type Params = void
@@ -18,19 +18,42 @@ const FAILING_RESPONSE = {
 const getOfferIndividualVenuesAdapter: TGetOfferIndividualVenuesAdapter =
   async () => {
     try {
-      const response = await pcapi.getVenuesForOfferer({
-        activeOfferersOnly: true,
-      })
-      return {
-        isOk: true,
-        message: null,
-        payload: response.map((venue: IAPIVenue) => ({
+      const response = await api.getVenues(
+        ...Object.values({
+          validatedForUser: null,
+          validated: null,
+          activeOfferersOnly: true,
+          offererId: null,
+        })
+      )
+
+      const serializeVenue = (
+        venue: VenueListItemResponseModel
+      ): TOfferIndividualVenue => {
+        const baseAccessibility = {
+          [AccessiblityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
+          [AccessiblityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
+          [AccessiblityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
+          [AccessiblityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+        }
+        return {
           id: venue.id,
           managingOffererId: venue.managingOffererId,
           name: venue.publicName || venue.name,
           isVirtual: venue.isVirtual,
-          withdrawalDetails: venue.withdrawalDetails,
-        })),
+          withdrawalDetails: venue.withdrawalDetails || null,
+          accessibility: {
+            ...baseAccessibility,
+            [AccessiblityEnum.NONE]:
+              !Object.values(baseAccessibility).includes(true),
+          },
+        }
+      }
+
+      return {
+        isOk: true,
+        message: null,
+        payload: response.venues.map(serializeVenue),
       }
     } catch (e) {
       return FAILING_RESPONSE

@@ -123,6 +123,13 @@ describe('screens:OfferCreation::Informations', () => {
       managingOffererId: 'A',
       isVirtual: false,
       withdrawalDetails: '',
+      accessibility: {
+        visual: false,
+        mental: false,
+        audio: false,
+        motor: false,
+        none: true,
+      },
     }
     props.initialValues.venueId = venue.id
     props.venueList = [
@@ -133,6 +140,13 @@ describe('screens:OfferCreation::Informations', () => {
         managingOffererId: 'A',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
     ]
 
@@ -153,6 +167,13 @@ describe('screens:OfferCreation::Informations', () => {
         managingOffererId: 'A',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       }
       props.initialValues.venueId = venue.id
       props.venueList = [
@@ -163,6 +184,13 @@ describe('screens:OfferCreation::Informations', () => {
           managingOffererId: 'A',
           isVirtual: false,
           withdrawalDetails: '',
+          accessibility: {
+            visual: false,
+            mental: false,
+            audio: false,
+            motor: false,
+            none: true,
+          },
         },
       ]
     })

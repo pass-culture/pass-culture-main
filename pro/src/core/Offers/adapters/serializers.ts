@@ -9,6 +9,8 @@ import {
   IOfferIndividualVenue,
 } from 'core/Offers/types'
 
+import { AccessiblityEnum } from 'core/shared'
+
 export const serializeOffererApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualOfferer => {
@@ -21,6 +23,14 @@ export const serializeOffererApi = (
 export const serializeVenueApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividualVenue => {
+  const baseAccessibility = {
+    [AccessiblityEnum.VISUAL]:
+      apiOffer.venue.visualDisabilityCompliant || false,
+    [AccessiblityEnum.MENTAL]:
+      apiOffer.venue.mentalDisabilityCompliant || false,
+    [AccessiblityEnum.AUDIO]: apiOffer.venue.audioDisabilityCompliant || false,
+    [AccessiblityEnum.MOTOR]: apiOffer.venue.motorDisabilityCompliant || false,
+  }
   return {
     id: apiOffer.venue.id,
     name: apiOffer.venue.name,
@@ -31,6 +41,10 @@ export const serializeVenueApi = (
     departmentCode: apiOffer.venue.departementCode || '',
     city: apiOffer.venue.city || '',
     offerer: serializeOffererApi(apiOffer),
+    accessibility: {
+      ...baseAccessibility,
+      [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
+    },
   }
 }
 
@@ -57,6 +71,13 @@ export const serializeStockApi = (
 export const serializeOfferApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividual => {
+  const baseAccessibility = {
+    [AccessiblityEnum.VISUAL]: apiOffer.visualDisabilityCompliant || false,
+    [AccessiblityEnum.MENTAL]: apiOffer.mentalDisabilityCompliant || false,
+    [AccessiblityEnum.AUDIO]: apiOffer.audioDisabilityCompliant || false,
+    [AccessiblityEnum.MOTOR]: apiOffer.motorDisabilityCompliant || false,
+  }
+
   const offer: IOfferIndividual = {
     id: apiOffer.id,
     nonHumanizedId: apiOffer.nonHumanizedId,
@@ -66,11 +87,6 @@ export const serializeOfferApi = (
     isDuo: apiOffer.isDuo,
     isEvent: apiOffer.isEvent,
     isEducational: apiOffer.isEducational,
-    noDisabilityCompliant: false,
-    audioDisabilityCompliant: apiOffer.audioDisabilityCompliant || false,
-    mentalDisabilityCompliant: apiOffer.mentalDisabilityCompliant || false,
-    motorDisabilityCompliant: apiOffer.motorDisabilityCompliant || false,
-    visualDisabilityCompliant: apiOffer.visualDisabilityCompliant || false,
     isNational: apiOffer.isNational,
     name: apiOffer.name,
     offererId: apiOffer.venue.managingOffererId,
@@ -83,6 +99,10 @@ export const serializeOfferApi = (
     withdrawalDelay: apiOffer.withdrawalDelay || null,
     withdrawalType: apiOffer.withdrawalType || null,
     thumbUrl: apiOffer.thumbUrl || '',
+    accessibility: {
+      ...baseAccessibility,
+      [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
+    },
     // extraData values
     author: apiOffer.extraData?.author || '',
     isbn: apiOffer.extraData?.isbn || '',
@@ -95,25 +115,6 @@ export const serializeOfferApi = (
     stageDirector: apiOffer.extraData?.stageDirector || '',
     visa: apiOffer.extraData?.visa || '',
     stocks: apiOffer.stocks.map(serializeStockApi),
-  }
-
-  if (
-    [
-      apiOffer.audioDisabilityCompliant,
-      apiOffer.mentalDisabilityCompliant,
-      apiOffer.motorDisabilityCompliant,
-      apiOffer.visualDisabilityCompliant,
-    ].includes(undefined) ||
-    [
-      apiOffer.audioDisabilityCompliant,
-      apiOffer.mentalDisabilityCompliant,
-      apiOffer.motorDisabilityCompliant,
-      apiOffer.visualDisabilityCompliant,
-    ].includes(true)
-  ) {
-    offer.noDisabilityCompliant = false
-  } else {
-    offer.noDisabilityCompliant = true
   }
 
   return offer

@@ -1,5 +1,6 @@
 import { CATEGORY_STATUS } from '.'
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import { IAccessibiltyFormValues } from 'core/shared'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
 
 export type TSearchFilters = {
@@ -112,6 +113,7 @@ export interface IOfferIndividualVenue {
   city: string
   offerer: IOfferIndividualOfferer
   departmentCode: string
+  accessibility: IAccessibiltyFormValues
 }
 
 export interface IOfferIndividual {
@@ -125,11 +127,7 @@ export interface IOfferIndividual {
   isDuo: boolean
   isEducational: boolean
   isEvent: boolean
-  noDisabilityCompliant: boolean
-  audioDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  visualDisabilityCompliant: boolean
+  accessibility: IAccessibiltyFormValues
   isNational: boolean
   name: string
   musicSubType: string

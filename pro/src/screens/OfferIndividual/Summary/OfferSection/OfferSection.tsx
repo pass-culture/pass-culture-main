@@ -1,10 +1,10 @@
+import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 
 import { AccessibilityLabel } from 'ui-kit'
-import { AccessiblityEnum } from 'core/shared'
 import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import React from 'react'
@@ -29,11 +29,7 @@ export interface IOfferSectionProps {
   showTypeName?: string
   showSubTypeName?: string
 
-  visualDisabilityCompliant: boolean
-  mentalDisabilityCompliant: boolean
-  motorDisabilityCompliant: boolean
-  audioDisabilityCompliant: boolean
-  noDisabilityCompliant: boolean
+  accessibility: IAccessibiltyFormValues
 
   isDuo: boolean
   author: string
@@ -78,6 +74,7 @@ const OfferSummary = ({
       isEdition: !isCreation,
     })
   }
+
   return (
     <SummaryLayout.Section
       title="Détails de l'offre"
@@ -187,28 +184,28 @@ const OfferSummary = ({
       </SummaryLayout.SubSection>
 
       <SummaryLayout.SubSection title="Accessibilité">
-        {offer.noDisabilityCompliant && (
+        {offer.accessibility[AccessiblityEnum.NONE] && (
           <SummaryLayout.Row description="Non accessible" />
         )}
-        {offer.visualDisabilityCompliant && (
+        {offer.accessibility[AccessiblityEnum.VISUAL] && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
             name={AccessiblityEnum.VISUAL}
           />
         )}
-        {offer.mentalDisabilityCompliant && (
+        {offer.accessibility[AccessiblityEnum.MENTAL] && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
             name={AccessiblityEnum.MENTAL}
           />
         )}
-        {offer.motorDisabilityCompliant && (
+        {offer.accessibility[AccessiblityEnum.MOTOR] && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
             name={AccessiblityEnum.MOTOR}
           />
         )}
-        {offer.audioDisabilityCompliant && (
+        {offer.accessibility[AccessiblityEnum.AUDIO] && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
             name={AccessiblityEnum.AUDIO}
