@@ -3,7 +3,7 @@ from pcapi.connectors import api_entreprises
 from pcapi.core.finance.models import BankInformationStatus
 from pcapi.core.finance.models import BusinessUnit
 from pcapi.core.offerers import api as offerers_api
-from pcapi.core.offerers.models import Offerer
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.users.external import update_external_pro
 from pcapi.domain.bank_information import CannotRegisterBankInformation
 from pcapi.domain.bank_information import check_new_bank_information_has_a_more_advanced_status
@@ -62,7 +62,7 @@ class SaveVenueBankInformations:
         ):
             siret = application_details.siret
             siren = application_details.siren
-            offerer = Offerer.query.filter_by(siren=siren).one_or_none()
+            offerer = offerers_models.Offerer.query.filter_by(siren=siren).one_or_none()
             check_offerer_presence(offerer, api_errors)
 
         venue = self.get_referent_venue(application_details, offerer, api_errors)
@@ -138,6 +138,10 @@ class SaveVenueBankInformations:
                 business_unit.bankAccountId = updated_bank_information.id
                 repository.save(business_unit)
                 offerers_api.set_business_unit_to_venue_id(business_unit.id, venue.identifier)
+        else:
+            if application_details.status == BankInformationStatus.ACCEPTED:
+                venue_sql_entity = offerers_models.Venue.query.get(venue.identifier)
+                offerers_api.link_venue_to_reimbursement_point(venue_sql_entity, venue.identifier)
 
         update_external_pro(venue.bookingEmail)
         if application_details.annotation_id is not None:
@@ -159,7 +163,10 @@ class SaveVenueBankInformations:
 
     # TODO(fseguin, 2022-07-11): clean up when previous procedures are retired
     def get_referent_venue(
-        self, application_details: ApplicationDetail, offerer: Offerer | None, api_errors: CannotRegisterBankInformation
+        self,
+        application_details: ApplicationDetail,
+        offerer: offerers_models.Offerer | None,
+        api_errors: CannotRegisterBankInformation,
     ) -> VenueWithBasicInformation | None:
         venue = None
         if dms_token := application_details.dms_token:
