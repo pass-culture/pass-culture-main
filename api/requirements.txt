@@ -77,7 +77,7 @@ types-simplejson
 types-urllib3
 tzlocal<3.0.0
 # Pin weasyprint to keep new versions from changing how our PDF files look.
-weasyprint==54.0
+weasyprint==56.1
 Werkzeug==2.0.3
 wheel==0.35.1
 WTForms==3.0.1
