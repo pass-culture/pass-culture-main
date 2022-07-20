@@ -27,7 +27,7 @@ google-cloud-tasks==2.8.1
 gql[requests]
 gunicorn==20.0.4
 ipaddress
-isort==5.6.4
+isort
 itsdangerous==2.0.1
 Jinja2==3.0.3
 MarkupSafe==2.0.1
