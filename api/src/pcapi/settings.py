@@ -278,15 +278,6 @@ LOCAL_STORAGE_DIR = Path(os.path.dirname(os.path.realpath(__file__))) / "static"
 # THUMBS
 THUMBS_FOLDER_NAME = os.environ.get("THUMBS_FOLDER_NAME", "thumbs")
 
-# SWIFT
-SWIFT_AUTH_URL = os.environ.get("SWIFT_AUTH_URL", "https://auth.cloud.ovh.net/v3/")
-SWIFT_BUCKET_NAME = os.environ.get("OVH_BUCKET_NAME")
-
-SWIFT_USER = os.environ.get("OVH_USER")
-SWIFT_KEY = os.environ.get("OVH_PASSWORD")
-SWIFT_TENANT_NAME = os.environ.get("OVH_TENANT_NAME")
-SWIFT_REGION_NAME = os.environ.get("OVH_REGION_NAME", "GRA")
-
 # GOOGLE
 GCP_BUCKET_CREDENTIALS = json.loads(base64.b64decode(os.environ.get("GCP_BUCKET_CREDENTIALS", "")) or "{}")
 GCP_BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME", "")

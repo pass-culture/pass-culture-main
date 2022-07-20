@@ -51,7 +51,7 @@ class LocalBackend(BaseBackend):
         full_listing: bool = True,
     ) -> tuple:
         """
-        This is modeled after OVH's get_container(), and quite similar to google.cloud.storage.Client.list_blobs
+        This is similar to google.cloud.storage.Client.list_blobs
         and it will be mainly used to test the delete_unused_mediations_and_assets script
         """
         try:
