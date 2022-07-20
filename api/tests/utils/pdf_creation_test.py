@@ -1,5 +1,8 @@
+import datetime
+import os
 import pathlib
 import time
+from unittest import mock
 
 from freezegun import freeze_time
 import pytest
@@ -35,15 +38,21 @@ class GeneratePdfFromHtmlTest:
             assert False, "Output PDF is not as expected"
         assert duration < ACCEPTABLE_GENERATION_DURATION
 
+    # Setting `SOURCE_DATE_EPOCH` is necessary for fonttools (and thus
+    # weasyprint) to be stable across time. Otherwise, if two
+    # consecutive renderings are done with a one-second interval, the
+    # output is different.
+    @mock.patch.dict(os.environ, {"SOURCE_DATE_EPOCH": "0"}, clear=True)
     def test_cache(self, example_html):
         pdf.url_cache.delete_cache()
         pdf.url_cache.tmp_dir.mkdir()
-        out1 = pdf.generate_pdf_from_html(html_content=example_html)
-        out2 = pdf.generate_pdf_from_html(html_content=example_html)
+        metadata = pdf.PdfMetadata(created=datetime.datetime.utcnow())
+        out1 = pdf.generate_pdf_from_html(example_html, metadata)
+        out2 = pdf.generate_pdf_from_html(example_html, metadata)
         # Do not use `assert out == expected_pdf`: pytest would try to
         # use a smart, but very slow algorithm to show diffs, which
         # would produce garbage anyway because it's binary.
-        if out1 == out2:
+        if out1 != out2:
             assert False, "Output PDF is not the same when the cache is used."
         # We have tried to check that the second run was quicker than
         # the first run, but it often failed on CircleCI, even though
