@@ -1,4 +1,5 @@
 import { GetVenueResponseModel } from 'apiClient/v1'
+import { IAccessibiltyFormValues } from 'core/shared'
 
 // TODO use api/gen types
 export interface IAPIVenue {
@@ -51,6 +52,7 @@ export type TOfferIndividualVenue = {
   name: string
   isVirtual: boolean
   withdrawalDetails: string | null
+  accessibility: IAccessibiltyFormValues
 }
 
 export type VenueCollectiveInformation = Pick<

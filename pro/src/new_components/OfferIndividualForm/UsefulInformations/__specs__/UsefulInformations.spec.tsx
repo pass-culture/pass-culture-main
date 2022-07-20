@@ -60,6 +60,13 @@ describe('OfferIndividual section: UsefulInformations', () => {
         managingOffererId: 'AA',
         isVirtual: false,
         withdrawalDetails: '',
+        accessibility: {
+          visual: false,
+          mental: false,
+          audio: false,
+          motor: false,
+          none: true,
+        },
       },
     ]
     initialValues = {
