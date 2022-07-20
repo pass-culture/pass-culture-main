@@ -1,6 +1,7 @@
 import { Field, useField } from 'react-final-form'
 import React, { useEffect, useState } from 'react'
 
+import { Banner } from 'ui-kit/index'
 import Button from 'ui-kit/Button/Button'
 import ConfirmDialog from 'new_components/ConfirmDialog'
 import { IAPIOfferer } from 'core/Offerers/types'
@@ -27,6 +28,7 @@ const PricingPoint = ({
   const [isInputDisabled, setIsInputDisabled] = useState(false)
   const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
     useState(false)
+  const [isBannerVisible, setIsBannerVisible] = useState(true)
   const pricingPointSelectField = useField('venueSiret')
 
   useEffect(() => {
@@ -43,6 +45,7 @@ const PricingPoint = ({
         .then(() => {
           setIsInputDisabled(true)
           setVenueHasPricingPoint(true)
+          setIsBannerVisible(false)
           setIsConfirmSiretDialogOpen(false)
         })
     }
@@ -53,6 +56,20 @@ const PricingPoint = ({
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">Barème de remboursement</h2>
       </div>
+      {!readOnly && !venue.pricingPoint && isBannerVisible && (
+        <Banner
+          href={`https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`}
+          linkTitle="En savoir plus sur les barèmes de remboursement"
+          type="notification-info"
+          icon={'ico-external-site-filled'}
+        >
+          Si vous souhaitez vous faire rembourser les offres de votre lieu sans
+          SIRET, vous devez sélectionner un lieu avec SIRET dans votre structure
+          afin de permettre le calcul de votre barème de remboursement.
+          Attention, vous ne pourrez plus modifier votre sélection après
+          validation.
+        </Banner>
+      )}
 
       {isConfirmSiretDialogOpen && (
         <ConfirmDialog
@@ -86,10 +103,9 @@ const PricingPoint = ({
       {!readOnly && !venue.pricingPoint && (
         <p className={styles['reimbursement-subtitle']}>
           <span className={styles['text-hightlight']}>
-            Sélectionner et valider
+            Sélectionner et valider{' '}
           </span>
-          ci-dessous le lieu avec SIRET sur lequel vous souhaitez que vos
-          remboursements soient calculés.
+          ci-dessous le lieu avec SIRET :
         </p>
       )}
       <div className="venue-label-label" id="venue-label">
