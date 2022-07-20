@@ -5,7 +5,6 @@ from pcapi.infrastructure.repository.bank_informations import bank_informations_
 from pcapi.repository import repository
 
 
-# oh
 class BankInformationsSQLRepository(BankInformationsRepository):
     def find_by_offerer(self, offerer_id: int) -> BankInformations | None:
         bank_informations_sql_entity = BankInformationsSQLEntity.query.filter_by(offererId=offerer_id).one_or_none()
