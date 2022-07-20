@@ -27,6 +27,7 @@ from . import utils
 SUBSCRIPTION_ITEM_METHODS = [
     subscription_api.get_email_validation_subscription_item,
     subscription_api.get_phone_validation_subscription_item,
+    subscription_api.get_user_profiling_subscription_item,
     subscription_api.get_profile_completion_subscription_item,
     subscription_api.get_identity_check_subscription_item,
     subscription_api.get_honor_statement_subscription_item,
