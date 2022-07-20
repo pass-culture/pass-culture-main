@@ -156,6 +156,10 @@ def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbu
         .options(sqla_orm.joinedload(models.Venue.bankInformation))
         .one_or_none()
     )
+    if not venue.current_pricing_point_id:
+        raise ApiErrors(
+            errors={"pricingPoint": ["Vous devez d'abord choisir un lieu pour le calcul du barème de remboursement."]}
+        )
     if not reimbursement_point:
         raise ApiErrors(errors={"reimbursementPointId": ["Ce lieu n'existe pas."]})
     if (
