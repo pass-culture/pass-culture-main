@@ -1,9 +1,10 @@
-import { AccessibilityLabel, AccessiblityLabelEnum } from 'ui-kit'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
 
+import { AccessibilityLabel } from 'ui-kit'
+import { AccessiblityEnum } from 'core/shared'
 import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import React from 'react'
@@ -192,25 +193,25 @@ const OfferSummary = ({
         {offer.visualDisabilityCompliant && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
-            name={AccessiblityLabelEnum.Visual}
+            name={AccessiblityEnum.VISUAL}
           />
         )}
         {offer.mentalDisabilityCompliant && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
-            name={AccessiblityLabelEnum.Mental}
+            name={AccessiblityEnum.MENTAL}
           />
         )}
         {offer.motorDisabilityCompliant && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
-            name={AccessiblityLabelEnum.Motor}
+            name={AccessiblityEnum.MOTOR}
           />
         )}
         {offer.audioDisabilityCompliant && (
           <AccessibilityLabel
             className={styles['accessibility-row']}
-            name={AccessiblityLabelEnum.Audio}
+            name={AccessiblityEnum.AUDIO}
           />
         )}
       </SummaryLayout.SubSection>

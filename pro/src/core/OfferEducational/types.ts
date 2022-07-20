@@ -7,6 +7,7 @@ import {
 } from 'apiClient/v1'
 
 import { GetOfferVenueResponseModel } from 'apiClient/v1'
+import { IAccessibiltyFormValues } from 'core/shared'
 
 export type IUserVenue = {
   id: string
@@ -22,14 +23,6 @@ export type IUserOfferer = {
   id: string
   name: string
   managedVenues: IUserVenue[]
-}
-
-export enum ACCESSIBILITY {
-  VISUAL = 'visual',
-  MENTAL = 'mental',
-  AUDIO = 'audio',
-  MOTOR = 'motor',
-  NONE = 'none',
 }
 
 export type IEducationalCategory = {
@@ -65,13 +58,7 @@ export type IOfferEducationalFormValues = {
     premiere: boolean
     terminale: boolean
   }
-  accessibility: {
-    visual: boolean
-    audio: boolean
-    motor: boolean
-    mental: boolean
-    none: boolean
-  }
+  accessibility: IAccessibiltyFormValues
   phone: string
   email: string
   notifications: boolean
