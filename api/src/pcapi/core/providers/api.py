@@ -110,6 +110,11 @@ def delete_venue_provider(venue_provider: providers_models.VenueProvider) -> Non
             repository.delete(price_rule)
 
     repository.delete(venue_provider)
+    logger.info(
+        "Deleted VenueProvider for venue %d",
+        venue_provider.venueId,
+        extra={"venue_id": venue_provider.venueId, "provider_name": venue_provider.provider.name},
+    )
 
 
 def update_venue_provider(
@@ -119,6 +124,12 @@ def update_venue_provider(
         venue_provider.isActive = bool(venue_provider_payload.isActive)
         update_venue_synchronized_offers_active_status_job.delay(
             venue_provider.venueId, venue_provider.providerId, venue_provider.isActive
+        )
+        logger.info(
+            "Updated VenueProvider %s isActive attribut to %s",
+            venue_provider.id,
+            venue_provider.isActive,
+            extra={"is_active": venue_provider.isActive, "venue_provider_id": venue_provider.id},
         )
 
     if venue_provider.isFromAllocineProvider:
