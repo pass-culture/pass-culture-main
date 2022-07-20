@@ -1,3 +1,4 @@
+import { AccessiblityEnum } from 'core/shared'
 import { ReactComponent as AudioDisabilitySvg } from 'icons/audio-disability.svg'
 import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.svg'
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
@@ -6,16 +7,9 @@ import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.s
 import cn from 'classnames'
 import styles from './AccessibilityLabel.module.scss'
 
-export enum AccessiblityLabelEnum {
-  Audio = 'audio',
-  Mental = 'mental',
-  Motor = 'motor',
-  Visual = 'visual',
-}
-
 interface IAccessibilityLabelProps {
   className?: string
-  name: AccessiblityLabelEnum
+  name: AccessiblityEnum
 }
 
 const AccessibilityLabel = ({
@@ -23,26 +17,29 @@ const AccessibilityLabel = ({
   name,
 }: IAccessibilityLabelProps): JSX.Element => {
   const labelData = {
-    [AccessiblityLabelEnum.Audio]: {
+    [AccessiblityEnum.AUDIO]: {
       label: 'Auditif',
       svg: AudioDisabilitySvg,
     },
-    [AccessiblityLabelEnum.Mental]: {
+    [AccessiblityEnum.MENTAL]: {
       label: 'Psychique ou cognitif',
       svg: MentalDisabilitySvg,
     },
-    [AccessiblityLabelEnum.Motor]: {
+    [AccessiblityEnum.MOTOR]: {
       label: 'Moteur',
       svg: MotorDisabilitySvg,
     },
-    [AccessiblityLabelEnum.Visual]: {
+    [AccessiblityEnum.VISUAL]: {
       label: 'Visuel',
       svg: VisualDisabilitySvg,
+    },
+    [AccessiblityEnum.NONE]: {
+      label: 'Non accessible',
     },
   }[name]
   return (
     <div className={cn(styles['accessibility-label'], className)}>
-      <labelData.svg className={styles['icon']} />
+      {labelData.svg && <labelData.svg className={styles['icon']} />}
       <span className={styles['text']}>{labelData.label}</span>
     </div>
   )
