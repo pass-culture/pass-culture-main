@@ -53,6 +53,7 @@ class AdageSpyClient(AdageClient):
                 "academieLibelle": "GRENOBLE",
                 "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 "domaines": "Patrimoine, mémoire, archéologie",
+                "synchroPass": 0,
             },
             {
                 "id": "128028",
@@ -80,6 +81,7 @@ class AdageSpyClient(AdageClient):
                 "academieLibelle": "GRENOBLE",
                 "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 "domaines": "Univers du livre, de la lecture et des écritures",
+                "synchroPass": 0,
             },
         ]
 
@@ -115,4 +117,5 @@ class AdageSpyClient(AdageClient):
             academieLibelle="GRENOBLE",
             regionLibelle="AUVERGNE-RHÔNE-ALPES",
             domaines="Univers du livre, de la lecture et des écritures",
+            synchroPass=0,
         )

@@ -65,6 +65,7 @@ class AdageLoggerClient(AdageClient):
                 "domaines": "des domaines",
                 "actif": 0,
                 "dateModification": "2022-06-27T08:52:27.597Z",
+                "synchroPass": 1,
             },
             {
                 "id": 2,
@@ -92,6 +93,7 @@ class AdageLoggerClient(AdageClient):
                 "domaines": "d'autres domaines",
                 "actif": 0,
                 "dateModification": "2022-06-27T08:52:27.597Z",
+                "synchroPass": 1,
             },
         ]
 
@@ -127,4 +129,5 @@ class AdageLoggerClient(AdageClient):
             academieLibelle="GRENOBLE",
             regionLibelle="AUVERGNE-RHÔNE-ALPES",
             domaines="Univers du livre, de la lecture et des écritures",
+            synchroPass=0,
         )
