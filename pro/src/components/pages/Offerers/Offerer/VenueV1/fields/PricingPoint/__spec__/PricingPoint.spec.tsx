@@ -110,6 +110,13 @@ describe('src | components | pages | Venue | fields | PricingPoint', () => {
 
     await userEvent.click(venueSiretButton)
 
+    const confirmButton = await screen.getByRole('button', {
+      name: /Valider ma sélection/,
+      exact: false,
+    })
+
+    await userEvent.click(confirmButton)
+
     expect(selectedValued).toBeInTheDocument()
 
     await waitFor(() => {
