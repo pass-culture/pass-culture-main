@@ -28,6 +28,7 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.object_storage.testing import recursive_listdir
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import assert_num_queries
@@ -101,15 +102,29 @@ class CleanStringTest:
 
 
 def individual_stock_factory(self_, **kwargs):
+    create_bank_info = False
     if self_.use_pricing_point and "offer__venue" not in kwargs:
         kwargs.setdefault("offer__venue__pricing_point", "self")
-    return offers_factories.ThingStockFactory(**kwargs)
+    if getattr(self_, "use_reimbursement_point", False) and "offer__venue" not in kwargs:
+        kwargs.setdefault("offer__venue__reimbursement_point", "self")
+        create_bank_info = True
+    stock = offers_factories.ThingStockFactory(**kwargs)
+    if create_bank_info:
+        factories.BankInformationFactory(venue=stock.offer.venue)
+    return stock
 
 
 def collective_stock_factory(self_, **kwargs):
+    create_bank_info = False
     if self_.use_pricing_point and "offer__venue" not in kwargs:
         kwargs.setdefault("collectiveOffer__venue__pricing_point", "self")
-    return educational_factories.CollectiveStockFactory(**kwargs)
+    if getattr(self_, "use_reimbursement_point", False) and "offer__venue" not in kwargs:
+        kwargs.setdefault("collectiveOffer__venue__reimbursement_point", "self")
+        create_bank_info = True
+    stock = educational_factories.CollectiveStockFactory(**kwargs)
+    if create_bank_info:
+        factories.BankInformationFactory(venue=stock.offer.venue)
+    return stock
 
 
 class PriceBookingTest:
@@ -1943,7 +1958,96 @@ def test_generate_wallets_file():
 
 
 @clean_temporary_files
-def test_genererate_invoice_file():
+@override_features(USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS=True)
+def test_generate_invoice_file():
+    first_siret = "12345678900"
+    reimbursement_point1 = offerers_factories.VenueFactory(siret=first_siret)
+    bank_info1 = factories.BankInformationFactory(venue=reimbursement_point1)
+    offerer1 = reimbursement_point1.managingOfferer
+    pricing_point1 = offerers_factories.VenueFactory(managingOfferer=offerer1)
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer1,
+        pricing_point=pricing_point1,
+        reimbursement_point=reimbursement_point1,
+    )
+    pricing1 = factories.PricingFactory(
+        status=models.PricingStatus.VALIDATED,
+        pricingPoint=pricing_point1,
+        amount=-1000,
+    )
+    pline11 = factories.PricingLineFactory(pricing=pricing1)
+    pline12 = factories.PricingLineFactory(
+        pricing=pricing1,
+        amount=100,
+        category=models.PricingLineCategory.OFFERER_CONTRIBUTION,
+    )
+    cashflow1 = factories.CashflowFactory(
+        bankAccount=bank_info1,
+        reimbursementPoint=reimbursement_point1,
+        pricings=[pricing1],
+        status=models.CashflowStatus.ACCEPTED,
+    )
+    invoice1 = factories.InvoiceFactory(
+        reimbursementPoint=reimbursement_point1,
+        cashflows=[cashflow1],
+    )
+
+    # The file should contains only cashflow from the current batch of invoice generation.
+    # This second invoice should not appear.
+    second_siret = "12345673900"
+    reimbursement_point2 = offerers_factories.VenueFactory(siret=second_siret)
+    bank_info2 = factories.BankInformationFactory(venue=reimbursement_point2)
+    offerer2 = reimbursement_point2.managingOfferer
+    pricing_point2 = offerers_factories.VenueFactory(managingOfferer=offerer2)
+    offerers_factories.VenueFactory(
+        managingOfferer=offerer2,
+        pricing_point=pricing_point2,
+        reimbursement_point=reimbursement_point2,
+    )
+    pline2 = factories.PricingLineFactory()
+    pricing2 = pline2.pricing
+    cashflow2 = factories.CashflowFactory(
+        bankAccount=bank_info2,
+        reimbursementPoint=reimbursement_point2,
+        pricings=[pricing2],
+        status=models.CashflowStatus.ACCEPTED,
+    )
+    factories.InvoiceFactory(
+        reimbursementPoint=reimbursement_point2,
+        cashflows=[cashflow2],
+        reference="not displayed because on a different date",
+        date=datetime.datetime(2022, 1, 1),
+    )
+
+    path = api.generate_invoice_file(datetime.date.today(), use_reimbursement_point=True)
+    with zipfile.ZipFile(path) as zfile:
+        with zfile.open("invoices.csv") as csv_bytefile:
+            csv_textfile = io.TextIOWrapper(csv_bytefile)
+            reader = csv.DictReader(csv_textfile, quoting=csv.QUOTE_NONNUMERIC)
+            rows = list(reader)
+    assert len(rows) == 2
+    assert rows[0] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Identifiant valorisation": pricing1.id,
+        "Identifiant ticket de facturation": pline11.id,
+        "type de ticket de facturation": pline11.category.value,
+        "montant du ticket de facturation": abs(pline11.amount),
+    }
+    assert rows[1] == {
+        "Identifiant du point de remboursement": human_ids.humanize(reimbursement_point1.id),
+        "Date du justificatif": datetime.date.today().isoformat(),
+        "Référence du justificatif": invoice1.reference,
+        "Identifiant valorisation": pricing1.id,
+        "Identifiant ticket de facturation": pline12.id,
+        "type de ticket de facturation": pline12.category.value,
+        "montant du ticket de facturation": abs(pline12.amount),
+    }
+
+
+@clean_temporary_files
+def test_generate_invoice_file_with_legacy_business_unit():
     first_siret = "12345678900"
     business_unit1 = factories.BusinessUnitFactory(siret=first_siret)
     venue1 = offerers_factories.VenueFactory(businessUnit=business_unit1, siret=first_siret)
@@ -1991,7 +2095,7 @@ def test_genererate_invoice_file():
         date=datetime.datetime(2022, 1, 1),
     )
 
-    path = api.generate_invoice_file(datetime.date.today())
+    path = api.generate_invoice_file(datetime.date.today(), use_reimbursement_point=False)
     with zipfile.ZipFile(path) as zfile:
         with zfile.open("invoices.csv") as csv_bytefile:
             csv_textfile = io.TextIOWrapper(csv_bytefile)
@@ -2055,16 +2159,31 @@ class EditBusinessUnitTest:
             api.edit_business_unit(business_unit, siret=existing.siret)
 
 
-@pytest.fixture(name="invoice_data")
-def invoice_test_data():
+# FIXME (dbaty, 2022-07-19): Once tests do not use business units
+# anymore, this function could be turned back into a pytest fixture.
+# @pytest.fixture(name="invoice_data")
+def invoice_test_data(use_reimbursement_point):
+    if use_reimbursement_point:
+        venue_kwargs = {
+            "businessUnit": None,
+            "pricing_point": "self",
+            "reimbursement_point": "self",
+        }
+    else:
+        venue_kwargs = {
+            "businessUnit__bankAccount__iban": "FR2710010000000000000000064",
+        }
     venue = offerers_factories.VenueFactory(
         name="Coiffeur justificaTIF",
         siret="85331845900023",
         bookingEmail="pro@example.com",
-        businessUnit__bankAccount__iban="FR2710010000000000000000064",
+        **venue_kwargs,
     )
+    if use_reimbursement_point:
+        factories.BankInformationFactory(venue=venue, iban="FR2710010000000000000000064")
 
     business_unit = venue.businessUnit
+    reimbursement_point = venue
     thing_offer1 = offers_factories.ThingOfferFactory(venue=venue)
     thing_offer2 = offers_factories.ThingOfferFactory(venue=venue)
     book_offer1 = offers_factories.OfferFactory(venue=venue, subcategoryId=subcategories.LIVRE_PAPIER.id)
@@ -2088,20 +2207,26 @@ def invoice_test_data():
         offers_factories.StockFactory(offer=custom_rule_offer2, price=23),
     ]
 
-    return business_unit, stocks, venue
+    return business_unit, reimbursement_point, stocks, venue
 
 
 class GenerateInvoicesTest:
-    use_pricing_point = False
+    use_pricing_point = True
+    use_reimbursement_point = True
+    stock_factory = individual_stock_factory
 
     # Mock slow functions that we are not interested in.
     @mock.patch("pcapi.core.finance.api._generate_invoice_html")
     @mock.patch("pcapi.core.finance.api._store_invoice_pdf")
+    @auto_override_features
     def test_basics(self, _mocked1, _mocked2):
-        booking1 = bookings_factories.UsedIndividualBookingFactory()
-        booking2 = bookings_factories.UsedIndividualBookingFactory()
+        booking1 = bookings_factories.UsedIndividualBookingFactory(stock=self.stock_factory())
+        booking2 = bookings_factories.UsedIndividualBookingFactory(stock=self.stock_factory())
         booking3 = bookings_factories.UsedIndividualBookingFactory(stock=booking1.stock)
-        booking4 = bookings_factories.UsedIndividualBookingFactory()
+        booking4 = bookings_factories.UsedIndividualBookingFactory(stock=self.stock_factory())
+        for booking in (booking1, booking2, booking3, booking4):
+            factories.BankInformationFactory(venue=booking.venue)
+
         # Cashflows for booking1 and booking2 will be UNDER_REVIEW.
         api.price_booking(booking1, self.use_pricing_point)
         api.price_booking(booking2, self.use_pricing_point)
@@ -2125,8 +2250,15 @@ class GenerateInvoicesTest:
         assert invoiced_bookings == {booking1, booking2}
 
 
-class GenerateInvoiceTest:
+class LegacyGenerateInvoicesTest(GenerateInvoicesTest):
     use_pricing_point = False
+    use_reimbursement_point = False
+
+
+class GenerateInvoiceTest:
+    use_pricing_point = True
+    use_reimbursement_point = True
+    stock_factory = individual_stock_factory
 
     EXPECTED_NUM_QUERIES = (
         1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
@@ -2143,18 +2275,43 @@ class GenerateInvoiceTest:
         + 1  # commit
     )
 
+    @auto_override_features
     def test_reference_scheme_increments(self):
         venue = offerers_factories.VenueFactory(siret="85331845900023")
         business_unit = venue.businessUnit
-        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[1, 2])
-        second_invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=[1, 2])
+        reimbursement_point = venue
+        invoice1 = api._generate_invoice(
+            business_unit_id=None if self.use_reimbursement_point else business_unit.id,
+            reimbursement_point_id=reimbursement_point.id if self.use_reimbursement_point else None,
+            cashflow_ids=[1, 2],
+        )
+        invoice2 = api._generate_invoice(
+            business_unit_id=None if self.use_reimbursement_point else business_unit.id,
+            reimbursement_point_id=reimbursement_point.id if self.use_reimbursement_point else None,
+            cashflow_ids=[1, 2],
+        )
 
-        assert invoice.reference == "F220000001"
-        assert second_invoice.reference == "F220000002"
+        assert invoice1.reference == "F220000001"
+        assert invoice2.reference == "F220000002"
 
+    @auto_override_features
     def test_one_regular_rule_one_rate(self):
-        venue = offerers_factories.VenueFactory(siret="85331845900023")
-        business_unit = venue.businessUnit
+        if self.use_reimbursement_point:
+            reimbursement_point = offerers_factories.VenueFactory()
+            factories.BankInformationFactory(venue=reimbursement_point)
+            venue = offerers_factories.VenueFactory(
+                managingOfferer=reimbursement_point.managingOfferer,
+                pricing_point="self",
+                reimbursement_point=reimbursement_point,
+                businessUnit=None,
+            )
+            reimbursement_point_id = reimbursement_point.id
+            business_unit_id = venue.businessUnitId
+        else:
+            venue = offerers_factories.VenueFactory()
+            business_unit_id = venue.businessUnit.id
+            reimbursement_point_id = None
+
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=20)
         booking1 = bookings_factories.UsedIndividualBookingFactory(stock=stock)
@@ -2162,17 +2319,19 @@ class GenerateInvoiceTest:
         api.price_booking(booking1, self.use_pricing_point)
         api.price_booking(booking2, self.use_pricing_point)
         api.generate_cashflows(datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
-        )
-        cashflow_ids = [c.id for c in cashflows]
+        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
+            invoice = api._generate_invoice(
+                business_unit_id=business_unit_id,
+                reimbursement_point_id=reimbursement_point_id,
+                cashflow_ids=cashflow_ids,
+            )
 
         assert invoice.reference == "F220000001"
-        assert invoice.businessUnit == business_unit
+        assert invoice.businessUnitId == venue.businessUnitId
+        if self.use_reimbursement_point:
+            assert invoice.reimbursementPoint == reimbursement_point
         assert invoice.amount == -40 * 100
         assert len(invoice.lines) == 1
         line = invoice.lines[0]
@@ -2182,9 +2341,24 @@ class GenerateInvoiceTest:
         assert line.rate == 1
         assert line.label == "Montant remboursé"
 
+    @auto_override_features
     def test_two_regular_rules_two_rates(self):
-        venue = offerers_factories.VenueFactory(siret="85331845900023")
-        business_unit = venue.businessUnit
+        if self.use_reimbursement_point:
+            reimbursement_point = offerers_factories.VenueFactory()
+            factories.BankInformationFactory(venue=reimbursement_point)
+            venue = offerers_factories.VenueFactory(
+                managingOfferer=reimbursement_point.managingOfferer,
+                pricing_point="self",
+                reimbursement_point=reimbursement_point,
+                businessUnit=None,
+            )
+            reimbursement_point_id = reimbursement_point.id
+            business_unit_id = venue.businessUnitId
+        else:
+            venue = offerers_factories.VenueFactory()
+            business_unit_id = venue.businessUnit.id
+            reimbursement_point_id = None
+
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
         stock2 = offers_factories.ThingStockFactory(offer=offer, price=160)
@@ -2197,18 +2371,19 @@ class GenerateInvoiceTest:
         api.price_booking(booking1, self.use_pricing_point)
         api.price_booking(booking2, self.use_pricing_point)
         api.generate_cashflows(datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
-        )
-        cashflow_ids = [c.id for c in cashflows]
+        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
+            invoice = api._generate_invoice(
+                business_unit_id=business_unit_id,
+                reimbursement_point_id=reimbursement_point_id,
+                cashflow_ids=cashflow_ids,
+            )
 
         assert invoice.reference == "F220000001"
-        assert invoice.businessUnit == business_unit
+        assert invoice.businessUnitId == business_unit_id
+        if self.use_reimbursement_point:
+            assert invoice.reimbursementPoint == reimbursement_point
         # 100% of 19_850*100 + 95% of 160*100 aka 152*100
         assert invoice.amount == -20_002 * 100
         assert len(invoice.lines) == 2
@@ -2227,9 +2402,24 @@ class GenerateInvoiceTest:
         assert line_rate_0_95.rate == Decimal("0.95")
         assert line_rate_0_95.label == "Montant remboursé"
 
+    @auto_override_features
     def test_one_custom_rule(self):
-        venue = offerers_factories.VenueFactory(siret="85331845900023")
-        business_unit = venue.businessUnit
+        if self.use_reimbursement_point:
+            reimbursement_point = offerers_factories.VenueFactory()
+            factories.BankInformationFactory(venue=reimbursement_point)
+            venue = offerers_factories.VenueFactory(
+                managingOfferer=reimbursement_point.managingOfferer,
+                pricing_point="self",
+                reimbursement_point=reimbursement_point,
+                businessUnit=None,
+            )
+            reimbursement_point_id = reimbursement_point.id
+            business_unit_id = venue.businessUnitId
+        else:
+            venue = offerers_factories.VenueFactory()
+            business_unit_id = venue.businessUnit.id
+            reimbursement_point_id = None
+
         offer = offers_factories.ThingOfferFactory(venue=venue)
         stock = offers_factories.ThingStockFactory(offer=offer, price=23)
         payments_factories.CustomReimbursementRuleFactory(amount=22, offer=offer)
@@ -2238,18 +2428,19 @@ class GenerateInvoiceTest:
         api.price_booking(booking1, self.use_pricing_point)
         api.price_booking(booking2, self.use_pricing_point)
         api.generate_cashflows(datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
-        )
-        cashflow_ids = [c.id for c in cashflows]
+        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
+            invoice = api._generate_invoice(
+                business_unit_id=business_unit_id,
+                reimbursement_point_id=reimbursement_point_id,
+                cashflow_ids=cashflow_ids,
+            )
 
         assert invoice.reference == "F220000001"
-        assert invoice.businessUnit == business_unit
+        assert invoice.businessUnitId == business_unit_id
+        if self.use_reimbursement_point:
+            assert invoice.reimbursementPoint == reimbursement_point
         assert invoice.amount == -4400
         assert len(invoice.lines) == 1
         line = invoice.lines[0]
@@ -2259,8 +2450,9 @@ class GenerateInvoiceTest:
         assert line.rate == Decimal("0.9565")
         assert line.label == "Montant remboursé"
 
-    def test_many_rules_and_rates_two_cashflows(self, invoice_data):
-        business_unit, stocks, _venue = invoice_data
+    @auto_override_features
+    def test_many_rules_and_rates_two_cashflows(self):
+        business_unit, reimbursement_point, stocks, _venue = invoice_test_data(self.use_reimbursement_point)
         bookings = []
         user = create_rich_user()
         for stock in stocks:
@@ -2276,19 +2468,21 @@ class GenerateInvoiceTest:
         for booking in bookings[3:]:
             api.price_booking(booking, self.use_pricing_point)
         api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
-        )
-        cashflow_ids = [c.id for c in cashflows]
+        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        business_unit_id = business_unit.id if business_unit else None
+        reimbursement_point_id = reimbursement_point.id if reimbursement_point else None
 
         with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
+            invoice = api._generate_invoice(
+                business_unit_id=business_unit_id,
+                reimbursement_point_id=reimbursement_point_id,
+                cashflow_ids=cashflow_ids,
+            )
 
         assert len(invoice.cashflows) == 2
         assert invoice.reference == "F220000001"
         assert invoice.businessUnit == business_unit
+        assert invoice.reimbursementPoint == reimbursement_point
         assert invoice.amount == -20_156_04
         # général 100%, général 95%, livre 100%, livre 95%, pas remboursé, custom 1, custom 2
         assert len(invoice.lines) == 7
@@ -2345,10 +2539,11 @@ class GenerateInvoiceTest:
         assert line6.rate == Decimal("0.9400")
         assert line6.label == "Montant remboursé"
 
+    @auto_override_features
     def test_update_statuses(self):
-        booking1 = bookings_factories.UsedBookingFactory()
-        booking2 = bookings_factories.UsedBookingFactory()
-        business_unit_id = booking1.venue.businessUnitId
+        stock = self.stock_factory()
+        booking1 = bookings_factories.UsedBookingFactory(stock=stock)
+        booking2 = bookings_factories.UsedBookingFactory(stock=stock)
         api.price_booking(booking1, self.use_pricing_point)
         api.price_booking(booking2, self.use_pricing_point)
         api.generate_cashflows(datetime.datetime.utcnow())
@@ -2357,7 +2552,12 @@ class GenerateInvoiceTest:
         db.session.add(booking2)
         db.session.commit()
 
-        api._generate_invoice(business_unit_id, cashflow_ids)
+        api._generate_invoice(
+            business_unit_id=booking1.venue.businessUnitId,
+            reimbursement_point_id=booking1.venue.current_reimbursement_point_id,
+            cashflow_ids=cashflow_ids,
+        )
+
         get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
         cashflow_statuses = get_statuses(models.Cashflow)
         assert cashflow_statuses == {models.CashflowStatus.ACCEPTED}
@@ -2366,28 +2566,32 @@ class GenerateInvoiceTest:
         assert booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
         assert booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
 
+    @auto_override_features
     def test_update_statuses_when_new_model_is_enabled(self):
+        past = datetime.datetime.utcnow() - datetime.timedelta(days=1)
         booking1 = bookings_factories.UsedEducationalBookingFactory(
-            stock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1)
+            stock=self.stock_factory(beginningDatetime=past),
         )
         collective_booking1 = UsedCollectiveBookingFactory(
             bookingId=booking1.id,
-            venue=booking1.venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__collectiveOffer__venue=booking1.venue,
+            collectiveStock__beginningDatetime=past,
         )
         collective_booking2 = UsedCollectiveBookingFactory(
-            venue=booking1.venue,
-            collectiveStock__beginningDatetime=datetime.datetime.utcnow() - datetime.timedelta(days=1),
+            collectiveStock__collectiveOffer__venue=booking1.venue,
+            collectiveStock__beginningDatetime=past,
         )
-        business_unit_id = booking1.venue.businessUnitId
         api.price_booking(booking1, self.use_pricing_point)
         api.price_booking(collective_booking1, self.use_pricing_point)
         api.price_booking(collective_booking2, self.use_pricing_point)
         api.generate_cashflows(datetime.datetime.utcnow())
         cashflow_ids = {cf.id for cf in models.Cashflow.query.all()}
 
-        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
-            api._generate_invoice(business_unit_id, cashflow_ids)
+        api._generate_invoice(
+            business_unit_id=booking1.venue.businessUnitId,
+            reimbursement_point_id=booking1.venue.current_reimbursement_point_id,
+            cashflow_ids=cashflow_ids,
+        )
 
         get_statuses = lambda model: {s for s, in model.query.with_entities(getattr(model, "status"))}
         cashflow_statuses = get_statuses(models.Cashflow)
@@ -2399,11 +2603,18 @@ class GenerateInvoiceTest:
         assert collective_booking2.status == CollectiveBookingStatus.REIMBURSED  # updated
 
 
-class PrepareInvoiceContextTest:
+class LegacyGenerateInvoiceTest(GenerateInvoiceTest):
     use_pricing_point = False
+    use_reimbursement_point = False
 
-    def test_context(self, invoice_data):
-        business_unit, stocks, _venue = invoice_data
+
+class PrepareInvoiceContextTest:
+    use_pricing_point = True
+    use_reimbursement_point = True
+
+    @auto_override_features
+    def test_context(self):
+        business_unit, reimbursement_point, stocks, _venue = invoice_test_data(self.use_reimbursement_point)
         bookings = []
         user = create_rich_user()
         for stock in stocks:
@@ -2418,14 +2629,15 @@ class PrepareInvoiceContextTest:
         for booking in bookings[3:]:
             api.price_booking(booking, self.use_pricing_point)
         api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
+        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+        invoice = api._generate_invoice(
+            business_unit_id=None if self.use_reimbursement_point else business_unit.id,
+            reimbursement_point_id=reimbursement_point.id if self.use_reimbursement_point else None,
+            cashflow_ids=cashflow_ids,
         )
-        cashflow_ids = [c.id for c in cashflows]
-        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
-        context = api._prepare_invoice_context(invoice)
+
+        context = api._prepare_invoice_context(invoice, self.use_reimbursement_point)
+
         general, books, not_reimbursed, custom = tuple(g for g in context["groups"])
         assert general.used_bookings_subtotal == 2006130
         assert general.contribution_subtotal == 406
@@ -2459,11 +2671,17 @@ class PrepareInvoiceContextTest:
         assert end_period == datetime.datetime(2020, 3, 15)
 
 
+class LegacyPrepareInvoiceContextTest(PrepareInvoiceContextTest):
+    use_pricing_point = False
+    use_reimbursement_point = False
+
+
 class GenerateInvoiceHtmlTest:
     TEST_FILES_PATH = pathlib.Path(tests.__path__[0]) / "files"
-    use_pricing_point = False
+    use_pricing_point = True
+    use_reimbursement_point = True
 
-    def generate_and_compare_invoice(self, stocks, business_unit, venue):
+    def generate_and_compare_invoice(self, stocks, business_unit, reimbursement_point, venue):
         bookings = []
         user = create_rich_user()
         for stock in stocks:
@@ -2482,15 +2700,15 @@ class GenerateInvoiceHtmlTest:
         duo_booking = bookings_factories.UsedIndividualBookingFactory(stock=duo_stock, quantity=2)
         api.price_booking(duo_booking, self.use_pricing_point)
         api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
-        )
+        cashflows = models.Cashflow.query.order_by(models.Cashflow.id).all()
         cashflow_ids = [c.id for c in cashflows]
-        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
+        invoice = api._generate_invoice(
+            business_unit_id=None if self.use_reimbursement_point else business_unit.id,
+            reimbursement_point_id=reimbursement_point.id if self.use_reimbursement_point else None,
+            cashflow_ids=cashflow_ids,
+        )
 
-        invoice_html = api._generate_invoice_html(invoice)
+        invoice_html = api._generate_invoice_html(invoice, self.use_reimbursement_point)
 
         with open(self.TEST_FILES_PATH / "invoice" / "rendered_invoice.html", "r", encoding="utf-8") as f:
             expected_invoice_html = f.read()
@@ -2516,11 +2734,23 @@ class GenerateInvoiceHtmlTest:
             "Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels",
             f'Remboursement des réservations validées entre le {start_period.strftime("%d/%m/%y")} et le {end_period.strftime("%d/%m/%y")}, sauf cas exceptionnels',
         )
+        if self.use_reimbursement_point:
+            expected_invoice_html = expected_invoice_html.replace("\n    <p><b>SIRET :</b> 85331845900023</p>", "")
         assert expected_invoice_html == invoice_html
 
-    def test_basics(self, invoice_data):
-        business_unit, stocks, venue = invoice_data
-        only_educational_venue = offerers_factories.VenueFactory(businessUnit=business_unit, name="Coiffeur collecTIF")
+    @auto_override_features
+    def test_basics(self):
+        business_unit, reimbursement_point, stocks, venue = invoice_test_data(self.use_reimbursement_point)
+        if self.use_reimbursement_point:
+            pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)
+        else:
+            pricing_point = None
+        only_educational_venue = offerers_factories.VenueFactory(
+            name="Coiffeur collecTIF",
+            businessUnit=business_unit,
+            pricing_point=pricing_point,
+            reimbursement_point=reimbursement_point,
+        )
         only_educational_booking = bookings_factories.UsedEducationalBookingFactory(
             stock__price=666,
             stock__offer__venue=only_educational_venue,
@@ -2540,11 +2770,21 @@ class GenerateInvoiceHtmlTest:
         api.price_booking(educational_booking2, self.use_pricing_point)
         api.price_booking(only_educational_booking, self.use_pricing_point)
 
-        self.generate_and_compare_invoice(stocks, business_unit, venue)
+        self.generate_and_compare_invoice(stocks, business_unit, reimbursement_point, venue)
 
-    def test_basics_with_new_collective_model(self, invoice_data):
-        business_unit, stocks, venue = invoice_data
-        only_collective_venue = offerers_factories.VenueFactory(businessUnit=business_unit, name="Coiffeur collecTIF")
+    @auto_override_features
+    def test_basics_with_new_collective_model(self):
+        business_unit, reimbursement_point, stocks, venue = invoice_test_data(self.use_reimbursement_point)
+        if self.use_reimbursement_point:
+            pricing_point = offerers_models.Venue.query.get(venue.current_pricing_point_id)
+        else:
+            pricing_point = None
+        only_collective_venue = offerers_factories.VenueFactory(
+            businessUnit=business_unit,
+            pricing_point=pricing_point,
+            reimbursement_point=reimbursement_point,
+            name="Coiffeur collecTIF",
+        )
         only_collective_booking = educational_factories.UsedCollectiveBookingFactory(
             collectiveStock__beginningDatetime=datetime.datetime.utcnow(),
             collectiveStock__collectiveOffer__venue=only_collective_venue,
@@ -2564,38 +2804,24 @@ class GenerateInvoiceHtmlTest:
         api.price_booking(collective_booking2, self.use_pricing_point)
         api.price_booking(only_collective_booking, self.use_pricing_point)
 
-        self.generate_and_compare_invoice(stocks, business_unit, venue)
+        self.generate_and_compare_invoice(stocks, business_unit, reimbursement_point, venue)
+
+
+class LegacyGenerateInvoiceHtmlTest(GenerateInvoiceHtmlTest):
+    use_pricing_point = False
+    use_reimbursement_point = False
 
 
 class StoreInvoicePdfTest:
-    BASE_THUMBS_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
-    INVOICES_DIR = BASE_THUMBS_DIR / "invoices"
-    use_pricing_point = False
+    STORAGE_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
+    INVOICES_DIR = STORAGE_DIR / "invoices"
 
-    @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
-    def test_basics(self, clear_tests_invoices_bucket, invoice_data):
+    @override_settings(OBJECT_STORAGE_URL=STORAGE_DIR)
+    def test_basics(self, clear_tests_invoices_bucket):
+        invoice = factories.InvoiceFactory()
+        html = "<p>Trust me, I am an invoice.<p>"
         existing_number_of_files = len(recursive_listdir(self.INVOICES_DIR))
-        business_unit, stocks, _venue = invoice_data
-        bookings = []
-        for stock in stocks:
-            booking = bookings_factories.UsedBookingFactory(stock=stock)
-            bookings.append(booking)
-        for booking in bookings[:3]:
-            api.price_booking(booking, self.use_pricing_point)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        for booking in bookings[3:]:
-            api.price_booking(booking, self.use_pricing_point)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
-        )
-        cashflow_ids = [c.id for c in cashflows]
-        invoice = api._generate_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)
-
-        invoice_html = api._generate_invoice_html(invoice)
-        api._store_invoice_pdf(invoice.storage_object_id, invoice_html)
+        api._store_invoice_pdf(invoice.storage_object_id, html)
 
         assert invoice.url == f"{self.INVOICES_DIR}/{invoice.storage_object_id}"
         assert len(recursive_listdir(self.INVOICES_DIR)) == existing_number_of_files + 2
@@ -2604,32 +2830,39 @@ class StoreInvoicePdfTest:
 
 
 class GenerateAndStoreInvoiceTest:
-    BASE_THUMBS_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
-    use_pricing_point = False
+    STORAGE_DIR = pathlib.Path(tests.__path__[0]) / ".." / "src" / "pcapi" / "static" / "object_store_data"
+    use_pricing_point = True
+    use_reimbursement_point = True
 
-    @override_settings(OBJECT_STORAGE_URL=BASE_THUMBS_DIR)
-    def test_basics(self, clear_tests_invoices_bucket, invoice_data):
-        business_unit, stocks, _venue = invoice_data
-        bookings = []
-        for stock in stocks:
-            booking = bookings_factories.UsedBookingFactory(stock=stock)
-            bookings.append(booking)
-        for booking in bookings[:3]:
-            api.price_booking(booking, self.use_pricing_point)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        for booking in bookings[3:]:
-            api.price_booking(booking, self.use_pricing_point)
-        api.generate_cashflows(cutoff=datetime.datetime.utcnow())
-        cashflows = (
-            models.Cashflow.query.join(models.Cashflow.pricings)
-            .filter(models.Pricing.businessUnitId == business_unit.id)
-            .all()
+    @override_settings(OBJECT_STORAGE_URL=STORAGE_DIR)
+    @auto_override_features
+    # FIXME (dbaty, 2022-07-22): this test should use the
+    # "clear_tests_invoices_bucket" fixture, but I cannot make
+    # it work with the "auto_override_features" decorator. The
+    # fixture should be added back when we remove the decorator.
+    def test_basics(self):
+        if self.use_reimbursement_point:
+            reimbursement_point = offerers_factories.VenueFactory()
+        else:
+            venue = offerers_factories.VenueFactory()
+            business_unit = venue.businessUnit
+
+        # We're not interested in the invoice itself. We just want to
+        # check that the function does not fail and that the e-mail is
+        # sent.
+        api.generate_and_store_invoice(
+            business_unit_id=None if self.use_reimbursement_point else business_unit.id,
+            reimbursement_point_id=reimbursement_point.id if self.use_reimbursement_point else None,
+            cashflow_ids=[1],
+            use_reimbursement_point=self.use_reimbursement_point,
         )
-        cashflow_ids = [c.id for c in cashflows]
 
-        api.generate_and_store_invoice(business_unit_id=business_unit.id, cashflow_ids=cashflow_ids)  # does not raise
+        assert len(mails_testing.outbox) == 1
 
-        assert len(mails_testing.outbox) == 1  # test number of emails sent
+
+class LegacyGenerateAndStoreInvoiceTest(GenerateAndStoreInvoiceTest):
+    use_pricing_point = False
+    use_reimbursement_point = False
 
 
 def test_merge_cashflow_batches():

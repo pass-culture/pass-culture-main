@@ -123,6 +123,7 @@ class CashflowFactory(BaseFactory):
     class Meta:
         model = models.Cashflow
 
+    amount = -1000
     batch = factory.SubFactory(CashflowBatchFactory)
     status = models.CashflowStatus.ACCEPTED
     # FIXME (dbaty, 2022-07-08): must be adapted for reimbursement points
