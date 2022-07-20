@@ -140,7 +140,7 @@ filterwarnings = [
     "ignore:Coercing Subquery object into a select\\(\\) for use in IN\\(\\):sqlalchemy.exc.SAWarning",
     # ---------------------------- #
 
-    # FIXME (rpaoloni, 2022-04-19): some of our dependencies (swift and rq) use `distutils.version.StrictVersion`,
+    # FIXME (rpaoloni, 2022-04-19): some of our dependencies (rq, at least) use `distutils.version.StrictVersion`,
     # which emits a deprecation warnings with setuptools >=59.6.0. Remove this when we update or remove those
     # dependencies.
     "ignore:distutils Version classes are deprecated. Use packaging.version instead.:DeprecationWarning",

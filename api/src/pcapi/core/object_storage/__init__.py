@@ -2,12 +2,10 @@ from pcapi import settings
 from pcapi.utils.module_loading import import_string
 
 
-OVH = "OVH"
 GCP = "GCP"
 GCP_ALTERNATE = "GCP_ALTERNATE"
 LOCAL_FILE_STORAGE = "local"
 BACKENDS_MAPPING = {
-    OVH: "pcapi.core.object_storage.backends.ovh.OVHBackend",
     GCP: "pcapi.core.object_storage.backends.gcp.GCPBackend",
     GCP_ALTERNATE: "pcapi.core.object_storage.backends.gcp.GCPAlternateBackend",
     LOCAL_FILE_STORAGE: "pcapi.core.object_storage.backends.local.LocalBackend",
