@@ -1,24 +1,23 @@
 import logging
 import os
-from pathlib import Path
-from pathlib import PurePath
+import pathlib
 
 from pcapi import settings
-
-
-logger = logging.getLogger(__name__)
 
 from .base import BaseBackend
 
 
+logger = logging.getLogger(__name__)
+
+
 class LocalBackend(BaseBackend):
-    def local_dir(self, bucket: str, object_id: str) -> Path:
+    def local_dir(self, bucket: str, object_id: str) -> pathlib.Path:
         if "/" in object_id:
-            return settings.LOCAL_STORAGE_DIR / bucket / PurePath(object_id).parent
+            return settings.LOCAL_STORAGE_DIR / bucket / pathlib.PurePath(object_id).parent
         return settings.LOCAL_STORAGE_DIR / bucket
 
-    def local_path(self, bucket: str, object_id: str) -> Path:
-        return self.local_dir(bucket, object_id) / PurePath(object_id).name
+    def local_path(self, bucket: str, object_id: str) -> pathlib.Path:
+        return self.local_dir(bucket, object_id) / pathlib.PurePath(object_id).name
 
     def store_public_object(self, folder: str, object_id: str, blob: bytes, content_type: str) -> None:
         try:
@@ -41,50 +40,4 @@ class LocalBackend(BaseBackend):
             os.remove(str(file_local_path) + ".type")
         except OSError as exc:
             logger.exception("An error has occured while trying to delete file on local file storage: %s", exc)
-            raise exc
-
-    def get_container(
-        self,
-        container_name: str | None = None,
-        marker: str = "",
-        end_marker: str = "",
-        full_listing: bool = True,
-    ) -> tuple:
-        """
-        This is similar to google.cloud.storage.Client.list_blobs
-        and it will be mainly used to test the delete_unused_mediations_and_assets script
-        """
-        try:
-            bucket_local_path = container_name or settings.LOCAL_STORAGE_DIR
-            bucket_local_path = str(bucket_local_path) + "/"
-            asset_names = []
-
-            # first, we build a list of asset_names
-            for root, _subdirs, files in os.walk(bucket_local_path):
-                for filename in files:
-                    file_path = os.path.join(root, filename)
-                    asset_name = str(file_path).replace(str(bucket_local_path), "")
-                    # don't add hidden system files
-                    if "/." in asset_name or asset_name.startswith("."):
-                        break
-                    # don't add names lower than marker or higher than end_marker
-                    if asset_name < marker or (end_marker and asset_name > end_marker):
-                        break
-                    asset_names.append(asset_name)
-
-            # then we sort the list of asset_names and create a list of dict from it
-            asset_names.sort()
-            assets = [{"name": asset} for asset in asset_names]
-
-            if not full_listing:
-                # only keep the first 10_000 elements
-                assets = assets[:10_000]
-
-            # this is the only header we would use locally
-            headers = {"x-container-object-count": len(assets)}
-
-            return headers, assets
-
-        except Exception as exc:
-            logger.exception("An error has occured while trying to get container info on local file storage: %s", exc)
             raise exc
