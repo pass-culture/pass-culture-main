@@ -1,3 +1,5 @@
+import { IAccessibiltyFormValues } from 'core/shared'
+
 export interface IOfferIndividualFormValues {
   subCategoryFields: string[]
   title: string
@@ -14,4 +16,5 @@ export interface IOfferIndividualFormValues {
   withdrawalDetails: string | null
   withdrawalType: string
   withdrawalDelay: string
+  accessibility: IAccessibiltyFormValues
 }
