@@ -192,11 +192,17 @@
 </svg>
 <h1>Justificatif de remboursement</h1>
 <div class="custumerInfo">
+{%- if reimbursement_point %}
+    <p><b>Nom :</b> {{ reimbursement_point.name }}</p>
+
+    <p><b>Adresse :</b> {{ reimbursement_point.address }} - {{ reimbursement_point.postalCode}} {{ reimbursement_point.city }}</p>
+{% else %}
     <p><b>Nom :</b> {{ invoice.businessUnit.name }}</p>
 {% if venue is not none %}
     <p><b>Adresse :</b> {{ venue.address }} - {{ venue.postalCode}} {{ venue.city }}</p>
 {% endif %}
     <p><b>SIRET :</b> {{ invoice.businessUnit.siret }}</p>
+{%- endif %}
 </div>
 <h3 class="coloredTitle">
     Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels
@@ -276,7 +282,7 @@
         <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
         <td class="cashflow_creation_date">{{ invoice.date.strftime("%d/%m/%Y") }}</td>
         <td>{{ cashflow.amount|fr_currency }} €</td>
-        <td>{{ invoice.businessUnit.name }}</td>
+        <td>{% if reimbursement_point %}{{ reimbursement_point.name }}{% else %}{{ invoice.businessUnit.name }}{% endif %}</td>
     </tr>
 {% endfor %}
     <tr class="coloredSection bottomTableText">

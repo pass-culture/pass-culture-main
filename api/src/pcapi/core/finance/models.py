@@ -370,7 +370,7 @@ class Invoice(Model):  # type: ignore [valid-type, misc]
     reference = sqla.Column(sqla.Text, nullable=False, unique=True)
     # FIXME (dbaty, 2022-06-20): remove `businessUnitId` once we have
     # fully switched to `reimbursementPointId`
-    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=False)
+    businessUnitId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("business_unit.id"), index=True, nullable=True)
     businessUnit = sqla_orm.relationship("BusinessUnit", back_populates="invoices")
     # FIXME (dbaty, 2022-06-20): set non-NULLABLE once invoice code
     # has been updated and old data has been migrated.

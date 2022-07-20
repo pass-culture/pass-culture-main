@@ -1567,9 +1567,15 @@ def _make_invoice_line(
 
 def generate_invoices() -> None:
     """Generate (and store) all invoices."""
+    use_reimbursement_point = FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS.is_active()
     rows = (
         db.session.query(
-            models.Cashflow.businessUnitId.label("business_unit_id"),
+            sqla.literal(None).label("business_unit_id")
+            if use_reimbursement_point
+            else models.Cashflow.businessUnitId.label("business_unit_id"),
+            models.Cashflow.reimbursementPointId.label("reimbursement_point_id")
+            if use_reimbursement_point
+            else sqla.literal(None).label("reimbursement_point_id"),
             sqla_func.array_agg(models.Cashflow.id).label("cashflow_ids"),
         )
         .filter(models.Cashflow.status == models.CashflowStatus.UNDER_REVIEW)
@@ -1580,35 +1586,49 @@ def generate_invoices() -> None:
         # There should not be any invoice linked to a cashflow that is
         # UNDER_REVIEW, but having a safety belt here is almost free.
         .filter(models.InvoiceCashflow.invoiceId.is_(None))
-        .group_by(models.Cashflow.businessUnitId)
     )
+    if use_reimbursement_point:
+        rows = rows.group_by(models.Cashflow.reimbursementPointId)
+    else:
+        rows = rows.group_by(models.Cashflow.businessUnitId)
 
     for row in rows:
         try:
             with transaction():
-                extra = {"business_unit_id": row.business_unit_id}
+                extra = {
+                    "business_unit_id": row.business_unit_id,
+                    "reimbursement_point_id": row.reimbursement_point_id,
+                }
                 with log_elapsed(logger, "Generated and sent invoice", extra):
-                    generate_and_store_invoice(row.business_unit_id, row.cashflow_ids)
+                    generate_and_store_invoice(
+                        business_unit_id=row.business_unit_id,
+                        reimbursement_point_id=row.reimbursement_point_id,
+                        cashflow_ids=row.cashflow_ids,
+                        use_reimbursement_point=use_reimbursement_point,
+                    )
         except Exception as exc:  # pylint: disable=broad-except
+            if settings.IS_RUNNING_TESTS:
+                raise
             logger.exception(
                 "Could not generate invoice",
                 extra={
                     "business_unit": row.business_unit_id,
+                    "reimbursement_point_id": row.reimbursement_point_id,
                     "cashflow_ids": row.cashflow_ids,
                     "exc": str(exc),
                 },
             )
     with log_elapsed(logger, "Generated CSV invoices file"):
-        path = generate_invoice_file(datetime.date.today())
+        path = generate_invoice_file(datetime.date.today(), use_reimbursement_point)
     batch_id = models.CashflowBatch.query.order_by(models.CashflowBatch.cutoff.desc()).first().id
     drive_folder_name = _get_drive_folder_name(batch_id)
     with log_elapsed(logger, "Uploaded CSV invoices file to Google Drive"):
         _upload_files_to_google_drive(drive_folder_name, [path])
 
 
-def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
+def generate_invoice_file(invoice_date: datetime.date, use_reimbursement_point: bool) -> pathlib.Path:
     header = [
-        "Identifiant de la BU",
+        "Identifiant du point de remboursement" if use_reimbursement_point else "Identifiant de la BU",
         "Date du justificatif",
         "Référence du justificatif",
         "Identifiant valorisation",
@@ -1620,7 +1640,12 @@ def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
     query = (
         db.session.query(
             models.Invoice,
-            BusinessUnitVenue.id.label("business_unit_venue_id"),
+            sqla.literal(None).label("business_unit_venue_id")
+            if use_reimbursement_point
+            else BusinessUnitVenue.id.label("business_unit_venue_id"),
+            models.Invoice.reimbursementPointId.label("reimbursement_point_id")
+            if use_reimbursement_point
+            else sqla.literal(None).label("reimbursement_point_id"),
             models.Pricing.id.label("pricing_id"),
             models.PricingLine.id.label("pricing_line_id"),
             models.PricingLine.category.label("pricing_line_category"),
@@ -1629,19 +1654,23 @@ def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
         .join(models.Invoice.cashflows)
         .join(models.Cashflow.pricings)
         .join(models.Pricing.lines)
-        .join(models.Invoice.businessUnit)
-        # See `_generate_payments_file()` as for why we do an _outer_
-        # join and not an _inner_ join here.
-        .outerjoin(
-            BusinessUnitVenue,
-            models.BusinessUnit.siret == BusinessUnitVenue.siret,
+    )
+    if not use_reimbursement_point:
+        query = (
+            query.join(models.Invoice.businessUnit)
+            # See `_generate_payments_file()` as for why we do an _outer_
+            # join and not an _inner_ join here.
+            .outerjoin(
+                BusinessUnitVenue,
+                models.BusinessUnit.siret == BusinessUnitVenue.siret,
+            )
         )
-        .filter(cast(models.Invoice.date, Date) == invoice_date)
-        .order_by(models.Invoice.id, models.Pricing.id, models.PricingLine.id)
+    query = query.filter(cast(models.Invoice.date, Date) == invoice_date).order_by(
+        models.Invoice.id, models.Pricing.id, models.PricingLine.id
     )
 
     row_formatter = lambda row: (
-        human_ids.humanize(row.business_unit_venue_id),
+        human_ids.humanize(row.reimbursement_point_id if use_reimbursement_point else row.business_unit_venue_id),
         row.Invoice.date.date().isoformat(),
         row.Invoice.reference,
         row.pricing_id,
@@ -1658,20 +1687,36 @@ def generate_invoice_file(invoice_date: datetime.date) -> pathlib.Path:
     )
 
 
-def generate_and_store_invoice(business_unit_id: int, cashflow_ids: list[int]) -> None:
-    log_extra = {"business_unit": business_unit_id}
+def generate_and_store_invoice(
+    business_unit_id: int | None,
+    reimbursement_point_id: int | None,
+    cashflow_ids: list[int],
+    use_reimbursement_point: bool,
+) -> None:
+    log_extra = {"business_unit": business_unit_id, "reimbursement_point": reimbursement_point_id}
     with log_elapsed(logger, "Generated invoice model instance", log_extra):
-        invoice = _generate_invoice(business_unit_id=business_unit_id, cashflow_ids=cashflow_ids)
+        invoice = _generate_invoice(
+            business_unit_id=business_unit_id,
+            reimbursement_point_id=reimbursement_point_id,
+            cashflow_ids=cashflow_ids,
+        )
     with log_elapsed(logger, "Generated invoice HTML", log_extra):
-        invoice_html = _generate_invoice_html(invoice=invoice)
+        invoice_html = _generate_invoice_html(invoice, use_reimbursement_point)
     with log_elapsed(logger, "Generated and stored PDF invoice", log_extra):
         _store_invoice_pdf(invoice_storage_id=invoice.storage_object_id, invoice_html=invoice_html)
     with log_elapsed(logger, "Sent invoice", log_extra):
-        send_invoice_available_to_pro_email(invoice)
+        send_invoice_available_to_pro_email(invoice, use_reimbursement_point)
 
 
-def _generate_invoice(business_unit_id: int, cashflow_ids: list[int]) -> models.Invoice:
-    invoice = models.Invoice(businessUnitId=business_unit_id)
+def _generate_invoice(
+    business_unit_id: int | None,
+    reimbursement_point_id: int | None,
+    cashflow_ids: list[int],
+) -> models.Invoice:
+    invoice = models.Invoice(
+        businessUnitId=business_unit_id,
+        reimbursementPointId=reimbursement_point_id,
+    )
     total_reimbursed_amount = 0
     cashflows = models.Cashflow.query.filter(models.Cashflow.id.in_(cashflow_ids)).options(
         sqla_orm.joinedload(models.Cashflow.pricings)
@@ -1804,7 +1849,7 @@ def get_invoice_period(invoice_date: datetime.datetime) -> typing.Tuple[datetime
     return start_date, end_date
 
 
-def _prepare_invoice_context(invoice: models.Invoice) -> dict:
+def _prepare_invoice_context(invoice: models.Invoice, use_reimbursement_point: bool) -> dict:
     invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
     total_used_bookings_amount = 0
     total_contribution_amount = 0
@@ -1833,12 +1878,20 @@ def _prepare_invoice_context(invoice: models.Invoice) -> dict:
         groups.append(invoice_group)
     reimbursements_by_venue = get_reimbursements_by_venue(invoice)
 
-    venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
+    # FIXME (dbaty, 2022-07-18): once business units are not used
+    # anymore, stop using `venue` in the template.
+    if use_reimbursement_point:
+        reimbursement_point = invoice.reimbursementPoint
+        venue = None
+    else:
+        venue = offerers_repository.find_venue_by_siret(invoice.businessUnit.siret)  # type: ignore [arg-type]
+        reimbursement_point = None
     period_start, period_end = get_invoice_period(invoice.date)
     return dict(
         invoice=invoice,
         groups=groups,
         venue=venue,
+        reimbursement_point=reimbursement_point,
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
@@ -1932,8 +1985,8 @@ def get_reimbursements_by_venue(
     return reimbursements_by_venue.values()
 
 
-def _generate_invoice_html(invoice: models.Invoice) -> str:
-    context = _prepare_invoice_context(invoice)
+def _generate_invoice_html(invoice: models.Invoice, use_reimbursement_point: bool) -> str:
+    context = _prepare_invoice_context(invoice, use_reimbursement_point)
     return render_template("invoices/invoice.html", **context)
 
 

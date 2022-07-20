@@ -114,6 +114,8 @@ def create_specific_invoice() -> None:
 
     finance_api.generate_and_store_invoice(
         business_unit_id=business_unit.id,
+        reimbursement_point_id=None,
         cashflow_ids=cashflow_ids,
+        use_reimbursement_point=False,
     )
     logger.info("Created specific Invoice")

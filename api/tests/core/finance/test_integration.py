@@ -62,10 +62,8 @@ def test_integration():
     db.session.refresh(pricing)
     assert pricing.status == models.PricingStatus.PROCESSED
 
-    # FIXME (dbaty, 2022-06-29): uncomment below once invoice
-    # generation can deal with reimbursement points.
-    # api.generate_invoices()
-    # db.session.refresh(cashflow)
-    # assert cashflow.status == models.CashflowStatus.ACCEPTED
-    # db.session.refresh(pricing)
-    # assert pricing.status == models.PricingStatus.INVOICED
+    api.generate_invoices()
+    db.session.refresh(cashflow)
+    assert cashflow.status == models.CashflowStatus.ACCEPTED
+    db.session.refresh(pricing)
+    assert pricing.status == models.PricingStatus.INVOICED
