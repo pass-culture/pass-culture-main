@@ -7,6 +7,7 @@ import { Select } from 'ui-kit'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
 import { useFormikContext } from 'formik'
+import { useVenueUpdates } from './hooks'
 
 export interface IVenueProps {
   offererNames: TOffererName[]
@@ -22,6 +23,8 @@ const Venue = ({ offererNames, venueList }: IVenueProps): JSX.Element => {
     values.offererId,
     venueList
   )
+
+  useVenueUpdates(venueList)
 
   return (
     <>
