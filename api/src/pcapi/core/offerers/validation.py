@@ -158,9 +158,6 @@ def check_venue_can_be_linked_to_reimbursement_point(venue: models.Venue, reimbu
     )
     if not reimbursement_point:
         raise ApiErrors(errors={"reimbursementPointId": ["Ce lieu n'existe pas."]})
-    if not reimbursement_point.siret:
-        error = f"Le lieu {reimbursement_point.name} ne peut pas être utilisé pour les remboursements car il n'a pas de SIRET."
-        raise ApiErrors(errors={"reimbursementPointId": [error]})
     if (
         not reimbursement_point.bankInformation
         or reimbursement_point.bankInformation.status != finance_models.BankInformationStatus.ACCEPTED
