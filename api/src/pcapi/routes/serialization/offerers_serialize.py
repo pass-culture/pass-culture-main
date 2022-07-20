@@ -238,9 +238,7 @@ class GetOffererListQueryModel(BaseModel):
 class ReimbursementPointResponseModel(BaseModel):
     venueId: int
     venueName: str
-    siret: str
     iban: str
-    bic: str
 
 
 class ReimbursementPointListResponseModel(BaseModel):

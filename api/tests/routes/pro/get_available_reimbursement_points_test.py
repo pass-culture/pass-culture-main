@@ -16,12 +16,16 @@ class Returns200Test:
         )
         offerer = user_offerer.offerer
         offerers_factories.VirtualVenueFactory(managingOfferer=offerer)
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, name="Chez Toto")
-        finance_factories.BankInformationFactory(venue=venue_1, status=BankInformationStatus.ACCEPTED)
-        venue_2 = offerers_factories.VenueFactory(
-            managingOfferer=offerer, name="Dans l'antre de la folie", publicName="Association des démons"
+        venue_with_siret = offerers_factories.VenueFactory(managingOfferer=offerer, name="Chez Toto")
+        finance_factories.BankInformationFactory(venue=venue_with_siret, status=BankInformationStatus.ACCEPTED)
+        venue_without_siret = offerers_factories.VenueFactory(
+            siret=None,
+            comment="Ceci est une collectivité locale",
+            managingOfferer=offerer,
+            name="Dans l'antre de la folie",
+            publicName="Association des démons",
         )
-        finance_factories.BankInformationFactory(venue=venue_2, status=BankInformationStatus.ACCEPTED)
+        finance_factories.BankInformationFactory(venue=venue_without_siret, status=BankInformationStatus.ACCEPTED)
         _venue_without_bank_info_nor_siret = offerers_factories.VenueFactory(
             siret=None, comment="Pas de SIRET", managingOfferer=offerer
         )
@@ -38,18 +42,14 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == [
             {
-                "venueId": venue_2.id,
+                "venueId": venue_without_siret.id,
                 "venueName": "Association des démons",
-                "siret": venue_2.siret,
-                "iban": venue_2.iban,
-                "bic": venue_2.bic,
+                "iban": venue_without_siret.iban,
             },
             {
-                "venueId": venue_1.id,
+                "venueId": venue_with_siret.id,
                 "venueName": "Chez Toto",
-                "siret": venue_1.siret,
-                "iban": venue_1.iban,
-                "bic": venue_1.bic,
+                "iban": venue_with_siret.iban,
             },
         ]
 
