@@ -8,7 +8,6 @@ import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
 import Icon from 'components/layout/Icon'
 import { Offerer } from './Offerer'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import VenuesContainer from './Venues/VenuesContainer'
@@ -107,10 +106,6 @@ const OffererDetails = () => {
       <VenuesContainer offererId={offerer.id} venues={physicalVenues} />
     </div>
   )
-}
-
-OffererDetails.propTypes = {
-  offererId: PropTypes.string.isRequired,
 }
 
 export default OffererDetails
