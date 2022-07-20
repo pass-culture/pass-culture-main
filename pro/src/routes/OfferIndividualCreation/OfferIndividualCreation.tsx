@@ -18,6 +18,7 @@ const OfferIndividualCreation = (): JSX.Element | null => {
   const homePath = useHomePath()
 
   const { offerId } = useParams<{ offerId: string }>()
+
   const {
     data: offer,
     isLoading: offerIsLoading,
@@ -65,10 +66,10 @@ const OfferIndividualCreation = (): JSX.Element | null => {
 
       <OfferFormLayout.Content>
         {currentStep.id === OFFER_FORM_STEP_IDS.INFORMATIONS && (
-          <InformationsRoute />
+          <InformationsRoute offer={offer} />
         )}
-        {offerId && currentStep.id === OFFER_FORM_STEP_IDS.STOCKS && (
-          <StockRoute />
+        {offer && currentStep.id === OFFER_FORM_STEP_IDS.STOCKS && (
+          <StockRoute offer={offer} />
         )}
         {offer && currentStep.id === OFFER_FORM_STEP_IDS.SUMMARY && (
           <OfferSummaryRoute
