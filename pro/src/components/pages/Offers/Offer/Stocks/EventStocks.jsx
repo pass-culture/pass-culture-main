@@ -187,6 +187,7 @@ const EventStocks = ({
       )
     ) {
       setIsSendingStocksOfferCreation(true)
+
       const stocksToCreate = stocksInCreation.map(stockInCreation =>
         createEventStockPayload(stockInCreation, offer.venue.departementCode)
       )
