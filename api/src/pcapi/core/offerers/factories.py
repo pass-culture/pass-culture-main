@@ -52,6 +52,7 @@ class VenueFactory(BaseFactory):
     visualDisabilityCompliant = False
     businessUnit = factory.SubFactory(
         "pcapi.core.finance.factories.BusinessUnitFactory",
+        name=factory.LazyAttribute(lambda bu: bu.factory_parent.name),
         siret=factory.LazyAttribute(lambda bu: bu.factory_parent.siret),
     )
     contact = factory.RelatedFactory("pcapi.core.offerers.factories.VenueContactFactory", factory_related_name="venue")
