@@ -494,6 +494,7 @@ class AdageCulturalPartner(BaseModel):
     domaines: str | None
     actif: int | None
     dateModification: datetime
+    synchroPass: int | None
 
 
 class AdageCulturalPartners(BaseModel):

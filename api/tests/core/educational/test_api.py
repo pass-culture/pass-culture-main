@@ -613,6 +613,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Patrimoine, mémoire, archéologie",
+                    "synchroPass": 0,
                 },
                 {
                     "id": 128028,
@@ -640,6 +641,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Univers du livre, de la lecture et des écritures",
+                    "synchroPass": 0,
                 },
             ]
         }
@@ -674,6 +676,7 @@ class GetCulturalPartnersTest:
                 "academieLibelle": "GRENOBLE",
                 "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 "domaines": "Patrimoine, mémoire, archéologie",
+                "synchroPass": 0,
             },
         ]
         redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
@@ -710,6 +713,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Patrimoine, mémoire, archéologie",
+                    "synchroPass": 0,
                 },
             ]
         }
@@ -744,6 +748,7 @@ class GetCulturalPartnersTest:
                 "academieLibelle": "GRENOBLE",
                 "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 "domaines": "Patrimoine, mémoire, archéologie",
+                "synchroPass": 1,
             },
         ]
         redis_client.set("api:adage_cultural_partner:cache", json.dumps(data).encode("utf-8"))
@@ -781,6 +786,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Patrimoine, mémoire, archéologie",
+                    "synchroPass": 0,
                 },
                 {
                     "id": 128028,
@@ -808,6 +814,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Univers du livre, de la lecture et des écritures",
+                    "synchroPass": 0,
                 },
             ]
         }
