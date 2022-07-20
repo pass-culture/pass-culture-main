@@ -119,6 +119,20 @@ export interface IOfferIndividualVenue {
   accessibility: IAccessibiltyFormValues
 }
 
+// TODO: this should be generated in openapi schema
+export interface IOfferExtraData {
+  author?: string
+  isbn?: string
+  musicType?: string
+  musicSubType?: string
+  performer?: string
+  showType?: string
+  showSubType?: string
+  speaker?: string
+  stageDirector?: string
+  visa?: string
+}
+
 export interface IOfferIndividual {
   id: string
   nonHumanizedId: number

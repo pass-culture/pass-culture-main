@@ -67,6 +67,23 @@ export const serializeStockApi = (
   }
 }
 
+export const serializeOfferApiExtraData = (
+  apiOffer: GetIndividualOfferResponseModel
+) => {
+  return {
+    author: apiOffer.extraData?.author || '',
+    isbn: apiOffer.extraData?.isbn || '',
+    musicType: apiOffer.extraData?.musicType || '',
+    musicSubType: apiOffer.extraData?.musicSubType || '',
+    performer: apiOffer.extraData?.performer || '',
+    showType: apiOffer.extraData?.showType || '',
+    showSubType: apiOffer.extraData?.showSubType || '',
+    speaker: apiOffer.extraData?.speaker || '',
+    stageDirector: apiOffer.extraData?.stageDirector || '',
+    visa: apiOffer.extraData?.visa || '',
+  }
+}
+
 export const serializeOfferApi = (
   apiOffer: GetIndividualOfferResponseModel
 ): IOfferIndividual => {
@@ -102,20 +119,10 @@ export const serializeOfferApi = (
       ...baseAccessibility,
       [AccessiblityEnum.NONE]: !Object.values(baseAccessibility).includes(true),
     },
-    // extraData values
-    author: apiOffer.extraData?.author || '',
-    isbn: apiOffer.extraData?.isbn || '',
-    musicType: apiOffer.extraData?.musicType || '',
-    musicSubType: apiOffer.extraData?.musicSubType || '',
-    performer: apiOffer.extraData?.performer || '',
-    showType: apiOffer.extraData?.showType || '',
-    showSubType: apiOffer.extraData?.showSubType || '',
-    speaker: apiOffer.extraData?.speaker || '',
-    stageDirector: apiOffer.extraData?.stageDirector || '',
-    visa: apiOffer.extraData?.visa || '',
     stocks: apiOffer.stocks.map(serializeStockApi),
     lastProviderName: apiOffer.lastProvider?.name || null,
     status: apiOffer.status || null,
+    ...serializeOfferApiExtraData(apiOffer),
   }
 
   return offer

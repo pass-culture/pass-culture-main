@@ -85,7 +85,6 @@ describe('screens:OfferCreation::Informations', () => {
     ]
 
     props = {
-      createOfferAdapter: jest.fn(),
       initialValues: FORM_DEFAULT_VALUES,
       offererNames: [],
       venueList: [],
