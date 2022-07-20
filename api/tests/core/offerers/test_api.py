@@ -873,7 +873,7 @@ class LinkVenueToPricingPointTest:
 
 class LinkVenueToReimbursementPointTest:
     def test_no_pre_existing_link(self):
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(pricing_point="self")
         reimbursement_point = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         finance_factories.BankInformationFactory(venue=reimbursement_point)
         assert offerers_models.VenueReimbursementPointLink.query.count() == 0
@@ -888,7 +888,7 @@ class LinkVenueToReimbursementPointTest:
     @freeze_time()
     def test_end_pre_existing_link(self):
         now = datetime.datetime.utcnow()
-        venue = offerers_factories.VenueFactory(reimbursement_point="self")
+        venue = offerers_factories.VenueFactory(reimbursement_point="self", pricing_point="self")
         offerers_api.link_venue_to_reimbursement_point(venue, None)
 
         former_link = offerers_models.VenueReimbursementPointLink.query.one()
@@ -898,7 +898,7 @@ class LinkVenueToReimbursementPointTest:
 
     def test_pre_existing_links(self):
         now = datetime.datetime.utcnow()
-        venue = offerers_factories.VenueFactory()
+        venue = offerers_factories.VenueFactory(pricing_point="self")
         reimbursement_point_1 = offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)
         finance_factories.BankInformationFactory(venue=reimbursement_point_1)
         offerers_factories.VenueReimbursementPointLinkFactory(
@@ -935,7 +935,7 @@ class LinkVenueToReimbursementPointTest:
     def test_fails_if_reimbursement_point_has_no_bank_information(self):
         reimbursement_point = offerers_factories.VenueFactory()
         offerer = reimbursement_point.managingOfferer
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
 
         with pytest.raises(api_errors.ApiErrors) as error:
             offerers_api.link_venue_to_reimbursement_point(venue, reimbursement_point.id)
