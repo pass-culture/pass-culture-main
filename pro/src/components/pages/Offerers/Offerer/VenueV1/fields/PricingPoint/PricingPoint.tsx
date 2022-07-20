@@ -2,9 +2,11 @@ import { Field, useField } from 'react-final-form'
 import React, { useEffect, useState } from 'react'
 
 import Button from 'ui-kit/Button/Button'
+import ConfirmDialog from 'new_components/ConfirmDialog'
 import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
 import Icon from 'components/layout/Icon'
+import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
 import { api } from 'apiClient/api'
 import styles from './PricingPoint.module.scss'
 
@@ -23,6 +25,8 @@ const PricingPoint = ({
 }: IPricingPointProps) => {
   const [canSubmit, setCanSubmit] = useState(true)
   const [isInputDisabled, setIsInputDisabled] = useState(false)
+  const [isConfirmSiretDialogOpen, setIsConfirmSiretDialogOpen] =
+    useState(false)
   const pricingPointSelectField = useField('venueSiret')
 
   useEffect(() => {
@@ -39,6 +43,7 @@ const PricingPoint = ({
         .then(() => {
           setIsInputDisabled(true)
           setVenueHasPricingPoint(true)
+          setIsConfirmSiretDialogOpen(false)
         })
     }
   }
@@ -48,6 +53,35 @@ const PricingPoint = ({
       <div className="main-list-title title-actions-container">
         <h2 className="main-list-title-text">Barème de remboursement</h2>
       </div>
+
+      {isConfirmSiretDialogOpen && (
+        <ConfirmDialog
+          cancelText={'Annuler'}
+          confirmText={'Valider ma sélection'}
+          onCancel={() => {
+            setIsConfirmSiretDialogOpen(false)
+          }}
+          onConfirm={handleClick}
+          icon={ValidIcon}
+          title={`Êtes-vous sur de vouloir sélectionner`}
+          secondTitle={'ce lieu avec SIRET\u00a0?'}
+        >
+          <p className={styles['text-dialog']}>
+            Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
+            calcul de vos remboursements. <br />
+            Ce choix ne pourra pas être modifié.
+          </p>
+          <a
+            className={`bi-link tertiary-link`}
+            href="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <Icon svg={'ico-external-site-filled'} />
+            En savoir plus sur les remboursements
+          </a>
+        </ConfirmDialog>
+      )}
 
       {!readOnly && !venue.pricingPoint && (
         <p className={styles['reimbursement-subtitle']}>
@@ -95,7 +129,7 @@ const PricingPoint = ({
         {!readOnly && !isInputDisabled && !venue.pricingPoint && (
           <Button
             className={styles['space-left']}
-            onClick={handleClick}
+            onClick={() => setIsConfirmSiretDialogOpen(true)}
             disabled={canSubmit}
           >
             Valider la sélection
