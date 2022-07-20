@@ -2061,7 +2061,6 @@ def invoice_test_data():
         name="Coiffeur justificaTIF",
         siret="85331845900023",
         bookingEmail="pro@example.com",
-        businessUnit__name="SARL LIBRAIRIE BOOKING",
         businessUnit__bankAccount__iban="FR2710010000000000000000064",
     )
 
