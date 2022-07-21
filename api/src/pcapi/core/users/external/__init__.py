@@ -133,7 +133,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
         all_venues += venues
         attributes.update(
             {
-                "dms_application_submitted": any(venue.demarchesSimplifieesIsDraft for venue in venues),
+                "dms_application_submitted": any(venue.hasPendingBankInformationApplication for venue in venues),
                 "dms_application_approved": all(venue.demarchesSimplifieesIsAccepted for venue in venues),
                 "isVirtual": any(venue.isVirtual for venue in venues),
                 "isPermanent": any(venue.isPermanent for venue in venues),
