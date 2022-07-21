@@ -281,10 +281,6 @@ class Venue(PcObject, Model, HasThumbMixin, ProvidableMixin, NeedsValidationMixi
         return bool(self.bankInformation) and self.bankInformation.status == BankInformationStatus.DRAFT
 
     @property
-    def demarchesSimplifieesIsDraft(self):  # type: ignore [no-untyped-def]
-        return self.bankInformation and self.bankInformation.status == BankInformationStatus.DRAFT
-
-    @property
     def demarchesSimplifieesIsAccepted(self):  # type: ignore [no-untyped-def]
         return self.bankInformation and self.bankInformation.status == BankInformationStatus.ACCEPTED
 
