@@ -63,6 +63,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -110,6 +111,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -124,6 +126,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -194,6 +197,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -208,6 +212,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -225,10 +230,14 @@ class CDSStocksTest:
         # Then
         assert len(providable_infos) == 0
 
+    @patch(
+        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
+        return_value=True,
+    )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def should_create_offers_for_each_movie(self, mock_get_venue_movies, mock_get_shows):
+    def should_create_offers_for_each_movie(self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider)
@@ -262,6 +271,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -276,6 +286,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -296,11 +307,15 @@ class CDSStocksTest:
         assert Offer.query.count() == 2
         assert Product.query.count() == 2
 
+    @patch(
+        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
+        return_value=False,
+    )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
     def should_fill_offer_and_product_and_stock_informations_for_each_movie(
-        self, mock_get_venue_movies, mock_get_shows
+        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge
     ):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
@@ -335,6 +350,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -349,6 +365,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=78,
                     internet_remaining_place=11,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -359,6 +376,7 @@ class CDSStocksTest:
             },
         ]
         mock_get_shows.return_value = mocked_shows
+
         cds_stocks = CDSStocks(venue_provider=venue_provider)
 
         # When
@@ -383,7 +401,7 @@ class CDSStocksTest:
         assert created_products[0].durationMinutes == 120
         assert created_products[0].extraData == {"visa": "123456"}
 
-        assert created_stocks[0].quantity == 10
+        assert created_stocks[0].quantity == 77
         assert created_stocks[0].price == 5.0
         assert created_stocks[0].dateCreated is not None
         assert created_stocks[0].bookingLimitDatetime == datetime(2022, 6, 19, 22, 0)
@@ -402,17 +420,23 @@ class CDSStocksTest:
         assert created_products[1].durationMinutes == 150
         assert created_products[1].extraData == {"visa": "333333"}
 
-        assert created_stocks[1].quantity == 11
+        assert created_stocks[1].quantity == 78
         assert created_stocks[1].price == 6.5
         assert created_stocks[1].dateCreated is not None
         assert created_stocks[1].bookingLimitDatetime == datetime(2022, 6, 30, 22, 0)
         assert created_stocks[1].offer == created_offers[1]
 
+    @patch(
+        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
+        return_value=True,
+    )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_movie_poster")
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def should_create_product_with_correct_thumb(self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows):
+    def should_create_product_with_correct_thumb(
+        self, mock_get_venue_movies, mocked_get_movie_poster, mock_get_shows, mock_get_internet_sale_gauge
+    ):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         venue_provider = VenueProviderFactory(provider=cds_provider, isDuoOffers=True)
@@ -447,6 +471,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -461,6 +486,7 @@ class CDSStocksTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=78,
                     internet_remaining_place=11,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -498,10 +524,16 @@ class CDSStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class CDSStocksQuantityTest:
+    @patch(
+        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
+        return_value=True,
+    )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
-    def should_update_cds_stock_with_correct_stock_quantity(self, mock_get_venue_movies, mock_get_shows):
+    def should_update_cds_stock_with_correct_stock_quantity(
+        self, mock_get_venue_movies, mock_get_shows, mock_get_internet_sale_gauge
+    ):
         # Given
         cds_provider = Provider.query.filter(Provider.localClass == "CDSStocks").one()
         cds_venue_provider = VenueProviderFactory(provider=cds_provider)
@@ -528,6 +560,7 @@ class CDSStocksQuantityTest:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -538,6 +571,7 @@ class CDSStocksQuantityTest:
             }
         ]
         mock_get_shows.return_value = mocked_shows
+
         # When
         cds_stocks_provider = CDSStocks(venue_provider=cds_venue_provider)
         cds_stocks_provider.updateObjects()
@@ -557,8 +591,7 @@ class CDSStocksQuantityTest:
 
         # Then
         assert len(created_stocks) == 1
-        print(first_stock)
-        assert first_stock.quantity == 11
+        assert first_stock.quantity == 78
         assert first_stock.dnBookedQuantity == 1
 
 

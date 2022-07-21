@@ -82,8 +82,11 @@ class GetBookingProviderClientApiTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetShowStockTest:
+    @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active")
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_show")
-    def test_should_return_avaible_places_for_show_id(self, mocked_show: Any) -> None:
+    def test_should_return_available_places_for_show_id(
+        self, mocked_show: Any, mocked_internet_sale_gauge_active: Any
+    ) -> None:
         # Given
         booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="test_api_url")
         venue_booking_provider = VenueBookingProviderFactory(idAtProvider="test_id", bookingProvider=booking_provider)
@@ -97,6 +100,7 @@ class GetShowStockTest:
             is_cancelled=False,
             is_deleted=False,
             is_disabled_seatmap=False,
+            remaining_place=88,
             internet_remaining_place=15,
             showtime=datetime.utcnow(),
             shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -104,8 +108,9 @@ class GetShowStockTest:
             media=IdObjectCDS(id=1),
         )
 
+        mocked_internet_sale_gauge_active.return_value = True
+
         # When
         remaining_places = get_show_stock(venue_id, 1)
-
         # Then
         assert remaining_places == 15

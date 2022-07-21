@@ -16,6 +16,7 @@ def create_show_cds(
     is_cancelled: bool = False,
     is_deleted: bool = False,
     is_disabled_seatmap: bool = False,
+    remaining_place: int = 88,
     internet_remaining_place: int = 100,
     showtime: datetime.datetime = datetime.datetime.utcnow(),
     shows_tariff_pos_type_ids=None,
@@ -29,6 +30,7 @@ def create_show_cds(
         is_cancelled=is_cancelled,
         is_deleted=is_deleted,
         is_disabled_seatmap=is_disabled_seatmap,
+        remaining_place=remaining_place,
         internet_remaining_place=internet_remaining_place,
         showtime=showtime,
         shows_tariff_pos_type_collection=[
@@ -66,6 +68,7 @@ class CineDigitalServiceGetShowTest:
         json_shows = [
             {
                 "id": 1,
+                "remaining_place": 88,
                 "internet_remaining_place": 10,
                 "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
@@ -81,6 +84,7 @@ class CineDigitalServiceGetShowTest:
             },
             {
                 "id": 2,
+                "remaining_place": 88,
                 "internet_remaining_place": 30,
                 "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
@@ -94,6 +98,7 @@ class CineDigitalServiceGetShowTest:
             },
             {
                 "id": 3,
+                "remaining_place": 88,
                 "internet_remaining_place": 100,
                 "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
@@ -122,6 +127,7 @@ class CineDigitalServiceGetShowTest:
         json_shows = [
             {
                 "id": 1,
+                "remaining_place": 88,
                 "internet_remaining_place": 10,
                 "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
@@ -146,7 +152,13 @@ class CineDigitalServiceGetShowTest:
 
 class CineDigitalServiceGetShowsRemainingPlacesTest:
     @patch("pcapi.core.booking_providers.cds.client.get_resource")
-    def test_should_return_shows_id_with_corresponding_remaining_places(self, mocked_get_resource):
+    @patch(
+        "pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active",
+        return_value=True,
+    )
+    def test_should_return_shows_id_with_corresponding_internet_remaining_places(
+        self, mocked_internet_sale_gauge_active, mocked_get_resource
+    ):
         # Given
         cinema_id = "cinemaid_test"
         token = "token_test"
@@ -156,6 +168,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         json_shows = [
             {
                 "id": 1,
+                "remaining_place": 88,
                 "internet_remaining_place": 10,
                 "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 28),
@@ -169,6 +182,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
             },
             {
                 "id": 2,
+                "remaining_place": 88,
                 "internet_remaining_place": 30,
                 "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 29),
@@ -182,6 +196,7 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
             },
             {
                 "id": 3,
+                "remaining_place": 88,
                 "internet_remaining_place": 100,
                 "disableseatmap": False,
                 "showtime": datetime.datetime(2022, 3, 30),
@@ -206,6 +221,77 @@ class CineDigitalServiceGetShowsRemainingPlacesTest:
         mocked_get_resource.assert_called_once_with(api_url, cinema_id, token, resource)
 
         assert shows_remaining_places == {2: 30, 3: 100}
+
+    @patch("pcapi.core.booking_providers.cds.client.get_resource")
+    @patch(
+        "pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_internet_sale_gauge_active",
+        return_value=False,
+    )
+    def test_should_return_shows_id_with_corresponding_remaining_places(
+        self, mocked_internet_sale_gauge_active, mocked_get_resource
+    ):
+        # Given
+        cinema_id = "cinemaid_test"
+        token = "token_test"
+        api_url = "apiUrl_test/"
+        resource = ResourceCDS.SHOWS
+
+        json_shows = [
+            {
+                "id": 1,
+                "remaining_place": 88,
+                "internet_remaining_place": 10,
+                "disableseatmap": False,
+                "showtime": datetime.datetime(2022, 3, 28),
+                "is_cancelled": False,
+                "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 2}},
+                ],
+                "screenid": {"id": 10},
+                "mediaid": {"id": 52},
+            },
+            {
+                "id": 2,
+                "remaining_place": 88,
+                "internet_remaining_place": 30,
+                "disableseatmap": False,
+                "showtime": datetime.datetime(2022, 3, 29),
+                "is_cancelled": False,
+                "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 2}},
+                ],
+                "screenid": {"id": 10},
+                "mediaid": {"id": 52},
+            },
+            {
+                "id": 3,
+                "remaining_place": 88,
+                "internet_remaining_place": 100,
+                "disableseatmap": False,
+                "showtime": datetime.datetime(2022, 3, 30),
+                "is_cancelled": False,
+                "is_deleted": False,
+                "showsTariffPostypeCollection": [
+                    {"tariffid": {"id": 2}},
+                ],
+                "screenid": {"id": 10},
+                "mediaid": {"id": 52},
+            },
+        ]
+        mocked_get_resource.return_value = json_shows
+
+        # when
+        cine_digital_service = CineDigitalServiceAPI(
+            cinema_id="cinemaid_test", cinema_api_token="token_test", api_url="apiUrl_test/"
+        )
+        shows_remaining_places = cine_digital_service.get_shows_remaining_places([2, 3])
+
+        # then
+        mocked_get_resource.assert_called_once_with(api_url, cinema_id, token, resource)
+
+        assert shows_remaining_places == {2: 88, 3: 88}
 
 
 class CineDigitalServiceGetPaymentTypeTest:
@@ -616,6 +702,7 @@ class CineDigitalServiceGetVoucherForShowTest:
             is_cancelled=False,
             is_deleted=False,
             is_disabled_seatmap=True,
+            remaining_place=88,
             internet_remaining_place=20,
             showtime=datetime.datetime.utcnow(),
             shows_tariff_pos_type_collection=[cds_serializers.ShowTariffCDS(tariff=cds_serializers.IdObjectCDS(id=5))],
@@ -644,6 +731,7 @@ class CineDigitalServiceGetVoucherForShowTest:
             is_cancelled=False,
             is_deleted=False,
             is_disabled_seatmap=False,
+            remaining_place=88,
             internet_remaining_place=20,
             showtime=datetime.datetime.utcnow(),
             shows_tariff_pos_type_collection=[
