@@ -6,6 +6,7 @@ import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
+import getCulturalPartnerAdapter from './adapters/getCulturalPartnerAdapter'
 import { getCulturalPartnersAdapter } from '../adapters'
 import { getEducationalDomainsAdapter } from 'core/OfferEducational'
 import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
@@ -13,6 +14,34 @@ import { getVenueEducationalStatusesAdapter } from './adapters'
 import styles from './CollectiveDataEdition.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import { useParams } from 'react-router-dom'
+import { venueHasCollectiveInformation } from '../EACInformation/utils/venueHasCollectiveInformation'
+
+const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
+  venueResponse: GetCollectiveVenueResponseModel
+): Promise<GetCollectiveVenueResponseModel | null> => {
+  if (!venueResponse.siret) {
+    return null
+  }
+
+  const culturalPartnerResponse = await getCulturalPartnerAdapter(
+    venueResponse.siret
+  )
+
+  if (!culturalPartnerResponse.isOk) {
+    return null
+  }
+
+  return {
+    ...venueResponse,
+    collectiveLegalStatus: culturalPartnerResponse.payload.statutId
+      ? {
+          id: culturalPartnerResponse.payload.statutId,
+          name: '',
+        }
+      : null,
+    collectiveWebsite: culturalPartnerResponse.payload.siteWeb,
+  }
+}
 
 const CollectiveDataEdition = (): JSX.Element => {
   const notify = useNotification()
@@ -51,7 +80,18 @@ const CollectiveDataEdition = (): JSX.Element => {
       setDomains(domainsResponse.payload)
       setStatuses(statusesResponse.payload)
       setCulturalPartners(culturalPartnersResponse.payload)
-      setVenueCollectiveData(venueResponse.payload)
+
+      if (venueResponse.isOk) {
+        if (venueHasCollectiveInformation(venueResponse.payload)) {
+          setVenueCollectiveData(venueResponse.payload)
+        } else {
+          const collectiveData =
+            await fetchCulturalPartnerIfVenueHasNoCollectiveData(
+              venueResponse.payload
+            )
+          setVenueCollectiveData(collectiveData)
+        }
+      }
 
       setIsLoading(false)
     }
