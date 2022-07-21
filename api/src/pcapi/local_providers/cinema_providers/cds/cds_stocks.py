@@ -14,7 +14,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import VenueProvider
-from pcapi.core.providers.repository import get_cds_cinema_api_token
+from pcapi.core.providers.repository import get_cds_cinema_details
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
@@ -31,6 +31,9 @@ class CDSStocks(LocalProvider):
         self.apiUrl = settings.CDS_API_URL
         self.venue = venue_provider.venue
         self.cinema_id = venue_provider.venueIdAtOfferProvider
+        cinema_details = get_cds_cinema_details(venue_provider.venueIdAtOfferProvider)
+        self.apiToken = cinema_details.cinemaApiToken
+        self.accountId = cinema_details.accountId
         self.isDuo = venue_provider.isDuoOffers if venue_provider.isDuoOffers else False
         self.movies: Iterator[Movie] = iter(self._get_cds_movies())
         self.shows = self._get_cds_shows()
@@ -172,8 +175,9 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            account_id=self.accountId,
             api_url=self.apiUrl,
-            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
+            cinema_api_token=self.apiToken,
         )
         return client_cds.get_internet_sale_gauge_active()
 
@@ -182,8 +186,9 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            account_id=self.accountId,
             api_url=self.apiUrl,
-            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
+            cinema_api_token=self.apiToken,
         )
         return client_cds.get_venue_movies()
 
@@ -192,8 +197,9 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            account_id=self.accountId,
             api_url=self.apiUrl,
-            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
+            cinema_api_token=self.apiToken,
         )
         return client_cds.get_movie_poster(image_url)
 
@@ -202,8 +208,9 @@ class CDSStocks(LocalProvider):
             raise Exception("CDS API URL not configured in this env")
         client_cds = CineDigitalServiceAPI(
             cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            account_id=self.accountId,
             api_url=self.apiUrl,
-            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
+            cinema_api_token=self.apiToken,
         )
 
         shows = client_cds.get_shows()

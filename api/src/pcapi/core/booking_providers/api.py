@@ -2,7 +2,7 @@ import sqlalchemy.orm as sqla_orm
 
 from pcapi.core.booking_providers.cds.client import CineDigitalServiceAPI
 import pcapi.core.booking_providers.models as booking_providers_models
-from pcapi.core.providers.repository import get_cds_cinema_api_token
+from pcapi.core.providers.repository import get_cds_cinema_details
 
 
 def get_show_stock(venue_id: int, show_id: int) -> int:
@@ -40,8 +40,10 @@ def _get_booking_provider_client_api(venue_id: int) -> booking_providers_models.
     cinema_id = venue_booking_provider.idAtProvider
     api_url = venue_booking_provider.bookingProvider.apiUrl
     if venue_booking_provider.bookingProvider.name == booking_providers_models.BookingProviderName.CINE_DIGITAL_SERVICE:
-        cinema_api_token = get_cds_cinema_api_token(cinema_id)
-        return CineDigitalServiceAPI(cinema_id, api_url, cinema_api_token)
+        cds_cinema_details = get_cds_cinema_details(cinema_id)
+        cinema_api_token = cds_cinema_details.cinemaApiToken
+        account_id = cds_cinema_details.accountId
+        return CineDigitalServiceAPI(cinema_id, account_id, api_url, cinema_api_token)
     raise Exception(f"No booking provider named : {venue_booking_provider.bookingProvider.name}")
 
 

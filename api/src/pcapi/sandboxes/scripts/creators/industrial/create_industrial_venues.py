@@ -171,7 +171,7 @@ def create_industrial_venues(offerers_by_name: dict, venue_types: list[VenueType
     cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(
         venue=venue_synchronized_with_cds, provider=cds_provider, idAtProvider="cdsdemorc1"
     )
-    providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot)
+    providers_factories.CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, accountId="cdsdemorc1")
     providers_factories.VenueProviderFactory(venue=venue_synchronized_with_cds, provider=cds_provider)
 
     venue_by_name[venue_synchronized_with_cds.name] = venue_synchronized_with_cds
