@@ -50,7 +50,13 @@ describe('offerDetails - Creation - admin user', () => {
 
   beforeEach(() => {
     store = configureTestStore({
-      user: { currentUser: { publicName: 'François', isAdmin: true } },
+      user: {
+        currentUser: {
+          publicName: 'François',
+          isAdmin: true,
+          email: 'toto@tata.com',
+        },
+      },
     })
 
     props = {
