@@ -135,7 +135,7 @@ const PricingPoint = ({
                       key={`venue-type-${venue.siret}`}
                       value={venue.nonHumanizedId}
                     >
-                      {`${venue.name} - ${venue?.siret}`}
+                      {`${venue.publicName || venue.name} - ${venue?.siret}`}
                     </option>
                   )
               )}
