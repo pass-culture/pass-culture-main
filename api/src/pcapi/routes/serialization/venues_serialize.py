@@ -277,6 +277,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
+    siret: str | None
 
     _humanize_id = humanize_field("id")
 
@@ -504,6 +505,15 @@ class AdageCulturalPartners(BaseModel):
 
 class AdageCulturalPartnerResponseModel(BaseModel):
     id: int
+    statutId: int | None
+    siteWeb: str | None
+
+    class Config:
+        orm_mode = True
+
+
+class CulturalPartner(BaseModel):
+    id: int
     communeLibelle: str | None
     libelle: str
     regionLibelle: str | None
@@ -513,7 +523,7 @@ class AdageCulturalPartnerResponseModel(BaseModel):
 
 
 class AdageCulturalPartnersResponseModel(BaseModel):
-    partners: list[AdageCulturalPartnerResponseModel]
+    partners: list[CulturalPartner]
 
     class Config:
         orm_mode = True

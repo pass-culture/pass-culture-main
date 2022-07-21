@@ -46,6 +46,7 @@ class Returns200Test:
                 educational_models.StudentLevels.GENERAL1.value,
             ],
             "collectiveWebsite": venue.collectiveWebsite,
+            "siret": venue.siret,
         }
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
