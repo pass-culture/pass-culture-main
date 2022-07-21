@@ -249,6 +249,10 @@ class Returns201Test:
         assert venue_provider.venue.venueProviders == [venue_provider]
 
     @pytest.mark.usefixtures("db_session")
+    @patch(
+        "pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_internet_sale_gauge",
+        lambda *args: True,
+    )
     @patch("pcapi.local_providers.cinema_providers.cds.cds_stocks.CDSStocks._get_cds_shows")
     @patch("pcapi.core.booking_providers.cds.client.CineDigitalServiceAPI.get_venue_movies")
     @patch("pcapi.settings.CDS_API_URL", "fakeUrl")
@@ -267,6 +271,7 @@ class Returns201Test:
             "venueId": humanize(venue.id),
             # TODO AMARINIER : add isDuo to payload when we implement cds modal
         }
+
         mocked_movies = [
             Movie(
                 id="123",
@@ -294,6 +299,7 @@ class Returns201Test:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=77,
                     internet_remaining_place=10,
                     showtime=datetime(2022, 6, 20, 11, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
@@ -308,6 +314,7 @@ class Returns201Test:
                     is_cancelled=False,
                     is_deleted=False,
                     is_disabled_seatmap=False,
+                    remaining_place=78,
                     internet_remaining_place=11,
                     showtime=datetime(2022, 7, 1, 12, 00, 00),
                     shows_tariff_pos_type_collection=[ShowTariffCDS(tariff=IdObjectCDS(id=4))],
