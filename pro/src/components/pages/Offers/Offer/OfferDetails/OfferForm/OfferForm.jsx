@@ -139,7 +139,10 @@ const OfferForm = ({
 
   const setOfferVenue = useCallback(
     newVenueId => {
-      if (readOnlyFields.includes('venueId')) {
+      if (
+        readOnlyFields.includes('venueId') ||
+        newVenueId === formValues.venueId
+      ) {
         return
       }
 
@@ -172,7 +175,7 @@ const OfferForm = ({
       }
       handleFormUpdate(updatedValues)
     },
-    [handleFormUpdate, readOnlyFields, venues]
+    [handleFormUpdate, readOnlyFields, venues, formValues.newVenueId]
   )
 
   useEffect(() => {
