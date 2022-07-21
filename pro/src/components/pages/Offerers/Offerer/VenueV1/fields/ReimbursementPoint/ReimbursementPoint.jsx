@@ -121,8 +121,8 @@ const ReimbursementPoint = ({
               <InfoDialog
                 buttonText="J'ai compris"
                 iconName="ico-info-wrong"
-                title="Vous devez sélectionner un SIRET pour ajouter de nouvelles coordonnées bancaires"
-                subTitle="Sélectionner un SIRET parmi la liste puis valider votre sélection."
+                title="Vous devez sélectionner un lieu avec SIRET pour ajouter de nouvelles coordonnées bancaires"
+                subTitle="Sélectionner un lieu avec SIRET parmi la liste puis valider votre sélection."
                 closeDialog={() => setIsNoSiretDialogOpen(false)}
               ></InfoDialog>
             )}
