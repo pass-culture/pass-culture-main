@@ -2,9 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { AdageCulturalPartnerResponseModel } from './AdageCulturalPartnerResponseModel';
+import type { CulturalPartner } from './CulturalPartner';
 
 export type AdageCulturalPartnersResponseModel = {
-  partners: Array<AdageCulturalPartnerResponseModel>;
+  partners: Array<CulturalPartner>;
 };
 

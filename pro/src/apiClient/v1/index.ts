@@ -44,6 +44,7 @@ export type { CollectiveStockResponseModel } from './models/CollectiveStockRespo
 export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
+export type { CulturalPartner } from './models/CulturalPartner';
 export type { EditVenueBodyModel } from './models/EditVenueBodyModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
 export type { EducationalInstitutionsQueryModel } from './models/EducationalInstitutionsQueryModel';

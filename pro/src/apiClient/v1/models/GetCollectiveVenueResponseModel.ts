@@ -18,5 +18,6 @@ export type GetCollectiveVenueResponseModel = {
   collectiveStudents?: Array<StudentLevels> | null;
   collectiveWebsite?: string | null;
   id: string;
+  siret?: string | null;
 };
 
