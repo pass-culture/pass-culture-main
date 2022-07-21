@@ -29,10 +29,7 @@ const activeOffer = (institutionName?: string) => ({
           <b>{institutionName}</b>
         </>
       ) : (
-        <>
-          visible par les enseignants et chefs d’établissement de l’Éducation
-          nationale.
-        </>
+        <>visible par les enseignants et chefs d’établissement.</>
       )}
     </>
   ),
@@ -57,9 +54,8 @@ const showcaseOffer = {
     <>
       Votre offre est désormais disponible sur <b>ADAGE</b> (L’Application
       Dédiée À la Généralisation de l’Éducation artistique et culturelle) et
-      visible par les enseignants et chefs d’établissement de l’Éducation
-      nationale. Vous aurez la possibilité de revenir <b>éditer</b> votre offre
-      et
+      visible par les enseignants et chefs d’établissement. Vous aurez la
+      possibilité de revenir <b>éditer</b> votre offre et
       <b> compléter</b> les éléments de date(s) et prix.
     </>
   ),
