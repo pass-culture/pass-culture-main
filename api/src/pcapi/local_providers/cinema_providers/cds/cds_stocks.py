@@ -134,13 +134,17 @@ class CDSStocks(LocalProvider):
             cds_stock.bookingLimitDatetime = bookingLimitDatetime
 
         if "quantity" not in cds_stock.fieldsUpdated:
-            cds_stock.quantity = show.internet_remaining_place
+            if self._get_cds_internet_sale_gauge():
+                cds_stock.quantity = show.internet_remaining_place
+            cds_stock.quantity = show.remaining_place
 
         if "price" not in cds_stock.fieldsUpdated:
             cds_stock.price = show_price
 
         if not is_new_stock_to_insert:
-            cds_stock.quantity = show.internet_remaining_place + cds_stock.dnBookedQuantity
+            if self._get_cds_internet_sale_gauge():
+                cds_stock.quantity = show.internet_remaining_place + cds_stock.dnBookedQuantity
+            cds_stock.quantity = show.remaining_place + cds_stock.dnBookedQuantity
 
     def update_from_movie_information(self, obj: Offer | Product, movie_information: Movie) -> None:
         if movie_information.description:
@@ -162,6 +166,16 @@ class CDSStocks(LocalProvider):
 
     def get_keep_poster_ratio(self) -> bool:
         return True
+
+    def _get_cds_internet_sale_gauge(self) -> bool:
+        if not self.apiUrl:
+            raise Exception("CDS API URL not configured in this env")
+        client_cds = CineDigitalServiceAPI(
+            cinema_id=self.venue_provider.venueIdAtOfferProvider,
+            api_url=self.apiUrl,
+            cinema_api_token=get_cds_cinema_api_token(self.venue_provider.venueIdAtOfferProvider),
+        )
+        return client_cds.get_internet_sale_gauge_active()
 
     def _get_cds_movies(self) -> list[Movie]:
         if not self.apiUrl:

@@ -4,6 +4,7 @@ from typing import Any
 from pcapi import settings
 import pcapi.core.booking_providers.cds.exceptions as cds_exceptions
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedCancelBookingSuccess
+from pcapi.core.booking_providers.cds.mocked_api_calls import MockedCinemas
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedMovies
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedPaymentType
 from pcapi.core.booking_providers.cds.mocked_api_calls import MockedScreens
@@ -15,6 +16,7 @@ from pcapi.utils import requests
 
 
 class ResourceCDS(enum.Enum):
+    CINEMAS = "cinemas"
     TARIFFS = "tariffs"
     SHOWS = "shows"
     MEDIA = "media"
@@ -27,6 +29,7 @@ class ResourceCDS(enum.Enum):
 
 
 MOCKS: dict[ResourceCDS, dict | list[dict] | list] = {
+    ResourceCDS.CINEMAS: MockedCinemas,
     ResourceCDS.SHOWS: MockedShows,
     ResourceCDS.PAYMENT_TYPE: MockedPaymentType,
     ResourceCDS.TARIFFS: MockedTariffs,

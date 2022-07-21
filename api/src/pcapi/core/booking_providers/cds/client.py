@@ -24,14 +24,29 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
             raise ValueError(f"Missing token for {cinema_id}")
         super().__init__(cinema_id, api_url, cinema_api_token)
 
+    def get_internet_sale_gauge_active(self) -> bool:
+        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.CINEMAS)
+        cinemas = parse_obj_as(list[cds_serializers.CinemasCDS], data)
+        for cinema in cinemas:
+            if cinema.id == self.cinema_id:
+                return cinema.is_internet_sale_gauge_active
+        raise cds_exceptions.CineDigitalServiceAPIException(
+            f"Cinema internet_sale_gauge_active not found in Cine Digital Service API "
+            f"for cinemaId={self.cinema_id} & url={self.api_url}"
+        )
+
     def get_show_remaining_places(self, show_id: int) -> int:
         show = self.get_show(show_id)
-        return show.internet_remaining_place
+        if self.get_internet_sale_gauge_active():
+            return show.internet_remaining_place
+        return show.remaining_place
 
     def get_shows_remaining_places(self, show_ids: list[int]) -> dict[int, int]:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
-        return {show.id: show.internet_remaining_place for show in shows if show.id in show_ids}
+        if self.get_internet_sale_gauge_active():
+            return {show.id: show.internet_remaining_place for show in shows if show.id in show_ids}
+        return {show.id: show.remaining_place for show in shows if show.id in show_ids}
 
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
