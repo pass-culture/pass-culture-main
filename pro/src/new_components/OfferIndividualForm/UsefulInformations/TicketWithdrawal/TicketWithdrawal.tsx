@@ -1,7 +1,6 @@
 import { RadioGroup, Select } from 'ui-kit'
 import React, { useEffect } from 'react'
 import {
-  WITHDRAWAL_TYPE,
   ticketSentDateOptions,
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
@@ -11,6 +10,7 @@ import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from '../../types'
 import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
 import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '..'
+import { WithdrawalTypeEnum } from 'apiClient/v1'
 import { useFormikContext } from 'formik'
 
 const TicketWithdrawal = (): JSX.Element => {
@@ -37,17 +37,10 @@ const TicketWithdrawal = (): JSX.Element => {
 
   useEffect(
     function onWithdrawalTypeChange() {
-      if (withdrawalType !== WITHDRAWAL_TYPE.emailTicket) {
-        setFieldValue(
-          'withdrawalDelay',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
-        )
-      } else if (withdrawalType !== WITHDRAWAL_TYPE.onPlaceTicket) {
-        setFieldValue(
-          'withdrawalDelay',
-          TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
-        )
-      }
+      setFieldValue(
+        'withdrawalDelay',
+        TICKET_WITHDRAWAL_DEFAULT_VALUES['withdrawalDelay']
+      )
     },
     [withdrawalType]
   )
@@ -62,7 +55,7 @@ const TicketWithdrawal = (): JSX.Element => {
         />
       </FormLayout.Row>
 
-      {withdrawalType === WITHDRAWAL_TYPE.emailTicket && (
+      {withdrawalType === WithdrawalTypeEnum.BY_EMAIL && (
         <FormLayout.Row>
           <Select
             label="Date d’envoi"
@@ -73,7 +66,7 @@ const TicketWithdrawal = (): JSX.Element => {
         </FormLayout.Row>
       )}
 
-      {withdrawalType === WITHDRAWAL_TYPE.onPlaceTicket && (
+      {withdrawalType === WithdrawalTypeEnum.ON_SITE && (
         <FormLayout.Row>
           <Select
             label="Heure de retrait"
