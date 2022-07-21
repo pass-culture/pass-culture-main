@@ -899,5 +899,5 @@ def get_cultural_partners(*, force_update: bool = False) -> venues_serialize.Ada
     return parse_obj_as(venues_serialize.AdageCulturalPartners, {"partners": cultural_partners})
 
 
-def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartner:
-    return adage_client.get_cultural_partner(siret)
+def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
+    return venues_serialize.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
