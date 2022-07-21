@@ -317,7 +317,7 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     collectiveWebsite: str | None
     collectiveDomains: list[int] | None
     collectiveInterventionArea: list[str] | None
-    collectiveLegalStatus: int | None
+    venueEducationalStatusId: int | None
     collectiveNetwork: list[str] | None
     collectiveAccessInformation: str | None
     collectivePhone: str | None
