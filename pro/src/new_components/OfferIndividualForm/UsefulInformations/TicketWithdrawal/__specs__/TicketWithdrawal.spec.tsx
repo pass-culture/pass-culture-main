@@ -5,25 +5,18 @@ import * as yup from 'yup'
 import { Form, Formik } from 'formik'
 import { render, screen } from '@testing-library/react'
 
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 import React from 'react'
 import { SubmitButton } from 'ui-kit'
 import TicketWithdrawal from '../TicketWithdrawal'
 import userEvent from '@testing-library/user-event'
 import { validationSchema } from '../'
 
-interface IInitialValues {
-  isEvent?: boolean
-  subCategoryId: string
-  withdrawalDetails: string
-  withdrawalType: string
-  withdrawalDelay: string
-}
-
 const renderTicketWithdrawal = ({
   initialValues,
   onSubmit = jest.fn(),
 }: {
-  initialValues: IInitialValues
+  initialValues: Partial<IOfferIndividualFormValues>
   onSubmit: () => void
 }) => {
   return render(
@@ -43,16 +36,15 @@ const renderTicketWithdrawal = ({
 }
 
 describe('OfferIndividual section: TicketWithdrawal', () => {
-  let initialValues: IInitialValues
+  let initialValues: Partial<IOfferIndividualFormValues>
   const onSubmit = jest.fn()
 
   beforeEach(() => {
     initialValues = {
       isEvent: true,
-      subCategoryId: '',
       withdrawalDetails: '',
-      withdrawalType: '',
-      withdrawalDelay: '',
+      withdrawalType: undefined,
+      withdrawalDelay: undefined,
     }
   })
 
@@ -110,8 +102,7 @@ describe('OfferIndividual section: TicketWithdrawal', () => {
     ).not.toBeInTheDocument()
 
     await userEvent.click(screen.getByLabelText('Date d’envoi'))
-    // FIXME: select field need two click outside in order to trigger validation.
-    await userEvent.tab()
+    // FIXME: select field need to click outside in order to trigger validation.
     await userEvent.tab()
     expect(
       screen.queryByText('Vous devez cocher l’une des options ci-dessus')
