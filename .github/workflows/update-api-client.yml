@@ -21,6 +21,9 @@ jobs:
             src:
               - 'api/**'
 
+      - name: Cache
+        uses: satackey/action-docker-layer-caching@v0.0.11
+
       - uses: actions/setup-node@v2
         if: steps.changesApi.outputs.src == 'true'
         with:
