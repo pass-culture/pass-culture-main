@@ -73,9 +73,9 @@ test('lorsque je clique sur le lien de validation de création du compte reçu p
 })
 
 test('la balise script pour le tracking HubSpot est présente sur la page', async t => {
-  const trackingScript = Selector(
-    'script[src="//js.hs-scripts.com/5119289.js"]'
+  const trackingScript = Selector('script').withAttribute(
+    'src',
+    /.*\/\/js\.hs-scripts.com\/5119289\.js/
   )
-
   await t.expect(trackingScript.exists).ok()
 })
