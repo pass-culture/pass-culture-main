@@ -22,9 +22,8 @@ class Return200Test:
         assert response.status_code == 200
         assert response.json == {
             "id": 128028,
-            "libelle": "Fête du livre jeunesse de St Paul les trois Châteaux",
-            "communeLibelle": "SAINT-PAUL-TROIS-CHATEAUX",
-            "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
+            "statutId": 3,
+            "siteWeb": "http://www.fetedulivrejeunesse.fr/",
         }
 
 
