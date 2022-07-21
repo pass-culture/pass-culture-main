@@ -16,7 +16,6 @@ export type EditVenueBodyModel = {
   collectiveDomains?: Array<number> | null;
   collectiveEmail?: string | null;
   collectiveInterventionArea?: Array<string> | null;
-  collectiveLegalStatus?: number | null;
   collectiveNetwork?: Array<string> | null;
   collectivePhone?: string | null;
   collectiveStudents?: Array<StudentLevels> | null;
@@ -36,6 +35,7 @@ export type EditVenueBodyModel = {
   publicName?: string | null;
   reimbursementPointId?: number | null;
   siret?: string | null;
+  venueEducationalStatusId?: number | null;
   venueLabelId?: number | null;
   venueTypeCode?: string | null;
   visualDisabilityCompliant?: boolean | null;
