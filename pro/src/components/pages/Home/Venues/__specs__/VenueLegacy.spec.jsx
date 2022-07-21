@@ -65,7 +65,7 @@ describe('venues', () => {
     )
 
     expect(
-      within(activeOffersStat).getByText('Offres actives')
+      within(activeOffersStat).getByText('Offres publiées')
     ).toBeInTheDocument()
 
     expect(within(activeBookingsStat).getByText('0')).toBeInTheDocument()
