@@ -1,5 +1,6 @@
 import * as yup from 'yup'
 
+import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
 import { ProfileForm } from './'
 import React from 'react'
 import { ResetEmailBanner } from 'new_components/Banner'
@@ -20,7 +21,7 @@ const validationSchema = yup.object().shape({
 })
 
 const onFormSubmit = (values: any) => {
-  alert(Object.values(values))
+  return new Promise(resolve => setTimeout(() => resolve(values), 500))
 }
 
 const Template: Story<Props> = args => <ProfileForm {...args} />
@@ -29,9 +30,9 @@ export const BasicProfileForm = Template.bind({})
 BasicProfileForm.storyName = 'Basic Form'
 BasicProfileForm.args = {
   title: 'Are you a wizard ?',
-  subtitle: 'Harry Potter',
+  subtitleFormat: () => 'Harry Potter',
   fields: fields,
-  onFormSubmit: onFormSubmit,
+  adapter: onFormSubmit as PatchIdentityAdapter,
   validationSchema: validationSchema,
   initialValues: { firstName: 'Harry', lastName: 'Potter' },
 }
@@ -40,9 +41,9 @@ export const BanneredProfileForm = Template.bind({})
 BanneredProfileForm.storyName = 'Bannered Form'
 BanneredProfileForm.args = {
   title: 'Are you a wizard ?',
-  subtitle: 'Harry Potter',
+  subtitleFormat: () => 'Harry Potter',
   fields: fields,
-  onFormSubmit: onFormSubmit,
+  adapter: onFormSubmit as PatchIdentityAdapter,
   validationSchema: validationSchema,
   initialValues: { firstName: 'Harry', lastName: 'Potter' },
   shouldDisplayBanner: true,

@@ -32,7 +32,7 @@ describe('new_components:ProfileForm', () => {
   beforeEach(() => {
     props = {
       title: 'What are you?',
-      subtitle: 'A bird',
+      subtitleFormat: () => 'A bird',
       fields: defaultFields,
       validationSchema: defaultSchema,
       initialValues: {
@@ -41,7 +41,7 @@ describe('new_components:ProfileForm', () => {
       },
       banner: <Banner>Banner test text</Banner>,
       shouldDisplayBanner: false,
-      onFormSubmit: onProfileFormSubmit,
+      adapter: onProfileFormSubmit,
     }
   })
   it('renders component successfully', () => {
