@@ -415,8 +415,12 @@ class InvoiceCashflow(Model):  # type: ignore [valid-type, misc]
 # by `Pricing`, `Cashflow` and other models listed above.
 class Payment(Model):  # type: ignore [valid-type, misc]
     id = sqla.Column(sqla.BigInteger, primary_key=True, autoincrement=True)
-    bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=False)
+    bookingId = sqla.Column(sqla.BigInteger, sqla.ForeignKey("booking.id"), index=True, nullable=True)
     booking = sqla_orm.relationship("Booking", foreign_keys=[bookingId], backref="payments")  # type: ignore [misc]
+    collectiveBookingId = sqla.Column(
+        sqla.BigInteger, sqla.ForeignKey("collective_booking.id"), index=True, nullable=True
+    )
+    collectiveBooking = sqla_orm.relationship("CollectiveBooking", foreign_keys=[collectiveBookingId], backref="payments")  # type: ignore [misc]
     amount = sqla.Column(sqla.Numeric(10, 2), nullable=False)
     reimbursementRule = sqla.Column(sqla.String(200))
     reimbursementRate = sqla.Column(sqla.Numeric(10, 2))
