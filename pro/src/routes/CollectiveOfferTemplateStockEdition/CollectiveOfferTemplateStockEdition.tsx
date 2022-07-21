@@ -59,7 +59,7 @@ const CollectiveOfferTemplateStockEdition = (): JSX.Element => {
       values.educationalOfferType === EducationalOfferType.CLASSIC
     ) {
       return history.push(
-        `/offre/${stockResponse.payload.offerId}/collectif/stocks/edition`
+        `/offre/${stockResponse.payload.offerId}/collectif/visibilite/edition`
       )
     }
     const offerResponse = await getCollectiveOfferTemplateAdapter(offerId)
