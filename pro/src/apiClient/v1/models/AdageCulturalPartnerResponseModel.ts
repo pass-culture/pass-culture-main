@@ -3,9 +3,8 @@
 /* eslint-disable */
 
 export type AdageCulturalPartnerResponseModel = {
-  communeLibelle?: string | null;
   id: number;
-  libelle: string;
-  regionLibelle?: string | null;
+  siteWeb?: string | null;
+  statutId?: number | null;
 };
 
