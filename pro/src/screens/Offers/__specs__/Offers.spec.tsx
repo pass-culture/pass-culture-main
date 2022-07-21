@@ -373,7 +373,7 @@ describe('screen Offers', () => {
           ).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Tous')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Active')).not.toBeInTheDocument()
-          expect(screen.queryByLabelText('Inactive')).not.toBeInTheDocument()
+          expect(screen.queryByLabelText('Désactivée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Épuisée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Expirée')).not.toBeInTheDocument()
           expect(screen.queryByLabelText('Appliquer')).not.toBeInTheDocument()
@@ -396,7 +396,7 @@ describe('screen Offers', () => {
           expect(screen.queryByText('Afficher les statuts')).toBeInTheDocument()
           expect(screen.getByLabelText('Tous')).toBeChecked()
           expect(screen.getByLabelText('Active')).not.toBeChecked()
-          expect(screen.getByLabelText('Inactive')).not.toBeChecked()
+          expect(screen.getByLabelText('Désactivée')).not.toBeChecked()
           expect(screen.getByLabelText('Épuisée')).not.toBeChecked()
           expect(screen.getByLabelText('Expirée')).not.toBeChecked()
           expect(

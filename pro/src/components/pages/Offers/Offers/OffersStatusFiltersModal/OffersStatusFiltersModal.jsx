@@ -72,7 +72,7 @@ export const OffersStatusFiltersModal = ({
       />
       <RadioInput
         checked={status === 'INACTIVE'}
-        label="Inactive"
+        label="Désactivée"
         name="status"
         onChange={handleStatusFilterChange}
         value="INACTIVE"
