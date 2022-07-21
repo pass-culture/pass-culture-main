@@ -1,27 +1,23 @@
+import { WithdrawalTypeEnum } from 'apiClient/v1'
+
 export const TICKET_WITHDRAWAL_DEFAULT_VALUES = {
   withdrawalDetails: '',
-  withdrawalType: '',
-  withdrawalDelay: '',
-}
-
-export const WITHDRAWAL_TYPE = {
-  withoutTicket: 'no_ticket',
-  emailTicket: 'by_email',
-  onPlaceTicket: 'on_site',
+  withdrawalType: undefined,
+  withdrawalDelay: undefined,
 }
 
 export const ticketWithdrawalTypeRadios = [
   {
     label: 'Évènement sans billet',
-    value: WITHDRAWAL_TYPE.withoutTicket,
+    value: WithdrawalTypeEnum.NO_TICKET,
   },
   {
     label: 'Envoi par e-mail',
-    value: WITHDRAWAL_TYPE.emailTicket,
+    value: WithdrawalTypeEnum.BY_EMAIL,
   },
   {
     label: 'Retrait sur place (guichet, comptoir ...)',
-    value: WITHDRAWAL_TYPE.onPlaceTicket,
+    value: WithdrawalTypeEnum.ON_SITE,
   },
 ]
 
