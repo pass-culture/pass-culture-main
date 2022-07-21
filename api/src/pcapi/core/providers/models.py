@@ -171,6 +171,8 @@ class CDSCinemaDetails(PcObject, Model):  # type: ignore [valid-type, misc]
 
     cinemaApiToken = Column(Text, nullable=False)
 
+    accountId = Column(Text)
+
 
 class AllocineVenueProvider(VenueProvider):
     __tablename__ = "allocine_venue_provider"
