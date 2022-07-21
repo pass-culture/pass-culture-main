@@ -29,37 +29,34 @@ const CollectiveDataEdition = (): JSX.Element => {
     useState<GetCollectiveVenueResponseModel | null>(null)
 
   useEffect(() => {
-    Promise.all([
-      getEducationalDomainsAdapter(),
-      getVenueEducationalStatusesAdapter(),
-      getCulturalPartnersAdapter(),
-      getVenueCollectiveDataAdapter(venueId),
-    ]).then(
-      ([
+    const fetchData = async () => {
+      const allResponses = await Promise.all([
+        getEducationalDomainsAdapter(),
+        getVenueEducationalStatusesAdapter(),
+        getCulturalPartnersAdapter(),
+        getVenueCollectiveDataAdapter(venueId),
+      ])
+
+      if (allResponses.some(response => !response.isOk)) {
+        notify.error(GET_DATA_ERROR_MESSAGE)
+      }
+
+      const [
         domainsResponse,
         statusesResponse,
         culturalPartnersResponse,
         venueResponse,
-      ]) => {
-        if (
-          [
-            domainsResponse,
-            statusesResponse,
-            culturalPartnersResponse,
-            venueResponse,
-          ].some(response => !response.isOk)
-        ) {
-          notify.error(GET_DATA_ERROR_MESSAGE)
-        }
+      ] = allResponses
 
-        setDomains(domainsResponse.payload)
-        setStatuses(statusesResponse.payload)
-        setCulturalPartners(culturalPartnersResponse.payload)
-        setVenueCollectiveData(venueResponse.payload)
+      setDomains(domainsResponse.payload)
+      setStatuses(statusesResponse.payload)
+      setCulturalPartners(culturalPartnersResponse.payload)
+      setVenueCollectiveData(venueResponse.payload)
 
-        setIsLoading(false)
-      }
-    )
+      setIsLoading(false)
+    }
+
+    fetchData()
   }, [])
 
   return (
