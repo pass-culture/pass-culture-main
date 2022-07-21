@@ -52,7 +52,9 @@ class GetBookingProviderClientApiTest:
         cinema_provider_pivot = CinemaProviderPivotFactory(
             venue=venue_booking_provider.venue, idAtProvider=venue_booking_provider.idAtProvider
         )
-        CDSCinemaDetailsFactory(cinemaProviderPivot=cinema_provider_pivot, cinemaApiToken="test_token")
+        CDSCinemaDetailsFactory(
+            cinemaProviderPivot=cinema_provider_pivot, cinemaApiToken="test_token", accountId="test_account"
+        )
 
         # When
         venue_id = venue_booking_provider.venueId
@@ -64,12 +66,13 @@ class GetBookingProviderClientApiTest:
         assert client_api.token == "test_token"
         assert client_api.api_url == "test_api_url"
 
-    def test_should_raise_an_exception_if_no_token_provided_when_required(self) -> None:
+    def test_should_raise_an_exception_if_no_cds_details_provided_when_required(self) -> None:
         # Given
         booking_provider = BookingProviderFactory(name=BookingProviderName.CINE_DIGITAL_SERVICE, apiUrl="test_api_url")
         venue_booking_provider = VenueBookingProviderFactory(
             idAtProvider="test_id", bookingProvider=booking_provider, token=None
         )
+        CinemaProviderPivotFactory(venue=venue_booking_provider.venue, idAtProvider=venue_booking_provider.idAtProvider)
         venue_id = venue_booking_provider.venueId
 
         # When
@@ -77,7 +80,7 @@ class GetBookingProviderClientApiTest:
             _get_booking_provider_client_api(venue_id)
 
         # Then
-        assert str(e.value) == f"Missing token for {venue_booking_provider.idAtProvider}"
+        assert str(e.value) == "No row was found when one was required"
 
 
 @pytest.mark.usefixtures("db_session")

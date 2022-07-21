@@ -11,7 +11,7 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column("cds_cinema_details", sa.Column("accountId", sa.Text()))
+    op.add_column("cds_cinema_details", sa.Column("accountId", sa.Text(), nullable=False))
 
 
 def downgrade() -> None:

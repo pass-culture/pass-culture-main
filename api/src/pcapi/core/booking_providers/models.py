@@ -76,10 +76,11 @@ class Ticket:
 
 
 class BookingProviderClientAPI:
-    def __init__(self, cinema_id: str, api_url: str, token: str | None):
+    def __init__(self, cinema_id: str, account_id: str, api_url: str, token: str | None):
         self.token = token
         self.api_url = api_url
         self.cinema_id = cinema_id
+        self.account_id = account_id
 
     def get_show_remaining_places(self, show_id: int) -> int:
         raise NotImplementedError("Should be implemented in subclass (abstract method)")

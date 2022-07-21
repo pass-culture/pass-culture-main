@@ -19,10 +19,10 @@ CDS_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f%z"
 
 
 class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
-    def __init__(self, cinema_id: str, api_url: str, cinema_api_token: str | None):
+    def __init__(self, cinema_id: str, account_id: str, api_url: str, cinema_api_token: str | None):
         if not cinema_api_token:
             raise ValueError(f"Missing token for {cinema_id}")
-        super().__init__(cinema_id, api_url, cinema_api_token)
+        super().__init__(cinema_id, account_id, api_url, cinema_api_token)
 
     def get_internet_sale_gauge_active(self) -> bool:
         data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.CINEMAS)
@@ -42,14 +42,14 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         return show.remaining_place
 
     def get_shows_remaining_places(self, show_ids: list[int]) -> dict[int, int]:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         if self.get_internet_sale_gauge_active():
             return {show.id: show.internet_remaining_place for show in shows if show.id in show_ids}
         return {show.id: show.remaining_place for show in shows if show.id in show_ids}
 
     def get_shows(self) -> list[cds_serializers.ShowCDS]:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         if shows:
             return shows
@@ -59,7 +59,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         )
 
     def get_show(self, show_id: int) -> cds_serializers.ShowCDS:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SHOWS)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SHOWS)
         shows = parse_obj_as(list[cds_serializers.ShowCDS], data)
         for show in shows:
             if show.id == show_id:
@@ -69,7 +69,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         )
 
     def get_venue_movies(self) -> list[booking_providers_models.Movie]:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.MEDIA)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.MEDIA)
         cds_movies = parse_obj_as(list[cds_serializers.MediaCDS], data)
         return [cds_movie.to_generic_movie() for cds_movie in cds_movies]
 
@@ -77,7 +77,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         return get_movie_poster_from_api(image_url)
 
     def get_voucher_payment_type(self) -> cds_serializers.PaymentTypeCDS:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.PAYMENT_TYPE)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.PAYMENT_TYPE)
         payment_types = parse_obj_as(list[cds_serializers.PaymentTypeCDS], data)
         for payment_type in payment_types:
             if payment_type.internal_code == cds_constants.VOUCHER_PAYMENT_TYPE_CDS:
@@ -89,7 +89,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         )
 
     def get_pc_voucher_types(self) -> list[cds_serializers.VoucherTypeCDS]:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.VOUCHER_TYPE)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.VOUCHER_TYPE)
         voucher_types = parse_obj_as(list[cds_serializers.VoucherTypeCDS], data)
         return [
             voucher_type
@@ -98,7 +98,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         ]
 
     def get_tariff(self) -> cds_serializers.TariffCDS:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.TARIFFS)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.TARIFFS)
         tariffs = parse_obj_as(list[cds_serializers.TariffCDS], data)
 
         for tariff in tariffs:
@@ -110,7 +110,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         )
 
     def get_screen(self, screen_id: int) -> cds_serializers.ScreenCDS:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SCREENS)
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SCREENS)
         screens = parse_obj_as(list[cds_serializers.ScreenCDS], data)
 
         for screen in screens:
@@ -158,7 +158,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         ]
 
     def get_seatmap(self, show_id: int) -> booking_providers_models.SeatMap:
-        data = get_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
+        data = get_resource(self.api_url, self.account_id, self.token, ResourceCDS.SEATMAP, {"show_id": show_id})
         seatmap_cds = parse_obj_as(cds_serializers.SeatmapCDS, data)
         return booking_providers_models.SeatMap(seatmap_cds.map)
 
@@ -184,7 +184,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
             barcodes_int.append(int(barcode))
 
         cancel_body = cds_serializers.CancelBookingCDS(barcodes=barcodes_int, paiementtypeid=paiement_type_id)
-        api_response = put_resource(self.api_url, self.cinema_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
+        api_response = put_resource(self.api_url, self.account_id, self.token, ResourceCDS.CANCEL_BOOKING, cancel_body)
 
         if api_response:
             cancel_errors = parse_obj_as(cds_serializers.CancelBookingsErrorsCDS, api_response)
@@ -215,7 +215,7 @@ class CineDigitalServiceAPI(booking_providers_models.BookingProviderClientAPI):
         )
 
         json_response = post_resource(
-            self.api_url, self.cinema_id, self.token, ResourceCDS.CREATE_TRANSACTION, create_transaction_body
+            self.api_url, self.account_id, self.token, ResourceCDS.CREATE_TRANSACTION, create_transaction_body
         )
         create_transaction_response = parse_obj_as(cds_serializers.CreateTransactionResponseCDS, json_response)
 

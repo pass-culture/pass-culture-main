@@ -90,15 +90,11 @@ def get_providers_to_exclude(venue: Venue) -> list[str]:
     return providers_to_exclude
 
 
-def get_cds_cinema_api_token(cinema_id: str) -> str | None:
+def get_cds_cinema_details(cinema_id: str) -> CDSCinemaDetails:
     cinema_details = (
-        CDSCinemaDetails.query.join(CinemaProviderPivot)
-        .filter(CinemaProviderPivot.idAtProvider == cinema_id)
-        .one_or_none()
+        CDSCinemaDetails.query.join(CinemaProviderPivot).filter(CinemaProviderPivot.idAtProvider == cinema_id).one()
     )
-    if cinema_details:
-        return cinema_details.cinemaApiToken
-    return None
+    return cinema_details
 
 
 # Each venue is known to allocine by its siret (AllocineTheater) or by its id (AllocinePivot).

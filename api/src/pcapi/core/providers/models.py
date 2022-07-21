@@ -171,7 +171,7 @@ class CDSCinemaDetails(PcObject, Model):  # type: ignore [valid-type, misc]
 
     cinemaApiToken = Column(Text, nullable=False)
 
-    accountId = Column(Text)
+    accountId = Column(Text, nullable=False)
 
 
 class AllocineVenueProvider(VenueProvider):
