@@ -6,37 +6,47 @@ import { AnySchema } from 'yup'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import FormLayout from 'new_components/FormLayout'
 import Icon from 'components/layout/Icon'
+import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
 import styles from './ProfileForm.module.scss'
 
 export interface IProfileFormProps {
   title: string
-  subtitle: string
+  subtitleFormat: (values: any) => string
   fields: Array<JSX.Element>
   validationSchema: AnySchema
   banner?: JSX.Element
-  shouldDisplayBanner: boolean
-  onFormSubmit: (values: any) => void
+  shouldDisplayBanner?: boolean
+  adapter: PatchIdentityAdapter
   initialValues: { [id: string]: string }
 }
 
 const ProfileForm = ({
   title,
-  subtitle,
+  subtitleFormat,
   fields,
   validationSchema,
   initialValues,
   shouldDisplayBanner = false,
   banner,
-  onFormSubmit,
+  adapter,
 }: IProfileFormProps): JSX.Element => {
   const [isFormVisible, setIsFormVisible] = useState(false)
+  const [subTitle, setSubTitle] = useState(subtitleFormat(initialValues))
   const toggleFormVisible = () => {
     setIsFormVisible(oldValue => !oldValue)
   }
   const onSubmit = (values: any) => {
-    onFormSubmit(values)
+    adapter(values).then(response => {
+      if (response.isOk) {
+        toggleFormVisible()
+        formik.setValues(response.payload)
+        setSubTitle(subtitleFormat(response.payload))
+      } else {
+        for (const field in response.payload)
+          formik.setFieldError(field, response.payload[field])
+      }
+    })
     formik.setSubmitting(false)
-    toggleFormVisible()
   }
 
   const formik = useFormik({
@@ -53,7 +63,7 @@ const ProfileForm = ({
             {title}
           </div>
           <div className={styles['profile-form-description-value']}>
-            {subtitle}
+            {subTitle}
           </div>
         </div>
         <div className={styles['profile-form-description-column']}>
@@ -79,9 +89,7 @@ const ProfileForm = ({
           <FormikProvider value={formik}>
             <Form onSubmit={formik.handleSubmit}>
               <FormLayout className={styles['profile-form-field']}>
-                {fields.map((item, index) => (
-                  <FormLayout.Row key={index}>{item}</FormLayout.Row>
-                ))}
+                {fields}
               </FormLayout>
 
               <div className={styles['buttons-field']}>

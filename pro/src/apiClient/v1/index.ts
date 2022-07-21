@@ -140,6 +140,8 @@ export type { StocksUpsertBodyModel } from './models/StocksUpsertBodyModel';
 export { StudentLevels } from './models/StudentLevels';
 export { SubcategoryIdEnum } from './models/SubcategoryIdEnum';
 export type { SubcategoryResponseModel } from './models/SubcategoryResponseModel';
+export type { UserIdentityBodyModel } from './models/UserIdentityBodyModel';
+export type { UserIdentityResponseModel } from './models/UserIdentityResponseModel';
 export { UserRole } from './models/UserRole';
 export type { ValidationError } from './models/ValidationError';
 export type { ValidationErrorElement } from './models/ValidationErrorElement';
