@@ -53,7 +53,7 @@ describe('venues', () => {
     ] = screen.getAllByTestId('venue-stat')
     expect(within(activeOffersStat).getByText('2')).toBeInTheDocument()
     expect(
-      within(activeOffersStat).getByText('Offres actives')
+      within(activeOffersStat).getByText('Offres publiées')
     ).toBeInTheDocument()
 
     expect(within(activeBookingsStat).getByText('0')).toBeInTheDocument()

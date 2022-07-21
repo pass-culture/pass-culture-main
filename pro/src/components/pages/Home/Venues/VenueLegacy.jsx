@@ -31,7 +31,7 @@ const Venue = ({
   const venueStatData = [
     {
       count: stats.activeOffersCount,
-      label: 'Offres actives',
+      label: 'Offres publiées',
       link: `/offres?lieu=${id}&statut=active`,
     },
     {
