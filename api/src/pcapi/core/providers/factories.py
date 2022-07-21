@@ -79,6 +79,7 @@ class CDSCinemaDetailsFactory(BaseFactory):
 
     cinemaProviderPivot = factory.SubFactory(CinemaProviderPivotFactory)
     cinemaApiToken = factory.LazyFunction(secrets.token_urlsafe)
+    accountId = factory.Sequence("account{}".format)
 
 
 class AllocineProviderFactory(BaseFactory):

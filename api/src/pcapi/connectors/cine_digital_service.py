@@ -42,7 +42,7 @@ MOCKS: dict[ResourceCDS, dict | list[dict] | list] = {
 
 def get_resource(
     api_url: str,
-    cinema_id: str,
+    account_id: str,
     cinema_api_token: str | None,
     resource: ResourceCDS,
     path_params: dict[str, Any] | None = None,
@@ -52,7 +52,7 @@ def get_resource(
         return MOCKS[resource]
 
     try:
-        url = _build_url(api_url, cinema_id, cinema_api_token, resource, path_params)
+        url = _build_url(api_url, account_id, cinema_api_token, resource, path_params)
         response = requests.get(url)
         response.raise_for_status()
 
@@ -66,13 +66,13 @@ def get_resource(
 
 
 def put_resource(
-    api_url: str, cinema_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
+    api_url: str, account_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
 ) -> dict | list[dict] | list | None:
     if settings.IS_DEV:
         return MOCKS[resource]
 
     try:
-        url = _build_url(api_url, cinema_id, cinema_api_token, resource)
+        url = _build_url(api_url, account_id, cinema_api_token, resource)
         headers = {"Content-Type": "application/json"}
         response = requests.put(url, headers=headers, data=body.json(by_alias=True))
         response.raise_for_status()
@@ -90,10 +90,10 @@ def put_resource(
 
 
 def post_resource(
-    api_url: str, cinema_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
+    api_url: str, account_id: str, cinema_api_token: str | None, resource: ResourceCDS, body: BaseModel
 ) -> dict:
     try:
-        url = _build_url(api_url, cinema_id, cinema_api_token, resource)
+        url = _build_url(api_url, account_id, cinema_api_token, resource)
         headers = {"Content-Type": "application/json"}
         response = requests.post(url, headers=headers, data=body.json(by_alias=True))
         response.raise_for_status()
@@ -120,7 +120,7 @@ def get_movie_poster_from_api(image_url: str) -> bytes:
 
 def _build_url(
     api_url: str,
-    cinema_id: str,
+    account_id: str,
     cinema_api_token: str | None,
     resource: ResourceCDS,
     path_params: dict[str, Any] | None = None,
@@ -129,7 +129,7 @@ def _build_url(
     if path_params:
         for key, value in path_params.items():
             resource_url = resource_url.replace(":" + key, str(value))
-    return f"https://{cinema_id}.{api_url}{resource_url}?api_token={cinema_api_token}"
+    return f"https://{account_id}.{api_url}{resource_url}?api_token={cinema_api_token}"
 
 
 def _filter_token(error_message: str, token: str | None) -> str:
