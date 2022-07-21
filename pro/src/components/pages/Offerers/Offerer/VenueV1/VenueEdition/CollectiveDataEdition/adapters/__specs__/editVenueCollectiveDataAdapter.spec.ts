@@ -53,7 +53,8 @@ describe('editVenueCollectiveDataAdapter', () => {
       ...COLLECTIVE_DATA_FORM_INITIAL_VALUES,
       collectiveDescription: 'blabla',
       collectiveDomains: [1],
-      collectiveLegalStatus: 3,
+      venueEducationalStatusId: 3,
+      collectiveLegalStatus: '3',
     })
   })
 })
