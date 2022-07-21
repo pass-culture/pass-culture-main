@@ -63,6 +63,8 @@ import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StockIdsResponseModel } from '../models/StockIdsResponseModel';
 import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StocksUpsertBodyModel } from '../models/StocksUpsertBodyModel';
+import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
+import type { UserIdentityResponseModel } from '../models/UserIdentityResponseModel';
 import type { VenueLabelListResponseModel } from '../models/VenueLabelListResponseModel';
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
@@ -1257,6 +1259,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/users/current',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * patch_user_identity <PATCH>
+   * @param requestBody
+   * @returns UserIdentityResponseModel OK
+   * @throws ApiError
+   */
+  public patchUserIdentity(
+    requestBody?: UserIdentityBodyModel,
+  ): CancelablePromise<UserIdentityResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/users/identity',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
