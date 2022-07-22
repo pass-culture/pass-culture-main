@@ -423,7 +423,7 @@ describe('CollectiveDataEdition', () => {
 
       await waitFor(() =>
         expect(notifyErrorMock).toHaveBeenCalledWith(
-          'Une erreur est surevenue lors de l’enregistrement des données'
+          'Une erreur est survenue lors de l’enregistrement des données'
         )
       )
     })

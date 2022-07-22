@@ -25,7 +25,7 @@ describe('editVenueCollectiveDataAdapter', () => {
     ).toStrictEqual({
       isOk: false,
       payload: null,
-      message: 'Une erreur est surevenue lors de l’enregistrement des données',
+      message: 'Une erreur est survenue lors de l’enregistrement des données',
     })
   })
 
