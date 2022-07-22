@@ -7,10 +7,12 @@ import { Form } from 'react-final-form'
 import React from 'react'
 import ReimbursementPoint from '../ReimbursementPoint'
 import { api } from 'apiClient/api'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('apiClient/api', () => ({
   api: {
     getAvailableReimbursementPoints: jest.fn(),
+    getVenue: jest.fn(),
   },
 }))
 
@@ -26,7 +28,7 @@ const renderReimbursementPoint = async props => {
 }
 
 describe('src | Venue | ReimbursementPoint', () => {
-  const venue = {
+  const initialVenue = {
     id: 'AA',
     nonHumanizedId: 1,
     name: 'fake venue name',
@@ -38,7 +40,7 @@ describe('src | Venue | ReimbursementPoint', () => {
   }
   let props
   beforeEach(() => {
-    props = { venue, offerer }
+    props = { initialVenue, offerer }
   })
 
   it('should display reimbursement point secion  when offerer has at least one', async () => {
@@ -128,7 +130,7 @@ describe('src | Venue | ReimbursementPoint', () => {
         iban: 'FR9410010000000000000000022',
       },
     ])
-    props.venue = venueWithReimbursementPoint
+    props.initialVenue = venueWithReimbursementPoint
 
     // When
     await renderReimbursementPoint(props)
@@ -151,7 +153,7 @@ describe('src | Venue | ReimbursementPoint', () => {
       demarchesSimplifieesApplicationId: '2',
     }
 
-    props.venue = venueWithPendingApplication
+    props.initialVenue = venueWithPendingApplication
     jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
 
     // When
@@ -163,5 +165,36 @@ describe('src | Venue | ReimbursementPoint', () => {
         'Les coordonnées bancaires de votre lieu sont en cours de validation par notre service financier.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should reload component when closing dms pop-in', async () => {
+    const venueWithSiret = {
+      id: 'AA',
+      name: 'fake venue name',
+      siret: '11111111100000',
+    }
+    props.initialVenue = venueWithSiret
+
+    jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
+    jest.spyOn(api, 'getVenue').mockResolvedValue(props.initialVenue)
+
+    // When
+    await renderReimbursementPoint(props)
+
+    const addReimbursementPointButton = screen.getByRole('button', {
+      name: 'Ajouter des coordonnées bancaires',
+    })
+    await userEvent.click(addReimbursementPointButton)
+
+    // Then
+    expect(
+      screen.queryByText(
+        'Avant d’ajouter des nouvelles coordonnées bancaires via la plateforme Démarches Simplifiées :'
+      )
+    ).toBeInTheDocument()
+    const closeModalButton = screen.getByTitle('Fermer la modale')
+    await userEvent.click(closeModalButton)
+
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
   })
 })

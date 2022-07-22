@@ -66,7 +66,7 @@ const ReimbursementFields = ({
               offerer={offerer}
               readOnly={readOnly}
               scrollToSection={scrollToSection}
-              venue={venue}
+              initialVenue={venue}
               venueHasPricingPoint={venueHasPricingPoint}
             />
           </>
