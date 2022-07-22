@@ -22,7 +22,7 @@ const EACInformation = ({
 }): JSX.Element => {
   const collectiveDataIsNotEmpty = venue && venueHasCollectiveInformation(venue)
   return (
-    <div className="section">
+    <div className="section vp-content-section">
       <h2 className="main-list-title">Mes informations pour les enseignants</h2>
       {collectiveDataIsNotEmpty ? (
         <CollectiveData venue={venue} />
@@ -49,11 +49,7 @@ const EACInformation = ({
       )}
 
       {isCreatingVenue && canOffererCreateCollectiveOffer && (
-        <Banner
-          type="notification-info"
-          href="https://passculture.typeform.com/to/VtKospEg"
-          linkTitle="Faire une demande de référencement"
-        >
+        <Banner type="notification-info">
           Une fois votre lieu créé, vous pourrez renseigner des informations
           pour les enseignants en revenant sur cette page.
         </Banner>

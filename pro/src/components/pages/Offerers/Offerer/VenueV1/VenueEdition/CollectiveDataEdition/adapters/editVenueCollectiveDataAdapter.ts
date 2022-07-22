@@ -30,7 +30,7 @@ const editVenueCollectiveDataAdapter: EditVenueCollectiveDataAdapter = async ({
   } catch (e) {
     return {
       isOk: false,
-      message: 'Une erreur est surevenue lors de l’enregistrement des données',
+      message: 'Une erreur est survenue lors de l’enregistrement des données',
       payload: null,
     }
   }
