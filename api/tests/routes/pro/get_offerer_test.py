@@ -8,99 +8,105 @@ import pcapi.core.users.factories as users_factories
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
-from tests.conftest import TestClient
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class Returns404Test:
-    @pytest.mark.usefixtures("db_session")
-    def test_when_user_offerer_does_not_exist(self, app):
-        pro = users_factories.ProFactory()
-        invalid_id = 12
+def test_basics(client):
+    pro = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+    venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
+    offers_factories.OfferFactory(venue=venue_1)
+    venue_2 = offerers_factories.VenueFactory(
+        managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details"
+    )
+    offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="More venue withdrawal details")
+    offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
+    offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
+    finance_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
+    finance_factories.BankInformationFactory(venue=venue_1, applicationId=3)
+    finance_factories.BankInformationFactory(venue=venue_2, applicationId=4)
 
-        response = TestClient(app.test_client()).with_session_auth(pro.email).get("/offerers/%s" % invalid_id)
+    client = client.with_session_auth(pro.email)
+    n_queries = (
+        testing.AUTHENTICATION_QUERIES
+        + 1  # check_user_has_access_to_offerer
+        + 1  # Offerer api_key prefix
+        + 1  # Offerer hasDigitalVenueAtLeastOneOffer
+        + 1  # Offerer BankInformation
+        + 1  # Offerer hasMissingBankInformation
+    )
+    with testing.assert_num_queries(n_queries):
+        response = client.get(f"/offerers/{humanize(offerer.id)}")
 
-        assert response.status_code == 404
-        assert response.json["global"] == ["La page que vous recherchez n'existe pas"]
+    expected_serialized_offerer = {
+        "address": offerer.address,
+        "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
+        "bic": None,
+        "iban": None,
+        "city": offerer.city,
+        "dateCreated": format_into_utc_date(offerer.dateCreated),
+        "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),
+        "demarchesSimplifieesApplicationId": None,
+        "hasAvailablePricingPoints": True,
+        "hasDigitalVenueAtLeastOneOffer": False,
+        "fieldsUpdated": offerer.fieldsUpdated,
+        "hasMissingBankInformation": True,
+        "id": humanize(offerer.id),
+        "idAtProviders": offerer.idAtProviders,
+        "isActive": offerer.isActive,
+        "isValidated": offerer.isValidated,
+        "lastProviderId": offerer.lastProviderId,
+        "managedVenues": [
+            {
+                "audioDisabilityCompliant": False,
+                "address": venue.address,
+                "bookingEmail": venue.bookingEmail,
+                "businessUnitId": venue.businessUnitId,
+                "city": venue.city,
+                "comment": venue.comment,
+                "departementCode": venue.departementCode,
+                "id": humanize(venue.id),
+                "isValidated": venue.isValidated,
+                "isVirtual": venue.isVirtual,
+                "managingOffererId": humanize(venue.managingOffererId),
+                "mentalDisabilityCompliant": False,
+                "motorDisabilityCompliant": False,
+                "name": venue.name,
+                "nonHumanizedId": venue.id,
+                "postalCode": venue.postalCode,
+                "publicName": venue.publicName,
+                "siret": venue.siret,
+                "venueLabelId": humanize(venue.venueLabelId),
+                "visualDisabilityCompliant": False,
+                "withdrawalDetails": venue.withdrawalDetails,
+            }
+            for venue in offerer.managedVenues
+        ],
+        "name": offerer.name,
+        "nonHumanizedId": offerer.id,
+        "postalCode": offerer.postalCode,
+        "siren": offerer.siren,
+    }
+    assert response.status_code == 200
+    assert response.json == expected_serialized_offerer
 
 
-class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
-    def test_when_user_has_rights_on_offerer(self, app):
-        pro = users_factories.ProFactory()
-        offerer = offerers_factories.OffererFactory()
-        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
-        offers_factories.OfferFactory(venue=venue_1)
-        venue_2 = offerers_factories.VenueFactory(
-            managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details"
-        )
-        offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="More venue withdrawal details")
-        offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
-        offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix2")
-        finance_factories.BankInformationFactory(venue=venue_1, applicationId=2, status="REJECTED")
-        finance_factories.BankInformationFactory(venue=venue_1, applicationId=3)
-        finance_factories.BankInformationFactory(venue=venue_2, applicationId=4)
+def test_unknown_offerer(client):
+    pro = users_factories.ProFactory()
 
-        client = TestClient(app.test_client()).with_session_auth(pro.email)
-        n_queries = (
-            testing.AUTHENTICATION_QUERIES
-            + 1  # check_user_has_access_to_offerer
-            + 1  # Offerer api_key prefix
-            + 1  # Offerer hasDigitalVenueAtLeastOneOffer
-            + 1  # Offerer BankInformation
-            + 1  # Offerer hasMissingBankInformation
-        )
-        with testing.assert_num_queries(n_queries):
-            response = client.get(f"/offerers/{humanize(offerer.id)}")
+    client = client.with_session_auth(pro.email)
+    response = client.get("/offerers/ABC1234")
 
-        expected_serialized_offerer = {
-            "address": offerer.address,
-            "apiKey": {"maxAllowed": 5, "prefixes": ["testenv_prefix", "testenv_prefix2"]},
-            "bic": None,
-            "iban": None,
-            "city": offerer.city,
-            "dateCreated": format_into_utc_date(offerer.dateCreated),
-            "dateModifiedAtLastProvider": format_into_utc_date(offerer.dateModifiedAtLastProvider),
-            "demarchesSimplifieesApplicationId": None,
-            "hasAvailablePricingPoints": True,
-            "hasDigitalVenueAtLeastOneOffer": False,
-            "fieldsUpdated": offerer.fieldsUpdated,
-            "hasMissingBankInformation": True,
-            "id": humanize(offerer.id),
-            "idAtProviders": offerer.idAtProviders,
-            "isActive": offerer.isActive,
-            "isValidated": offerer.isValidated,
-            "lastProviderId": offerer.lastProviderId,
-            "managedVenues": [
-                {
-                    "audioDisabilityCompliant": False,
-                    "address": offererVenue.address,
-                    "bookingEmail": offererVenue.bookingEmail,
-                    "businessUnitId": offererVenue.businessUnitId,
-                    "city": offererVenue.city,
-                    "comment": offererVenue.comment,
-                    "departementCode": offererVenue.departementCode,
-                    "id": humanize(offererVenue.id),
-                    "isValidated": offererVenue.isValidated,
-                    "isVirtual": offererVenue.isVirtual,
-                    "managingOffererId": humanize(offererVenue.managingOffererId),
-                    "mentalDisabilityCompliant": False,
-                    "motorDisabilityCompliant": False,
-                    "name": offererVenue.name,
-                    "nonHumanizedId": offererVenue.id,
-                    "postalCode": offererVenue.postalCode,
-                    "publicName": offererVenue.publicName,
-                    "siret": offererVenue.siret,
-                    "venueLabelId": humanize(offererVenue.venueLabelId),
-                    "visualDisabilityCompliant": False,
-                    "withdrawalDetails": offererVenue.withdrawalDetails,
-                }
-                for offererVenue in offerer.managedVenues
-            ],
-            "name": offerer.name,
-            "nonHumanizedId": offerer.id,
-            "postalCode": offerer.postalCode,
-            "siren": offerer.siren,
-        }
-        assert response.status_code == 200
-        assert response.json == expected_serialized_offerer
+    assert response.status_code == 404
+
+
+def test_unauthorized_offerer(client):
+    pro = users_factories.ProFactory()
+    offerer = offerers_factories.OffererFactory()
+
+    client = client.with_session_auth(pro.email)
+    response = client.get(f"/offerers/{humanize(offerer.id)}")
+
+    assert response.status_code == 403
