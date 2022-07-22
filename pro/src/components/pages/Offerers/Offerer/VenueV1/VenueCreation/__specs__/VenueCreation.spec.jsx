@@ -94,7 +94,7 @@ describe('venue form', () => {
     jest
       .spyOn(api, 'getProfile')
       .mockResolvedValue(storeOverrides.user.currentUser)
-    pcapi.canOffererCreateEducationalOffer.mockResolvedValue(false)
+    jest.spyOn(pcapi, 'canOffererCreateEducationalOffer').mockRejectedValue()
   })
 
   describe('when submiting a valide form', () => {
@@ -345,7 +345,10 @@ describe('venue form', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should render button when FF is on', async () => {
+    it('should render button when FF is on and offerer can create collective offer', async () => {
+      jest
+        .spyOn(pcapi, 'canOffererCreateEducationalOffer')
+        .mockResolvedValueOnce()
       await renderVenueCreation({
         props,
         storeOverrides: {
@@ -364,6 +367,27 @@ describe('venue form', () => {
       expect(
         await screen.findByText('Renseigner mes informations')
       ).toBeInTheDocument()
+    })
+
+    it('should not render button when FF is on and offerer cannot create collective offer', async () => {
+      await renderVenueCreation({
+        props,
+        storeOverrides: {
+          ...storeOverrides,
+          features: {
+            list: [
+              {
+                isActive: true,
+                nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
+              },
+            ],
+          },
+        },
+      })
+
+      expect(
+        screen.queryByText('Renseigner mes informations')
+      ).not.toBeInTheDocument()
     })
   })
 })
