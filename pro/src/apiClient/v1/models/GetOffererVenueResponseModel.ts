@@ -10,6 +10,7 @@ export type GetOffererVenueResponseModel = {
   city?: string | null;
   comment?: string | null;
   departementCode?: string | null;
+  hasReimbursementPoint: boolean;
   id: string;
   isValidated: boolean;
   isVirtual: boolean;

@@ -150,7 +150,6 @@ def list_educational_offerers(query: GetEducationalOfferersQueryModel) -> GetEdu
 def get_offerer(offerer_id: str) -> GetOffererResponseModel:
     check_user_has_access_to_offerer(current_user, dehumanize(offerer_id))  # type: ignore [arg-type]
     offerer = load_or_404(offerers_models.Offerer, offerer_id)
-
     return GetOffererResponseModel.from_orm(offerer)
 
 
