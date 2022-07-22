@@ -23,7 +23,7 @@ export type GetOffererResponseModel = {
   isActive: boolean;
   isValidated: boolean;
   lastProviderId?: string | null;
-  managedVenues: Array<GetOffererVenueResponseModel>;
+  managedVenues?: Array<GetOffererVenueResponseModel>;
   name: string;
   nonHumanizedId: number;
   postalCode: string;

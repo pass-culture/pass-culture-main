@@ -1,5 +1,8 @@
 from datetime import datetime
 
+import sqlalchemy.orm as sqla_orm
+import sqlalchemy.sql.functions as sqla_func
+
 from pcapi import settings
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
@@ -18,6 +21,7 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     comment: str | None
     departementCode: str | None
+    hasReimbursementPoint: bool
     id: str
     isValidated: bool
     isVirtual: bool
@@ -36,6 +40,11 @@ class GetOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetOffererVenueResponseModel":
         venue.nonHumanizedId = venue.id
+        now = datetime.utcnow()
+        venue.hasReimbursementPoint = any(
+            now > link.timespan.lower and (link.timespan.upper is None or now < link.timespan.upper)
+            for link in venue.reimbursement_point_links
+        )
         return super().from_orm(venue)
 
     class Config:
@@ -66,7 +75,7 @@ class GetOffererResponseModel(BaseModel):
     isValidated: bool
     isActive: bool
     lastProviderId: str | None
-    managedVenues: list[GetOffererVenueResponseModel]
+    managedVenues: list[GetOffererVenueResponseModel] = []  # see end of `from_orm()`
     name: str
     nonHumanizedId: int
     postalCode: str
@@ -81,9 +90,15 @@ class GetOffererResponseModel(BaseModel):
             "maxAllowed": settings.MAX_API_KEY_PER_OFFERER,
             "prefixes": offerers_repository.get_api_key_prefixes(offerer.id),
         }
+        venues = (
+            offerers_models.Venue.query.filter_by(managingOffererId=offerer.id)
+            .options(sqla_orm.joinedload(offerers_models.Venue.reimbursement_point_links))
+            .order_by(sqla_func.coalesce(offerers_models.Venue.publicName, offerers_models.Venue.name))
+            .all()
+        )
         if venue_stats_by_ids:
-            for managedVenue in offerer.managedVenues:
-                managedVenue.stats = venue_stats_by_ids[managedVenue.id]
+            for venue in venues:
+                venue.stats = venue_stats_by_ids[venue.id]
 
         offerer.hasDigitalVenueAtLeastOneOffer = offerers_repository.has_digital_venue_with_at_least_one_offer(
             offerer.id
@@ -95,7 +110,13 @@ class GetOffererResponseModel(BaseModel):
         offerer.hasAvailablePricingPoints = any(venue.siret for venue in offerer.managedVenues)
         offerer.nonHumanizedId = offerer.id
 
-        return super().from_orm(offerer)
+        # We would like the response attribute to be called
+        # `managedVenues` but we don't want to use the
+        # `Offerer.managedVenues` relationship which does not
+        # join-load what we want.
+        res = super().from_orm(offerer)
+        res.managedVenues = [GetOffererVenueResponseModel.from_orm(venue) for venue in venues]
+        return res
 
     class Config:
         orm_mode = True

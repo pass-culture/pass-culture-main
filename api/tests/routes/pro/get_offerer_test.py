@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from pcapi.core import testing
@@ -5,6 +7,7 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.models import db
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
@@ -18,8 +21,18 @@ def test_basics(client):
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
     venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
     offers_factories.OfferFactory(venue=venue_1)
+    offerers_factories.VenueReimbursementPointLinkFactory(venue=venue_1, reimbursementPoint=venue_1)
     venue_2 = offerers_factories.VenueFactory(
         managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details"
+    )
+    offerers_factories.VenueReimbursementPointLinkFactory(
+        venue=venue_2,
+        reimbursementPoint=venue_2,
+        # old, inactive link
+        timespan=[
+            datetime.datetime.utcnow() - datetime.timedelta(days=10),
+            datetime.datetime.utcnow() - datetime.timedelta(days=9),
+        ],
     )
     offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="More venue withdrawal details")
     offerers_factories.ApiKeyFactory(offerer=offerer, prefix="testenv_prefix")
@@ -28,17 +41,23 @@ def test_basics(client):
     finance_factories.BankInformationFactory(venue=venue_1, applicationId=3)
     finance_factories.BankInformationFactory(venue=venue_2, applicationId=4)
 
+    offerer_id = offerer.id
+    db.session.expunge_all()
     client = client.with_session_auth(pro.email)
     n_queries = (
         testing.AUTHENTICATION_QUERIES
+        # You'll note that we don't seem to fetch the offerer
+        # itself... I guess that it's in SQLAlchemy session but I
+        # cannot find a way to remove it from there.
         + 1  # check_user_has_access_to_offerer
+        + 1  # select venues
         + 1  # Offerer api_key prefix
         + 1  # Offerer hasDigitalVenueAtLeastOneOffer
         + 1  # Offerer BankInformation
         + 1  # Offerer hasMissingBankInformation
     )
     with testing.assert_num_queries(n_queries):
-        response = client.get(f"/offerers/{humanize(offerer.id)}")
+        response = client.get(f"/offerers/{humanize(offerer_id)}")
 
     expected_serialized_offerer = {
         "address": offerer.address,
@@ -67,6 +86,7 @@ def test_basics(client):
                 "city": venue.city,
                 "comment": venue.comment,
                 "departementCode": venue.departementCode,
+                "hasReimbursementPoint": bool(venue.current_reimbursement_point_id),
                 "id": humanize(venue.id),
                 "isValidated": venue.isValidated,
                 "isVirtual": venue.isVirtual,
@@ -91,6 +111,9 @@ def test_basics(client):
     }
     assert response.status_code == 200
     assert response.json == expected_serialized_offerer
+
+    db.session.refresh(offerer)
+    assert len(offerer.managedVenues) == 3
 
 
 def test_unknown_offerer(client):
