@@ -22,6 +22,7 @@ jobs:
               - 'api/**'
 
       - name: Cache
+        if: steps.changesApi.outputs.src == 'true'
         uses: satackey/action-docker-layer-caching@v0.0.11
         with:
           key: docker-cache-${{ hashFiles('api/requirements.txt') }}
@@ -47,9 +48,11 @@ jobs:
           ./pc start-backend &
 
       - name: Update permission
+        if: steps.changesApi.outputs.src == 'true'
         run: cd pro && sudo chown -R $USER .
 
       - uses: actions/cache@v2
+        if: steps.changesApi.outputs.src == 'true'
         with:
           path: pro/node_modules
           key: ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
