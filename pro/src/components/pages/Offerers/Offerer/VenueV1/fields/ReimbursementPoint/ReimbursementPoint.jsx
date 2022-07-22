@@ -15,7 +15,7 @@ const ReimbursementPoint = ({
   readOnly,
   offerer,
   scrollToSection,
-  venue,
+  initialVenue,
   isCreatingVenue,
   venueHasPricingPoint,
 }) => {
@@ -27,6 +27,7 @@ const ReimbursementPoint = ({
     useState(false)
   const [hasAlreadyAddReimbursementPoint, setHasAlreadyAddReimbursementPoint] =
     useState(false)
+  const [venue, setVenue] = useState(initialVenue)
 
   const reimbursementPointDisplayName = reimbursementPoint =>
     reimbursementPoint
@@ -52,6 +53,12 @@ const ReimbursementPoint = ({
       setIsNoSiretDialogOpen(true)
     }
   }, [venueHasPricingPoint])
+
+  const closeDmsDialog = useCallback(async () => {
+    setIsDmsDialogOpen(false)
+    const venueRequest = await api.getVenue(venue.id)
+    setVenue(venueRequest)
+  }, [])
   const [isDmsDialogOpen, setIsDmsDialogOpen] = useState(false)
   useEffect(() => {
     async function loadReimbursementPoints(offererId) {
@@ -89,18 +96,7 @@ const ReimbursementPoint = ({
       setIsLoading(false)
     }
     loadReimbursementPoints(offerer.nonHumanizedId)
-  }, [
-    isCreatingVenue,
-    offerer.id,
-    readOnly,
-    venue.bic,
-    venue.reimbursementPointId,
-    venue.demarchesSimplifieesApplicationId,
-    venue.iban,
-    venue.id,
-    venue.isVirtual,
-    venue.siret,
-  ])
+  }, [isCreatingVenue, offerer.id, readOnly, venue])
 
   if (isLoading) return <Spinner />
   if (!venue.isVirtual)
@@ -147,7 +143,7 @@ const ReimbursementPoint = ({
             )}
             {isDmsDialogOpen && (
               <ReimbursmentPointDialog
-                closeDialog={() => setIsDmsDialogOpen(false)}
+                closeDialog={closeDmsDialog}
                 buttonAction={openDMSApplication}
                 dmsToken={venue.dmsToken}
               />
@@ -172,6 +168,11 @@ const ReimbursementPoint = ({
                     id="venue-reimbursement-point"
                     name="reimbursementPointId"
                     disabled={readOnly || !venueHasPricingPoint}
+                    initialValue={
+                      venueReimbursementPoint
+                        ? venueReimbursementPoint.venueId
+                        : ''
+                    }
                   >
                     <option disabled value="">
                       Sélectionner des coordonnées dans la liste
@@ -205,17 +206,17 @@ const ReimbursementPoint = ({
 }
 
 ReimbursementPoint.defaultProps = {
+  initialVenue: {},
   isCreatingVenue: false,
   readOnly: false,
   scrollToSection: false,
-  venue: {},
 }
 ReimbursementPoint.propTypes = {
+  initialVenue: PropTypes.shape(),
   isCreatingVenue: PropTypes.bool,
   offerer: PropTypes.shape().isRequired,
   readOnly: PropTypes.bool,
   scrollToSection: PropTypes.bool,
-  venue: PropTypes.shape(),
 }
 
 export default ReimbursementPoint
