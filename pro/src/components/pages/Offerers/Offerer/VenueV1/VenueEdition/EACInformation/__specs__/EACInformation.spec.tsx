@@ -30,40 +30,13 @@ describe('EACInformation', () => {
     it('should display information banner when user is creating venue and can create collective offers', async () => {
       render(
         <Router history={history}>
-          <EACInformation
-            venue={null}
-            isCreatingVenue
-            canOffererCreateCollectiveOffer
-            offererId="O1"
-          />
+          <EACInformation venue={null} isCreatingVenue offererId="O1" />
         </Router>
       )
 
       expect(
         await screen.findByText(
           'Une fois votre lieu créé, vous pourrez renseigner des informations pour les enseignants en revenant sur cette page.'
-        )
-      ).toBeInTheDocument()
-      expect(
-        await screen.findByRole('link', { name: 'Renseigner mes informations' })
-      ).toHaveAttribute('aria-disabled')
-    })
-
-    it('should display information banner when user is creating venue and cannot create collective offers', async () => {
-      render(
-        <Router history={history}>
-          <EACInformation
-            venue={null}
-            isCreatingVenue
-            canOffererCreateCollectiveOffer={false}
-            offererId="O1"
-          />
-        </Router>
-      )
-
-      expect(
-        await screen.findByText(
-          'Pour proposer des informations à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture.'
         )
       ).toBeInTheDocument()
       expect(

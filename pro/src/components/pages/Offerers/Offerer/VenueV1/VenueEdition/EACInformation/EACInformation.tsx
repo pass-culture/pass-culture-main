@@ -13,12 +13,10 @@ const EACInformation = ({
   venue,
   offererId,
   isCreatingVenue = false,
-  canOffererCreateCollectiveOffer = false,
 }: {
   venue: GetVenueResponseModel | null
   offererId: string
   isCreatingVenue?: boolean
-  canOffererCreateCollectiveOffer?: boolean
 }): JSX.Element => {
   const collectiveDataIsNotEmpty = venue && venueHasCollectiveInformation(venue)
   return (
@@ -36,19 +34,7 @@ const EACInformation = ({
         </p>
       )}
 
-      {isCreatingVenue && !canOffererCreateCollectiveOffer && (
-        <Banner
-          type="attention"
-          href="https://passculture.typeform.com/to/VtKospEg"
-          linkTitle="Faire une demande de référencement"
-        >
-          Pour proposer des informations à destination d’un groupe scolaire,
-          vous devez être référencé auprès du ministère de l’Éducation Nationale
-          et du ministère de la Culture.
-        </Banner>
-      )}
-
-      {isCreatingVenue && canOffererCreateCollectiveOffer && (
+      {isCreatingVenue && (
         <Banner type="notification-info">
           Une fois votre lieu créé, vous pourrez renseigner des informations
           pour les enseignants en revenant sur cette page.
