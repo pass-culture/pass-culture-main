@@ -613,6 +613,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Patrimoine, mémoire, archéologie",
+                    "domaineIds": "13",
                     "synchroPass": 0,
                 },
                 {
@@ -641,6 +642,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Univers du livre, de la lecture et des écritures",
+                    "domaineIds": "11",
                     "synchroPass": 0,
                 },
             ]
@@ -676,6 +678,7 @@ class GetCulturalPartnersTest:
                 "academieLibelle": "GRENOBLE",
                 "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 "domaines": "Patrimoine, mémoire, archéologie",
+                "domaineIds": "13",
                 "synchroPass": 0,
             },
         ]
@@ -713,6 +716,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Patrimoine, mémoire, archéologie",
+                    "domaineIds": "13",
                     "synchroPass": 0,
                 },
             ]
@@ -748,6 +752,7 @@ class GetCulturalPartnersTest:
                 "academieLibelle": "GRENOBLE",
                 "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                 "domaines": "Patrimoine, mémoire, archéologie",
+                "domaineIds": "13",
                 "synchroPass": 1,
             },
         ]
@@ -786,6 +791,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Patrimoine, mémoire, archéologie",
+                    "domaineIds": "13",
                     "synchroPass": 0,
                 },
                 {
@@ -814,6 +820,7 @@ class GetCulturalPartnersTest:
                     "academieLibelle": "GRENOBLE",
                     "regionLibelle": "AUVERGNE-RHÔNE-ALPES",
                     "domaines": "Univers du livre, de la lecture et des écritures",
+                    "domaineIds": "11",
                     "synchroPass": 0,
                 },
             ]

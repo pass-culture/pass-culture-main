@@ -63,6 +63,7 @@ class AdageLoggerClient(AdageClient):
                 "academieLibelle": "versaille",
                 "regionLibelle": "ile de france",
                 "domaines": "des domaines",
+                "domaineIds": "1",
                 "actif": 0,
                 "dateModification": "2022-06-27T08:52:27.597Z",
                 "synchroPass": 1,
@@ -91,6 +92,7 @@ class AdageLoggerClient(AdageClient):
                 "academieLibelle": "Lille",
                 "regionLibelle": "Corse",
                 "domaines": "d'autres domaines",
+                "domaineIds": "1",
                 "actif": 0,
                 "dateModification": "2022-06-27T08:52:27.597Z",
                 "synchroPass": 1,
@@ -129,7 +131,8 @@ class AdageLoggerClient(AdageClient):
                 communeDepartement="026",
                 academieLibelle="GRENOBLE",
                 regionLibelle="AUVERGNE-RHÔNE-ALPES",
-                domaines="Univers du livre, de la lecture et des écritures",
+                domaines="Architecture|Univers du livre, de la lecture et des écritures",
+                domaineIds="1,11",
                 synchroPass=0,
             )
         raise CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")

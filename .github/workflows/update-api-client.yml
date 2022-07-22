@@ -25,10 +25,17 @@ jobs:
         if: steps.changesApi.outputs.src == 'true'
         uses: satackey/action-docker-layer-caching@v0.0.11
         with:
+<<<<<<< Updated upstream
           key: docker-cache-${{ hashFiles('api/requirements.txt') }}
           restore-keys: |
             docker-cache-${{ hashFiles('api/requirements.txt') }}
             docker-cache
+=======
+          key: docker-cache-{hash}
+          restore-keys: |
+            docker-cache-
+            docker-cache-
+>>>>>>> Stashed changes
 
       - uses: actions/setup-node@v2
         if: steps.changesApi.outputs.src == 'true'
