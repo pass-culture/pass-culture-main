@@ -17,9 +17,9 @@ const useUtmTracking = (): LocationListener | void => {
       'utm_source' in parsedParams
     )
       logEvent(Events.UTM_TRACKING_CAMPAIGN, {
-        utm_campaign: parsedParams.utm_campaign,
-        utm_medium: parsedParams.utm_medium,
-        utm_source: parsedParams.utm_source,
+        traffic_campaign: parsedParams.utm_campaign,
+        traffic_medium: parsedParams.utm_medium,
+        traffic_source: parsedParams.utm_source,
       })
   }, [location.search])
 }

@@ -45,9 +45,9 @@ describe('UtmTracker', () => {
       1,
       Events.UTM_TRACKING_CAMPAIGN,
       {
-        utm_campaign: 'push_offre_local',
-        utm_medium: 'batch',
-        utm_source: 'push',
+        traffic_campaign: 'push_offre_local',
+        traffic_medium: 'batch',
+        traffic_source: 'push',
       }
     )
   })
