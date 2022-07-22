@@ -227,13 +227,8 @@ const VenueCreation = () => {
         <AccessibilityFields />
         <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         <ContactInfosFields readOnly={false} />
-        {enableAdageVenueInformation && (
-          <EACInformation
-            venue={null}
-            offererId={offererId}
-            isCreatingVenue
-            canOffererCreateCollectiveOffer={canOffererCreateCollectiveOffer}
-          />
+        {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
+          <EACInformation venue={null} offererId={offererId} isCreatingVenue />
         )}
         {!isNewBankInformationCreation &&
           (isBankInformationWithSiretActive ? (
