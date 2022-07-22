@@ -30,6 +30,7 @@ jest.mock('apiClient/api', () => ({
     getEducationalPartners: jest.fn(),
     editVenue: jest.fn(),
     getVenueCollectiveData: jest.fn(),
+    getEducationalPartner: jest.fn(),
   },
 }))
 
@@ -110,7 +111,10 @@ describe('CollectiveDataEdition', () => {
       collectivePhone: '',
       collectiveStudents: [],
       collectiveWebsite: '',
+      siret: '1234567890',
     })
+
+    jest.spyOn(api, 'getEducationalPartner').mockRejectedValue({})
   })
 
   describe('render', () => {
@@ -448,38 +452,99 @@ describe('CollectiveDataEdition', () => {
     })
   })
 
-  it('should prefill form with venue collective data', async () => {
-    jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
-      id: 'A1',
-      collectiveDomains: [{ id: 1, name: 'domain 1' }],
-      collectiveDescription: '',
-      collectiveEmail: 'toto@domain.com',
-      collectiveInterventionArea: [],
-      collectiveLegalStatus: { id: 1, name: 'statut 1' },
-      collectiveNetwork: [],
-      collectivePhone: '',
-      collectiveStudents: [],
-      collectiveWebsite: '',
+  describe('prefill', () => {
+    it('should prefill form with venue collective data', async () => {
+      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
+        id: 'A1',
+        collectiveDomains: [{ id: 1, name: 'domain 1' }],
+        collectiveDescription: '',
+        collectiveEmail: 'toto@domain.com',
+        collectiveInterventionArea: [],
+        collectiveLegalStatus: { id: 1, name: 'statut 1' },
+        collectiveNetwork: [],
+        collectivePhone: '',
+        collectiveStudents: [],
+        collectiveWebsite: '',
+        siret: '1234567890',
+      })
+
+      renderCollectiveDataEdition(history)
+
+      await waitForLoader()
+
+      const emailField = screen.getByLabelText(/E-mail/)
+
+      const statusField = screen.getByLabelText(/Statut :/)
+
+      expect(emailField).toHaveValue('toto@domain.com')
+      expect(statusField).toHaveValue('1')
+
+      await userEvent.click(
+        await screen.findByLabelText(/Domaine artistique et culturel :/)
+      )
+      await waitFor(async () =>
+        expect(
+          await screen.findAllByRole('checkbox', { checked: true })
+        ).toHaveLength(1)
+      )
+
+      expect(api.getEducationalPartner).not.toHaveBeenCalled()
     })
 
-    renderCollectiveDataEdition(history)
+    it('should prefill form with educational partner data when venue has no collectiva data', async () => {
+      jest.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce({
+        id: 1,
+        siteWeb: 'http://monsite.com',
+        statutId: 2,
+        domaineIds: [1, 2],
+      })
+      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
+        id: 'A1',
+        collectiveDomains: [],
+        collectiveDescription: '',
+        collectiveEmail: '',
+        collectiveInterventionArea: [],
+        collectiveLegalStatus: null,
+        collectiveNetwork: [],
+        collectivePhone: '',
+        collectiveStudents: [],
+        collectiveWebsite: '',
+        siret: '1234567890',
+      })
 
-    await waitForLoader()
+      renderCollectiveDataEdition(history)
 
-    const emailField = screen.getByLabelText(/E-mail/)
+      await waitForLoader()
 
-    const statusField = screen.getByLabelText(/Statut :/)
+      const websiteField = screen.getByLabelText(/URL de votre site web/)
+      const statusField = screen.getByLabelText(/Statut :/)
 
-    expect(emailField).toHaveValue('toto@domain.com')
-    expect(statusField).toHaveValue('1')
+      expect(websiteField).toHaveValue('http://monsite.com')
+      expect(statusField).toHaveValue('2')
 
-    await userEvent.click(
-      await screen.findByLabelText(/Domaine artistique et culturel :/)
-    )
-    await waitFor(async () =>
-      expect(
-        await screen.findAllByRole('checkbox', { checked: true })
-      ).toHaveLength(1)
-    )
+      expect(api.getEducationalPartner).toHaveBeenCalledWith('1234567890')
+    })
+
+    it('should not call educational partner if venue has no siret and no collective data', async () => {
+      jest.spyOn(api, 'getVenueCollectiveData').mockResolvedValue({
+        id: 'A1',
+        collectiveDomains: [],
+        collectiveDescription: '',
+        collectiveEmail: '',
+        collectiveInterventionArea: [],
+        collectiveLegalStatus: null,
+        collectiveNetwork: [],
+        collectivePhone: '',
+        collectiveStudents: [],
+        collectiveWebsite: '',
+        siret: undefined,
+      })
+
+      renderCollectiveDataEdition(history)
+
+      await waitForLoader()
+
+      expect(api.getEducationalPartner).not.toHaveBeenCalled()
+    })
   })
 })
