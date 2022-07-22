@@ -3,7 +3,6 @@ import logging
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.matomo import matomo
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
 from pcapi.routes.adage_iframe.serialization.venues import VenueResponse
@@ -16,7 +15,6 @@ logger = logging.getLogger(__name__)
 @blueprint.adage_iframe.route("/venues/siret/<siret>", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
-@matomo()
 def get_venue_by_siret(authenticated_information: AuthenticatedInformation, siret: str) -> VenueResponse:
     venue = offerers_repository.find_venue_by_siret(siret)
 
@@ -30,7 +28,6 @@ def get_venue_by_siret(authenticated_information: AuthenticatedInformation, sire
 @blueprint.adage_iframe.route("/venues/<int:venue_id>", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=VenueResponse)
 @adage_jwt_required
-@matomo()
 def get_venue_by_id(authenticated_information: AuthenticatedInformation, venue_id: int) -> VenueResponse:
     venue = offerers_repository.find_venue_by_id(venue_id)
 

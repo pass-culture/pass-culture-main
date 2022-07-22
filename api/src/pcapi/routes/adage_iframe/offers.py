@@ -5,7 +5,6 @@ from sqlalchemy.orm import exc as orm_exc
 from pcapi.core.educational import api as educational_api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.matomo import matomo
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization import offers as serializers
 from pcapi.routes.adage_iframe.serialization.adage_authentication import AuthenticatedInformation
@@ -18,7 +17,6 @@ logger = logging.getLogger(__name__)
 @blueprint.adage_iframe.route("/offers/categories", methods=["GET"])
 @adage_jwt_required
 @spectree_serialize(response_model=serializers.CategoriesResponseModel, api=blueprint.api)
-@matomo()
 def get_educational_offers_categories(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.CategoriesResponseModel:
@@ -38,7 +36,6 @@ def get_educational_offers_categories(
 @blueprint.adage_iframe.route("/collective/offers/<int:offer_id>", methods=["GET"])
 @adage_jwt_required
 @spectree_serialize(response_model=serializers.CollectiveOfferResponseModel, api=blueprint.api, on_error_statuses=[404])
-@matomo()
 def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferResponseModel:
@@ -55,7 +52,6 @@ def get_collective_offer(
 @spectree_serialize(
     response_model=serializers.CollectiveOfferTemplateResponseModel, api=blueprint.api, on_error_statuses=[404]
 )
-@matomo()
 def get_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferTemplateResponseModel:
