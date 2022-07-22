@@ -146,9 +146,7 @@ describe('src | Venue | ReimbursementPoint', () => {
     const venueWithPendingApplication = {
       id: 'AA',
       name: 'fake venue name',
-      bic: null,
-      iban: null,
-      demarchesSimplifieesApplicationId: '2',
+      hasPendingBankInformationApplication: true,
     }
 
     props.venue = venueWithPendingApplication
