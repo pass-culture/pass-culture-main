@@ -23,8 +23,10 @@ const ReimbursementPoint = ({
   const [venueReimbursementPoint, setVenueReimbursementPoint] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isNoSiretDialogOpen, setIsNoSiretDialogOpen] = useState(false)
-  const [hasPendingDmsApplication, setHasPendingDmsApplication] =
-    useState(false)
+  const [
+    hasPendingBankInformationApplication,
+    setHasPendingBankInformationApplication,
+  ] = useState(false)
   const [hasAlreadyAddReimbursementPoint, setHasAlreadyAddReimbursementPoint] =
     useState(false)
   const [venue, setVenue] = useState(initialVenue)
@@ -86,12 +88,8 @@ const ReimbursementPoint = ({
           id: reimbursementPoint.venueId,
         }))
       )
-      setHasPendingDmsApplication(
-        venue.id &&
-          !venue.iban &&
-          !venue.bic &&
-          venue.demarchesSimplifieesApplicationId &&
-          !venue.isVirtual
+      setHasPendingBankInformationApplication(
+        venue.hasPendingBankInformationApplication
       )
       setIsLoading(false)
     }
@@ -107,7 +105,7 @@ const ReimbursementPoint = ({
             Coordonnées bancaires
           </Title>
         </div>
-        {hasPendingDmsApplication ? (
+        {hasPendingBankInformationApplication ? (
           <ApplicationBanner
             applicationId={venue.demarchesSimplifieesApplicationId}
           />
