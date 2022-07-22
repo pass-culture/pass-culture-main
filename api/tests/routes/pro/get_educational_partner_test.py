@@ -24,6 +24,7 @@ class Return200Test:
             "id": 128028,
             "statutId": 3,
             "siteWeb": "http://www.fetedulivrejeunesse.fr/",
+            "domaineIds": [1, 11],
         }
 
 
