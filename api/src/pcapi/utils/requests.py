@@ -11,16 +11,11 @@ from urllib3.util.retry import Retry
 
 # fmt: off
 # isort: off
-# pylint: disable=unused-import
-# Keep these imports so that our monkey patch of mailjet_rest allows
-# its code to use `requests.exception` and get `RequestException`
-# from this module.
-from requests import exceptions
-from requests import RequestException
-# pylint: enable=unused-import
+# Allow our code to access `requests` exceptions directly from this
+# wrapper module.
+from requests import exceptions  # pylint: disable=unused-import
 # isort: on
 # fmt: on
-
 
 logger = logging.getLogger(__name__)
 
@@ -95,5 +90,4 @@ class Session(_SessionMixin, requests.Session):  # type: ignore [misc]
         safe_adapter = HTTPAdapter(max_retries=safe_retry_strategy)
         unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
         self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
-        self.mount("https://api.mailjet.com", unsafe_adapter)
         self.mount("https://api.batch.com", unsafe_adapter)

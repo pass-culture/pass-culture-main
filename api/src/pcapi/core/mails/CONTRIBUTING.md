@@ -61,11 +61,11 @@ Selon l'environnement, un backend approprié est choisi, défini par
 `settings.EMAIL_BACKEND` (et surchargeable via la variable
 d'environnement du même nom) :
 
-- sur la production, les mails sont envoyés via Mailjet
+- sur la production, les mails sont envoyés via SendinBlue
   (cf. `pcapi.core.mails.backends.sendinblue.SendinblueBackend`) ;
 
 - sur les environnements testing et staging, les mails sont également
-  envoyés via Mailjet, mais les destinataires originaux sont remplacés
+  envoyés via SendinBlue, mais les destinataires originaux sont remplacés
   par l'adresse mail définie dans `DEV_EMAIL_ADDRESS`, ceci afin de ne
   pas envoyer de mail à des adresses réelles, notamment sur staging
   (cf. `ToDevSendinblueBackend`) ;
@@ -104,7 +104,7 @@ def test_frobulation():
 ## Envoyer des mails via l'API Sendinblue en local
 Définissez les variables d'environnement suivantes :
 
-- `EMAIL_BACKEND="pcapi.core.mails.backends.mailjet.ToDevSendinblueBackend"` ;
+- `EMAIL_BACKEND="pcapi.core.mails.backends.sendinblue.ToDevSendinblueBackend"` ;
 - `SUPPORT_EMAIL_ADDRESS` : c'est l'adresse de l'émetteur, qui doit
   avoir été validée par Sendinblue. Le plus simple est d'utiliser la même
   adresse que sur les environnements de testing, staging ou prod ;
