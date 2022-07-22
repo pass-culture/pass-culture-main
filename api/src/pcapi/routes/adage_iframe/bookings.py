@@ -5,7 +5,6 @@ from pcapi.core.educational import exceptions
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
-from pcapi.routes.adage_iframe.matomo import matomo
 from pcapi.routes.adage_iframe.security import adage_jwt_required
 from pcapi.routes.adage_iframe.serialization.adage_authentication import (
     get_redactor_information_from_adage_authentication,
@@ -22,7 +21,6 @@ logger = logging.getLogger(__name__)
 @blueprint.adage_iframe.route("/collective/bookings", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=BookCollectiveOfferResponse, on_error_statuses=[400, 403])
 @adage_jwt_required
-@matomo()
 def book_collective_offer(
     body: BookCollectiveOfferRequest,
     authenticated_information: AuthenticatedInformation,
