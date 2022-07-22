@@ -497,6 +497,7 @@ class AdageCulturalPartner(BaseModel):
     actif: int | None
     dateModification: datetime
     synchroPass: int | None
+    domaineIds: str | None
 
 
 class AdageCulturalPartners(BaseModel):
@@ -507,6 +508,19 @@ class AdageCulturalPartnerResponseModel(BaseModel):
     id: int
     statutId: int | None
     siteWeb: str | None
+    domaineIds: list[int]
+
+    @validator("domaineIds", pre=True)
+    @classmethod
+    def transform_domaine_ids(cls, domaine_ids: str | list[int] | None) -> list[int]:
+        if not domaine_ids:
+            return []
+
+        if isinstance(domaine_ids, list):
+            return domaine_ids
+
+        # we let pydantic cast str into int to have better error logs if it crashes
+        return domaine_ids.split(",")  # type: ignore [return-value]
 
     class Config:
         orm_mode = True
