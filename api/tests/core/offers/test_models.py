@@ -1,4 +1,5 @@
 import datetime
+import itertools
 
 import pytest
 
@@ -15,10 +16,35 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.pc_object import DeletedRecordException
 from pcapi.repository import repository
+from pcapi.utils import human_ids
 from pcapi.utils.date import DateTimes
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
+
+
+class ProductModelTest:
+    def test_thumb_url(self):
+        product = factories.ProductFactory(thumbCount=1)
+        human_id = human_ids.humanize(product.id)
+        assert product.thumbUrl == f"http://localhost/storage/thumbs/products/{human_id}"
+
+    def test_no_thumb_url(self):
+        product = models.Product(thumbCount=0)
+        assert product.thumbUrl is None
+
+    def test_cgu_compatible_and_sync_compatible(self):
+        permutations = itertools.product((True, False), (True, False))
+        for gcu_compatible, is_synchronization_compatible in permutations:
+            product = factories.ProductFactory(
+                isGcuCompatible=gcu_compatible,
+                isSynchronizationCompatible=is_synchronization_compatible,
+            )
+
+            can_be_synchronized = gcu_compatible & is_synchronization_compatible
+            assert product.can_be_synchronized == can_be_synchronized
+            assert models.Product.query.filter(models.Product.can_be_synchronized).count() == int(can_be_synchronized)
+            models.Product.query.delete()
 
 
 class OfferDateRangeTest:
