@@ -103,10 +103,6 @@ def get_newly_eligible_age_18_users(since: date) -> list[models.User]:
     return eligible_users
 
 
-def get_favorites_for_offers(offer_ids: list[int]) -> list[models.Favorite]:
-    return models.Favorite.query.filter(models.Favorite.offerId.in_(offer_ids)).all()
-
-
 def get_users_with_validated_attachment_by_offerer(offerer: offerers_models.Offerer) -> models.User:
     return (
         models.User.query.join(offerers_models.UserOfferer)

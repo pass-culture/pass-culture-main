@@ -76,6 +76,7 @@ from pcapi.core.offers.validation import check_offer_withdrawal
 from pcapi.core.offers.validation import check_validation_config_parameters
 from pcapi.core.payments import conf as deposit_conf
 from pcapi.core.users.external import update_external_pro
+import pcapi.core.users.models as users_models
 from pcapi.core.users.models import ExpenseDomain
 from pcapi.core.users.models import User
 from pcapi.domain import admin_emails
@@ -98,6 +99,8 @@ from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.rest import load_or_raise_error
 from pcapi.workers.push_notification_job import send_cancel_booking_notification
 
+from . import exceptions
+from . import models
 from .exceptions import ThumbnailStorageError
 from .models import ActivationCode
 from .models import Mediation
@@ -1144,3 +1147,41 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
             if remaining_places <= 0:
                 stock.quantity = stock.dnBookedQuantity
                 repository.save(stock)
+
+
+def delete_unwanted_existing_product(isbn: str) -> None:
+    product_has_at_least_one_booking = (
+        models.Product.query.filter_by(idAtProviders=isbn).join(models.Offer).join(models.Stock).join(Booking).count()
+        > 0
+    )
+    product = (
+        models.Product.query.filter(models.Product.can_be_synchronized)
+        .filter_by(subcategoryId=subcategories.LIVRE_PAPIER.id)
+        .filter_by(idAtProviders=isbn)
+        .one_or_none()
+    )
+
+    if not product:
+        return
+
+    if product_has_at_least_one_booking:
+        offers = models.Offer.query.filter_by(productId=product.id)
+        offers.update({"isActive": False}, synchronize_session=False)
+        db.session.commit()
+        product.isGcuCompatible = False
+        product.isSynchronizationCompatible = False
+        repository.save(product)
+        raise exceptions.CannotDeleteProductWithBookings()
+
+    objects_to_delete = []
+    objects_to_delete.append(product)
+    offers = models.Offer.query.filter_by(productId=product.id).all()
+    offer_ids = [offer.id for offer in offers]
+    objects_to_delete = objects_to_delete + offers
+    stocks = offers_repository.get_stocks_for_offers(offer_ids)
+    objects_to_delete = objects_to_delete + stocks
+    mediations = models.Mediation.query.filter(models.Mediation.offerId.in_(offer_ids)).all()
+    objects_to_delete = objects_to_delete + mediations
+    favorites = users_models.Favorite.query.filter(users_models.Favorite.offerId.in_(offer_ids)).all()
+    objects_to_delete = objects_to_delete + favorites
+    repository.delete(*objects_to_delete)
