@@ -9,7 +9,7 @@ from pcapi.notifications.push.transactional_notifications import TransactionalNo
 class BatchPushNotificationClientTest:
     def test_update_user_attributes(self):
         with requests_mock.Mocker() as mock:
-            ios_post = mock.post("https://api.example.com/1.0/fake_android_api_key/data/users/1")
+            ios_post = mock.post("https://api.batch.com/1.0/fake_android_api_key/data/users/1")
 
             BatchBackend().update_user_attributes(BatchAPI.ANDROID, 1, {"attri": "but"})
 
@@ -17,8 +17,8 @@ class BatchPushNotificationClientTest:
 
     def test_send_transactional_notification(self):
         with requests_mock.Mocker() as mock:
-            android_post = mock.post("https://api.example.com/1.1/fake_android_api_key/transactional/send")
-            ios_post = mock.post("https://api.example.com/1.1/fake_ios_api_key/transactional/send")
+            android_post = mock.post("https://api.batch.com/1.1/fake_android_api_key/transactional/send")
+            ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
 
             BatchBackend().send_transactional_notification(
                 TransactionalNotificationData(
@@ -41,8 +41,8 @@ class BatchPushNotificationClientTest:
 
     def test_api_exception(self):
         with requests_mock.Mocker() as mock:
-            android_post = mock.post("https://api.example.com/1.1/fake_android_api_key/transactional/send")
-            ios_post = mock.post("https://api.example.com/1.1/fake_ios_api_key/transactional/send")
+            android_post = mock.post("https://api.batch.com/1.1/fake_android_api_key/transactional/send")
+            ios_post = mock.post("https://api.batch.com/1.1/fake_ios_api_key/transactional/send")
 
             BatchBackend().send_transactional_notification(
                 TransactionalNotificationData(
