@@ -11,9 +11,7 @@ from freezegun import freeze_time
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.core.bookings.models import Booking
-from pcapi.core.bookings.models import BookingCancellationReasons
-from pcapi.core.bookings.models import BookingStatus
+import pcapi.core.bookings.models as bookings_models
 from pcapi.core.categories import subcategories
 import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.mails.testing as mails_testing
@@ -209,8 +207,8 @@ class UpsertStocksTest:
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
 
         # Then
-        updated_booking = Booking.query.get(booking.id)
-        assert updated_booking.status is not BookingStatus.USED
+        updated_booking = bookings_models.Booking.query.get(booking.id)
+        assert updated_booking.status is not bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed is None
         assert updated_booking.cancellationLimitDate == booking.cancellationLimitDate
 
@@ -237,8 +235,8 @@ class UpsertStocksTest:
         api.upsert_stocks(offer_id=offer.id, stock_data_list=[edited_stock_data], user=user)
 
         # Then
-        updated_booking = Booking.query.get(booking.id)
-        assert updated_booking.status is BookingStatus.USED
+        updated_booking = bookings_models.Booking.query.get(booking.id)
+        assert updated_booking.status is bookings_models.BookingStatus.USED
         assert updated_booking.dateUsed == date_used_in_48_hours
 
     def test_update_fields_updated_on_allocine_stocks(self):
@@ -725,15 +723,15 @@ class DeleteStockTest:
 
         stock = models.Stock.query.one()
         assert stock.isSoftDeleted
-        booking1 = Booking.query.get(booking1.id)
-        assert booking1.status == BookingStatus.CANCELLED
-        assert booking1.cancellationReason == BookingCancellationReasons.OFFERER
-        booking2 = Booking.query.get(booking2.id)
-        assert booking2.status == BookingStatus.CANCELLED  # unchanged
-        assert booking2.cancellationReason == BookingCancellationReasons.BENEFICIARY
-        booking3 = Booking.query.get(booking3.id)
-        assert booking3.status == BookingStatus.CANCELLED  # cancel used booking for event offer
-        assert booking3.cancellationReason == BookingCancellationReasons.OFFERER
+        booking1 = bookings_models.Booking.query.get(booking1.id)
+        assert booking1.status == bookings_models.BookingStatus.CANCELLED
+        assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
+        booking2 = bookings_models.Booking.query.get(booking2.id)
+        assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
+        assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
+        booking3 = bookings_models.Booking.query.get(booking3.id)
+        assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
+        assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
 
         assert len(mails_testing.outbox) == 3
         assert {outbox.sent_data["To"] for outbox in mails_testing.outbox} == {
@@ -746,7 +744,10 @@ class DeleteStockTest:
         last_request["user_ids"] = set(last_request["user_ids"])
         assert last_request == {
             "group_id": "Cancel_booking",
-            "user_ids": {booking1.individualBooking.userId, booking3.individualBooking.userId},
+            "user_ids": {
+                booking1.individualBooking.userId,
+                booking3.individualBooking.userId,
+            },
             "message": {
                 "body": f"""Ta réservation "{stock.offer.name}" a été annulée par l'offreur.""",
                 "title": "Réservation annulée",
