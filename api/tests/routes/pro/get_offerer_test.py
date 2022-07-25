@@ -42,19 +42,18 @@ def test_basics(client):
     finance_factories.BankInformationFactory(venue=venue_2, applicationId=4)
 
     offerer_id = offerer.id
-    db.session.expunge_all()
     client = client.with_session_auth(pro.email)
+    db.session.commit()
     n_queries = (
         testing.AUTHENTICATION_QUERIES
-        # You'll note that we don't seem to fetch the offerer
-        # itself... I guess that it's in SQLAlchemy session but I
-        # cannot find a way to remove it from there.
         + 1  # check_user_has_access_to_offerer
-        + 1  # select venues
+        + 1  # Offerer
         + 1  # Offerer api_key prefix
+        + 1  # venues (manual with joinedload)
         + 1  # Offerer hasDigitalVenueAtLeastOneOffer
         + 1  # Offerer BankInformation
         + 1  # Offerer hasMissingBankInformation
+        + 1  # Offerer.managedVenues (automatic by Pydantic)
     )
     with testing.assert_num_queries(n_queries):
         response = client.get(f"/offerers/{humanize(offerer_id)}")
