@@ -27,6 +27,7 @@ import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferS
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import PropTypes from 'prop-types'
 import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
+import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
 import { computeOffersUrl } from 'core/Offers/utils'
 import { v4 as generateRandomUuid } from 'uuid'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
@@ -283,12 +284,25 @@ const EventStocks = ({
       ? `/offre/${offerId}/individuel/creation`
       : undefined
     : computeOffersUrl(offersSearchFilters, offersPageNumber)
+  let providerName = offer.lastProvider?.name || null
 
   return (
     <div className="stocks-page">
       <PageTitle title="Vos stocks" />
-
-      {isDisabled && <OfferStatusBanner status={offer.status} />}
+      {(isDisabled || providerName !== null) && (
+        <div className="banners">
+          {isDisabled && (
+            <div className="banner">
+              <OfferStatusBanner status={offer.status} />
+            </div>
+          )}
+          {providerName !== null && (
+            <div className="banner">
+              <SynchronizedProviderInformation providerName={providerName} />
+            </div>
+          )}
+        </div>
+      )}
 
       <h3 className="section-title">Stocks et prix</h3>
 

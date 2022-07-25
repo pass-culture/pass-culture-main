@@ -23,11 +23,14 @@ import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOffe
 import { IOfferSubCategory } from 'core/Offers/types'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { RootState } from 'store/reducers'
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
 import { computeOffersUrl } from 'core/Offers'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import styles from './Summary.module.scss'
 import useNotification from 'components/hooks/useNotification'
 import { useSelector } from 'react-redux'
@@ -36,6 +39,8 @@ export interface ISummaryProps {
   offerId: string
   formOfferV2?: boolean
   isCreation?: boolean
+  providerName: string | null
+  offerStatus: string
   offer: IOfferSectionProps
   stockThing?: IStockThingSectionProps
   stockEventList?: IStockEventItemProps[]
@@ -46,6 +51,8 @@ export interface ISummaryProps {
 const Summary = ({
   formOfferV2 = false,
   isCreation = false,
+  providerName,
+  offerStatus,
   offerId,
   offer,
   stockThing,
@@ -121,9 +128,25 @@ const Summary = ({
   )
   const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
 
+  const isDisabledOffer = isOfferDisabled(offerStatus)
+
   return (
     <>
-      {isCreation && <BannerSummary />}
+      {(isCreation || isDisabledOffer || providerName !== null) && (
+        <div className={styles['offer-preview-banners']}>
+          {isCreation && <BannerSummary />}
+          {isDisabledOffer && (
+            <div className={styles['offer-preview-banner']}>
+              <OfferStatusBanner status={offerStatus} />
+            </div>
+          )}
+          {providerName !== null && (
+            <div className={styles['offer-preview-banner']}>
+              <SynchronizedProviderInformation providerName={providerName} />
+            </div>
+          )}
+        </div>
+      )}
       <SummaryLayout>
         <SummaryLayout.Content>
           <OfferSection

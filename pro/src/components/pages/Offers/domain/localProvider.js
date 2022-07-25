@@ -4,7 +4,7 @@ import { SYNCHRONIZED_OFFER_EDITABLE_FIELDS } from 'components/pages/Offers/Offe
 const doesLastProviderExist = offer =>
   Boolean(offer !== null && offer.lastProvider)
 
-export const isSynchronizedOffer = (offer = null) => {
+export const isSynchronizedOffer = offer => {
   return isOfferFromStockProvider(offer) || isAllocineOffer(offer)
 }
 

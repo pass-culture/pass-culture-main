@@ -23,6 +23,13 @@ $buttonHeight: rem.torem(40px);
     }
   }
 
+  .banner {
+    margin-bottom: rem.torem(16px);
+  }
+  .banners {
+    margin-bottom: rem.torem(32px);
+  }
+
   .activation-codes-information,
   .cancellation-information {
     margin-top: rem.torem(16px);

@@ -27,6 +27,8 @@ const OfferIndividualSummary = ({
     ) !== null
 
   const {
+    providerName,
+    offerStatus,
     offer: offerData,
     stockThing,
     stockEventList,
@@ -37,6 +39,8 @@ const OfferIndividualSummary = ({
     <SummaryScreen
       offerId={offer.id}
       formOfferV2={formOfferV2}
+      providerName={providerName}
+      offerStatus={offerStatus}
       isCreation={isCreation}
       offer={offerData}
       stockThing={stockThing}
