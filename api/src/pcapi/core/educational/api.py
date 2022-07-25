@@ -186,6 +186,13 @@ def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking
             deposit,
         )
 
+        validation.check_ministry_fund(
+            educational_year_id=educational_year_id,
+            booking_amount=collective_booking.collectiveStock.price,
+            booking_date=collective_booking.collectiveStock.beginningDatetime,
+            ministry=deposit.ministry,
+        )
+
         collective_booking.mark_as_confirmed()
 
         db.session.add(collective_booking)

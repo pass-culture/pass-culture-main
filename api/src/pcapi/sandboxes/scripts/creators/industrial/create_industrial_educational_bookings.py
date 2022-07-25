@@ -285,7 +285,7 @@ def create_industrial_educational_bookings() -> None:
 
     deposits = []
     for educational_institution in educational_institutions:
-        if educational_institution.institutionId != "0780004F":
+        if educational_institution.institutionId == "0780004F":
             deposits.append(
                 educational_factories.EducationalDepositFactory(
                     ministry=educational_models.Ministry.AGRICULTURE,
