@@ -1551,10 +1551,14 @@ def _make_invoice_line(
     )
 
     reimbursed_amount += offerer_revenue + contribution_amount + passculture_commission
-    # A rate is calculated for this line if we are using a CustomRule with an amount instead of a rate
-    rate = line_rate or (decimal.Decimal(reimbursed_amount) / decimal.Decimal(offerer_revenue)).quantize(
-        decimal.Decimal("0.0001")
-    )
+    if offerer_revenue:
+        # A rate is calculated for this line if we are using a
+        # CustomRule with an amount instead of a rate.
+        rate = line_rate or (decimal.Decimal(reimbursed_amount) / decimal.Decimal(offerer_revenue)).quantize(
+            decimal.Decimal("0.0001")
+        )
+    else:
+        rate = decimal.Decimal(0)
     invoice_line = models.InvoiceLine(
         label="Montant remboursé",
         group=group.value,

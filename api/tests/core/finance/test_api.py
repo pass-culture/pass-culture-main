@@ -2540,6 +2540,65 @@ class GenerateInvoiceTest:
         assert line6.label == "Montant remboursé"
 
     @auto_override_features
+    def test_with_free_offer(self):
+        if self.use_reimbursement_point:
+            reimbursement_point = offerers_factories.VenueFactory()
+            factories.BankInformationFactory(venue=reimbursement_point)
+            venue = offerers_factories.VenueFactory(
+                managingOfferer=reimbursement_point.managingOfferer,
+                pricing_point="self",
+                reimbursement_point=reimbursement_point,
+                businessUnit=None,
+            )
+            reimbursement_point_id = reimbursement_point.id
+            business_unit_id = venue.businessUnitId
+        else:
+            venue = offerers_factories.VenueFactory()
+            business_unit_id = venue.businessUnit.id
+            reimbursement_point_id = None
+
+        # 2 offers that have a distinct reimbursement rate rule.
+        offer1 = offers_factories.ThingOfferFactory(
+            venue=venue,
+            product__subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        )
+        stock1 = offers_factories.StockFactory(offer=offer1, price=20)
+        booking1 = bookings_factories.UsedIndividualBookingFactory(stock=stock1)
+        offer2 = offers_factories.ThingOfferFactory(
+            venue=venue,
+            product__subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
+        )
+        stock2 = offers_factories.StockFactory(offer=offer2, price=0)
+        booking2 = bookings_factories.UsedIndividualBookingFactory(stock=stock2)
+        api.price_booking(booking1, self.use_pricing_point)
+        api.price_booking(booking2, self.use_pricing_point)
+        api.generate_cashflows(datetime.datetime.utcnow())
+        cashflow_ids = [c.id for c in models.Cashflow.query.all()]
+
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                business_unit_id=business_unit_id,
+                reimbursement_point_id=reimbursement_point_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        assert invoice.reference == "F220000001"
+        assert invoice.amount == -20 * 100
+        assert len(invoice.lines) == 2
+        line1 = invoice.lines[0]
+        assert line1.group == {"label": "Barème général", "position": 1}
+        assert line1.contributionAmount == 0
+        assert line1.reimbursedAmount == -20 * 100
+        assert line1.rate == 1
+        assert line1.label == "Montant remboursé"
+        line2 = invoice.lines[1]
+        assert line2.group == {"label": "Barème non remboursé", "position": 3}
+        assert line2.contributionAmount == 0
+        assert line2.reimbursedAmount == 0
+        assert line2.rate == 0
+        assert line2.label == "Montant remboursé"
+
+    @auto_override_features
     def test_update_statuses(self):
         stock = self.stock_factory()
         booking1 = bookings_factories.UsedBookingFactory(stock=stock)
