@@ -526,7 +526,7 @@ class EducationalInstitution(PcObject, Model):  # type: ignore[valid-type, misc]
 
     institutionId = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
-    institutionType = sa.Column(sa.String(60), nullable=True)
+    institutionType = sa.Column(sa.String(80), nullable=True)
 
     name = sa.Column(sa.Text(), nullable=False)
 
