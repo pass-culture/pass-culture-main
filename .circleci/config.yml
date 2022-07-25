@@ -259,12 +259,6 @@ commands:
           name: Clone pass-culture-deployment-repo
           command: git clone git@github.com:pass-culture/pass-culture-deployment.git ~/pass-culture-deployment
 
-  clone-pass-culture-db-operations-repo:
-    steps:
-      - run:
-          name: Clone pass-culture-db-operations-repo
-          command: git clone git@github.com:pass-culture/pass-culture-db-operations.git ~/pass-culture-db-operations
-
   setup_sentry:
     description: Setup sentry credentials for Backoffice
     steps:
@@ -844,64 +838,6 @@ jobs:
             curl -X POST -H 'Content-type: application/json' --data "{'text': $BOT_MESSAGE}" $SLACK_OPS_BOT_URL
           when: on_fail
 
-  build-and-push-image-db-ops:
-    executor: gcp-sdk
-    steps:
-      - checkout
-      - clone-pass-culture-db-operations-repo
-      - setup_remote_docker:
-          version: 19.03.13
-          docker_layer_caching: true
-      - authenticate-gcp:
-          gcp-key-name: GCP_INFRA_KEY
-      - authenticate_gcp_docker_registry:
-          registry-region: GCP_REGION
-      - export_app_version
-      - run:
-          name: Build & push db-ops image
-          command: |
-            source ${BASH_ENV}
-            docker build ~/pass-culture-db-operations \
-              -f ~/pass-culture-db-operations/Dockerfile \
-              --build-arg BASE_PCAPI_TAG=${APP_VERSION} \
-              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION} \
-              -t ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
-            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:${APP_VERSION}
-            docker push ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_TOOLS_REGISTRY_NAME}/db-ops:latest
-
-  deploy-dbops:
-    executor: helm
-    environment:
-      HELM_EXPERIMENTAL_OCI: 1
-      CHART_NAME: dbops-chart
-      CHART_RELEASE: database-operations
-      NAMESPACE: database-operations
-    steps:
-      - checkout
-      - clone-pass-culture-deployment-repo
-      - authenticate-gcp:
-          gcp-key-name: GCP_METIER_KEY
-      - export_chart_version:
-          version_file: ~/pass-culture-deployment/helm/db-ops/values.${DBOPS_ENV}.yaml
-      - run:
-          name: Get GKE cluster credentials
-          command: gcloud container clusters get-credentials --region ${GCP_REGION} ${GKE_CLUSTER_NAME}
-      - run:
-          name: Login to GCP Artifact Registry with helm
-          command: echo ${GCP_INFRA_KEY} | helm registry login  -u _json_key --password-stdin ${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}
-      - run:
-          name: Pull chart from registry and export in local filesystem
-          command: |
-            source ${BASH_ENV}
-            helm pull oci://${GCP_REGION}-docker.pkg.dev/${GCP_INFRA_PROJECT}/${GCP_REGISTRY_NAME}/${CHART_NAME} --version ${CHART_VERSION} --untar -d tmp/
-      - deploy-helm-chart:
-          helm_chart_name: passculture-db-operations
-          helm_release_name: ${CHART_RELEASE}
-          kubernetes_namespace: ${NAMESPACE}
-          helm_values_file: ./api/helm/db-ops/values.${DBOPS_ENV}.yaml
-          helm_private_values_file: ~/pass-culture-deployment/helm/db-ops/values.${DBOPS_ENV}.yaml
-          app_version: latest
-
   deploy-pcapi:
     executor: helm
     parameters:
@@ -1311,17 +1247,6 @@ workflows:
           context:
             - GCP
             - GCP_EHP
-      - build-and-push-image-db-ops:
-          requires:
-            - build-and-push-image
-          filters:
-            tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
-          context:
-            - GCP
-            - GCP_EHP
       - deploy-pcapi:
           filters:
             branches:
@@ -1369,14 +1294,6 @@ workflows:
 
   gcp-prod:
     jobs:
-      - deploy-dbops:
-          filters:
-            branches:
-              only:
-                - production
-          context:
-            - GCP
-            - GCP_PROD
       - deploy-pcapi:
           filters:
             branches:
