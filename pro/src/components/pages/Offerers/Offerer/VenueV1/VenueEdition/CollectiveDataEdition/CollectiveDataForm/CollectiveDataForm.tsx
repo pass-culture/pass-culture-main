@@ -43,6 +43,7 @@ type CollectiveDataFormProps = {
   venueId: string
   offererId: string
   venueCollectiveData: GetCollectiveVenueResponseModel | null
+  adageVenueCollectiveData: GetCollectiveVenueResponseModel | null
 }
 
 const CollectiveDataForm = ({
@@ -52,6 +53,7 @@ const CollectiveDataForm = ({
   venueId,
   offererId,
   venueCollectiveData,
+  adageVenueCollectiveData,
 }: CollectiveDataFormProps): JSX.Element => {
   const notify = useNotification()
   const history = useHistory()
@@ -97,6 +99,12 @@ const CollectiveDataForm = ({
         : COLLECTIVE_DATA_FORM_INITIAL_VALUES,
     })
   }, [venueCollectiveData])
+
+  useEffect(() => {
+    if (adageVenueCollectiveData) {
+      formik.setValues(extractInitialValuesFromVenue(adageVenueCollectiveData))
+    }
+  }, [adageVenueCollectiveData])
 
   useEffect(() => {
     handleAllFranceDepartmentOptions(

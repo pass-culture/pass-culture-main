@@ -533,6 +533,7 @@ describe('CollectiveDataEdition', () => {
       })
 
       expect(api.getEducationalPartner).toHaveBeenCalledWith('1234567890')
+      expect(screen.getByRole('button', { name: 'Enregistrer' })).toBeEnabled()
     })
 
     it('should not call educational partner if venue has no siret and no collective data', async () => {
