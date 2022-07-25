@@ -9,6 +9,7 @@ import pcapi.core.finance.factories as finance_factories
 from pcapi.core.finance.models import BankInformation
 from pcapi.core.finance.models import BusinessUnit
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -168,6 +169,30 @@ def test_delete_cascade_offerer_should_remove_business_unit_of_managed_venue():
     # Then
     assert Offerer.query.count() == 0
     assert BusinessUnit.query.count() == 1
+
+
+@pytest.mark.usefixtures("db_session")
+def test_delete_cascade_offerer_should_remove_pricing_point_links():
+    venue = offerers_factories.VenueFactory(pricing_point="self")
+    offerer = venue.managingOfferer
+
+    delete_cascade_offerer_by_id(offerer.id)
+
+    assert offerers_models.Offerer.query.count() == 0
+    assert offerers_models.Venue.query.count() == 0
+    assert offerers_models.VenuePricingPointLink.query.count() == 0
+
+
+@pytest.mark.usefixtures("db_session")
+def test_delete_cascade_offerer_should_remove_reimbursement_point_links():
+    venue = offerers_factories.VenueFactory(reimbursement_point="self")
+    offerer = venue.managingOfferer
+
+    delete_cascade_offerer_by_id(offerer.id)
+
+    assert offerers_models.Offerer.query.count() == 0
+    assert offerers_models.Venue.query.count() == 0
+    assert offerers_models.VenueReimbursementPointLink.query.count() == 0
 
 
 @pytest.mark.usefixtures("db_session")

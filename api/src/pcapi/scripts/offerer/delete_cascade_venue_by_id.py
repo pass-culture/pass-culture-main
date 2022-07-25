@@ -7,6 +7,7 @@ import pcapi.core.criteria.models as criteria_models
 from pcapi.core.educational import models as educational_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
@@ -107,6 +108,20 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         synchronize_session=False
     )
 
+    # Warning: we should only delete rows where the "venueId" is the
+    # venue to delete. We should NOT delete rows where the
+    # "pricingPointId" or the "reimbursementId" is the venue to
+    # delete. If other venues still have the "venue to delete" as
+    # their pricing/reimbursement point, the database will rightfully
+    # raise an error. Either these venues should be deleted first, or
+    # the "venue to delete" should not be deleted.
+    deleted_pricing_point_links_count = offerers_models.VenuePricingPointLink.query.filter_by(
+        venueId=venue_id,
+    ).delete(synchronize_session=False)
+    deleted_reimbursement_point_links_count = offerers_models.VenueReimbursementPointLink.query.filter_by(
+        venueId=venue_id
+    ).delete(synchronize_session=False)
+
     deleted_venues_count = Venue.query.filter(Venue.id == venue_id).delete(synchronize_session=False)
 
     db.session.commit()
@@ -132,6 +147,8 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         "deleted_mediations_count": deleted_mediations_count,
         "deleted_favorites_count": deleted_favorites_count,
         "deleted_offer_criteria_count": deleted_offer_criteria_count,
+        "deleted_pricing_point_links_count": deleted_pricing_point_links_count,
+        "deleted_reimbursement_point_links_count": deleted_reimbursement_point_links_count,
         "deleted_stocks_count": deleted_stocks_count,
         "deleted_collective_stocks_count": deleted_collective_stocks_count,
         "deleted_activation_codes_count": deleted_activation_codes_count,
