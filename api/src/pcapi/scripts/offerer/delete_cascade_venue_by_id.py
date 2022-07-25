@@ -103,16 +103,11 @@ def delete_cascade_venue_by_id(venue_id: int) -> None:
         venueId=venue_id
     ).delete(synchronize_session=False)
 
-    deleted_bank_informations_count = 0
-    deleted_bank_informations_count += BankInformation.query.filter(BankInformation.venueId == venue_id).delete(
+    deleted_bank_informations_count = BankInformation.query.filter(BankInformation.venueId == venue_id).delete(
         synchronize_session=False
     )
 
     deleted_venues_count = Venue.query.filter(Venue.id == venue_id).delete(synchronize_session=False)
-
-    deleted_bank_informations_count += BankInformation.query.filter(BankInformation.venueId == venue_id).delete(
-        synchronize_session=False
-    )
 
     db.session.commit()
 
