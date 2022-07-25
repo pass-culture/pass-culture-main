@@ -1,11 +1,11 @@
-""" json encoder """
 from enum import Enum
+import typing
 
 from flask.json import JSONEncoder
 
 
 class EnumJSONEncoder(JSONEncoder):
-    def default(self, obj):  # type: ignore [no-untyped-def]
+    def default(self, obj: typing.Any) -> typing.Any:
         try:
             if isinstance(obj, Enum):
                 return str(obj)
