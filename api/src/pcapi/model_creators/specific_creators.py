@@ -11,10 +11,10 @@ from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import Provider
 from pcapi.models.event_occurence import EventOccurrence
-from pcapi.models.product import Product
 
 
 def create_offer_with_event_product(

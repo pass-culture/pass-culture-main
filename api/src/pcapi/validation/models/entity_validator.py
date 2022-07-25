@@ -2,12 +2,12 @@ from pcapi.core.finance.models import BankInformation
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_address_mixin import HasAddressMixin
-from pcapi.models.product import Product
 from pcapi.validation.models import bank_information
 from pcapi.validation.models import has_address_mixin
 from pcapi.validation.models import offer

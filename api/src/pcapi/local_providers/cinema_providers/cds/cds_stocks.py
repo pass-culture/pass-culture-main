@@ -11,6 +11,7 @@ from pcapi.core.booking_providers.models import Movie
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.models import VenueProvider
 from pcapi.core.providers.repository import get_cds_cinema_api_token
@@ -18,7 +19,6 @@ from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import Model
 from pcapi.models import db
-from pcapi.models.product import Product
 import pcapi.utils.date as utils_date
 
 

@@ -9,9 +9,10 @@ from pcapi.core.bookings.factories import CancelledBookingFactory
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offerers.models import Venue
-from pcapi.core.offers import factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.offers.factories import StockFactory
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.providers import api
 from pcapi.core.providers.exceptions import ProviderNotFound
@@ -19,8 +20,6 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import StockDetail
 from pcapi.core.providers.models import VenueProvider
 from pcapi.local_providers.provider_api import synchronize_provider_api
-from pcapi.models.product import Product
-from pcapi.models.product import UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
 
 
 class CreateVenueProviderTest:
@@ -39,7 +38,7 @@ class CreateVenueProviderTest:
 
 
 def create_product(isbn, **kwargs):
-    return factories.ProductFactory(
+    return offers_factories.ProductFactory(
         idAtProviders=isbn,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         extraData={"prix_livre": 12},
@@ -48,11 +47,11 @@ def create_product(isbn, **kwargs):
 
 
 def create_offer(isbn, venue: Venue):
-    return factories.OfferFactory(product=create_product(isbn), idAtProvider=isbn, venue=venue)
+    return offers_factories.OfferFactory(product=create_product(isbn), idAtProvider=isbn, venue=venue)
 
 
 def create_stock(isbn, siret, venue: Venue, **kwargs):
-    return factories.StockFactory(offer=create_offer(isbn, venue), idAtProviders=f"{isbn}@{siret}", **kwargs)
+    return offers_factories.StockFactory(offer=create_offer(isbn, venue), idAtProviders=f"{isbn}@{siret}", **kwargs)
 
 
 @pytest.mark.usefixtures("db_session")
@@ -150,7 +149,7 @@ class SynchronizeStocksTest:
         create_product(spec[4]["ref"])
         create_product(spec[6]["ref"], isGcuCompatible=False)
         create_product(spec[7]["ref"], isSynchronizationCompatible=False)
-        create_product(spec[8]["ref"], name=UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
+        create_product(spec[8]["ref"], name=offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
 
         stock_with_booking = create_stock(spec[5]["ref"], siret, venue, quantity=20)
         BookingFactory(stock=stock_with_booking)
@@ -244,7 +243,7 @@ class SynchronizeStocksTest:
         existing_offers_by_venue_reference = {"venue_ref1": 1}
         provider = providers_factories.APIProviderFactory(apiUrl="https://provider_url", authToken="fake_token")
         venue = offerers_factories.VenueFactory(bookingEmail="booking_email", withdrawalDetails="My withdrawal details")
-        product = Product(
+        product = offers_models.Product(
             id=456,
             name="product_name",
             description="product_desc",
@@ -320,10 +319,10 @@ class SynchronizeStocksTest:
         }
         offers_by_provider_reference = {"offer_ref1": 123, "offer_ref2": 134, "offer_ref4": 123}
         products_by_provider_reference = {
-            "product_ref1": Product(extraData={"prix_livre": 7.01}),
-            "product_ref2": Product(extraData={"prix_livre": 9.02}),
-            "product_ref3": Product(extraData={"prix_livre": 11.03}),
-            "product_ref4": Product(extraData={"prix_livre": 7.01}),
+            "product_ref1": offers_models.Product(extraData={"prix_livre": 7.01}),
+            "product_ref2": offers_models.Product(extraData={"prix_livre": 9.02}),
+            "product_ref3": offers_models.Product(extraData={"prix_livre": 11.03}),
+            "product_ref4": offers_models.Product(extraData={"prix_livre": 7.01}),
         }
         provider_id = 1
 

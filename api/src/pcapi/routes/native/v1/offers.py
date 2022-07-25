@@ -7,11 +7,11 @@ from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import api
 from pcapi.core.offers.exceptions import OfferReportError
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
 from pcapi.core.users.models import User
 from pcapi.models import feature
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.product import Product
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.workers.push_notification_job import send_offer_link_by_push_job

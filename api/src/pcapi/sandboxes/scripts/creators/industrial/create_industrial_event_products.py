@@ -1,10 +1,10 @@
 import logging
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offers.models as offers_models
 from pcapi.domain.music_types import music_types
 from pcapi.domain.show_types import show_types
 from pcapi.model_creators.specific_creators import create_product_with_event_subcategory
-from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_DESCRIPTION
 from pcapi.sandboxes.scripts.mocks.event_mocks import MOCK_ACTIVATION_NAME
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 EVENT_COUNTS_PER_TYPE = 7
 
 
-def create_industrial_event_products() -> dict[str, Product]:
+def create_industrial_event_products() -> dict[str, offers_models.Product]:
     logger.info("create_industrial_event_products")
 
     event_products_by_name = {}

@@ -10,13 +10,13 @@ from pcapi.connectors.serialization.cine_digital_service_serializers import Show
 from pcapi.core.booking_providers.models import Movie
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import CDSCinemaDetailsFactory
 from pcapi.core.providers.factories import CinemaProviderPivotFactory
 from pcapi.core.providers.factories import VenueProviderFactory
 from pcapi.core.providers.models import Provider
 from pcapi.local_providers.cinema_providers.cds.cds_stocks import CDSStocks
-from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.utils.cds import get_cds_show_id_from_uuid
 from pcapi.utils.human_ids import humanize

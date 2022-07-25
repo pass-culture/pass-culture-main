@@ -2,9 +2,8 @@ import logging
 from typing import Iterable
 
 from pcapi.core import search
-from pcapi.core.offers.models import Offer
+import pcapi.core.offers.models as offers_models
 from pcapi.models import db
-from pcapi.models.product import Product
 
 
 logger = logging.getLogger(__name__)
@@ -12,13 +11,15 @@ logger = logging.getLogger(__name__)
 
 def process_batch(isbns: list[str], is_compatible: bool) -> None:
     logger.info("Bulk-update products isGcuCompatible=%s", is_compatible, extra={"isbns": isbns})
-    products = Product.query.filter(Product.extraData["isbn"].astext.in_(isbns))
+    products = offers_models.Product.query.filter(offers_models.Product.extraData["isbn"].astext.in_(isbns))
     updated_products_count = products.update({"isGcuCompatible": is_compatible}, synchronize_session=False)
     offer_ids = []
     updated_offers_count = 0
     if not is_compatible:
-        offers = Offer.query.filter(Offer.productId.in_(products.with_entities(Product.id)))
-        offer_ids = [offer_id for offer_id, in offers.with_entities(Offer.id)]
+        offers = offers_models.Offer.query.filter(
+            offers_models.Offer.productId.in_(products.with_entities(offers_models.Product.id))
+        )
+        offer_ids = [offer_id for offer_id, in offers.with_entities(offers_models.Offer.id)]
         updated_offers_count = offers.update({"isActive": False}, synchronize_session=False)
     db.session.commit()
     if offer_ids:

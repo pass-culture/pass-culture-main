@@ -1,10 +1,8 @@
 import logging
 
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offerers.models import Venue
-from pcapi.core.offers.models import Offer
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 from pcapi.model_creators.specific_creators import create_offer_with_thing_product
-from pcapi.models.product import Product
 from pcapi.repository import repository
 
 
@@ -16,11 +14,13 @@ THINGS_PER_OFFERER = 5
 
 
 def create_industrial_thing_offers(
-    thing_products_by_name: dict[str, Product], offerers_by_name: dict[str, Offerer], venues_by_name: dict[str, Venue]
-) -> dict[str, Offer]:
+    thing_products_by_name: dict[str, offers_models.Product],
+    offerers_by_name: dict[str, offerers_models.Offerer],
+    venues_by_name: dict[str, offerers_models.Venue],
+) -> dict[str, offers_models.Offer]:
     logger.info("create_industrial_thing_offers")
 
-    thing_offers_by_name: dict[str, Offer] = {}
+    thing_offers_by_name: dict[str, offers_models.Offer] = {}
 
     id_at_provider = 1234
     thing_index = 0

@@ -3,12 +3,12 @@ import pytest
 import pcapi.core.bookings.factories as bookings_factories
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.models import Favorite
-from pcapi.models.product import Product
 from pcapi.repository.product_queries import ProductWithBookingsException
 from pcapi.repository.product_queries import delete_unwanted_existing_product
 from pcapi.repository.product_queries import find_active_book_product_by_isbn
@@ -34,7 +34,7 @@ class DeleteUnwantedExistingProductTest:
         delete_unwanted_existing_product("1111111111111")
 
         # Then
-        assert Product.query.all() == [keep_other_isbn]
+        assert offers_models.Product.query.all() == [keep_other_isbn]
 
     @pytest.mark.usefixtures("db_session")
     def test_should_delete_product_when_it_has_offer_and_stock_but_not_booked(self):
@@ -49,7 +49,7 @@ class DeleteUnwantedExistingProductTest:
         delete_unwanted_existing_product("1111111111111")
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
 
@@ -74,7 +74,7 @@ class DeleteUnwantedExistingProductTest:
         # Then
         offer = Offer.query.one()
         assert offer.isActive is False
-        assert Product.query.one() == product
+        assert offers_models.Product.query.one() == product
         assert not product.isGcuCompatible
         assert not product.isSynchronizationCompatible
 
@@ -92,7 +92,7 @@ class DeleteUnwantedExistingProductTest:
         delete_unwanted_existing_product("1111111111111")
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
         assert Mediation.query.count() == 0
@@ -111,7 +111,7 @@ class DeleteUnwantedExistingProductTest:
         delete_unwanted_existing_product("1111111111111")
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
         assert Offer.query.count() == 0
         assert Stock.query.count() == 0
         assert Favorite.query.count() == 0

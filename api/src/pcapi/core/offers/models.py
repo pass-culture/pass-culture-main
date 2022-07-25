@@ -5,7 +5,8 @@ import enum
 import logging
 
 import sqlalchemy as sa
-from sqlalchemy import and_
+from sqlalchemy.dialects import postgresql
+import sqlalchemy.orm as sa_orm
 
 import pcapi.core.bookings.constants as bookings_constants
 from pcapi.core.categories import categories
@@ -26,6 +27,66 @@ from pcapi.utils.date import DateTimes
 
 
 logger = logging.getLogger(__name__)
+
+
+class BookFormat(enum.Enum):
+    REVUE = "REVUE"
+    BANDE_DESSINEE = "BANDE DESSINEE "
+    BEAUX_LIVRES = "BEAUX LIVRES"
+    POCHE = "POCHE"
+    LIVRE_CASSETTE = "LIVRE + CASSETTE"
+    LIVRE_AUDIO = "LIVRE + CD AUDIO"
+    MOYEN_FORMAT = "MOYEN FORMAT"
+
+
+UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER = "xxx"
+
+
+class Product(PcObject, Model, ExtraDataMixin, HasThumbMixin, ProvidableMixin):  # type: ignore [valid-type, misc]
+    name = sa.Column(sa.String(140), nullable=False)
+    description = sa.Column(sa.Text, nullable=True)
+    conditions = sa.Column(sa.String(120), nullable=True)
+    ageMin = sa.Column(sa.Integer, nullable=True)
+    ageMax = sa.Column(sa.Integer, nullable=True)
+    mediaUrls = sa.Column(postgresql.ARRAY(sa.String(220)), nullable=False, default=[])
+    url = sa.Column(sa.String(255), nullable=True)
+    durationMinutes = sa.Column(sa.Integer, nullable=True)
+    isGcuCompatible = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
+    isSynchronizationCompatible = sa.Column(sa.Boolean, default=True, server_default=sa.true(), nullable=False)
+    isNational = sa.Column(sa.Boolean, server_default=sa.false(), default=False, nullable=False)
+    owningOffererId = sa.Column(sa.BigInteger, sa.ForeignKey("offerer.id"), nullable=True)
+    owningOfferer = sa_orm.relationship("Offerer", foreign_keys=[owningOffererId], backref="events")  # type: ignore [misc]
+    subcategoryId = sa.Column(sa.Text, nullable=False, index=True)
+
+    sa.Index("product_isbn_idx", ExtraDataMixin.extraData["isbn"].astext)
+
+    thumb_path_component = "products"
+
+    @property
+    def subcategory(self) -> subcategories.Subcategory:
+        if self.subcategoryId not in subcategories.ALL_SUBCATEGORIES_DICT:
+            raise ValueError(f"Unexpected subcategoryId '{self.subcategoryId}' for product {self.id}")
+        return subcategories.ALL_SUBCATEGORIES_DICT[self.subcategoryId]
+
+    @property
+    def isDigital(self) -> bool:
+        return self.url is not None and self.url != ""
+
+    @property
+    def is_offline_only(self) -> bool:
+        return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.OFFLINE.value
+
+    @property
+    def is_online_only(self) -> bool:
+        return self.subcategory.online_offline_platform == subcategories.OnlineOfflinePlatformChoices.ONLINE.value
+
+    @sa.ext.hybrid.hybrid_property
+    def can_be_synchronized(self) -> bool:
+        return (
+            self.isGcuCompatible
+            & self.isSynchronizationCompatible
+            & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
+        )
 
 
 class Mediation(PcObject, Model, HasThumbMixin, ProvidableMixin, DeactivableMixin):  # type: ignore [valid-type, misc]
@@ -268,7 +329,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
 
-    product = sa.orm.relationship("Product", foreign_keys=[productId], backref="offers")  # type: ignore [misc]
+    product = sa.orm.relationship("Product", foreign_keys=[productId], backref="offers")
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
@@ -436,7 +497,7 @@ class Offer(PcObject, Model, ExtraDataMixin, DeactivableMixin, ValidationMixin, 
 
     @isDigital.expression  # type: ignore [no-redef]
     def isDigital(cls) -> bool:  # pylint: disable=no-self-argument
-        return and_(cls.url != None, cls.url != "")
+        return sa.and_(cls.url != None, cls.url != "")
 
     @property
     def isEditable(self) -> bool:

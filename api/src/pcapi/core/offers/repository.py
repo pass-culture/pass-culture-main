@@ -32,13 +32,13 @@ from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.users.models import User
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
 from pcapi.infrastructure.repository.pro_offers.offers_recap_domain_converter import to_domain
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
-from pcapi.models.product import Product
 from pcapi.utils.custom_keys import compute_venue_reference
 
 

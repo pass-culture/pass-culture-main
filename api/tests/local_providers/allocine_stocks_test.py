@@ -8,14 +8,14 @@ import pytest
 
 from pcapi.core.categories import subcategories
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.factories import OfferFactory
-from pcapi.core.offers.factories import ProductFactory
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.factories import AllocineVenueProviderFactory
 from pcapi.core.providers.factories import AllocineVenueProviderPriceRuleFactory
 from pcapi.local_providers import AllocineStocks
-from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.utils.human_ids import humanize
 
@@ -152,7 +152,7 @@ class AllocineStocksTest:
             offer_providable_info = allocine_providable_infos[1]
             stock_providable_info = allocine_providable_infos[2]
 
-            assert product_providable_info.type == Product
+            assert product_providable_info.type == offers_models.Product
             assert product_providable_info.id_at_providers == "TW92aWU6Mzc4MzI="
             assert product_providable_info.new_id_at_provider == "TW92aWU6Mzc4MzI="
             assert product_providable_info.date_modified_at_provider == datetime(year=2019, month=10, day=15, hour=9)
@@ -215,7 +215,7 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = Offer.query.one()
-        created_product = Product.query.one()
+        created_product = offers_models.Product.query.one()
 
         assert created_offer.bookingEmail == "toto@example.com"
         assert (
@@ -328,7 +328,7 @@ class UpdateObjectsTest:
 
         # Then
         created_offers = Offer.query.order_by("id").all()
-        created_products = Product.query.order_by("id").all()
+        created_products = offers_models.Product.query.order_by("id").all()
 
         assert len(created_offers) == 2
         assert len(created_products) == 1
@@ -412,7 +412,7 @@ class UpdateObjectsTest:
 
         # Then
         created_offers = Offer.query.all()
-        created_products = Product.query.all()
+        created_products = offers_models.Product.query.all()
 
         assert len(created_offers) == 1
         assert len(created_products) == 1
@@ -449,7 +449,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        product = ProductFactory(
+        product = offers_factories.ProductFactory(
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
@@ -493,7 +493,7 @@ class UpdateObjectsTest:
 
         # Then
         existing_offers = Offer.query.order_by("id").all()
-        existing_product = Product.query.one()
+        existing_product = offers_models.Product.query.one()
 
         assert len(existing_offers) == 2
         assert existing_offers[0].durationMinutes == 46
@@ -526,7 +526,7 @@ class UpdateObjectsTest:
             ]
         )
 
-        ProductFactory(
+        offers_factories.ProductFactory(
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
@@ -550,7 +550,7 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = Offer.query.one()
-        existing_product = Product.query.one()
+        existing_product = offers_models.Product.query.one()
 
         assert existing_product.durationMinutes == 46
         assert created_offer.name == "Les Contes de la mère poule - VF"
@@ -598,7 +598,7 @@ class UpdateObjectsTest:
 
         # Then
         created_offer = Offer.query.one()
-        created_product = Product.query.one()
+        created_product = offers_models.Product.query.one()
 
         assert created_product.durationMinutes == 46
         assert created_product.extraData == {
@@ -674,7 +674,7 @@ class UpdateObjectsTest:
 
         # Then
         assert Offer.query.count() == 0
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movie_poster")
     @patch("pcapi.local_providers.allocine.allocine_stocks.get_movies_showtimes")
@@ -706,7 +706,7 @@ class UpdateObjectsTest:
         with open(file_path, "rb") as thumb_file:
             mock_get_object_thumb.return_value = thumb_file.read()
 
-        ProductFactory(
+        offers_factories.ProductFactory(
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
@@ -730,7 +730,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_product = Product.query.one()
+        existing_product = offers_models.Product.query.one()
 
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
@@ -765,7 +765,7 @@ class UpdateObjectsTest:
         with open(file_path, "rb") as thumb_file:
             mock_get_object_thumb.return_value = thumb_file.read()
 
-        ProductFactory(
+        offers_factories.ProductFactory(
             name="Test event",
             subcategoryId=subcategories.SEANCE_CINE.id,
             durationMinutes=60,
@@ -789,7 +789,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        existing_product = Product.query.one()
+        existing_product = offers_models.Product.query.one()
         assert existing_product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(existing_product.id)}"
         assert existing_product.thumbCount == 1
 
@@ -847,7 +847,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_product = Product.query.all()
+        created_product = offers_models.Product.query.all()
         created_offer = Offer.query.all()
         created_stock = Stock.query.order_by("id").all()
 
@@ -941,7 +941,7 @@ class UpdateObjectsTest:
         allocine_stocks_provider.updateObjects()
 
         # Then
-        created_product = Product.query.all()
+        created_product = offers_models.Product.query.all()
         created_offer = Offer.query.order_by("id").all()
         created_stock = Stock.query.order_by("id").all()
 
@@ -1119,7 +1119,7 @@ class UpdateObjectsTest:
             allocine_stocks_provider2.updateObjects()
 
             # Then
-            created_product = Product.query.all()
+            created_product = offers_models.Product.query.all()
             created_offer = Offer.query.all()
             created_stock = Stock.query.all()
 

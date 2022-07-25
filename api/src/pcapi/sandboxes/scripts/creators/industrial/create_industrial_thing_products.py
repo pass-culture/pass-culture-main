@@ -2,9 +2,9 @@ import logging
 import random
 
 from pcapi.core.categories import subcategories
+import pcapi.core.offers.models as offers_models
 from pcapi.domain.music_types import music_types
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_AUTHOR_NAMES
 from pcapi.sandboxes.scripts.mocks.thing_mocks import MOCK_DESCRIPTIONS
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 THINGS_PER_SUBCATEGORY = 7
 
 
-def create_industrial_thing_products() -> dict[str, Product]:
+def create_industrial_thing_products() -> dict[str, offers_models.Product]:
     logger.info("create_industrial_thing_products")
 
     thing_products_by_name = {}

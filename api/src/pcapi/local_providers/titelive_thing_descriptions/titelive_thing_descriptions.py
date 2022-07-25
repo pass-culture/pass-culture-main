@@ -3,12 +3,12 @@ import re
 
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_zip_file_from_ftp
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_description_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.product import Product
 from pcapi.repository import local_provider_event_queries
 
 
@@ -44,11 +44,11 @@ class TiteLiveThingDescriptions(LocalProvider):
         path = PurePath(self.description_zip_info.filename)
         date_from_filename = path.name.split("_", 1)[0]
         product_providable_info = self.create_providable_info(
-            Product, date_from_filename, self.date_modified, date_from_filename
+            offers_models.Product, date_from_filename, self.date_modified, date_from_filename
         )
         return [product_providable_info]
 
-    def fill_object_attributes(self, product: Product):  # type: ignore [no-untyped-def]
+    def fill_object_attributes(self, product: offers_models.Product):  # type: ignore [no-untyped-def]
         with self.zip_file.open(self.description_zip_info) as f:
             description = f.read().decode("iso-8859-1")
         product.description = description.replace("\x00", "")

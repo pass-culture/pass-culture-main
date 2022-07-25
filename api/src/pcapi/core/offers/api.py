@@ -62,6 +62,7 @@ from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import OfferReport
 from pcapi.core.offers.models import OfferValidationConfig
 from pcapi.core.offers.models import OfferValidationStatus
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
@@ -83,7 +84,6 @@ from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.models.product import Product
 from pcapi.repository import offer_queries
 from pcapi.repository import repository
 from pcapi.repository import transaction

@@ -4,11 +4,11 @@ import re
 
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_zip_file_from_ftp
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.product import Product
 from pcapi.repository import local_provider_event_queries
 
 
@@ -44,7 +44,9 @@ class TiteLiveThingThumbs(LocalProvider):
 
         file_identifier = path.name.split("_", 1)[0]
         file_date = datetime(*self.thumb_zipinfo.date_time)
-        product_providable_info = self.create_providable_info(Product, file_identifier, file_date, file_identifier)
+        product_providable_info = self.create_providable_info(
+            offers_models.Product, file_identifier, file_date, file_identifier
+        )
 
         return [product_providable_info]
 

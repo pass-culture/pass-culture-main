@@ -1,8 +1,8 @@
 import logging
 from typing import Iterable
 
+import pcapi.core.offers.models as offers_models
 from pcapi.models import db
-from pcapi.models.product import Product
 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ def process_batch(isbns: list[str], is_synchronization_compatible: bool) -> None
     logger.info(
         "Bulk-update products isSynchronizationCompatible=%s", is_synchronization_compatible, extra={"isbns": isbns}
     )
-    products = Product.query.filter(Product.extraData["isbn"].astext.in_(isbns))
+    products = offers_models.Product.query.filter(offers_models.Product.extraData["isbn"].astext.in_(isbns))
     updated_products_count = products.update(
         {"isSynchronizationCompatible": is_synchronization_compatible}, synchronize_session=False
     )

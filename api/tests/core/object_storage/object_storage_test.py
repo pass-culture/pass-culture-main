@@ -10,8 +10,8 @@ from pcapi.core.object_storage import _check_backends_module_paths
 from pcapi.core.object_storage import delete_public_object
 from pcapi.core.object_storage import store_public_object
 from pcapi.core.offers.models import Mediation
+from pcapi.core.offers.models import Product
 from pcapi.core.testing import override_settings
-from pcapi.models.product import Product
 
 
 class StorePublicObjectTest:
