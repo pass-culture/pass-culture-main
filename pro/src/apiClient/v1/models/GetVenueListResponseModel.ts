@@ -2,8 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { VenueListItemResponseModel } from './VenueListItemResponseModel'
+import type { VenueListItemResponseModel } from './VenueListItemResponseModel';
 
 export type GetVenueListResponseModel = {
-  venues: Array<VenueListItemResponseModel>
-}
+  venues: Array<VenueListItemResponseModel>;
+};
+
