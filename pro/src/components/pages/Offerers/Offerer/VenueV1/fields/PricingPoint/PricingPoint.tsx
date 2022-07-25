@@ -80,12 +80,12 @@ const PricingPoint = ({
           }}
           onConfirm={handleClick}
           icon={ValidIcon}
-          title={`Êtes-vous sur de vouloir sélectionner`}
+          title={`Êtes-vous sûr de vouloir sélectionner`}
           secondTitle={'ce lieu avec SIRET\u00a0?'}
         >
           <p className={styles['text-dialog']}>
             Vous avez sélectionné un lieu avec SIRET qui sera utilisé pour le
-            calcul de vos remboursements. <br />
+            calcul de votre barème de remboursement. <br />
             Ce choix ne pourra pas être modifié.
           </p>
           <a
