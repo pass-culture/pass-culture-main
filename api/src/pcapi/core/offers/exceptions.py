@@ -192,3 +192,7 @@ class CollectiveOfferNotFound(Exception):
 
 class UnapplicableModel(Exception):
     ...
+
+
+class CannotDeleteProductWithBookings(Exception):
+    pass

@@ -27,6 +27,7 @@ import pcapi.core.providers.factories as providers_factories
 from pcapi.core.testing import override_features
 from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
+import pcapi.core.users.models as users_models
 from pcapi.models import api_errors
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
@@ -2014,3 +2015,47 @@ class UnindexExpiredOffersTest:
         assert mock_unindex_offer_ids.mock_calls == [
             mock.call([stock1.offerId]),
         ]
+
+
+class DeleteUnwantedExistingProductTest:
+    def test_delete_product_when_isbn_found(self):
+        isbn = "1111111111111"
+        product_to_delete = factories.ProductFactory(
+            idAtProviders=isbn,
+            isSynchronizationCompatible=True,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+        offer_to_delete = factories.OfferFactory(product=product_to_delete)
+        factories.MediationFactory(offer=offer_to_delete)
+        users_factories.FavoriteFactory(offer=offer_to_delete)
+        product_to_keep_other_isbn = factories.ProductFactory(
+            idAtProviders="something-else",
+            isSynchronizationCompatible=True,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+
+        api.delete_unwanted_existing_product("1111111111111")
+
+        assert models.Product.query.all() == [product_to_keep_other_isbn]
+        assert models.Mediation.query.count() == 0
+        assert models.Offer.query.count() == 0
+        assert users_models.Favorite.query.count() == 0
+
+    def test_keep_but_modify_product_if_booked(self):
+        isbn = "1111111111111"
+        product = factories.ProductFactory(
+            idAtProviders=isbn,
+            isGcuCompatible=True,
+            isSynchronizationCompatible=True,
+            subcategoryId=subcategories.LIVRE_PAPIER.id,
+        )
+        bookings_factories.BookingFactory(stock__offer__product=product)
+
+        with pytest.raises(exceptions.CannotDeleteProductWithBookings):
+            api.delete_unwanted_existing_product("1111111111111")
+
+        offer = models.Offer.query.one()
+        assert offer.isActive is False
+        assert models.Product.query.one() == product
+        assert not product.isGcuCompatible
+        assert not product.isSynchronizationCompatible

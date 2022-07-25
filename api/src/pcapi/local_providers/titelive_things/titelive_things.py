@@ -6,7 +6,9 @@ import re
 from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.core.categories import subcategories
+import pcapi.core.offers.api as offers_api
 from pcapi.core.offers.api import deactivate_permanently_unavailable_products
+import pcapi.core.offers.exceptions as offers_exceptions
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.titelive import get_date_from_filename
@@ -14,8 +16,6 @@ from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.repository import local_provider_event_queries
-from pcapi.repository import product_queries
-from pcapi.repository.product_queries import ProductWithBookingsException
 from pcapi.utils.string_processing import trim_with_elipsis
 
 
@@ -119,8 +119,8 @@ class TiteLiveThings(LocalProvider):
         if ineligibility_reason:
             logger.info("Ignoring isbn=%s because reason=%s", book_unique_identifier, ineligibility_reason)
             try:
-                product_queries.delete_unwanted_existing_product(book_unique_identifier)
-            except ProductWithBookingsException:
+                offers_api.delete_unwanted_existing_product(book_unique_identifier)
+            except offers_exceptions.CannotDeleteProductWithBookings:
                 self.log_provider_event(
                     providers_models.LocalProviderEventType.SyncError,
                     f"Error deleting product with ISBN: {self.product_infos['ean13']}",

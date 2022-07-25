@@ -5,10 +5,6 @@ def get_offer_by_id(offer_id: int):  # type: ignore [no-untyped-def]
     return Offer.query.get(offer_id)
 
 
-def get_offers_by_product_id(product_id: int) -> list[Offer]:
-    return Offer.query.filter_by(productId=product_id).all()
-
-
 def get_paginated_active_offer_ids(limit: int, page: int) -> list[int]:
     query = (
         Offer.query.with_entities(Offer.id)
