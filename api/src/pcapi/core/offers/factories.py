@@ -9,14 +9,13 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
 import pcapi.core.users.factories as users_factories
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.models.product import Product
 
 from . import models
 
 
 class ProductFactory(BaseFactory):
     class Meta:
-        model = Product
+        model = models.Product
 
     subcategoryId = factory.Iterator(ALL_SUBCATEGORIES, getter=lambda s: s.id)
     name = factory.Sequence("Product {}".format)

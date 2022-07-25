@@ -19,7 +19,6 @@ from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import Feature
 from pcapi.models.feature import install_feature_flags
-from pcapi.models.product import Product
 from pcapi.models.user_session import UserSession
 
 
@@ -64,7 +63,7 @@ def clean_all_database(*args, **kwargs):  # type: ignore [no-untyped-def]
     educational_models.CollectiveOffer.query.delete()
     educational_models.CollectiveOfferTemplate.query.delete()
     offers_models.Offer.query.delete()
-    Product.query.delete()
+    offers_models.Product.query.delete()
     # Handle relationship loop: Venue->BusinessUnit->BankInformation->Venue.
     offerers_models.Venue.query.update({"businessUnitId": None}, synchronize_session=False)
     finance_models.BusinessUnit.query.delete()

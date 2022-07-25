@@ -7,14 +7,12 @@ from pcapi.connectors.ftp_titelive import connect_to_titelive_ftp
 from pcapi.connectors.ftp_titelive import get_files_to_process_from_titelive_ftp
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.api import deactivate_permanently_unavailable_products
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 from pcapi.domain.titelive import get_date_from_filename
 from pcapi.domain.titelive import read_things_date
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.local_providers.providable_info import ProvidableInfo
-from pcapi.models.product import BookFormat
-from pcapi.models.product import Product
-from pcapi.models.product import UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
 from pcapi.repository import local_provider_event_queries
 from pcapi.repository import product_queries
 from pcapi.repository.product_queries import ProductWithBookingsException
@@ -130,7 +128,9 @@ class TiteLiveThings(LocalProvider):
             return []
 
         if is_unreleased_book(self.product_infos):
-            products = Product.query.filter(Product.extraData["isbn"].astext == book_unique_identifier).all()
+            products = offers_models.Product.query.filter(
+                offers_models.Product.extraData["isbn"].astext == book_unique_identifier
+            ).all()
             if len(products) > 0:
                 deactivate_permanently_unavailable_products(book_unique_identifier)
                 logger.info(
@@ -146,7 +146,7 @@ class TiteLiveThings(LocalProvider):
 
         book_information_last_update = read_things_date(self.product_infos["date_updated"])
         providable_info = self.create_providable_info(
-            Product, book_unique_identifier, book_information_last_update, book_unique_identifier
+            offers_models.Product, book_unique_identifier, book_information_last_update, book_unique_identifier
         )
         return [providable_info]
 
@@ -165,7 +165,7 @@ class TiteLiveThings(LocalProvider):
 
         return None
 
-    def fill_object_attributes(self, product: Product) -> None:
+    def fill_object_attributes(self, product: offers_models.Product) -> None:
         product.name = trim_with_elipsis(self.product_infos["titre"], 140)
         product.datePublished = read_things_date(self.product_infos["date_parution"])
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[self.product_subcategory_id]
@@ -216,9 +216,9 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type):  # type: i
     if titelive_type in ("A", "I", "LA"):  # obsolete codes
         return None, None
     if titelive_type == "BD":  # bande dessinée
-        return subcategories.LIVRE_PAPIER.id, BookFormat.BANDE_DESSINEE.value
+        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.BANDE_DESSINEE.value
     if titelive_type == "BL":  # beaux livres
-        return subcategories.LIVRE_PAPIER.id, BookFormat.BEAUX_LIVRES.value
+        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.BEAUX_LIVRES.value
     if titelive_type == "C":  # carte et plan
         return None, None
     if titelive_type == "CA":  # CD audio
@@ -238,9 +238,9 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type):  # type: i
     if titelive_type == "LA":  # obsolete code
         return None, None
     if titelive_type == "LC":  # livre + cassette
-        return subcategories.LIVRE_PAPIER.id, BookFormat.LIVRE_CASSETTE.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.LIVRE_CASSETTE.value  # TODO: verify
     if titelive_type == "LD":  # livre + CD audio
-        return subcategories.LIVRE_PAPIER.id, BookFormat.LIVRE_AUDIO.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.LIVRE_AUDIO.value  # TODO: verify
     if titelive_type == "LE":  # livre numérique
         return None, None
     if titelive_type == "LR":  # livre + CD-ROM
@@ -250,17 +250,17 @@ def get_subcategory_and_extra_data_from_titelive_type(titelive_type):  # type: i
     if titelive_type == "LV":  # livre + DVD
         return None, None
     if titelive_type == "M":  # moyen format
-        return subcategories.LIVRE_PAPIER.id, BookFormat.MOYEN_FORMAT.value
+        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.MOYEN_FORMAT.value
     if titelive_type == "O":  # objet
         return None, None
     if titelive_type == "P":  # poche
-        return subcategories.LIVRE_PAPIER.id, BookFormat.POCHE.value
+        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.POCHE.value
     if titelive_type == "PC":  # papeterie / consommable
         return None, None
     if titelive_type == "PS":  # poster
         return None, None
     if titelive_type == "R":  # revue
-        return subcategories.LIVRE_PAPIER.id, BookFormat.REVUE.value  # TODO: verify
+        return subcategories.LIVRE_PAPIER.id, offers_models.BookFormat.REVUE.value  # TODO: verify
     if titelive_type in ("T", "TL"):  # livre papier (hors spécificité)
         return subcategories.LIVRE_PAPIER.id, None
     if titelive_type == "TR":  # transparents
@@ -345,4 +345,4 @@ def get_extra_data_from_infos(infos: dict) -> dict:
 def is_unreleased_book(product_info: dict) -> bool:
     title = product_info.get("titre", "").lower()
     authors = product_info.get("auteurs", "").lower()
-    return title == authors == UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER
+    return title == authors == offers_models.UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER

@@ -15,7 +15,6 @@ import pcapi.core.providers.models as providers_models
 import pcapi.core.providers.repository as providers_repository
 from pcapi.domain.price_rule import PriceRule
 from pcapi.models import db
-from pcapi.models.product import Product
 from pcapi.repository import repository
 from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
 from pcapi.use_cases.connect_venue_to_allocine import connect_venue_to_allocine
@@ -304,7 +303,7 @@ def synchronize_stocks(
 def _build_new_offers_from_stock_details(
     stock_details: list[providers_models.StockDetail],
     existing_offers_by_provider_reference: dict[str, int],
-    products_by_provider_reference: dict[str, Product],
+    products_by_provider_reference: dict[str, offers_models.Product],
     existing_offers_by_venue_reference: dict[str, int],
     venue: Venue,
     provider_id: int | None,
@@ -344,7 +343,7 @@ def _get_stocks_to_upsert(
     stock_details: list[providers_models.StockDetail],
     stocks_by_provider_reference: dict[str, dict],
     offers_by_provider_reference: dict[str, int],
-    products_by_provider_reference: dict[str, Product],
+    products_by_provider_reference: dict[str, offers_models.Product],
     provider_id: int | None,
 ) -> tuple[list[dict], list[offers_models.Stock], set[int]]:
     update_stock_mapping = []
@@ -438,7 +437,11 @@ def _validate_stock_or_offer(model: offers_models.Offer | offers_models.Stock) -
 
 
 def _build_new_offer(
-    venue: Venue, product: Product, id_at_providers: str, id_at_provider: str, provider_id: int | None
+    venue: Venue,
+    product: offers_models.Product,
+    id_at_providers: str,
+    id_at_provider: str,
+    provider_id: int | None,
 ) -> offers_models.Offer:
     return offers_models.Offer(
         bookingEmail=venue.bookingEmail,

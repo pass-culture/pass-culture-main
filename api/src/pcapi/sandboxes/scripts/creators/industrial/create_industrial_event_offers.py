@@ -1,9 +1,8 @@
 import logging
 
-from pcapi.core.offerers.models import Offerer
-from pcapi.core.offers.models import Offer
+import pcapi.core.offerers.models as offerers_models
+import pcapi.core.offers.models as offers_models
 from pcapi.model_creators.specific_creators import create_offer_with_event_product
-from pcapi.models.product import Product
 from pcapi.repository import repository
 
 
@@ -15,8 +14,9 @@ EVENTS_PER_OFFERER_WITH_PHYSICAL_VENUE = 5
 
 
 def create_industrial_event_offers(
-    events_by_name: dict[str, Product], offerers_by_name: dict[str, Offerer]
-) -> dict[str, Offer]:
+    events_by_name: dict[str, offers_models.Product],
+    offerers_by_name: dict[str, offerers_models.Offerer],
+) -> dict[str, offers_models.Offer]:
     logger.info("create_industrial_event_offers")
 
     event_offers_by_name = {}

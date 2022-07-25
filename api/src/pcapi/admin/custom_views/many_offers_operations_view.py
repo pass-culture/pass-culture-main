@@ -17,8 +17,8 @@ from pcapi.core.categories import categories
 from pcapi.core.criteria.models import Criterion
 from pcapi.core.offers.api import add_criteria_to_offers
 from pcapi.core.offers.api import deactivate_inappropriate_products
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
-from pcapi.models.product import Product
 
 
 class SearchForm(SecureForm):
@@ -66,7 +66,7 @@ def _get_current_criteria_on_active_offers(offers: list[Offer]) -> dict[str, dic
     return current_criteria_on_offers
 
 
-def _get_products_compatible_status(products: list[Product]) -> dict[str, str]:
+def _get_products_compatible_status(products: list[offers_models.Product]) -> dict[str, str]:
     if all(product.isGcuCompatible for product in products):
         return {
             "status": "compatible_products",
@@ -85,7 +85,7 @@ def _get_products_compatible_status(products: list[Product]) -> dict[str, str]:
     }
 
 
-def _get_product_type(product: Product) -> str:
+def _get_product_type(product: offers_models.Product) -> str:
     if product.subcategory.category_id == categories.FILM.id:
         return "cinema"
     if product.subcategory.category_id == categories.LIVRE.id:
@@ -126,15 +126,15 @@ class ManyOffersOperationsView(BaseCustomAdminView):
 
         if isbn:
             products = (
-                Product.query.filter(Product.extraData["isbn"].astext == isbn)
-                .options(joinedload(Product.offers).joinedload(Offer.criteria))
+                offers_models.Product.query.filter(offers_models.Product.extraData["isbn"].astext == isbn)
+                .options(joinedload(offers_models.Product.offers).joinedload(Offer.criteria))
                 .all()
             )
 
         if visa:
             products = (
-                Product.query.filter(Product.extraData["visa"].astext == visa)
-                .options(joinedload(Product.offers).joinedload(Offer.criteria))
+                offers_models.Product.query.filter(offers_models.Product.extraData["visa"].astext == visa)
+                .options(joinedload(offers_models.Product.offers).joinedload(Offer.criteria))
                 .all()
             )
 

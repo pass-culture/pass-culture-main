@@ -9,14 +9,12 @@ import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.offers.factories import ThingOfferFactory
 from pcapi.core.offers.factories import ThingProductFactory
 from pcapi.core.offers.factories import ThingStockFactory
-from pcapi.core.offers.models import Offer
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.local_providers import TiteLiveThings
 from pcapi.model_creators.specific_creators import create_product_with_thing_subcategory
-from pcapi.models.product import BookFormat
-from pcapi.models.product import Product
 from pcapi.repository import repository
 
 
@@ -89,8 +87,8 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        product = Product.query.one()
-        assert product.extraData.get("bookFormat") == BookFormat.BEAUX_LIVRES.value
+        product = offers_models.Product.query.one()
+        assert product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.extraData.get("isbn") == "9782895026310"
 
@@ -117,7 +115,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -147,9 +145,9 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        updated_product = Product.query.first()
+        updated_product = offers_models.Product.query.first()
         assert updated_product.name == "nouvelles du Chili"
-        assert updated_product.extraData.get("bookFormat") == BookFormat.BEAUX_LIVRES.value
+        assert updated_product.extraData.get("bookFormat") == offers_models.BookFormat.BEAUX_LIVRES.value
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -164,7 +162,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -185,7 +183,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -211,7 +209,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -237,7 +235,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -272,7 +270,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -306,7 +304,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -339,7 +337,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 1
+        assert offers_models.Product.query.count() == 1
         provider_log_error = providers_models.LocalProviderEvent.query.filter_by(
             type=providers_models.LocalProviderEventType.SyncError
         ).one()
@@ -369,7 +367,7 @@ class TiteliveThingsTest:
 
         # When
         titelive_things.updateObjects()
-        products = Product.query.all()
+        products = offers_models.Product.query.all()
         product = products[0]
 
         # Then
@@ -407,7 +405,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -446,9 +444,9 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        offer = Offer.query.one()
+        offer = offers_models.Offer.query.one()
         assert offer.isActive is False
-        assert Product.query.count() == 1
+        assert offers_models.Product.query.count() == 1
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -471,7 +469,7 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @pytest.mark.usefixtures("db_session")
     @patch("pcapi.local_providers.titelive_things.titelive_things.get_files_to_process_from_titelive_ftp")
@@ -510,8 +508,8 @@ class TiteliveThingsTest:
         titelive_things.updateObjects()
 
         # Then
-        refreshed_offer = Offer.query.get(offer.id)
-        refreshed_product = Product.query.get(product.id)
+        refreshed_offer = offers_models.Offer.query.get(offer.id)
+        refreshed_product = offers_models.Product.query.get(product.id)
         assert refreshed_product.name == "xxx"
         assert refreshed_offer.isActive == False
         assert refreshed_offer.name == "xxx"

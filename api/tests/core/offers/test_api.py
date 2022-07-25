@@ -31,7 +31,6 @@ from pcapi.core.testing import override_settings
 import pcapi.core.users.factories as users_factories
 from pcapi.models import api_errors
 from pcapi.models.offer_mixin import OfferValidationType
-from pcapi.models.product import Product
 from pcapi.notifications.push import testing as push_testing
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
@@ -932,7 +931,7 @@ class CreateOfferTest:
         assert offer.mentalDisabilityCompliant
         assert offer.motorDisabilityCompliant
         assert not offer.visualDisabilityCompliant
-        assert Product.query.count() == 1
+        assert models.Product.query.count() == 1
 
     @override_features(ENABLE_ISBN_REQUIRED_IN_LIVRE_EDITION_OFFER_CREATION=True)
     def test_create_offer_livre_edition_from_isbn_with_is_not_compatible_gcu_should_fail(self):
@@ -1502,7 +1501,7 @@ class DeactivateInappropriateProductTest:
         api.deactivate_inappropriate_products("isbn-de-test")
 
         # Then
-        products = Product.query.all()
+        products = models.Product.query.all()
         offers = models.Offer.query.all()
 
         assert not any(product.isGcuCompatible for product in products)
@@ -1529,7 +1528,7 @@ class DeactivatePermanentlyUnavailableProductTest:
         api.deactivate_permanently_unavailable_products("isbn-de-test")
 
         # Then
-        products = Product.query.all()
+        products = models.Product.query.all()
         offers = models.Offer.query.all()
 
         assert any(product.name == "xxx" for product in products)

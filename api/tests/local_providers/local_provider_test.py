@@ -5,12 +5,12 @@ import pytest
 
 from pcapi.core.categories import subcategories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.local_providers.local_provider import _save_same_thumb_from_thumb_count_to_index
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.product import Product
 from pcapi.repository import repository
 
 from . import provider_test_utils
@@ -60,7 +60,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        new_product = Product.query.one()
+        new_product = offers_models.Product.query.one()
         assert new_product.name == "New Product"
         assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
@@ -83,7 +83,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        product = Product.query.one()
+        product = offers_models.Product.query.one()
         assert product.name == "New Product"
         assert product.dateModifiedAtLastProvider == providable_info.date_modified_at_provider
 
@@ -106,7 +106,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        product = Product.query.one()
+        product = offers_models.Product.query.one()
         assert product.name == "Old product name"
         assert product.dateModifiedAtLastProvider == datetime(2020, 1, 1)
 
@@ -123,7 +123,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_does_not_update_objects_when_provider_is_not_active(self, next_function):
@@ -137,7 +137,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProviderNoCreation.__next__")
     def test_does_not_create_new_object_when_can_create_is_false(self, next_function):
@@ -151,7 +151,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects()
 
         # Then
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
 
     @patch("tests.local_providers.provider_test_utils.TestLocalProvider.__next__")
     def test_creates_only_one_object_when_limit_is_one(self, next_function):
@@ -166,7 +166,7 @@ class UpdateObjectsTest:
         local_provider.updateObjects(limit=1)
 
         # Then
-        new_product = Product.query.one()
+        new_product = offers_models.Product.query.one()
         assert new_product.name == "New Product"
         assert new_product.subcategoryId == subcategories.LIVRE_PAPIER.id
 
@@ -183,7 +183,7 @@ class CreateObjectTest:
         product = local_provider._create_object(providable_info)
 
         # Then
-        assert isinstance(product, Product)
+        assert isinstance(product, offers_models.Product)
         assert product.name == "New Product"
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
         assert product.lastProviderId == provider.id
@@ -202,7 +202,7 @@ class CreateObjectTest:
         assert api_errors.value.errors["url"] == [
             "Un produit de sous-catégorie ACHAT_INSTRUMENT ne peut pas être numérique"
         ]
-        assert Product.query.count() == 0
+        assert offers_models.Product.query.count() == 0
         provider_event = providers_models.LocalProviderEvent.query.one()
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError
 
@@ -225,7 +225,7 @@ class HandleUpdateTest:
         local_provider._handle_update(product, providable_info)
 
         # Then
-        product = Product.query.one()
+        product = offers_models.Product.query.one()
         assert product.name == "New Product"
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id
 

@@ -17,6 +17,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.offers.models import ActivationCode
 from pcapi.core.offers.models import Mediation
 from pcapi.core.offers.models import Offer
+from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Stock
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.providers.models import AllocineVenueProvider
@@ -26,7 +27,6 @@ from pcapi.core.providers.models import VenueProvider
 import pcapi.core.users.factories as users_factories
 from pcapi.core.users.models import Favorite
 from pcapi.core.users.models import User
-from pcapi.models.product import Product
 from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_offerer_by_id
 
 

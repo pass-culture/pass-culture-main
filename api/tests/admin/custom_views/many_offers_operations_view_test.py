@@ -8,9 +8,9 @@ import pcapi.core.criteria.factories as criteria_factories
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.offers.models as offers_models
 from pcapi.core.offers.models import Offer
 import pcapi.core.users.factories as users_factories
-from pcapi.models.product import Product
 
 from tests.conftest import TestClient
 
@@ -223,7 +223,7 @@ class ManyOffersOperationsViewTest:
         # Then
         assert response.status_code == 302
         assert response.headers["location"] == "http://localhost/pc/back-office/many_offers_operations/"
-        products = Product.query.all()
+        products = offers_models.Product.query.all()
         offers = Offer.query.all()
         first_product = products[0]
         first_offer = offers[0]
@@ -237,8 +237,8 @@ class ManyOffersOperationsViewTest:
     def test_get_products_compatible_status(self):
         # Given
         products = []
-        products.append(Product(isGcuCompatible=True))
-        products.append(Product(isGcuCompatible=True))
+        products.append(offers_models.Product(isGcuCompatible=True))
+        products.append(offers_models.Product(isGcuCompatible=True))
 
         # Then
         assert _get_products_compatible_status(products) == {
