@@ -8,6 +8,7 @@ from pcapi.core.bookings.models import Booking
 import pcapi.core.criteria.models as criteria_models
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.models import BankInformation
+import pcapi.core.offerers.models as offerers_models
 from pcapi.core.offerers.models import ApiKey
 from pcapi.core.offerers.models import Offerer
 from pcapi.core.offerers.models import UserOfferer
@@ -136,6 +137,22 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         BankInformation.id.in_(bank_information_ids_to_delete)
     ).delete(synchronize_session=False)
 
+    venue_ids = offerers_models.Venue.query.filter_by(managingOffererId=offerer_id).with_entities(
+        offerers_models.Venue.id
+    )
+    # Warning: we should only delete rows where the "venueId" is the
+    # venue to delete. We should NOT delete rows where the
+    # "pricingPointId" or the "reimbursementId" is the venue to
+    # delete. If other venues still have the "venue to delete" as
+    # their pricing/reimbursement point, the database will rightfully
+    # raise an error. Either these venues should be deleted first, or
+    # the "venue to delete" should not be deleted.
+    deleted_pricing_point_links_count = offerers_models.VenuePricingPointLink.query.filter(
+        offerers_models.VenuePricingPointLink.venueId.in_(venue_ids)
+    ).delete(synchronize_session=False)
+    deleted_reimbursement_point_links_count = offerers_models.VenueReimbursementPointLink.query.filter(
+        offerers_models.VenueReimbursementPointLink.venueId.in_(venue_ids)
+    ).delete(synchronize_session=False)
     deleted_venues_count = Venue.query.filter(Venue.managingOffererId == offerer_id).delete(synchronize_session=False)
 
     deleted_user_offerers_count = UserOfferer.query.filter(UserOfferer.offererId == offerer_id).delete(
@@ -169,6 +186,8 @@ def delete_cascade_offerer_by_id(offerer_id: int) -> None:
         "deleted_mediations_count": deleted_mediations_count,
         "deleted_favorites_count": deleted_favorites_count,
         "deleted_offer_criteria_count": deleted_offer_criteria_count,
+        "deleted_pricing_point_links_count": deleted_pricing_point_links_count,
+        "deleted_reimbursement_point_links_count": deleted_reimbursement_point_links_count,
         "deleted_stocks_count": deleted_stocks_count,
         "deleted_activation_codes_count": deleted_activation_codes_count,
     }
