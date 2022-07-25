@@ -115,6 +115,8 @@ export const serializeOfferApi = (
     stageDirector: apiOffer.extraData?.stageDirector || '',
     visa: apiOffer.extraData?.visa || '',
     stocks: apiOffer.stocks.map(serializeStockApi),
+    lastProviderName: apiOffer.lastProvider?.name || null,
+    status: apiOffer.status || null,
   }
 
   return offer

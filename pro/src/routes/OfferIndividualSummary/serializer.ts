@@ -183,12 +183,16 @@ export const serializePropsFromOfferIndividual = (
   categories: IOfferCategory[],
   subCategories: IOfferSubCategory[]
 ): {
+  offerStatus: string
+  providerName: string | null
   offer: IOfferSectionProps
   stockThing?: IStockThingSectionProps
   stockEventList?: IStockEventItemProps[]
   preview: IOfferAppPreviewProps
 } => {
   return {
+    offerStatus: offer.status,
+    providerName: offer.lastProviderName,
     offer: serializerOfferSectionProps(offer, categories, subCategories),
     stockThing: serializerStockThingSectionProps(offer),
     stockEventList: serializerStockEventSectionProps(offer),
