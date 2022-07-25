@@ -40,6 +40,10 @@ const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
         }
       : null,
     collectiveWebsite: culturalPartnerResponse.payload.siteWeb,
+    collectiveDomains: culturalPartnerResponse.payload.domaineIds.map(id => ({
+      id,
+      name: '',
+    })),
   }
 }
 
