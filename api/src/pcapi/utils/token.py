@@ -8,7 +8,7 @@ ALPHABET = string.ascii_uppercase + string.digits
 ALPHABET = ALPHABET.translate(str.maketrans("", "", "0189IO"))
 
 
-def random_token(length=6):  # type: ignore [no-untyped-def]
+def random_token(length: int = 6) -> str:
     """Generate a token.
 
     This function uses a limited set of characters. If you want to

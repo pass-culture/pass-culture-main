@@ -1,4 +1,4 @@
-from typing import Callable
+import typing
 
 from flask import request
 from flask_limiter import Limiter
@@ -29,7 +29,7 @@ rate_limiter = Limiter(
 )
 
 
-def ip_rate_limiter(**kwargs) -> Callable:  # type: ignore [no-untyped-def]
+def ip_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
     base_kwargs = {
         "key_func": get_remote_address,
         "scope": "ip_limiter",
@@ -39,7 +39,7 @@ def ip_rate_limiter(**kwargs) -> Callable:  # type: ignore [no-untyped-def]
     return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_IP, **base_kwargs)
 
 
-def email_rate_limiter(**kwargs) -> Callable:  # type: ignore [no-untyped-def]
+def email_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
     base_kwargs = {
         "key_func": get_email_from_request,
         "scope": "rate_limiter",
@@ -49,7 +49,7 @@ def email_rate_limiter(**kwargs) -> Callable:  # type: ignore [no-untyped-def]
     return rate_limiter.shared_limit(settings.RATE_LIMIT_BY_EMAIL, **base_kwargs)
 
 
-def basic_auth_rate_limiter(**kwargs) -> Callable:  # type: ignore [no-untyped-def]
+def basic_auth_rate_limiter(**kwargs: typing.Any) -> typing.Callable:
     base_kwargs = {
         "key_func": get_basic_auth_from_request,
         "exempt_when": lambda: get_basic_auth_from_request() is None,
