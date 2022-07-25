@@ -183,6 +183,7 @@ describe('useGetOffer', () => {
       showType: '',
       stageDirector: '',
       speaker: '',
+      status: OfferStatus.EXPIRED,
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
       url: '',
       externalTicketOfficeUrl: '',
@@ -190,6 +191,7 @@ describe('useGetOffer', () => {
       visa: '',
       withdrawalDetails: '',
       withdrawalDelay: null,
+      lastProviderName: null,
       stocks: [
         {
           beginningDatetime: '2022-05-23T08:25:31.009799Z',

@@ -151,4 +151,6 @@ export interface IOfferIndividual {
   withdrawalDelay?: number | null
   withdrawalType: WithdrawalTypeEnum | null
   stocks: IOfferIndividualStock[]
+  lastProviderName: string | null
+  status: string
 }
