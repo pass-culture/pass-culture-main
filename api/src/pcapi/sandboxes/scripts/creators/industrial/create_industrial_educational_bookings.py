@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+from itertools import cycle
 
 from pcapi.core.educational import models as educational_models
 import pcapi.core.educational.factories as educational_factories
@@ -231,6 +232,10 @@ def create_industrial_educational_bookings() -> None:
             email=None,
             phoneNumber=None,
         ),
+        educational_factories.EducationalInstitutionFactory(
+            institutionId="0780004F",
+            name="LEGTPA DE ST GERMAIN EN LAYE - SAINT-GERMAIN-EN-LAYE",
+        ),
     ]
     offerer_with_right_siren = offerers_factories.CollectiveOffererFactory(
         siren="950469494",
@@ -280,62 +285,58 @@ def create_industrial_educational_bookings() -> None:
 
     deposits = []
     for educational_institution in educational_institutions:
-        deposits.append(
-            educational_factories.EducationalDepositFactory(
-                educationalInstitution=educational_institution,
-                educationalYear=educational_current_year,
-                amount=40000,
+        if educational_institution.institutionId != "0780004F":
+            deposits.append(
+                educational_factories.EducationalDepositFactory(
+                    ministry=educational_models.Ministry.AGRICULTURE,
+                    educationalInstitution=educational_institution,
+                    educationalYear=educational_current_year,
+                    amount=40000,
+                )
             )
-        )
-        deposits.append(
-            educational_factories.EducationalDepositFactory(
-                educationalInstitution=educational_institution,
-                educationalYear=educational_next_year,
-                amount=50000,
-                isFinal=False,
+            deposits.append(
+                educational_factories.EducationalDepositFactory(
+                    ministry=educational_models.Ministry.AGRICULTURE,
+                    educationalInstitution=educational_institution,
+                    educationalYear=educational_next_year,
+                    amount=50000,
+                    isFinal=False,
+                )
             )
-        )
+        else:
+            deposits.append(
+                educational_factories.EducationalDepositFactory(
+                    educationalInstitution=educational_institution,
+                    educationalYear=educational_current_year,
+                    amount=40000,
+                )
+            )
+            deposits.append(
+                educational_factories.EducationalDepositFactory(
+                    educationalInstitution=educational_institution,
+                    educationalYear=educational_next_year,
+                    amount=50000,
+                    isFinal=False,
+                )
+            )
 
     now = datetime.datetime.utcnow()
     stocks: list[educational_models.CollectiveStock] = []
     passed_stocks: list[educational_models.CollectiveStock] = []
     next_year_stocks: list[educational_models.CollectiveStock] = []
 
-    iterable_venues = iter(venues)
-    for stock_data in FAKE_STOCK_DATA:
-        try:
-            venue = next(iterable_venues)
-        except StopIteration:
-            iterable_venues = iter(venues)
-            venue = next(iterable_venues)
+    for stock_data, venue in zip(FAKE_STOCK_DATA, cycle(venues)):
         stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=False)[0])
 
-    for stock_data in PASSED_STOCK_DATA:
-        try:
-            venue = next(iterable_venues)
-        except StopIteration:
-            iterable_venues = iter(venues)
-            venue = next(iterable_venues)
+    for stock_data, venue in zip(PASSED_STOCK_DATA, cycle(venues)):
         passed_stocks.append(_create_collective_stock(stock_data, now, venue, 2, is_passed=True)[0])
 
-    for stock_data in FAKE_STOCK_DATA:
-        try:
-            venue = next(iterable_venues)
-        except StopIteration:
-            iterable_venues = iter(venues)
-            venue = next(iterable_venues)
+    for stock_data, venue in zip(FAKE_STOCK_DATA, cycle(venues)):
         next_year_stocks.append(
             _create_collective_stock(stock_data, educational_next_year.beginningDate, venue, 2, is_passed=False)[0]
         )
 
-    iterable_institutions = iter(educational_institutions)
-    for stock in stocks:
-        try:
-            educational_institution = next(iterable_institutions)
-        except StopIteration:
-            iterable_institutions = iter(educational_institutions)
-            educational_institution = next(iterable_institutions)
-
+    for stock, educational_institution in zip(stocks, cycle(educational_institutions)):
         educational_factories.PendingCollectiveBookingFactory(
             educationalRedactor=educational_redactor,
             educationalInstitution=educational_institution,
@@ -349,13 +350,7 @@ def create_industrial_educational_bookings() -> None:
             collectiveStock=stock,
         )
 
-    for stock in passed_stocks:
-        try:
-            educational_institution = next(iterable_institutions)
-        except StopIteration:
-            iterable_institutions = iter(educational_institutions)
-            educational_institution = next(iterable_institutions)
-
+    for stock, educational_institution in zip(passed_stocks, cycle(educational_institutions)):
         educational_factories.UsedCollectiveBookingFactory(
             educationalRedactor=educational_redactor,
             educationalInstitution=educational_institution,
@@ -367,14 +362,7 @@ def create_industrial_educational_bookings() -> None:
             collectiveStock__beginningDatetime=now - datetime.timedelta(8),
         )
 
-    iterable_institutions = iter(educational_institutions)
-    for next_year_stock in next_year_stocks:
-        try:
-            educational_institution = next(iterable_institutions)
-        except StopIteration:
-            iterable_institutions = iter(educational_institutions)
-            educational_institution = next(iterable_institutions)
-
+    for next_year_stock, educational_institution in zip(next_year_stocks, cycle(educational_institutions)):
         educational_factories.PendingCollectiveBookingFactory(
             educationalRedactor=educational_redactor,
             educationalInstitution=educational_institution,
