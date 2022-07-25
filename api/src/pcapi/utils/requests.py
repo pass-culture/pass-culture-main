@@ -105,7 +105,7 @@ class Session(requests.Session):
         unsafe_adapter = HTTPAdapter(max_retries=unsafe_retry_strategy)
         self.mount("https://www.demarches-simplifiees.fr", safe_adapter)
         self.mount(settings.UBBLE_API_URL, safe_adapter)
-        self.mount(settings.BATCH_API_URL, unsafe_adapter)
+        self.mount("https://api.batch.com", unsafe_adapter)
         self.mount("https://api.insee.fr/entreprises/sirene/V3", safe_adapter)
 
     def request(self, method: str | bytes, url: str | bytes, *args: Any, **kwargs: Any) -> Response:

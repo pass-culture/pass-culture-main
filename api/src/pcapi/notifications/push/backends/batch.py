@@ -10,6 +10,9 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 
+API_URL = "https://api.batch.com"
+
+
 @dataclass
 class UserUpdateData:
     user_id: str
@@ -73,7 +76,7 @@ class BatchBackend:
     ) -> None:
         self.handle_request(
             "POST",
-            f"{settings.BATCH_API_URL}/1.0/{batch_api.value}/data/users/{user_id}",
+            f"{API_URL}/1.0/{batch_api.value}/data/users/{user_id}",
             api_name="update_user_attributes",
             can_be_asynchronously_retried=can_be_asynchronously_retried,
             payload={"overwrite": False, "values": attribute_values},
@@ -91,7 +94,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/",
+                f"{API_URL}/1.0/{api.value}/data/users/",
                 api_name="update_userS_attributes",
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
                 payload=[payload_template(user) for user in users_data],
@@ -106,7 +109,7 @@ class BatchBackend:
         def make_post_request(api: BatchAPI) -> None:
             self.handle_request(
                 "POST",
-                f"{settings.BATCH_API_URL}/1.1/{api.value}/transactional/send",
+                f"{API_URL}/1.1/{api.value}/transactional/send",
                 api_name="transactional_notification",
                 can_be_asynchronously_retried=can_be_asynchronously_retried,
                 payload={
@@ -129,7 +132,7 @@ class BatchBackend:
         accept DELETE http methods.
         """
         for api in (BatchAPI.IOS, BatchAPI.ANDROID):
-            url = f"{settings.BATCH_API_URL}/1.0/{api.value}/data/users/{user_id}"
+            url = f"{API_URL}/1.0/{api.value}/data/users/{user_id}"
             self.handle_request(
                 "DELETE",
                 url,
