@@ -105,9 +105,6 @@ class FeatureToggle(enum.Enum):
     # then, this flag musty be kept because it is still fetched by the
     # old webapp.
     WEBAPP_V2_ENABLED = "Utiliser la nouvelle web app (décli web/v2) au lieu de l'ancienne"
-    ENABLE_INDIVIDUAL_AND_COLLECTIVE_OFFER_SEPARATION = (
-        "Sépare la visualisation des offres et des remboursements sur le portail PRO"
-    )
     OFFER_FORM_V3 = "Afficher la version 3 du formulaire d'offre"
     OFFER_FORM_SUMMARY_PAGE = "Afficher la page de récapitulatif de l'offre dans le formulaire V2"
     ALLOW_ACCOUNT_UNSUSPENSION = "Activer le nouveau parcours de réactivation de compte"
