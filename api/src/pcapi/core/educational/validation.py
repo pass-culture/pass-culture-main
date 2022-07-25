@@ -1,3 +1,4 @@
+import datetime
 from decimal import Decimal
 
 from pcapi.core.bookings import exceptions as booking_exceptions
@@ -11,6 +12,8 @@ from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.models import EducationalInstitution
 from pcapi.core.educational.models import EducationalYear
 from pcapi.core.educational.repository import get_confirmed_collective_bookings_amount
+from pcapi.core.educational.repository import get_confirmed_collective_bookings_amount_for_ministry
+from pcapi.core.educational.repository import get_ministry_budget_for_year
 from pcapi.core.offers import validation as offers_validation
 from pcapi.core.offers.models import Stock
 
@@ -24,6 +27,22 @@ def check_institution_fund(
     spent_amount = get_confirmed_collective_bookings_amount(educational_institution_id, educational_year_id)
     total_amount = booking_amount + spent_amount
     deposit.check_has_enough_fund(total_amount)
+
+
+def check_ministry_fund(
+    educational_year_id: str, booking_amount: Decimal, booking_date: datetime.datetime, ministry: str | None
+) -> None:
+    if booking_date.month < 9:
+        return
+    spent_amount = get_confirmed_collective_bookings_amount_for_ministry(
+        educational_year_id=educational_year_id, ministry=ministry
+    )
+    total_spent_amount = spent_amount + booking_amount
+    yearly_available_amount = get_ministry_budget_for_year(educational_year_id=educational_year_id, ministry=ministry)
+    # on sptember-december period we only have 4/12 of the budget
+    available_amount = yearly_available_amount / 3
+    if total_spent_amount > available_amount:
+        raise exceptions.InsufficientMinistryFund()
 
 
 def check_institution_exists(educational_institution: EducationalInstitution | None) -> None:

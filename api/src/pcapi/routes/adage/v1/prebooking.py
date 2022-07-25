@@ -53,6 +53,8 @@ def confirm_prebooking(educational_booking_id: int) -> prebooking_serialization.
         educational_booking = api.confirm_collective_booking(educational_booking_id)
     except exceptions.InsufficientFund:
         raise ApiErrors({"code": "INSUFFICIENT_FUND"}, status_code=422)
+    except exceptions.InsufficientMinistryFund:
+        raise ApiErrors({"code": "INSUFFICIENT_MINISTRY_FUND"}, status_code=422)
     except exceptions.InsufficientTemporaryFund:
         raise ApiErrors({"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}, status_code=422)
     except exceptions.BookingIsCancelled:
