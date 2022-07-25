@@ -22,6 +22,7 @@ describe('getCulturalPartnerAdapter', () => {
       id: 1,
       statutId: 3,
       siteWeb: 'www.toto.com',
+      domaineIds: [1, 2],
     }
     // given
     jest.spyOn(api, 'getEducationalPartner').mockResolvedValueOnce(payload)

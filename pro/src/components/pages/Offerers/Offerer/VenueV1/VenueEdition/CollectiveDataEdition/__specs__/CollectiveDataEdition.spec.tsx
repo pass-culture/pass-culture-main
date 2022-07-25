@@ -518,9 +518,19 @@ describe('CollectiveDataEdition', () => {
 
       const websiteField = screen.getByLabelText(/URL de votre site web/)
       const statusField = screen.getByLabelText(/Statut :/)
+      const domainsInput = screen.getByLabelText(
+        /Domaine artistique et culturel :/
+      )
 
       expect(websiteField).toHaveValue('http://monsite.com')
       expect(statusField).toHaveValue('2')
+
+      await userEvent.click(domainsInput)
+      await waitFor(() => {
+        expect(screen.getAllByRole('checkbox', { checked: true })).toHaveLength(
+          2
+        )
+      })
 
       expect(api.getEducationalPartner).toHaveBeenCalledWith('1234567890')
     })
