@@ -21,14 +21,15 @@ jobs:
             src:
               - 'api/**'
 
-      - name: Cache
-        if: steps.changesApi.outputs.src == 'true'
-        uses: satackey/action-docker-layer-caching@v0.0.11
+      - uses: satackey/action-docker-layer-caching@v0.0.11
         with:
-          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
+          key: docker-layer-caching-${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}-${{ hashFiles('api/requirements.txt') }}
           restore-keys: |
-            docker-cache-${{ hashFiles('api/requirements.txt') }}
-            docker-cache
+            docker-layer-caching-${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}-${{ hashFiles('api/requirements.txt') }}
+            docker-layer-caching-${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+            docker-layer-caching-${{ github.workflow }}-${{ github.event_name }}
+            docker-layer-caching-${{ github.workflow }}
+            docker-layer-caching-
 
       - uses: actions/setup-node@v2
         if: steps.changesApi.outputs.src == 'true'
