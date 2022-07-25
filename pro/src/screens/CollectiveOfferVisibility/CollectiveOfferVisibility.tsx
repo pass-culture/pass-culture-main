@@ -178,6 +178,7 @@ const CollectiveOfferVisibility = ({
                       maxDisplayOptionsLabel="20 résultats maximum. Veuillez affiner votre recherche"
                       maxHeight={100}
                       hideArrow
+                      disabled={mode === Mode.READ_ONLY}
                     />
                     {selectedInstitution && (
                       <Banner type="light" className={styles['institution']}>

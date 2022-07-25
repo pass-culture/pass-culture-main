@@ -75,9 +75,17 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should disable visibility form if offer is not editable', async () => {
+    props.initialValues = {
+      ...props.initialValues,
+      institution: '12',
+      visibility: 'one',
+    }
     renderVisibilityStep({ ...props, mode: Mode.READ_ONLY })
     expect(
       screen.getByLabelText(/Un établissement en particulier/)
+    ).toBeDisabled()
+    expect(
+      await screen.findByPlaceholderText(/Saisir l’établissement scolaire/)
     ).toBeDisabled()
     expect(screen.getByText(/Valider et enregistrer l’offre/)).toBeDisabled()
   })
