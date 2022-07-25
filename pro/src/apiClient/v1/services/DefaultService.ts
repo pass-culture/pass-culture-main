@@ -189,7 +189,7 @@ export class DefaultService {
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
-      url: '/collective/offers',
+      url: '/collective/offer',
       query: {
         'nameOrIsbn': nameOrIsbn,
         'offererId': offererId,
