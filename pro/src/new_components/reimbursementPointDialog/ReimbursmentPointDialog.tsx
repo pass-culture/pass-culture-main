@@ -1,9 +1,8 @@
 import { Button } from 'ui-kit/Button'
-
 import CopyLink from 'ui-kit/CopyLink'
-import { DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import DialogBox from '../DialogBox'
 import Icon from 'components/layout/Icon'
+import { REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
 import React from 'react'
 import styles from './ReimbursmentPointDialog.module.scss'
 
@@ -17,7 +16,7 @@ const ReimbursmentPointDialog = ({
 }: IReimbursmentPointDialog) => {
   const openDmsProcedure = () => {
     window.open(
-      DEMARCHES_SIMPLIFIEES_BUSINESS_UNIT_RIB_UPLOAD_PROCEDURE_URL,
+      REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4,
       '_blank'
     )
   }
