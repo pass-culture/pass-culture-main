@@ -60,6 +60,8 @@ const CollectiveDataEdition = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const [venueCollectiveData, setVenueCollectiveData] =
     useState<GetCollectiveVenueResponseModel | null>(null)
+  const [adageVenueCollectiveData, setAdageVenueCollectiveData] =
+    useState<GetCollectiveVenueResponseModel | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -93,7 +95,7 @@ const CollectiveDataEdition = (): JSX.Element => {
             await fetchCulturalPartnerIfVenueHasNoCollectiveData(
               venueResponse.payload
             )
-          setVenueCollectiveData(collectiveData)
+          setAdageVenueCollectiveData(collectiveData)
         }
       }
 
@@ -123,6 +125,7 @@ const CollectiveDataEdition = (): JSX.Element => {
           venueId={venueId}
           offererId={offererId}
           venueCollectiveData={venueCollectiveData}
+          adageVenueCollectiveData={adageVenueCollectiveData}
         />
       )}
     </>
