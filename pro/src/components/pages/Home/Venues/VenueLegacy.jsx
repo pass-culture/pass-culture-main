@@ -13,6 +13,7 @@ import { venueCreateOfferLink } from 'core/Venue/utils'
 
 const Venue = ({
   hasBusinessUnit,
+  hasReimbursementPoint,
   id,
   isVirtual,
   name,
@@ -70,6 +71,9 @@ const Venue = ({
 
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
+  )
+  const isNewBankInformationActive = useActiveFeature(
+    'ENABLE_NEW_BANK_INFORMATIONS_CREATION'
   )
 
   useEffect(() => {
@@ -130,7 +134,9 @@ const Venue = ({
               </span>
             </h3>
             <div className="button-group">
-              {isBankInformationWithSiretActive &&
+              {(isNewBankInformationActive ||
+                isBankInformationWithSiretActive) &&
+                !hasReimbursementPoint &&
                 !hasBusinessUnit &&
                 !isVirtual && (
                   <>

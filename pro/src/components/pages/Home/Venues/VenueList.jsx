@@ -26,6 +26,7 @@ export const VenueList = ({
         name={venue.name}
         offererId={selectedOffererId}
         publicName={venue.publicName}
+        hasReimbursementPoint={venue.hasReimbursementPoint}
       />
     ))}
   </div>
