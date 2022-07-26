@@ -3,12 +3,10 @@ import React, { useContext } from 'react'
 import { Configure, InstantSearch } from 'react-instantsearch-dom'
 
 import { AuthenticatedResponse, VenueResponse } from 'api/gen'
-import { useActiveFeature } from 'app/hooks/useActiveFeature'
 import { FacetFiltersContext } from 'app/providers'
 import {
   ALGOLIA_API_KEY,
   ALGOLIA_APP_ID,
-  ALGOLIA_OFFERS_INDEX,
   ALGOLIA_COLLECTIVE_OFFERS_INDEX,
 } from 'utils/config'
 
@@ -35,17 +33,10 @@ export const OffersInstantSearch = ({
   venueFilter: VenueResponse | null
 }): JSX.Element => {
   const { facetFilters } = useContext(FacetFiltersContext)
-  const useNewAlgoliaIndex = useActiveFeature(
-    'ENABLE_NEW_ALGOLIA_INDEX_ON_ADAGE'
-  )
 
   return (
     <InstantSearch
-      indexName={
-        useNewAlgoliaIndex
-          ? ALGOLIA_COLLECTIVE_OFFERS_INDEX
-          : ALGOLIA_OFFERS_INDEX
-      }
+      indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
       searchClient={searchClient}
     >
       <Configure
