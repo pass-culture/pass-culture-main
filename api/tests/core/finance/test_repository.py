@@ -8,10 +8,9 @@ from pcapi.core.finance import api
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.finance import repository
-from pcapi.core.finance.factories import BankInformationFactory
 from pcapi.core.finance.models import BankInformationStatus
-import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.payments.factories as payments_factories
 from pcapi.core.testing import override_features
@@ -98,6 +97,88 @@ class GetBusinessUnitsTest:
         business_units = repository.get_business_units_query(admin)
         business_units = list(business_units.order_by(models.BusinessUnit.id))
         assert business_units == [business_unit1]
+
+
+class GetReimbursementPointsTest:
+    def test_admin(self):
+        admin = users_factories.AdminFactory()
+        reimbursement_point1 = offerers_factories.VenueFactory(reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point1)
+        reimbursement_point2 = offerers_factories.VenueFactory(reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point2)
+
+        reimbursement_points = repository.get_reimbursement_points_query(admin)
+        reimbursement_points = list(reimbursement_points.order_by(offerers_models.Venue.id))
+
+        assert reimbursement_points == [reimbursement_point1, reimbursement_point2]
+
+    def test_pro(self):
+        offerer = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
+        reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer, reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point1)
+        reimbursement_point2 = offerers_factories.VenueFactory(reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point2)
+
+        reimbursement_points = list(repository.get_reimbursement_points_query(pro))
+
+        assert reimbursement_points == [reimbursement_point1]
+
+    def test_admin_and_filter_on_offerer_id(self):
+        admin = users_factories.AdminFactory()
+        offerer1 = offerers_factories.OffererFactory()
+        reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer1, reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point1)
+        reimbursement_point2 = offerers_factories.VenueFactory(reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point2)
+
+        reimbursement_points = repository.get_reimbursement_points_query(user=admin, offerer_id=offerer1.id)
+        reimbursement_points = list(reimbursement_points.order_by(offerers_models.Venue.id))
+
+        assert reimbursement_points == [reimbursement_point1]
+
+    def test_pro_and_filter_on_offerer_id(self):
+        offerer1 = offerers_factories.OffererFactory()
+        reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer1, reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point1)
+        offerer2 = offerers_factories.OffererFactory()
+        reimbursement_point2 = offerers_factories.VenueFactory(managingOfferer=offerer2, reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point2)
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
+
+        reimbursement_points = list(repository.get_reimbursement_points_query(pro, offerer_id=offerer1.id))
+
+        assert reimbursement_points == [reimbursement_point1]
+
+    def test_check_offerer_id_and_pro_user(self):
+        # Make sure that a pro user cannot specify an offerer id for
+        # which they don't have access.
+        offerer1 = offerers_factories.OffererFactory()
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
+        reimbursement_point1 = offerers_factories.VenueFactory(managingOfferer=offerer1, reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point1)
+        offerer2 = offerers_factories.OffererFactory()
+        reimbursement_point2 = offerers_factories.VenueFactory(managingOfferer=offerer2, reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point2)
+
+        reimbursement_points = repository.get_reimbursement_points_query(pro, offerer_id=offerer2.id)
+
+        assert reimbursement_points.count() == 0
+
+    def test_return_accepted_bank_information_only(self):
+        admin = users_factories.AdminFactory()
+        reimbursement_point1 = offerers_factories.VenueFactory(reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point1)
+        reimbursement_point2 = offerers_factories.VenueFactory(reimbursement_point="self")
+        factories.BankInformationFactory(venue=reimbursement_point2, status=BankInformationStatus.DRAFT)
+
+        reimbursement_points = repository.get_reimbursement_points_query(admin)
+        reimbursement_points = list(reimbursement_points.order_by(offerers_models.Venue.id))
+
+        assert reimbursement_points == [reimbursement_point1]
 
 
 class GetInvoicesQueryTest:
