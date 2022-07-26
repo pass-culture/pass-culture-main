@@ -45,10 +45,11 @@
       display: flex;
       flex-direction: column;
       color: colors.$grey-dark;
+      font-size: rem.torem(15px);
 
       span {
         color: colors.$black;
-        font-weight: 600;
+        font-weight: 500;
       }
 
       .last-synchronisation {
