@@ -5,7 +5,7 @@ import {
   IOfferIndividualFormValues,
 } from 'new_components/OfferIndividualForm'
 
-const setInitialFormValues = (
+const setDefaultInitialFormValues = (
   values: IOfferIndividualFormValues,
   offererNames: TOffererName[],
   offererId: string | null,
@@ -54,4 +54,4 @@ const setInitialFormValues = (
   }
 }
 
-export default setInitialFormValues
+export default setDefaultInitialFormValues
