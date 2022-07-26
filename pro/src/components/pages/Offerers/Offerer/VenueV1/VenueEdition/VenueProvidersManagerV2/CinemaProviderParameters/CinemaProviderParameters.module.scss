@@ -17,7 +17,8 @@
 
     span {
       color: colors.$black;
-      font-weight: 600;
+      font-size: rem.torem(15px);
+      font-weight: 500;
     }
   }
 
