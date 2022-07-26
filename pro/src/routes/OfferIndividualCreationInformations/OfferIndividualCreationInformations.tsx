@@ -11,7 +11,7 @@ import { useHomePath } from 'hooks'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
-  setInitialFormValues,
+  setDefaultInitialFormValues,
 } from 'new_components/OfferIndividualForm'
 import { Informations as InformationsScreen } from 'screens/OfferIndividual/Informations'
 
@@ -80,7 +80,7 @@ const OfferIndividualCreationInformations = (): JSX.Element | null => {
   const { categories, subCategories } = categoriesData
 
   // TODO: prefill informations from previously saved offer
-  const initialValues: IOfferIndividualFormValues = setInitialFormValues(
+  const initialValues: IOfferIndividualFormValues = setDefaultInitialFormValues(
     FORM_DEFAULT_VALUES,
     offererNames,
     offererId,
