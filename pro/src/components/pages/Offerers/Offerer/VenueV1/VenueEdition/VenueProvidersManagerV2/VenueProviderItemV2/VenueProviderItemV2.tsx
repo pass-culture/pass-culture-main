@@ -50,14 +50,14 @@ const VenueProviderItemV2 = ({
           </div>
         </div>
         {!lastSyncDate ? (
-          <div className="venue-id-at-offer-provider-container-with-message">
+          <div className={style['venue-id-at-offer-provider-container']}>
             <div className="venue-id-at-offer-provider">
-              Compte : <strong>{venueIdAtOfferProvider}</strong>
+              Compte : <span>{venueIdAtOfferProvider}</span>
             </div>
-            <div className="import-label-container">
+            <span>
               Importation en cours. Cette étape peut durer plusieurs dizaines de
               minutes. Vous pouvez fermer votre navigateur et revenir plus tard.
-            </div>
+            </span>
           </div>
         ) : (
           <div className={style['venue-id-at-offer-provider-container']}>
