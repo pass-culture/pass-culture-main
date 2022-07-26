@@ -149,8 +149,8 @@ class ChangeEmailTokenContent(BaseModel):
     current_email: pydantic.EmailStr
     new_email: pydantic.EmailStr
 
+    @validator("current_email", "new_email", pre=True)
     @classmethod
-    @validator("current_email,new_email", pre=True)
     def validate_emails(cls, email: str) -> str:
         try:
             return sanitize_email(email)
