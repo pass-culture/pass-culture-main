@@ -48,39 +48,67 @@ def find_business_unit_by_siret(siret: str) -> models.BusinessUnit | None:
     return models.BusinessUnit.query.filter_by(siret=siret).one_or_none()
 
 
-def get_invoices_query(  # type: ignore [no-untyped-def]
+def get_invoices_query(
     user: users_models.User,
-    business_unit_id: int = None,
-    date_from: datetime.date = None,
-    date_until: datetime.date = None,
-):
+    business_unit_id: int | None = None,
+    reimbursement_point_id: int | None = None,
+    date_from: datetime.date | None = None,
+    date_until: datetime.date | None = None,
+) -> sqla_orm.Query:
     """Return invoices for the requested offerer.
 
     If given, ``date_from`` is **inclusive**, ``date_until`` is
     **exclusive**.
     """
-    business_units_subquery = offerers_models.Venue.query
-    if not user.has_admin_role:
-        business_units_subquery = business_units_subquery.join(
-            offerers_models.UserOfferer,
-            offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
-        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
-    if business_unit_id:
-        # Filtering like this makes sure that the requested business
-        # unit id is accessible by the requesting user.
-        business_units_subquery = business_units_subquery.filter(
-            offerers_models.Venue.businessUnitId == business_unit_id
+    if FeatureToggle.ENABLE_NEW_BANK_INFORMATIONS_CREATION.is_active():
+        reimbursement_point_subquery = offerers_models.Venue.query
+
+        if not user.has_admin_role:
+            reimbursement_point_subquery = reimbursement_point_subquery.join(
+                offerers_models.UserOfferer,
+                offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
+            ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
+
+        if reimbursement_point_id:
+            reimbursement_point_subquery = reimbursement_point_subquery.join(
+                offerers_models.Venue.reimbursement_point_links
+            ).filter(offerers_models.VenueReimbursementPointLink.reimbursementPointId == reimbursement_point_id)
+
+        elif user.has_admin_role:
+            # The following intentionally returns nothing for admin users,
+            # so that we do NOT return all invoices of all reimbursement points
+            # for them. Admin users must select a reimbursement point.
+            reimbursement_point_subquery = reimbursement_point_subquery.filter(False)
+
+        invoices = models.Invoice.query.filter(
+            models.Invoice.reimbursementPointId.in_(
+                reimbursement_point_subquery.with_entities(offerers_models.Venue.id).subquery()
+            )
         )
-    elif user.has_admin_role:
-        # The following intentionally returns nothing for admin users,
-        # so that we do NOT return all invoices of all business units
-        # for them. Admin users must select a business unit.
-        business_units_subquery = business_units_subquery.filter(False)
-    invoices = models.Invoice.query.filter(
-        models.Invoice.businessUnitId.in_(
-            business_units_subquery.with_entities(offerers_models.Venue.businessUnitId).subquery()
+    else:
+        business_units_subquery = offerers_models.Venue.query
+        if not user.has_admin_role:
+            business_units_subquery = business_units_subquery.join(
+                offerers_models.UserOfferer,
+                offerers_models.UserOfferer.offererId == offerers_models.Venue.managingOffererId,
+            ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
+        if business_unit_id:
+            # Filtering like this makes sure that the requested business
+            # unit id is accessible by the requesting user.
+            business_units_subquery = business_units_subquery.filter(
+                offerers_models.Venue.businessUnitId == business_unit_id
+            )
+        elif user.has_admin_role:
+            # The following intentionally returns nothing for admin users,
+            # so that we do NOT return all invoices of all business units
+            # for them. Admin users must select a business unit.
+            business_units_subquery = business_units_subquery.filter(False)
+        invoices = models.Invoice.query.filter(
+            models.Invoice.businessUnitId.in_(
+                business_units_subquery.with_entities(offerers_models.Venue.businessUnitId).subquery()
+            )
         )
-    )
+
     convert_to_datetime = lambda date: date_utils.get_day_start(date, utils.ACCOUNTING_TIMEZONE).astimezone(pytz.utc)
     if date_from:
         datetime_from = convert_to_datetime(date_from)

@@ -106,6 +106,7 @@ class InvoiceFactory(BaseFactory):
         model = models.Invoice
 
     businessUnit = factory.SubFactory(BusinessUnitFactory)
+    reimbursementPoint = factory.SubFactory(offerers_factories.VenueFactory)
     amount = 1000
     reference = factory.Sequence("{:09}".format)
     token = factory.LazyFunction(secrets.token_urlsafe)

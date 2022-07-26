@@ -30,6 +30,7 @@ def get_invoices(
     invoices = finance_repository.get_invoices_query(
         current_user,
         business_unit_id=query.businessUnitId,
+        reimbursement_point_id=query.reimbursementPointId,
         date_from=query.periodBeginningDate,
         date_until=query.periodEndingDate,
     )

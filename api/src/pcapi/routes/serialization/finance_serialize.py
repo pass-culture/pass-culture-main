@@ -50,6 +50,7 @@ class InvoiceListQueryModel(BaseModel):
     businessUnitId: int | None
     periodBeginningDate: datetime.date | None
     periodEndingDate: datetime.date | None
+    reimbursementPointId: int | None
 
 
 class InvoiceResponseModel(BaseModel):
@@ -60,12 +61,14 @@ class InvoiceResponseModel(BaseModel):
     date: datetime.date
     amount: float
     url: str
-    businessUnitName: str
+    businessUnitName: str | None
+    reimbursementPointName: str | None
     cashflowLabels: list[str]
 
     @classmethod
     def from_orm(cls, invoice: finance_models.Invoice):  # type: ignore [no-untyped-def]
-        invoice.businessUnitName = invoice.businessUnit.name
+        invoice.businessUnitName = invoice.businessUnit.name if invoice.businessUnit else None
+        invoice.reimbursementPointName = invoice.reimbursementPoint.name if invoice.reimbursementPoint else None
         invoice.cashflowLabels = [cashflow.batch.label for cashflow in invoice.cashflows]
         res = super().from_orm(invoice)
         res.amount = -finance_utils.to_euros(res.amount)  # type: ignore [assignment, arg-type]
