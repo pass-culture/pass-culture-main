@@ -28,7 +28,12 @@ export const ManualReviewModal = ({
   eligibilityFraudChecks: EligibilityFraudCheck[]
 }) => {
   const [openModal, setOpenModal] = useState(false)
-  const noFraudCheck = eligibilityFraudChecks.length <= 0
+
+  const fraudChecks = eligibilityFraudChecks.flatMap(
+    eligibilityFraudCheck => eligibilityFraudCheck.items
+  )
+  const noFraudCheck = fraudChecks.length <= 0
+
   const notify = useNotify()
 
   const styleModal = {
