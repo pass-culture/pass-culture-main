@@ -32,7 +32,8 @@ def test_get_invoices(client):
     other_business_unit = finance_factories.BusinessUnitFactory()
     _other_venue = offerers_factories.VenueFactory(businessUnit=other_business_unit)
     _other_invoice = finance_factories.InvoiceFactory(businessUnit=other_business_unit)
-    pro = users_factories.ProFactory(offerers=[offerer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     client = client.with_session_auth(pro.email)
     response = client.get("/finance/invoices")
@@ -76,7 +77,8 @@ def test_get_invoices_only_return_visible_invoices(client):
     venue3 = offerers_factories.VenueFactory(businessUnit=business_unit3)
     offerer2 = venue3.managingOfferer
 
-    pro = users_factories.ProFactory(offerers=[offerer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer2, validationToken="token")
 
     client = client.with_session_auth(pro.email)
@@ -110,7 +112,8 @@ def test_get_invoices_specify_business_unit(client):
     _invoice2 = finance_factories.InvoiceFactory(businessUnit=business_unit2)
     venue = offerers_factories.VenueFactory(businessUnit=business_unit1)
     offerer = venue.managingOfferer
-    pro = users_factories.ProFactory(offerers=[offerer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     client = client.with_session_auth(pro.email)
     params = {"businessUnitId": business_unit1.id}
@@ -138,7 +141,8 @@ def test_get_invoices_specify_dates(client):
     )
     venue = offerers_factories.VenueFactory(businessUnit=business_unit)
     offerer = venue.managingOfferer
-    pro = users_factories.ProFactory(offerers=[offerer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     client = client.with_session_auth(pro.email)
     params = {"periodBeginningDate": "2021-07-01", "periodEndingDate": "2021-07-31"}
@@ -152,7 +156,8 @@ def test_get_invoices_specify_dates(client):
 
 def test_get_invoices_unauthorized_business_unit(client):
     offerer = offerers_factories.OffererFactory()
-    pro = users_factories.ProFactory(offerers=[offerer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
     other_invoice = finance_factories.InvoiceFactory()
     other_business_unit = other_invoice.businessUnit
 

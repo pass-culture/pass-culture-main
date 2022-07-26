@@ -90,7 +90,11 @@ def get_pro_attributes(email: str) -> ProAttributes:
 
     user = find_pro_user_by_email(email)
     if user:
-        offerers = [offerer for offerer in user.offerers if offerer.isActive]
+        offerers = [
+            user_offerer.offerer
+            for user_offerer in user.UserOfferers
+            if (user_offerer.isValidated and user_offerer.offerer.isActive)
+        ]
 
         if offerers:
             offerers_names += [offerer.name for offerer in offerers]

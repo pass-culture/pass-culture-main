@@ -32,7 +32,8 @@ def test_get_business_units_by_pro(client):
     )
     business_unit1 = venue1.businessUnit
     _other_venue_with_business_unit = offerers_factories.VenueFactory()
-    pro = users_factories.ProFactory(offerers=[venue1.managingOfferer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(offerer=venue1.managingOfferer, user=pro)
 
     client = client.with_session_auth(pro.email)
     n_queries = testing.AUTHENTICATION_QUERIES
@@ -56,7 +57,9 @@ def test_get_business_units_by_pro_filtered_on_offerer_id(client):
     venue1 = offerers_factories.VenueFactory()
     business_unit1 = venue1.businessUnit
     venue2 = offerers_factories.VenueFactory()
-    pro = users_factories.ProFactory(offerers=[venue1.managingOfferer, venue2.managingOfferer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(offerer=venue1.managingOfferer, user=pro)
+    offerers_factories.UserOffererFactory(offerer=venue2.managingOfferer, user=pro)
 
     client = client.with_session_auth(pro.email)
     params = {"offererId": human_ids.humanize(venue1.managingOffererId)}

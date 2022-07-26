@@ -128,7 +128,7 @@ class VenueTypeCode(enum.Enum):
 
 VenueTypeCodeKey = enum.Enum(  # type: ignore [misc]
     "VenueTypeCodeKey",
-    {name.name: name.name for name in VenueTypeCode},
+    {code.name: code.name for code in VenueTypeCode},
 )
 
 
@@ -557,7 +557,7 @@ class Offerer(
 
     name = Column(String(140), nullable=False)
 
-    users = relationship("User", secondary="user_offerer")  # type: ignore [var-annotated]
+    UserOfferers: list["UserOfferer"] = sa.orm.relationship("UserOfferer", back_populates="offerer")
 
     siren = Column(
         String(9), nullable=True, unique=True
@@ -623,9 +623,9 @@ offerer_ts_indexes = [
 class UserOfferer(PcObject, Base, Model, NeedsValidationMixin):  # type: ignore [valid-type, misc]
     __table_name__ = "user_offerer"
     userId = Column(BigInteger, ForeignKey("user.id"), primary_key=True)
-    user = relationship("User", foreign_keys=[userId], backref=backref("UserOfferers"))  # type: ignore [misc]
-    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True)
-    offerer = relationship("Offerer", foreign_keys=[offererId], backref=backref("UserOfferers"))  # type: ignore [misc]
+    user = relationship("User", foreign_keys=[userId], back_populates="UserOfferers")  # type: ignore [misc]
+    offererId = Column(BigInteger, ForeignKey("offerer.id"), index=True, primary_key=True, nullable=False)
+    offerer: Offerer = relationship(Offerer, foreign_keys=[offererId], back_populates="UserOfferers")
 
     __table_args__ = (
         UniqueConstraint(
