@@ -1,7 +1,9 @@
+import { Events } from 'core/FirebaseEvents/constants'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
 import classnames from 'classnames'
+import { useSelector } from 'react-redux'
 
 const ReturnOrSubmitControl = ({
   canSubmit,
@@ -10,36 +12,47 @@ const ReturnOrSubmitControl = ({
   isRequestPending,
   offererId,
   readOnly,
-}) => (
-  <div className="control">
-    <div
-      className="field is-grouped is-grouped-centered"
-      style={{ justifyContent: 'space-between' }}
-    >
-      <div className="control">
-        {readOnly ? (
-          <Link className="primary-link" to={`/accueil?structure=${offererId}`}>
-            Terminer
-          </Link>
-        ) : (
-          <button
-            className={classnames('primary-button', {
-              'is-loading': isRequestPending,
-            })}
-            disabled={!canSubmit || isRequestPending}
-            type="submit"
-          >
-            {isCreatedEntity
-              ? isNewBankInformationCreation
-                ? 'Enregistrer et continuer'
-                : 'Créer'
-              : 'Valider'}
-          </button>
-        )}
+}) => {
+  const logEvent = useSelector(state => state.app.logEvent)
+  return (
+    <div className="control">
+      <div
+        className="field is-grouped is-grouped-centered"
+        style={{ justifyContent: 'space-between' }}
+      >
+        <div className="control">
+          {readOnly ? (
+            <Link
+              className="primary-link"
+              to={`/accueil?structure=${offererId}`}
+            >
+              Terminer
+            </Link>
+          ) : (
+            <button
+              className={classnames('primary-button', {
+                'is-loading': isRequestPending,
+              })}
+              disabled={!canSubmit || isRequestPending}
+              type="submit"
+              onClick={() => {
+                logEvent(Events.CLICKED_SAVE_VENUE, {
+                  from: location.pathname,
+                })
+              }}
+            >
+              {isCreatedEntity
+                ? isNewBankInformationCreation
+                  ? 'Enregistrer et continuer'
+                  : 'Créer'
+                : 'Valider'}
+            </button>
+          )}
+        </div>
       </div>
     </div>
-  </div>
-)
+  )
+}
 
 ReturnOrSubmitControl.defaultProps = {
   isCreatedEntity: false,
