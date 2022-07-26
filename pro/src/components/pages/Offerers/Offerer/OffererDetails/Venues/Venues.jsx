@@ -1,14 +1,17 @@
+import { Events } from 'core/FirebaseEvents/constants'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import VenueItem from './VenueItem/VenueItem'
+import { useSelector } from 'react-redux'
 
 const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
   const venueCreationUrl = isVenueCreationAvailable
     ? `/structures/${offererId}/lieux/creation`
     : UNAVAILABLE_ERROR_PAGE
 
+  const logEvent = useSelector(state => state.app.logEvent)
   return (
     <div className="section op-content-section">
       <h2 className="main-list-title">Lieux</h2>
@@ -18,7 +21,15 @@ const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
         ))}
       </ul>
       <div className="has-text-centered">
-        <Link className="tertiary-link" to={venueCreationUrl}>
+        <Link
+          className="tertiary-link"
+          to={venueCreationUrl}
+          onClick={() => {
+            logEvent(Events.CLICKED_ADD_VENUE_IN_OFFERER, {
+              from: location.pathname,
+            })
+          }}
+        >
           + Ajouter un lieu
         </Link>
       </div>
