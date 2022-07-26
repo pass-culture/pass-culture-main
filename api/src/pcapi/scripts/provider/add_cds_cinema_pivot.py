@@ -14,8 +14,9 @@ from pcapi.models import db
 
 
 class CDSCinema:
-    def __init__(self, cinemaid: str, cds_token: str, venue_siret: str) -> None:
-        self.cinemaid = cinemaid
+    def __init__(self, account_id: str, cinema_id: str, cds_token: str, venue_siret: str) -> None:
+        self.account_id = account_id
+        self.cinema_id = cinema_id
         self.cds_token = cds_token
         self.venue_siret = venue_siret
 
@@ -44,18 +45,20 @@ def add_all_cinema_pivot_from_file(file_path: str, dry_run: bool = True) -> None
 def add_pivot_and_booking_provider_for_cinema(
     cinema: CDSCinema, provider: Provider, booking_provider: BookingProvider
 ) -> None:
-    print(f"Adding Pivot for {cinema.cinemaid} - {cinema.venue_siret} - {cinema.cds_token} ...")
+    print(f"Adding Pivot for {cinema.account_id} - {cinema.cinema_id} - {cinema.venue_siret} - {cinema.cds_token} ...")
     venue = Venue.query.filter(Venue.siret == cinema.venue_siret).one_or_none()
     if venue:
         try:
             with db.session.begin_nested():
-                pivot = CinemaProviderPivot(venue=venue, provider=provider, idAtProvider=cinema.cinemaid)
-                cds_details = CDSCinemaDetails(cinemaProviderPivot=pivot, cinemaApiToken=cinema.cds_token)
+                pivot = CinemaProviderPivot(venue=venue, provider=provider, idAtProvider=cinema.cinema_id)
+                cds_details = CDSCinemaDetails(
+                    cinemaProviderPivot=pivot, cinemaApiToken=cinema.cds_token, accountId=cinema.account_id
+                )
                 venue_booking_provider = VenueBookingProvider(
                     isActive=True,
                     venue=venue,
                     bookingProvider=booking_provider,
-                    idAtProvider=cinema.cinemaid,
+                    idAtProvider=cinema.cinema_id,
                     token=cinema.cds_token,
                 )
                 db.session.add(pivot)
@@ -63,11 +66,11 @@ def add_pivot_and_booking_provider_for_cinema(
                 db.session.add(venue_booking_provider)
                 db.session.flush()
         except sqlalchemy.exc.IntegrityError as e:
-            print("Ignoring cinema: %s because %s" % (str(cinema.cinemaid), e.orig.diag.message_detail))
-        print(f"{cinema.cinemaid} added successfully")
+            print("Ignoring cinema: %s because %s" % (str(cinema.cinema_id), e.orig.diag.message_detail))
+        print(f"{cinema.cinema_id} added successfully")
 
     else:
-        print(f"No venue found for cinema : {cinema.cinemaid}")
+        print(f"No venue found for cinema : {cinema.cinema_id}")
 
 
 def get_all_cinemas_to_add(rows: Iterable[dict]) -> list[CDSCinema]:
@@ -77,13 +80,18 @@ def get_all_cinemas_to_add(rows: Iterable[dict]) -> list[CDSCinema]:
         if isValidSiret(cinema.venue_siret) and isValidToken(cinema.cds_token):
             cinemas_to_add.append(cinema)
         else:
-            print(f"Ignoring {cinema.cinemaid} : incorrect siret or token")
+            print(f"Ignoring {cinema.account_id} - {cinema.cinema_id} : incorrect siret or token")
 
     return cinemas_to_add
 
 
 def get_cds_cinema_from_row(row: dict) -> CDSCinema:
-    return CDSCinema(cinemaid=row["cinemaid"], cds_token=row["vadtoken"], venue_siret=row["SIRET (manuel)"])
+    return CDSCinema(
+        account_id=row["compte"],
+        cinema_id=row["cinemaid"],
+        cds_token=row["vadtoken"],
+        venue_siret=row["SIRET (manuel)"],
+    )
 
 
 def isValidSiret(siret: str) -> bool:
