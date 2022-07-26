@@ -551,8 +551,6 @@ class Offerer(
     NeedsValidationMixin,
     DeactivableMixin,
 ):
-    id = Column(BigInteger, primary_key=True)
-
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     name = Column(String(140), nullable=False)
@@ -565,7 +563,7 @@ class Offerer(
 
     dateValidated = Column(DateTime, nullable=True, default=None)
 
-    tags = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")  # type: ignore [var-annotated]
+    tags = sa.orm.relationship("OffererTag", secondary="offerer_tag_mapping")  # type: ignore [misc]
 
     thumb_path_component = "offerers"
 

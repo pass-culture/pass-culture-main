@@ -96,9 +96,10 @@ def extract_roles_from_google_workspace_groups(api_response: dict) -> list[str]:
 
 
 def get_permissions_from_roles(roles: typing.Iterable[str]) -> list[perm_models.Permission]:
-    permissions = perm_models.Permission.query.filter(
-        perm_models.Permission.roles.any(perm_models.Role.name.in_(roles))
+    permissions = perm_models.Permission.query.join(perm_models.Permission.roles).filter(
+        perm_models.Role.name.in_(roles)
     )
+
     return permissions.all()
 
 

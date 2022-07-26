@@ -377,8 +377,8 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
 
     @property
     def hasPhysicalVenues(self):  # type: ignore [no-untyped-def]
-        for offerer in self.offerers:
-            if any(not venue.isVirtual for venue in offerer.managedVenues):
+        for user_offerer in self.UserOfferers:
+            if any(not venue.isVirtual for venue in user_offerer.offerer.managedVenues):
                 return True
 
         return False

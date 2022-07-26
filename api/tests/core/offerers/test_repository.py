@@ -83,7 +83,9 @@ class GetAllOfferersForUserTest:
     def test_search_keywords_in_offerer_name(self):
         offerer1 = offerers_factories.OffererFactory(name="cinéma")
         offerer2 = offerers_factories.OffererFactory(name="théâtre")
-        pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
 
         offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
 
@@ -95,7 +97,9 @@ class GetAllOfferersForUserTest:
         offerers_factories.VenueFactory(managingOfferer=offerer1, name="cinéma")
         offerer2 = offerers_factories.OffererFactory(name="dummy")
         offerers_factories.VenueFactory(managingOfferer=offerer2, name="théâtre")
-        pro = users_factories.ProFactory(offerers=[offerer1, offerer2])
+        pro = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
+        offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
 
         offerers = repository.get_all_offerers_for_user(user=pro, keywords="cinema").all()
 
