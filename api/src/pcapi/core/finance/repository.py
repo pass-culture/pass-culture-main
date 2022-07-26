@@ -44,6 +44,24 @@ def get_business_units_query(  # type: ignore [no-untyped-def]
     return query
 
 
+def get_reimbursement_points_query(user: users_models.User, offerer_id: int = None) -> sqla_orm.Query:
+    query = offerers_models.Venue.query.join(models.BankInformation).filter(
+        models.BankInformation.status == models.BankInformationStatus.ACCEPTED
+    )
+    venue_subquery = offerers_models.Venue.query
+    if not user.has_admin_role:
+        venue_subquery = venue_subquery.join(
+            offerers_models.UserOfferer,
+            offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
+        ).filter(offerers_models.UserOfferer.user == user, offerers_models.UserOfferer.isValidated)
+    if offerer_id:
+        venue_subquery = venue_subquery.filter(offerers_models.Venue.managingOffererId == offerer_id)
+    if venue_subquery.whereclause is not None:
+        venue_subquery = venue_subquery.with_entities(offerers_models.Venue.id).subquery()
+        query = query.filter(offerers_models.Venue.id.in_(venue_subquery))
+    return query
+
+
 def find_business_unit_by_siret(siret: str) -> models.BusinessUnit | None:
     return models.BusinessUnit.query.filter_by(siret=siret).one_or_none()
 

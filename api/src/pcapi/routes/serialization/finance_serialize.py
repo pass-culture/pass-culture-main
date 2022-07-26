@@ -43,6 +43,27 @@ class BusinessUnitListResponseModel(BaseModel):
         orm_mode = True
 
 
+class ReimbursementPointListQueryModel(BaseModel):
+    class Config:
+        alias_generator = serialization_utils.to_camel
+        extra = "forbid"
+
+    _dehumanize_id = serialization_utils.dehumanize_field("offerer_id")
+    offerer_id: int | None
+
+
+class ReimbursementPointResponseModel(BaseModel):
+    class Config:
+        orm_mode = True
+
+    id: int
+    name: str
+
+
+class ReimbursementPointListResponseModel(BaseModel):
+    __root__: list[ReimbursementPointResponseModel]
+
+
 class InvoiceListQueryModel(BaseModel):
     class Config:
         orm_mode = True
