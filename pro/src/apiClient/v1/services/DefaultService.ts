@@ -701,6 +701,7 @@ export class DefaultService {
    * @param businessUnitId
    * @param periodBeginningDate
    * @param periodEndingDate
+   * @param reimbursementPointId
    * @returns InvoiceListResponseModel OK
    * @throws ApiError
    */
@@ -708,6 +709,7 @@ export class DefaultService {
     businessUnitId?: number | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
+    reimbursementPointId?: number | null,
   ): CancelablePromise<InvoiceListResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -716,6 +718,29 @@ export class DefaultService {
         'businessUnitId': businessUnitId,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
+        'reimbursementPointId': reimbursementPointId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_reimbursement_points <GET>
+   * @param offererId
+   * @returns ReimbursementPointListResponseModel OK
+   * @throws ApiError
+   */
+  public getReimbursementPoints(
+    offererId?: number | null,
+  ): CancelablePromise<ReimbursementPointListResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/finance/reimbursement-points',
+      query: {
+        'offererId': offererId,
       },
       errors: {
         403: `Forbidden`,
