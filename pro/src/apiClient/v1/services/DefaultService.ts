@@ -166,49 +166,6 @@ export class DefaultService {
   }
 
   /**
-   * get_collective_offers <GET>
-   * @param nameOrIsbn
-   * @param offererId
-   * @param status
-   * @param venueId
-   * @param categoryId
-   * @param creationMode
-   * @param periodBeginningDate
-   * @param periodEndingDate
-   * @returns ListCollectiveOffersResponseModel OK
-   * @throws ApiError
-   */
-  public getCollectiveOffers(
-    nameOrIsbn?: string | null,
-    offererId?: number | null,
-    status?: string | null,
-    venueId?: number | null,
-    categoryId?: string | null,
-    creationMode?: string | null,
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-  ): CancelablePromise<ListCollectiveOffersResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/collective/offers',
-      query: {
-        'nameOrIsbn': nameOrIsbn,
-        'offererId': offererId,
-        'status': status,
-        'venueId': venueId,
-        'categoryId': categoryId,
-        'creationMode': creationMode,
-        'periodBeginningDate': periodBeginningDate,
-        'periodEndingDate': periodEndingDate,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Entity`,
-      },
-    });
-  }
-
-  /**
    * create_collective_offer <POST>
    * @param requestBody
    * @returns CollectiveOfferResponseIdModel Created
@@ -507,6 +464,49 @@ export class DefaultService {
       url: '/collective/offers/{offer_id}/stock',
       path: {
         'offer_id': offerId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Entity`,
+      },
+    });
+  }
+
+  /**
+   * get_collective_offers <GET>
+   * @param nameOrIsbn
+   * @param offererId
+   * @param status
+   * @param venueId
+   * @param categoryId
+   * @param creationMode
+   * @param periodBeginningDate
+   * @param periodEndingDate
+   * @returns ListCollectiveOffersResponseModel OK
+   * @throws ApiError
+   */
+  public getCollectiveOffers(
+    nameOrIsbn?: string | null,
+    offererId?: number | null,
+    status?: string | null,
+    venueId?: number | null,
+    categoryId?: string | null,
+    creationMode?: string | null,
+    periodBeginningDate?: string | null,
+    periodEndingDate?: string | null,
+  ): CancelablePromise<ListCollectiveOffersResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/collective/offrs',
+      query: {
+        'nameOrIsbn': nameOrIsbn,
+        'offererId': offererId,
+        'status': status,
+        'venueId': venueId,
+        'categoryId': categoryId,
+        'creationMode': creationMode,
+        'periodBeginningDate': periodBeginningDate,
+        'periodEndingDate': periodEndingDate,
       },
       errors: {
         403: `Forbidden`,
