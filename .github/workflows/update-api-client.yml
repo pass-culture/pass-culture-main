@@ -21,14 +21,25 @@ jobs:
             src:
               - 'api/**'
 
-      - name: Cache
-        if: steps.changesApi.outputs.src == 'true'
-        uses: satackey/action-docker-layer-caching@v0.0.11
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Cache Docker layers
+        uses: actions/cache@v2
         with:
-          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('api/requirements.txt') }}
           restore-keys: |
-            docker-cache-${{ hashFiles('api/requirements.txt') }}
-            docker-cache
+            ${{ runner.os }}-buildx-${{ hashFiles('api/requirements.txt') }}
+            ${{ runner.os }}-buildx-
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          file: ./api/docker-compose-app.yml
+          context: ./api
+          push: false
+          tags: user/app:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - uses: actions/setup-node@v2
         if: steps.changesApi.outputs.src == 'true'
@@ -104,3 +115,8 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           branch: ${{ github.head_ref }}
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
