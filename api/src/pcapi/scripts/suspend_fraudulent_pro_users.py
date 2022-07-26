@@ -9,16 +9,16 @@ from pcapi.scripts.offerer.delete_cascade_offerer_by_id import delete_cascade_of
 def suspend_fraudulent_pro_by_email_providers(
     fraudulent_email_providers: list[str], admin_user: User, dry_run: bool = True
 ) -> None:
-    fraudulent_pros = []
+    fraudulent_pros: list[User] = []
 
     for email_provider in fraudulent_email_providers:
         fraudulent_pros.extend(find_pro_users_by_email_provider(email_provider=email_provider))
 
     if not dry_run:
         for fraudulent_pro in fraudulent_pros:
-            for offerer in fraudulent_pro.offerers:
+            for user_offerer in fraudulent_pro.UserOfferers:
                 try:
-                    delete_cascade_offerer_by_id(offerer_id=offerer.id)
+                    delete_cascade_offerer_by_id(offerer_id=user_offerer.offererId)  # type: ignore[arg-type]
                 except CannotDeleteOffererWithBookingsException:
                     pass
 

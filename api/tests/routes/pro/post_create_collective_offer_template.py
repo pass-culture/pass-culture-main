@@ -21,7 +21,7 @@ class Returns200Test:
         data = {
             "educationalPriceDetail": "pouet",
         }
-        response = client.with_session_auth(offer.venue.managingOfferer.users[0].email).post(
+        response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
             f"/collective/offers-template/{humanize(offer.id)}/", json=data
         )
 
@@ -45,7 +45,7 @@ class Returns200Test:
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
 
         # When
-        response = client.with_session_auth(offer.venue.managingOfferer.users[0].email).post(
+        response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
             f"/collective/offers-template/{humanize(offer.id)}/",
         )
 
@@ -72,7 +72,7 @@ class Returns400Test:
         offer = educational_factories.CollectiveOfferFactory(venue=venue, collectiveStock=stock)
 
         # When
-        response = client.with_session_auth(offer.venue.managingOfferer.users[0].email).post(
+        response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
             f"/collective/offers-template/{humanize(offer.id)}/",
         )
 
@@ -109,7 +109,7 @@ class Returns404Test:
         offer = educational_factories.CollectiveOfferFactory(venue=venue)
 
         # When
-        response = client.with_session_auth(offer.venue.managingOfferer.users[0].email).post(
+        response = client.with_session_auth(offer.venue.managingOfferer.UserOfferers[0].user.email).post(
             "/collective/offers-template/P8UET/"
         )
 

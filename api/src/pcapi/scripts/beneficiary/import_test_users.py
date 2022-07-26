@@ -70,9 +70,9 @@ def _create_pro_user(row: dict) -> User:
     )
 
     # Validate offerer
-    offerer = user.offerers[0]
-    offerer.validationToken = None  # type: ignore [attr-defined]
-    offerer.dateValidated = datetime.utcnow()  # type: ignore [attr-defined]
+    offerer = user.UserOfferers[0].offerer
+    offerer.validationToken = None
+    offerer.dateValidated = datetime.utcnow()
     repository.save(offerer)
 
     user.validationToken = None  # type: ignore [assignment]

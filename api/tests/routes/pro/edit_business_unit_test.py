@@ -13,7 +13,8 @@ def test_edit_business_unit(client):
         businessUnit__siret=None, managingOfferer__siren="123456789", siret="12345678901234"
     )
     business_unit = venue.businessUnit
-    pro = users_factories.ProFactory(offerers=[venue.managingOfferer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
 
     client = client.with_session_auth(pro.email)
     data = {"siret": "12345678901234"}
@@ -42,7 +43,8 @@ def test_edit_business_unit_with_validation_error(client):
         managingOfferer__siren="123456789",
     )
     business_unit = venue.businessUnit
-    pro = users_factories.ProFactory(offerers=[venue.managingOfferer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
 
     client = client.with_session_auth(pro.email)
     data = {"siret": "not-a-valid-siret"}

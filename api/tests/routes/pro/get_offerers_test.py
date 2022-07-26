@@ -25,7 +25,10 @@ def test_access_by_pro(client):
     CollectiveOfferTemplateFactory(venue=venue2)
 
     offerers_factories.VenueFactory(managingOfferer=offerer1, name="lieu B1")
-    pro = users_factories.ProFactory(offerers=[offerer1, offerer2, inactive])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(offerer=offerer1, user=pro)
+    offerers_factories.UserOffererFactory(offerer=offerer2, user=pro)
+    offerers_factories.UserOffererFactory(offerer=inactive, user=pro)
     # Non-validated offerers should not be included.
     offerers_factories.UserOffererFactory(user=pro, offerer=offerer3, validationToken="TOKEN")
     # Offerer that belongs to another user should not be returned.
@@ -94,7 +97,10 @@ def test_filter_on_keywords(client):
     offerer1 = offerers_factories.OffererFactory(name="Cinema")
     offerer2 = offerers_factories.OffererFactory(name="Encore Un Cinema")
     offerer3 = offerers_factories.OffererFactory(name="not matching")
-    pro = users_factories.ProFactory(offerers=[offerer1, offerer2, offerer3])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer1)
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer2)
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer3)
 
     response = client.with_session_auth(pro.email).get("/offerers?keywords=cinéma")
 

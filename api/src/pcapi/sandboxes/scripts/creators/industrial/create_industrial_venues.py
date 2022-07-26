@@ -31,7 +31,7 @@ def add_default_image_to_venue(image_venue_counter: int, offerer: Offerer, venue
         mode="rb",
     ) as file:
         offerers_api.save_venue_banner(
-            user=offerer.users[0],  # type: ignore [index]
+            user=offerer.UserOfferers[0].user,
             venue=venue,
             content=file.read(),
             image_credit="industrial sandbox picture provider",

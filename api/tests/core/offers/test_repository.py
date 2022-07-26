@@ -112,7 +112,8 @@ class GetCappedOffersForFiltersTest:
         manual_offer = factories.OfferFactory(venue=venue)
         provider = providers_factories.ProviderFactory()
         synced_offer = factories.OfferFactory(venue=venue, lastProvider=provider)
-        pro_user = users_factories.ProFactory(offerers=[venue.managingOfferer])
+        pro_user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=venue.managingOfferer)
 
         offers = repository.get_capped_offers_for_filters(
             user_id=pro_user.id,

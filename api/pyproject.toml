@@ -132,8 +132,6 @@ filterwarnings = [
 
     # -------------- Temporary ignored warnings due to SLQAlchemy bump to 1.4 -------------- #
     # FIXME (lixxday, 2022/06/09)
-    # Warning on relationships. Fix with backrefs: https://docs.sqlalchemy.org/en/14/errors.html#error-qzyx
-    "ignore:relationship '(User.UserOfferers|User.offerers|Offerer.UserOfferers|UserOfferer.*)' will copy column .* to column .*, which conflicts with relationship:sqlalchemy.exc.SAWarning",
     # Warning on deprecated sqla function as_scalar()
     "ignore:The Query.as_scalar\\(\\) method is deprecated and will be removed in a future release:sqlalchemy.exc.SADeprecationWarning",
     # Warning on SELECT with IN. Fix: pass a select() construct explicitly
