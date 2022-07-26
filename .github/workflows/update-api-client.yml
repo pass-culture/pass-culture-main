@@ -25,10 +25,8 @@ jobs:
         if: steps.changesApi.outputs.src == 'true'
         uses: satackey/action-docker-layer-caching@v0.0.11
         with:
-          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
-          restore-keys: |
-            docker-cache-${{ hashFiles('api/requirements.txt') }}
-            docker-cache
+          key: docker-cache
+          restore-keys: docker-cache
 
       - uses: actions/setup-node@v2
         if: steps.changesApi.outputs.src == 'true'

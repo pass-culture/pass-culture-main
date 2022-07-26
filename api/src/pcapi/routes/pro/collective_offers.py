@@ -25,7 +25,7 @@ from . import blueprint
 logger = logging.getLogger(__name__)
 
 
-@private_api.route("/collective/offers", methods=["GET"])
+@private_api.route("/collective/offes", methods=["GET"])
 @login_required
 @spectree_serialize(
     response_model=collective_offers_serialize.ListCollectiveOffersResponseModel,
