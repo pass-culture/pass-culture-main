@@ -1,7 +1,6 @@
 import pytest
 
 import pcapi.core.bookings.factories as booking_factories
-import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.serialization import as_dict
@@ -53,20 +52,6 @@ class AsDictTest:
 
         # then
         assert "hasPhysicalVenues" in dict_result
-
-    @pytest.mark.usefixtures("db_session")
-    def test_returns_model_keys_on_joined_relationships(self):
-        # given
-        user = offerers_factories.UserOffererFactory().user
-        USER_INCLUDES = ["offerers"]
-
-        # when
-        dict_result = as_dict(user, includes=USER_INCLUDES)
-
-        # then
-        assert "offerers" in dict_result
-        assert "name" in dict_result["offerers"][0]
-        assert "siren" in dict_result["offerers"][0]
 
     def test_returns_included_properties_on_joined_relationships(self):
         mediation = offers_factories.MediationFactory.build()

@@ -376,7 +376,7 @@ def suspend_account(user: models.User, reason: constants.SuspensionReason, actor
     if reason == constants.SuspensionReason.FRAUD_SUSPICION:
         for user_offerer in user.UserOfferers:
             offerer = user_offerer.offerer
-            if any(user_of.u.isActive and user_of.u != user for user_of in offerer.UserOfferers):
+            if any(user_of.user.isActive and user_of.user != user for user_of in offerer.UserOfferers):
                 continue
             bookings = bookings_repository.find_cancellable_bookings_by_offerer(offerer.id)  # type: ignore [arg-type]
             for booking in bookings:

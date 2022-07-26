@@ -3,7 +3,6 @@ from sqlalchemy import func
 from sqlalchemy.sql.elements import BinaryExpression
 from sqlalchemy.sql.functions import Function
 
-from pcapi.core.offerers.models import UserOfferer
 from pcapi.core.users.models import User
 from pcapi.core.users.utils import sanitize_email
 

@@ -20,7 +20,6 @@ from sqlalchemy import event
 from sqlalchemy import exists
 from sqlalchemy import select
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import relationship
 
 from pcapi.core.bookings import exceptions
@@ -34,6 +33,8 @@ from pcapi.utils.human_ids import humanize
 
 
 if typing.TYPE_CHECKING:
+    from sqlalchemy.orm import Mapped
+
     from pcapi.core.educational.models import EducationalBooking
 
 

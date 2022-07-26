@@ -187,7 +187,7 @@ class SaveVenueBankInformations:
 
         else:
             if offerer and (name := application_details.venue_name):
-                venues = self.venue_repository.find_by_name(name, offerer.id) # type: ignore [arg-type]
+                venues = self.venue_repository.find_by_name(name, offerer.id)  # type: ignore [arg-type]
                 if len(venues) == 0:
                     api_errors.add_error("Venue", "Venue name not found")
                 elif len(venues) > 1:

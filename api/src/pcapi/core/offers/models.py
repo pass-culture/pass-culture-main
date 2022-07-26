@@ -90,7 +90,7 @@ class Product(PcObject, Base, Model, ExtraDataMixin, HasThumbMixin, ProvidableMi
     @sa.ext.hybrid.hybrid_property
     def can_be_synchronized(self) -> bool:
         return (
-            self.isGcuCompatible
+            self.isGcuCompatible  # type: ignore [operator]
             & self.isSynchronizationCompatible
             & (self.name != UNRELEASED_OR_UNAVAILABLE_BOOK_MARKER)
         )
@@ -336,7 +336,7 @@ class Offer(PcObject, Base, Model, ExtraDataMixin, DeactivableMixin, ValidationM
 
     productId = sa.Column(sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=False)
 
-    product = sa.orm.relationship(Product, foreign_keys=[productId], backref="offers")
+    product: Product = sa.orm.relationship(Product, foreign_keys=[productId], backref="offers")
 
     venueId = sa.Column(sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True)
 
