@@ -6,9 +6,9 @@ import { Configure } from 'react-instantsearch-dom'
 import { api } from 'api/api'
 import { AdageFrontRoles, VenueResponse } from 'api/gen'
 import {
-  FiltersContextProvider,
-  FacetFiltersContextProvider,
   AlgoliaQueryContextProvider,
+  FacetFiltersContextProvider,
+  FiltersContextProvider,
 } from 'app/providers'
 import { FeaturesContext } from 'app/providers/FeaturesContextProvider'
 
@@ -23,7 +23,7 @@ import {
 jest.mock('utils/config', () => ({
   ALGOLIA_APP_ID: 'algolia-app-id',
   ALGOLIA_API_KEY: 'algolia-api-key',
-  ALGOLIA_OFFERS_INDEX: 'algolia-index-name',
+  ALGOLIA_COLLECTIVE_OFFERS_INDEX: 'algolia-index-name',
 }))
 
 jest.mock('react-instantsearch-dom', () => {
