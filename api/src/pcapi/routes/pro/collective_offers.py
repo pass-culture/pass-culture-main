@@ -45,6 +45,7 @@ def get_collective_offers(
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,
     )
+    print("")
 
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)
