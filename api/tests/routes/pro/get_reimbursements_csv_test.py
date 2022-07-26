@@ -25,7 +25,8 @@ def test_with_venue_filter(app):
             status=finance_models.TransactionStatus.SENT,
             payment__transactionLabel="pass Culture Pro - remboursement 1ère quinzaine 06-21",
         )
-    pro = users_factories.ProFactory(offerers=[offerer])
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
     # When
     client = TestClient(app.test_client()).with_session_auth(pro.email)
