@@ -120,7 +120,7 @@ class VirtualVenueFactory(VenueFactory):
     mentalDisabilityCompliant = None
     motorDisabilityCompliant = None
     visualDisabilityCompliant = None
-    venueTypeCode = models.VenueTypeCode.DIGITAL  # type: ignore[attr-defined]
+    venueTypeCode = models.VenueTypeCode.DIGITAL
 
 
 class VenuePricingPointLinkFactory(BaseFactory):

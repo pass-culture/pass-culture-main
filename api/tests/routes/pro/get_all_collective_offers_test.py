@@ -20,7 +20,8 @@ class Returns200Test:
     def test_one_simple_collective_offer(self, app):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory(users=[user])
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         institution = educational_factories.EducationalInstitutionFactory()
         offer = educational_factories.CollectiveOfferFactory(venue=venue, offerId=1, institution=institution)
@@ -45,7 +46,8 @@ class Returns200Test:
     def test_one_simple_collective_offer_template(self, app):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory(users=[user])
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferTemplateFactory(venue=venue, offerId=1)
 
@@ -67,7 +69,8 @@ class Returns200Test:
     def test_mix_collective_offer_and_template(self, app):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory(users=[user])
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1
@@ -102,7 +105,8 @@ class Returns200Test:
         # Given
         offers = []
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory(users=[user])
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
 
         for i in range(510):
@@ -157,7 +161,8 @@ class Returns200Test:
     def test_with_filters(self, app):
         # Given
         user = users_factories.UserFactory()
-        offerer = offerer_factories.OffererFactory(users=[user])
+        offerer = offerer_factories.OffererFactory()
+        offerer_factories.UserOffererFactory(user=user, offerer=offerer)
         venue = offerer_factories.VenueFactory(managingOfferer=offerer)
         offer = educational_factories.CollectiveOfferFactory(
             venue=venue, dateCreated=datetime.datetime.utcnow(), offerId=1

@@ -59,7 +59,7 @@ def sync_db_permissions(session: sa.orm.Session) -> None:
 
 role_permission_table = sa.Table(
     "role_permission",
-    Model.metadata,
+    Base.metadata,
     sa.Column("roleId", sa.ForeignKey("role.id")),
     sa.Column("permissionId", sa.ForeignKey("permission.id")),
     sa.UniqueConstraint("roleId", "permissionId"),
@@ -71,6 +71,9 @@ class Permission(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     name = sa.Column(sa.String(length=140), nullable=False, unique=True)
     category = sa.Column(sa.String(140), nullable=True, default=None)
+    roles = sa.orm.relationship(  # type: ignore [misc]
+        "Role", secondary=role_permission_table, back_populates="permissions"
+    )
 
 
 class Role(PcObject, Base, Model):  # type: ignore [valid-type, misc]
@@ -78,7 +81,5 @@ class Role(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
     name = sa.Column(sa.String(140), nullable=False, unique=True)
     permissions = sa.orm.relationship(  # type: ignore [misc]
-        Permission,
-        secondary=role_permission_table,
-        backref="roles",
+        Permission, secondary=role_permission_table, back_populates="roles"
     )
