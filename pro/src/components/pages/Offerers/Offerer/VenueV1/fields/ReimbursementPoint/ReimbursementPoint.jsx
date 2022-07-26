@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
 import ApplicationBanner from '../ApplicationBanner'
+import { Events } from 'core/FirebaseEvents/constants'
 import { Field } from 'react-final-form'
 import InfoDialog from 'new_components/InfoDialog'
 import PropTypes from 'prop-types'
 import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
-
 import { api } from 'apiClient/api'
 import styles from './ReimbursementPoint.module.scss'
+import { useSelector } from 'react-redux'
 
 const ReimbursementPoint = ({
   readOnly,
@@ -95,7 +96,7 @@ const ReimbursementPoint = ({
     }
     loadReimbursementPoints(offerer.nonHumanizedId)
   }, [isCreatingVenue, offerer.id, readOnly, venue])
-
+  const logEvent = useSelector(state => state.app.logEvent)
   if (isLoading) return <Spinner />
   if (!venue.isVirtual)
     return (
@@ -117,8 +118,13 @@ const ReimbursementPoint = ({
                 iconName="ico-info-wrong"
                 title="Vous devez sélectionner un lieu avec SIRET pour ajouter de nouvelles coordonnées bancaires"
                 subTitle="Sélectionner un lieu avec SIRET parmi la liste puis valider votre sélection."
-                closeDialog={() => setIsNoSiretDialogOpen(false)}
-              ></InfoDialog>
+                closeDialog={() => {
+                  setIsNoSiretDialogOpen(false)
+                  logEvent(Events.CLICKED_NO_PRICING_POINT_SELECTED_YET, {
+                    from: location.pathname,
+                  })
+                }}
+              />
             )}
             <p className={styles['section-description']}>
               Ces coordonnées bancaires seront utilisées pour les remboursements
@@ -129,7 +135,12 @@ const ReimbursementPoint = ({
                 <button
                   className="secondary-button"
                   id="add-new-reimbursement-point"
-                  onClick={openDMSApplication}
+                  onClick={() => {
+                    openDMSApplication()
+                    logEvent(Events.CLICKED_ADD_BANK_INFORMATIONS, {
+                      from: location.pathname,
+                    })
+                  }}
                   type="button"
                 >
                   Ajouter des coordonnées bancaires

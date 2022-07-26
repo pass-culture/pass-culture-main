@@ -1,15 +1,21 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
+
 import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
 import React from 'react'
 import ReimbursementFields from '../ReimbursementFields'
-
 import { api } from 'apiClient/api'
+import { configureTestStore } from 'store/testUtils'
 
-const renderReimbursementFields = async props => {
+const renderReimbursementFields = async (props, store) => {
   const rtlReturn = await render(
-    <Form onSubmit={() => {}}>{() => <ReimbursementFields {...props} />}</Form>
+    <Provider store={store}>
+      <Form onSubmit={() => {}}>
+        {() => <ReimbursementFields {...props} />}
+      </Form>
+    </Provider>
   )
 
   const loadingMessage = screen.queryByText('Chargement en cours ...')
@@ -42,9 +48,14 @@ describe('src | Venue | ReimbursementFields', () => {
     managedVenues: [otherVenue],
     hasAvailablePricingPoints: true,
   }
+  const mockLogEvent = jest.fn()
   let props
+  let store
   beforeEach(() => {
     props = { venue, offerer }
+    store = configureTestStore({
+      app: { logEvent: mockLogEvent },
+    })
     jest.spyOn(api, 'getAvailableReimbursementPoints').mockResolvedValue([])
   })
 
@@ -57,7 +68,7 @@ describe('src | Venue | ReimbursementFields', () => {
     props.offerer = offererWithoutPricingPoint
 
     // When
-    await renderReimbursementFields(props)
+    await renderReimbursementFields(props, store)
 
     // Then
     expect(screen.queryByText('Créer un lieu avec SIRET')).toBeInTheDocument()
@@ -72,7 +83,7 @@ describe('src | Venue | ReimbursementFields', () => {
     props.venue = venueWithSiret
 
     // When
-    await renderReimbursementFields(props)
+    await renderReimbursementFields(props, store)
 
     // Then
     expect(
@@ -89,7 +100,7 @@ describe('src | Venue | ReimbursementFields', () => {
     props.venue = venueWithoutSiret
 
     // When
-    await renderReimbursementFields(props)
+    await renderReimbursementFields(props, store)
 
     // Then
     expect(screen.queryByText('Barème de remboursement')).toBeInTheDocument()

@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
+import { MemoryRouter } from 'react-router'
+import { Provider } from 'react-redux'
 import React from 'react'
 import ReturnOrSubmitControl from '../ReturnOrSubmitControl'
-import { shallow } from 'enzyme'
+import { configureTestStore } from 'store/testUtils'
+import { mount } from 'enzyme'
 
 describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', () => {
   let props
-
   beforeEach(() => {
     props = {
       canSubmit: true,
@@ -15,13 +17,22 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', 
       readOnly: true,
     }
   })
-
+  const mountReturnOrSubmitControl = props => {
+    const store = configureTestStore({ app: { logEvent: jest.fn() } })
+    return mount(
+      <Provider store={store}>
+        <MemoryRouter>
+          <ReturnOrSubmitControl {...props} />
+        </MemoryRouter>
+      </Provider>
+    )
+  }
   it("should display a return link to offerer's page when read-only mode", () => {
     // given
     props.readOnly = true
 
     // when
-    const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
+    const wrapper = mountReturnOrSubmitControl(props)
 
     // then
     const navLink = wrapper.find(Link)
@@ -35,10 +46,9 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', 
     props.isRequestPending = false
 
     // when
-    const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
-
+    const wrapper = mountReturnOrSubmitControl(props)
     // then
-    const button = wrapper.find('button')
+    const button = wrapper.find('ReturnOrSubmitControl').find('button')
     expect(button.prop('disabled')).toBe(false)
     expect(button.prop('type')).toBe('submit')
     expect(button.text()).toBe('Créer')
@@ -52,7 +62,7 @@ describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', 
     props.isRequestPending = true
 
     // when
-    const wrapper = shallow(<ReturnOrSubmitControl {...props} />)
+    const wrapper = mountReturnOrSubmitControl(props)
 
     // then
     const button = wrapper.find('button')
