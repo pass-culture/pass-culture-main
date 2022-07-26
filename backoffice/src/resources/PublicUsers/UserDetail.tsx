@@ -33,7 +33,7 @@ import {
 import { dataProvider } from '../../providers/dataProvider'
 
 import { BeneficiaryBadge } from './Components/BeneficiaryBadge'
-import { CheckHistoryCard } from './Components/CheckHistoryCard'
+import { FraudCheckCard } from './Components/FraudCheckCard'
 import { ManualReviewModal } from './Components/ManualReviewModal'
 import { StatusBadge } from './Components/StatusBadge'
 import { UserDetailsCard } from './Components/UserDetailsCard'
@@ -44,12 +44,6 @@ import {
   EligibilitySubscriptionItem,
   UserBaseInfo,
 } from './types'
-import { dataProvider } from '../../providers/dataProvider'
-import {
-  getHttpApiErrorMessage,
-  PcApiHttpError,
-} from '../../providers/apiHelpers'
-import { captureException } from '@sentry/react'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -467,7 +461,7 @@ export const UserDetail = () => {
                           id={fraudCheck.thirdPartyId}
                           key={fraudCheck.thirdPartyId}
                         >
-                          <CheckHistoryCard
+                          <FraudCheckCard
                             eligibilityFraudCheck={{
                               role: idCheckHistory.role,
                               items: [fraudCheck],

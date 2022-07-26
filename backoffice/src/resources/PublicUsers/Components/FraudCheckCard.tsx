@@ -14,13 +14,13 @@ import { snakeCaseToTitleCase } from '../../../tools/textTools'
 import { EligibilityFraudCheck } from '../types'
 
 import { BeneficiaryBadge } from './BeneficiaryBadge'
-import { StatusAvatar } from './StatusAvatar'
+import { FraudCheckStatusBadge } from './FraudCheckStatusBadge'
 
 type Props = {
   eligibilityFraudCheck: EligibilityFraudCheck
 }
 
-export const CheckHistoryCard = ({ eligibilityFraudCheck }: Props) => {
+export const FraudCheckCard = ({ eligibilityFraudCheck }: Props) => {
   const cardStyle = {
     width: '100%',
     marginTop: '20px',
@@ -34,9 +34,6 @@ export const CheckHistoryCard = ({ eligibilityFraudCheck }: Props) => {
     setChecked(event.target.checked)
   }
 
-  const beneficiaryBadge = (
-    <BeneficiaryBadge role={eligibilityFraudCheck.role} />
-  )
   const fraudCheckItem = eligibilityFraudCheck.items[0]
   return (
     <Card style={cardStyle}>
@@ -44,7 +41,9 @@ export const CheckHistoryCard = ({ eligibilityFraudCheck }: Props) => {
         <Typography variant={'h5'}>
           {fraudCheckItem.type &&
             snakeCaseToTitleCase(fraudCheckItem.type as string)}
-          <span style={{ marginLeft: '3rem' }}>{beneficiaryBadge}</span>
+          <span style={{ marginLeft: '3rem' }}>
+            <BeneficiaryBadge role={eligibilityFraudCheck.role} />
+          </span>
         </Typography>
         <Grid container spacing={1} sx={{ mt: 4 }}>
           <Stack spacing={2} direction={'row'} style={{ width: '100%' }}>
@@ -71,9 +70,11 @@ export const CheckHistoryCard = ({ eligibilityFraudCheck }: Props) => {
             <Grid item xs={6}>
               <p>Statut</p>
             </Grid>
-            <Grid item xs={6}>
+            <Grid>
               <p>
-                <StatusAvatar item={fraudCheckItem} />
+                <FraudCheckStatusBadge
+                  fraudCheckStatus={fraudCheckItem.status}
+                />
               </p>
             </Grid>
           </Stack>
@@ -114,7 +115,7 @@ export const CheckHistoryCard = ({ eligibilityFraudCheck }: Props) => {
                 <Grid item style={gridStyle}>
                   <Collapse in={checked}>
                     <pre>
-                      <code>
+                      <code data-testid="fraudCheckTechnicalDetails">
                         {fraudCheckItem.technicalDetails &&
                           JSON.stringify(
                             fraudCheckItem.technicalDetails,

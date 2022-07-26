@@ -86,11 +86,21 @@ export interface FraudCheckTechnicalDetails {
   registrationDateTime: Date
 }
 
+export enum FraudCheckStatus {
+  OK = 'ok',
+  KO = 'ko',
+  STARTED = 'started',
+  SUSPISCIOUS = 'suspiscious',
+  PENDING = 'pending',
+  CANCELED = 'canceled',
+  ERROR = 'error',
+}
+
 export interface FraudCheck {
   type: string
   thirdPartyId: string
   dateCreated: Date
-  status: 'ok' | 'void' | 'not-applicable' | 'ko' | 'not-enabled'
+  status: FraudCheckStatus
   reason?: string
   reasonCodes?: string
   technicalDetails?: FraudCheckTechnicalDetails
