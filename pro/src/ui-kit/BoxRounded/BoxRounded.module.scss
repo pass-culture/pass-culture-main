@@ -1,0 +1,21 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_rem.scss' as rem;
+@use 'styles/variables/_colors.scss' as colors;
+
+.expandable-box {
+  position: relative;
+
+  border-radius: rem.torem(10px);
+  border: rem.torem(1px) solid colors.$grey-medium;
+  padding: rem.torem(16px);
+}
+
+.modify-button-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  .expanded & {
+    display: none;
+  }
+}
