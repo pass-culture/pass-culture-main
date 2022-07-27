@@ -1,22 +1,25 @@
+import { IUserIdentityFormValues } from 'new_components/ProfileForm/types'
+import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
 import { ProfileForm } from 'new_components/ProfileForm'
 import React from 'react'
-import { UserIdentityResponseModel } from 'apiClient/v1'
-import patchIdentityAdapter from 'routes/User/adapters/patchIdentityAdapter'
+
+interface IUserProfileProps {
+  patchIdentityAdapter: PatchIdentityAdapter
+  userIdentityInitialValues: IUserIdentityFormValues
+}
 
 const UserProfile = ({
-  ...identityData
-}: UserIdentityResponseModel): JSX.Element => {
+  patchIdentityAdapter,
+  userIdentityInitialValues,
+}: IUserProfileProps): JSX.Element => {
   return (
     <>
       <h1>Profil</h1>
       <ProfileForm
         title="Prénom et nom"
         subtitleFormat={values => `${values.firstName} ${values.lastName}`}
-        initialValues={{
-          firstName: identityData.firstName,
-          lastName: identityData.lastName,
-        }}
-        adapter={patchIdentityAdapter}
+        initialValues={userIdentityInitialValues}
+        patchIdentityAdapter={patchIdentityAdapter}
       />
     </>
   )
