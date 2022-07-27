@@ -1,5 +1,3 @@
-import { identityFormFields, identityFormSchema } from './UserIdentityForm'
-
 import { ProfileForm } from 'new_components/ProfileForm'
 import React from 'react'
 import { UserIdentityResponseModel } from 'apiClient/v1'
@@ -14,8 +12,6 @@ const UserProfile = ({
       <ProfileForm
         title="Prénom et nom"
         subtitleFormat={values => `${values.firstName} ${values.lastName}`}
-        fields={identityFormFields}
-        validationSchema={identityFormSchema}
         initialValues={{
           firstName: identityData.firstName,
           lastName: identityData.lastName,
