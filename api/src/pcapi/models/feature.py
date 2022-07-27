@@ -118,6 +118,7 @@ class FeatureToggle(enum.Enum):
     ENABLE_ADAGE_VENUE_INFORMATION = "Active la page acteur culturel"
     USE_PRICING_POINT_FOR_PRICING = "Utilise le modèle VenuePricingPointLink pour la valorisation"
     USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS = "Utilise le modèle VenueReimbursementPointLink pour les cashflows"
+    ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER = "Ajoute la gestion des zones de mobilité/intervention pour les AC."
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -178,6 +179,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USER_PROFILING_FRAUD_CHECK,
     FeatureToggle.USE_PRICING_POINT_FOR_PRICING,
     FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS,
+    FeatureToggle.ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER,
 )
 
 
