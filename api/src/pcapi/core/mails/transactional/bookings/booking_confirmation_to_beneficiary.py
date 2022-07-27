@@ -96,6 +96,7 @@ def get_booking_confirmation_to_beneficiary_email_data(
             "OFFER_PRICE": stock_price,
             "OFFER_TOKEN": booking_token,
             "OFFER_CATEGORY": offer.category,
+            "OFFER_SUBCATEGORY": offer.subcategoryId,
             "IS_DIGITAL_BOOKING_WITH_ACTIVATION_CODE_AND_NO_EXPIRATION_DATE": bool(
                 is_digital_booking_with_activation_code_and_no_expiration_date
             ),
