@@ -1,9 +1,7 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { NavLink, useHistory } from 'react-router-dom'
-
 import { Form } from 'react-final-form'
-import Icon from 'components/layout/Icon'
+import GoBackLink from 'new_components/GoBackLink'
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCreationUnavailable'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
@@ -11,6 +9,7 @@ import React from 'react'
 import Titles from 'components/layout/Titles/Titles'
 import { addressAndDesignationFromSirenDecorator } from 'components/layout/form/fields/SirenField'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import { useHistory } from 'react-router-dom'
 import useNotification from 'components/hooks/useNotification'
 
 interface iOfferer {
@@ -52,10 +51,7 @@ const OffererCreation = (): JSX.Element => {
 
   return (
     <div className="offerer-page">
-      <NavLink className="back-button has-text-primary" to="/accueil">
-        <Icon svg="ico-back" />
-        Accueil
-      </NavLink>
+      <GoBackLink to="/accueil" title="Accueil" />
       <PageTitle title="Créer une structure" />
       <Titles title="Structure" />
       {isEntrepriseApiDisabled ? (

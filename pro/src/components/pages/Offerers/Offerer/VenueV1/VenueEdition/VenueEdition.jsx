@@ -3,13 +3,7 @@ import * as pcapi from 'repository/pcapi/pcapi'
 import AccessibilityFields, {
   autoFillNoDisabilityCompliantDecorator,
 } from '../fields/AccessibilityFields'
-import {
-  Link,
-  NavLink,
-  useHistory,
-  useLocation,
-  useParams,
-} from 'react-router-dom'
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
 
@@ -23,7 +17,7 @@ import { DisplayVenueInAppLink } from './DisplayVenueInAppLink'
 import EACInformation from './EACInformation'
 import { FRANCE_POSITION } from '../fields/LocationFields/utils/positions'
 import { Form } from 'react-final-form'
-import Icon from 'components/layout/Icon'
+import GoBackLink from 'new_components/GoBackLink'
 import IdentifierFields from '../fields/IdentifierFields/IdentifierFields'
 import { ImageVenueUploaderSection } from './ImageVenueUploaderSection/ImageVenueUploaderSection'
 import LocationFields from '../fields/LocationFields/LocationFields'
@@ -486,13 +480,7 @@ const VenueEdition = () => {
 
   return (
     <div className="venue-page">
-      <NavLink
-        className="back-button has-text-primary"
-        to={`/accueil?structure=${offererId}`}
-      >
-        <Icon svg="ico-back" />
-        Accueil
-      </NavLink>
+      <GoBackLink to={`/accueil?structure=${offererId}`} title="Accueil" />
       {venue.isPermanent && (
         <DisplayVenueInAppLink
           className="venue-page-view-venue-cta"
