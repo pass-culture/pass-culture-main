@@ -11,16 +11,16 @@ import moment from 'moment'
 import React, { useState } from 'react'
 
 import { snakeCaseToTitleCase } from '../../../tools/textTools'
-import { EligibilityFraudCheck, FraudCheck } from '../types'
+import { EligibilityFraudCheck } from '../types'
 
-import { StatusAvatar } from './StatusAvatar'
 import { BeneficiaryBadge } from './BeneficiaryBadge'
+import { StatusAvatar } from './StatusAvatar'
 
 type Props = {
-  fraudCheck: EligibilityFraudCheck
+  eligibilityFraudCheck: EligibilityFraudCheck
 }
 
-export const CheckHistoryCard = ({ fraudCheck }: Props) => {
+export const CheckHistoryCard = ({ eligibilityFraudCheck }: Props) => {
   const cardStyle = {
     width: '100%',
     marginTop: '20px',
@@ -34,8 +34,10 @@ export const CheckHistoryCard = ({ fraudCheck }: Props) => {
     setChecked(event.target.checked)
   }
 
-  const beneficiaryBadge = <BeneficiaryBadge role={fraudCheck.role} />
-  const fraudCheckItem = fraudCheck.items[0]
+  const beneficiaryBadge = (
+    <BeneficiaryBadge role={eligibilityFraudCheck.role} />
+  )
+  const fraudCheckItem = eligibilityFraudCheck.items[0]
   return (
     <Card style={cardStyle}>
       <Grid container spacing={1}>

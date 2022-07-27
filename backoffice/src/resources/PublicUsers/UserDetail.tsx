@@ -1,7 +1,7 @@
-import { Card } from '@material-ui/core'
 import {
   Box,
   Button,
+  Card,
   CircularProgress,
   Grid,
   LinearProgress,
@@ -29,13 +29,13 @@ import { CheckHistoryCard } from './Components/CheckHistoryCard'
 import { ManualReviewModal } from './Components/ManualReviewModal'
 import { StatusBadge } from './Components/StatusBadge'
 import { UserDetailsCard } from './Components/UserDetailsCard'
+import { UserHistoryCard } from './Components/UserHistoryCard'
 import {
   EligibilityFraudCheck,
   PublicUserRolesEnum,
   EligibilitySubscriptionItem,
   UserBaseInfo,
 } from './types'
-import { UserHistoryCard } from './Components/UserHistoryCard'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -224,7 +224,7 @@ export const UserDetail = () => {
 
                 <ManualReviewModal
                   user={userBaseInfo}
-                  fraudChecks={idsCheckHistory}
+                  eligibilityFraudChecks={idsCheckHistory}
                 />
               </Stack>
             </div>
@@ -377,7 +377,7 @@ export const UserDetail = () => {
             <div id="details-user">
               <UserDetailsCard
                 user={userBaseInfo}
-                firstIdCheckHistory={idsCheckHistory[0].items[0]}
+                firstFraudCheck={idsCheckHistory[0].items[0]}
               />
             </div>
             <div id="parcours-register">
@@ -395,7 +395,7 @@ export const UserDetail = () => {
                     key={fraudCheck.thirdPartyId}
                   >
                     <CheckHistoryCard
-                      fraudCheck={{
+                      eligibilityFraudCheck={{
                         role: idCheckHistory.role,
                         items: [fraudCheck],
                       }}
