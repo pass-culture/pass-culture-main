@@ -3,7 +3,7 @@
 @use 'styles/variables/_colors.scss' as colors;
 
 .sub-title-text {
-  @include fonts.title4();
+  font-size: rem.torem(16px);
 }
 
 .section-description,
