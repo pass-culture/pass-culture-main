@@ -1,7 +1,6 @@
 import DomainNameBanner from 'new_components/DomainNameBanner'
+import GoBackLink from 'new_components/GoBackLink'
 import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import Icon from 'components/layout/Icon'
-import { NavLink } from 'react-router-dom'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import PropTypes from 'prop-types'
 import React from 'react'
@@ -51,15 +50,7 @@ const AppLayout = props => {
               })}
             >
               <DomainNameBanner />
-              {backTo && (
-                <NavLink
-                  className="back-button has-text-primary"
-                  to={backTo.path}
-                >
-                  <Icon svg="ico-back" />
-                  {` ${backTo.label}`}
-                </NavLink>
-              )}
+              {backTo && <GoBackLink to={backTo.path} title={backTo.label} />}
               {children}
             </div>
           </div>

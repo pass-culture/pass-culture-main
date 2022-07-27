@@ -10,22 +10,6 @@
     margin-bottom: rem.torem(24px);
   }
 
-  .has-text-primary {
-    align-items: center;
-    color: colors.$primary;
-    display: flex;
-    justify-content: center;
-
-    svg {
-      height: rem.torem(24px);
-      margin-right: rem.torem(4px);
-    }
-
-    svg .ico-plus {
-      fill: colors.$primary;
-    }
-  }
-
   .has-text-grey {
     color: colors.$grey-dark;
   }

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import CollectiveDataForm from './CollectiveDataForm'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
+import GoBackLink from 'new_components/GoBackLink'
 import { SelectOption } from 'custom_types/form'
 import Spinner from 'components/layout/Spinner'
 import { Title } from 'ui-kit'
@@ -106,8 +107,15 @@ const CollectiveDataEdition = (): JSX.Element => {
   }, [])
 
   return (
-    <>
-      <Title level={1}>Mes informations pour les enseignants</Title>
+    <div className={styles['collective-data-edition']}>
+      <GoBackLink
+        to={`/structures/${offererId}/lieux/${venueId}}`}
+        title="Retour page lieu"
+      />
+
+      <Title level={1} className={styles['title']}>
+        Mes informations pour les enseignants
+      </Title>
       <p className={styles.description}>
         Ce formulaire vous permet de renseigner des informations complémentaires
         concernant votre établissement et les actions menées auprès du public
@@ -128,7 +136,7 @@ const CollectiveDataEdition = (): JSX.Element => {
           adageVenueCollectiveData={adageVenueCollectiveData}
         />
       )}
-    </>
+    </div>
   )
 }
 

@@ -87,19 +87,6 @@ main {
         &.with-padding {
           padding-top: rem.torem(74px);
         }
-
-        .back-button {
-          @include fonts.button();
-
-          padding-left: rem.torem(30px);
-          position: absolute;
-          top: 0;
-
-          img {
-            left: 0;
-            position: absolute;
-          }
-        }
       }
     }
   }
