@@ -1,11 +1,14 @@
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
+import { useModal } from 'hooks/useModal'
+import DialogBox from 'new_components/DialogBox'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import DialogBox from 'new_components/DialogBox'
-import Icon from 'components/layout/Icon'
-import React from 'react'
+
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
+
 import styles from './ButtonPreviewImage.module.scss'
-import { useModal } from 'hooks/useModal'
 
 interface IButtonPreviewImage {
   venueImage: string

@@ -1,6 +1,6 @@
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { TOffererName } from 'core/Offerers/types'
 import { api } from 'apiClient/api'
+import { TOffererName } from 'core/Offerers/types'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
 
 type TGetOffererNamesAdapter = Adapter<void, TOffererName[], TOffererName[]>

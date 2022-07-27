@@ -1,7 +1,7 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
 import InputError from '../Errors/InputError'
-import PropTypes from 'prop-types'
 
 const translateMinutesToHours = durationInMinutes => {
   if (durationInMinutes === null) return ''

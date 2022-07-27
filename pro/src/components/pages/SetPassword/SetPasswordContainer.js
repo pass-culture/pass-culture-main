@@ -1,7 +1,9 @@
-import { SetPassword } from './SetPassword'
 import { connect } from 'react-redux'
-import { selectCurrentUser } from 'store/user/selectors'
+
 import { showNotification } from 'store/reducers/notificationReducer'
+import { selectCurrentUser } from 'store/user/selectors'
+
+import { SetPassword } from './SetPassword'
 
 export const mapStateToProps = state => {
   return {

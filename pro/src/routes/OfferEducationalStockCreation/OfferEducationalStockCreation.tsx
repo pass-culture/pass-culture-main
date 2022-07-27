@@ -1,3 +1,9 @@
+import React, { useEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -6,19 +12,13 @@ import {
   OfferEducationalStockFormValues,
   getStockCollectiveOfferAdapter,
 } from 'core/OfferEducational'
-import React, { useEffect, useState } from 'react'
-
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
-import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
-import Spinner from 'components/layout/Spinner'
+import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
+
 import postCollectiveOfferTemplateAdapter from './adapters/postCollectiveOfferTemplate'
 import postCollectiveStockAdapter from './adapters/postCollectiveStock'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useHistory } from 'react-router-dom'
-import useNotification from 'components/hooks/useNotification'
-import { useParams } from 'react-router-dom'
 
 const OfferEducationalStockCreation = (): JSX.Element => {
   const [offer, setOffer] = useState<GetStockOfferSuccessPayload | null>(null)

@@ -1,18 +1,19 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { MemoryRouter, Route } from 'react-router-dom'
 import { render, screen, waitFor } from '@testing-library/react'
-
-import { Provider } from 'react-redux'
-import React from 'react'
-import VenueCreation from '../VenueCreation'
-import VenueType from '../../ValueObjects/VenueType'
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
-import { setVenueValues } from './helpers'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter, Route } from 'react-router-dom'
+
+import { api } from 'apiClient/api'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
+
+import VenueType from '../../ValueObjects/VenueType'
+import VenueCreation from '../VenueCreation'
+
+import { setVenueValues } from './helpers'
 
 jest.mock('repository/pcapi/pcapi')
 jest.mock('apiClient/api', () => ({

@@ -1,6 +1,8 @@
-import { Banner } from 'ui-kit'
-// react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import React from 'react'
+
+import { Banner } from 'ui-kit'
+
+// react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 import styles from './ResetEmailBanner.module.scss'
 
 interface IResetEmailBannerProps {

@@ -1,7 +1,8 @@
+import React from 'react'
+
+import { UserIdentityForm } from 'new_components/UserIdentityForm'
 import { IUserIdentityFormValues } from 'new_components/UserIdentityForm/types'
 import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
-import React from 'react'
-import { UserIdentityForm } from 'new_components/UserIdentityForm'
 
 interface IUserProfileProps {
   patchIdentityAdapter: PatchIdentityAdapter

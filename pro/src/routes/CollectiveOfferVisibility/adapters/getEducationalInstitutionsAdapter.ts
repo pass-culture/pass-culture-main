@@ -1,5 +1,5 @@
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 
 export type GetEducationalInstitutionsAdapter = Adapter<
   void,

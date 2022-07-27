@@ -1,19 +1,20 @@
+import { isAfter } from 'date-fns'
+import PropTypes from 'prop-types'
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
+
+import DateInput from 'components/layout/inputs/DateInput/DateInput'
+import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
+import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
+import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
 import {
   getMaximumBookingLimitDatetime as getMaximumBookingLimitDatetimeFromExpirationDatetime,
   hasStockBeenUpdated,
 } from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
+import { getToday } from 'utils/date'
+import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 import ActivationCodesUploadDialog from '../ActivationCodesUploadDialog/ActivationCodesUploadDialog'
-import DateInput from 'components/layout/inputs/DateInput/DateInput'
-import DeleteStockDialogContainer from 'components/pages/Offers/Offer/Stocks/DeleteStockDialog/DeleteStockDialogContainer'
-import PropTypes from 'prop-types'
 import StockItemOptionsMenu from '../StockItemOptionsMenu/StockItemOptionsMenu'
-import TimeInput from 'components/layout/inputs/TimeInput/TimeInput'
-import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
-import { getToday } from 'utils/date'
-import { isAfter } from 'date-fns'
-import { isAllocineProvider } from 'components/pages/Offers/domain/localProvider'
 
 const noOperation = () => {}
 

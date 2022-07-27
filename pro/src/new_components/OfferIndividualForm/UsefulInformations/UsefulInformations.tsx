@@ -1,14 +1,17 @@
+import { useFormikContext } from 'formik'
+import React from 'react'
+
+import { TOffererName } from 'core/Offerers/types'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import FormLayout from 'new_components/FormLayout'
 import { Checkbox, TextArea } from 'ui-kit'
 
-import FormLayout from 'new_components/FormLayout'
 import { IOfferIndividualFormValues } from '../types'
-import React from 'react'
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import { TOffererName } from 'core/Offerers/types'
+
 import { TicketWithdrawal } from './TicketWithdrawal'
 import { Venue } from './Venue'
+
 import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '.'
-import { useFormikContext } from 'formik'
 
 export interface IUsefulInformationsProps {
   offererNames: TOffererName[]

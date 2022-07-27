@@ -1,9 +1,9 @@
-import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
+import fr from 'date-fns/locale/fr'
+import React from 'react'
 import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from 'components/layout/inputs/PeriodSelector/InputWithCalendar'
-import React from 'react'
-import fr from 'date-fns/locale/fr'
+import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
 import { getToday } from 'utils/date'
 
 registerLocale('fr', fr)

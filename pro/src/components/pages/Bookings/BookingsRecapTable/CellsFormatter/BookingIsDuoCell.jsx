@@ -1,6 +1,7 @@
-import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 
 const BookingIsDuoCell = ({ isDuo }) => {
   return (

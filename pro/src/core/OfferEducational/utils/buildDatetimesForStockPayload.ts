@@ -1,7 +1,7 @@
 import { endOfDay, isSameDay, set } from 'date-fns'
 
-import { getUtcDateTimeFromLocalDepartement } from '../../../utils/timezone'
 import { toISOStringWithoutMilliseconds } from '../../../utils/date'
+import { getUtcDateTimeFromLocalDepartement } from '../../../utils/timezone'
 
 export const buildBeginningDatetime = (
   beginningDateIsoString: Date,

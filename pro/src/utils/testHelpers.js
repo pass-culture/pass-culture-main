@@ -1,6 +1,6 @@
-import { act } from 'react-dom/test-utils'
 import { fireEvent } from '@testing-library/react'
 import omit from 'lodash.omit'
+import { act } from 'react-dom/test-utils'
 
 export const queryCallbacks = {
   // From the 4th tips of this article: https://www.polvara.me/posts/five-things-you-didnt-know-about-testing-library/

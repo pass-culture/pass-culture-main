@@ -1,9 +1,9 @@
+import React from 'react'
+
+import LeavingGuardDialog from 'new_components/LeavingGuardDialog'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
-
-import LeavingGuardDialog from 'new_components/LeavingGuardDialog'
-import React from 'react'
 
 export interface RouteLeavingGuardOfferCreationProps {
   isFormDirty: boolean

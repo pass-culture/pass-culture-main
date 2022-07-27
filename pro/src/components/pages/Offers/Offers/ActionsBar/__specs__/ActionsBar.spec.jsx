@@ -1,20 +1,20 @@
 import '@testing-library/jest-dom'
 
-import * as useNotification from 'components/hooks/useNotification'
-
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import * as useNotification from 'components/hooks/useNotification'
+import { Events } from 'core/FirebaseEvents/constants'
 import {
   updateAllOffersActiveStatus,
   updateOffersActiveStatus,
 } from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
 import ActionsBar from '../ActionsBar'
-import { Events } from 'core/FirebaseEvents/constants'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { configureTestStore } from 'store/testUtils'
-import userEvent from '@testing-library/user-event'
 
 const renderActionsBar = (props, store) => {
   return render(

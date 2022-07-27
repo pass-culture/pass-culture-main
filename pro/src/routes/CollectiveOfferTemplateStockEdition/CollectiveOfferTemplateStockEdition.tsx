@@ -1,3 +1,8 @@
+import React, { useEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
+
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -9,18 +14,14 @@ import {
   extractOfferIdAndOfferTypeFromRouteParams,
   patchIsTemplateOfferActiveAdapter,
 } from 'core/OfferEducational'
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-
-import { GetCollectiveOfferTemplateSuccessPayload } from './types'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-import Spinner from 'components/layout/Spinner'
+
 import { getCollectiveOfferTemplateAdapter } from './adapters/getCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
 import { patchCollectiveOfferTemplateIntoCollectiveOfferAdapter } from './adapters/patchCollectiveOfferTemplateIntoCollectiveOffer'
-import useNotification from 'components/hooks/useNotification'
+import { GetCollectiveOfferTemplateSuccessPayload } from './types'
 
 const getAdapter = (educationalOfferType: EducationalOfferType) => {
   if (educationalOfferType === EducationalOfferType.CLASSIC) {

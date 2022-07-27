@@ -1,6 +1,7 @@
-import PendingOffererItem from '../PendingOffererItem'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import PendingOffererItem from '../PendingOffererItem'
 
 describe('src | components | pages | Offerers | OffererItem | PendingOffererItem', () => {
   let props

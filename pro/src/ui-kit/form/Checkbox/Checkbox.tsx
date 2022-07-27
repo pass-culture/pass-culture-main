@@ -1,9 +1,10 @@
+import cn from 'classnames'
+import { useField } from 'formik'
+import React from 'react'
+
 import { BaseCheckbox, FieldError } from '../shared'
 
-import React from 'react'
-import cn from 'classnames'
 import styles from './Checkbox.module.scss'
-import { useField } from 'formik'
 
 interface ICheckboxProps {
   name: string

@@ -1,16 +1,17 @@
 import '@testing-library/jest-dom'
 
-import OfferItem, { OfferItemProps } from '../OfferItem'
-import { render, screen } from '@testing-library/react'
-
-import { Audience } from 'core/shared'
-import { MemoryRouter } from 'react-router'
-import { Offer } from 'core/Offers/types'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { Store } from 'redux'
-import { configureTestStore } from 'store/testUtils'
 import { within } from '@testing-library/dom'
+import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+import { Store } from 'redux'
+
+import { Offer } from 'core/Offers/types'
+import { Audience } from 'core/shared'
+import { configureTestStore } from 'store/testUtils'
+
+import OfferItem, { OfferItemProps } from '../OfferItem'
 
 const renderOfferItem = (props: OfferItemProps, store: Store) => {
   return render(

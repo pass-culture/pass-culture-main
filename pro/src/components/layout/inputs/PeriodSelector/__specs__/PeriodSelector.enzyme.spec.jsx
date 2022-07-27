@@ -1,6 +1,7 @@
-import PeriodSelector from '../PeriodSelector'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import PeriodSelector from '../PeriodSelector'
 
 describe('components | PeriodSelector', () => {
   let props

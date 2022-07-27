@@ -1,5 +1,6 @@
-import FormLayout from './FormLayout'
 import React from 'react'
+
+import FormLayout from './FormLayout'
 
 export default {
   title: 'components/FormLayout',

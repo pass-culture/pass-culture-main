@@ -1,9 +1,13 @@
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import React from 'react'
 import { matchPath, useLocation } from 'react-router-dom'
 
-import { IOfferIndividual } from 'core/Offers/types'
-import React from 'react'
+import {
+  IOfferCategory,
+  IOfferSubCategory,
+  IOfferIndividual,
+} from 'core/Offers/types'
 import { Summary as SummaryScreen } from 'screens/OfferIndividual/Summary'
+
 import { serializePropsFromOfferIndividual } from '.'
 
 interface IOfferIndividualSummaryProps {

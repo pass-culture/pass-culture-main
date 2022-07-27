@@ -1,5 +1,5 @@
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 
 type IPayloadFailure = null
 type GetCollectiveOfferTemplateAdapter = Adapter<

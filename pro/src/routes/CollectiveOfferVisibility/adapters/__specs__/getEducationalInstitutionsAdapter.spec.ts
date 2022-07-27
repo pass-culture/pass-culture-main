@@ -1,5 +1,6 @@
-import { EducationalInstitutionsResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { EducationalInstitutionsResponseModel } from 'apiClient/v1'
+
 import { getEducationalInstitutionsAdapter } from '../getEducationalInstitutionsAdapter'
 
 describe('getEducationalInstitutionsAdapter', () => {

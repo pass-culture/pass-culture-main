@@ -1,8 +1,11 @@
-import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
-import { IBooking } from '..'
-import React from 'react'
 import cx from 'classnames'
+import React from 'react'
+
+import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { formatLocalTimeDateString } from 'utils/timezone'
+
+import { IBooking } from '..'
+
 import styles from './BookingDetails.module.scss'
 
 interface IBookingDetailsProps {

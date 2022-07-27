@@ -1,10 +1,11 @@
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
-
-import { Events } from 'core/FirebaseEvents/constants'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
 import { useSelector } from 'react-redux'
+
+import { Events } from 'core/FirebaseEvents/constants'
+import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
+
+import { doesUserPreferReducedMotion } from '../../../utils/windowMatchMedia'
 
 export const STEP_ID_OFFERERS = 'offerers'
 export const STEP_ID_PROFILE = 'profile'

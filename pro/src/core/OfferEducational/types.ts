@@ -4,9 +4,8 @@ import {
   OfferStatus,
   StudentLevels,
   SubcategoryIdEnum,
+  GetOfferVenueResponseModel,
 } from 'apiClient/v1'
-
-import { GetOfferVenueResponseModel } from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
 
 export type IUserVenue = {

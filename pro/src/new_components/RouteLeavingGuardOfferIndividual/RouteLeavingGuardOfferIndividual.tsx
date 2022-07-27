@@ -1,10 +1,10 @@
 import React, { useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
+
+import { LeavingOfferCreationDialog } from 'new_components/LeavingOfferCreationDialog'
 import RouteLeavingGuard, {
   IShouldBlockNavigationReturnValue,
 } from 'new_components/RouteLeavingGuard'
-
-import { LeavingOfferCreationDialog } from 'new_components/LeavingOfferCreationDialog'
-import { useLocation } from 'react-router-dom'
 
 const STEP_OFFER = 'offer'
 const STEP_STOCKS = 'stocks'

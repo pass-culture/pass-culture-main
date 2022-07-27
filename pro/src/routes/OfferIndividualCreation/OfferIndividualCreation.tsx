@@ -1,16 +1,16 @@
-import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
-import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
-import { useGetCategories, useGetOffer } from 'core/Offers/adapters'
+import React from 'react'
 import { useHistory, useParams } from 'react-router'
 
-import { OfferIndividualCreationInformations as InformationsRoute } from 'routes/OfferIndividualCreationInformations'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
-import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
-import React from 'react'
-import Spinner from 'components/layout/Spinner'
-import { OfferIndividualCreationStocks as StockRoute } from 'routes/OfferIndividualCreationStocks'
-import { useHomePath } from 'hooks'
 import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
+import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
+import { useGetCategories, useGetOffer } from 'core/Offers/adapters'
+import { useHomePath } from 'hooks'
+import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import { OfferIndividualCreationInformations as InformationsRoute } from 'routes/OfferIndividualCreationInformations'
+import { OfferIndividualCreationStocks as StockRoute } from 'routes/OfferIndividualCreationStocks'
+import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
 
 const OfferIndividualCreation = (): JSX.Element | null => {
   const notify = useNotification()

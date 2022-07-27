@@ -1,17 +1,17 @@
+import { api } from 'apiClient/api'
 import {
   ApiError,
   GetCollectiveOfferTemplateResponseModel,
   OfferAddressType,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
+import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v1/core/ApiResult'
+
 import {
   Params,
   patchCollectiveOfferTemplateAdapter,
 } from '../patchCollectiveOfferTemplateAdapter'
-
-import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
-import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { api } from 'apiClient/api'
 
 describe('patchCollectiveOfferTemplateAdapter', () => {
   let props: Params

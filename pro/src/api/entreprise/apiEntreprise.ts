@@ -1,11 +1,11 @@
+import { ApiError } from 'api/helpers'
+
+import { API_ENTREPRISE_BASE_URL } from './constants'
 import type {
   IEntrepriseApiJson,
   IEntrepriseSirenData,
   IEntrepriseSiretData,
 } from './types'
-
-import { API_ENTREPRISE_BASE_URL } from './constants'
-import { ApiError } from 'api/helpers'
 
 const handleApiError = async (
   response: Response

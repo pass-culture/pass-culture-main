@@ -1,10 +1,11 @@
-import { BaseInput, FieldLayout } from '../shared'
+import fr from 'date-fns/locale/fr'
+import { useField } from 'formik'
 import React, { createRef } from 'react'
 import { default as ReactDatePicker, registerLocale } from 'react-datepicker'
 
+import { BaseInput, FieldLayout } from '../shared'
+
 import { ReactComponent as Calendar } from './assets/calendar.svg'
-import fr from 'date-fns/locale/fr'
-import { useField } from 'formik'
 
 registerLocale('fr', fr)
 

@@ -1,23 +1,23 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { Link, useHistory, useLocation } from 'react-router-dom'
-import React, { PureComponent } from 'react'
-
-import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
-import { Form } from 'react-final-form'
-import Icon from 'components/layout/Icon'
-import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
-import OffererItemContainer from './OffererItem/OffererItemContainer'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import PendingOffererItem from './OffererItem/PendingOffererItem'
 /*eslint no-undef: 0*/
 import PropTypes from 'prop-types'
-import Spinner from 'components/layout/Spinner'
+import React, { PureComponent } from 'react'
+import { Form } from 'react-final-form'
+import LoadingInfiniteScroll from 'react-loading-infinite-scroller'
+import { Link, useHistory, useLocation } from 'react-router-dom'
+
+import Icon from 'components/layout/Icon'
 import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
+import { ReactComponent as AddOffererSvg } from 'icons/ico-plus.svg'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
-import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 import { mapApiToBrowser } from 'utils/translate'
+
+import OffererItemContainer from './OffererItem/OffererItemContainer'
+import PendingOffererItem from './OffererItem/PendingOffererItem'
+import createVenueForOffererUrl from './utils/createVenueForOffererUrl'
 
 /* eslint-disable */
 function withRouter(Component) {

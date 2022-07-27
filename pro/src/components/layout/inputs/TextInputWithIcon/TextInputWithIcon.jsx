@@ -1,7 +1,9 @@
-import InputError from '../Errors/InputError'
 import PropTypes from 'prop-types'
-import { ROOT_PATH } from 'utils/config'
 import React from 'react'
+
+import { ROOT_PATH } from 'utils/config'
+
+import InputError from '../Errors/InputError'
 
 const TextInputWithIcon = ({
   disabled,

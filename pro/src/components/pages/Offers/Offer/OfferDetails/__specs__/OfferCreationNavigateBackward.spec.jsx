@@ -1,18 +1,19 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import { MemoryRouter, Route } from 'react-router'
 import { render, screen } from '@testing-library/react'
-
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import OfferLayout from '../../OfferLayout'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
-import { getOfferInputForField } from './helpers'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter, Route } from 'react-router'
+
+import { api } from 'apiClient/api'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
+
+import OfferLayout from '../../OfferLayout'
+
+import { getOfferInputForField } from './helpers'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),

@@ -1,26 +1,27 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter, Route } from 'react-router'
+
+import { api } from 'apiClient/api'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
+import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
 import * as computeUrl from 'core/Offers/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
-import { MemoryRouter, Route } from 'react-router'
+import { DEFAULT_FORM_VALUES } from '../_constants'
+
 import {
   fieldLabels,
   findInputErrorForField,
   getOfferInputForField,
   setOfferValues,
 } from './helpers'
-import { render, screen, waitFor, within } from '@testing-library/react'
-
-import { DEFAULT_FORM_VALUES } from '../_constants'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
-import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-import userEvent from '@testing-library/user-event'
 
 Element.prototype.scrollIntoView = () => {}
 

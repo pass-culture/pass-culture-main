@@ -1,9 +1,11 @@
 import './AllocineProviderFormDialog.scss'
 
-import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
-import DialogBox from 'new_components/DialogBox/DialogBox'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import DialogBox from 'new_components/DialogBox/DialogBox'
+
+import AllocineProviderForm from '../AllocineProviderForm/AllocineProviderForm'
 
 const AllocineProviderFormDialog = ({
   onCancel,

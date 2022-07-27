@@ -1,7 +1,10 @@
-import { CATEGORY_STATUS } from '.'
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import {
+  EducationalInstitutionResponseModel,
+  WithdrawalTypeEnum,
+} from 'apiClient/v1'
 import { IAccessibiltyFormValues } from 'core/shared'
-import { WithdrawalTypeEnum } from 'apiClient/v1'
+
+import { CATEGORY_STATUS } from '.'
 
 export type TSearchFilters = {
   nameOrIsbn: string

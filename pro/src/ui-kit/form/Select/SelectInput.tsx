@@ -1,7 +1,9 @@
-import { ReactComponent as Down } from './assets/down.svg'
-import React from 'react'
-import { SelectOption } from 'custom_types/form'
 import cn from 'classnames'
+import React from 'react'
+
+import { SelectOption } from 'custom_types/form'
+
+import { ReactComponent as Down } from './assets/down.svg'
 import styles from './Select.module.scss'
 
 interface ISelectInputProps {

@@ -1,7 +1,8 @@
-import fetchAddressData from 'components/pages/Offerers/Offerer/VenueV1/fields/LocationFields/utils/fetchAddressData'
 import { screen } from '@testing-library/dom'
-import userEvent from '@testing-library/user-event'
 import { waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
+import fetchAddressData from 'components/pages/Offerers/Offerer/VenueV1/fields/LocationFields/utils/fetchAddressData'
 
 export const fieldLabels = {
   siret: {

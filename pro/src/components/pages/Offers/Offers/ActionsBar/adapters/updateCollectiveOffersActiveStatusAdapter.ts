@@ -1,9 +1,9 @@
+import { api } from 'apiClient/api'
+
 import {
   computeActivationSuccessMessage,
   computeDeactivationSuccessMessage,
 } from './utils'
-
-import { api } from 'apiClient/api'
 
 type UpdateCollectiveOffersActiveStatusAdapter = Adapter<
   {

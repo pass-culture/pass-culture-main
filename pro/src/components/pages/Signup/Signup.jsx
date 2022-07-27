@@ -1,15 +1,16 @@
+import PropTypes from 'prop-types'
 import React, { useEffect } from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import AppLayout from 'app/AppLayout'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import PropTypes from 'prop-types'
+import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+
 import SignupConfirmation from './SignupConfirmation/SignupConfirmation'
 import SignupForm from './SignupForm/SignupForm'
 import SignupUnavailable from './SignupUnavailable/SignupUnavailable'
-import { campaignTracker } from 'tracking/mediaCampaignsTracking'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 
 const Signup = ({ location }) => {
   useEffect(() => {

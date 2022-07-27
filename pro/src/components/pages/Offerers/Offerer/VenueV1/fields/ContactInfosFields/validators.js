@@ -1,5 +1,6 @@
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { string } from 'yup'
+
 import { urlRegex } from 'core/shared'
 
 export const validatePhone = phone => {

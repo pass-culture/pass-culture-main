@@ -1,7 +1,9 @@
-import Icon from 'components/layout/Icon'
-import React from 'react'
-import TablePagination from '../TablePagination'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
+
+import TablePagination from '../TablePagination'
 
 describe('components | TablePagination', () => {
   let props

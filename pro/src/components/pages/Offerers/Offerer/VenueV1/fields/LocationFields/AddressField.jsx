@@ -1,11 +1,13 @@
-import { Field } from 'react-final-form'
-import FieldErrors from 'components/layout/form/FieldErrors'
-import LocationViewer from './LocationViewer'
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
-import classnames from 'classnames'
-import { composeValidators } from 'utils/react-final-form'
+import { Field } from 'react-final-form'
+
+import FieldErrors from 'components/layout/form/FieldErrors'
 import getRequiredValidate from 'components/layout/form/utils/getRequiredValidate'
+import { composeValidators } from 'utils/react-final-form'
+
+import LocationViewer from './LocationViewer'
 
 const updateLocationFields =
   (form, { isLocationFrozen }) =>

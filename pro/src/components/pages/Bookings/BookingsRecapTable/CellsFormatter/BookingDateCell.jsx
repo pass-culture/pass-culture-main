@@ -1,12 +1,12 @@
+import { format } from 'date-fns-tz'
+import PropTypes from 'prop-types'
+import React from 'react'
+
 import {
   FORMAT_DD_MM_YYYY,
   FORMAT_HH_mm,
   toDateStrippedOfTimezone,
 } from 'utils/date'
-
-import PropTypes from 'prop-types'
-import React from 'react'
-import { format } from 'date-fns-tz'
 
 const BookingDateCell = ({ bookingDateTimeIsoString }) => {
   const bookingDate = toDateStrippedOfTimezone(bookingDateTimeIsoString)

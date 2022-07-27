@@ -1,8 +1,10 @@
+import cn from 'classnames'
+import React from 'react'
+
 import { ReactComponent as DuoSvg } from 'icons/ico-duo.svg'
 import { ReactComponent as PassCultureSvg } from 'icons/ico-passculture.svg'
-import React from 'react'
 import { ReactComponent as TagSvg } from 'icons/ico-tag.svg'
-import cn from 'classnames'
+
 import style from './OptionsIcons.module.scss'
 
 interface IOptionsIconsProps {

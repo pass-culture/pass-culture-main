@@ -1,7 +1,7 @@
-import Banner, { IBannerProps } from './Banner'
-
-import React from 'react'
 import { Story } from '@storybook/react'
+import React from 'react'
+
+import Banner, { IBannerProps } from './Banner'
 
 export default {
   title: 'ui-kit/Banner',

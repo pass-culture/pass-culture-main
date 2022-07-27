@@ -1,3 +1,9 @@
+import React, { useEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
+
+import { CollectiveStockResponseModel } from 'apiClient/v1'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_STOCK_FORM_VALUES,
   EducationalOfferType,
@@ -9,17 +15,12 @@ import {
   getStockCollectiveOfferAdapter,
   patchIsCollectiveOfferActiveAdapter,
 } from 'core/OfferEducational'
-import React, { useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-
-import { CollectiveStockResponseModel } from 'apiClient/v1'
+import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalStockScreen from 'screens/OfferEducationalStock'
-import Spinner from 'components/layout/Spinner'
-import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
+
 import patchCollectiveStockAdapter from './adapters/patchCollectiveStockAdapter'
-import useNotification from 'components/hooks/useNotification'
 
 const OfferEducationalStockEdition = (): JSX.Element => {
   const history = useHistory()

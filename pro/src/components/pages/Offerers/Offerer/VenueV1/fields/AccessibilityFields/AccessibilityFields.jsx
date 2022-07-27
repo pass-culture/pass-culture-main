@@ -1,12 +1,12 @@
-import { CheckboxField, Divider } from 'ui-kit'
+import createDecorator from 'final-form-calculate'
+import PropTypes from 'prop-types'
+import React from 'react'
 
 import { ReactComponent as AudioDisabilitySvg } from 'icons/audio-disability.svg'
 import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.svg'
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
-import PropTypes from 'prop-types'
-import React from 'react'
 import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.svg'
-import createDecorator from 'final-form-calculate'
+import { CheckboxField, Divider } from 'ui-kit'
 
 const checkNoDisabilityCompliant = (_value, allValues) => {
   const hasAccessibility = [

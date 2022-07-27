@@ -1,17 +1,16 @@
 import * as PropTypes from 'prop-types'
+import React, { useCallback } from 'react'
 
 import {
   IMAGE_TYPE,
   MAX_IMAGE_SIZE,
   MIN_IMAGE_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import React, { useCallback } from 'react'
-
 import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
-import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/ImportFromComputerInput'
-import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
 import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
+import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/ImportFromComputerInput'
+import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
 
 const constraints = [
   imageConstraints.formats(IMAGE_TYPE),

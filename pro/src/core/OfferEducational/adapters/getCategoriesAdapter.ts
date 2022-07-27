@@ -1,11 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   IEducationalCategory,
   IEducationalSubCategory,
 } from 'core/OfferEducational'
-
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import { filterEducationalCategories } from '../utils/filterEducationalCategories'
 
 type Params = null

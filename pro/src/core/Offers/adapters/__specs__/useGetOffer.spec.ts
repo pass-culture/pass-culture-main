@@ -1,13 +1,14 @@
 import '@testing-library/jest-dom'
 
+import { renderHook } from '@testing-library/react-hooks'
+
+import { api } from 'apiClient/api'
 import {
   GetIndividualOfferResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
 } from 'apiClient/v1'
 
-import { api } from 'apiClient/api'
-import { renderHook } from '@testing-library/react-hooks'
 import { useGetOffer } from '..'
 
 describe('useGetOffer', () => {

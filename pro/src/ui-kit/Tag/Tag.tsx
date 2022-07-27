@@ -1,6 +1,8 @@
-import Icon from 'components/layout/Icon'
-import React from 'react'
 import cx from 'classnames'
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
+
 import styles from './Tag.module.scss'
 interface Closeable {
   onClose?: (event: React.MouseEvent<HTMLButtonElement>) => void

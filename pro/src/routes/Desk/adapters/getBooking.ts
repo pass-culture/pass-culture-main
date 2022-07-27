@@ -1,17 +1,16 @@
+import { apiV2 } from 'api/api'
 import {
   ApiError,
   HTTP_STATUS,
   extractApiErrorMessageForKey,
   extractApiFirstErrorMessage,
 } from 'api/helpers'
+import { GetBookingResponse } from 'api/v2/gen'
 import {
   IBooking,
   IDeskGetBookingResponse,
   MESSAGE_VARIANT,
 } from 'screens/Desk'
-
-import { GetBookingResponse } from 'api/v2/gen'
-import { apiV2 } from 'api/api'
 
 const getBookingSuccess = (
   response: GetBookingResponse

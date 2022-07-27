@@ -1,7 +1,9 @@
-import { BoxRounded } from '.'
-import { IBoxRoundedProps } from './BoxRounded'
-import React from 'react'
 import { Story } from '@storybook/react'
+import React from 'react'
+
+import { IBoxRoundedProps } from './BoxRounded'
+
+import { BoxRounded } from '.'
 
 export default {
   title: 'ui-kit/BoxRounded',

@@ -1,18 +1,19 @@
 import '@testing-library/jest-dom'
 
-import { MemoryRouter, Route } from 'react-router'
 import { fireEvent, render, screen } from '@testing-library/react'
-
-import { ApiError } from 'apiClient/v1'
-import { Events } from 'core/FirebaseEvents/constants'
-import { HTTP_STATUS } from 'api/helpers'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { Provider } from 'react-redux'
-import React from 'react'
-import SignIn from '../SignIn'
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter, Route } from 'react-router'
+
+import { HTTP_STATUS } from 'api/helpers'
+import { api } from 'apiClient/api'
+import { ApiError } from 'apiClient/v1'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { Events } from 'core/FirebaseEvents/constants'
+import { configureTestStore } from 'store/testUtils'
+
+import SignIn from '../SignIn'
 
 jest.mock('apiClient/api', () => ({
   api: {

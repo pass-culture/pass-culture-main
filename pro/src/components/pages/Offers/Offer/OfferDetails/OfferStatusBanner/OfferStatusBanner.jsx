@@ -1,12 +1,12 @@
+import PropTypes from 'prop-types'
+import React from 'react'
+
 import {
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-
 import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
-import PropTypes from 'prop-types'
-import React from 'react'
 
 const OfferStatusBanner = ({ status }) => {
   return status === OFFER_STATUS_REJECTED ? (

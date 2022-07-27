@@ -1,7 +1,9 @@
-import { Audience } from 'core/shared/types'
-import Icon from 'components/layout/Icon'
-import { Link } from 'react-router-dom'
 import React from 'react'
+import { Link } from 'react-router-dom'
+
+import Icon from 'components/layout/Icon'
+import { Audience } from 'core/shared/types'
+
 import styles from './NoResults.module.scss'
 
 interface INoResultsProps {

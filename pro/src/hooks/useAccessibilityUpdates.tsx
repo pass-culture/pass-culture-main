@@ -1,7 +1,7 @@
+import isEqual from 'lodash.isequal'
 import { useEffect, useState } from 'react'
 
 import { IAccessibiltyFormValues } from 'core/shared'
-import isEqual from 'lodash.isequal'
 
 const useAccessibilityUpdates = (
   values: IAccessibiltyFormValues,

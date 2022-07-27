@@ -1,5 +1,6 @@
-import React from 'react'
 import cn from 'classnames'
+import React from 'react'
+
 import style from './SummaryLayout.module.scss'
 
 interface ISummaryLayoutRowProps {

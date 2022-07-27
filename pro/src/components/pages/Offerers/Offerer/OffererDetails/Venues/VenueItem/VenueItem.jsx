@@ -1,9 +1,10 @@
-import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
-import Dotdotdot from 'react-dotdotdot'
-import Icon from 'components/layout/Icon'
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
+import Dotdotdot from 'react-dotdotdot'
+import { Link } from 'react-router-dom'
+
+import Icon from 'components/layout/Icon'
+import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 
 const buildLinkIdFromVenue = ({ publicName, name }) => {
   const nameToFormat = publicName || name

@@ -1,8 +1,8 @@
-import { Offer, TSearchFilters } from 'core/Offers/types'
-
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { api } from 'apiClient/api'
+import { Offer, TSearchFilters } from 'core/Offers/types'
 import { serializeApiFilters } from 'core/Offers/utils'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+
 import { serializeOffers } from './serializers'
 
 type IPayload = {

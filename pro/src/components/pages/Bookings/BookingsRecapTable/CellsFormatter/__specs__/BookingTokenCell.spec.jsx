@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import React from 'react'
 
 import BookingTokenCell from '../BookingTokenCell'
-import React from 'react'
 
 const renderBookingTokenCell = props => render(<BookingTokenCell {...props} />)
 

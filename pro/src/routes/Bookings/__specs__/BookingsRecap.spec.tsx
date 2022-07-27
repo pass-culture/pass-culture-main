@@ -1,13 +1,5 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
-import BookingsRecapContainer, { BookingsRouterState } from '../Bookings'
-import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-} from 'utils/date'
-import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
 import {
   fireEvent,
   render,
@@ -15,17 +7,25 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
-
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
-import { MemoryRouter } from 'react-router'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { SharedCurrentUserResponseModel } from 'apiClient/v1'
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
-import { getNthCallNthArg } from 'utils/testHelpers'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import { api } from 'apiClient/api'
+import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
+import { bookingRecapFactory, venueFactory } from 'utils/apiFactories'
+import {
+  FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
+} from 'utils/date'
+import { getNthCallNthArg } from 'utils/testHelpers'
+
+import BookingsRecapContainer, { BookingsRouterState } from '../Bookings'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getVenuesForOfferer: jest.fn(),

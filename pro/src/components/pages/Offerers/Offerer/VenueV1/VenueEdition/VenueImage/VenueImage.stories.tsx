@@ -1,8 +1,8 @@
-import { VenueImage, VenueImageProps } from './VenueImage'
-
-import React from 'react'
 import { Story } from '@storybook/react'
+import React from 'react'
+
 import demoImage from './demo-image.jpg'
+import { VenueImage, VenueImageProps } from './VenueImage'
 
 export default {
   title: 'components/VenueImage',

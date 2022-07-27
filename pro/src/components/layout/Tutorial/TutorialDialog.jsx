@@ -1,13 +1,13 @@
+import PropTypes from 'prop-types'
+import React, { useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
+
+import { Events } from 'core/FirebaseEvents/constants'
+import DialogBox from 'new_components/DialogBox/DialogBox'
+import { TUTO_DIALOG_LABEL_ID, Tutorial } from 'new_components/Tutorial'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import React, { useCallback, useState } from 'react'
-import { TUTO_DIALOG_LABEL_ID, Tutorial } from 'new_components/Tutorial'
-
-import DialogBox from 'new_components/DialogBox/DialogBox'
-import { Events } from 'core/FirebaseEvents/constants'
-import PropTypes from 'prop-types'
 import styles from './TutorialDialog.module.scss'
-import { useSelector } from 'react-redux'
 
 const TutorialDialog = ({ currentUser, setUserHasSeenTuto }) => {
   const [areTutoDisplayed, setAreTutoDisplayed] = useState(

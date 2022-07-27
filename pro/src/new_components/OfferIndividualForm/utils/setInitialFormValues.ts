@@ -1,10 +1,9 @@
+import { TOffererName } from 'core/Offerers/types'
+import { TOfferIndividualVenue } from 'core/Venue/types'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
 } from 'new_components/OfferIndividualForm'
-
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import { TOffererName } from 'core/Offerers/types'
 
 const setInitialFormValues = (
   values: IOfferIndividualFormValues,

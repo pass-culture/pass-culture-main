@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 
 import { renderHook } from '@testing-library/react-hooks'
+
 import { useAdapter } from '..'
 
 interface ISuccessPayload {

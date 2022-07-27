@@ -1,6 +1,7 @@
-import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../CollectiveDataForm/initialValues'
 import { StudentLevels } from 'apiClient/v1'
 import { VenueCollectiveInformation } from 'core/Venue/types'
+
+import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../CollectiveDataForm/initialValues'
 import { extractInitialValuesFromVenue } from '../CollectiveDataForm/utils/extractInitialValuesFromVenue'
 
 describe('extractInitialValuesFromVenue', () => {

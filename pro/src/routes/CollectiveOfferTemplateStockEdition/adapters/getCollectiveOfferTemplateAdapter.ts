@@ -1,5 +1,6 @@
-import { GetCollectiveOfferTemplateSuccessPayload } from '../types'
 import { api } from 'apiClient/api'
+
+import { GetCollectiveOfferTemplateSuccessPayload } from '../types'
 
 type IPayloadFailure = null
 type GetCollectiveOfferTemplateAdapter = Adapter<

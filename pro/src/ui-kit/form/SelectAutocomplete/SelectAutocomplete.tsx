@@ -1,9 +1,10 @@
-import { BaseCheckbox, BaseInput, FieldLayout } from '../shared'
-import React, { useEffect, useRef, useState } from 'react'
-import { useField, useFormikContext } from 'formik'
-
-import AutocompleteList from '../shared/AutocompleteList/AutocompleteList'
 import cx from 'classnames'
+import { useField, useFormikContext } from 'formik'
+import React, { useEffect, useRef, useState } from 'react'
+
+import { BaseCheckbox, BaseInput, FieldLayout } from '../shared'
+import AutocompleteList from '../shared/AutocompleteList/AutocompleteList'
+
 import styles from './SelectAutocomplete.module.scss'
 import { toLowerCaseWithoutAccents } from './utils/toLowerCaseWithoutAccents'
 

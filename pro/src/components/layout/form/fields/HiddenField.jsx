@@ -1,9 +1,9 @@
+import PropTypes from 'prop-types'
 import React, { PureComponent } from 'react'
-
 import { Field } from 'react-final-form'
+
 import FieldErrors from '../FieldErrors'
 /*eslint no-undef: 0*/
-import PropTypes from 'prop-types'
 
 const noOperation = () => {}
 

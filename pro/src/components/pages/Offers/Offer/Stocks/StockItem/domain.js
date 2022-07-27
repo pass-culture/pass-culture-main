@@ -6,12 +6,12 @@ import {
   startOfDay,
   startOfMinute,
 } from 'date-fns'
+
+import { toISOStringWithoutMilliseconds } from 'utils/date'
 import {
   getLocalDepartementDateTimeFromUtc,
   getUtcDateTimeFromLocalDepartement,
 } from 'utils/timezone'
-
-import { toISOStringWithoutMilliseconds } from 'utils/date'
 
 const EMPTY_STRING_VALUE = ''
 

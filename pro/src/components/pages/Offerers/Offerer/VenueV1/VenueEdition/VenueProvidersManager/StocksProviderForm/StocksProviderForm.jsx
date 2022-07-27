@@ -1,9 +1,9 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
 
-import ConfirmDialog from 'new_components/ConfirmDialog'
 import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
+import ConfirmDialog from 'new_components/ConfirmDialog'
 
 const StocksProviderForm = ({
   saveVenueProvider,

@@ -1,4 +1,5 @@
-import AvatarEditor, { Position } from 'react-avatar-editor'
+import Slider from '@mui/material/Slider'
+import { ThemeProvider, createTheme, styled } from '@mui/material/styles'
 import React, {
   forwardRef,
   useCallback,
@@ -6,13 +7,12 @@ import React, {
   useRef,
   useState,
 } from 'react'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
+import AvatarEditor, { Position } from 'react-avatar-editor'
+
+import { useEffectUnmount } from 'hooks'
 
 import CanvasTools from './canvas'
-import Slider from '@mui/material/Slider'
 import style from './ImageEditor.module.scss'
-import { styled } from '@mui/material/styles'
-import { useEffectUnmount } from 'hooks'
 
 export interface IImageEditorProps {
   image: string | File

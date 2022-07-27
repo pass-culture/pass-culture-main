@@ -1,4 +1,5 @@
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+
 import { VisibilityFormValues } from '../types'
 
 export const extractInitialVisibilityValues = (

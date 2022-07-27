@@ -1,6 +1,7 @@
 import { ComponentStory } from '@storybook/react'
-import Notification from './Notification'
 import React from 'react'
+
+import Notification from './Notification'
 
 export default {
   title: 'ui-kit/Notification',

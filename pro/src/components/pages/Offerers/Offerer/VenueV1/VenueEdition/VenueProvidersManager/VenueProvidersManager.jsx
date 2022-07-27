@@ -1,12 +1,12 @@
 import './VenueProvidersManager.scss'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
+import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
 
-import AddVenueProviderButton from './AddVenueProviderButton'
-import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import AddVenueProviderButton from './AddVenueProviderButton'
 import VenueProviderList from './VenueProviderList'
 
 const VenueProvidersManager = ({ venue }) => {

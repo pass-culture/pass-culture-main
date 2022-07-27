@@ -1,9 +1,9 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef } from 'react'
 
-import { ALL_STATUS } from 'core/Offers/constants'
-import PropTypes from 'prop-types'
-import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import { RadioInput } from 'components/layout/inputs/RadioInput/RadioInput'
+import { ALL_STATUS } from 'core/Offers/constants'
 
 export const OffersStatusFiltersModal = ({
   isVisible,

@@ -1,6 +1,6 @@
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { Offerer } from 'core/Offers/types'
 import { api } from 'apiClient/api'
+import { Offerer } from 'core/Offers/types'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 type IPayload = Offerer
 

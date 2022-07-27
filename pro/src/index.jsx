@@ -1,19 +1,19 @@
 import './styles/index.scss'
 
+import { init as SentryInit } from '@sentry/browser'
+import { Integrations as TracingIntegrations } from '@sentry/tracing'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import smoothscroll from 'smoothscroll-polyfill'
+
+import Root from 'Root'
 import {
   ENVIRONMENT_NAME,
   SENTRY_SAMPLE_RATE,
   SENTRY_SERVER_URL,
 } from 'utils/config'
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Root from 'Root'
-
-import { init as SentryInit } from '@sentry/browser'
-import { Integrations as TracingIntegrations } from '@sentry/tracing'
 import config from '../package.json'
-import smoothscroll from 'smoothscroll-polyfill'
 
 import { unregister } from './registerServiceWorker'
 

@@ -1,9 +1,16 @@
+import { useFormikContext } from 'formik'
+import React, { useEffect, useState } from 'react'
+
+import { OfferAddressType } from 'apiClient/v1'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   IUserOfferer,
   IUserVenue,
 } from 'core/OfferEducational'
+import FormLayout from 'new_components/FormLayout'
+import { RadioGroup, Select, TextArea, Banner } from 'ui-kit'
+
 import {
   EVENT_ADDRESS_OFFERER_LABEL,
   EVENT_ADDRESS_OFFERER_VENUE_SELECT_LABEL,
@@ -11,14 +18,7 @@ import {
   EVENT_ADDRESS_OTHER_LABEL,
   EVENT_ADDRESS_SCHOOL_LABEL,
 } from '../../constants/labels'
-import { RadioGroup, Select, TextArea } from 'ui-kit'
-import React, { useEffect, useState } from 'react'
-
-import { Banner } from 'ui-kit'
-import FormLayout from 'new_components/FormLayout'
-import { OfferAddressType } from 'apiClient/v1'
 import styles from '../OfferEducationalForm.module.scss'
-import { useFormikContext } from 'formik'
 
 interface IFormEventAddressProps {
   venuesOptions: SelectOptions

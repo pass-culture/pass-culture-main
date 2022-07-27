@@ -1,16 +1,17 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-
+import userEvent from '@testing-library/user-event'
+import fetch from 'jest-fetch-mock'
+import React from 'react'
 import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
-import React from 'react'
-import SiretField from '../SiretField'
-import { configureTestStore } from 'store/testUtils'
-import fetch from 'jest-fetch-mock'
+
 import getSiretData from 'core/Venue/adapters/getSiretDataAdapter'
+import { configureTestStore } from 'store/testUtils'
+
+import SiretField from '../SiretField'
 import siretApiValidate from '../validators/siretApiValidate'
-import userEvent from '@testing-library/user-event'
 
 describe('components | SiretField', () => {
   it('should display a error if siret do not include given siren', async () => {

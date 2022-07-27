@@ -1,7 +1,9 @@
-import Icon from 'components/layout/Icon'
-import React from 'react'
-import { SelectOption } from 'custom_types/form'
 import cx from 'classnames'
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
+import { SelectOption } from 'custom_types/form'
+
 import styles from './AutocompleteList.module.scss'
 
 // FIXME (MathildeDuboille - 15-06-22): improve accessibility and refactor if needed.

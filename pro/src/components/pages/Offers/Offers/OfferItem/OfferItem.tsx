@@ -1,21 +1,21 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
-
-import { Audience } from 'core/shared'
 import Icon from 'components/layout/Icon'
-import { Link } from 'react-router-dom'
+import Thumb from 'components/layout/Thumb'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
 import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
-import React from 'react'
-import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
-import Thumb from 'components/layout/Thumb'
+import { Audience } from 'core/shared'
 import { computeVenueDisplayName } from 'repository/venuesService'
-import { formatLocalTimeDateString } from 'utils/timezone'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { pluralize } from 'utils/pluralize'
-import useActiveFeature from 'components/hooks/useActiveFeature'
+import { formatLocalTimeDateString } from 'utils/timezone'
 
 export type OfferItemProps = {
   disabled?: boolean

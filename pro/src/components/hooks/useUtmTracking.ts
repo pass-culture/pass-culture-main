@@ -1,10 +1,11 @@
-import { Events } from 'core/FirebaseEvents/constants'
 import { LocationListener } from 'history'
+import { useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
+
+import { Events } from 'core/FirebaseEvents/constants'
 import { RootState } from 'store/reducers'
 import { parse } from 'utils/query-string'
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import { useSelector } from 'react-redux'
 
 const useUtmTracking = (): LocationListener | void => {
   const location = useLocation()

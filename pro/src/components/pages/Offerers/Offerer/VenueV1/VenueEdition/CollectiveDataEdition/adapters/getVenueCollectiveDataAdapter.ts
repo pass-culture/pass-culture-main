@@ -1,6 +1,6 @@
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 type GetVenueCollectiveDataAdapter = Adapter<
   string,

@@ -1,5 +1,5 @@
-import { composeValidators } from 'utils/react-final-form'
 import { getSirenDataAdapter } from 'core/Offerers/adapters'
+import { composeValidators } from 'utils/react-final-form'
 
 const required = (value: string) => {
   return value ? undefined : 'Ce champ est obligatoire'

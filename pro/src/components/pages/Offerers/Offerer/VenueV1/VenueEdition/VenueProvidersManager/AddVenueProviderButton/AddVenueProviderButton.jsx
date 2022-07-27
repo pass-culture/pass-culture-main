@@ -1,13 +1,14 @@
 import './AddVenueProviderButton.scss'
 
+import PropTypes from 'prop-types'
 import React, { useCallback, useMemo, useState } from 'react'
 
-import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
-import PropTypes from 'prop-types'
 import Select from 'components/layout/inputs/Select'
 import { ReactComponent as SynchronizeOffers } from 'icons/ico-more-circle.svg'
-import VenueProviderForm from '../VenueProviderForm'
 import { sortByDisplayName } from 'utils/strings'
+
+import { DEFAULT_PROVIDER_OPTION } from '../utils/_constants'
+import VenueProviderForm from '../VenueProviderForm'
 
 const AddVenueProviderButton = ({ providers, setVenueProviders, venue }) => {
   const [isCreationMode, setIsCreationMode] = useState(false)

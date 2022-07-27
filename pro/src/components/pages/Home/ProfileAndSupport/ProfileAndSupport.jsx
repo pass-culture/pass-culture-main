@@ -1,15 +1,17 @@
-import { Button, ButtonLink } from 'ui-kit'
 import React, { useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
 
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { Events } from 'core/FirebaseEvents/constants'
-import Icon from 'components/layout/Icon'
-import ProfileInformationsModal from './ProfileInformationsModal'
-import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
-import Support from './Support'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useSelector } from 'react-redux'
+import Icon from 'components/layout/Icon'
+import { Events } from 'core/FirebaseEvents/constants'
+import { Button, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { STEP_PROFILE_HASH } from '../HomepageBreadcrumb'
+
+import ProfileInformationsModal from './ProfileInformationsModal'
+import Support from './Support'
 
 /**
  * if phone number is valid:

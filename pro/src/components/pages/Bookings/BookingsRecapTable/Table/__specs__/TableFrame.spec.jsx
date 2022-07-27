@@ -1,10 +1,10 @@
+import { mount } from 'enzyme'
+import React from 'react'
 import * as reactTable from 'react-table'
 
-import React from 'react'
-import TableFrame from '../TableFrame'
 import TableHead from '../Head/TableHead'
 import TablePagination from '../Paginate/TablePagination'
-import { mount } from 'enzyme'
+import TableFrame from '../TableFrame'
 
 const CellMock = ({ offer: { offer_name: offerName } }) => (
   <span>{offerName}</span>

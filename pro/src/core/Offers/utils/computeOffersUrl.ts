@@ -4,6 +4,7 @@ import {
   DEFAULT_PAGE,
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
+import { stringify } from 'utils/query-string'
 import {
   mapApiToBrowser,
   translateApiParamsToQueryParams,
@@ -11,7 +12,6 @@ import {
 
 import { Audience } from '../../shared/types'
 import { TSearchFilters } from '../types'
-import { stringify } from 'utils/query-string'
 
 const INDIVIDUAL_OFFERS_URL = '/offres'
 const COLLECTIVE_OFFERS_URL = '/offres/collectives'

@@ -1,8 +1,8 @@
+import { useFormikContext } from 'formik'
 import { useEffect, useState } from 'react'
 
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
-import { useFormikContext } from 'formik'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 
 const useVenueUpdates = (venueList: TOfferIndividualVenue[]): void => {
   const {

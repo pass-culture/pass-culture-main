@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+
+import { configureTestStore } from 'store/testUtils'
+
 import SiretOrCommentFields, {
   SiretOrCommentInterface,
 } from '../SiretOrCommentFields'
-import { render, screen } from '@testing-library/react'
-
-import { Form } from 'react-final-form'
-import { Provider } from 'react-redux'
-import React from 'react'
-
-import { configureTestStore } from 'store/testUtils'
-import userEvent from '@testing-library/user-event'
 
 describe('components | SiretOrCommentFields', () => {
   let props: SiretOrCommentInterface

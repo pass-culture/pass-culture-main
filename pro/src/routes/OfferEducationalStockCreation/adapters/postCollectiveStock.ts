@@ -1,12 +1,11 @@
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
   createStockDataPayload,
   hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
-
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offer: GetStockOfferSuccessPayload

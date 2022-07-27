@@ -1,6 +1,33 @@
+import React, { useCallback, useEffect, useState } from 'react'
+import { Form } from 'react-final-form'
+import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+import { useHistory, useParams } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Spinner from 'components/layout/Spinner'
+import Titles from 'components/layout/Titles/Titles'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import { unhumanizeSiret } from 'core/Venue/utils'
+import ConfirmDialog from 'new_components/ConfirmDialog'
+import GoBackLink from 'new_components/GoBackLink'
+import {
+  createVenue,
+  getOfferer,
+  getVenueLabels,
+  getVenueTypes,
+} from 'repository/pcapi/pcapi'
+import { sortByLabel } from 'utils/strings'
+
+import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
 import AccessibilityFields, {
   autoFillNoDisabilityCompliantDecorator,
 } from '../fields/AccessibilityFields'
+import BankInformation from '../fields/BankInformationFields'
+import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
+import ContactInfosFields from '../fields/ContactInfosFields'
 import IdentifierFields, {
   bindGetSiretInformationToSiret,
 } from '../fields/IdentifierFields'
@@ -9,38 +36,11 @@ import LocationFields, {
   bindGetSuggestionsToLatitude,
   bindGetSuggestionsToLongitude,
 } from '../fields/LocationFields'
-import React, { useCallback, useEffect, useState } from 'react'
-import {
-  createVenue,
-  getOfferer,
-  getVenueLabels,
-  getVenueTypes,
-} from 'repository/pcapi/pcapi'
-import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
-import { useHistory, useParams } from 'react-router-dom'
-
-import BankInformation from '../fields/BankInformationFields'
-import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
-import ConfirmDialog from 'new_components/ConfirmDialog'
-import ContactInfosFields from '../fields/ContactInfosFields'
-import EACInformation from '../VenueEdition/EACInformation'
-import { Form } from 'react-final-form'
-import GoBackLink from 'new_components/GoBackLink'
-import NotificationMessage from '../Notification'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-/*eslint no-undef: 0*/
-import ReturnOrSubmitControl from '../controls/ReturnOrSubmitControl/ReturnOrSubmitControl'
-import Spinner from 'components/layout/Spinner'
-import Titles from 'components/layout/Titles/Titles'
-import VenueType from '../ValueObjects/VenueType'
 import WithdrawalDetailsFields from '../fields/WithdrawalDetailsFields'
-import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import NotificationMessage from '../Notification'
 import { formatVenuePayload } from '../utils/formatVenuePayload'
-import { sortByLabel } from 'utils/strings'
-import { unhumanizeSiret } from 'core/Venue/utils'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
+import VenueType from '../ValueObjects/VenueType'
+import EACInformation from '../VenueEdition/EACInformation'
 
 const VenueCreation = () => {
   const [isReady, setIsReady] = useState(false)

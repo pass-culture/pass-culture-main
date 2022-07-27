@@ -1,3 +1,10 @@
+import { useFormikContext } from 'formik'
+import React from 'react'
+
+import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
+import FormLayout from 'new_components/FormLayout'
+import { DatePicker, TextInput, TimePicker } from 'ui-kit'
+
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
   EVENT_DATE_LABEL,
@@ -5,12 +12,6 @@ import {
   NUMBER_OF_PLACES_LABEL,
   TOTAL_PRICE_LABEL,
 } from '../constants/labels'
-import { DatePicker, TextInput, TimePicker } from 'ui-kit'
-import { Mode, OfferEducationalStockFormValues } from 'core/OfferEducational'
-
-import FormLayout from 'new_components/FormLayout'
-import React from 'react'
-import { useFormikContext } from 'formik'
 
 interface IFormStockProps {
   mode: Mode

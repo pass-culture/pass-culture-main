@@ -1,6 +1,35 @@
-import AccessibilityCheckboxList, {
-  getAccessibilityValues,
-} from './AccessibilityCheckboxList'
+import isEqual from 'lodash.isequal'
+import PropTypes from 'prop-types'
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import CheckboxInput from 'components/layout/inputs/CheckboxInput'
+import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
+import Select from 'components/layout/inputs/Select'
+import TextareaInput from 'components/layout/inputs/TextareaInput'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import InternalBanner from 'components/layout/InternalBanner'
+import Spinner from 'components/layout/Spinner'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
+import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
+import { OfferRefundWarning } from 'new_components/Banner'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { SubmitButton } from 'ui-kit'
+import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
+import { sortByDisplayName } from 'utils/strings'
+import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
+
 import {
   BASE_OFFER_FIELDS,
   CAN_CREATE_FROM_ISBN_SUBCATEGORIES,
@@ -14,43 +43,16 @@ import {
   WITHDRAWAL_ON_SITE_DELAY_OPTIONS,
   WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE,
 } from '../_constants'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
 
-import CheckboxInput from 'components/layout/inputs/CheckboxInput'
-import DurationInput from 'components/layout/inputs/DurationInput/DurationInput'
-import InternalBanner from 'components/layout/InternalBanner'
-import { Link } from 'react-router-dom'
-import { OFFER_WITHDRAWAL_TYPE_OPTIONS } from 'core/Offers'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import AccessibilityCheckboxList, {
+  getAccessibilityValues,
+} from './AccessibilityCheckboxList'
+import WithdrawalReminder from './Messages/WithdrawalReminder'
 import OfferCategories from './OfferCategories'
 import OfferOptions from './OfferOptions'
-import { OfferRefundWarning } from 'new_components/Banner'
 import { OfferWithdrawalTypeOptions } from './OfferWithdrawalTypeOptions'
-import PropTypes from 'prop-types'
-import Select from 'components/layout/inputs/Select'
-import Spinner from 'components/layout/Spinner'
-import { SubmitButton } from 'ui-kit'
 import SynchronizedProviderInformation from './SynchronisedProviderInfos'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import TextareaInput from 'components/layout/inputs/TextareaInput'
-import WithdrawalReminder from './Messages/WithdrawalReminder'
-import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
-import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
-import isEqual from 'lodash.isequal'
 import { isUrlValid } from './validators'
-import { sortByDisplayName } from 'utils/strings'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useSelector } from 'react-redux'
 
 // JOCONDE React:component "Ce composant est vraiment le plus beau et le plus lisible que nous ayons côté pro. Prenez en de la graine !"
 

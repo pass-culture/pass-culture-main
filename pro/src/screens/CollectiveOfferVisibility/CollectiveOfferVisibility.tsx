@@ -1,21 +1,22 @@
-import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
+import { FormikProvider, useFormik } from 'formik'
+import React, { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router-dom'
+
 import {
   EducationalInstitutionResponseModel,
   GetCollectiveOfferResponseModel,
 } from 'apiClient/v1'
-import { FormikProvider, useFormik } from 'formik'
-import { Link, useParams } from 'react-router-dom'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
 import { Mode, VisibilityFormValues } from 'core/OfferEducational'
-import React, { useEffect, useState } from 'react'
-
+import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+import { computeOffersUrl } from 'core/Offers/utils'
 import FormLayout from 'new_components/FormLayout'
 import { PatchEducationalInstitutionAdapter } from 'routes/CollectiveOfferVisibility/adapters/patchEducationalInstitutionAdapter'
+import { Banner, SelectAutocomplete, SubmitButton } from 'ui-kit'
 import RadioGroup from 'ui-kit/form/RadioGroup'
-import Spinner from 'components/layout/Spinner'
-import { computeOffersUrl } from 'core/Offers/utils'
-import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
+
 import styles from './CollectiveOfferVisibility.module.scss'
-import useNotification from 'components/hooks/useNotification'
 import validationSchema from './validationSchema'
 
 export interface CollectiveOfferVisibilityProps {

@@ -1,16 +1,18 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
+import { Field } from 'react-final-form'
+import { useSelector } from 'react-redux'
+
+import { api } from 'apiClient/api'
+import Spinner from 'components/layout/Spinner'
+import { Events } from 'core/FirebaseEvents/constants'
+import InfoDialog from 'new_components/InfoDialog'
+import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
+import { Title } from 'ui-kit'
 
 import ApplicationBanner from '../ApplicationBanner'
-import { Events } from 'core/FirebaseEvents/constants'
-import { Field } from 'react-final-form'
-import InfoDialog from 'new_components/InfoDialog'
-import PropTypes from 'prop-types'
-import ReimbursmentPointDialog from 'new_components/reimbursementPointDialog'
-import Spinner from 'components/layout/Spinner'
-import { Title } from 'ui-kit'
-import { api } from 'apiClient/api'
+
 import styles from './ReimbursementPoint.module.scss'
-import { useSelector } from 'react-redux'
 
 const ReimbursementPoint = ({
   readOnly,

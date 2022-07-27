@@ -1,14 +1,15 @@
 import React, { FunctionComponent, useState } from 'react'
 
-import Advices from 'new_components/Advices/Advices'
-import { Constraint } from 'new_components/ConstraintCheck/imageConstraints'
-import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
-import { Divider } from 'ui-kit'
-import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/ImportFromComputerInput'
 import { NBSP } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
-import style from './ImportFromComputer.module.scss'
+import Advices from 'new_components/Advices/Advices'
+import { ConstraintCheck } from 'new_components/ConstraintCheck/ConstraintCheck'
+import { Constraint } from 'new_components/ConstraintCheck/imageConstraints'
 import { useCheckAndSetImage } from 'new_components/ConstraintCheck/useCheckAndSetImage'
+import { ImportFromComputerInput } from 'new_components/ImportFromComputerInput/ImportFromComputerInput'
+import { PreferredOrientation } from 'new_components/PreferredOrientation/PreferredOrientation'
+import { Divider } from 'ui-kit'
+
+import style from './ImportFromComputer.module.scss'
 
 export type ImportFromComputerProps = {
   orientation: 'portrait' | 'landscape'

@@ -1,6 +1,7 @@
+import { VenueCollectiveInformation } from 'core/Venue/types'
+
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
 import { CollectiveDataFormValues } from '../type'
-import { VenueCollectiveInformation } from 'core/Venue/types'
 
 type CollectiveDataFormValuesWithoutSearchField = Omit<
   CollectiveDataFormValues,

@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types'
+import React from 'react'
+import { useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 
 import { Events } from 'core/FirebaseEvents/constants'
-import PropTypes from 'prop-types'
-import React from 'react'
-import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 import { isAPISireneAvailable } from 'store/features/selectors'
-import { useSelector } from 'react-redux'
+import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
 const VenueCreationLinks = ({
   hasPhysicalVenue,

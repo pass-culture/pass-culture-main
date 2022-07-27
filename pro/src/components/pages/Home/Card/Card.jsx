@@ -1,6 +1,6 @@
-import { NavLink } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
+import { NavLink } from 'react-router-dom'
 
 const Card = ({ SvgElement, title, text, navLink }) => (
   <NavLink className="home-card column" to={navLink}>

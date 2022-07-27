@@ -1,6 +1,7 @@
-import { Banner } from 'ui-kit'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import { Banner } from 'ui-kit'
 
 const ApplicationBanner = ({ applicationId }) => (
   <Banner

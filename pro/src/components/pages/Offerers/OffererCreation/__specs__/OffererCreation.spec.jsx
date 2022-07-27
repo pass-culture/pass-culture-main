@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router'
-import OffererCreation from '../OffererCreation'
-import { Provider } from 'react-redux'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
 import { configureTestStore } from 'store/testUtils'
+
+import OffererCreation from '../OffererCreation'
 
 const renderOffererCreation = store => {
   return render(

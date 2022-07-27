@@ -1,12 +1,13 @@
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
-
-import { CheckboxGroup } from 'ui-kit'
-import FormLayout from 'new_components/FormLayout'
-import { IOfferIndividualFormValues } from '../types'
+import { useFormikContext } from 'formik'
 import React from 'react'
+
+import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { accessibilityOptions } from 'core/shared/accessibilityOptions'
 import { useAccessibilityUpdates } from 'hooks'
-import { useFormikContext } from 'formik'
+import FormLayout from 'new_components/FormLayout'
+import { CheckboxGroup } from 'ui-kit'
+
+import { IOfferIndividualFormValues } from '../types'
 
 const Accessibility = (): JSX.Element => {
   const { values, setFieldValue } =

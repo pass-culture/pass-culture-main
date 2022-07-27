@@ -1,8 +1,8 @@
-import { ButtonVariant, SharedButtonProps } from './types'
-
-import React from 'react'
 import cn from 'classnames'
+import React from 'react'
+
 import styles from './Button.module.scss'
+import { ButtonVariant, SharedButtonProps } from './types'
 
 interface IButtonProps
   extends SharedButtonProps,

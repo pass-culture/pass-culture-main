@@ -1,16 +1,15 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import PropTypes from 'prop-types'
+import React, { useCallback } from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
+import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_INACTIVE,
   OFFER_STATUS_PENDING,
   OFFER_STATUS_REJECTED,
 } from 'core/Offers/constants'
-import React, { useCallback } from 'react'
-
-import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 const StatusToggleButton = ({ offer, reloadOffer }) => {
   const notification = useNotification()

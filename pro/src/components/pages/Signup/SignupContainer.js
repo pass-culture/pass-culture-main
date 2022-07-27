@@ -1,6 +1,8 @@
-import Signup from './Signup'
 import { connect } from 'react-redux'
+
 import { selectCurrentUser } from 'store/user/selectors'
+
+import Signup from './Signup'
 
 export function mapStateToProps(state) {
   return {

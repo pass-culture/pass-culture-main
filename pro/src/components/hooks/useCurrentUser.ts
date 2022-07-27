@@ -1,11 +1,10 @@
-import { setCurrentUser, setIsInitialized } from 'store/user/actions'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
-import { selectCurrentUser } from 'store/user/selectors'
-import { selectUserInitialized } from 'store/user/selectors'
-import { useEffect } from 'react'
+import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+import { setCurrentUser, setIsInitialized } from 'store/user/actions'
+import { selectCurrentUser, selectUserInitialized } from 'store/user/selectors'
 
 export interface IUseCurrentUserReturn {
   isUserInitialized: boolean

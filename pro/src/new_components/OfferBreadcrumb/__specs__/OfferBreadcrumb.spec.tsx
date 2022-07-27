@@ -1,14 +1,15 @@
 import '@testing-library/jest-dom'
 
-import { History, createBrowserHistory } from 'history'
-import OfferBreadcrumb, { OfferBreadcrumbStep } from '../OfferBreadcrumb'
 import { render, screen } from '@testing-library/react'
-
-import { Provider } from 'react-redux'
+import { History, createBrowserHistory } from 'history'
 import React from 'react'
+import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
 import { Store } from 'redux'
+
 import { configureTestStore } from 'store/testUtils'
+
+import OfferBreadcrumb, { OfferBreadcrumbStep } from '../OfferBreadcrumb'
 
 describe('src | new_components | OfferBreadcrumb', () => {
   let store: Store

@@ -1,4 +1,3 @@
-import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import React, { useCallback, useEffect, useState } from 'react'
 import {
   Route,
@@ -8,19 +7,21 @@ import {
   useRouteMatch,
 } from 'react-router-dom'
 
+import { api } from 'apiClient/api'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
-import OfferDetails from './OfferDetails'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
-import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
+import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
+import { useGetCategories } from 'core/Offers/adapters'
+import { serializeOfferApi } from 'core/Offers/adapters/serializers'
+import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
-import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
+import { OfferIndividualSummary as OfferSummaryRoute } from 'routes/OfferIndividualSummary'
 import { Title } from 'ui-kit'
-import Titles from 'components/layout/Titles/Titles'
-import { api } from 'apiClient/api'
-import { serializeOfferApi } from 'core/Offers/adapters/serializers'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useGetCategories } from 'core/Offers/adapters'
+
+import OfferDetails from './OfferDetails'
 
 const mapPathToStep = {
   creation: OfferBreadcrumbStep.DETAILS,

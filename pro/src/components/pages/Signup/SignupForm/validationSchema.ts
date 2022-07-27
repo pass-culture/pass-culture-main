@@ -1,6 +1,5 @@
-import * as yup from 'yup'
-
 import parsePhoneNumberFromString from 'libphonenumber-js'
+import * as yup from 'yup'
 
 const passwordErrorMessage = `Votre mot de passe doit contenir au moins :
       - 12 caractères

@@ -1,14 +1,15 @@
 import '@testing-library/jest-dom'
 
-import PreFilters, { IPreFiltersProps } from '../../PreFilters'
 import { fireEvent, render, screen } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+import type { Store } from 'redux'
 
 import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
-import { Provider } from 'react-redux'
-import React from 'react'
-import type { Store } from 'redux'
 import { configureTestStore } from 'store/testUtils'
 import { venueFactory } from 'utils/apiFactories'
+
+import PreFilters, { IPreFiltersProps } from '../../PreFilters'
 
 jest.mock('utils/date', () => ({
   ...jest.requireActual('utils/date'),

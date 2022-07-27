@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
 
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { Provider } from 'react-redux'
-import React from 'react'
 import { configureTestStore } from 'store/testUtils'
 
 jest.mock('../_constants', () => ({

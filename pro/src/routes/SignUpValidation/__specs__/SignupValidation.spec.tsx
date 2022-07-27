@@ -1,21 +1,21 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-import * as useCurrentUser from 'components/hooks/useCurrentUser'
-import * as useNotification from 'components/hooks/useNotification'
-
-import type { Action, History } from 'history'
 import { render, waitFor } from '@testing-library/react'
+import type { Action, History } from 'history'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import reactRouter from 'react-router'
+import { Router } from 'react-router-dom'
 
 import type { IUseCurrentUserReturn } from 'components/hooks/useCurrentUser'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { Router } from 'react-router-dom'
-import SignUpValidation from '../SignUpValidation'
-import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+import * as useCurrentUser from 'components/hooks/useCurrentUser'
+import * as useNotification from 'components/hooks/useNotification'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
-import { createBrowserHistory } from 'history'
-import reactRouter from 'react-router'
+import { campaignTracker } from 'tracking/mediaCampaignsTracking'
+
+import SignUpValidation from '../SignUpValidation'
 
 jest.mock('repository/pcapi/pcapi')
 jest.mock('components/hooks/useCurrentUser')

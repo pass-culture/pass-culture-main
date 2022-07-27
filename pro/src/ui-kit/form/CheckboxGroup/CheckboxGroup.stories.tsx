@@ -1,7 +1,8 @@
-import CheckboxGroup from './CheckboxGroup'
+import { action } from '@storybook/addon-actions'
 import { Formik } from 'formik'
 import React from 'react'
-import { action } from '@storybook/addon-actions'
+
+import CheckboxGroup from './CheckboxGroup'
 
 export default {
   title: 'ui-kit/forms/CheckboxGroup',

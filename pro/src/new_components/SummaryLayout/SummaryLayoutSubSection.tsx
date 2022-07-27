@@ -1,6 +1,8 @@
-import React from 'react'
-import { Title } from 'ui-kit'
 import cn from 'classnames'
+import React from 'react'
+
+import { Title } from 'ui-kit'
+
 import style from './SummaryLayout.module.scss'
 
 interface ISummaryLayoutSubSectionProps {

@@ -1,9 +1,9 @@
+import { api } from 'apiClient/api'
 import { ApiError, OfferStatus } from 'apiClient/v1'
-
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
 import { EducationalOfferType } from 'core/OfferEducational'
-import { api } from 'apiClient/api'
+
 import { patchCollectiveOfferTemplateAdapter } from '../patchCollectiveOfferTemplateAdapter'
 
 describe('patchCollectiveOfferTemplateAdapter', () => {

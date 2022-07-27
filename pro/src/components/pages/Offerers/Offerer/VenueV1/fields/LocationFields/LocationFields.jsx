@@ -1,14 +1,15 @@
+import PropTypes from 'prop-types'
+import React from 'react'
+
+import HiddenField from 'components/layout/form/fields/HiddenField'
+import NumberField from 'components/layout/form/fields/NumberField'
+import TextField from 'components/layout/form/fields/TextField'
 import {
   parsePostalCode,
   validatePostalCode,
 } from 'components/layout/form/validate'
 
 import AddressField from './AddressField'
-import HiddenField from 'components/layout/form/fields/HiddenField'
-import NumberField from 'components/layout/form/fields/NumberField'
-import PropTypes from 'prop-types'
-import React from 'react'
-import TextField from 'components/layout/form/fields/TextField'
 
 const COORDINATE_ACCURACY = 0.000001
 

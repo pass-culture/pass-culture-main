@@ -1,4 +1,5 @@
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+
 import { extractInitialVisibilityValues } from '../extractInitialVisibilityValues'
 
 describe('extractInitialVisibilityValues', () => {

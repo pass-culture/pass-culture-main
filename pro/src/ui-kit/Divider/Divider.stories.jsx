@@ -1,5 +1,6 @@
-import Divider from './Divider'
 import React from 'react'
+
+import Divider from './Divider'
 
 export default {
   title: 'ui-kit/Divider',

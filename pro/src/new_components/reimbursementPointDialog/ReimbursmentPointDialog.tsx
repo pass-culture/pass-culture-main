@@ -1,9 +1,12 @@
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
 import { Button } from 'ui-kit/Button'
 import CopyLink from 'ui-kit/CopyLink'
-import DialogBox from '../DialogBox'
-import Icon from 'components/layout/Icon'
 import { REACT_APP_DEMARCHES_SIMPLIFIEES_RIB_VENUE_PROCEDURE_ID_V4 } from 'utils/config'
-import React from 'react'
+
+import DialogBox from '../DialogBox'
+
 import styles from './ReimbursmentPointDialog.module.scss'
 
 export interface IReimbursmentPointDialog {

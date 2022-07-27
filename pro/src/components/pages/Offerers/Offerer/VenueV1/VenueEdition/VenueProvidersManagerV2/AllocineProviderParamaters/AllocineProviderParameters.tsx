@@ -1,12 +1,15 @@
-import * as pcapi from 'repository/pcapi/pcapi'
 import React, { useCallback, useState } from 'react'
-import AllocineProviderFormDialog from '../../VenueProvidersManager/AllocineProviderFormDialog/AllocineProviderFormDialog'
+
+import useNotification from 'components/hooks/useNotification'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import { IAllocineProviderParametersValues } from './types'
+
+import AllocineProviderFormDialog from '../../VenueProvidersManager/AllocineProviderFormDialog/AllocineProviderFormDialog'
 import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
+
 import style from './AllocineProviderParameters.module.scss'
-import useNotification from 'components/hooks/useNotification'
+import { IAllocineProviderParametersValues } from './types'
 
 export interface IAllocineProviderParametersProps {
   venueProvider: IVenueProviderApi

@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import React from 'react'
+
+import { api } from 'apiClient/api'
+import { GetVenueResponseModel } from 'apiClient/v1'
 
 import CollectiveData from '../CollectiveData'
-import { GetVenueResponseModel } from 'apiClient/v1'
-import React from 'react'
-import { api } from 'apiClient/api'
 
 jest.mock('apiClient/api', () => ({
   api: { getEducationalPartners: jest.fn() },

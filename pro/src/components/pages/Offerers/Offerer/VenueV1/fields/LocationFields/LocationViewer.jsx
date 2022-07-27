@@ -1,16 +1,17 @@
-import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
-import React, { Fragment, PureComponent } from 'react'
-
-import Autocomplete from 'react-autocomplete'
-import { FRANCE_POSITION } from './utils/positions'
-import { Icon as LeafletIcon } from 'leaflet'
-import PropTypes from 'prop-types'
-import { ROOT_PATH } from 'utils/config'
 /* eslint no-undef: 0 */
 import classnames from 'classnames'
+import { Icon as LeafletIcon } from 'leaflet'
 import debounce from 'lodash.debounce'
+import PropTypes from 'prop-types'
+import React, { Fragment, PureComponent } from 'react'
+import Autocomplete from 'react-autocomplete'
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
+
+import { ROOT_PATH } from 'utils/config'
+
 import getSuggestionsFromAddressAndMaxSuggestions from './selectors/getSuggestionsFromAddressAndMaxSuggestions'
 import getSuggestionsFromLatitudeAndLongitude from './selectors/getSuggestionsFromLatitudeAndLongitude'
+import { FRANCE_POSITION } from './utils/positions'
 import sanitizeCoordinates from './utils/sanitizeCoordinates'
 
 const markerIcon = new LeafletIcon({

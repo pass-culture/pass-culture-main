@@ -1,11 +1,13 @@
+import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
-import ApplicationBanner from '../ApplicationBanner'
-import { Banner } from 'ui-kit'
-import { BicIbanFields } from './BicIbanFields'
-import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
+import { Banner } from 'ui-kit'
+import { DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+
+import ApplicationBanner from '../ApplicationBanner'
+
+import { BicIbanFields } from './BicIbanFields'
 
 const BankInformation = ({ venue, offerer }) => {
   const venueHasBankInformation = !!(venue.iban && venue.bic)

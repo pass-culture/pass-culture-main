@@ -1,16 +1,18 @@
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import {
+  musicOptionsTree,
+  showOptionsTree,
+} from 'core/Offers/categoriesSubTypes'
+import {
+  IOfferCategory,
+  IOfferSubCategory,
+  IOfferIndividual,
+} from 'core/Offers/types'
+import { IOfferAppPreviewProps } from 'new_components/OfferAppPreview'
 import {
   IOfferSectionProps,
   IStockEventItemProps,
   IStockThingSectionProps,
 } from 'screens/OfferIndividual/Summary'
-import {
-  musicOptionsTree,
-  showOptionsTree,
-} from 'core/Offers/categoriesSubTypes'
-
-import { IOfferAppPreviewProps } from 'new_components/OfferAppPreview'
-import { IOfferIndividual } from 'core/Offers/types'
 
 const serializerOfferSubCategoryFields = (
   offer: IOfferIndividual,

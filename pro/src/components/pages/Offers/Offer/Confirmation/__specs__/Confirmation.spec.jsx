@@ -1,9 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { api } from 'apiClient/api'
-import { offerFactory } from 'utils/apiFactories'
-import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
 import { screen } from '@testing-library/react'
+
+import { api } from 'apiClient/api'
+import { renderOffer } from 'components/pages/Offers/Offer/__specs__/render'
+import { offerFactory } from 'utils/apiFactories'
 
 jest.mock('utils/config', () => {
   return {

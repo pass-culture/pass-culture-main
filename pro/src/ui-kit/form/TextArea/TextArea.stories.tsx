@@ -1,8 +1,9 @@
+import { action } from '@storybook/addon-actions'
+import { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
-import { Story } from '@storybook/react'
+
 import TextArea from './TextArea'
-import { action } from '@storybook/addon-actions'
 
 export default {
   title: 'ui-kit/forms/TextArea',

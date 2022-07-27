@@ -1,12 +1,22 @@
+import type { Location } from 'history'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
+
 import {
   BookingRecapResponseModel,
   CollectiveBookingResponseModel,
 } from 'apiClient/v1'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Spinner from 'components/layout/Spinner'
+import Titles from 'components/layout/Titles/Titles'
+import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
+import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
+import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
 import {
-  FORMAT_ISO_DATE_ONLY,
-  formatBrowserTimezonedDateAsUTC,
-} from '../../utils/date'
-import {
+  DEFAULT_PRE_FILTERS,
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
   GetFilteredBookingsRecapAdapter,
@@ -15,27 +25,19 @@ import {
   GetVenuesAdapter,
   TPreFilters,
 } from 'core/Bookings'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
-
 import { Audience } from 'core/shared/types'
-import BookingsRecapTable from 'components/pages/Bookings/BookingsRecapTable/BookingsRecapTable'
-import ChoosePreFiltersMessage from 'components/pages/Bookings/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings'
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import type { Location } from 'history'
-import NoBookingsForPreFiltersMessage from 'components/pages/Bookings/NoBookingsForPreFiltersMessage/NoBookingsForPreFiltersMessage'
-import NoData from 'new_components/NoData'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import PreFilters from './PreFilters'
-import Spinner from 'components/layout/Spinner'
-import Tabs from 'new_components/Tabs'
-import Titles from 'components/layout/Titles/Titles'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
+import NoData from 'new_components/NoData'
+import Tabs from 'new_components/Tabs'
+
+import {
+  FORMAT_ISO_DATE_ONLY,
+  formatBrowserTimezonedDateAsUTC,
+} from '../../utils/date'
 import { stringify } from '../../utils/query-string'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import useNotification from 'components/hooks/useNotification'
+
+import PreFilters from './PreFilters'
 
 interface IBookingsProps {
   locationState: Location['state']

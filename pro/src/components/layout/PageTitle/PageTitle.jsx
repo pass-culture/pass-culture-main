@@ -1,6 +1,7 @@
-import { DEFAULT_PAGE_TITLE } from './_constants'
 import PropTypes from 'prop-types'
 import { useEffect } from 'react'
+
+import { DEFAULT_PAGE_TITLE } from './_constants'
 
 const PageTitle = ({ title }) => {
   useEffect(() => {

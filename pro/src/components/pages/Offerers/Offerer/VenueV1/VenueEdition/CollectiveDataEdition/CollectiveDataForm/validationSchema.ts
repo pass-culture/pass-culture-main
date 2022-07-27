@@ -1,6 +1,6 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import { urlRegex } from 'core/shared'
 
 const isPhoneValid = (phone: string | undefined): boolean => {

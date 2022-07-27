@@ -1,8 +1,11 @@
-import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
-import React from 'react'
-import { ResetEmailBanner } from 'new_components/Banner'
-// storybook doc : https://storybook.js.org/docs/react/writing-stories/introduction
 import { Story } from '@storybook/react'
+import React from 'react'
+
+import { ResetEmailBanner } from 'new_components/Banner'
+import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
+
+// storybook doc : https://storybook.js.org/docs/react/writing-stories/introduction
+
 import { UserIdentityForm } from './'
 
 type Props = React.ComponentProps<typeof UserIdentityForm>

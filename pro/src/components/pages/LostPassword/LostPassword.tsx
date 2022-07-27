@@ -1,20 +1,19 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import React, { useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import ChangePasswordForm from './ChangePasswordForm'
-import ChangePasswordRequestForm from './ChangePasswordRequestForm'
-import Hero from 'ui-kit/Hero'
-import { IS_DEV } from 'utils/config'
-import Logo from 'components/layout/Logo'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import { getReCaptchaToken } from 'utils/recaptcha'
-import { initReCaptchaScript } from '../../../utils/recaptcha'
-import { parse } from 'utils/query-string'
-import { redirectLoggedUser } from 'components/router/helpers'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
+import Logo from 'components/layout/Logo'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { redirectLoggedUser } from 'components/router/helpers'
+import * as pcapi from 'repository/pcapi/pcapi'
+import Hero from 'ui-kit/Hero'
+import { IS_DEV } from 'utils/config'
+import { parse } from 'utils/query-string'
+import { getReCaptchaToken, initReCaptchaScript } from 'utils/recaptcha'
+
+import ChangePasswordForm from './ChangePasswordForm'
+import ChangePasswordRequestForm from './ChangePasswordRequestForm'
 
 const LostPassword = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState('')

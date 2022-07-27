@@ -1,10 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
+import PropTypes from 'prop-types'
 import React, { useCallback, useRef } from 'react'
 
-import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
 import DialogBox from 'new_components/DialogBox/DialogBox'
-import PropTypes from 'prop-types'
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import { ReactComponent as DeletionIcon } from './assets/deletion.svg'
 
 const DeleteStockDialog = ({
   isEvent,

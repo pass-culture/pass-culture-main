@@ -1,7 +1,8 @@
-import TutorialDialog from 'components/layout/Tutorial/TutorialDialog'
 import { connect } from 'react-redux'
-import { selectCurrentUser } from 'store/user/selectors'
+
+import TutorialDialog from 'components/layout/Tutorial/TutorialDialog'
 import { setCurrentUser } from 'store/user/actions'
+import { selectCurrentUser } from 'store/user/selectors'
 
 const mapStateToProps = state => {
   return {

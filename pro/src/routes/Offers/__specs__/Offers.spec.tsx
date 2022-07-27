@@ -1,5 +1,16 @@
 import '@testing-library/jest-dom'
 
+import { parse } from 'querystring'
+
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { createMemoryHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router'
+import type { Store } from 'redux'
+
+import { api } from 'apiClient/api'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_OFFERS,
@@ -11,21 +22,12 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offer, TSearchFilters } from 'core/Offers/types'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-
-import { Audience } from 'core/shared'
-import Offers from '../Offers'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { Router } from 'react-router'
-import type { Store } from 'redux'
-import { api } from 'apiClient/api'
 import { computeOffersUrl } from 'core/Offers/utils'
+import { Audience } from 'core/shared'
 import { configureTestStore } from 'store/testUtils'
-import { createMemoryHistory } from 'history'
 import { offerFactory } from 'utils/apiFactories'
-import { parse } from 'querystring'
-import userEvent from '@testing-library/user-event'
+
+import Offers from '../Offers'
 
 const renderOffers = (
   store: Store,

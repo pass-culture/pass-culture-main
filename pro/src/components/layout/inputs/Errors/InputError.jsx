@@ -1,6 +1,7 @@
-import Icon from '../../Icon'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import Icon from '../../Icon'
 
 const InputError = ({ children, name }) => {
   const inputErrorExtraProps = name

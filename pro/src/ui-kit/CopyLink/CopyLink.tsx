@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
-import { Button } from 'ui-kit/Button'
+
 import Icon from 'components/layout/Icon'
+import { Button } from 'ui-kit/Button'
+
 import styles from './CopyLink.module.scss'
 
 export interface ICopyLink {

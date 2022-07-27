@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
+
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { render, screen, waitFor } from '@testing-library/react'
-
 import BusinessUnitFields from '../BusinessUnitFields'
-import React from 'react'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getBusinessUnits: jest.fn(),

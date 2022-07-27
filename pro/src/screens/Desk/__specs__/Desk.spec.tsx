@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { DeskScreen, IDeskProps } from '..'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router'
-import React from 'react'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { MemoryRouter } from 'react-router'
+
+import { DeskScreen, IDeskProps } from '..'
 
 const renderDeskScreen = async (props: IDeskProps) => {
   const rtlReturns = render(

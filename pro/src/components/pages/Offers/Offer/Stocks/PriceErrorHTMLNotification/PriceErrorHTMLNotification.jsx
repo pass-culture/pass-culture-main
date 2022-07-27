@@ -1,6 +1,8 @@
-import { CGU_URL } from 'utils/config'
-import Icon from 'components/layout/Icon'
 import React from 'react'
+
+import Icon from 'components/layout/Icon'
+import { CGU_URL } from 'utils/config'
+
 import styles from './PriceErrorHTMLNotification.module.scss'
 
 const PriceErrorHTMLNotification = () => {

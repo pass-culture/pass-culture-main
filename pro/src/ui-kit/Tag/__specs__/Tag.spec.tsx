@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-
-import React from 'react'
-import Tag from '../Tag'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+
+import Tag from '../Tag'
 
 describe('src | components | layout | Banner', () => {
   describe('render', () => {

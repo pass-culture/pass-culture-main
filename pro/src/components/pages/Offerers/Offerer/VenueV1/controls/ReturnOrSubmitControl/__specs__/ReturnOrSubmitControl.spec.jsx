@@ -1,10 +1,12 @@
-import { Link } from 'react-router-dom'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import React from 'react'
-import ReturnOrSubmitControl from '../ReturnOrSubmitControl'
-import { configureTestStore } from 'store/testUtils'
 import { mount } from 'enzyme'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+import { Link } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
+
+import ReturnOrSubmitControl from '../ReturnOrSubmitControl'
 
 describe('src | components | pages | Venue | controls | ReturnOrSubmitControl', () => {
   let props
