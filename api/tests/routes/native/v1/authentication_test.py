@@ -210,26 +210,28 @@ def test_request_reset_password_for_existing_email(client):
 
 
 class InactiveAccountRequestResetPasswordTest:
-    @patch("pcapi.core.users.api.reset_password.send_reset_password_email_to_user")
-    def test_inactive_account(self, mock_send_reset_password_email_to_user, client):
-        email = "existing_user@example.com"
-        data = {"email": email}
-        users_factories.UserFactory(email=email, isActive=False)
-
-        response = client.post("/native/v1/request_password_reset", json=data)
-
-        assert response.status_code == 204
-        mock_send_reset_password_email_to_user.assert_not_called()
-
     def test_suspended_upon_user_request(self, client):
-        email = "existing_user@example.com"
-        user = users_factories.UserFactory(email=email, isActive=False)
-
+        user = users_factories.UserFactory(email="existing_user@example.com", isActive=False)
         users_factories.SuspendedUponUserRequestFactory(user=user)
 
-        data = {"email": email}
-        response = client.post("/native/v1/request_password_reset", json=data)
+        response = client.post("/native/v1/request_password_reset", json={"email": user.email})
+        self.assert_email_is_sent(response, user)
 
+    def test_suspended_account(self, client):
+        user = users_factories.UserFactory(email="existing_user@example.com", isActive=False)
+        users_factories.UserSuspensionByFraudFactory(user=user)
+
+        response = client.post("/native/v1/request_password_reset", json={"email": user.email})
+        self.assert_email_is_sent(response, user)
+
+    def test_deleted_account(self, client):
+        user = users_factories.UserFactory(email="existing_user@example.com", isActive=False)
+        users_factories.DeletedAccountSuspensionFactory(user=user)
+
+        response = client.post("/native/v1/request_password_reset", json={"email": user.email})
+        self.assert_email_is_sent(response, user)
+
+    def assert_email_is_sent(self, response, user):
         assert response.status_code == 204
 
         saved_token = Token.query.filter_by(user=user).one()
