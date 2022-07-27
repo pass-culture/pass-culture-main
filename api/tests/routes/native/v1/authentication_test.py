@@ -364,7 +364,7 @@ def test_validate_email_with_invalid_token(mock_get_user_with_valid_token, clien
 
     response = client.post("/native/v1/validate_email", json={"email_validation_token": token})
 
-    mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=False)
+    mock_get_user_with_valid_token.assert_called_once_with(token, [TokenType.EMAIL_VALIDATION], use_token=True)
 
     assert response.status_code == 400
 
