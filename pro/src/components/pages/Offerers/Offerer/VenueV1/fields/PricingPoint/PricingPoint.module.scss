@@ -1,4 +1,9 @@
 @use 'styles/mixins/_rem.scss' as rem;
+
+.title {
+  font-size: rem.torem(16px);
+  font-weight: 600;
+}
 .reimbursement-subtitle {
   margin: rem.torem(24px) 0;
   font-size: rem.torem(15px);
