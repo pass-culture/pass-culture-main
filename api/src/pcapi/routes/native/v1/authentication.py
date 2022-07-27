@@ -144,7 +144,7 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=ValidateEmailResponse)
 def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     user = users_repo.get_user_with_valid_token(
-        body.email_validation_token, [TokenType.EMAIL_VALIDATION], use_token=False
+        body.email_validation_token, [TokenType.EMAIL_VALIDATION], use_token=True
     )
 
     if not user:
