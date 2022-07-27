@@ -220,7 +220,9 @@ const CollectiveDataForm = ({
               className={styles.row}
             />
           </FormLayout.Row>
-          <FormLayout.Actions>
+          <FormLayout.Actions
+            className={styles['collective-data-form-actions']}
+          >
             <Link
               className="secondary-link"
               to={`/structures/${offererId}/lieux/${venueId}`}
