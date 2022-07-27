@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import StudentLevels
+from pcapi.core.educational import models
 from pcapi.routes.adage.v1.serialization.config import AdageBaseResponseModel
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
 
@@ -27,7 +26,7 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     id: int
     name: str
     numberOfTickets: int
-    participants: list[StudentLevels]
+    participants: list[models.StudentLevels]
     postalCode: str
     price: float
     priceDetail: str | None
@@ -40,7 +39,7 @@ class AdageCollectiveOffer(AdageBaseResponseModel):
     withdrawalDetails: str | None
 
 
-def _get_collective_offer_address(offer: CollectiveOffer) -> str:
+def _get_collective_offer_address(offer: models.CollectiveOffer) -> str:
     default_address = f"{offer.venue.address}, {offer.venue.postalCode} {offer.venue.city}"
 
     if offer.offerVenue is None:
@@ -60,7 +59,7 @@ def _get_collective_offer_address(offer: CollectiveOffer) -> str:
     return default_address
 
 
-def serialize_collective_offer(collective_offer: CollectiveOffer) -> AdageCollectiveOffer:
+def serialize_collective_offer(collective_offer: models.CollectiveOffer) -> AdageCollectiveOffer:
     stock = collective_offer.collectiveStock
     venue = collective_offer.venue
     institution = collective_offer.institution

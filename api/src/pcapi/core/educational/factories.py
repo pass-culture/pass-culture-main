@@ -4,16 +4,11 @@ from dateutil.relativedelta import relativedelta
 import factory
 
 from pcapi.core.categories.subcategories import COLLECTIVE_SUBCATEGORIES
-from pcapi.core.educational import api
+from pcapi.core.educational import models
+from pcapi.core.educational import utils
 import pcapi.core.offerers.factories as offerers_factories
 from pcapi.core.testing import BaseFactory
 from pcapi.models.offer_mixin import OfferValidationStatus
-
-from . import models
-from .models import CollectiveBookingCancellationReasons
-from .models import EducationalBookingStatus
-from .models import Ministry
-from .models import StudentLevels
 
 
 ADAGE_STARTING_EDUCATIONAL_YEAR = 2014
@@ -39,7 +34,7 @@ class CollectiveOfferFactory(BaseFactory):
     motorDisabilityCompliant = False
     visualDisabilityCompliant = False
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
-    students = [StudentLevels.GENERAL2]
+    students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     bookingEmail = "collectiveofferfactory+booking@example.com"
     contactPhone = "+33199006328"
@@ -89,7 +84,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
     visualDisabilityCompliant = False
 
     dateCreated = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(days=5))
-    students = [StudentLevels.GENERAL2]
+    students = [models.StudentLevels.GENERAL2]
     contactEmail = "collectiveofferfactory+contact@example.com"
     contactPhone = "+33199006328"
     offerVenue = {
@@ -186,7 +181,7 @@ class EducationalDepositFactory(BaseFactory):
     educationalYear = factory.SubFactory(EducationalYearFactory)
     amount = 3000
     isFinal = True
-    ministry = Ministry.EDUCATION_NATIONALE.name
+    ministry = models.Ministry.EDUCATION_NATIONALE.name
 
 
 class EducationalRedactorFactory(BaseFactory):
@@ -215,7 +210,7 @@ class PendingEducationalBookingFactory(EducationalBookingFactory):
 
 
 class RefusedEducationalBookingFactory(EducationalBookingFactory):
-    status = EducationalBookingStatus.REFUSED
+    status = models.EducationalBookingStatus.REFUSED
 
 
 class CollectiveBookingFactory(BaseFactory):
@@ -227,7 +222,7 @@ class CollectiveBookingFactory(BaseFactory):
     offerer = factory.SelfAttribute("collectiveStock.collectiveOffer.venue.managingOfferer")
     venue = factory.SelfAttribute("collectiveStock.collectiveOffer.venue")
     cancellationLimitDate = factory.LazyAttribute(
-        lambda self: api.compute_educational_booking_cancellation_limit_date(
+        lambda self: utils.compute_educational_booking_cancellation_limit_date(
             self.collectiveStock.beginningDatetime, self.dateCreated
         )
     )
@@ -241,7 +236,7 @@ class CollectiveBookingFactory(BaseFactory):
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CANCELLED
     cancellationDate = factory.LazyFunction(lambda: datetime.datetime.utcnow() - datetime.timedelta(hours=1))
-    cancellationReason = factory.Iterator(CollectiveBookingCancellationReasons)
+    cancellationReason = factory.Iterator(models.CollectiveBookingCancellationReasons)
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):

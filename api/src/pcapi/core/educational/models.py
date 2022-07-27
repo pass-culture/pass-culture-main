@@ -23,11 +23,8 @@ from pcapi.core.categories import subcategories
 from pcapi.core.educational import exceptions
 from pcapi.core.offers.models import Offer
 from pcapi.models import Model
+from pcapi.models import offer_mixin
 from pcapi.models.accessibility_mixin import AccessibilityMixin
-from pcapi.models.offer_mixin import OfferStatus
-from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.models.offer_mixin import StatusMixin
-from pcapi.models.offer_mixin import ValidationMixin
 from pcapi.models.pc_object import PcObject
 
 
@@ -91,7 +88,7 @@ class CollectiveBookingStatusFilter(enum.Enum):
     REIMBURSED = "reimbursed"
 
 
-class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
+class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -153,7 +150,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
 
     @property
     def isEditable(self) -> bool:
-        return self.status not in [OfferStatus.PENDING, OfferStatus.REJECTED]
+        return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
 
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
@@ -182,7 +179,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
     def isReleased(self) -> bool:
         return (
             self.isActive  # type: ignore [return-value]
-            and self.validation == OfferValidationStatus.APPROVED
+            and self.validation == offer_mixin.OfferValidationStatus.APPROVED
             and self.venue.isValidated
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
@@ -277,7 +274,7 @@ class CollectiveOffer(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin
         )
 
 
-class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, StatusMixin, Model):  # type: ignore[valid-type, misc]
+class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer_template"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
@@ -331,7 +328,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
 
     @property
     def isEditable(self) -> bool:
-        return self.status not in [OfferStatus.PENDING, OfferStatus.REJECTED]
+        return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
 
     @sa.ext.hybrid.hybrid_property
     def hasBookingLimitDatetimesPassed(self) -> bool:
@@ -357,7 +354,7 @@ class CollectiveOfferTemplate(PcObject, ValidationMixin, AccessibilityMixin, Sta
     def isReleased(self) -> bool:
         return (
             self.isActive  # type: ignore [return-value]
-            and self.validation == OfferValidationStatus.APPROVED
+            and self.validation == offer_mixin.OfferValidationStatus.APPROVED
             and self.venue.isValidated
             and self.venue.managingOfferer.isActive
             and self.venue.managingOfferer.isValidated
