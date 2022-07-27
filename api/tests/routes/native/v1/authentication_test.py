@@ -377,8 +377,6 @@ def test_validate_email_when_eligible(client):
     )
     token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
 
-    assert not user.isEmailValidated
-
     response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
 
     assert user.isEmailValidated
@@ -403,6 +401,20 @@ def test_validate_email_when_eligible(client):
     client.auth_header = {"Authorization": f"Bearer {refresh_token}"}
     refresh_response = client.post("/native/v1/refresh_access_token", json={})
     assert refresh_response.status_code == 200
+
+
+def test_validate_email_second_time_is_forbidden(client):
+    user = users_factories.UserFactory(isEmailValidated=False)
+    token = users_factories.TokenFactory(userId=user.id, type=TokenType.EMAIL_VALIDATION)
+
+    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+
+    assert user.isEmailValidated
+    assert response.status_code == 200
+
+    response = client.post("/native/v1/validate_email", json={"email_validation_token": token.value})
+    assert response.status_code == 400
+    assert response.json["token"] == ["Le token de validation d'email est invalide."]
 
 
 @freeze_time("2018-06-01")
