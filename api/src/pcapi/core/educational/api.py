@@ -10,35 +10,22 @@ from flask import current_app
 from flask_sqlalchemy import BaseQuery
 from pydantic import parse_obj_as
 from pydantic.error_wrappers import ValidationError
-import sqlalchemy as sqla
-from sqlalchemy.orm import joinedload
-from sqlalchemy.sql.elements import not_
+import sqlalchemy as sa
 
 from pcapi import settings
 from pcapi.core import mails
 from pcapi.core import search
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.categories import categories
 from pcapi.core.categories import subcategories
+from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import utils as educational_utils
 from pcapi.core.educational import validation
-import pcapi.core.educational.adage_backends as adage_client
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
 from pcapi.core.educational.exceptions import AdageException
-from pcapi.core.educational.models import CollectiveBooking
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveBookingStatusFilter
-from pcapi.core.educational.models import CollectiveOffer
-from pcapi.core.educational.models import CollectiveOfferTemplate
-from pcapi.core.educational.models import CollectiveStock
-from pcapi.core.educational.repository import get_and_lock_collective_stock
-from pcapi.core.educational.repository import get_collective_offers_for_filters
-from pcapi.core.educational.repository import get_collective_offers_template_for_filters
-from pcapi.core.educational.repository import get_filtered_collective_booking_report
-from pcapi.core.educational.utils import compute_educational_booking_cancellation_limit_date
 from pcapi.core.mails.models.sendinblue_models import SendinblueTransactionalEmailData
 from pcapi.core.mails.transactional.educational.eac_new_booking_to_pro import send_eac_new_booking_email_to_pro
 from pcapi.core.mails.transactional.educational.eac_new_prebooking_to_pro import (
@@ -56,19 +43,16 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.repository import repository
 from pcapi.repository import transaction
-from pcapi.routes.adage.v1.serialization.prebooking import EducationalBookingEdition
-from pcapi.routes.adage.v1.serialization.prebooking import serialize_collective_booking
+from pcapi.routes.adage.v1.serialization import prebooking
 from pcapi.routes.adage_iframe.serialization.adage_authentication import RedactorInformation
+from pcapi.routes.serialization import collective_bookings_serialize
 from pcapi.routes.serialization import venues_serialize
-from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_csv_report
-from pcapi.routes.serialization.collective_bookings_serialize import serialize_collective_booking_excel_report
 from pcapi.routes.serialization.collective_offers_serialize import PostCollectiveOfferBodyModel
 from pcapi.routes.serialization.collective_stock_serialize import CollectiveStockCreationBodyModel
 from pcapi.routes.serialization.offers_serialize import PostEducationalOfferBodyModel
+from pcapi.utils import rest
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.human_ids import dehumanize
-from pcapi.utils.rest import check_user_has_access_to_offerer
-from pcapi.utils.rest import load_or_raise_error
 
 
 logger = logging.getLogger(__name__)
@@ -86,7 +70,9 @@ def _create_redactor(redactor_informations: RedactorInformation) -> educational_
     return redactor
 
 
-def book_collective_offer(redactor_informations: RedactorInformation, stock_id: int) -> CollectiveBooking:
+def book_collective_offer(
+    redactor_informations: RedactorInformation, stock_id: int
+) -> educational_models.CollectiveBooking:
     redactor = educational_repository.find_redactor_by_email(redactor_informations.email)
     if not redactor:
         redactor = _create_redactor(redactor_informations)
@@ -105,7 +91,7 @@ def book_collective_offer(redactor_informations: RedactorInformation, stock_id: 
         validation.check_user_can_prebook_collective_stock(redactor_informations.uai, stock)
 
         utcnow = datetime.datetime.utcnow()
-        booking = CollectiveBooking(
+        booking = educational_models.CollectiveBooking(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalRedactor=redactor,
@@ -115,7 +101,9 @@ def book_collective_offer(redactor_informations: RedactorInformation, stock_id: 
             offererId=stock.collectiveOffer.venue.managingOffererId,
             status=educational_models.CollectiveBookingStatus.PENDING,
             dateCreated=utcnow,
-            cancellationLimitDate=compute_educational_booking_cancellation_limit_date(stock.beginningDatetime, utcnow),
+            cancellationLimitDate=educational_utils.compute_educational_booking_cancellation_limit_date(
+                stock.beginningDatetime, utcnow
+            ),
         )
         repository.save(booking)
 
@@ -138,7 +126,7 @@ def book_collective_offer(redactor_informations: RedactorInformation, stock_id: 
     search.async_index_collective_offer_ids([stock.collectiveOfferId])
 
     try:
-        adage_client.notify_prebooking(data=serialize_collective_booking(booking))
+        adage_client.notify_prebooking(data=prebooking.serialize_collective_booking(booking))
     except AdageException as adage_error:
         logger.error(
             "%s Educational institution will not receive a confirmation email.",
@@ -160,7 +148,7 @@ def book_collective_offer(redactor_informations: RedactorInformation, stock_id: 
     return booking
 
 
-def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking:
+def confirm_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
     collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
 
     if collective_booking is None:
@@ -214,15 +202,17 @@ def confirm_collective_booking(educational_booking_id: int) -> CollectiveBooking
     return collective_booking
 
 
-def refuse_collective_booking(educational_booking_id: int) -> CollectiveBooking:
+def refuse_collective_booking(educational_booking_id: int) -> educational_models.CollectiveBooking:
 
     collective_booking = educational_repository.find_collective_booking_by_id(educational_booking_id)
     if collective_booking is None:
         raise exceptions.EducationalBookingNotFound()
 
-    collective_booking = cast(CollectiveBooking, collective_booking)  # we already checked it was not None
+    collective_booking = cast(
+        educational_models.CollectiveBooking, collective_booking
+    )  # we already checked it was not None
 
-    if collective_booking.status == CollectiveBookingStatus.CANCELLED:
+    if collective_booking.status == educational_models.CollectiveBookingStatus.CANCELLED:
         return collective_booking
 
     with transaction():
@@ -330,7 +320,7 @@ def create_educational_deposit(
 def get_venues_by_siret(siret: str) -> list[offerers_models.Venue]:
     venue = (
         offerers_models.Venue.query.filter_by(siret=siret, isVirtual=False)
-        .options(joinedload(offerers_models.Venue.contact))
+        .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .one()
     )
     return [venue]
@@ -345,7 +335,7 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
         .order_by(offerers_models.Venue.id)
         .offset((page - 1) * per_page)
         .limit(per_page)
-        .options(joinedload(offerers_models.Venue.contact))
+        .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .all()
     )
 
@@ -357,12 +347,12 @@ def get_venues_by_name(name: str) -> list[offerers_models.Venue]:
     venues = (
         offerers_models.Venue.query.filter(
             or_(
-                sqla.func.unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
-                sqla.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
+                sa.func.unaccent(offerers_models.Venue.name).ilike(f"%{name}%"),
+                sa.func.unaccent(offerers_models.Venue.publicName).ilike(f"%{name}%"),
             )
         )
         .filter(offerers_models.Venue.isVirtual.is_(False))
-        .options(joinedload(offerers_models.Venue.contact))
+        .options(sa.orm.joinedload(offerers_models.Venue.contact))
         .all()
     )
     return venues
@@ -391,8 +381,8 @@ def notify_educational_redactor_on_collective_offer_or_stock_edit(
     if active_collective_bookings is None:
         return
 
-    data = EducationalBookingEdition(
-        **serialize_collective_booking(active_collective_bookings).dict(),
+    data = prebooking.EducationalBookingEdition(
+        **prebooking.serialize_collective_booking(active_collective_bookings).dict(),
         updatedFields=updated_fields,
     )
     try:
@@ -427,7 +417,9 @@ def _update_educational_booking_educational_year_id(
         educational_booking.educationalYear = educational_year
 
 
-def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> CollectiveStock:
+def edit_collective_stock(
+    stock: educational_models.CollectiveStock, stock_data: dict
+) -> educational_models.CollectiveStock:
     from pcapi.core.offers.api import _update_educational_booking_cancellation_limit_date
 
     beginning = stock_data.get("beginningDatetime")
@@ -444,9 +436,11 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
     if beginning is not None and beginning < updatable_fields["bookingLimitDatetime"]:
         updatable_fields["bookingLimitDatetime"] = updatable_fields["beginningDatetime"]
 
-    collective_stock_unique_booking = CollectiveBooking.query.filter(
-        CollectiveBooking.collectiveStockId == stock.id,
-        not_(CollectiveBooking.status == CollectiveBookingStatus.CANCELLED),
+    collective_stock_unique_booking = educational_models.CollectiveBooking.query.filter(
+        educational_models.CollectiveBooking.collectiveStockId == stock.id,
+        sa.sql.elements.not_(
+            educational_models.CollectiveBooking.status == educational_models.CollectiveBookingStatus.CANCELLED
+        ),
     ).one_or_none()
 
     if collective_stock_unique_booking:
@@ -464,7 +458,7 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
     validation.check_collective_stock_is_editable(stock)
 
     with transaction():
-        stock = get_and_lock_collective_stock(stock_id=stock.id)
+        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
         for attribute, new_value in updatable_fields.items():
             if new_value is not None and getattr(stock, attribute) != new_value:
                 setattr(stock, attribute, new_value)
@@ -484,7 +478,7 @@ def edit_collective_stock(stock: CollectiveStock, stock_data: dict) -> Collectiv
 
 
 def _extract_updatable_fields_from_stock_data(
-    stock: CollectiveStock, stock_data: dict, beginning: datetime, booking_limit_datetime: datetime  # type: ignore [valid-type]
+    stock: educational_models.CollectiveStock, stock_data: dict, beginning: datetime, booking_limit_datetime: datetime  # type: ignore [valid-type]
 ) -> dict:
     # if booking_limit_datetime is provided but null, set it to default value which is event datetime
     if "bookingLimitDatetime" in stock_data.keys() and booking_limit_datetime is None:
@@ -509,7 +503,7 @@ def create_collective_stock(
     user: User,
     *,
     offer_id: int | None = None,
-) -> CollectiveStock | None:
+) -> educational_models.CollectiveStock | None:
     from pcapi.core.offers.api import update_offer_fraud_information
 
     offer_id = offer_id or stock_data.offer_id
@@ -520,7 +514,9 @@ def create_collective_stock(
     educational_price_detail = stock_data.educational_price_detail
 
     collective_offer = (
-        CollectiveOffer.query.filter_by(id=offer_id).options(joinedload(CollectiveOffer.collectiveStock)).one()
+        educational_models.CollectiveOffer.query.filter_by(id=offer_id)
+        .options(sa.orm.joinedload(educational_models.CollectiveOffer.collectiveStock))
+        .one()
     )
 
     validation.check_collective_offer_number_of_collective_stocks(collective_offer)
@@ -528,7 +524,7 @@ def create_collective_stock(
     if booking_limit_datetime is None:
         booking_limit_datetime = beginning
 
-    collective_stock = CollectiveStock(
+    collective_stock = educational_models.CollectiveStock(
         collectiveOffer=collective_offer,
         beginningDatetime=beginning,
         bookingLimitDatetime=booking_limit_datetime,
@@ -586,12 +582,13 @@ def _get_expired_collective_offer_ids(interval: list[datetime.datetime], page: i
 def get_collective_booking_report(
     user: User,
     booking_period: tuple[datetime.date, datetime.date] | None = None,
-    status_filter: CollectiveBookingStatusFilter | None = CollectiveBookingStatusFilter.BOOKED,
+    status_filter: educational_models.CollectiveBookingStatusFilter
+    | None = educational_models.CollectiveBookingStatusFilter.BOOKED,
     event_date: datetime.datetime | None = None,
     venue_id: int | None = None,
-    export_type: BookingExportType | None = BookingExportType.CSV,
+    export_type: bookings_models.BookingExportType | None = bookings_models.BookingExportType.CSV,
 ) -> str | bytes:
-    bookings_query = get_filtered_collective_booking_report(
+    bookings_query = educational_repository.get_filtered_collective_booking_report(
         pro_user=user,
         period=booking_period,  # type: ignore [arg-type]
         status_filter=status_filter,  # type: ignore [arg-type]
@@ -599,9 +596,9 @@ def get_collective_booking_report(
         venue_id=venue_id,
     )
 
-    if export_type == BookingExportType.EXCEL:
-        return serialize_collective_booking_excel_report(bookings_query)
-    return serialize_collective_booking_csv_report(bookings_query)
+    if export_type == bookings_models.BookingExportType.EXCEL:
+        return collective_bookings_serialize.serialize_collective_booking_excel_report(bookings_query)
+    return collective_bookings_serialize.serialize_collective_booking_csv_report(bookings_query)
 
 
 def list_collective_offers_for_pro_user(
@@ -614,8 +611,8 @@ def list_collective_offers_for_pro_user(
     status: str | None = None,
     period_beginning_date: str | None = None,
     period_ending_date: str | None = None,
-) -> list[CollectiveOffer | CollectiveOfferTemplate]:
-    offers = get_collective_offers_for_filters(
+) -> list[educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate]:
+    offers = educational_repository.get_collective_offers_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offers_limit=OFFERS_RECAP_LIMIT,
@@ -627,7 +624,7 @@ def list_collective_offers_for_pro_user(
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
     )
-    templates = get_collective_offers_template_for_filters(
+    templates = educational_repository.get_collective_offers_template_for_filters(
         user_id=user_id,
         user_is_admin=user_is_admin,
         offers_limit=OFFERS_RECAP_LIMIT,
@@ -692,11 +689,11 @@ def create_collective_offer(
     offer_data: PostCollectiveOfferBodyModel | PostEducationalOfferBodyModel,
     user: User,
     offer_id: int | None = None,
-) -> CollectiveOffer:
+) -> educational_models.CollectiveOffer:
 
     offerers_api.can_offerer_create_educational_offer(dehumanize(offer_data.offerer_id))
-    venue: offerers_models.Venue = load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
-    check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
+    venue: offerers_models.Venue = rest.load_or_raise_error(offerers_models.Venue, offer_data.venue_id)
+    rest.check_user_has_access_to_offerer(user, offerer_id=venue.managingOffererId)
     offer_validation.check_offer_subcategory_is_valid(offer_data.subcategory_id)
     offer_validation.check_offer_is_eligible_for_educational(offer_data.subcategory_id, is_educational=True)
     educational_domains = []
@@ -738,17 +735,17 @@ def create_collective_offer(
     return collective_offer
 
 
-def get_collective_offer_by_id(offer_id: int) -> CollectiveOffer:
+def get_collective_offer_by_id(offer_id: int) -> educational_models.CollectiveOffer:
     return educational_repository.get_collective_offer_by_id(offer_id)
 
 
-def get_collective_offer_template_by_id(offer_id: int) -> CollectiveOffer:
+def get_collective_offer_template_by_id(offer_id: int) -> educational_models.CollectiveOffer:
     return educational_repository.get_collective_offer_template_by_id(offer_id)
 
 
 def create_collective_offer_template_from_collective_offer(
     price_detail: str | None, user: User, offer_id: int
-) -> CollectiveOfferTemplate:
+) -> educational_models.CollectiveOfferTemplate:
     from pcapi.core.offers.api import update_offer_fraud_information
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
@@ -779,17 +776,17 @@ def get_collective_offer_id_from_educational_stock(stock: Stock) -> int:
     return collective_offer.id
 
 
-def get_collective_offer_by_id_for_adage(offer_id: int) -> CollectiveOffer:
+def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:
     return educational_repository.get_collective_offer_by_id_for_adage(offer_id)
 
 
-def get_collective_offer_template_by_id_for_adage(offer_id: int) -> CollectiveOfferTemplate:
+def get_collective_offer_template_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOfferTemplate:
     return educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
 
 
 def transform_collective_offer_template_into_collective_offer(
     user: User, body: CollectiveStockCreationBodyModel
-) -> CollectiveOffer:
+) -> educational_models.CollectiveOffer:
     collective_offer_template = educational_models.CollectiveOfferTemplate.query.filter_by(id=body.offer_id).one()
     collective_offer_template_id = collective_offer_template.id
 
@@ -850,7 +847,7 @@ def get_educational_institution_by_id(institution_id: int) -> educational_models
 
 def update_collective_offer_educational_institution(
     offer_id: int, educational_institution_id: int | None, is_creating_offer: bool, user: User
-) -> CollectiveOffer:
+) -> educational_models.CollectiveOffer:
     from pcapi.core.offers.api import update_offer_fraud_information
 
     offer = educational_repository.get_collective_offer_by_id(offer_id)
