@@ -22,13 +22,13 @@ import { UserBaseInfo, UserManualReview, EligibilityFraudCheck } from '../types'
 
 export const ManualReviewModal = ({
   user,
-  fraudChecks,
+  eligibilityFraudChecks,
 }: {
   user: UserBaseInfo
-  fraudChecks: EligibilityFraudCheck[]
+  eligibilityFraudChecks: EligibilityFraudCheck[]
 }) => {
   const [openModal, setOpenModal] = useState(false)
-  const noFraudCheck = fraudChecks.length <= 0
+  const noFraudCheck = eligibilityFraudChecks.length <= 0
   const notify = useNotify()
 
   const styleModal = {

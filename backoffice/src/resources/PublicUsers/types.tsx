@@ -67,6 +67,7 @@ export interface EligibilityFraudCheck {
   role: PublicUserRolesEnum
   items: FraudCheck[]
 }
+
 export interface FraudCheckTechnicalDetails {
   score?: string
   gender?: string
