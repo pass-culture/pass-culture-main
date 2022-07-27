@@ -127,6 +127,7 @@
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "eslint-config-prettier": "^8.4.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-pass-culture": "./eslint-plugin-pass-culture",
     "history": "^4.7.2",
     "hygen": "^6.2.0",

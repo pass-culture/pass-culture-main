@@ -3,6 +3,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
+    'plugin:import/recommended',
   ],
   env: {
     browser: true,
@@ -26,8 +27,22 @@ module.exports = {
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-empty-function': 'off',
-    'sort-imports': 1,
     'no-console': 1,
+    'import/order': [
+      'warn',
+      {
+        groups: [
+          'builtin',
+          'external',
+          'internal',
+          'parent',
+          'sibling',
+          'index',
+        ],
+        'newlines-between': 'always',
+        alphabetize: { order: 'asc', caseInsensitive: true },
+      },
+    ],
   },
   overrides: [
     {
@@ -37,4 +52,16 @@ module.exports = {
       },
     },
   ],
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        paths: ['.'],
+        moduleDirectory: ['node_modules', 'src'],
+      },
+    },
+    react: {
+      version: 'detect',
+    },
+  },
 }
