@@ -263,11 +263,8 @@ def request_email_confirmation(user: models.User) -> None:
     send_email_confirmation_email(user, token=token)
 
 
-def request_password_reset(user: models.User) -> None:
+def request_password_reset(user: models.User | None) -> None:
     if not user:
-        return
-
-    if not user.isActive and not user.is_account_suspended_upon_user_request:
         return
 
     is_email_sent = reset_password.send_reset_password_email_to_user(user)
@@ -278,7 +275,7 @@ def request_password_reset(user: models.User) -> None:
 
 
 def handle_create_account_with_existing_email(user: models.User) -> None:
-    if not user or not user.isActive:
+    if not user:
         return
 
     is_email_sent = reset_password.send_email_already_exists_email(user)

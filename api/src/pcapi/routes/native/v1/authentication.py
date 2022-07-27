@@ -85,7 +85,7 @@ def request_password_reset(body: RequestPasswordResetRequest) -> None:
             raise ApiErrors({"token": "The given token is not valid"})
     user = find_user_by_email(body.email)
     try:
-        users_api.request_password_reset(user)  # type: ignore [arg-type]
+        users_api.request_password_reset(user)
     except users_exceptions.EmailNotSent:
         raise ApiErrors(
             {"email": ["L'email n'a pas pu être envoyé"]},
