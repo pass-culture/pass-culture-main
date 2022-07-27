@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 
 import { ButtonVariant } from 'ui-kit/Button/types'
 import FormLayout from 'new_components/FormLayout'
+import { IUserIdentityFormValues } from './types'
 import Icon from 'components/layout/Icon'
 import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
 import { setCurrentUser } from 'store/user/actions'
@@ -17,8 +18,8 @@ export interface IProfileFormProps {
   subtitleFormat: (values: any) => string
   banner?: JSX.Element
   shouldDisplayBanner?: boolean
-  adapter: PatchIdentityAdapter
-  initialValues: { [id: string]: string }
+  patchIdentityAdapter: PatchIdentityAdapter
+  initialValues: IUserIdentityFormValues
 }
 
 const ProfileForm = ({
@@ -27,7 +28,7 @@ const ProfileForm = ({
   initialValues,
   shouldDisplayBanner = false,
   banner,
-  adapter,
+  patchIdentityAdapter,
 }: IProfileFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
@@ -37,7 +38,7 @@ const ProfileForm = ({
     setIsFormVisible(oldValue => !oldValue)
   }
   const onSubmit = (values: any) => {
-    adapter(values).then(response => {
+    patchIdentityAdapter(values).then(response => {
       if (response.isOk) {
         formik.setValues(response.payload)
         setSubTitle(subtitleFormat(response.payload))
