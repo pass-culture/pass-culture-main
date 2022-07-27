@@ -4,13 +4,14 @@ import { render, screen } from '@testing-library/react'
 
 import { ManualReviewModal } from '../Components/ManualReviewModal'
 
-const renderManualReviewModal = props => render(<ManualReviewModal {...props} />)
+const renderManualReviewModal = props =>
+  render(<ManualReviewModal {...props} />)
 const someUser = {
   id: 123,
   lastname: 'Durond',
   firstname: 'Laurent',
   email: 'laurentdurond@example.com',
-  dateOfBirth: new Date(2005, 12, 25)
+  dateOfBirth: new Date(2005, 12, 25),
 }
 
 describe('manual review modal button', () => {
@@ -18,9 +19,10 @@ describe('manual review modal button', () => {
     // Given
     const props = {
       user: someUser,
-      checkHistory: []
+      checkHistory: [],
     }
-    const expectedLabel = 'Revue manuelle non disponible (aucun fraud check avec nom, prénom, date de naissance)'
+    const expectedLabel =
+      'Revue manuelle non disponible (aucun fraud check avec nom, prénom, date de naissance)'
 
     // When
     renderManualReviewModal(props)
@@ -39,9 +41,9 @@ describe('manual review modal button', () => {
           type: 'ubble',
           thirdPartyId: 'some-id',
           dateCreated: new Date(2022, 7, 11),
-          status: 'ok'
-        }
-      ]
+          status: 'ok',
+        },
+      ],
     }
     const expectedLabel = 'Revue manuelle'
 

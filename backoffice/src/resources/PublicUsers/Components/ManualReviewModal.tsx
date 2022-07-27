@@ -18,17 +18,17 @@ import {
 } from '../../../providers/apiHelpers'
 import { dataProvider } from '../../../providers/dataProvider'
 import { ExclamationPointIcon } from '../../Icons/ExclamationPointIcon'
-import { UserBaseInfo, UserManualReview, CheckHistory } from '../types'
+import { UserBaseInfo, UserManualReview, EligibilityFraudCheck } from '../types'
 
 export const ManualReviewModal = ({
   user,
-  checkHistory,
+  fraudChecks,
 }: {
   user: UserBaseInfo
-  checkHistory: CheckHistory[]
+  fraudChecks: EligibilityFraudCheck[]
 }) => {
   const [openModal, setOpenModal] = useState(false)
-  const noFraudCheck = checkHistory.length <= 0
+  const noFraudCheck = fraudChecks.length <= 0
   const notify = useNotify()
 
   const styleModal = {

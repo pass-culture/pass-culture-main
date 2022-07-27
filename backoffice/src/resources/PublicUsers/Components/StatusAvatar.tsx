@@ -4,21 +4,20 @@ import { Avatar, Tooltip } from '@mui/material'
 import { green, red, yellow } from '@mui/material/colors'
 import React from 'react'
 
-import {
-  CheckHistory,
-  SubscriptionItem,
-  SubscriptionItemStatus,
-} from '../types'
+import { FraudCheck, SubscriptionItem, SubscriptionItemStatus } from '../types'
 
 type Props = {
-  subscriptionItem: SubscriptionItem | CheckHistory | undefined
+  item: SubscriptionItem | FraudCheck | undefined
 }
 
-export const StatusAvatar = ({ subscriptionItem }: Props) => {
+export const StatusAvatar = ({ item }: Props) => {
   let color, icon
   icon = <ErrorOutlineIcon />
   color = red['700']
-  switch (subscriptionItem?.status) {
+
+  const itemLabel = item?.status?.toUpperCase()
+
+  switch (item?.status) {
     case SubscriptionItemStatus.OK:
       color = green['700']
       icon = <CheckCircleOutlineIcon />
@@ -28,7 +27,10 @@ export const StatusAvatar = ({ subscriptionItem }: Props) => {
     default:
       color = yellow['700']
       return (
-        <Tooltip title="Non renseigné" placement="right">
+        <Tooltip
+          title={itemLabel ? itemLabel : 'Statut inconnu'}
+          placement="right"
+        >
           <Avatar sx={{ bgcolor: color }}>{icon}</Avatar>
         </Tooltip>
       )

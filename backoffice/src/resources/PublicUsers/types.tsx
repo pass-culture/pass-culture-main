@@ -42,6 +42,7 @@ export enum SubscriptionItemStatus {
   KO = 'ko',
   OK = 'ok',
   NOT_APPLICABLE = 'not-applicable',
+  NOT_ENABLED = 'not-enabled',
   VOID = 'void',
 }
 export enum SubscriptionItemType {
@@ -52,12 +53,21 @@ export enum SubscriptionItemType {
   HONOR_STATEMENT = 'honor-statement',
 }
 
+export interface EligibilitySubscriptionItem {
+  role: PublicUserRolesEnum
+  items: SubscriptionItem[]
+}
+
 export interface SubscriptionItem {
   type: SubscriptionItemType
   status: SubscriptionItemStatus
 }
 
-export interface CheckHistoryTechnicalDetails {
+export interface EligibilityFraudCheck {
+  role: PublicUserRolesEnum
+  items: FraudCheck[]
+}
+export interface FraudCheckTechnicalDetails {
   score?: string
   gender?: string
   status?: string
@@ -75,24 +85,13 @@ export interface CheckHistoryTechnicalDetails {
   registrationDateTime: Date
 }
 
-export interface CheckHistory {
+export interface FraudCheck {
   type: string
   thirdPartyId: string
   dateCreated: Date
-  status: 'ok' | 'void' | 'not-applicable' | 'ko'
+  status: 'ok' | 'void' | 'not-applicable' | 'ko' | 'not-enabled'
   reason?: string
   reasonCodes?: string
-  technicalDetails?: CheckHistoryTechnicalDetails
+  technicalDetails?: FraudCheckTechnicalDetails
   sourceId?: string
-}
-
-export interface UserCredit {
-  dateCreated: Date
-  initialCredit: number
-  remainingCredit: number
-  remainingDigitalCredit: number
-}
-
-export interface CheckHistories {
-  histories: CheckHistory[]
 }

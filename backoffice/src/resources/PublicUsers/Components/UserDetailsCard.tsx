@@ -17,11 +17,11 @@ import {
   PcApiHttpError,
 } from '../../../providers/apiHelpers'
 import { dataProvider } from '../../../providers/dataProvider'
-import { CheckHistory, UserBaseInfo } from '../types'
+import { FraudCheck, UserBaseInfo } from '../types'
 
 type Props = {
   user: UserBaseInfo
-  firstIdCheckHistory: CheckHistory
+  firstIdCheckHistory: FraudCheck
 }
 export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
   const notify = useNotify()
