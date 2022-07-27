@@ -298,7 +298,7 @@ const OfferForm = ({
           ...oldFormErrors,
           venueId: 'Il faut obligatoirement une structure avec un lieu.',
         }))
-      } else {
+      } else if (formValues.venueId !== DEFAULT_FORM_VALUES['venueId']) {
         setFormErrors(oldFormErrors => {
           delete oldFormErrors.venueId
           return oldFormErrors
