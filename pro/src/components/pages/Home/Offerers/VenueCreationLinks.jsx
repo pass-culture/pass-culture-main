@@ -3,7 +3,12 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link, useLocation } from 'react-router-dom'
 
-import { Events } from 'core/FirebaseEvents/constants'
+import {
+  Events,
+  OFFER_FORM_HOMEPAGE,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { isAPISireneAvailable } from 'store/features/selectors'
 import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
 
@@ -39,9 +44,11 @@ const VenueCreationLinks = ({
         <Link
           className="secondary-link"
           onClick={() =>
-            logEvent(Events.CLICKED_CREATE_OFFER, {
-              from: location.pathname,
-              offerer_id: offererId,
+            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OFFER_FORM_NAVIGATION_IN.HOME,
+              to: OFFER_FORM_HOMEPAGE,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.HOME_BUTTON,
+              isEdition: false,
             })
           }
           to={`/offre/creation?structure=${offererId}`}

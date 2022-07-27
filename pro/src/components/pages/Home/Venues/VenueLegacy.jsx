@@ -1,10 +1,17 @@
 import * as PropTypes from 'prop-types'
 import React, { Fragment, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import Icon from 'components/layout/Icon'
 import { BOOKING_STATUS } from 'core/Bookings'
+import {
+  Events,
+  OFFER_FORM_HOMEPAGE,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { venueCreateOfferLink } from 'core/Venue/utils'
 import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
@@ -28,6 +35,7 @@ const Venue = ({
     soldOutOffersCount: '',
     validatedBookingsQuantity: '',
   })
+  const logEvent = useSelector(state => state.app.logEvent)
 
   const venueStatData = [
     {
@@ -164,6 +172,16 @@ const Venue = ({
               <div className="h-card-col v-add-offer-link">
                 <Link
                   className="tertiary-link"
+                  onClick={() =>
+                    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                      from: OFFER_FORM_NAVIGATION_IN.HOME,
+                      to: OFFER_FORM_HOMEPAGE,
+                      used: isVirtual
+                        ? OFFER_FORM_NAVIGATION_MEDIUM.HOME_VIRTUAL_LINK
+                        : OFFER_FORM_NAVIGATION_MEDIUM.HOME_LINK,
+                      isEdition: false,
+                    })
+                  }
                   to={venueCreateOfferLink(offererId, id, isVirtual)}
                 >
                   <IcoPlus />
