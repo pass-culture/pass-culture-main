@@ -7,7 +7,7 @@ export type GetEducationalInstitutionsAdapter = Adapter<
   null
 >
 
-export const getEducationalInstitutionsAdapter: GetEducationalInstitutionsAdapter =
+const getEducationalInstitutionsAdapter: GetEducationalInstitutionsAdapter =
   async () => {
     try {
       let allInstitutions: EducationalInstitutionResponseModel[] = []

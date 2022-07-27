@@ -7,40 +7,39 @@ const FAILING_RESPONSE: AdapterFailure<null> = {
   payload: null,
 }
 
-export const getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter =
-  async filters => {
-    try {
-      const bookingsCsvText = await pcapi.getFilteredBookingsCSV({
-        bookingPeriodBeginningDate: filters.bookingBeginningDate,
-        bookingPeriodEndingDate: filters.bookingEndingDate,
-        bookingStatusFilter: filters.bookingStatusFilter,
-        eventDate: filters.offerEventDate,
-        offerType: filters.offerType,
-        venueId: filters.offerVenueId,
-        page: filters.page,
-      })
+const getBookingsCSVFileAdapter: GetBookingsCSVFileAdapter = async filters => {
+  try {
+    const bookingsCsvText = await pcapi.getFilteredBookingsCSV({
+      bookingPeriodBeginningDate: filters.bookingBeginningDate,
+      bookingPeriodEndingDate: filters.bookingEndingDate,
+      bookingStatusFilter: filters.bookingStatusFilter,
+      eventDate: filters.offerEventDate,
+      offerType: filters.offerType,
+      venueId: filters.offerVenueId,
+      page: filters.page,
+    })
 
-      const fakeLink = document.createElement('a')
-      const blob = new Blob([bookingsCsvText], { type: 'text/csv' })
-      const date = new Date().toISOString()
+    const fakeLink = document.createElement('a')
+    const blob = new Blob([bookingsCsvText], { type: 'text/csv' })
+    const date = new Date().toISOString()
 
-      fakeLink.href = URL.createObjectURL(blob)
-      fakeLink.setAttribute('download', `reservations_pass_culture-${date}.csv`)
+    fakeLink.href = URL.createObjectURL(blob)
+    fakeLink.setAttribute('download', `reservations_pass_culture-${date}.csv`)
 
-      document.body.appendChild(fakeLink)
+    document.body.appendChild(fakeLink)
 
-      fakeLink.click()
+    fakeLink.click()
 
-      document.body.removeChild(fakeLink)
+    document.body.removeChild(fakeLink)
 
-      return {
-        isOk: true,
-        message: null,
-        payload: null,
-      }
-    } catch (e) {
-      return FAILING_RESPONSE
+    return {
+      isOk: true,
+      message: null,
+      payload: null,
     }
+  } catch (e) {
+    return FAILING_RESPONSE
   }
+}
 
 export default getBookingsCSVFileAdapter

@@ -1,4 +1,4 @@
-import createCachedSelector from 're-reselect'
+import { createCachedSelector } from 're-reselect'
 
 import { parse } from 'utils/query-string'
 

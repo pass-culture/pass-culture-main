@@ -20,7 +20,7 @@ const FAILING_RESPONSE: AdapterFailure<GetFilteredBookingsRecapAdapterPayload> =
     },
   }
 
-export const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
+const getFilteredBookingsRecapAdapter: GetFilteredBookingsRecapAdapter =
   async apiFilters => {
     try {
       let allBookings: BookingRecapResponseModel[] = []
