@@ -4,7 +4,7 @@ from enum import Enum
 
 RESET_PASSWORD_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 RESET_PASSWORD_TOKEN_LIFE_TIME_EXTENDED = datetime.timedelta(days=30)
-EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
+EMAIL_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(minutes=30)
 EMAIL_CHANGE_TOKEN_LIFE_TIME = datetime.timedelta(hours=24)
 PHONE_VALIDATION_TOKEN_LIFE_TIME = datetime.timedelta(hours=12)
 
