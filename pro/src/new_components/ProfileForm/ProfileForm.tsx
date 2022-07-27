@@ -7,7 +7,10 @@ import { ButtonVariant } from 'ui-kit/Button/types'
 import FormLayout from 'new_components/FormLayout'
 import Icon from 'components/layout/Icon'
 import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
+import { setCurrentUser } from 'store/user/actions'
 import styles from './ProfileForm.module.scss'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import { useDispatch } from 'react-redux'
 
 export interface IProfileFormProps {
   title: string
@@ -30,6 +33,8 @@ const ProfileForm = ({
   banner,
   adapter,
 }: IProfileFormProps): JSX.Element => {
+  const { currentUser } = useCurrentUser()
+  const dispatch = useDispatch()
   const [isFormVisible, setIsFormVisible] = useState(false)
   const [subTitle, setSubTitle] = useState(subtitleFormat(initialValues))
   const toggleFormVisible = () => {
@@ -38,9 +43,16 @@ const ProfileForm = ({
   const onSubmit = (values: any) => {
     adapter(values).then(response => {
       if (response.isOk) {
-        toggleFormVisible()
         formik.setValues(response.payload)
         setSubTitle(subtitleFormat(response.payload))
+        dispatch(
+          setCurrentUser({
+            ...currentUser,
+            ...response.payload,
+          })
+        )
+
+        toggleFormVisible()
       } else {
         for (const field in response.payload)
           formik.setFieldError(field, response.payload[field])

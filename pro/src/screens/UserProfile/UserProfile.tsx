@@ -5,7 +5,7 @@ import React from 'react'
 import { UserIdentityResponseModel } from 'apiClient/v1'
 import patchIdentityAdapter from 'routes/User/adapters/patchIdentityAdapter'
 
-const ProfileScreen = ({
+const UserProfile = ({
   ...identityData
 }: UserIdentityResponseModel): JSX.Element => {
   return (
@@ -26,4 +26,4 @@ const ProfileScreen = ({
   )
 }
 
-export default ProfileScreen
+export default UserProfile
