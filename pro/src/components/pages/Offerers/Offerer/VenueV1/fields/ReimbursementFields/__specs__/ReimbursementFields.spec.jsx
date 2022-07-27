@@ -1,13 +1,14 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
-
+import React from 'react'
 import { Form } from 'react-final-form'
 import { Provider } from 'react-redux'
-import React from 'react'
-import ReimbursementFields from '../ReimbursementFields'
+
 import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
+
+import ReimbursementFields from '../ReimbursementFields'
 
 const renderReimbursementFields = async (props, store) => {
   const rtlReturn = await render(

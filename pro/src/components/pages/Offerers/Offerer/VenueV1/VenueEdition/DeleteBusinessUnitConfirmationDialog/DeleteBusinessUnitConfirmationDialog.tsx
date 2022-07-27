@@ -1,5 +1,6 @@
-import ConfirmDialog from 'new_components/ConfirmDialog'
 import React from 'react'
+
+import ConfirmDialog from 'new_components/ConfirmDialog'
 
 interface IDeleteBusinessUnitConfirmationDialogProps {
   onConfirm: () => void

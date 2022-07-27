@@ -1,3 +1,6 @@
+import { FormikProvider, useFormik } from 'formik'
+import React, { useEffect, useState } from 'react'
+
 import {
   CanOffererCreateCollectiveOffer,
   GetEducationalDomainsAdapter,
@@ -7,17 +10,15 @@ import {
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
-import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { SelectOption } from 'custom_types/form'
+import OfferEducationalActions from 'new_components/OfferEducationalActions'
+
+import styles from './OfferEducational.module.scss'
+import OfferEducationalForm from './OfferEducationalForm'
 import {
   validationSchema,
   validationSchemaWithDomains,
 } from './validationSchema'
-
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
-import OfferEducationalForm from './OfferEducationalForm'
-import { SelectOption } from 'custom_types/form'
-import styles from './OfferEducational.module.scss'
 
 export interface IOfferEducationalProps {
   educationalCategories: IEducationalCategory[]

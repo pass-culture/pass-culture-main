@@ -1,8 +1,10 @@
 import './CinemaProviderFormDialog.scss'
 
-import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
-import DialogBox from 'new_components/DialogBox'
 import React from 'react'
+
+import DialogBox from 'new_components/DialogBox'
+
+import { CinemaProviderForm } from '../CinemaProviderForm/CinemaProviderForm'
 
 interface ICinemaProviderFormDialogProps {
   onCancel: () => void

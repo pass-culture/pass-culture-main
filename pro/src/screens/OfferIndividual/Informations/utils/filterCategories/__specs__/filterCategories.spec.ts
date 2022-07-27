@@ -1,8 +1,8 @@
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
-
-import { CATEGORY_STATUS } from 'core/Offers'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { CATEGORY_STATUS } from 'core/Offers'
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
+
 import { filterCategories } from '..'
 
 describe('filterCategories', () => {

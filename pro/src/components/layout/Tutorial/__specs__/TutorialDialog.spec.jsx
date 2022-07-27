@@ -1,16 +1,15 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { act, fireEvent, render, screen } from '@testing-library/react'
-
-import { Events } from 'core/FirebaseEvents/constants'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import React from 'react'
-import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
-import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { configureTestStore } from 'store/testUtils'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   setHasSeenTutos: jest.fn().mockResolvedValue({}),

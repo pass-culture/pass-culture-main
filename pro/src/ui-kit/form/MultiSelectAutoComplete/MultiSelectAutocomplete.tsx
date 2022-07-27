@@ -1,13 +1,15 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import cx from 'classnames'
 import { useField, useFormikContext } from 'formik'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 
-import AutocompleteList from '../shared/AutocompleteList'
-import BaseCheckbox from '../shared/BaseCheckbox'
-import { BaseInput } from '../shared'
-import FieldLayout from '../shared/FieldLayout'
 import { SelectOption } from 'custom_types/form'
 import Tag from 'ui-kit/Tag'
-import cx from 'classnames'
+
+import { BaseInput } from '../shared'
+import AutocompleteList from '../shared/AutocompleteList'
+import BaseCheckbox from '../shared/BaseCheckbox'
+import FieldLayout from '../shared/FieldLayout'
+
 import styles from './MultiSelectAutocomplete.module.scss'
 
 export interface MultiSelectAutocompleteProps {

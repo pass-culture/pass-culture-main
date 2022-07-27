@@ -1,7 +1,8 @@
+import { connect } from 'react-redux'
+
 import { selectCurrentUser, selectIsUserAdmin } from 'store/user/selectors'
 
 import OfferDetails from './OfferDetails'
-import { connect } from 'react-redux'
 
 const mapStateToProps = state => ({
   isUserAdmin: selectIsUserAdmin(state),

@@ -1,9 +1,9 @@
+import { Selector } from 'testcafe'
+
 import {
   navigateAfterVenueSubmit,
   navigateToOffererAs,
 } from './helpers/navigations'
-
-import { Selector } from 'testcafe'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 import { getSiretRequestMockAs } from './helpers/sirenes'

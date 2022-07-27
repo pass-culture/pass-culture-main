@@ -1,8 +1,9 @@
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import { api } from 'apiClient/api'
+
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
-import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offerId: string

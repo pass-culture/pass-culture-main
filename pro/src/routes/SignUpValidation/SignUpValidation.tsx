@@ -1,11 +1,10 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
+import { useEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useEffect } from 'react'
 import useNotification from 'components/hooks/useNotification'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { campaignTracker } from 'tracking/mediaCampaignsTracking'
 
 type Params = { token: string }
 

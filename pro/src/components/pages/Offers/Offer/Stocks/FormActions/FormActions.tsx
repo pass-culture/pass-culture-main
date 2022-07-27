@@ -1,8 +1,9 @@
+import React from 'react'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import { SubmitButton } from 'ui-kit'
 import { ButtonLink } from 'ui-kit/Button'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import React from 'react'
-import { SubmitButton } from 'ui-kit'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 
 interface IFormActionsProps {
   cancelUrl?: string

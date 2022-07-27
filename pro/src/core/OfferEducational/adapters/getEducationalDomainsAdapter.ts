@@ -1,7 +1,6 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 export type GetEducationalDomainsAdapter = Adapter<
   void,

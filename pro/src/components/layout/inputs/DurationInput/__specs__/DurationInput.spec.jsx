@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom'
 
+import { fireEvent } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
 
 import DurationInput from '../DurationInput'
-import React from 'react'
-import { fireEvent } from '@testing-library/dom'
-import userEvent from '@testing-library/user-event'
 
 const renderDurationInput = async props => {
   await render(<DurationInput {...props} />)

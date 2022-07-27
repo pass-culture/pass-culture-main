@@ -1,10 +1,12 @@
+import { useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
 
-import { FORM_DEFAULT_VALUES } from 'new_components/OfferIndividualForm'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 import { IOfferSubCategory } from 'core/Offers/types'
+import {
+  FORM_DEFAULT_VALUES,
+  IOfferIndividualFormValues,
+} from 'new_components/OfferIndividualForm'
 import { Select } from 'ui-kit'
-import { useFormikContext } from 'formik'
 
 interface ISelectSubCategoryProps {
   subCategories: IOfferSubCategory[]

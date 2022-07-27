@@ -1,15 +1,15 @@
+import React, { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
+
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
 import {
   GetStockOfferSuccessPayload,
   extractOfferIdAndOfferTypeFromRouteParams,
   getStockCollectiveOfferAdapter,
 } from 'core/OfferEducational'
-import React, { useEffect, useState } from 'react'
-
-import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
-import Spinner from 'components/layout/Spinner'
 import { getStockCollectiveOfferTemplateAdapter } from 'core/OfferEducational/adapters/getStockCollectiveOfferTemplateAdapter'
-import useNotification from 'components/hooks/useNotification'
-import { useParams } from 'react-router-dom'
+import CollectiveOfferConfirmationScreen from 'screens/CollectiveOfferConfirmation'
 
 const CollectiveOfferConfirmation = (): JSX.Element => {
   const { offerId: offerIdFromParams } = useParams<{ offerId: string }>()

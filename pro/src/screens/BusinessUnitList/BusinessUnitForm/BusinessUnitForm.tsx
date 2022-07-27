@@ -1,8 +1,9 @@
-import { IBusinessUnit, IBusinessUnitVenue } from '../BusinessUnitList'
 import React, { useState } from 'react'
 
 import Select from 'components/layout/inputs/Select'
 import { sortByDisplayName } from 'utils/strings'
+
+import { IBusinessUnit, IBusinessUnitVenue } from '../BusinessUnitList'
 
 interface IBusinessUnitFormProps {
   className?: string

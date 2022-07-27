@@ -1,13 +1,13 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
+import PropTypes from 'prop-types'
 import React, { useCallback, useState } from 'react'
+import { useDispatch } from 'react-redux'
+
+import * as pcapi from 'repository/pcapi/pcapi'
+import { showNotification } from 'store/reducers/notificationReducer'
 
 import AllocineProviderFormDialog from '../AllocineProviderFormDialog/AllocineProviderFormDialog'
-import PropTypes from 'prop-types'
-import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
-import { showNotification } from 'store/reducers/notificationReducer'
-import { useDispatch } from 'react-redux'
+import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 const AllocineProviderItem = ({
   afterVenueProviderEdit,

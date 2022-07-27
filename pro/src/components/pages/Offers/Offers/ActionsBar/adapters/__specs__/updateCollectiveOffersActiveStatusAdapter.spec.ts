@@ -1,4 +1,5 @@
 import { api } from 'apiClient/api'
+
 import { updateCollectiveOffersActiveStatusAdapter } from '../updateCollectiveOffersActiveStatusAdapter'
 
 describe('updateCollectiveOffersActiveStatusAdapter', () => {

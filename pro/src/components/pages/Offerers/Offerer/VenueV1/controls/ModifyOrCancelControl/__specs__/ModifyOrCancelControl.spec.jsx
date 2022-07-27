@@ -1,8 +1,8 @@
-import { Field, Form } from 'react-final-form'
+import { mount } from 'enzyme'
 import React, { Fragment } from 'react'
+import { Field, Form } from 'react-final-form'
 
 import ModifyOrCancelControl from '../ModifyOrCancelControl'
-import { mount } from 'enzyme'
 
 const history = {
   push: jest.fn(),

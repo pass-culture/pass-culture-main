@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { MemoryRouter } from 'react-router'
 
 import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { MemoryRouter } from 'react-router'
-import React from 'react'
-import Tabs from '../Tabs'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
+
+import Tabs from '../Tabs'
 
 describe('src | new_components | Tabs', () => {
   it('should render tabs', () => {

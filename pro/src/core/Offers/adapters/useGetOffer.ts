@@ -1,7 +1,7 @@
+import { api } from 'apiClient/api'
+import { IOfferIndividual } from 'core/Offers/types'
 import { TUseAdapterFailure, useAdapter } from 'hooks'
 
-import { IOfferIndividual } from 'core/Offers/types'
-import { api } from 'apiClient/api'
 import { serializeOfferApi } from './serializers'
 
 type GetOfferAdapter = Adapter<string, IOfferIndividual, null>

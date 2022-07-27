@@ -1,5 +1,6 @@
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { api } from 'apiClient/api'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+
 import getVenueCollectiveDataAdapter from '../getVenueCollectiveDataAdapter'
 
 describe('getVenueCollectiveDataAdapter', () => {

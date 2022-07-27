@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react'
-
-import CollectiveDataForm from './CollectiveDataForm'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
-import GoBackLink from 'new_components/GoBackLink'
-import { SelectOption } from 'custom_types/form'
-import Spinner from 'components/layout/Spinner'
-import { Title } from 'ui-kit'
-import getCulturalPartnerAdapter from './adapters/getCulturalPartnerAdapter'
-import { getCulturalPartnersAdapter } from '../adapters'
-import { getEducationalDomainsAdapter } from 'core/OfferEducational'
-import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
-import { getVenueEducationalStatusesAdapter } from './adapters'
-import styles from './CollectiveDataEdition.module.scss'
-import useNotification from 'components/hooks/useNotification'
 import { useParams } from 'react-router-dom'
+
+import { GetCollectiveVenueResponseModel } from 'apiClient/v1'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
+import { getEducationalDomainsAdapter } from 'core/OfferEducational'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { SelectOption } from 'custom_types/form'
+import GoBackLink from 'new_components/GoBackLink'
+import { Title } from 'ui-kit'
+
+import { getCulturalPartnersAdapter } from '../adapters'
 import { venueHasCollectiveInformation } from '../EACInformation/utils/venueHasCollectiveInformation'
+
+import { getVenueEducationalStatusesAdapter } from './adapters'
+import getCulturalPartnerAdapter from './adapters/getCulturalPartnerAdapter'
+import getVenueCollectiveDataAdapter from './adapters/getVenueCollectiveDataAdapter'
+import styles from './CollectiveDataEdition.module.scss'
+import CollectiveDataForm from './CollectiveDataForm'
 
 const fetchCulturalPartnerIfVenueHasNoCollectiveData = async (
   venueResponse: GetCollectiveVenueResponseModel

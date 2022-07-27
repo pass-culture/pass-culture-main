@@ -1,8 +1,10 @@
-import { Banner } from 'ui-kit'
-import BusinessUnitCard from './BusinessUnitCard'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import React from 'react'
+
+import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import { Banner } from 'ui-kit'
+
+import BusinessUnitCard from './BusinessUnitCard'
 import styles from './BusinessUnitList.module.scss'
 
 export interface IBusinessUnitVenue {

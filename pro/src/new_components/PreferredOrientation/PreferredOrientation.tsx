@@ -1,6 +1,7 @@
+import React from 'react'
+
 import { ReactComponent as LandscapePreferredOrientation } from './landscape-preferred-orientation.svg'
 import { ReactComponent as PortraitPreferredOrientation } from './portrait-preferred-orientation.svg'
-import React from 'react'
 import style from './PreferredOrientation.module.scss'
 
 export type IPreferredOrientationProps = {

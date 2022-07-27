@@ -1,19 +1,21 @@
-import React, { PureComponent } from 'react'
-
-import { CheckboxField } from 'ui-kit'
-import { Field } from 'react-final-form'
-import HiddenField from 'components/layout/form/fields/HiddenField'
-import Icon from 'components/layout/Icon'
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
+import React, { PureComponent } from 'react'
+import { Field } from 'react-final-form'
 import ReactTooltip from 'react-tooltip'
 
-import SiretOrCommentFields from '../SiretOrCommentFields'
-import TextField from 'components/layout/form/fields/TextField'
+import HiddenField from 'components/layout/form/fields/HiddenField'
 import TextareaField from 'components/layout/form/fields/TextareaField'
+import TextField from 'components/layout/form/fields/TextField'
+import Icon from 'components/layout/Icon'
 import VenueLabel from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueLabel'
 import VenueType from 'components/pages/Offerers/Offerer/VenueV1/ValueObjects/VenueType'
+import { CheckboxField } from 'ui-kit'
+
+import SiretOrCommentFields from '../SiretOrCommentFields'
+
 /*eslint no-undef: 0*/
-import classnames from 'classnames'
+
 import getLabelFromList from './utils/getLabelFromList'
 
 class IdentifierFields extends PureComponent {

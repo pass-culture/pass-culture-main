@@ -1,11 +1,11 @@
-import { Link, useHistory, useLocation } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 
 import Logo from 'components/layout/Logo'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
-import PropTypes from 'prop-types'
-import { parse } from 'utils/query-string'
 import { redirectLoggedUser } from 'components/router/helpers'
+import { parse } from 'utils/query-string'
 
 export const SetPasswordConfirm = props => {
   const { currentUser } = props

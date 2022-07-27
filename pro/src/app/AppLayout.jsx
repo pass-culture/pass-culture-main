@@ -1,12 +1,13 @@
-import DomainNameBanner from 'new_components/DomainNameBanner'
-import GoBackLink from 'new_components/GoBackLink'
-import HeaderContainer from 'components/layout/Header/HeaderContainer'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import classnames from 'classnames'
 import PropTypes from 'prop-types'
 import React from 'react'
 import ReactTooltip from 'react-tooltip'
+
+import HeaderContainer from 'components/layout/Header/HeaderContainer'
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
 import TutorialDialogContainer from 'components/layout/Tutorial/TutorialDialogContainer'
-import classnames from 'classnames'
+import DomainNameBanner from 'new_components/DomainNameBanner'
+import GoBackLink from 'new_components/GoBackLink'
 
 const AppLayout = props => {
   const { children, layoutConfig } = props

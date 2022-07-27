@@ -1,8 +1,9 @@
-import { ButtonLink, Title } from 'ui-kit'
+import cn from 'classnames'
+import React from 'react'
 
 import { ReactComponent as BlackPen } from 'icons/ico-pen-black.svg'
-import React from 'react'
-import cn from 'classnames'
+import { ButtonLink, Title } from 'ui-kit'
+
 import style from './SummaryLayout.module.scss'
 
 interface ISummaryLayoutSectionProps {

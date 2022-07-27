@@ -1,3 +1,7 @@
+import { screen } from '@testing-library/react'
+
+import { QueryFieldResponse, queryField } from 'ui-kit/form/__tests-utils__'
+
 import {
   CATEGORY_LABEL,
   DESCRIPTION_LABEL,
@@ -12,9 +16,6 @@ import {
   TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
-import { QueryFieldResponse, queryField } from 'ui-kit/form/__tests-utils__'
-
-import { screen } from '@testing-library/react'
 
 export const elements = {
   queryOffererSelect: (): Promise<QueryFieldResponse<HTMLSelectElement>> =>

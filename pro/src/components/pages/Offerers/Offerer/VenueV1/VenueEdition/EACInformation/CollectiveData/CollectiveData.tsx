@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { GetVenueResponseModel } from 'apiClient/v1'
 import { SelectOption } from 'custom_types/form'
 import { Title } from 'ui-kit'
+
 import { getCulturalPartnersAdapter } from '../../adapters'
 import { getInterventionAreaLabels } from '../utils/getInterventionAreaLabels'
+
 import styles from './CollectiveData.module.scss'
 
 const CollectiveData = ({

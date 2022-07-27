@@ -1,10 +1,12 @@
-import { App } from './App'
-import { compose } from 'redux'
 import { connect } from 'react-redux'
+import { compose } from 'redux'
+
+import { selectFeaturesInitialized } from 'store/features/selectors'
 import { loadFeatures } from 'store/features/thunks'
 import { maintenanceSelector } from 'store/selectors/maintenanceSelector'
-import { selectFeaturesInitialized } from 'store/features/selectors'
 import { withRouter } from 'utils/withRouter'
+
+import { App } from './App'
 
 export function mapStateToProps(state) {
   return {

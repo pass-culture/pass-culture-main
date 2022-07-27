@@ -1,7 +1,7 @@
+import { Story } from '@storybook/react'
 import React, { useState } from 'react'
 
 import { CreditInput } from './CreditInput'
-import { Story } from '@storybook/react'
 
 export default {
   title: 'components/CreditInput',

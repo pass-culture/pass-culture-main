@@ -1,17 +1,20 @@
-import { RadioGroup, Select } from 'ui-kit'
+import { useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
+
+import { WithdrawalTypeEnum } from 'apiClient/v1'
+import FormLayout from 'new_components/FormLayout'
+import { RadioGroup, Select } from 'ui-kit'
+
+import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '..'
+import { IOfferIndividualFormValues } from '../../types'
+
 import {
   ticketSentDateOptions,
   ticketWithdrawalHourOptions,
   ticketWithdrawalTypeRadios,
 } from './constants'
 
-import FormLayout from 'new_components/FormLayout'
-import { IOfferIndividualFormValues } from '../../types'
 import { TICKET_WITHDRAWAL_DEFAULT_VALUES } from '.'
-import { WITHDRAWAL_TYPE_COMPATIBLE_SUBCATEGORIE } from '..'
-import { WithdrawalTypeEnum } from 'apiClient/v1'
-import { useFormikContext } from 'formik'
 
 const TicketWithdrawal = (): JSX.Element => {
   const {

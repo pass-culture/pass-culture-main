@@ -1,17 +1,18 @@
-import { Offer, TSearchFilters } from 'core/Offers/types'
 import React, { useCallback } from 'react'
 
-import { Audience } from 'core/shared'
-import { Banner } from 'ui-kit'
 import Icon from 'components/layout/Icon'
-import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
-import NoResults from 'screens/Offers/NoResults'
-import OffersTableBody from './OffersTableBody/OffersTableBody'
-import OffersTableHead from './OffersTableHead/OffersTableHead'
 import Spinner from 'components/layout/Spinner'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
-import { hasSearchFilters } from 'core/Offers/utils'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { MAX_OFFERS_TO_DISPLAY } from 'core/Offers/constants'
+import { Offer, TSearchFilters } from 'core/Offers/types'
+import { hasSearchFilters } from 'core/Offers/utils'
+import { Audience } from 'core/shared'
+import NoResults from 'screens/Offers/NoResults'
+import { Banner } from 'ui-kit'
+
+import OffersTableBody from './OffersTableBody/OffersTableBody'
+import OffersTableHead from './OffersTableHead/OffersTableHead'
 
 type OffersProps = {
   applyFilters: () => void

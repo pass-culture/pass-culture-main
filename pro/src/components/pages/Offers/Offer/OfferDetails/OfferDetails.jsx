@@ -1,24 +1,25 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
+import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import { DEFAULT_FORM_VALUES } from './_constants'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Spinner from 'components/layout/Spinner'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
+import { useGetCategories } from 'core/Offers/adapters'
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
+
+import { DEFAULT_FORM_VALUES } from './_constants'
 import OfferCreation from './OfferCreation'
 import OfferEdition from './OfferEdition'
 import OfferPreview from './OfferPreview'
 import OfferStatusBanner from './OfferStatusBanner'
 import OfferThumbnail from './OfferThumbnail'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import PropTypes from 'prop-types'
-import Spinner from 'components/layout/Spinner'
 import { computeInitialValuesFromOffer } from './utils'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
-import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useGetCategories } from 'core/Offers/adapters'
-import useNotification from 'components/hooks/useNotification'
 
 const OfferDetails = ({
   isCreatingOffer,

@@ -1,4 +1,5 @@
 import React from 'react'
+
 import style from './ImportFromComputerInput.module.scss'
 
 export type IImportFromComputerInputProps = {

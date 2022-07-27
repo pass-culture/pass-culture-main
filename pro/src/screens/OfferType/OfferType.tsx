@@ -1,15 +1,16 @@
-import { Link, useHistory, useLocation } from 'react-router-dom'
 import React, { useState } from 'react'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 
-import FormLayout from 'new_components/FormLayout'
-import { ReactComponent as LibraryIcon } from 'icons/library.svg'
-import { OFFER_TYPES } from 'core/Offers'
-import OfferTypeButton from './OfferTypeButton'
-import { SubmitButton } from 'ui-kit'
-import { ReactComponent as UserIcon } from 'icons/user.svg'
-import { computeOffersUrl } from 'core/Offers/utils'
-import styles from './OfferType.module.scss'
 import useActiveFeature from 'components/hooks/useActiveFeature'
+import { OFFER_TYPES } from 'core/Offers'
+import { computeOffersUrl } from 'core/Offers/utils'
+import { ReactComponent as LibraryIcon } from 'icons/library.svg'
+import { ReactComponent as UserIcon } from 'icons/user.svg'
+import FormLayout from 'new_components/FormLayout'
+import { SubmitButton } from 'ui-kit'
+
+import styles from './OfferType.module.scss'
+import OfferTypeButton from './OfferTypeButton'
 
 const { INDIVIDUAL_OR_DUO, EDUCATIONAL } = OFFER_TYPES
 

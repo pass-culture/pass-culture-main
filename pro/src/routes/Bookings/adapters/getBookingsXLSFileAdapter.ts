@@ -1,6 +1,5 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { GetBookingsXLSFileAdapter } from 'core/Bookings'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<null> = {
   isOk: false,

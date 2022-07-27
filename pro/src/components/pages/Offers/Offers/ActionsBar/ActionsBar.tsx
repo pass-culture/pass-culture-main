@@ -1,22 +1,24 @@
 import React, { useCallback, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
 
-import { Audience } from 'core/shared'
-import ConfirmDialog from 'new_components/ConfirmDialog'
-import { Events } from 'core/FirebaseEvents/constants'
-import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
+import useNotification from 'components/hooks/useNotification'
 import Icon from 'components/layout/Icon'
-import { NBSP } from '../../Offer/Thumbnail/_constants'
-import { RootState } from 'store/reducers'
-import { TSearchFilters } from 'core/Offers/types'
 import { getOffersCountToDisplay } from 'components/pages/Offers/domain/getOffersCountToDisplay'
+import { Events } from 'core/FirebaseEvents/constants'
+import { TSearchFilters } from 'core/Offers/types'
+import { Audience } from 'core/shared'
+import { ReactComponent as EyeIcon } from 'icons/ico-eye-hidden.svg'
+import ConfirmDialog from 'new_components/ConfirmDialog'
 import { searchFiltersSelector } from 'store/offers/selectors'
+import { RootState } from 'store/reducers'
+
+import { NBSP } from '../../Offer/Thumbnail/_constants'
+
 import { updateAllCollectiveOffersActiveStatusAdapter } from './adapters/updateAllCollectiveOffersActiveStatusAdapter'
 import { updateAllOffersActiveStatusAdapter } from './adapters/updateAllOffersActiveStatusAdapter'
 import { updateCollectiveOffersActiveStatusAdapter } from './adapters/updateCollectiveOffersActiveStatusAdapter'
 import { updateOffersActiveStatusAdapter } from './adapters/updateOffersActiveStatusAdapter'
-import { useLocation } from 'react-router-dom'
-import useNotification from 'components/hooks/useNotification'
-import { useSelector } from 'react-redux'
 
 interface IActionBarProps {
   areAllOffersSelected: boolean

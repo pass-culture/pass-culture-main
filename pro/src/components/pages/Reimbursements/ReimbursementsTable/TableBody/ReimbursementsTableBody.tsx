@@ -1,5 +1,7 @@
-import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
 import React from 'react'
+
+import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
+
 import styles from './ReimbursementsTableBody.module.scss'
 
 type ColumnData = {

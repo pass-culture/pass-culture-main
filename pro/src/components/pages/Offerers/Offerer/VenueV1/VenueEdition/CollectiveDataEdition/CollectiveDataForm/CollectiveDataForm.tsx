@@ -1,6 +1,12 @@
 import { FormikProvider, useFormik } from 'formik'
-import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
+import React, { useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
+
+import { GetCollectiveVenueResponseModel, StudentLevels } from 'apiClient/v1'
+import useNotification from 'components/hooks/useNotification'
+import { interventionOptions } from 'core/Venue'
+import { SelectOption } from 'custom_types/form'
+import FormLayout from 'new_components/FormLayout'
 import {
   MultiSelectAutocomplete,
   Select,
@@ -8,19 +14,15 @@ import {
   TextArea,
   TextInput,
 } from 'ui-kit'
-import React, { useEffect, useState } from 'react'
 
+import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
+import RouteLeavingGuardVenueCollectiveDataEdition from '../RouteLeavingGuardVenueCollectiveDataEdition'
+
+import styles from './CollectiveDataForm.module.scss'
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from './initialValues'
 import { CollectiveDataFormValues } from './type'
-import FormLayout from 'new_components/FormLayout'
-import RouteLeavingGuardVenueCollectiveDataEdition from '../RouteLeavingGuardVenueCollectiveDataEdition'
-import { SelectOption } from 'custom_types/form'
-import editVenueCollectiveDataAdapter from '../adapters/editVenueCollectiveDataAdapter'
 import { extractInitialValuesFromVenue } from './utils/extractInitialValuesFromVenue'
 import { handleAllFranceDepartmentOptions } from './utils/handleAllFranceDepartmentOptions'
-import { interventionOptions } from 'core/Venue'
-import styles from './CollectiveDataForm.module.scss'
-import useNotification from 'components/hooks/useNotification'
 import { validationSchema } from './validationSchema'
 
 const studentOptions = [

@@ -1,11 +1,11 @@
+import { api } from 'apiClient/api'
+import { TSearchFilters } from 'core/Offers/types'
+import { serializeApiFilters } from 'core/Offers/utils'
+
 import {
   computeAllActivationSuccessMessage,
   computeAllDeactivationSuccessMessage,
 } from './utils'
-
-import { TSearchFilters } from 'core/Offers/types'
-import { api } from 'apiClient/api'
-import { serializeApiFilters } from 'core/Offers/utils'
 
 type UpdateAllCollectiveOffersActiveStatusAdapter = Adapter<
   {

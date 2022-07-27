@@ -1,14 +1,15 @@
 import {
+  OfferAddressType,
+  StudentLevels,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
+
+import {
   EducationalOfferType,
   IOfferEducationalFormValues,
   OfferEducationalStockFormValues,
   VisibilityFormValues,
 } from './types'
-import {
-  OfferAddressType,
-  StudentLevels,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
 
 export const DEFAULT_EAC_FORM_VALUES: IOfferEducationalFormValues = {
   category: '',

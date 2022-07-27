@@ -1,17 +1,18 @@
-import {
-  DEFAULT_FORM_VALUES,
-  EDITED_OFFER_READ_ONLY_FIELDS,
-} from '../_constants'
+import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
+
+import Spinner from 'components/layout/Spinner'
 import {
   isFieldReadOnlyForSynchronizedOffer,
   isSynchronizedOffer,
 } from 'components/pages/Offers/domain/localProvider'
-
-import OfferForm from '../OfferForm'
-import PropTypes from 'prop-types'
-import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'core/Offers/utils'
+
+import {
+  DEFAULT_FORM_VALUES,
+  EDITED_OFFER_READ_ONLY_FIELDS,
+} from '../_constants'
+import OfferForm from '../OfferForm'
 
 const OfferEdition = ({
   categories,

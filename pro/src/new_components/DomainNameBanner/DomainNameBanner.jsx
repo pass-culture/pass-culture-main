@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect } from 'react'
-import { parse, stringify } from 'utils/query-string'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import { Banner } from 'ui-kit'
 import { setDisplayDomainBanner } from 'store/app/actions'
+import { Banner } from 'ui-kit'
+import { parse, stringify } from 'utils/query-string'
 
 export const DomainNameBanner = () => {
   const dispatch = useDispatch()

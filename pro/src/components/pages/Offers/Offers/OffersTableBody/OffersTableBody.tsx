@@ -1,6 +1,8 @@
-import { Audience } from 'core/shared'
-import OfferItem from '../OfferItem/OfferItem'
 import React from 'react'
+
+import { Audience } from 'core/shared'
+
+import OfferItem from '../OfferItem/OfferItem'
 
 type OffersTableBodyProps = {
   areAllOffersSelected: boolean

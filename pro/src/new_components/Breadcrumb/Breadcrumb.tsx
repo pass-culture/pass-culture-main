@@ -1,8 +1,10 @@
-import { ReactComponent as BreadcumbSeparator } from 'icons/ico-breadcrumb-arrow-right.svg'
-import { Link } from 'react-router-dom'
-import React from 'react'
-import type { Step } from './types'
 import cn from 'classnames'
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+import { ReactComponent as BreadcumbSeparator } from 'icons/ico-breadcrumb-arrow-right.svg'
+
+import type { Step } from './types'
 
 export enum BreadcrumbStyle {
   DEFAULT = 'default',

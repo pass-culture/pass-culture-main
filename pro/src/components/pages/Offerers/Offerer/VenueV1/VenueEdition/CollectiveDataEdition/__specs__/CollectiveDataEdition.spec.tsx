@@ -1,24 +1,24 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-import * as useNotification from 'components/hooks/useNotification'
-
-import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
-import { domtomOptions, mainlandOptions } from 'core/Venue'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import type { History } from 'history'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router'
 
+import { api } from 'apiClient/api'
+import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import CollectiveDataEdition from '../CollectiveDataEdition'
+import * as useNotification from 'components/hooks/useNotification'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import type { History } from 'history'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { Router } from 'react-router'
-import { api } from 'apiClient/api'
+import { domtomOptions, mainlandOptions } from 'core/Venue'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
-import { createBrowserHistory } from 'history'
-import userEvent from '@testing-library/user-event'
+
+import CollectiveDataEdition from '../CollectiveDataEdition'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getEducationalDomains: jest.fn(),

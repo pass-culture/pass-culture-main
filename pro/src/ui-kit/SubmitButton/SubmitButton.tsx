@@ -1,7 +1,7 @@
+import cx from 'classnames'
 import React, { FC, ForwardedRef } from 'react'
 
 import { ReactComponent as SpinnerIcon } from './assets/loader.svg'
-import cx from 'classnames'
 import styles from './SubmitButton.module.scss'
 
 interface ISubmitButtonProps {

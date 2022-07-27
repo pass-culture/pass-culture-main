@@ -1,11 +1,11 @@
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+
 import {
   isFeatureActive,
   selectFeaturesInitialized,
 } from 'store/features/selectors'
-import { useDispatch, useSelector } from 'react-redux'
-
 import { loadFeatures } from 'store/features/thunks'
-import { useEffect } from 'react'
 
 const useActiveFeature = featureName => {
   const isActive = useSelector(state => isFeatureActive(state, featureName))

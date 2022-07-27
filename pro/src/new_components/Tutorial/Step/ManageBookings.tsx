@@ -1,10 +1,13 @@
+import React from 'react'
+
 import { ReactComponent as BookingsSvg } from 'components/layout/Header/assets/bookings.svg'
 import { ReactComponent as CounterSvg } from 'components/layout/Header/assets/counter.svg'
-import { ReactComponent as DownArrow } from './assets/down-arrow.svg'
-import { IStepComponentProps } from '../types'
 import { ReactComponent as OffersSvg } from 'components/layout/Header/assets/offers.svg'
-import React from 'react'
 import { ReactComponent as RefundsSvg } from 'components/layout/Header/assets/refunds.svg'
+
+import { IStepComponentProps } from '../types'
+
+import { ReactComponent as DownArrow } from './assets/down-arrow.svg'
 import { ReactComponent as UpArrow } from './assets/up-arrow.svg'
 import styles from './Step.module.scss'
 

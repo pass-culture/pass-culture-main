@@ -1,7 +1,9 @@
-import FieldErrors from 'components/layout/form/FieldErrors'
-import LocationViewer from '../LocationViewer'
-import { addressFieldRender } from '../AddressField'
 import { shallow } from 'enzyme'
+
+import FieldErrors from 'components/layout/form/FieldErrors'
+
+import { addressFieldRender } from '../AddressField'
+import LocationViewer from '../LocationViewer'
 
 describe('src | components | pages | Venue | fields | AddressField', () => {
   describe('addressFieldRender', () => {

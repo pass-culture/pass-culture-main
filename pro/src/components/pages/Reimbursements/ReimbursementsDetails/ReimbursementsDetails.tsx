@@ -1,16 +1,17 @@
+import React, { useEffect, useState } from 'react'
+
+import ButtonDownloadCSV from 'new_components/ButtonDownloadCSV'
+import { ButtonLink } from 'ui-kit/Button'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { API_URL } from 'utils/config'
 import {
   FORMAT_ISO_DATE_ONLY,
   formatBrowserTimezonedDateAsUTC,
   getToday,
 } from 'utils/date'
-import React, { useEffect, useState } from 'react'
-
-import { API_URL } from 'utils/config'
-import ButtonDownloadCSV from 'new_components/ButtonDownloadCSV'
-import { ButtonLink } from 'ui-kit/Button'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import DetailsFilters from './DetailsFilters'
 import { stringify } from 'utils/query-string'
+
+import DetailsFilters from './DetailsFilters'
 
 type venuesOptionsType = [
   {

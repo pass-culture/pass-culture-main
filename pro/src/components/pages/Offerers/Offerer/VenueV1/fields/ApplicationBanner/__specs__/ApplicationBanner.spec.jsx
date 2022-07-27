@@ -1,6 +1,7 @@
-import ApplicationBanner from '../ApplicationBanner'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import ApplicationBanner from '../ApplicationBanner'
 
 describe('when offerer has no bank informations', () => {
   it('should render current application detail', () => {

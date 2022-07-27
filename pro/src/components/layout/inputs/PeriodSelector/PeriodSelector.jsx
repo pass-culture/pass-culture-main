@@ -1,9 +1,9 @@
-import DatePicker, { registerLocale } from 'react-datepicker'
+import fr from 'date-fns/locale/fr'
+import PropTypes from 'prop-types'
 import React, { useRef } from 'react'
+import DatePicker, { registerLocale } from 'react-datepicker'
 
 import InputWithCalendar from './InputWithCalendar'
-import PropTypes from 'prop-types'
-import fr from 'date-fns/locale/fr'
 
 registerLocale('fr', fr)
 

@@ -1,10 +1,11 @@
 import '@testing-library/jest-dom'
 
+import { fireEvent, screen, waitFor } from '@testing-library/react'
+
 import {
   createImageFile,
   renderThumbnail,
 } from 'components/pages/Offers/Offer/Thumbnail/__specs__/setup'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
 
 // The tests files have been separated in two because this mock
 // breaks other tests

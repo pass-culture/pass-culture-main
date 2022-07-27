@@ -1,19 +1,21 @@
-import React, { useEffect, useMemo, useState } from 'react'
-
-import BankInformations from './BankInformations'
-import { Banner } from 'ui-kit'
-import { ReactComponent as ClosedEyeSvg } from './assets/ico-eye-close.svg'
-import { Events } from 'core/FirebaseEvents/constants'
-import Icon from 'components/layout/Icon'
-import InvalidBusinessUnits from './InvalidBusinessUnits'
-import { Link } from 'react-router-dom'
-import MissingBusinessUnits from './MissingBusinessUnits'
-import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
 import PropTypes from 'prop-types'
-import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
-import Select from 'components/layout/inputs/Select'
-import useActiveFeature from 'components/hooks/useActiveFeature'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import Icon from 'components/layout/Icon'
+import Select from 'components/layout/inputs/Select'
+import { Events } from 'core/FirebaseEvents/constants'
+import { Banner } from 'ui-kit'
+
+import { STEP_OFFERER_HASH } from '../HomepageBreadcrumb'
+
+import { ReactComponent as ClosedEyeSvg } from './assets/ico-eye-close.svg'
+import { ReactComponent as OpenedEyeSvg } from './assets/ico-eye-open.svg'
+import BankInformations from './BankInformations'
+import InvalidBusinessUnits from './InvalidBusinessUnits'
+import MissingBusinessUnits from './MissingBusinessUnits'
 
 const hasRejectedOrDraftBankInformation = offerer =>
   Boolean(

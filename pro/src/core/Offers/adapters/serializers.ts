@@ -8,7 +8,6 @@ import {
   IOfferIndividualStock,
   IOfferIndividualVenue,
 } from 'core/Offers/types'
-
 import { AccessiblityEnum } from 'core/shared'
 
 export const serializeOffererApi = (

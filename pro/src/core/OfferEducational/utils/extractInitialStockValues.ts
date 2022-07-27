@@ -9,7 +9,6 @@ import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-
 import { getLocalDepartementDateTimeFromUtc } from 'utils/timezone'
 
 export const extractInitialStockValues = (

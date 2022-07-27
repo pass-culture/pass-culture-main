@@ -1,13 +1,14 @@
 import React, { useCallback, useState } from 'react'
 
+import useNotification from 'components/hooks/useNotification'
+import Icon from 'components/layout/Icon'
+import { useModal } from 'hooks/useModal'
+import { deleteVenueImage } from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'components/layout/Icon'
-import { VenueImageDeleteModal } from './VenueImageDeleteModal'
-import { deleteVenueImage } from 'repository/pcapi/pcapi'
+
 import styles from './ButtonImageDelete.module.scss'
-import { useModal } from 'hooks/useModal'
-import useNotification from 'components/hooks/useNotification'
+import { VenueImageDeleteModal } from './VenueImageDeleteModal'
 
 type ButtonImageDeleteProps = {
   venueId: string

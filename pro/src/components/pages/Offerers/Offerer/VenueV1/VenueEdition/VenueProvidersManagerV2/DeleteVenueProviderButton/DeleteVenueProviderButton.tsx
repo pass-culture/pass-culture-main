@@ -1,12 +1,14 @@
 import React, { useCallback, useState } from 'react'
+
+import useNotification from 'components/hooks/useNotification'
+import Icon from 'components/layout/Icon'
+import { useModal } from 'hooks/useModal'
+import { deleteVenueProvider } from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
 import DeleteVenueProviderDialog from '../DeleteVenueProviderDialog/DeleteVenueProviderDialog'
-import Icon from 'components/layout/Icon'
-import { deleteVenueProvider } from 'repository/pcapi/pcapi'
 import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'
-import { useModal } from 'hooks/useModal'
-import useNotification from 'components/hooks/useNotification'
 
 export interface IDeleteVenueProviderButtonProps {
   venueProviderId: string

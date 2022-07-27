@@ -1,16 +1,17 @@
+import React from 'react'
+import { Form } from 'react-final-form'
+import { useHistory } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
+import { addressAndDesignationFromSirenDecorator } from 'components/layout/form/fields/SirenField'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import Titles from 'components/layout/Titles/Titles'
+import GoBackLink from 'new_components/GoBackLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { Form } from 'react-final-form'
-import GoBackLink from 'new_components/GoBackLink'
 import OffererCreationForm from './OffererCreationForm/OffererCreationForm'
 import OffererCreationUnavailable from './OffererCreationUnavailable/OffererCreationUnavailable'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import React from 'react'
-import Titles from 'components/layout/Titles/Titles'
-import { addressAndDesignationFromSirenDecorator } from 'components/layout/form/fields/SirenField'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useHistory } from 'react-router-dom'
-import useNotification from 'components/hooks/useNotification'
 
 interface iOfferer {
   id?: string

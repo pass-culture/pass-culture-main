@@ -1,3 +1,6 @@
+import { Selector } from 'testcafe'
+
+import { isElementInViewport } from './helpers/custom_assertions'
 import { getPathname, goBack } from './helpers/location'
 import {
   navigateToNewOfferAs,
@@ -6,10 +9,8 @@ import {
 } from './helpers/navigations'
 
 /* eslint-disable max-lines */
-import { Selector } from 'testcafe'
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
-import { isElementInViewport } from './helpers/custom_assertions'
 
 const nameInput = Selector('.offer-form [name="name"]')
 const offererInput = Selector('.offer-form [name="offererId"]')

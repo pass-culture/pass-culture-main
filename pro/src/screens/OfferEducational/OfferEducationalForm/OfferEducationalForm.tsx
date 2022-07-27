@@ -1,26 +1,28 @@
-import { Banner, SubmitButton } from 'ui-kit'
+import { useFormikContext } from 'formik'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+
 import {
   IOfferEducationalFormValues,
   IUserOfferer,
   Mode,
 } from 'core/OfferEducational'
-import React, { useEffect, useState } from 'react'
+import { computeOffersUrl } from 'core/Offers/utils'
+import { SelectOption } from 'custom_types/form'
+import { useScrollToFirstErrorAfterSubmit } from 'hooks'
+import FormLayout from 'new_components/FormLayout'
+import { Banner, SubmitButton } from 'ui-kit'
+
+import { IOfferEducationalProps } from '../OfferEducational'
 
 import FormAccessibility from './FormAccessibility'
 import FormContact from './FormContact'
 import FormEventAddress from './FormEventAddress'
-import FormLayout from 'new_components/FormLayout'
 import FormNotifications from './FormNotifications'
 import FormOfferType from './FormOfferType'
 import FormParticipants from './FormParticipants'
 import FormVenue from './FormVenue'
-import { IOfferEducationalProps } from '../OfferEducational'
-import { Link } from 'react-router-dom'
-import { SelectOption } from 'custom_types/form'
-import { computeOffersUrl } from 'core/Offers/utils'
 import styles from './OfferEducationalForm.module.scss'
-import { useFormikContext } from 'formik'
-import { useScrollToFirstErrorAfterSubmit } from 'hooks'
 
 type IOfferEducationalFormProps = Omit<
   IOfferEducationalProps,

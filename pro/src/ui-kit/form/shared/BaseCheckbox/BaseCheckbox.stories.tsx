@@ -1,8 +1,9 @@
+import { Story } from '@storybook/react'
 import React, { ChangeEventHandler } from 'react'
 
-import BaseCheckbox from './BaseCheckbox'
 import { ReactComponent as Icon } from 'icons/ico-calendar.svg'
-import { Story } from '@storybook/react'
+
+import BaseCheckbox from './BaseCheckbox'
 
 export default {
   title: 'ui-kit/forms/shared/BaseCheckbox',

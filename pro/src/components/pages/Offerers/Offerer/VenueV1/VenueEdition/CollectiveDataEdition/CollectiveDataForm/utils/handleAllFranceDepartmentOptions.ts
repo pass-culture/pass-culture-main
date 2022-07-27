@@ -1,3 +1,5 @@
+import type { FormikErrors } from 'formik'
+
 import {
   ALL_FRANCE_OPTION_VALUE,
   MAINLAND_OPTION_VALUE,
@@ -6,7 +8,6 @@ import {
 } from 'core/Venue'
 
 import { CollectiveDataFormValues } from '../type'
-import type { FormikErrors } from 'formik'
 
 const areAllMainlandDepartmentsSelected = (formikValues: string[]) =>
   mainlandValues.every(departmentValue =>

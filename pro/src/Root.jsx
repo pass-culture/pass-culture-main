@@ -1,21 +1,20 @@
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
-import routes, { routesWithoutLayout } from 'utils/routes_map'
+import { Provider, useSelector } from 'react-redux'
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
+
+import AppContainer from 'app/AppContainer'
+import AppLayout from 'app/AppLayout'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import Spinner from 'components/layout/Spinner'
+import NotFound from 'components/pages/Errors/NotFound/NotFound'
+import NavigationLogger from 'components/router/NavigationLogger'
+import UtmTracking from 'components/router/UtmTracker'
+import configureStore from 'store'
 import {
   selectActiveFeatures,
   selectFeaturesInitialized,
 } from 'store/features/selectors'
-
-import AppContainer from 'app/AppContainer'
-import AppLayout from 'app/AppLayout'
-import NavigationLogger from 'components/router/NavigationLogger'
-import NotFound from 'components/pages/Errors/NotFound/NotFound'
-import { Provider } from 'react-redux'
-import Spinner from 'components/layout/Spinner'
-import UtmTracking from 'components/router/UtmTracker'
-import configureStore from 'store'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useSelector } from 'react-redux'
+import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 const { store } = configureStore()
 

@@ -1,18 +1,18 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter, Route } from 'react-router'
+
+import { HTTP_STATUS } from 'api/helpers'
+import { Events } from 'core/FirebaseEvents/constants'
 import * as getSirenDataAdapter from 'core/Offerers/adapters/getSirenDataAdapter'
 import * as pcapi from 'repository/pcapi/pcapi'
-
-import { MemoryRouter, Route } from 'react-router'
-import { render, screen, waitFor } from '@testing-library/react'
-
-import { Events } from 'core/FirebaseEvents/constants'
-import { HTTP_STATUS } from 'api/helpers'
-import { Provider } from 'react-redux'
-import React from 'react'
-import SignupForm from '../SignupForm'
 import { configureTestStore } from 'store/testUtils'
-import userEvent from '@testing-library/user-event'
+
+import SignupForm from '../SignupForm'
 
 const mockLogEvent = jest.fn()
 

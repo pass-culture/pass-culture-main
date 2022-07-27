@@ -1,8 +1,10 @@
-import Card from '../Card'
-import { NavLink } from 'react-router-dom'
-import { ReactComponent as OffersSvg } from 'components/layout/Header/assets/offers.svg'
-import React from 'react'
 import { shallow } from 'enzyme'
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+
+import { ReactComponent as OffersSvg } from 'components/layout/Header/assets/offers.svg'
+
+import Card from '../Card'
 
 describe('src | components | pages | Home | Card', () => {
   let props

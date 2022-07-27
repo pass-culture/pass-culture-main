@@ -1,11 +1,13 @@
-import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
-import { Audience } from 'core/shared'
 import React from 'react'
-import StatusFiltersButton from './StatusFiltersButton'
-import { TSearchFilters } from 'core/Offers/types'
-import { searchFiltersSelector } from 'store/offers/selectors'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 import { useSelector } from 'react-redux'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import { ADMINS_DISABLED_FILTERS_MESSAGE } from 'core/Offers/constants'
+import { TSearchFilters } from 'core/Offers/types'
+import { Audience } from 'core/shared'
+import { searchFiltersSelector } from 'store/offers/selectors'
+
+import StatusFiltersButton from './StatusFiltersButton'
 
 type OffersTableHeadProps = {
   applyFilters: () => void

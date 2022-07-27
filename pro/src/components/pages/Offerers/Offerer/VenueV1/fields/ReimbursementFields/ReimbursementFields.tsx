@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
-import { IAPIOfferer } from 'core/Offerers/types'
-import { IAPIVenue } from 'core/Venue/types'
+
 import Icon from 'components/layout/Icon'
 import InternalBanner from 'components/layout/InternalBanner'
-import PricingPoint from '../PricingPoint/PricingPoint'
+import { IAPIOfferer } from 'core/Offerers/types'
+import { IAPIVenue } from 'core/Venue/types'
 
+import PricingPoint from '../PricingPoint/PricingPoint'
 import ReimbursementPoint from '../ReimbursementPoint/ReimbursementPoint'
+
 import styles from './ReimbursementFields.module.scss'
 
 export interface ReimbursementInterface {

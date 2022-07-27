@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router'
-import Offerers from '../Offerers'
-import { Provider } from 'react-redux'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+
+import Offerers from '../Offerers'
 
 const renderOfferers = async (props, store) => {
   render(

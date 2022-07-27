@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+
+import { configureTestStore } from 'store/testUtils'
 
 import BookingsRecapTable from '../BookingsRecapTable'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { configureTestStore } from 'store/testUtils'
-import userEvent from '@testing-library/user-event'
 
 describe('components | BookingsRecapTable', () => {
   let store

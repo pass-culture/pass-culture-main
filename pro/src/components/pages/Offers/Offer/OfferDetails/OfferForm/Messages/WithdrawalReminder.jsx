@@ -1,6 +1,7 @@
+import React from 'react'
+
 import { Banner } from 'ui-kit'
 import { CGU_URL } from 'utils/config'
-import React from 'react'
 
 const WithdrawalReminder = () => {
   return (

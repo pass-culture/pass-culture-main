@@ -1,8 +1,9 @@
-import { Button, Title } from 'ui-kit'
 import React, { useRef } from 'react'
 
-import { ButtonVariant } from 'ui-kit/Button/types'
 import DialogBox from 'new_components/DialogBox'
+import { Button, Title } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
 import { ReactComponent as Trash } from './assets/trash.svg'
 import styles from './OfferEducationalActionsModal.module.scss'
 

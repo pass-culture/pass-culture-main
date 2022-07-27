@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { ReactComponent as Banner } from './assets/one_year_banner.svg'
+
 import { ReactComponent as CloseButton } from './assets/close.svg'
+import { ReactComponent as Banner } from './assets/one_year_banner.svg'
 import styles from './BannerOneYear.module.scss'
 
 const BannerOneYear = () => {

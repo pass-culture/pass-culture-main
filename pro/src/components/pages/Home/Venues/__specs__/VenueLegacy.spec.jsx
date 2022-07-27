@@ -1,16 +1,15 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { act, render, screen, waitFor, within } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
 import Venue from 'components/pages/Home/Venues/VenueLegacy'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { loadFakeApiVenueStats } from 'utils/fakeApi'
-import userEvent from '@testing-library/user-event'
 
 const renderVenue = async (props, store) => {
   return await act(async () => {

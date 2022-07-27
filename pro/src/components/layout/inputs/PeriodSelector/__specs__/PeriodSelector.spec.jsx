@@ -1,11 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { fireEvent, within } from '@testing-library/react'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, within, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
 
 import PeriodSelector from '../PeriodSelector'
-import React from 'react'
-import userEvent from '@testing-library/user-event'
 
 describe('components | PeriodSelector', () => {
   it('should open second calendar when a date has been selected in first calendar', async () => {

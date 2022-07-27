@@ -1,8 +1,7 @@
-import { AccessiblityEnum, GET_DATA_ERROR_MESSAGE } from 'core/shared'
-
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import { VenueListItemResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { VenueListItemResponseModel } from 'apiClient/v1'
+import { AccessiblityEnum, GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import { TOfferIndividualVenue } from 'core/Venue/types'
 import { useAdapter } from 'hooks'
 
 type Params = void

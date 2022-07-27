@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import { CollectiveStockResponseModel } from 'apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { api } from 'apiClient/api'
 
 export type IPayloadSuccess = {
   stock: CollectiveStockResponseModel | null

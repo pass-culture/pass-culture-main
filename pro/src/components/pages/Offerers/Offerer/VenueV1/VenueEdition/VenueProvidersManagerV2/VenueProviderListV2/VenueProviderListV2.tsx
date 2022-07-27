@@ -1,6 +1,8 @@
-import { IAPIVenue } from 'core/Venue/types'
-import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 import React from 'react'
+
+import { IAPIVenue } from 'core/Venue/types'
+
+import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 import VenueProviderItemV2 from '../VenueProviderItemV2/VenueProviderItemV2'
 
 export interface IVenueProviderListV2Props {

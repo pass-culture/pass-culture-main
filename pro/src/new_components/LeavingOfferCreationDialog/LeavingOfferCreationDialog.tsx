@@ -1,5 +1,6 @@
-import LeavingGuardDialog from 'new_components/LeavingGuardDialog'
 import React from 'react'
+
+import LeavingGuardDialog from 'new_components/LeavingGuardDialog'
 
 const LeavingOfferCreationDialog = (): JSX.Element => {
   return (

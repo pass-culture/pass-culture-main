@@ -1,3 +1,6 @@
+import PropTypes from 'prop-types'
+import React, { useCallback, useRef } from 'react'
+
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -5,10 +8,7 @@ import {
   CROP_BORDER_HEIGHT,
   CROP_BORDER_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import React, { useCallback, useRef } from 'react'
-
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
-import PropTypes from 'prop-types'
 
 const ImageEditorWrapper = ({
   setCroppingRect,

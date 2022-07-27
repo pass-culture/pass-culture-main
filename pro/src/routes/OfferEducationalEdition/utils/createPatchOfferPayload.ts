@@ -1,11 +1,11 @@
+import isEqual from 'lodash.isequal'
+
+import { PatchCollectiveOfferBodyModel } from 'apiClient/v1'
 import {
   IOfferEducationalFormValues,
   parseDuration,
   serializeParticipants,
 } from 'core/OfferEducational'
-
-import { PatchCollectiveOfferBodyModel } from 'apiClient/v1'
-import isEqual from 'lodash.isequal'
 
 const serializer = {
   title: (

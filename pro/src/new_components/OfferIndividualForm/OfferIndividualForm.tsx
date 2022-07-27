@@ -1,20 +1,21 @@
+import { useFormikContext } from 'formik'
+import React from 'react'
+
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import { TOffererName } from 'core/Offerers/types'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import FormLayout from 'new_components/FormLayout'
+import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
 
 import { Accessibility } from './Accessibility'
 import { Categories } from './Categories'
 import { ExternalLink } from './ExternalLink'
-import FormLayout from 'new_components/FormLayout'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
+import { useFilteredVenueList } from './hooks'
 import { Image } from './Image'
 import { Informations } from './Informations'
 import { Notifications } from './Notifications'
-import React from 'react'
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import { TOffererName } from 'core/Offerers/types'
 import { UsefulInformations } from './UsefulInformations'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useFilteredVenueList } from './hooks'
-import { useFormikContext } from 'formik'
 
 interface IOfferIndividualForm {
   offererNames: TOffererName[]

@@ -1,14 +1,5 @@
-import {
-  ALL_BOOKING_STATUS,
-  DEFAULT_OMNISEARCH_CRITERIA,
-  EMPTY_FILTER_VALUE,
-} from './Filters/_constants'
+import PropTypes from 'prop-types'
 import React, { Component, Fragment } from 'react'
-import {
-  sortByBeneficiaryName,
-  sortByBookingDate,
-  sortByOfferName,
-} from './utils/sortingFunctions'
 
 import BeneficiaryCell from './CellsFormatter/BeneficiaryCell'
 import BookingDateCell from './CellsFormatter/BookingDateCell'
@@ -16,15 +7,25 @@ import BookingIsDuoCell from './CellsFormatter/BookingIsDuoCell'
 import BookingOfferCell from './CellsFormatter/BookingOfferCell'
 import BookingStatusCell from './CellsFormatter/BookingStatusCell'
 import BookingTokenCell from './CellsFormatter/BookingTokenCell'
+import {
+  ALL_BOOKING_STATUS,
+  DEFAULT_OMNISEARCH_CRITERIA,
+  EMPTY_FILTER_VALUE,
+} from './Filters/_constants'
 import FilterByBookingStatus from './Filters/FilterByBookingStatus'
 import FilterByOmniSearch from './Filters/FilterByOmniSearch'
 import Header from './Header/Header'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
 /* eslint no-undef: 0 */
-import PropTypes from 'prop-types'
+
 import TableFrame from './Table/TableFrame'
 import filterBookingsRecap from './utils/filterBookingsRecap'
+import {
+  sortByBeneficiaryName,
+  sortByBookingDate,
+  sortByOfferName,
+} from './utils/sortingFunctions'
 
 const FIRST_PAGE_INDEX = 0
 

@@ -1,7 +1,8 @@
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
 import { api } from 'apiClient/api'
-import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 import { isErrorAPIError } from 'apiClient/helpers'
+import { IOfferEducationalFormValues } from 'core/OfferEducational'
+
+import { createCollectiveOfferPayload } from '../utils/createOfferPayload'
 
 type Params = {
   offer: IOfferEducationalFormValues

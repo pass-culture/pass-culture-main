@@ -1,5 +1,6 @@
-import { ReactComponent as OfferCardEuro } from 'icons/offer-card-euro.svg'
 import React from 'react'
+
+import { ReactComponent as OfferCardEuro } from 'icons/offer-card-euro.svg'
 
 const NoInvoicesYet = (): JSX.Element => {
   return (

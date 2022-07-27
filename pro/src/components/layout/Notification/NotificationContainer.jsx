@@ -1,6 +1,7 @@
+import { connect } from 'react-redux'
+
 import Notification from 'components/layout/Notification/Notification'
 import { closeNotification } from 'store/reducers/notificationReducer'
-import { connect } from 'react-redux'
 import { notificationSelector } from 'store/selectors/notificationSelector'
 
 const mapStateToProps = state => ({

@@ -1,10 +1,12 @@
+import cn from 'classnames'
+import React from 'react'
 import { Link } from 'react-router-dom'
+
 import { OfferStatus } from 'apiClient/v1'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
-import React from 'react'
-import { Title } from 'ui-kit'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
-import cn from 'classnames'
+import { Title } from 'ui-kit'
+
 import styles from './CollectiveOfferConfirmation.module.scss'
 
 interface ICollectiveOfferConfirmationProps {

@@ -1,15 +1,15 @@
+import { format } from 'date-fns-tz'
+import React from 'react'
+import { useSelector } from 'react-redux'
+
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
-
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import React from 'react'
-import { RootState } from 'store/reducers'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { format } from 'date-fns-tz'
-import { useSelector } from 'react-redux'
+import { RootState } from 'store/reducers'
+import { FORMAT_DD_MM_YYYY, toDateStrippedOfTimezone } from 'utils/date'
 
 export interface IStockThingSectionProps {
   quantity?: number | null

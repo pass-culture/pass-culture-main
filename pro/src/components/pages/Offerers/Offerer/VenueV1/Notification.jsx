@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react'
-
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
+import React, { useCallback } from 'react'
+import { Link } from 'react-router-dom'
+
 import useNotification from 'components/hooks/useNotification'
 
 const NotificationMessage = ({ venueId, offererId }) => {

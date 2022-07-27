@@ -1,25 +1,28 @@
-import { DEFAULT_PRE_FILTERS, TPreFilters } from 'core/Bookings'
+import classNames from 'classnames'
+import isEqual from 'lodash.isequal'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
 import {
+  DEFAULT_PRE_FILTERS,
+  TPreFilters,
   GetBookingsCSVFileAdapter,
   GetBookingsXLSFileAdapter,
 } from 'core/Bookings'
-import React, { useCallback, useEffect, useState } from 'react'
-
+import { ReactComponent as ResetIcon } from 'icons/reset.svg'
+import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
 import { Events } from '../../../core/FirebaseEvents/constants'
+import { RootState } from '../../../store/reducers'
+
 import FilterByBookingPeriod from './FilterByBookingPeriod'
 import FilterByBookingStatusPeriod from './FilterByBookingStatusPeriod'
 import FilterByEventDate from './FilterByEventDate'
 import FilterByVenue from './FilterByVenue'
-import MultiDownloadButtonsModal from 'new_components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
-import { RootState } from '../../../store/reducers'
-import classNames from 'classnames'
-import isEqual from 'lodash.isequal'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
-import { useSelector } from 'react-redux'
 
 export interface IPreFiltersProps {
   appliedPreFilters: TPreFilters

@@ -1,6 +1,4 @@
-import React, { FunctionComponent, useCallback } from 'react'
-
-import { MouseEventHandler } from 'react'
+import React, { FunctionComponent, useCallback, MouseEventHandler } from 'react'
 
 interface Props {
   className?: string

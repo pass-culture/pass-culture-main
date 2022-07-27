@@ -1,13 +1,13 @@
 import { ClientFunction, Selector } from 'testcafe'
+
+import { getPathname } from './helpers/location'
 import { HOME_URL, navigateToNewOffererAs } from './helpers/navigations'
+import { createUserRole } from './helpers/roles'
+import { fetchSandbox } from './helpers/sandboxes'
 import {
   getSirenRequestMockAs,
   getSirenRequestMockWithNoResult,
 } from './helpers/sirenes'
-
-import { createUserRole } from './helpers/roles'
-import { fetchSandbox } from './helpers/sandboxes'
-import { getPathname } from './helpers/location'
 
 fixture('Structure,')
 

@@ -1,6 +1,7 @@
-import { CollectiveDataFormValues } from '../CollectiveDataForm/type'
-import { GetVenueResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { GetVenueResponseModel } from 'apiClient/v1'
+
+import { CollectiveDataFormValues } from '../CollectiveDataForm/type'
 
 type EditVenueCollectiveDataAdapter = Adapter<
   { venueId: string; values: CollectiveDataFormValues },

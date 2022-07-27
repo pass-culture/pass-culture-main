@@ -1,12 +1,15 @@
-import * as pcapi from 'repository/pcapi/pcapi'
 import React, { useEffect, useState } from 'react'
-import AddVenueProviderButton from '../VenueProvidersManager/AddVenueProviderButton'
-import { IAPIVenue } from 'core/Venue/types'
-import { IVenueProviderApi } from '../VenueProvidersManager/CinemaProviderItem/types'
+
 import Spinner from 'components/layout/Spinner'
+import { IAPIVenue } from 'core/Venue/types'
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import AddVenueProviderButton from '../VenueProvidersManager/AddVenueProviderButton'
+import { IVenueProviderApi } from '../VenueProvidersManager/CinemaProviderItem/types'
+
 import VenueProviderListV2 from './VenueProviderListV2/VenueProviderListV2'
-import VenueProviderStatus from './VenueProviderStatus/VenueProviderStatus'
 import styles from './VenueProvidersManagerV2.module.scss'
+import VenueProviderStatus from './VenueProviderStatus/VenueProviderStatus'
 
 export interface IVenueProvidersManagerV2Props {
   venue: IAPIVenue

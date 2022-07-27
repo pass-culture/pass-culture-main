@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
 
 import Toggle from '../Toggle'
-import userEvent from '@testing-library/user-event'
 
 const renderToggle = props => {
   return render(<Toggle {...props} />)

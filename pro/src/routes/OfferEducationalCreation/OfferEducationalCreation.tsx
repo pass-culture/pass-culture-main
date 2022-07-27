@@ -1,3 +1,10 @@
+import React, { useEffect, useState } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
+import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
@@ -7,21 +14,16 @@ import {
   getOfferersAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
-import React, { useEffect, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
-
-import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
-import OfferEducationalScreen from 'screens/OfferEducational'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
-import Spinner from 'components/layout/Spinner'
-import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
+import OfferEducationalScreen from 'screens/OfferEducational'
+import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+
 import postCollectiveOfferAdapter from './adapters/postCollectiveOfferAdapter'
+
 // @debt deprecated "Mathilde: should not import utility from legacy page"
-import { queryParamsFromOfferer } from 'components/pages/Offers/utils/queryParamsFromOfferer'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,

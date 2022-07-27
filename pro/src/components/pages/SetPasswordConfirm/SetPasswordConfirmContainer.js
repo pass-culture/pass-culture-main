@@ -1,6 +1,8 @@
-import { SetPasswordConfirm } from './SetPasswordConfirm'
 import { connect } from 'react-redux'
+
 import { selectCurrentUser } from 'store/user/selectors'
+
+import { SetPasswordConfirm } from './SetPasswordConfirm'
 
 export const mapStateToProps = state => {
   return {

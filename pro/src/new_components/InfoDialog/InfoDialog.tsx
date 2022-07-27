@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
-import DialogBox from 'new_components/DialogBox'
+
 import Icon from 'components/layout/Icon'
+import DialogBox from 'new_components/DialogBox'
 
 import styles from './InfoDialog.module.scss'
 

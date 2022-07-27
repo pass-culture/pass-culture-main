@@ -1,7 +1,7 @@
-import { usePagination, useSortBy, useTable } from 'react-table'
-
 import PropTypes from 'prop-types'
 import React from 'react'
+import { usePagination, useSortBy, useTable } from 'react-table'
+
 import TableWrapper from './TableWrapper'
 
 const TableFrame = ({

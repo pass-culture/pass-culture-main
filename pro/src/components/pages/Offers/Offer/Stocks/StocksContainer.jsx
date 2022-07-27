@@ -1,6 +1,8 @@
-import Stocks from './Stocks'
 import { connect } from 'react-redux'
+
 import { showNotification } from 'store/reducers/notificationReducer'
+
+import Stocks from './Stocks'
 
 const mapDispatchToProps = dispatch => ({
   showErrorNotification: () =>

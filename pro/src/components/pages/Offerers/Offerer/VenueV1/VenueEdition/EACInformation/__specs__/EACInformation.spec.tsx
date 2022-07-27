@@ -1,14 +1,15 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-
-import EACInformation from '../EACInformation'
-import { GetVenueResponseModel } from 'apiClient/v1'
 import type { History } from 'history'
+import { createBrowserHistory } from 'history'
 import React from 'react'
 import { Router } from 'react-router-dom'
+
 import { api } from 'apiClient/api'
-import { createBrowserHistory } from 'history'
+import { GetVenueResponseModel } from 'apiClient/v1'
+
+import EACInformation from '../EACInformation'
 
 jest.mock('apiClient/api', () => ({
   api: {

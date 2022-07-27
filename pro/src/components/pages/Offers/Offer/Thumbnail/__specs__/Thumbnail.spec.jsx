@@ -1,5 +1,12 @@
 import '@testing-library/jest-dom'
 
+import { fireEvent, screen, waitFor } from '@testing-library/react'
+
+import {
+  createFile,
+  createImageFile,
+  renderThumbnail,
+} from 'components/pages/Offers/Offer/Thumbnail/__specs__/setup'
 import {
   CANVAS_HEIGHT,
   CANVAS_WIDTH,
@@ -7,13 +14,6 @@ import {
   CROP_BORDER_HEIGHT,
   CROP_BORDER_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import {
-  createFile,
-  createImageFile,
-  renderThumbnail,
-} from 'components/pages/Offers/Offer/Thumbnail/__specs__/setup'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
-
 import CanvasTools from 'new_components/ImageEditor/canvas.js'
 
 jest.mock('new_components/ImageEditor/canvas.js')

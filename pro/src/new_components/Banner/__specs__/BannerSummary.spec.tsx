@@ -2,9 +2,9 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import React from 'react'
 
 import { BannerSummary } from '../'
-import React from 'react'
 
 describe('new_components:BannerSummary', () => {
   it('renders component successfully', async () => {

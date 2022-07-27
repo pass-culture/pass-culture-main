@@ -1,8 +1,9 @@
-import { getBooking, submitInvalidate, submitValidate } from './adapters'
-
-import { DeskScreen } from 'screens/Desk'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
 import React from 'react'
+
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { DeskScreen } from 'screens/Desk'
+
+import { getBooking, submitInvalidate, submitValidate } from './adapters'
 
 const Desk = (): JSX.Element => (
   <>

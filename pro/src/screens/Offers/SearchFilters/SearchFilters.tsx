@@ -1,3 +1,11 @@
+import { endOfDay } from 'date-fns'
+import { utcToZonedTime } from 'date-fns-tz'
+import React, { FormEvent, MouseEventHandler, useCallback } from 'react'
+
+import Icon from 'components/layout/Icon'
+import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
+import Select from 'components/layout/inputs/Select'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
 import {
   ALL_CATEGORIES_OPTION,
   ALL_VENUES_OPTION,
@@ -6,21 +14,14 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from 'core/Offers/constants'
 import { Offerer, Option, TSearchFilters } from 'core/Offers/types'
-import React, { FormEvent, MouseEventHandler, useCallback } from 'react'
-import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
-
+import { hasSearchFilters } from 'core/Offers/utils'
 import { Audience } from 'core/shared'
+import { ReactComponent as ResetIcon } from 'icons/reset.svg'
 import { ButtonLink } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import Icon from 'components/layout/Icon'
-import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
-import { ReactComponent as ResetIcon } from 'icons/reset.svg'
-import Select from 'components/layout/inputs/Select'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import { endOfDay } from 'date-fns'
-import { hasSearchFilters } from 'core/Offers/utils'
+import { formatBrowserTimezonedDateAsUTC, getToday } from 'utils/date'
+
 import styles from './SearchFilters.module.scss'
-import { utcToZonedTime } from 'date-fns-tz'
 
 interface ISearchFiltersProps {
   applyFilters: () => void

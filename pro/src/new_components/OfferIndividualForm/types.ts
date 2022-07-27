@@ -1,5 +1,5 @@
-import { IAccessibiltyFormValues } from 'core/shared'
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import { IAccessibiltyFormValues } from 'core/shared'
 
 export interface IOfferIndividualFormValues {
   isEvent?: boolean

@@ -1,25 +1,26 @@
-import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
-import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+
+import { api } from 'apiClient/api'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
+import { DEFAULT_SEARCH_FILTERS, hasSearchFilters } from 'core/Offers'
+import { getOffererAdapter } from 'core/Offers/adapters'
+import { useQuerySearchFilters } from 'core/Offers/hooks'
+import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { computeOffersUrl } from 'core/Offers/utils'
+import { Audience } from 'core/shared'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
-
-import { Audience } from 'core/shared'
 import OffersScreen from 'screens/Offers'
-import Spinner from 'components/layout/Spinner'
-import { api } from 'apiClient/api'
-import { computeOffersUrl } from 'core/Offers/utils'
-import { getFilteredOffersAdapter } from './adapters'
-import { getOffererAdapter } from 'core/Offers/adapters'
+import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { sortByDisplayName } from 'utils/strings'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-import useNotification from 'components/hooks/useNotification'
-import { useQuerySearchFilters } from 'core/Offers/hooks'
+
+import { getFilteredOffersAdapter } from './adapters'
 
 const Offers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()

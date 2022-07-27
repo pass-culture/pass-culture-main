@@ -1,15 +1,14 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
 import SelectAutocomplete, {
   SelectAutocompleteProps,
 } from '../SelectAutocomplete'
-import { render, screen, waitFor } from '@testing-library/react'
-
-import { Formik } from 'formik'
-import React from 'react'
-import userEvent from '@testing-library/user-event'
 
 describe('src | ui-kit | form | SelectAutocomplete', () => {
   describe('render', () => {

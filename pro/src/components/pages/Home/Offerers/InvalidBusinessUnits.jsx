@@ -1,7 +1,8 @@
-import Icon from 'components/layout/Icon'
-import InternalBanner from 'components/layout/InternalBanner'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import Icon from 'components/layout/Icon'
+import InternalBanner from 'components/layout/InternalBanner'
 
 const InvalidBusinessUnits = ({ offererId, hasTitle = true }) => {
   const businessUnitRoutePath = `/structures/${offererId}/point-de-remboursement/`

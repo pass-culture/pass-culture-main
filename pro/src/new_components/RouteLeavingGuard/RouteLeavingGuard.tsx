@@ -1,10 +1,10 @@
 import React, { ReactNode, useCallback, useState } from 'react'
-import { Redirect, useHistory } from 'react-router-dom'
+import { Redirect, useHistory, Prompt } from 'react-router-dom'
 
+import DialogBox from 'new_components/DialogBox/DialogBox'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import DialogBox from 'new_components/DialogBox/DialogBox'
-import { Prompt } from 'react-router-dom'
+
 import styles from './RouteLeavingGuard.module.scss'
 
 export interface IShouldBlockNavigationReturnValue {

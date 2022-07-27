@@ -1,20 +1,20 @@
 import '@testing-library/jest-dom'
 import 'react-router-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import { EducationalInstitutionResponseModel } from 'apiClient/v1'
 import * as useNotification from 'components/hooks/useNotification'
+import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
+import { configureTestStore } from 'store/testUtils'
 
 import CollectiveOfferVisibility, {
   CollectiveOfferVisibilityProps,
 } from '../CollectiveOfferVisibility'
-import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
-import { render, screen, waitFor } from '@testing-library/react'
-
-import { EducationalInstitutionResponseModel } from 'apiClient/v1'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { configureTestStore } from 'store/testUtils'
-import userEvent from '@testing-library/user-event'
 
 const mockHistoryPush = jest.fn()
 

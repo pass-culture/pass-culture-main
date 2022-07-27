@@ -1,16 +1,18 @@
 import React, { useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
+import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
+import Icon from 'components/layout/Icon'
+import { TPreFilters } from 'core/Bookings'
+import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as DownloadSvg } from 'icons/ico-download.svg'
+import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
+
+import { RootState } from '../../store/reducers'
+
 import { ReactComponent as DropDownIcon } from './assets/dropdown-disclosure-down-w.svg'
 import { ReactComponent as DropUpIcon } from './assets/dropdown-disclosure-up-w.svg'
-import { Events } from 'core/FirebaseEvents/constants'
-import Icon from 'components/layout/Icon'
-import { ReactComponent as LinkIcon } from 'icons/ico-external-site-filled.svg'
-import { RootState } from '../../store/reducers'
-import { TPreFilters } from 'core/Bookings'
 import style from './MultiDownloadButtonsModal.module.scss'
-import useOnClickOrFocusOutside from 'components/hooks/useOnClickOrFocusOutside'
-import { useSelector } from 'react-redux'
 
 interface MultiDownloadButtonsModalType {
   isDownloading: boolean

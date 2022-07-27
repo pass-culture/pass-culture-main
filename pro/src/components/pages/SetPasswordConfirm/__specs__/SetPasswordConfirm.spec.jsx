@@ -1,14 +1,15 @@
 import '@testing-library/jest-dom'
 
-import { Route, Router } from 'react-router'
 import { render, screen, waitFor } from '@testing-library/react'
-
-import { Provider } from 'react-redux'
-import React from 'react'
-import SetPasswordConfirmContainer from '../SetPasswordConfirmContainer'
-import { configureTestStore } from 'store/testUtils'
-import { createBrowserHistory } from 'history'
 import userEvent from '@testing-library/user-event'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { Route, Router } from 'react-router'
+
+import { configureTestStore } from 'store/testUtils'
+
+import SetPasswordConfirmContainer from '../SetPasswordConfirmContainer'
 
 const renderSetPassword = (store, history) =>
   render(

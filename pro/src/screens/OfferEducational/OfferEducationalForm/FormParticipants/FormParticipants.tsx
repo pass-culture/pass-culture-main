@@ -1,6 +1,8 @@
-import { CheckboxGroup } from 'ui-kit'
-import FormLayout from 'new_components/FormLayout'
 import React from 'react'
+
+import FormLayout from 'new_components/FormLayout'
+import { CheckboxGroup } from 'ui-kit'
+
 import { participantsOptions } from './participantsOptions'
 
 const FormParticipants = ({

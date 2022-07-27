@@ -1,6 +1,5 @@
-import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
-
 import { BOOKING_STATUS } from 'core/Bookings'
+import { FORMAT_DD_MM_YYYY, FORMAT_DD_MM_YYYY_HH_mm } from 'utils/date'
 
 const BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {

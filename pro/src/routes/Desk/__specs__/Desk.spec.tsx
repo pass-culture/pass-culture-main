@@ -1,5 +1,11 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React, { useState } from 'react'
+import { MemoryRouter } from 'react-router'
+
+import { apiV2 } from 'api/api'
 import { ApiError, HTTP_STATUS } from 'api/helpers'
 import {
   BookingFormula,
@@ -7,14 +13,9 @@ import {
   GetBookingResponse,
 } from 'api/v2/gen'
 import { IDeskProps, MESSAGE_VARIANT } from 'screens/Desk'
-import React, { useState } from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
-
 import { Button } from 'ui-kit'
+
 import Desk from '../Desk'
-import { MemoryRouter } from 'react-router'
-import { apiV2 } from 'api/api'
-import userEvent from '@testing-library/user-event'
 
 const TestScreen = ({
   getBooking,

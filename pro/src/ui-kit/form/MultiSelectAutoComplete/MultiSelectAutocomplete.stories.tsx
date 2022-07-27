@@ -1,8 +1,9 @@
+import { Story } from '@storybook/react'
 import { Formik } from 'formik'
+import React from 'react'
+
 import MultiSelectAutocomplete from './MultiSelectAutocomplete'
 import type { MultiSelectAutocompleteProps } from './MultiSelectAutocomplete'
-import React from 'react'
-import { Story } from '@storybook/react'
 
 export default {
   title: 'ui-kit/forms/MultiSelectAutocomplete',

@@ -1,7 +1,7 @@
 import { mount, shallow } from 'enzyme'
+import React from 'react'
 
 import Insert from '../Insert'
-import React from 'react'
 
 describe('src | components | layout | Insert', () => {
   let props

@@ -1,7 +1,8 @@
+import { api } from 'apiClient/api'
 import { ApiError } from 'apiClient/v1'
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
-import { api } from 'apiClient/api'
+
 import { cancelCollectiveBookingAdapter } from '../cancelCollectiveBookingAdapter'
 
 describe('cancelCollectiveBookingAdapter', () => {

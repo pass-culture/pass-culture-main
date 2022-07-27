@@ -2,14 +2,15 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-
-import { Banner } from 'ui-kit'
-import { IUserIdentityFormProps } from '../UserIdentityForm'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { UserIdentityForm } from '../'
-import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+
+import { configureTestStore } from 'store/testUtils'
+import { Banner } from 'ui-kit'
+
+import { UserIdentityForm } from '../'
+import { IUserIdentityFormProps } from '../UserIdentityForm'
 
 const patchIdentityAdapterMock = jest.fn()
 

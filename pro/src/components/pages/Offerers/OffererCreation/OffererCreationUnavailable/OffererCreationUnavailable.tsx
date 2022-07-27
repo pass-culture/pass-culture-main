@@ -1,6 +1,7 @@
 import React, { FunctionComponent } from 'react'
 
 import { ReactComponent as UnavailableIcon } from 'icons/ico-unavailable-gradient.svg'
+
 import styles from './OffererCreationUnavailable.module.scss'
 
 const OffererCreationUnavailable: FunctionComponent = () => {

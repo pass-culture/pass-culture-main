@@ -1,6 +1,6 @@
-import { AppClient, OpenAPIConfig } from './v1'
-
 import { API_URL } from 'utils/config'
+
+import { AppClient, OpenAPIConfig } from './v1'
 import { AppClientV2 } from './v2'
 
 const config: OpenAPIConfig = {

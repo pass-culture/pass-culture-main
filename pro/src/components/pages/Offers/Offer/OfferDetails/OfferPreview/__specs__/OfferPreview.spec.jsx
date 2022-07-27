@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'
 
 import { act, render, screen } from '@testing-library/react'
+import React from 'react'
+
+import { venueFactory } from 'utils/apiFactories'
+import { loadFakeApiVenue } from 'utils/fakeApi'
 
 import OfferPreview from '../OfferPreview'
-import React from 'react'
-import { loadFakeApiVenue } from 'utils/fakeApi'
-import { venueFactory } from 'utils/apiFactories'
 
 const renderOfferPreview = ({ props = {} }) => {
   return render(<OfferPreview {...props} />)

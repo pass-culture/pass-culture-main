@@ -1,6 +1,6 @@
-import { APIConfiguration, APIContremarqueApi, APIStocksApi } from './gen'
-
 import { API_URL } from 'utils/config'
+
+import { APIConfiguration, APIContremarqueApi, APIStocksApi } from './gen'
 
 const configuration: APIConfiguration = {
   basePath: API_URL,

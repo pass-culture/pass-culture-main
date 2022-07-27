@@ -1,9 +1,10 @@
+import PropTypes from 'prop-types'
 import React, { Fragment, forwardRef } from 'react'
+
+import Icon from 'components/layout/Icon'
 
 import ActivationCodesUploadErrorDescription from './ActivationCodesUploadErrorDescription'
 import ActivationCodesUploadInformationDescription from './ActivationCodesUploadInformationDescription'
-import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
 
 export const ActivationCodeCsvForm = forwardRef(function ActivationCodeCsvForm(
   { isFileInputDisabled, submitThumbnail, errorMessage, fileName },

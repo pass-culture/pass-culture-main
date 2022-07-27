@@ -1,9 +1,8 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import {
   CanOffererCreateCollectiveOffer,
   hasStatusCode,
 } from 'core/OfferEducational'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 const FAILING_RESPONSE: AdapterFailure<{
   isOffererEligibleToEducationalOffer: false

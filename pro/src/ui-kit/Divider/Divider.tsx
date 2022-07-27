@@ -1,6 +1,6 @@
+import classnames from 'classnames'
 import React, { FC } from 'react'
 
-import classnames from 'classnames'
 import styles from './Divider.module.scss'
 
 type Size = 'medium' | 'large'

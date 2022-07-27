@@ -1,10 +1,12 @@
-import { Events } from 'core/FirebaseEvents/constants'
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import React from 'react'
-import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
-import VenueItem from './VenueItem/VenueItem'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+
+import { Events } from 'core/FirebaseEvents/constants'
+import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
+
+import VenueItem from './VenueItem/VenueItem'
 
 const Venues = ({ venues, offererId, isVenueCreationAvailable }) => {
   const venueCreationUrl = isVenueCreationAvailable

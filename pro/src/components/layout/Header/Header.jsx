@@ -1,18 +1,20 @@
-import { NavLink, useHistory, useLocation } from 'react-router-dom'
+import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { NavLink, useHistory, useLocation } from 'react-router-dom'
+
+import { Events } from 'core/FirebaseEvents/constants'
+import { signout } from 'repository/pcapi/pcapi'
+import { resetIsInitialized } from 'store/user/actions'
+
+import Logo from '../Logo'
 
 import { ReactComponent as BookingsSvg } from './assets/bookings.svg'
 import { ReactComponent as CounterSvg } from './assets/counter.svg'
-import { Events } from 'core/FirebaseEvents/constants'
 import { ReactComponent as HomeSvg } from './assets/home.svg'
-import Logo from '../Logo'
 import { ReactComponent as OffersSvg } from './assets/offers.svg'
-import PropTypes from 'prop-types'
 import { ReactComponent as RefundsSvg } from './assets/refunds.svg'
 import { ReactComponent as SignoutSvg } from './assets/signout.svg'
-import { resetIsInitialized } from 'store/user/actions'
-import { signout } from 'repository/pcapi/pcapi'
 
 const Header = ({ isUserAdmin }) => {
   const dispatch = useDispatch()

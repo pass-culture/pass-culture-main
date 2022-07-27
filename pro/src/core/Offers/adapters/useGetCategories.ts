@@ -1,10 +1,9 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { Category, SubCategory } from 'custom_types/categories'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { useAdapter } from 'hooks'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 interface IPayload {
   categories: IOfferCategory[]

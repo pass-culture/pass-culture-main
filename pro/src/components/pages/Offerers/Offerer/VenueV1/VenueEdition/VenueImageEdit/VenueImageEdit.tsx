@@ -1,14 +1,15 @@
-import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
-import { Button, Divider } from 'ui-kit'
 import React, { useCallback, useRef } from 'react'
+import AvatarEditor, { CroppedRect, Position } from 'react-avatar-editor'
 
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { CreditInput } from 'new_components/CreditInput/CreditInput'
+import useNotification from 'components/hooks/useNotification'
 import { ReactComponent as DownloadIcon } from 'icons/ico-download-filled.svg'
+import { CreditInput } from 'new_components/CreditInput/CreditInput'
 import ImageEditor from 'new_components/ImageEditor/ImageEditor'
 import { coordonateToPosition } from 'new_components/ImageEditor/utils'
+import { Button, Divider } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
 import style from './VenueImageEdit.module.scss'
-import useNotification from 'components/hooks/useNotification'
 
 const CANVAS_HEIGHT = 244
 const CANVAS_WIDTH = (CANVAS_HEIGHT * 3) / 2

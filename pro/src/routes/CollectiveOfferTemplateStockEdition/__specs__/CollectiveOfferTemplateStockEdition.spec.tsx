@@ -1,22 +1,23 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import type { History } from 'history'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
+
+import { api } from 'apiClient/api'
 import {
   EVENT_DATE_LABEL,
   EVENT_TIME_LABEL,
   NUMBER_OF_PLACES_LABEL,
   TOTAL_PRICE_LABEL,
 } from 'screens/OfferEducationalStock/constants/labels'
-import { render, screen, waitFor } from '@testing-library/react'
+import { configureTestStore } from 'store/testUtils'
 
 import CollectiveOfferTemplateStockEdition from '../CollectiveOfferTemplateStockEdition'
-import type { History } from 'history'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { Router } from 'react-router-dom'
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
-import { createBrowserHistory } from 'history'
-import userEvent from '@testing-library/user-event'
 
 const mockHistoryPush = jest.fn()
 

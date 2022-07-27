@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
 
 import ActivationCodesUploadDialog from 'components/pages/Offers/Offer/Stocks/ActivationCodesUploadDialog/ActivationCodesUploadDialog'
-import { Provider } from 'react-redux'
-import React from 'react'
 import { configureTestStore } from 'store/testUtils'
 
 const renderActivationCodesUploadDialog = async (store, props = {}) => {

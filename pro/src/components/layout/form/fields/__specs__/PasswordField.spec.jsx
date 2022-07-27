@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 
-import PasswordField, { isNotValid } from '../PasswordField'
 import { fireEvent, render, screen } from '@testing-library/react'
-
-import { Form } from 'react-final-form'
 import React from 'react'
+import { Form } from 'react-final-form'
+
+import PasswordField, { isNotValid } from '../PasswordField'
 
 describe('component | PasswordField', () => {
   describe('isNotValid', () => {

@@ -1,23 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router'
-
-import { BannerRGS } from 'new_components/Banner'
-import { Events } from 'core/FirebaseEvents/constants'
-import { HTTP_STATUS } from 'api/helpers'
 import { Link } from 'react-router-dom'
-import Logo from 'components/layout/Logo'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import { PasswordInput } from './PasswordInput'
-import { RootState } from 'store/reducers'
-import TextInput from 'components/layout/inputs/TextInput/TextInput'
-import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
+
+import { HTTP_STATUS } from 'api/helpers'
 import { api } from 'apiClient/api'
-import { redirectLoggedUser } from 'components/router/helpers'
-import { setCurrentUser } from 'store/user/actions'
 import useActiveFeature from 'components/hooks/useActiveFeature'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import useNotification from 'components/hooks/useNotification'
+import TextInput from 'components/layout/inputs/TextInput/TextInput'
+import Logo from 'components/layout/Logo'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { redirectLoggedUser } from 'components/router/helpers'
+import { Events } from 'core/FirebaseEvents/constants'
+import { BannerRGS } from 'new_components/Banner'
+import { RootState } from 'store/reducers'
+import { setCurrentUser } from 'store/user/actions'
+import { UNAVAILABLE_ERROR_PAGE } from 'utils/routes'
+
+import { PasswordInput } from './PasswordInput'
 
 const SignIn = (): JSX.Element => {
   const [emailValue, setEmailValue] = useState<string>('')

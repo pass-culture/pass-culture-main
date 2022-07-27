@@ -1,14 +1,15 @@
-import { Field, useField } from 'react-final-form'
 import React, { useEffect, useState } from 'react'
+import { Field, useField } from 'react-final-form'
 
-import { Banner } from 'ui-kit/index'
-import Button from 'ui-kit/Button/Button'
-import ConfirmDialog from 'new_components/ConfirmDialog'
+import { api } from 'apiClient/api'
+import Icon from 'components/layout/Icon'
 import { IAPIOfferer } from 'core/Offerers/types'
 import { IAPIVenue } from 'core/Venue/types'
-import Icon from 'components/layout/Icon'
 import { ReactComponent as ValidIcon } from 'icons/ico-valide-cercle.svg'
-import { api } from 'apiClient/api'
+import ConfirmDialog from 'new_components/ConfirmDialog'
+import Button from 'ui-kit/Button/Button'
+import { Banner } from 'ui-kit/index'
+
 import styles from './PricingPoint.module.scss'
 
 export interface IPricingPointProps {

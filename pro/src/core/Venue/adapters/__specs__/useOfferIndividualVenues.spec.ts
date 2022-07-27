@@ -1,9 +1,11 @@
 import '@testing-library/jest-dom'
 
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { VenueListItemResponseModel } from 'apiClient/v1'
-import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react-hooks'
+
+import { api } from 'apiClient/api'
+import { VenueListItemResponseModel } from 'apiClient/v1'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+
 import { useGetOfferIndividualVenues } from '..'
 
 describe('useOffererNames', () => {

@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import type { History } from 'history'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Router } from 'react-router'
+import { Link } from 'react-router-dom'
+
 import RouteLeavingGuardOfferIndividual, {
   RouteLeavingGuardOfferIndividualProps,
 } from '../RouteLeavingGuardOfferIndividual'
-import { render, screen } from '@testing-library/react'
-
-import type { History } from 'history'
-import { Link } from 'react-router-dom'
-import React from 'react'
-import { Router } from 'react-router'
-import { createBrowserHistory } from 'history'
-import userEvent from '@testing-library/user-event'
 
 const stepsUrls: { [key: string]: string } = {
   offer: '/offre/individuel/creation',
