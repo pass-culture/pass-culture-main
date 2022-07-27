@@ -150,12 +150,10 @@ const Venue = ({
                     <span className="button-group-separator" />
                   </>
                 )}
-              {(!isVirtual || isBankInformationWithSiretActive) && (
-                <Link className="tertiary-link" to={editVenueLink}>
-                  <Icon svg="ico-outer-pen" />
-                  Modifier
-                </Link>
-              )}
+              <Link className="tertiary-link" to={editVenueLink}>
+                <Icon svg="ico-outer-pen" />
+                Modifier
+              </Link>
             </div>
           </div>
           {isStatOpen && (
