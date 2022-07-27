@@ -1,8 +1,7 @@
-import { Button, SubmitButton } from 'ui-kit'
+import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
 
-import { AnySchema } from 'yup'
 import { ButtonVariant } from 'ui-kit/Button/types'
 import FormLayout from 'new_components/FormLayout'
 import Icon from 'components/layout/Icon'
@@ -11,12 +10,11 @@ import { setCurrentUser } from 'store/user/actions'
 import styles from './ProfileForm.module.scss'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { useDispatch } from 'react-redux'
+import validationSchema from './validationSchema'
 
 export interface IProfileFormProps {
   title: string
   subtitleFormat: (values: any) => string
-  fields: Array<JSX.Element>
-  validationSchema: AnySchema
   banner?: JSX.Element
   shouldDisplayBanner?: boolean
   adapter: PatchIdentityAdapter
@@ -26,8 +24,6 @@ export interface IProfileFormProps {
 const ProfileForm = ({
   title,
   subtitleFormat,
-  fields,
-  validationSchema,
   initialValues,
   shouldDisplayBanner = false,
   banner,
@@ -101,7 +97,12 @@ const ProfileForm = ({
           <FormikProvider value={formik}>
             <Form onSubmit={formik.handleSubmit}>
               <FormLayout className={styles['profile-form-field']}>
-                {fields}
+                <FormLayout.Row>
+                  <TextInput label="Prénom" name="firstName" />,
+                </FormLayout.Row>
+                <FormLayout.Row>
+                  <TextInput label="Nom" name="lastName" />
+                </FormLayout.Row>
               </FormLayout>
 
               <div className={styles['buttons-field']}>
