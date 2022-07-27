@@ -1,17 +1,30 @@
 import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import Spinner from 'components/layout/Spinner'
 import { ReactComponent as PendingIcon } from 'components/pages/Offers/Offer/Confirmation/assets/pending.svg'
 import { ReactComponent as ValidateIcon } from 'components/pages/Offers/Offer/Confirmation/assets/validate.svg'
 import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_PENDING } from 'core/Offers/constants'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 
 const Confirmation = ({ offer, setOffer, reloadOffer }) => {
   const [isLoading, setIsLoading] = useState(true)
+  const logEvent = useSelector(state => state.app.logEvent)
   const resetOffer = useCallback(() => {
     setOffer(null)
+    logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+      from: OfferBreadcrumbStep.CONFIRMATION,
+      to: OfferBreadcrumbStep.DETAILS,
+      used: OFFER_FORM_NAVIGATION_MEDIUM.CONFIRMATION_BUTTON,
+      isEdition: false,
+    })
   }, [setOffer])
 
   useEffect(() => {

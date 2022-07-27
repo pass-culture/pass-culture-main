@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { Form } from 'react-final-form'
-import { useDispatch } from 'react-redux'
+import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+import { useDispatch, useSelector } from 'react-redux'
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { api } from 'apiClient/api'
@@ -8,13 +9,18 @@ import useActiveFeature from 'components/hooks/useActiveFeature'
 import useNotification from 'components/hooks/useNotification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
+import {
+  Events,
+  OFFER_FORM_HOMEPAGE,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { ReactComponent as AddOfferSvg } from 'icons/ico-plus.svg'
 import GoBackLink from 'new_components/GoBackLink'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { showNotification } from 'store/reducers/notificationReducer'
 import { Banner } from 'ui-kit'
-import { getCanSubmit, parseSubmitErrors } from 'utils/react-final-form'
 import { sortByLabel } from 'utils/strings'
 
 import ModifyOrCancelControl from '../controls/ModifyOrCancelControl/ModifyOrCancelControl'
@@ -59,6 +65,7 @@ const VenueEdition = () => {
   const dispatch = useDispatch()
   const location = useLocation()
   const notify = useNotification()
+  const logEvent = useSelector(state => state.app.logEvent)
 
   const isBankInformationWithSiretActive = useActiveFeature(
     'ENFORCE_BANK_INFORMATION_WITH_SIRET'
@@ -494,6 +501,14 @@ const VenueEdition = () => {
   const actionLink = !!initialId && (
     <Link
       className="primary-button with-icon"
+      onClick={() =>
+        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_FORM_NAVIGATION_IN.VENUE,
+          to: OFFER_FORM_HOMEPAGE,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.VENUE_BUTTON,
+          isEdition: false,
+        })
+      }
       to={`/offre/creation?lieu=${initialId}&structure=${offererId}`}
     >
       <AddOfferSvg />

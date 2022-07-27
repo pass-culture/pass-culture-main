@@ -7,7 +7,6 @@ export enum Events {
   CLICKED_CONSULT_CGU = 'hasClickedConsultCGU',
   CLICKED_CONSULT_SUPPORT = 'hasClickedConsultSupport',
   CLICKED_CREATE_ACCOUNT = 'hasClickedCreateAccount',
-  CLICKED_CREATE_OFFER = 'hasClickedCreateOffer',
   CLICKED_CREATE_VENUE = 'hasClickedCreateVenue',
   CLICKED_ADD_BANK_INFORMATIONS = 'hasClickedAddBankInformation',
   CLICKED_NO_PRICING_POINT_SELECTED_YET = 'hasClickedNoPricingPointSelectedYet',
@@ -45,8 +44,32 @@ export enum OFFER_FORM_NAVIGATION_MEDIUM {
   RECAP_LINK = 'RecapLink',
   STICKY_BUTTONS = 'StickyButtons',
   BREADCRUMB = 'Breadcrumb',
+  HOME_BUTTON = 'HomeButton',
+  HOME_LINK = 'HomeLink',
+  HOME_VIRTUAL_LINK = 'HomeVirtualLink',
+  OFFERS_BUTTON = 'OffersButton',
+  OFFERER_LINK = 'OffererLink',
+  VENUE_BUTTON = 'VenueButton',
+  OFFERS_THUMB = 'OffersThumb',
+  OFFERS_TITLE = 'OffersTitle',
+  OFFERS_STOCKS = 'OffersStocks',
+  OFFERS_PEN = 'OffersPen',
+  BOOKINGS_TITLE = 'BookingsTitle',
+  CONFIRMATION_PREVIEW = 'ConfirmationPreview',
+  CONFIRMATION_BUTTON = 'ConfirmationButton',
 }
 
 export enum OFFER_FORM_NAVIGATION_OUT {
   OFFER = 'Offer',
+  PREVIEW = 'AppPreview',
 }
+
+export enum OFFER_FORM_NAVIGATION_IN {
+  HOME = 'Home',
+  OFFERS = 'Offers',
+  OFFERER = 'Offerer',
+  VENUE = 'Venue',
+  BOOKINGS = 'Bookings',
+}
+
+export const OFFER_FORM_HOMEPAGE = 'OfferFormHomepage'
