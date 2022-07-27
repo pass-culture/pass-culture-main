@@ -9,7 +9,6 @@ import LocationFields, {
   bindGetSuggestionsToLatitude,
   bindGetSuggestionsToLongitude,
 } from '../fields/LocationFields'
-import { NavLink, useHistory, useParams } from 'react-router-dom'
 import React, { useCallback, useEffect, useState } from 'react'
 import {
   createVenue,
@@ -18,6 +17,7 @@ import {
   getVenueTypes,
 } from 'repository/pcapi/pcapi'
 import { getCanSubmit, parseSubmitErrors } from 'react-final-form-utils'
+import { useHistory, useParams } from 'react-router-dom'
 
 import BankInformation from '../fields/BankInformationFields'
 import BusinessUnitFields from '../fields/BankInformationFields/BusinessUnitFields'
@@ -25,7 +25,7 @@ import ConfirmDialog from 'new_components/ConfirmDialog'
 import ContactInfosFields from '../fields/ContactInfosFields'
 import EACInformation from '../VenueEdition/EACInformation'
 import { Form } from 'react-final-form'
-import Icon from 'components/layout/Icon'
+import GoBackLink from 'new_components/GoBackLink'
 import NotificationMessage from '../Notification'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 /*eslint no-undef: 0*/
@@ -273,13 +273,7 @@ const VenueCreation = () => {
 
   return (
     <div className="venue-page">
-      <NavLink
-        className="back-button has-text-primary"
-        to={`/accueil?structure=${offererId}`}
-      >
-        <Icon svg="ico-back" />
-        Accueil
-      </NavLink>
+      <GoBackLink to={`/accueil?structure=${offererId}`} title="Accueil" />
       <PageTitle title="Créer un lieu" />
       <Titles title="Lieu" />
       <p className="advice">Ajoutez un lieu où accéder à vos offres.</p>

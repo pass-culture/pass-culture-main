@@ -1,16 +1,16 @@
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { NavLink, useParams } from 'react-router-dom'
 import React, { useCallback, useEffect, useState } from 'react'
 
 import ApiKey from './ApiKey/ApiKey'
+import GoBackLink from 'new_components/GoBackLink'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
-import Icon from 'components/layout/Icon'
 import { Offerer } from './Offerer'
 import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Spinner from 'components/layout/Spinner'
 import Titles from 'components/layout/Titles/Titles'
 import VenuesContainer from './Venues/VenuesContainer'
+import { useParams } from 'react-router-dom'
 
 const OffererDetails = () => {
   const { offererId } = useParams()
@@ -67,13 +67,7 @@ const OffererDetails = () => {
 
   return (
     <div className="offerer-page">
-      <NavLink
-        className="back-button has-text-primary"
-        to={`/accueil?structure=${offerer.id}`}
-      >
-        <Icon svg="ico-back" />
-        Accueil
-      </NavLink>
+      <GoBackLink to={`/accueil?structure=${offerer.id}`} title="Accueil" />
       <PageTitle title="Détails de votre structure" />
       <Titles subtitle={offerer.name} title="Structure" />
       <p className="op-teaser">
