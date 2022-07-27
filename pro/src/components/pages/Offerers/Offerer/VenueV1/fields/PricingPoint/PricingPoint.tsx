@@ -53,8 +53,8 @@ const PricingPoint = ({
 
   return (
     <div className="section vp-content-section bank-information">
-      <div className="main-list-title title-actions-container">
-        <h2 className="main-list-title-text">Barème de remboursement</h2>
+      <div className="main-list-title">
+        <h3 className={`${styles['title']}`}>Barème de remboursement</h3>
       </div>
       {!readOnly && !venue.pricingPoint && isBannerVisible && (
         <Banner
