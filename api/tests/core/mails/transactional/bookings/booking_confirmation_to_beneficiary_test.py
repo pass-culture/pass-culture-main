@@ -52,7 +52,7 @@ def get_expected_base_sendinblue_email_data(booking, mediation, **overrides):
             "EVENT_HOUR": "14h48",
             "OFFER_PRICE": f"{booking.total_amount} €" if booking.stock.price > 0 else "Gratuit",
             "OFFER_TOKEN": booking.token,
-            "OFFER_CATEGORY": booking.stock.offer.category,
+            "OFFER_CATEGORY": booking.stock.offer.category.id,
             "OFFER_SUBCATEGORY": booking.stock.offer.subcategoryId,
             "VENUE_NAME": booking.stock.offer.venue.name,
             "VENUE_ADDRESS": booking.stock.offer.venue.address,
