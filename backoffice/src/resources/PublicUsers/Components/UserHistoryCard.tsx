@@ -1,8 +1,3 @@
-import {
-  EligibilitySubscriptionItem,
-  SubscriptionItemStatus,
-  SubscriptionItemType,
-} from '../types'
 import { Card } from '@material-ui/core'
 import {
   Grid,
@@ -12,9 +7,16 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-import { StatusAvatar } from './StatusAvatar'
 import React from 'react'
+
+import {
+  EligibilitySubscriptionItem,
+  SubscriptionItemStatus,
+  SubscriptionItemType,
+} from '../types'
+
 import { BeneficiaryBadge } from './BeneficiaryBadge'
+import { StatusAvatar } from './StatusAvatar'
 
 type Props = {
   subscriptionItem: EligibilitySubscriptionItem
@@ -36,7 +38,7 @@ export const UserHistoryCard = ({ subscriptionItem }: Props) => {
         <span style={{ marginLeft: '3rem' }}>{beneficiaryBadge}</span>
       </Typography>
       {subscriptionItem.items.length > 0 && (
-        <Grid container spacing={5} sx={{ mt: 4 }}>
+        <Grid container spacing={5} sx={{ mt: 4 }} style={gridStyle}>
           <Grid item xs={6}>
             <List sx={{ width: '100%' }}>
               <ListItem>

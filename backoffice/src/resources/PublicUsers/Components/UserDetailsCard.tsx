@@ -1,5 +1,4 @@
-import { Card } from '@material-ui/core'
-import { Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
+import { Card, Button, Grid, Stack, Tooltip, Typography } from '@mui/material'
 import { captureException } from '@sentry/react'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -21,9 +20,9 @@ import { FraudCheck, UserBaseInfo } from '../types'
 
 type Props = {
   user: UserBaseInfo
-  firstIdCheckHistory: FraudCheck
+  firstFraudCheck: FraudCheck
 }
-export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
+export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
   const notify = useNotify()
 
   const [editable, setEditable] = useState(false)
@@ -271,8 +270,8 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                 </Typography>
 
                 <Typography variant={'body1'}>
-                  {firstIdCheckHistory && firstIdCheckHistory.dateCreated
-                    ? moment(firstIdCheckHistory.dateCreated).format(
+                  {firstFraudCheck && firstFraudCheck.dateCreated
+                    ? moment(firstFraudCheck.dateCreated).format(
                         'D/MM/YYYY à HH:mm'
                       )
                     : 'N/A'}
@@ -292,10 +291,10 @@ export const UserDetailsCard = ({ user, firstIdCheckHistory }: Props) => {
                   label={'N° pièce d’identité'}
                   variant={'standard'}
                   defaultValue={
-                    firstIdCheckHistory &&
-                    firstIdCheckHistory.technicalDetails &&
-                    firstIdCheckHistory.technicalDetails.identificationId
-                      ? firstIdCheckHistory.technicalDetails.identificationId
+                    firstFraudCheck &&
+                    firstFraudCheck.technicalDetails &&
+                    firstFraudCheck.technicalDetails.identificationId
+                      ? firstFraudCheck.technicalDetails.identificationId
                       : ''
                   }
                   source={'idPieceNumber'}

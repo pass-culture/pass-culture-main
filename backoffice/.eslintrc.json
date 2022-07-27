@@ -20,7 +20,6 @@
   },
   "plugins": ["@typescript-eslint", "import"],
   "rules": {
-    "react/react-in-jsx-scope": "off",
     "indent": "off",
     "import/order": [
       "warn",
@@ -45,6 +44,7 @@
         "allowTemplateLiterals": true
       }
     ],
+    "react/react-in-jsx-scope": "off",
     "semi": ["error", "never"]
   }
 }
