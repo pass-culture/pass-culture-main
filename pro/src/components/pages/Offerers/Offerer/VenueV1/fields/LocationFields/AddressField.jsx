@@ -97,7 +97,7 @@ export const addressFieldRender =
     )
   }
 
-export const AddressField = ({
+const AddressField = ({
   className,
   disabled,
   form,

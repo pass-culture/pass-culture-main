@@ -11,7 +11,7 @@ export type PatchEducationalInstitutionAdapter = Adapter<
   null
 >
 
-export const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdapter =
+const patchEducationalInstitutionAdapter: PatchEducationalInstitutionAdapter =
   async ({ offerId, institutionId, isCreatingOffer }) => {
     try {
       const collectiveOffer =

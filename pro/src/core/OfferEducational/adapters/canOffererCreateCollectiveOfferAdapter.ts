@@ -15,7 +15,7 @@ const FAILING_RESPONSE: AdapterFailure<{
   },
 }
 
-const canOffererCreateCollectiveOfferAdapter: CanOffererCreateCollectiveOffer =
+export const canOffererCreateCollectiveOfferAdapter: CanOffererCreateCollectiveOffer =
   async (structure: string) => {
     try {
       await pcapi.canOffererCreateEducationalOffer(structure)
@@ -41,5 +41,3 @@ const canOffererCreateCollectiveOfferAdapter: CanOffererCreateCollectiveOffer =
       return FAILING_RESPONSE
     }
   }
-
-export default canOffererCreateCollectiveOfferAdapter

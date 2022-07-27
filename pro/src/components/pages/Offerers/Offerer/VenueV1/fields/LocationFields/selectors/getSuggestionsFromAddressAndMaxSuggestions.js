@@ -1,4 +1,4 @@
-import createCachedSelector from 're-reselect'
+import { createCachedSelector } from 're-reselect'
 
 import fetchAddressData from '../utils/fetchAddressData'
 
