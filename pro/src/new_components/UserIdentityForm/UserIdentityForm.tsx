@@ -8,12 +8,12 @@ import { IUserIdentityFormValues } from './types'
 import Icon from 'components/layout/Icon'
 import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
 import { setCurrentUser } from 'store/user/actions'
-import styles from './ProfileForm.module.scss'
+import styles from './UserIdentityForm.module.scss'
 import useCurrentUser from 'components/hooks/useCurrentUser'
 import { useDispatch } from 'react-redux'
 import validationSchema from './validationSchema'
 
-export interface IProfileFormProps {
+export interface IUserIdentityFormProps {
   title: string
   subtitleFormat: (values: any) => string
   banner?: JSX.Element
@@ -22,14 +22,14 @@ export interface IProfileFormProps {
   initialValues: IUserIdentityFormValues
 }
 
-const ProfileForm = ({
+const UserIdentityForm = ({
   title,
   subtitleFormat,
   initialValues,
   shouldDisplayBanner = false,
   banner,
   patchIdentityAdapter,
-}: IProfileFormProps): JSX.Element => {
+}: IUserIdentityFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useDispatch()
   const [isFormVisible, setIsFormVisible] = useState(false)
@@ -128,4 +128,4 @@ const ProfileForm = ({
   )
 }
 
-export default ProfileForm
+export default UserIdentityForm
