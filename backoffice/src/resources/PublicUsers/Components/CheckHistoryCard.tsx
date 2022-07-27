@@ -1,5 +1,6 @@
 import { Card } from '@material-ui/core'
 import {
+  Collapse,
   FormControlLabel,
   Grid,
   Stack,
@@ -10,15 +11,16 @@ import moment from 'moment'
 import React, { useState } from 'react'
 
 import { snakeCaseToTitleCase } from '../../../tools/textTools'
-import { CheckHistory } from '../types'
+import { EligibilityFraudCheck, FraudCheck } from '../types'
 
 import { StatusAvatar } from './StatusAvatar'
+import { BeneficiaryBadge } from './BeneficiaryBadge'
 
 type Props = {
-  idCheckHistory: CheckHistory
+  fraudCheck: EligibilityFraudCheck
 }
 
-export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
+export const CheckHistoryCard = ({ fraudCheck }: Props) => {
   const cardStyle = {
     width: '100%',
     marginTop: '20px',
@@ -32,11 +34,15 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
     setChecked(event.target.checked)
   }
 
+  const beneficiaryBadge = <BeneficiaryBadge role={fraudCheck.role} />
+  const fraudCheckItem = fraudCheck.items[0]
   return (
     <Card style={cardStyle}>
       <Grid container spacing={1}>
         <Typography variant={'h5'}>
-          {snakeCaseToTitleCase(idCheckHistory.type as string)}
+          {fraudCheckItem.type &&
+            snakeCaseToTitleCase(fraudCheckItem.type as string)}
+          <span style={{ marginLeft: '3rem' }}>{beneficiaryBadge}</span>
         </Typography>
         <Grid container spacing={1} sx={{ mt: 4 }}>
           <Stack spacing={2} direction={'row'} style={{ width: '100%' }}>
@@ -45,7 +51,7 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
             </Grid>
             <Grid item xs={6}>
               <p>
-                {moment(idCheckHistory.dateCreated).format(
+                {moment(fraudCheckItem.dateCreated).format(
                   'D/MM/YYYY à HH:mm:s'
                 )}
               </p>
@@ -56,7 +62,7 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
               <p>ID Technique</p>
             </Grid>
             <Grid item xs={6}>
-              <p>{idCheckHistory.thirdPartyId}</p>
+              <p>{fraudCheckItem.thirdPartyId}</p>
             </Grid>
           </Stack>
           <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
@@ -65,7 +71,7 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
             </Grid>
             <Grid item xs={6}>
               <p>
-                <StatusAvatar subscriptionItem={idCheckHistory} />
+                <StatusAvatar item={fraudCheckItem} />
               </p>
             </Grid>
           </Stack>
@@ -74,7 +80,7 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
               <p>Explication</p>
             </Grid>
             <Grid item xs={6}>
-              <p>{idCheckHistory.reason && idCheckHistory.reason}</p>
+              <p>{fraudCheckItem.reason}</p>
             </Grid>
           </Stack>
           <Stack spacing={3} direction={'row'} style={{ width: '100%' }}>
@@ -82,7 +88,7 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
               <p>Code d'erreurs</p>
             </Grid>
             <Grid item xs={6}>
-              <p>{idCheckHistory.reasonCodes && idCheckHistory.reasonCodes}</p>
+              <p>{fraudCheckItem.reasonCodes && fraudCheckItem.reasonCodes}</p>
             </Grid>
           </Stack>
 
@@ -95,7 +101,7 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
                     checked={checked}
                     onChange={handleChange}
                     inputProps={{ 'aria-label': 'controlled' }}
-                    name={idCheckHistory.type}
+                    name={fraudCheckItem.type}
                   />
                 }
                 label="Afficher les détails techniques"
@@ -104,14 +110,18 @@ export const CheckHistoryCard = ({ idCheckHistory }: Props) => {
             <Grid item xs={6}>
               <Grid container spacing={0}>
                 <Grid item style={gridStyle}>
-                  <code style={{ visibility: !checked ? 'hidden' : 'visible' }}>
-                    {idCheckHistory.technicalDetails &&
-                      JSON.stringify(
-                        idCheckHistory.technicalDetails,
-                        undefined,
-                        4
-                      )}
-                  </code>
+                  <Collapse in={checked}>
+                    <pre>
+                      <code>
+                        {fraudCheckItem.technicalDetails &&
+                          JSON.stringify(
+                            fraudCheckItem.technicalDetails,
+                            undefined,
+                            4
+                          )}
+                      </code>
+                    </pre>
+                  </Collapse>
                 </Grid>
               </Grid>
             </Grid>
