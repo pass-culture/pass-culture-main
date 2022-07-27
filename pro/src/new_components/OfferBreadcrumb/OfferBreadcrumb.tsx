@@ -1,20 +1,20 @@
-import Breadcrumb, {
-  BreadcrumbStyle,
-} from 'new_components/Breadcrumb/Breadcrumb'
-import {
-  Events,
-  OFFER_FORM_NAVIGATION_MEDIUM,
-} from 'core/FirebaseEvents/constants'
+import React from 'react'
+import { useSelector } from 'react-redux'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import {
   useOfferEditionURL,
   useOfferStockEditionURL,
 } from 'components/hooks/useOfferEditionURL'
-
-import React from 'react'
-import { RootState } from 'store/reducers'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import type { Step } from 'new_components/Breadcrumb'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useSelector } from 'react-redux'
+import Breadcrumb, {
+  BreadcrumbStyle,
+} from 'new_components/Breadcrumb/Breadcrumb'
+import { RootState } from 'store/reducers'
 
 export enum OfferBreadcrumbStep {
   DETAILS = 'details',

@@ -1,14 +1,17 @@
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+import { useFormikContext } from 'formik'
 import React, { useEffect } from 'react'
 
-import { FORM_DEFAULT_VALUES } from 'new_components/OfferIndividualForm'
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import FormLayout from 'new_components/FormLayout'
-import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm'
-import { MusicTypes } from './MusicTypes'
+import {
+  FORM_DEFAULT_VALUES,
+  IOfferIndividualFormValues,
+} from 'new_components/OfferIndividualForm'
 import { Select } from 'ui-kit'
+
+import { MusicTypes } from './MusicTypes'
 import { SelectSubCategory } from './SelectSubCategory'
 import { ShowTypes } from './ShowTypes'
-import { useFormikContext } from 'formik'
 
 export interface ICategoriesProps {
   categories: IOfferCategory[]

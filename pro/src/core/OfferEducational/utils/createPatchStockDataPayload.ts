@@ -1,11 +1,13 @@
+import isEqual from 'lodash.isequal'
+
+import { CollectiveStockEditionBodyModel } from 'apiClient/v1'
+
+import { OfferEducationalStockFormValues } from '../types'
+
 import {
   buildBeginningDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
-
-import { CollectiveStockEditionBodyModel } from 'apiClient/v1'
-import { OfferEducationalStockFormValues } from '../types'
-import isEqual from 'lodash.isequal'
 
 type OfferEducationalStockFormValuesForSerializer = {
   eventDate: Date

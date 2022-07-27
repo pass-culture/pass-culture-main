@@ -1,11 +1,12 @@
+import PropTypes from 'prop-types'
 import React, { Fragment } from 'react'
 
-import { Banner } from 'ui-kit'
-import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
 import Icon from 'components/layout/Icon'
 import InvalidBusinessUnits from 'components/pages/Home/Offerers/InvalidBusinessUnits'
+import { Banner } from 'ui-kit'
+import { DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL } from 'utils/config'
+
 import { Offerer } from '../Offerer'
-import PropTypes from 'prop-types'
 
 const BankInformation = ({ offerer, hasBusinessUnitError }) => (
   <div className="section op-content-section bank-information">

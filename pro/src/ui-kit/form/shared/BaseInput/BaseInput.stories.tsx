@@ -1,7 +1,9 @@
-import BaseInput from './BaseInput'
-import React from 'react'
-import { ReactComponent as RightIcon } from 'icons/ico-calendar.svg'
 import { Story } from '@storybook/react'
+import React from 'react'
+
+import { ReactComponent as RightIcon } from 'icons/ico-calendar.svg'
+
+import BaseInput from './BaseInput'
 
 export default {
   title: 'ui-kit/forms/shared/BaseInput',

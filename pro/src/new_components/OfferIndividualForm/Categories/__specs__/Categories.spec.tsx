@@ -1,18 +1,18 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
-import Categories, { ICategoriesProps } from '../Categories'
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
-import { render, screen } from '@testing-library/react'
-
-import { CATEGORIES_DEFAULT_VALUES } from '../constants'
-import { CATEGORY_STATUS } from 'core/Offers'
-import { Formik } from 'formik'
 import { REIMBURSEMENT_RULES } from 'core/Finances'
-import React from 'react'
-import userEvent from '@testing-library/user-event'
+import { CATEGORY_STATUS } from 'core/Offers'
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
+
 import { validationSchema } from '..'
+import Categories, { ICategoriesProps } from '../Categories'
+import { CATEGORIES_DEFAULT_VALUES } from '../constants'
 
 interface IInitialValues {
   subCategoryFields: string[]

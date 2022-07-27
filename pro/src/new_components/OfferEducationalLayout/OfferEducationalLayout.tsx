@@ -1,10 +1,11 @@
+import React from 'react'
+
+import HelpLink from 'new_components/HelpLink'
 import OfferBreadcrumb, {
   OfferBreadcrumbStep,
 } from 'new_components/OfferBreadcrumb'
-
-import HelpLink from 'new_components/HelpLink'
-import React from 'react'
 import { Title } from 'ui-kit'
+
 import styles from './OfferEducationalLayout.module.scss'
 
 interface IOfferEducationalLayout {

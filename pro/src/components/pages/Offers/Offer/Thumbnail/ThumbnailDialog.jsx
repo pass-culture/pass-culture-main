@@ -1,16 +1,16 @@
+import PropTypes from 'prop-types'
+import React, { useCallback, useEffect, useState } from 'react'
+
 import {
   IMPORT_TAB_ID,
   NBSP,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-import React, { useCallback, useEffect, useState } from 'react'
-
-import Advices from 'new_components/Advices/Advices'
 import Credit from 'components/pages/Offers/Offer/Thumbnail/Credit/Credit'
-import DialogBox from 'new_components/DialogBox/DialogBox'
 import ImageEditorWrapper from 'components/pages/Offers/Offer/Thumbnail/ImageEditor/ImageEditorWrapper'
 import ImportFromComputer from 'components/pages/Offers/Offer/Thumbnail/ImportFromComputer/ImportFromComputer'
 import OfferPreview from 'components/pages/Offers/Offer/Thumbnail/Preview/OfferPreview'
-import PropTypes from 'prop-types'
+import Advices from 'new_components/Advices/Advices'
+import DialogBox from 'new_components/DialogBox/DialogBox'
 
 const ThumbnailDialog = ({
   offerId,

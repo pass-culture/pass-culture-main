@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
-import { VENUE_DEFAULT_VALUES, Venue, validationSchema } from '..'
-import { render, screen, waitFor } from '@testing-library/react'
-
-import { Formik } from 'formik'
-import { IVenueProps } from '../Venue'
-import React from 'react'
-import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
-import userEvent from '@testing-library/user-event'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+
+import { VENUE_DEFAULT_VALUES, Venue, validationSchema } from '..'
+import { IVenueProps } from '../Venue'
 
 interface IInitialValues {
   offererId: string

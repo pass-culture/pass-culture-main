@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 
 import { act, render, screen } from '@testing-library/react'
+import React from 'react'
 
 import { BicIbanFields } from '../BicIbanFields'
-import React from 'react'
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_VENUE_RIB_UPLOAD_PROCEDURE_URL:

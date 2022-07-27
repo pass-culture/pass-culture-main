@@ -1,13 +1,15 @@
-import * as pcapi from 'repository/pcapi/pcapi'
 import React, { useCallback, useState } from 'react'
+
+import useNotification from 'components/hooks/useNotification'
+import Icon from 'components/layout/Icon'
+import { useModal } from 'hooks/useModal'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
 import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
-import Icon from 'components/layout/Icon'
 import ToggleVenueProviderStatusDialog from '../ToggleVenueProviderStatusDialog/ToggleVenueProviderStatusDialog'
 import style from '../VenueProviderItemV2/VenueProviderItemV2.module.scss'
-import { useModal } from 'hooks/useModal'
-import useNotification from 'components/hooks/useNotification'
 
 export interface IToggleVenueProviderStatusButtonProps {
   venueProvider: IVenueProviderApi

@@ -1,8 +1,9 @@
+import { useField } from 'formik'
 import React, { useEffect } from 'react'
 
-import TextInput from '../TextInput'
 import { humanizeSiren } from 'core/Offerers/utils'
-import { useField } from 'formik'
+
+import TextInput from '../TextInput'
 
 const formatSiren = (siren: string) => {
   const lastChar = siren.charAt(siren.length - 1)

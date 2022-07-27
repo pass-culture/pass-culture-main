@@ -1,15 +1,14 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
+import Spinner from 'components/layout/Spinner'
+import * as pcapi from 'repository/pcapi/pcapi'
+import BusinessUnitListScreen from 'screens/BusinessUnitList'
 import {
   IBusinessUnit,
   IBusinessUnitVenue,
   IOfferer,
 } from 'screens/BusinessUnitList/BusinessUnitList'
-import React, { useCallback, useEffect, useState } from 'react'
-
-import BusinessUnitListScreen from 'screens/BusinessUnitList'
-import Spinner from 'components/layout/Spinner'
-import { useParams } from 'react-router-dom'
 
 interface IAPIBusinessUnitListItem {
   bic: string

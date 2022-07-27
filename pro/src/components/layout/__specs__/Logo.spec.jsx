@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { MemoryRouter } from 'react-router'
 
 import Logo from '../Logo'
-import { MemoryRouter } from 'react-router'
-import React from 'react'
 
 const renderLogo = props => {
   return render(

@@ -1,3 +1,5 @@
+import { screen } from '@testing-library/react'
+
 import {
   BOOKING_LIMIT_DATETIME_LABEL,
   DETAILS_PRICE_LABEL,
@@ -6,8 +8,6 @@ import {
   NUMBER_OF_PLACES_LABEL,
   TOTAL_PRICE_LABEL,
 } from '../constants/labels'
-
-import { screen } from '@testing-library/react'
 
 export const elements = {
   queryClassicOfferRadio: (): HTMLInputElement | null =>

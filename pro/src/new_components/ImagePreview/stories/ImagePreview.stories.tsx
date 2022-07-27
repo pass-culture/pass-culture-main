@@ -1,11 +1,13 @@
+import { Story } from '@storybook/react'
+import React from 'react'
+
 import { ImagePreview } from '../ImagePreview'
 import { ImagePreviewsWrapper } from '../ImagePreviewsWrapper'
-import React from 'react'
-import { Story } from '@storybook/react'
+
 import homeScreenShell from './home-screen-shell.png'
+import style from './HomeScreenShell.module.scss'
 import offerPreview from './offer-preview.jpg'
 import offerScreenShell from './offer-screen-shell.png'
-import style from './HomeScreenShell.module.scss'
 
 export default {
   title: 'components/ImagePreview',

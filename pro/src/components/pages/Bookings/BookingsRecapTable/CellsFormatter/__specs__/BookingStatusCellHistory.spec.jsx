@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import React from 'react'
 
 import BookingStatusCellHistory from '../BookingStatusCellHistory'
-import React from 'react'
 
 const renderBookingStatusCellHistory = props =>
   render(<BookingStatusCellHistory {...props} />)

@@ -1,11 +1,11 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
+import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
-import OfferForm from '../OfferForm'
-import PropTypes from 'prop-types'
 import Spinner from 'components/layout/Spinner'
 import { computeOffersUrl } from 'core/Offers/utils'
+import * as pcapi from 'repository/pcapi/pcapi'
+
+import OfferForm from '../OfferForm'
 
 const OfferCreation = ({
   categories,

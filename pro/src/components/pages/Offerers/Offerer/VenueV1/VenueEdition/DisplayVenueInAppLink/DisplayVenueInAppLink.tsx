@@ -1,9 +1,10 @@
+import cn from 'classnames'
 import React, { FunctionComponent } from 'react'
 
-import { DisplayInAppLink } from 'new_components/DisplayInAppLink'
 import Icon from 'components/layout/Icon'
+import { DisplayInAppLink } from 'new_components/DisplayInAppLink'
 import { WEBAPP_URL } from 'utils/config'
-import cn from 'classnames'
+
 import styles from './DisplayVenueInAppLink.module.scss'
 
 interface Props {

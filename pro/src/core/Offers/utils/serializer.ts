@@ -1,5 +1,6 @@
-import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { ListOffersQueryModel } from 'apiClient/v1'
+
+import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import { TSearchFilters } from '../types'
 
 export const serializeApiFilters = <K extends keyof TSearchFilters>(

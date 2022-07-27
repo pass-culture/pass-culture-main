@@ -1,8 +1,9 @@
 import React, { FunctionComponent } from 'react'
 
-import { Constraint } from './imageConstraints'
 import Icon from 'components/layout/Icon'
+
 import style from './ConstraintCheck.module.scss'
+import { Constraint } from './imageConstraints'
 
 export type ConstraintCheckProps = {
   constraints: Constraint[]

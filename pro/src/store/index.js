@@ -1,8 +1,8 @@
 import { applyMiddleware, compose, createStore } from 'redux'
-
 import createSagaMiddleware from 'redux-saga'
-import rootReducer from './reducers'
 import thunk from 'redux-thunk'
+
+import rootReducer from './reducers'
 
 const buildStoreEnhancer = (middlewares = []) => {
   const enhancers = []

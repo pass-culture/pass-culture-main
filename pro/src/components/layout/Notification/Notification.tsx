@@ -1,13 +1,13 @@
+import React, { useEffect, useState } from 'react'
+
 import {
   NOTIFICATION_SHOW_DURATION,
   NOTIFICATION_TRANSITION_DURATION,
 } from './_constants'
-import React, { useEffect, useState } from 'react'
-
 import { ReactComponent as ErrorIcon } from './assets/notification-error-white.svg'
 import { ReactComponent as InfoIcon } from './assets/notification-information.svg'
-import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 import { ReactComponent as SuccessIcon } from './assets/notification-success-white.svg'
+import { ReactComponent as PendingIcon } from './assets/status-pending.svg'
 
 interface INotification {
   text: React.ReactNode

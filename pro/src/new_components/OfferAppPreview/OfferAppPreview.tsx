@@ -1,8 +1,8 @@
-import { IVenueDetailsProps, VenueDetails } from './VenueDetails'
-
-import { OptionsIcons } from './OptionsIcons'
 import React from 'react'
+
 import style from './OfferAppPreview.module.scss'
+import { OptionsIcons } from './OptionsIcons'
+import { IVenueDetailsProps, VenueDetails } from './VenueDetails'
 
 interface IOfferPreviewVenueData extends IVenueDetailsProps {
   isVirtual: boolean

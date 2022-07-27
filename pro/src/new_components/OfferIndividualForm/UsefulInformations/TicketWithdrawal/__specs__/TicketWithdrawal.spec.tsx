@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Form, Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
-import { Form, Formik } from 'formik'
-import { render, screen } from '@testing-library/react'
-
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
-import React from 'react'
 import { SubmitButton } from 'ui-kit'
-import TicketWithdrawal from '../TicketWithdrawal'
-import userEvent from '@testing-library/user-event'
+
 import { validationSchema } from '../'
+import TicketWithdrawal from '../TicketWithdrawal'
 
 const renderTicketWithdrawal = ({
   initialValues,

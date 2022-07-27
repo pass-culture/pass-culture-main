@@ -1,11 +1,12 @@
-import Content from './SummaryLayoutContent'
+import cn from 'classnames'
 import React from 'react'
+
+import style from './SummaryLayout.module.scss'
+import Content from './SummaryLayoutContent'
 import Row from './SummaryLayoutRow'
 import Section from './SummaryLayoutSection'
 import Side from './SummaryLayoutSide'
 import SubSection from './SummaryLayoutSubSection'
-import cn from 'classnames'
-import style from './SummaryLayout.module.scss'
 
 interface ISummaryLayoutProps {
   children?: React.ReactNode | React.ReactNode[]

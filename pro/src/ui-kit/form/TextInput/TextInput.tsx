@@ -1,7 +1,7 @@
-import { BaseInput, FieldLayout } from '../shared'
-
-import React from 'react'
 import { useField } from 'formik'
+import React from 'react'
+
+import { BaseInput, FieldLayout } from '../shared'
 
 interface ITextInputProps
   extends Partial<React.InputHTMLAttributes<HTMLInputElement>> {

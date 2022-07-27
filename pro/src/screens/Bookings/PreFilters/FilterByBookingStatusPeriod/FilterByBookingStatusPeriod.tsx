@@ -1,11 +1,12 @@
-import { DEFAULT_BOOKING_PERIOD, TPreFilters } from 'core/Bookings'
 import { addDays, subDays } from 'date-fns'
-
-import FilterByStatus from './FilterByStatus'
-import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
 import React from 'react'
+
+import PeriodSelector from 'components/layout/inputs/PeriodSelector/PeriodSelector'
+import { DEFAULT_BOOKING_PERIOD, TPreFilters } from 'core/Bookings'
 import { getToday } from 'utils/date'
+
 import styles from './FilterByBookingStatusPeriod.module.scss'
+import FilterByStatus from './FilterByStatus'
 
 interface IFilterByBookingStatusPeriodProps {
   isDisabled: boolean

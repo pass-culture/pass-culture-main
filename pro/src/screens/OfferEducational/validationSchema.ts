@@ -1,7 +1,7 @@
+import { parsePhoneNumberFromString } from 'libphonenumber-js'
 import * as yup from 'yup'
 
 import { OfferAddressType } from 'apiClient/v1'
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)

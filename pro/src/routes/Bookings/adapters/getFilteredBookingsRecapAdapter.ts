@@ -1,12 +1,11 @@
+import { api } from 'apiClient/api'
+import { BookingRecapResponseModel } from 'apiClient/v1'
 import {
   GetFilteredBookingsRecapAdapter,
   GetFilteredBookingsRecapAdapterPayload,
 } from 'core/Bookings'
-
-import { BookingRecapResponseModel } from 'apiClient/v1'
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { api } from 'apiClient/api'
 import { buildBookingsRecapQuery } from 'core/Bookings/utils'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 
 const MAX_LOADED_PAGES = 5
 

@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 
 import { act, render, screen, within } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
 import Venue from 'components/pages/Home/Venues/Venue'
 import { configureTestStore } from 'store/testUtils'
 

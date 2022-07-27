@@ -1,9 +1,9 @@
+import PropTypes from 'prop-types'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import Icon from 'components/layout/Icon'
 import { ReactComponent as AddThumbnailIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/assets/add-thumbnail.svg'
 import { ReactComponent as ErrorAlertIcon } from 'components/pages/Offers/Offer/OfferDetails/OfferThumbnail/assets/error-alert.svg'
-import Icon from 'components/layout/Icon'
-import PropTypes from 'prop-types'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
 
 const OfferThumbnail = ({

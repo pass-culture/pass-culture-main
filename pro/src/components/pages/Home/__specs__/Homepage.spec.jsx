@@ -1,18 +1,18 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-
-import { Events } from 'core/FirebaseEvents/constants'
-import Homepage from '../Homepage'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
+import userEvent from '@testing-library/user-event'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
 import { api } from 'apiClient/api'
+import { Events } from 'core/FirebaseEvents/constants'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { doesUserPreferReducedMotion } from 'utils/windowMatchMedia'
-import userEvent from '@testing-library/user-event'
+
+import Homepage from '../Homepage'
 
 jest.mock('utils/config', () => ({
   DEMARCHES_SIMPLIFIEES_OFFERER_RIB_UPLOAD_PROCEDURE_URL:

@@ -1,10 +1,10 @@
+import { useCallback, useMemo } from 'react'
+import { useDispatch } from 'react-redux'
+
 import {
   closeNotification,
   showNotification,
 } from 'store/reducers/notificationReducer'
-import { useCallback, useMemo } from 'react'
-
-import { useDispatch } from 'react-redux'
 
 const useNotification = () => {
   const dispatch = useDispatch()

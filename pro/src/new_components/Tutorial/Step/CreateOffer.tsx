@@ -1,5 +1,7 @@
-import { IStepComponentProps } from '../types'
 import React from 'react'
+
+import { IStepComponentProps } from '../types'
+
 import styles from './Step.module.scss'
 
 const CreateOffer = ({

@@ -1,13 +1,14 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router-dom'
-import NotificationMessage from '../Notification'
-import { Provider } from 'react-redux'
 import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router-dom'
+
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
+
+import NotificationMessage from '../Notification'
 
 const renderNotificationMessage = ({ props, storeOverrides = {} }) => {
   const store = configureTestStore(storeOverrides)

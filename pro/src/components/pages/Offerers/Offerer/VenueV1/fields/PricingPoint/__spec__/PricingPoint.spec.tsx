@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom'
 
-import PricingPoint, { IPricingPointProps } from '../PricingPoint'
 import { render, screen, waitFor } from '@testing-library/react'
-
-import { Form } from 'react-final-form'
-import React from 'react'
-import { api } from 'apiClient/api'
 import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Form } from 'react-final-form'
+
+import { api } from 'apiClient/api'
+
+import PricingPoint, { IPricingPointProps } from '../PricingPoint'
 const renderPricingPointFields = async ({
   props,
   formValues = {},

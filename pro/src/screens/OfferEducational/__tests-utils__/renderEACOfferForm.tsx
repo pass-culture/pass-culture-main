@@ -1,11 +1,12 @@
-import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
-
-import { Provider } from 'react-redux'
-import React from 'react'
-import { Router } from 'react-router-dom'
-import { configureTestStore } from 'store/testUtils'
-import { createBrowserHistory } from 'history'
 import { render } from '@testing-library/react'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { Router } from 'react-router-dom'
+
+import { configureTestStore } from 'store/testUtils'
+
+import OfferEducational, { IOfferEducationalProps } from '../OfferEducational'
 
 export const renderEACOfferForm = (
   props: IOfferEducationalProps,

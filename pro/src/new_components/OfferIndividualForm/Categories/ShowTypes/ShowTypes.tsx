@@ -1,12 +1,12 @@
+import { useFormikContext } from 'formik'
+import React, { useEffect, useState } from 'react'
+
+import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
 } from 'new_components/OfferIndividualForm'
-import React, { useEffect, useState } from 'react'
-
 import { Select } from 'ui-kit'
-import { showOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { useFormikContext } from 'formik'
 
 const ShowTypes = (): JSX.Element => {
   const {

@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 
+import styles from './ReimbursementsTable.module.scss'
 import ReimbursementsTableBody from './TableBody/ReimbursementsTableBody'
 import ReimbursementsTableHead from './TableHead/ReimbursementsTableHead'
-import styles from './ReimbursementsTable.module.scss'
 
 type Invoice = {
   date: string

@@ -1,7 +1,8 @@
-import { Form } from 'react-final-form'
-import React from 'react'
-import TextField from '../TextField'
 import { mount } from 'enzyme'
+import React from 'react'
+import { Form } from 'react-final-form'
+
+import TextField from '../TextField'
 
 describe('src | components | layout | form | TextField', () => {
   it('should submit a form with a title text field', async () => {

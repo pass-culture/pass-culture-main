@@ -1,7 +1,9 @@
-import BookingStatusCellHistory from './BookingStatusCellHistory'
-import Icon from 'components/layout/Icon'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import Icon from 'components/layout/Icon'
+
+import BookingStatusCellHistory from './BookingStatusCellHistory'
 import { getBookingStatusDisplayInformations } from './utils/bookingStatusConverter'
 
 const BookingStatusCell = ({ bookingRecapInfo }) => {

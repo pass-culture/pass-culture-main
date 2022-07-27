@@ -1,3 +1,14 @@
+import React, { useCallback, useEffect, useState } from 'react'
+import { useHistory, useParams } from 'react-router-dom'
+
+import {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
 import {
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
@@ -11,26 +22,16 @@ import {
   patchIsTemplateOfferActiveAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
-import {
-  GetCollectiveOfferResponseModel,
-  GetCollectiveOfferTemplateResponseModel,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
-import React, { useCallback, useEffect, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-
-import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import OfferEducationalScreen from 'screens/OfferEducational'
-import Spinner from 'components/layout/Spinner'
-import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
-import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
+import { IOfferEducationalProps } from 'screens/OfferEducational/OfferEducational'
+
 import getCollectiveOfferTemplateAdapter from './adapters/getCollectiveOfferTemplateAdapter'
 import patchCollectiveOfferAdapter from './adapters/patchCollectiveOfferAdapter'
 import { patchCollectiveOfferTemplateAdapter } from './adapters/patchCollectiveOfferTemplateAdapter'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import useNotification from 'components/hooks/useNotification'
+import { computeInitialValuesFromOffer } from './utils/computeInitialValuesFromOffer'
 
 type AsyncScreenProps = Pick<
   IOfferEducationalProps,

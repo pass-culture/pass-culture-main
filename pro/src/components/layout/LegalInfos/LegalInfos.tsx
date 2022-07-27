@@ -1,9 +1,10 @@
-import { Events } from 'core/FirebaseEvents/constants'
-import Icon from 'components/layout/Icon'
 import React from 'react'
-import { RootState } from 'store/reducers'
-import { useLocation } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
+
+import Icon from 'components/layout/Icon'
+import { Events } from 'core/FirebaseEvents/constants'
+import { RootState } from 'store/reducers'
 
 interface ILegalInfoProps {
   title: string

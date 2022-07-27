@@ -1,5 +1,6 @@
-import FormLayout from 'new_components/FormLayout'
 import React from 'react'
+
+import FormLayout from 'new_components/FormLayout'
 
 const ExternalLink = (): JSX.Element => {
   return (

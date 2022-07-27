@@ -1,6 +1,7 @@
 /*eslint no-undef: 0*/
 import PropTypes from 'prop-types'
 import React from 'react'
+
 import TableBody from './Body/TableBody'
 import TableHead from './Head/TableHead'
 import TablePagination from './Paginate/TablePagination'

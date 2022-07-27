@@ -1,14 +1,15 @@
-import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import React, { useEffect, useState } from 'react'
+import { useHistory } from 'react-router'
 
-import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
 import { EducationalInstitutionResponseModel } from 'apiClient/v1'
+import { DEFAULT_VISIBILITY_FORM_VALUES, Mode } from 'core/OfferEducational'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
+import CollectiveOfferVisibilityScreen from 'screens/CollectiveOfferVisibility'
+
 import getEducationalInstitutionsAdapter from './adapters/getEducationalInstitutionsAdapter'
 import patchEducationalInstitutionAdapter from './adapters/patchEducationalInstitutionAdapter'
-import { useHistory } from 'react-router'
 
 const CollectiveOfferVisibility = () => {
   const history = useHistory()

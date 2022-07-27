@@ -1,6 +1,7 @@
+import { api } from 'apiClient/api'
 import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import { api } from 'apiClient/api'
+
 import { createPatchOfferPayload } from '../utils/createPatchOfferPayload'
 
 export type Params = {

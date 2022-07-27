@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+
+import { configureTestStore } from 'store/testUtils'
 
 import BookingOfferCell from '../BookingOfferCell'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { configureTestStore } from 'store/testUtils'
 
 const renderOfferCell = (props, store) =>
   render(

@@ -1,9 +1,9 @@
-import { MemoryRouter, Route } from 'react-router-dom'
 import { act, render } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter, Route } from 'react-router-dom'
 
 import OfferLayout from 'components/pages/Offers/Offer/OfferLayout'
-import { Provider } from 'react-redux'
-import React from 'react'
 import { configureTestStore } from 'store/testUtils'
 import routes from 'utils/routes_map'
 

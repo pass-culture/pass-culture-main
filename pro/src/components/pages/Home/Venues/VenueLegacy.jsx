@@ -1,15 +1,15 @@
 import * as PropTypes from 'prop-types'
+import React, { Fragment, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import Icon from 'components/layout/Icon'
+import { BOOKING_STATUS } from 'core/Bookings'
+import { venueCreateOfferLink } from 'core/Venue/utils'
+import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import React, { Fragment, useEffect, useState } from 'react'
-
-import { BOOKING_STATUS } from 'core/Bookings'
-import { ReactComponent as IcoPlus } from 'icons/ico-plus.svg'
-import Icon from 'components/layout/Icon'
-import { Link } from 'react-router-dom'
 import VenueStat from './VenueStat'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { venueCreateOfferLink } from 'core/Venue/utils'
 
 const Venue = ({
   hasBusinessUnit,

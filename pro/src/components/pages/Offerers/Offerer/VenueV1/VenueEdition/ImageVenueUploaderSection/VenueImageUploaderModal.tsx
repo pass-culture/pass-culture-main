@@ -1,20 +1,22 @@
-import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
 import React, { useCallback, useState } from 'react'
+import { CroppedRect } from 'react-avatar-editor'
+
+import { getDataURLFromImageURL } from 'api/utils/api'
+import useNotification from 'components/hooks/useNotification'
+import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
+import DialogBox from 'new_components/DialogBox'
 import {
   coordonateToPosition,
   heightCropPercentToScale,
 } from 'new_components/ImageEditor/utils'
+import { postImageToVenue } from 'repository/pcapi/pcapi'
 
-import { CroppedRect } from 'react-avatar-editor'
-import DialogBox from 'new_components/DialogBox'
-import { IVenueBannerMetaProps } from './ImageVenueUploaderSection'
 import { ImportFromComputer } from '../ImportFromComputer/ImportFromComputer'
 import { VenueImageEdit } from '../VenueImageEdit/VenueImageEdit'
 import { VenueImagePreview } from '../VenueImagePreview/VenueImagePreview'
-import { getDataURLFromImageURL } from 'api/utils/api'
-import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
-import { postImageToVenue } from 'repository/pcapi/pcapi'
-import useNotification from 'components/hooks/useNotification'
+
+import { IMAGE_TYPES, MAX_IMAGE_SIZE, MIN_IMAGE_WIDTH } from './constants'
+import { IVenueBannerMetaProps } from './ImageVenueUploaderSection'
 
 interface IVenueImageUploaderModalProps {
   venueId: string

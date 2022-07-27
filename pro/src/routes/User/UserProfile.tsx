@@ -1,9 +1,11 @@
 import React from 'react'
-import Spinner from 'components/layout/Spinner'
-import { UserProfile as UserProfileScreen } from 'screens/UserProfile'
-import patchIdentityAdapter from 'routes/User/adapters/patchIdentityAdapter'
-import { serializeUserIdentity } from './adapters/serializers'
+
 import useCurrentUser from 'components/hooks/useCurrentUser'
+import Spinner from 'components/layout/Spinner'
+import patchIdentityAdapter from 'routes/User/adapters/patchIdentityAdapter'
+import { UserProfile as UserProfileScreen } from 'screens/UserProfile'
+
+import { serializeUserIdentity } from './adapters/serializers'
 
 const Profile = (): JSX.Element => {
   const { currentUser, isUserInitialized } = useCurrentUser()

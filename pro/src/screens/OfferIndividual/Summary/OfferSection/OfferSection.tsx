@@ -1,19 +1,20 @@
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import React from 'react'
+import { useSelector } from 'react-redux'
+
+import { WithdrawalTypeEnum } from 'apiClient/v1'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-
-import { AccessibilityLabel } from 'ui-kit'
 import { OFFER_WITHDRAWAL_TYPE_LABELS } from 'core/Offers'
+import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import React from 'react'
-import { RootState } from 'store/reducers'
 import { SummaryLayout } from 'new_components/SummaryLayout'
-import { WithdrawalTypeEnum } from 'apiClient/v1'
-import humanizeDelay from './utils'
+import { RootState } from 'store/reducers'
+import { AccessibilityLabel } from 'ui-kit'
+
 import styles from './OfferSummary.module.scss'
-import { useSelector } from 'react-redux'
+import humanizeDelay from './utils'
 
 export interface IOfferSectionProps {
   id: string

@@ -1,6 +1,8 @@
-import Icon from 'components/layout/Icon'
-import React from 'react'
 import cn from 'classnames'
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
+
 import styles from './InternalBanner.module.scss'
 
 interface IInternalBannerProps {

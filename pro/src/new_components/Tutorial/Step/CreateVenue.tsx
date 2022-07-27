@@ -1,5 +1,6 @@
-import { IStepComponentProps } from '../types'
 import React from 'react'
+
+import { IStepComponentProps } from '../types'
 
 const CreateVenue = ({
   titleId,

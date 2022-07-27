@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom'
 
+import { render } from '@testing-library/react'
+import React from 'react'
+import { MemoryRouter } from 'react-router-dom'
+
 import {
   MIN_IMAGE_HEIGHT,
   MIN_IMAGE_WIDTH,
 } from 'components/pages/Offers/Offer/Thumbnail/_constants'
-
-import { MemoryRouter } from 'react-router-dom'
-import React from 'react'
 import ThumbnailDialog from 'components/pages/Offers/Offer/Thumbnail/ThumbnailDialog'
-import { render } from '@testing-library/react'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   ...jest.requireActual('repository/pcapi/pcapi'),

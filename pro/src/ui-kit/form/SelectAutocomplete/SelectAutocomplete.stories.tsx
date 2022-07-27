@@ -1,10 +1,10 @@
-import * as yup from 'yup'
-
+import { Story } from '@storybook/react'
 import { Formik } from 'formik'
 import React from 'react'
+import * as yup from 'yup'
+
 import SelectAutocomplete from './SelectAutocomplete'
 import type { SelectAutocompleteProps } from './SelectAutocomplete'
-import { Story } from '@storybook/react'
 
 export default {
   title: 'ui-kit/forms/SelectAutocomplete',

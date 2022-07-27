@@ -1,14 +1,14 @@
 import '@testing-library/jest-dom'
 
+import { screen } from '@testing-library/react'
+
 import {
   defaultEditionProps,
   managedVenuesFactory,
   renderEACOfferForm,
   userOfferersFactory,
 } from '../__tests-utils__'
-
 import { IOfferEducationalProps } from '../OfferEducational'
-import { screen } from '@testing-library/react'
 
 describe('screens | OfferEducational : edition offerer step', () => {
   let props: IOfferEducationalProps

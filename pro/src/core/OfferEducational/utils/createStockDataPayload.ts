@@ -1,10 +1,11 @@
+import { CollectiveStockCreationBodyModel } from 'apiClient/v1'
+
+import { OfferEducationalStockFormValues } from '..'
+
 import {
   buildBeginningDatetimeForStockPayload,
   buildBookingLimitDatetimeForStockPayload,
 } from './buildDatetimesForStockPayload'
-
-import { CollectiveStockCreationBodyModel } from 'apiClient/v1'
-import { OfferEducationalStockFormValues } from '..'
 
 export const createStockDataPayload = (
   values: OfferEducationalStockFormValues,

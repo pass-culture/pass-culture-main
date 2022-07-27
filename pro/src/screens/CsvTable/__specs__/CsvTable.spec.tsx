@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom'
 
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
 import * as csvService from 'routes/CsvTable/adapters/getCsvData'
+import { configureTestStore } from 'store/testUtils'
 
 import CsvTable, { ICsvTableProps } from '../CsvTable'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-
 import { ITableData } from '../types'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { configureTestStore } from 'store/testUtils'
 
 interface ICsvTableTestProps {
   getCsvData: jest.SpyInstance<Promise<ITableData | null>>

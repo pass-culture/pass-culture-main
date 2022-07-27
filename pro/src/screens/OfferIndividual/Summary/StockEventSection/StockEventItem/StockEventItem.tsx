@@ -1,7 +1,7 @@
-import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
-
 import React from 'react'
+
 import { SummaryLayout } from 'new_components/SummaryLayout'
+import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from 'utils/date'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
 export interface IStockEventItemProps {

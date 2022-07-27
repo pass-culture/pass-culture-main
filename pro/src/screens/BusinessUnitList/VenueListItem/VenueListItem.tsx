@@ -1,8 +1,10 @@
-import { IBusinessUnitVenue } from '../BusinessUnitList'
-import Icon from '../../../components/layout/Icon'
-import { Link } from 'react-router-dom'
-import React from 'react'
 import cn from 'classnames'
+import React from 'react'
+import { Link } from 'react-router-dom'
+
+import Icon from '../../../components/layout/Icon'
+import { IBusinessUnitVenue } from '../BusinessUnitList'
+
 import styles from './VenueListItem.module.scss'
 
 interface IVenueListItemProps {

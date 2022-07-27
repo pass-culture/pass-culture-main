@@ -1,6 +1,6 @@
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { getEducationalDomainsAdapter } from '../getEducationalDomainsAdapter'
 
 describe('getEducationalDomainsAdapter', () => {

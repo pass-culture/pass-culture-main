@@ -1,18 +1,18 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
-import { render, screen } from '@testing-library/react'
-
-import { Accessibility } from 'new_components/OfferIndividualForm/Accessibility'
-import { Formik } from 'formik'
-import { IVenueProps } from '../Venue'
-import React from 'react'
-import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
+import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { Accessibility } from 'new_components/OfferIndividualForm/Accessibility'
+
 import { Venue } from '..'
-import userEvent from '@testing-library/user-event'
+import { IVenueProps } from '../Venue'
 
 interface IInitialValues {
   offererId: string

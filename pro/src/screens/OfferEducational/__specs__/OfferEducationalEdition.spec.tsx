@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom'
 
+import { screen } from '@testing-library/react'
+
+import { Mode } from 'core/OfferEducational'
+
+import { defaultEditionProps, renderEACOfferForm } from '../__tests-utils__'
 import {
   CATEGORY_LABEL,
   DURATION_LABEL,
@@ -12,11 +17,7 @@ import {
   TITLE_LABEL,
   VENUE_LABEL,
 } from '../constants/labels'
-import { defaultEditionProps, renderEACOfferForm } from '../__tests-utils__'
-
 import { IOfferEducationalProps } from '../OfferEducational'
-import { Mode } from 'core/OfferEducational'
-import { screen } from '@testing-library/react'
 
 describe('screens | OfferEducational', () => {
   let props: IOfferEducationalProps

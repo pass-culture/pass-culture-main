@@ -1,3 +1,7 @@
+import React from 'react'
+
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import Icon from 'components/layout/Icon'
 import {
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_EXPIRED,
@@ -6,10 +10,6 @@ import {
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
-
-import Icon from 'components/layout/Icon'
-import React from 'react'
-import useActiveFeature from 'components/hooks/useActiveFeature'
 
 export const OFFER_STATUS_PROPERTIES: Record<
   string,

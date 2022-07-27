@@ -1,5 +1,7 @@
-import Icon from 'components/layout/Icon'
 import React from 'react'
+
+import Icon from 'components/layout/Icon'
+
 import styles from './ShowcaseBannerInfo.module.scss'
 
 const ShowcaseBannerInfo = (): JSX.Element => (

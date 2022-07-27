@@ -1,5 +1,6 @@
-import { API_URL } from '../../src/utils/config'
 import fetch from 'node-fetch'
+
+import { API_URL } from '../../src/utils/config'
 
 async function fetchFeatures() {
   const path = `${API_URL}/features`

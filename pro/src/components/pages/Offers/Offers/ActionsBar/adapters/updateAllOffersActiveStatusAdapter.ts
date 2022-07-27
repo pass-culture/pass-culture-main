@@ -1,12 +1,11 @@
+import { TSearchFilters } from 'core/Offers/types'
+import { serializeApiFilters } from 'core/Offers/utils'
 import * as pcapi from 'repository/pcapi/pcapi'
 
 import {
   computeAllActivationSuccessMessage,
   computeAllDeactivationSuccessMessage,
 } from './utils'
-
-import { TSearchFilters } from 'core/Offers/types'
-import { serializeApiFilters } from 'core/Offers/utils'
 
 type UpdateAllOffersActiveStatusAdapter = Adapter<
   {

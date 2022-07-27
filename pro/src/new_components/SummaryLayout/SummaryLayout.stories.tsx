@@ -1,6 +1,8 @@
 import React from 'react'
-import { SummaryLayout } from '.'
+
 import { withRouterDecorator } from 'stories/decorators/withRouter'
+
+import { SummaryLayout } from '.'
 
 export default {
   title: 'components/SummaryLayout',

@@ -1,10 +1,11 @@
-import Actions from './FormLayoutActions'
+import cn from 'classnames'
 import React from 'react'
+
+import style from './FormLayout.module.scss'
+import Actions from './FormLayoutActions'
 import Row from './FormLayoutRow'
 import Section from './FormLayoutSection'
 import SubSection from './FormLayoutSubSection'
-import cn from 'classnames'
-import style from './FormLayout.module.scss'
 
 interface IFormLayoutProps {
   children: React.ReactNode | React.ReactNode[]

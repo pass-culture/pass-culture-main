@@ -1,11 +1,11 @@
 import '@testing-library/jest-dom'
 
+import { fireEvent } from '@testing-library/dom'
 import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { Form } from 'react-final-form'
 
 import CheckboxField from '../CheckboxField'
-import { Form } from 'react-final-form'
-import React from 'react'
-import { fireEvent } from '@testing-library/dom'
 
 const renderCheckboxField = (props, initialValues) => {
   const renderForm = ({ handleSubmit }) => {

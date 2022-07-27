@@ -1,12 +1,14 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import React, { useCallback, useState } from 'react'
-import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
-import { IVenueProviderApi as VenueProvider } from './types'
-import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
-import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
-import { showNotification } from 'store/reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
+
+import * as pcapi from 'repository/pcapi/pcapi'
+import { showNotification } from 'store/reducers/notificationReducer'
+
+import { CinemaProviderFormDialog } from '../CinemaProviderFormDialog/CinemaProviderFormDialog'
+import { getRequestErrorStringFromErrors } from '../utils/getRequestErrorStringFromErrors'
+import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
+
+import { IVenueProviderApi as VenueProvider } from './types'
 
 interface ICinemaProviderItemProps {
   afterVenueProviderEdit: (editedVenueProvider: VenueProvider) => void

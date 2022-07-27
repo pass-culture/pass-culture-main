@@ -1,9 +1,9 @@
+import { api } from 'apiClient/api'
 import { ApiError, GetVenueResponseModel } from 'apiClient/v1'
-
 import { ApiRequestOptions } from 'apiClient/v1/core/ApiRequestOptions'
 import { ApiResult } from 'apiClient/v1/core/ApiResult'
+
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../../CollectiveDataForm/initialValues'
-import { api } from 'apiClient/api'
 import editVenueCollectiveDataAdapter from '../editVenueCollectiveDataAdapter'
 
 describe('editVenueCollectiveDataAdapter', () => {

@@ -1,27 +1,27 @@
-import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router-dom'
+
+import { api } from 'apiClient/api'
+import useCurrentUser from 'components/hooks/useCurrentUser'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
+import { filterEducationalCategories } from 'core/OfferEducational'
+import { getOffererAdapter } from 'core/Offers/adapters'
+import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
+import { useQuerySearchFilters } from 'core/Offers/hooks'
+import { Offer, Offerer, Option, TSearchFilters } from 'core/Offers/types'
+import { hasSearchFilters, computeCollectiveOffersUrl } from 'core/Offers/utils'
+import { Audience } from 'core/shared/types'
 import {
   fetchAllVenuesByProUser,
   formatAndOrderVenues,
 } from 'repository/venuesService'
-import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
-
-import { Audience } from 'core/shared/types'
-import { DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import OffersScreen from 'screens/Offers'
-import Spinner from 'components/layout/Spinner'
-import { api } from 'apiClient/api'
-import { computeCollectiveOffersUrl } from 'core/Offers/utils'
-import { filterEducationalCategories } from 'core/OfferEducational'
-import { getFilteredCollectiveOffersAdapter } from './adapters'
-import { getOffererAdapter } from 'core/Offers/adapters'
-import { hasSearchFilters } from 'core/Offers/utils'
+import { savePageNumber, saveSearchFilters } from 'store/offers/actions'
 import { sortByDisplayName } from 'utils/strings'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useDispatch } from 'react-redux'
-import { useHistory } from 'react-router-dom'
-import useNotification from 'components/hooks/useNotification'
-import { useQuerySearchFilters } from 'core/Offers/hooks'
+
+import { getFilteredCollectiveOffersAdapter } from './adapters'
 
 const CollectiveOffers = (): JSX.Element => {
   const [urlSearchFilters, urlPageNumber] = useQuerySearchFilters()

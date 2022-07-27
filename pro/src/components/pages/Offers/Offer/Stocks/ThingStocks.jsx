@@ -1,5 +1,21 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import PropTypes from 'prop-types'
+import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useHistory, useLocation } from 'react-router-dom'
+import { v4 as generateRandomUuid } from 'uuid'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
+import PageTitle from 'components/layout/PageTitle/PageTitle'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
+import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
+import {
+  createThingStockPayload,
+  formatStock,
+  validateCreatedStock,
+  validateUpdatedStock,
+} from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
+import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
@@ -8,30 +24,15 @@ import {
   LIVRE_PAPIER_SUBCATEGORY_ID,
   OFFER_STATUS_DRAFT,
 } from 'core/Offers/constants'
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
-import {
-  createThingStockPayload,
-  formatStock,
-  validateCreatedStock,
-  validateUpdatedStock,
-} from 'components/pages/Offers/Offer/Stocks/StockItem/domain'
-import { useHistory, useLocation } from 'react-router-dom'
-
-import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
-import { FormActions } from './FormActions'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner/OfferStatusBanner'
-import PageTitle from 'components/layout/PageTitle/PageTitle'
-import PriceErrorHTMLNotification from './PriceErrorHTMLNotification'
-import PropTypes from 'prop-types'
-import StockItem from 'components/pages/Offers/Offer/Stocks/StockItem/StockItem'
-import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
 import { computeOffersUrl } from 'core/Offers/utils'
-import { v4 as generateRandomUuid } from 'uuid'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { ReactComponent as AddStockSvg } from 'icons/ico-plus.svg'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import * as pcapi from 'repository/pcapi/pcapi'
+
 import { queryParamsFromOfferer } from '../../utils/queryParamsFromOfferer'
-import useActiveFeature from 'components/hooks/useActiveFeature'
-import { useSelector } from 'react-redux'
+
+import { FormActions } from './FormActions'
+import PriceErrorHTMLNotification from './PriceErrorHTMLNotification'
 
 const EMPTY_STRING_VALUE = ''
 

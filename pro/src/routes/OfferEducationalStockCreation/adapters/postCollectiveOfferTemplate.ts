@@ -1,10 +1,9 @@
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
 import {
   OfferEducationalStockFormValues,
   hasStatusCodeAndErrorsCode,
 } from 'core/OfferEducational'
-
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
 
 type Params = {
   offerId: string

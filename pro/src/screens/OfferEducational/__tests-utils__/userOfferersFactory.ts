@@ -1,6 +1,6 @@
-import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
-
 import merge from 'lodash/merge'
+
+import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
 
 export const managedVenueFactory = (
   userVenueExtends: Partial<IUserVenue>

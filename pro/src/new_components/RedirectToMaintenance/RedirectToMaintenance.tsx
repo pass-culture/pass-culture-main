@@ -1,7 +1,7 @@
 // react hooks and usages doc : https://reactjs.org/docs/hooks-intro.html
 
-import { URL_FOR_MAINTENANCE } from 'utils/config'
 import { useEffectMount } from 'hooks'
+import { URL_FOR_MAINTENANCE } from 'utils/config'
 
 const RedirectToMaintenance = (): null => {
   useEffectMount(() => {

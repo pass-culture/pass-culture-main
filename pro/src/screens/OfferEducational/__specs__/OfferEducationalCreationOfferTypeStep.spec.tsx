@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom'
 
+import { screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+
 import {
   categoriesFactory,
   defaultCreationProps,
   renderEACOfferForm,
   subCategoriesFactory,
 } from '../__tests-utils__'
-import { screen, waitFor } from '@testing-library/react'
-
 import { IOfferEducationalProps } from '../OfferEducational'
-import userEvent from '@testing-library/user-event'
 
 describe('screens | OfferEducational : creation offer type step', () => {
   let props: IOfferEducationalProps

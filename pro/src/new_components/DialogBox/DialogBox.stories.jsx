@@ -1,5 +1,6 @@
-import DialogBox from './DialogBox'
 import React from 'react'
+
+import DialogBox from './DialogBox'
 
 export default {
   title: 'components/DialogBox',

@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 
 import { fireEvent, render, screen } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router'
 import React from 'react'
+import { MemoryRouter } from 'react-router'
+
 import { UseFrenchQueryTestingExample } from 'components/hooks/__specs/UseFrenchQueryTestingExample'
 
 describe('useFrenchQuery', () => {

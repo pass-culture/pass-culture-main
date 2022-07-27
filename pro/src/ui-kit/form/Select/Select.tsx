@@ -1,9 +1,11 @@
+import { useField } from 'formik'
 import React, { useEffect } from 'react'
 
-import { FieldLayout } from '../shared'
-import SelectInput from './SelectInput'
 import { SelectOption } from 'custom_types/form'
-import { useField } from 'formik'
+
+import { FieldLayout } from '../shared'
+
+import SelectInput from './SelectInput'
 
 interface ISelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   name: string

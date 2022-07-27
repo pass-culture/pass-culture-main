@@ -1,15 +1,16 @@
 import '@testing-library/jest-dom'
 
+import { setUser } from '@sentry/browser'
 import { render, screen } from '@testing-library/react'
-
-import { App } from '../App'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
 import React from 'react'
-import { URL_FOR_MAINTENANCE } from 'utils/config'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
 import { api } from 'apiClient/api'
 import { configureTestStore } from 'store/testUtils'
-import { setUser } from '@sentry/browser'
+import { URL_FOR_MAINTENANCE } from 'utils/config'
+
+import { App } from '../App'
 
 jest.mock('apiClient/api', () => ({
   api: { getProfile: jest.fn() },

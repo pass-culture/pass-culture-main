@@ -1,7 +1,8 @@
-import InputError from './Errors/InputError'
 import PropTypes from 'prop-types'
 import React from 'react'
 import Textarea from 'react-autosize-textarea'
+
+import InputError from './Errors/InputError'
 
 const TextareaInput = ({
   countCharacters,

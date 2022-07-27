@@ -1,9 +1,10 @@
+import { useCallback, useMemo } from 'react'
+import { useHistory, useLocation } from 'react-router-dom'
+
 import {
   translateApiParamsToQueryParams,
   translateQueryParamsToApiParams,
 } from 'utils/translate'
-import { useCallback, useMemo } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
 
 const useFrenchQuery = () => {
   const location = useLocation()

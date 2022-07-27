@@ -1,7 +1,6 @@
+import { apiV2 } from 'api/api'
 import { ApiError, extractApiErrorMessageForKey } from 'api/helpers'
 import { IDeskSubmitResponse, MESSAGE_VARIANT } from 'screens/Desk'
-
-import { apiV2 } from 'api/api'
 
 const onSubmitFailure = (error: ApiError): IDeskSubmitResponse => ({
   error: {

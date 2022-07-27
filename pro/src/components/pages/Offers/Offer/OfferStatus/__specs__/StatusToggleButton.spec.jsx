@@ -1,19 +1,19 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-import * as useNotification from 'components/hooks/useNotification'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router-dom'
 
+import * as useNotification from 'components/hooks/useNotification'
 import {
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_INACTIVE,
 } from 'core/Offers/constants'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router-dom'
-import { Provider } from 'react-redux'
-import React from 'react'
-import StatusToggleButton from '../StatusToggleButton'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
+
+import StatusToggleButton from '../StatusToggleButton'
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),

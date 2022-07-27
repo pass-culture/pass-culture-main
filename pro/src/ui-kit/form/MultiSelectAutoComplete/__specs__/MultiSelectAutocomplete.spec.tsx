@@ -1,15 +1,14 @@
 import '@testing-library/jest-dom'
 
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
 import MultiSelectAutocomplete, {
   MultiSelectAutocompleteProps,
 } from '../MultiSelectAutocomplete'
-import { render, screen, waitFor } from '@testing-library/react'
-
-import { Formik } from 'formik'
-import React from 'react'
-import userEvent from '@testing-library/user-event'
 
 describe('MultiSelectAutocomplete', () => {
   const props: MultiSelectAutocompleteProps = {

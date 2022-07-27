@@ -1,6 +1,8 @@
-import { OfferAppPreview } from './'
 import React from 'react'
+
 import testImg from './__specs__/offer_storie_image.jpg'
+
+import { OfferAppPreview } from './'
 
 const offerData = {
   name: 'Le mouton à trois pattes',

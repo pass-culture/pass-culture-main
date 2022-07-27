@@ -1,6 +1,6 @@
+import cn from 'classnames'
 import React, { useCallback, useEffect, useState } from 'react'
 
-import cn from 'classnames'
 import styles from './Toggle.module.scss'
 
 interface IToggle {

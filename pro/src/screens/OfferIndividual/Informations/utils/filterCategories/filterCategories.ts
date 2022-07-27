@@ -1,6 +1,5 @@
-import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
-
 import { CATEGORY_STATUS } from 'core/Offers'
+import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { TOfferIndividualVenue } from 'core/Venue/types'
 
 const filterCategories = (

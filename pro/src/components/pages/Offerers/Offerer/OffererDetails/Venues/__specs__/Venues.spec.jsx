@@ -1,9 +1,11 @@
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import React from 'react'
-import Venues from '../Venues'
-import { configureTestStore } from 'store/testUtils'
 import { mount } from 'enzyme'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import { configureTestStore } from 'store/testUtils'
+
+import Venues from '../Venues'
 
 describe('src | components | pages | OffererCreation | Venues', () => {
   let props

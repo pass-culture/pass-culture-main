@@ -1,13 +1,15 @@
 import './CinemaProviderForm.scss'
 
-import { Checkbox, SubmitButton } from 'ui-kit'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useEffect, useState } from 'react'
-import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
-import FormLayout from 'new_components/FormLayout'
-import { ICinemaProviderFormValues } from './types'
-import Icon from 'components/layout/Icon'
 import ReactTooltip from 'react-tooltip'
+
+import Icon from 'components/layout/Icon'
+import FormLayout from 'new_components/FormLayout'
+import { Checkbox, SubmitButton } from 'ui-kit'
+
+import { DEFAULT_CINEMA_PROVIDER_FORM_VALUES } from './constants'
+import { ICinemaProviderFormValues } from './types'
 
 interface ICinemaProviderFormProps {
   saveVenueProvider: (values: ICinemaProviderFormValues) => void

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 
-import { Button } from 'ui-kit'
 import useNotification from 'components/hooks/useNotification'
+import { Button } from 'ui-kit'
 
 interface IDownloadButtonProps {
   filename: string

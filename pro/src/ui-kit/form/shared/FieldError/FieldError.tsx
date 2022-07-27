@@ -1,6 +1,7 @@
-import { ReactComponent as ErrorIcon } from './assets/error-icon.svg'
-import React from 'react'
 import cn from 'classnames'
+import React from 'react'
+
+import { ReactComponent as ErrorIcon } from './assets/error-icon.svg'
 import styles from './FieldError.module.scss'
 
 interface IFieldErrorProps {

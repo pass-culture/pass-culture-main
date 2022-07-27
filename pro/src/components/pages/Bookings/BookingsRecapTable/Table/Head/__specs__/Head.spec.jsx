@@ -1,7 +1,9 @@
-import Icon from 'components/layout/Icon'
-import React from 'react'
-import TableHead from '../TableHead'
 import { shallow } from 'enzyme'
+import React from 'react'
+
+import Icon from 'components/layout/Icon'
+
+import TableHead from '../TableHead'
 
 describe('components | pages | TableWrapper | TableHead', () => {
   it('should render one line with all columns', () => {

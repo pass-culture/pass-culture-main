@@ -1,7 +1,9 @@
-import { BaseInput } from '../'
-import FieldLayout from './FieldLayout'
-import React from 'react'
 import { Story } from '@storybook/react'
+import React from 'react'
+
+import { BaseInput } from '../'
+
+import FieldLayout from './FieldLayout'
 
 export default {
   title: 'ui-kit/forms/shared/FieldLayout',

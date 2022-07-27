@@ -1,10 +1,10 @@
+import { SharedCurrentUserResponseModel } from 'apiClient/v1'
+
 import {
   RESET_USER_IS_INITIALIZED,
   SET_CURRENT_USER,
   SET_USER_IS_INITIALIZED,
 } from './actions'
-
-import { SharedCurrentUserResponseModel } from 'apiClient/v1'
 
 export type UserState = {
   initialized: boolean

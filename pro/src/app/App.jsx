@@ -1,16 +1,16 @@
+import { setUser as setSentryUser } from '@sentry/browser'
+import PropTypes from 'prop-types'
 import React, { useEffect, useState } from 'react'
-import routes, { routesWithoutLayout } from 'utils/routes_map'
+import { useDispatch } from 'react-redux'
+import { matchPath } from 'react-router'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import PropTypes from 'prop-types'
-import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
-import Spinner from 'components/layout/Spinner'
-import { matchPath } from 'react-router'
-import { setLogEvent } from 'store/app/actions'
-import { setUser as setSentryUser } from '@sentry/browser'
 import useAnalytics from 'components/hooks/useAnalytics'
 import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useDispatch } from 'react-redux'
+import Spinner from 'components/layout/Spinner'
+import { RedirectToMaintenance } from 'new_components/RedirectToMaintenance'
+import { setLogEvent } from 'store/app/actions'
+import routes, { routesWithoutLayout } from 'utils/routes_map'
 
 export const App = props => {
   const {

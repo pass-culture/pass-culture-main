@@ -1,17 +1,18 @@
 import '@testing-library/jest-dom'
 
 import { render, screen, waitFor } from '@testing-library/react'
-
-import { Events } from 'core/FirebaseEvents/constants'
-import { Form } from 'react-final-form'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import React from 'react'
-import ReimbursementPoint from '../ReimbursementPoint'
-import { api } from 'apiClient/api'
-import { configureTestStore } from 'store/testUtils'
-import { createBrowserHistory } from 'history'
 import userEvent from '@testing-library/user-event'
+import { createBrowserHistory } from 'history'
+import React from 'react'
+import { Form } from 'react-final-form'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import { api } from 'apiClient/api'
+import { Events } from 'core/FirebaseEvents/constants'
+import { configureTestStore } from 'store/testUtils'
+
+import ReimbursementPoint from '../ReimbursementPoint'
 
 jest.mock('apiClient/api', () => ({
   api: {

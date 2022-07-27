@@ -1,10 +1,12 @@
+import cn from 'classnames'
+import React from 'react'
+
 import { AccessiblityEnum } from 'core/shared'
 import { ReactComponent as AudioDisabilitySvg } from 'icons/audio-disability.svg'
 import { ReactComponent as MentalDisabilitySvg } from 'icons/mental-disability.svg'
 import { ReactComponent as MotorDisabilitySvg } from 'icons/motor-disability.svg'
-import React from 'react'
 import { ReactComponent as VisualDisabilitySvg } from 'icons/visual-disability.svg'
-import cn from 'classnames'
+
 import styles from './AccessibilityLabel.module.scss'
 
 interface IAccessibilityLabelProps {

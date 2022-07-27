@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
+
 import {
   OFFER_STATUS_ACTIVE,
   OFFER_STATUS_EXPIRED,
@@ -8,12 +12,9 @@ import {
   OFFER_STATUS_REJECTED,
   OFFER_STATUS_SOLD_OUT,
 } from 'core/Offers/constants'
-import { render, screen } from '@testing-library/react'
-
-import { Provider } from 'react-redux'
-import React from 'react'
-import StatusLabel from '../StatusLabel'
 import { configureTestStore } from 'store/testUtils'
+
+import StatusLabel from '../StatusLabel'
 
 const renderStatusLabel = (status: string, store: any) => {
   return render(

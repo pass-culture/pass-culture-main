@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom'
 import React from 'react'
+import { Link } from 'react-router-dom'
+
 import styles from './Hero.module.scss'
 
 interface IHero {

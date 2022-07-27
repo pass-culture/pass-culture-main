@@ -1,14 +1,5 @@
+import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
-import {
-  buildGetOfferersQuery,
-  deleteStock,
-  loadFilteredOffers,
-  postThumbnail,
-  setHasSeenTutos,
-  updateAllOffersActiveStatus,
-  updateOffersActiveStatus,
-  validateDistantImage,
-} from '../pcapi'
 import {
   generateOffererApiKey,
   getBooking,
@@ -20,11 +11,17 @@ import {
   signout,
   updateUserInformations,
   validateBooking,
+  buildGetOfferersQuery,
+  deleteStock,
+  loadFilteredOffers,
+  postThumbnail,
+  setHasSeenTutos,
+  updateAllOffersActiveStatus,
+  updateOffersActiveStatus,
+  validateDistantImage,
 } from 'repository/pcapi/pcapi'
-
-import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
-import { bookingRecapFactory } from 'utils/apiFactories'
 import { client } from 'repository/pcapi/pcapiClient'
+import { bookingRecapFactory } from 'utils/apiFactories'
 
 jest.mock('repository/pcapi/pcapiClient', () => ({
   client: {

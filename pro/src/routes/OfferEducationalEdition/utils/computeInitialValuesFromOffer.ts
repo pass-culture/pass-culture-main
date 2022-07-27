@@ -1,13 +1,13 @@
 import {
+  GetCollectiveOfferTemplateResponseModel,
+  SubcategoryIdEnum,
+} from 'apiClient/v1'
+import {
   CollectiveOffer,
   DEFAULT_EAC_FORM_VALUES,
   IOfferEducationalFormValues,
   PARTICIPANTS,
 } from 'core/OfferEducational'
-import {
-  GetCollectiveOfferTemplateResponseModel,
-  SubcategoryIdEnum,
-} from 'apiClient/v1'
 
 const computeDurationString = (
   durationMinutes: number | undefined | null

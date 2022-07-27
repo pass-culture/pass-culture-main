@@ -1,29 +1,30 @@
 /* @debt standard "Gautier: Do not load internal page dependencies"*/
+
+import { FormikProvider, useFormik } from 'formik'
+import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import * as yup from 'yup'
 
-import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
 import {
   EducationalOfferType,
   GetStockOfferSuccessPayload,
   Mode,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-import { FormikProvider, useFormik } from 'formik'
-import React, { useEffect, useState } from 'react'
+import { computeOffersUrl } from 'core/Offers/utils'
+import FormLayout from 'new_components/FormLayout'
+import OfferEducationalActions from 'new_components/OfferEducationalActions'
+import { Banner, RadioGroup, SubmitButton, TextArea } from 'ui-kit'
+
+import { DETAILS_PRICE_LABEL } from './constants/labels'
+import FormStock from './FormStock'
+import styles from './OfferEducationalStock.module.scss'
+import ShowcaseBannerInfo from './ShowcaseBannerInfo'
+import { isOfferDisabled } from './utils'
 import {
   showcaseOfferValidationSchema,
   validationSchema,
 } from './validationSchema'
-
-import { DETAILS_PRICE_LABEL } from './constants/labels'
-import FormLayout from 'new_components/FormLayout'
-import FormStock from './FormStock'
-import { Link } from 'react-router-dom'
-import OfferEducationalActions from 'new_components/OfferEducationalActions'
-import ShowcaseBannerInfo from './ShowcaseBannerInfo'
-import { computeOffersUrl } from 'core/Offers/utils'
-import { isOfferDisabled } from './utils'
-import styles from './OfferEducationalStock.module.scss'
 
 const showcaseOfferRadios = [
   {

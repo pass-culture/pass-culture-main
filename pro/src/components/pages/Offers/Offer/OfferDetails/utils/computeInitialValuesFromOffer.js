@@ -1,9 +1,8 @@
+import { DEFAULT_FORM_VALUES } from '../_constants'
 import {
   checkHasNoDisabilityCompliance,
   getAccessibilityValues,
 } from '../OfferForm/AccessibilityCheckboxList'
-
-import { DEFAULT_FORM_VALUES } from '../_constants'
 
 const computeInitialValuesFromOffer = (offer, subCategories) => {
   if (!offer || !subCategories) {

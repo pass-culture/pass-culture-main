@@ -1,12 +1,12 @@
+import React from 'react'
+
+import { BookingStatusFilter } from 'apiClient/v1'
+import Select from 'components/layout/inputs/Select'
 import {
   BOOOKING_STATUS_FILTER,
   DEFAULT_BOOKING_FILTER,
   TPreFilters,
 } from 'core/Bookings'
-
-import { BookingStatusFilter } from 'apiClient/v1'
-import React from 'react'
-import Select from 'components/layout/inputs/Select'
 
 interface IFilterByStatusProps {
   isDisabled: boolean

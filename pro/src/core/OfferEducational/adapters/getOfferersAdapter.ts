@@ -1,8 +1,6 @@
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { IUserOfferer, IUserVenue } from 'core/OfferEducational'
-
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+import * as pcapi from 'repository/pcapi/pcapi'
 
 type Params = string | null
 

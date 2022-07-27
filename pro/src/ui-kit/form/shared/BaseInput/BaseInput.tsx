@@ -1,6 +1,6 @@
+import cn from 'classnames'
 import React, { ForwardedRef, forwardRef } from 'react'
 
-import cn from 'classnames'
 import styles from './BaseInput.module.scss'
 
 interface IBaseInputProps

@@ -1,39 +1,40 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useHistory, useLocation } from 'react-router-dom'
 
-import { Button, ButtonLink } from 'ui-kit'
+import useNotification from 'components/hooks/useNotification'
+import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
+import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
+import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
+import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner'
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
+import { computeOffersUrl } from 'core/Offers'
+import { IOfferSubCategory } from 'core/Offers/types'
+import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
+import { BannerSummary } from 'new_components/Banner'
 import {
   IOfferAppPreviewProps,
   OfferAppPreview,
 } from 'new_components/OfferAppPreview'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
+import { SummaryLayout } from 'new_components/SummaryLayout'
+import * as pcapi from 'repository/pcapi/pcapi'
+import { RootState } from 'store/reducers'
+import { Button, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
+
+import { ActionBar } from '../ActionBar'
+
 import { IOfferSectionProps, OfferSection } from './OfferSection'
 import { IStockEventItemProps, StockEventSection } from './StockEventSection'
 import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
-import React, { useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
-
-import { ActionBar } from '../ActionBar'
-import { BannerSummary } from 'new_components/Banner'
-import { ButtonVariant } from 'ui-kit/Button/types'
-import { DisplayOfferInAppLink } from 'components/pages/Offers/Offer/DisplayOfferInAppLink'
-import { IOfferSubCategory } from 'core/Offers/types'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
-import OfferStatusBanner from 'components/pages/Offers/Offer/OfferDetails/OfferStatusBanner'
-import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
-import { RootState } from 'store/reducers'
-import { SummaryLayout } from 'new_components/SummaryLayout'
-import SynchronizedProviderInformation from 'components/pages/Offers/Offer/OfferDetails/OfferForm/SynchronisedProviderInfos'
-import { computeOffersUrl } from 'core/Offers'
-import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
-import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import styles from './Summary.module.scss'
-import useNotification from 'components/hooks/useNotification'
-import { useSelector } from 'react-redux'
 
 export interface ISummaryProps {
   offerId: string

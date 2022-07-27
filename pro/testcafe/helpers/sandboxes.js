@@ -1,5 +1,6 @@
-import { API_URL } from '../../src/utils/config'
 import fetch from 'node-fetch'
+
+import { API_URL } from '../../src/utils/config'
 
 export async function fetchSandbox(moduleName, getterName) {
   const path = `${API_URL}/sandboxes/${moduleName}/${getterName}`

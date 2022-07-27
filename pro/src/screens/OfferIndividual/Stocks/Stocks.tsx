@@ -1,11 +1,12 @@
 import { FormikProvider, useFormik } from 'formik'
-import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
-
-import { ActionBar } from '../ActionBar'
-import { IOfferIndividual } from 'core/Offers/types'
-import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
+
+import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
+import { IOfferIndividual } from 'core/Offers/types'
+import { OfferFormLayout } from 'new_components/OfferFormLayout'
+
+import { ActionBar } from '../ActionBar'
 
 interface IStocksProps {
   offer: IOfferIndividual

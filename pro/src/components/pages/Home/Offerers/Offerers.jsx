@@ -1,21 +1,21 @@
-import * as pcapi from 'repository/pcapi/pcapi'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 
+import useFrenchQuery from 'components/hooks/useFrenchQuery'
+import Spinner from 'components/layout/Spinner'
 import {
   INITIAL_PHYSICAL_VENUES,
   INITIAL_VIRTUAL_VENUE,
 } from 'components/pages/Home/Offerers/_constants'
-import React, { useCallback, useEffect, useState } from 'react'
-
+import { VenueList } from 'components/pages/Home/Venues/VenueList'
+import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { HTTP_STATUS } from 'repository/pcapi/pcapiClient'
+import { sortByDisplayName } from 'utils/strings'
+
 import OffererCreationLinks from './OffererCreationLinks'
 import OffererDetails from './OffererDetails'
-import SoftDeletedOffererWarning from 'new_components/SoftDeletedOffererWarning'
-import Spinner from 'components/layout/Spinner'
 import VenueCreationLinks from './VenueCreationLinks'
-import { VenueList } from 'components/pages/Home/Venues/VenueList'
-import { sortByDisplayName } from 'utils/strings'
-import useFrenchQuery from 'components/hooks/useFrenchQuery'
-import { useHistory } from 'react-router-dom'
 
 export const CREATE_OFFERER_SELECT_ID = 'creation'
 

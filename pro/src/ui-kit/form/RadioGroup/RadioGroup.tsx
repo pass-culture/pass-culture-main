@@ -1,9 +1,11 @@
-import { FieldSetLayout } from '../shared'
-import { RadioButton } from '..'
-import React from 'react'
 import cn from 'classnames'
-import styles from './RadioGroup.module.scss'
 import { useField } from 'formik'
+import React from 'react'
+
+import { RadioButton } from '..'
+import { FieldSetLayout } from '../shared'
+
+import styles from './RadioGroup.module.scss'
 
 export enum Direction {
   VERTICAL = 'vertical',

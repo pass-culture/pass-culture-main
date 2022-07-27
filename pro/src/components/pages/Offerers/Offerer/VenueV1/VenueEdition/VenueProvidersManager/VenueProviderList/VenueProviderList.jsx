@@ -1,11 +1,13 @@
+import PropTypes from 'prop-types'
+import React from 'react'
+
 import {
   isAllocineProvider,
   isCinemaProvider,
 } from 'components/pages/Offers/domain/localProvider'
+
 import AllocineProviderItem from '../AllocineProviderItem/AllocineProviderItem'
 import { CinemaProviderItem } from '../CinemaProviderItem/CinemaProviderItem'
-import PropTypes from 'prop-types'
-import React from 'react'
 import VenueProviderItem from '../VenueProviderItem/VenueProviderItem'
 
 const VenueProviderList = ({

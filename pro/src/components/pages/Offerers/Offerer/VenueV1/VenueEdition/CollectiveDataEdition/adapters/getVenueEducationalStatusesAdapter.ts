@@ -1,6 +1,6 @@
+import { api } from 'apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
 import { SelectOption } from 'custom_types/form'
-import { api } from 'apiClient/api'
 
 type GetCulturelPartnersAdapter = Adapter<void, SelectOption[], SelectOption[]>
 

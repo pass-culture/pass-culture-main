@@ -1,16 +1,17 @@
-import { Button, SubmitButton, TextInput } from 'ui-kit'
 import { Form, FormikProvider, useFormik } from 'formik'
 import React, { useState } from 'react'
+import { useDispatch } from 'react-redux'
 
-import { ButtonVariant } from 'ui-kit/Button/types'
-import FormLayout from 'new_components/FormLayout'
-import { IUserIdentityFormValues } from './types'
+import useCurrentUser from 'components/hooks/useCurrentUser'
 import Icon from 'components/layout/Icon'
+import FormLayout from 'new_components/FormLayout'
 import { PatchIdentityAdapter } from 'routes/User/adapters/patchIdentityAdapter'
 import { setCurrentUser } from 'store/user/actions'
+import { TextInput, Button, SubmitButton } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
+import { IUserIdentityFormValues } from './types'
 import styles from './UserIdentityForm.module.scss'
-import useCurrentUser from 'components/hooks/useCurrentUser'
-import { useDispatch } from 'react-redux'
 import validationSchema from './validationSchema'
 
 export interface IUserIdentityFormProps {

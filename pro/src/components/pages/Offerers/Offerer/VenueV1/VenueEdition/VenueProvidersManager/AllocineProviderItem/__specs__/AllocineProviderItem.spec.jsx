@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom'
 
-import * as pcapi from 'repository/pcapi/pcapi'
-
 import { fireEvent, render, screen } from '@testing-library/react'
-
-import { MemoryRouter } from 'react-router'
-import NotificationContainer from 'components/layout/Notification/NotificationContainer'
-import { Provider } from 'react-redux'
 import React from 'react'
-import VenueProvidersManager from '../../VenueProvidersManager'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import NotificationContainer from 'components/layout/Notification/NotificationContainer'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 import { queryByTextTrimHtml } from 'utils/testHelpers'
+
+import VenueProvidersManager from '../../VenueProvidersManager'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   createVenueProvider: jest.fn(),

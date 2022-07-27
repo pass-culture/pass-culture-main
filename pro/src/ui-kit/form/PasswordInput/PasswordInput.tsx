@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 
+import Icon from 'components/layout/Icon'
 import { ReactComponent as IcoEyeClose } from 'icons/ico-eye-close.svg'
 import { ReactComponent as IcoEyeOpen } from 'icons/ico-eye-open.svg'
-import Icon from 'components/layout/Icon'
+
 import TextInput from '../TextInput'
+
 import styles from './PasswordInput.module.scss'
 
 interface IPasswordInputProps {

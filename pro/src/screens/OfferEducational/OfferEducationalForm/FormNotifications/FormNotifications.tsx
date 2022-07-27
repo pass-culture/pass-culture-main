@@ -1,13 +1,14 @@
+import { useFormikContext } from 'formik'
+import React, { useEffect } from 'react'
+
+import { IOfferEducationalFormValues } from 'core/OfferEducational'
+import FormLayout from 'new_components/FormLayout'
 import { Checkbox, TextInput } from 'ui-kit'
+
 import {
   NOTIFICATIONS_EMAIL_LABEL,
   NOTIFICATIONS_LABEL,
 } from '../../constants/labels'
-import React, { useEffect } from 'react'
-
-import FormLayout from 'new_components/FormLayout'
-import { IOfferEducationalFormValues } from 'core/OfferEducational'
-import { useFormikContext } from 'formik'
 
 const FormNotifications = ({
   disableForm,

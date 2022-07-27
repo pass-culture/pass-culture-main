@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom'
 
-import * as yup from 'yup'
-
-import { Accessibility, validationSchema } from '..'
-import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { render, screen } from '@testing-library/react'
-
+import userEvent from '@testing-library/user-event'
 import { Formik } from 'formik'
 import React from 'react'
+import * as yup from 'yup'
+
+import { AccessiblityEnum, IAccessibiltyFormValues } from 'core/shared'
 import { SubmitButton } from 'ui-kit'
-import userEvent from '@testing-library/user-event'
+
+import { Accessibility, validationSchema } from '..'
 
 interface IInitialValues {
   offererId: string

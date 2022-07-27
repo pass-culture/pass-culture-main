@@ -1,4 +1,5 @@
 import { GetOffererNameResponseModel } from 'apiClient/v1'
+
 import { IAPIVenue } from '../Venue/types'
 
 export type TOffererName = GetOffererNameResponseModel

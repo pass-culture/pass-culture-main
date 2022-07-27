@@ -1,16 +1,19 @@
+import React from 'react'
+
+import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
 import {
   isAllocineProvider,
   isCinemaProvider,
 } from 'components/pages/Offers/domain/localProvider'
+import { pluralize } from 'utils/pluralize'
+import { formatLocalTimeDateString } from 'utils/timezone'
+
+import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
 import AllocineProviderParameters from '../AllocineProviderParamaters/AllocineProviderParameters'
 import CinemaProviderParameters from '../CinemaProviderParameters/CinemaProviderParameters'
 import DeleteVenueProviderButton from '../DeleteVenueProviderButton/DeleteVenueProviderButton'
-import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
-import React from 'react'
 import ToggleVenueProviderStatusButton from '../ToggleVenueProviderStatusButton/ToggleVenueProviderStatusButton'
-import { formatLocalTimeDateString } from 'utils/timezone'
-import { getProviderInfo } from 'components/pages/Offers/domain/getProviderInfo'
-import { pluralize } from 'utils/pluralize'
+
 import style from './VenueProviderItemV2.module.scss'
 
 export interface IVenueProviderItemV2Props {

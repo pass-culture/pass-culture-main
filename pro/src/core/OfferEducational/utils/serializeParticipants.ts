@@ -1,6 +1,7 @@
-import { IOfferEducationalFormValues } from '../types'
-import { PARTICIPANTS } from '../constants'
 import { StudentLevels } from 'apiClient/v1'
+
+import { PARTICIPANTS } from '../constants'
+import { IOfferEducationalFormValues } from '../types'
 
 export const serializeParticipants = (
   participants: IOfferEducationalFormValues['participants']

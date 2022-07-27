@@ -1,5 +1,7 @@
-import ConfirmDialog from 'new_components/ConfirmDialog'
 import React from 'react'
+
+import ConfirmDialog from 'new_components/ConfirmDialog'
+
 import style from './DeleteVenueProviderDialog.module.scss'
 
 export interface IDeleteVenueProviderDialogProps {

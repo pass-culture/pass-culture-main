@@ -1,13 +1,13 @@
+import { useFormikContext } from 'formik'
+import React, { useEffect, useState } from 'react'
+
+import { musicOptionsTree } from 'core/Offers/categoriesSubTypes'
+import FormLayout from 'new_components/FormLayout'
 import {
   FORM_DEFAULT_VALUES,
   IOfferIndividualFormValues,
 } from 'new_components/OfferIndividualForm'
-import React, { useEffect, useState } from 'react'
-
-import FormLayout from 'new_components/FormLayout'
 import { Select } from 'ui-kit'
-import { musicOptionsTree } from 'core/Offers/categoriesSubTypes'
-import { useFormikContext } from 'formik'
 
 const MusicTypes = (): JSX.Element => {
   const [musicTypesOptions, setMusicTypesOptions] = useState<{

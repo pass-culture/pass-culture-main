@@ -1,19 +1,19 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
+import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router'
+
+import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { CATEGORY_STATUS } from 'core/Offers'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+import { FORM_DEFAULT_VALUES } from 'new_components/OfferIndividualForm'
 import * as utils from 'screens/OfferIndividual/Informations/utils'
+import { configureTestStore } from 'store/testUtils'
 
 import { IInformationsProps, Informations as InformationsScreen } from '..'
-import { render, screen } from '@testing-library/react'
-
-import { CATEGORY_STATUS } from 'core/Offers'
-import { FORM_DEFAULT_VALUES } from 'new_components/OfferIndividualForm'
-import { MemoryRouter } from 'react-router'
-import { Provider } from 'react-redux'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
-import React from 'react'
-import { TOfferIndividualVenue } from 'core/Venue/types'
-import { configureTestStore } from 'store/testUtils'
-import userEvent from '@testing-library/user-event'
 
 jest.mock('screens/OfferIndividual/Informations/utils', () => {
   return {

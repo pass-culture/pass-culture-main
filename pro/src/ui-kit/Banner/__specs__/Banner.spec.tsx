@@ -1,9 +1,9 @@
 import '@testing-library/jest-dom'
 
-import Banner, { IBannerProps } from '../Banner'
 import { render, screen } from '@testing-library/react'
-
 import React from 'react'
+
+import Banner, { IBannerProps } from '../Banner'
 
 describe('src | components | layout | Banner', () => {
   describe('render', () => {

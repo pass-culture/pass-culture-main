@@ -1,6 +1,8 @@
-import { Form } from 'react-final-form'
-import PasswordField from 'components/layout/form/fields/PasswordField'
 import React from 'react'
+import { Form } from 'react-final-form'
+
+import PasswordField from 'components/layout/form/fields/PasswordField'
+
 import styles from './ChangePasswordForm.module.scss'
 
 interface IChangePasswordForm {

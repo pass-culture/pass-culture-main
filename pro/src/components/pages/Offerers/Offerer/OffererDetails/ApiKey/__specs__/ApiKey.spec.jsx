@@ -1,18 +1,18 @@
 import '@testing-library/jest-dom'
 
-import * as notificationReducer from 'store/reducers/notificationReducer'
-import * as pcapi from 'repository/pcapi/pcapi'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
+import { Provider } from 'react-redux'
 
+import * as pcapi from 'repository/pcapi/pcapi'
+import * as notificationReducer from 'store/reducers/notificationReducer'
+import { configureTestStore } from 'store/testUtils'
 import {
   failToGenerateOffererApiKey,
   generateFakeOffererApiKey,
 } from 'utils/fakeApi'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import ApiKey from '../ApiKey'
-import { Provider } from 'react-redux'
-import React from 'react'
-import { configureTestStore } from 'store/testUtils'
 
 const store = configureTestStore()
 const defaultProps = {

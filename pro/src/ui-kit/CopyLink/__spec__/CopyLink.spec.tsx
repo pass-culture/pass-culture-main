@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import React from 'react'
 
 import CopyLink from 'ui-kit/CopyLink'
 import { ICopyLink } from 'ui-kit/CopyLink/CopyLink'
-import React from 'react'
-import userEvent from '@testing-library/user-event'
 
 const renderCopyLink = (props: ICopyLink) => {
   return render(<CopyLink {...props} />)

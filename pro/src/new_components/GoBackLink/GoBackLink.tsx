@@ -1,7 +1,9 @@
-import Icon from 'components/layout/Icon'
-import { NavLink } from 'react-router-dom'
-import React from 'react'
 import cn from 'classnames'
+import React from 'react'
+import { NavLink } from 'react-router-dom'
+
+import Icon from 'components/layout/Icon'
+
 import styles from './GoBackLink.module.scss'
 
 interface GoBackLinkProps {

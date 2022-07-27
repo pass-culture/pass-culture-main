@@ -1,10 +1,11 @@
+import cn from 'classnames'
+import React from 'react'
+
+import style from './OfferFormLayout.module.scss'
 import ActionBar from './OfferFormLayoutActionBar'
 import Content from './OfferFormLayoutContent'
-import React from 'react'
 import Stepper from './OfferFormLayoutStepper'
 import TitleBlock from './OfferFormLayoutTitleBlock'
-import cn from 'classnames'
-import style from './OfferFormLayout.module.scss'
 
 interface IOfferFormLayoutProps {
   children: React.ReactNode | React.ReactNode[]

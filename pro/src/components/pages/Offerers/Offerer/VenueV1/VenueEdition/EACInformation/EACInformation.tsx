@@ -1,11 +1,12 @@
-import { Banner, ButtonLink } from 'ui-kit'
-
-import { ButtonVariant } from 'ui-kit/Button/types'
-import CollectiveData from './CollectiveData'
-import { ReactComponent as EditIcon } from 'icons/ico-pen.svg'
-import { GetVenueResponseModel } from 'apiClient/v1'
-import React from 'react'
 import cn from 'classnames'
+import React from 'react'
+
+import { GetVenueResponseModel } from 'apiClient/v1'
+import { ReactComponent as EditIcon } from 'icons/ico-pen.svg'
+import { Banner, ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
+
+import CollectiveData from './CollectiveData'
 import styles from './EACInformation.module.scss'
 import { venueHasCollectiveInformation } from './utils/venueHasCollectiveInformation'
 

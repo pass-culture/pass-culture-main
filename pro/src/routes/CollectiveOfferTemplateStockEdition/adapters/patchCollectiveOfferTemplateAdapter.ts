@@ -1,11 +1,10 @@
+import { api } from 'apiClient/api'
+import { isErrorAPIError } from 'apiClient/helpers'
+import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
 import {
   GetStockOfferSuccessPayload,
   OfferEducationalStockFormValues,
 } from 'core/OfferEducational'
-
-import { GetCollectiveOfferTemplateResponseModel } from 'apiClient/v1'
-import { api } from 'apiClient/api'
-import { isErrorAPIError } from 'apiClient/helpers'
 
 export type Params = {
   offer: GetStockOfferSuccessPayload

@@ -1,6 +1,7 @@
-import InputError from '../Errors/InputError'
 import PropTypes from 'prop-types'
 import React from 'react'
+
+import InputError from '../Errors/InputError'
 
 const TextInput = ({
   countCharacters,

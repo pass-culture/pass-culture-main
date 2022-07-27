@@ -1,15 +1,15 @@
 import '@testing-library/jest-dom'
 
+import { render, screen } from '@testing-library/react'
+import { Formik } from 'formik'
+import React from 'react'
 import * as yup from 'yup'
 
-import { UsefulInformations, validationSchema } from '..'
-import { render, screen } from '@testing-library/react'
-
-import { Formik } from 'formik'
-import { IUsefulInformationsProps } from '../UsefulInformations'
-import React from 'react'
-import { TOfferIndividualVenue } from 'core/Venue/types'
 import { TOffererName } from 'core/Offerers/types'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+
+import { UsefulInformations, validationSchema } from '..'
+import { IUsefulInformationsProps } from '../UsefulInformations'
 
 interface IInitialValues {
   offererId: string

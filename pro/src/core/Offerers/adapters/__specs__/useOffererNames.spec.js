@@ -1,8 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { api } from 'apiClient/api'
 import { renderHook } from '@testing-library/react-hooks'
+
+import { api } from 'apiClient/api'
+import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
+
 import { useGetOffererNames } from '..'
 
 describe('useOffererNames', () => {

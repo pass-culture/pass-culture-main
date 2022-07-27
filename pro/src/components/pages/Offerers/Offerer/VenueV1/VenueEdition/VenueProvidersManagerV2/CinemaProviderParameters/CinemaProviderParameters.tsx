@@ -1,12 +1,15 @@
-import * as pcapi from 'repository/pcapi/pcapi'
 import React, { useCallback, useState } from 'react'
+
+import useNotification from 'components/hooks/useNotification'
+import * as pcapi from 'repository/pcapi/pcapi'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
+
 import { CinemaProviderFormDialog } from '../../VenueProvidersManager/CinemaProviderFormDialog/CinemaProviderFormDialog'
-import { ICinemaProviderParametersValues } from './types'
 import { IVenueProviderApi } from '../../VenueProvidersManager/CinemaProviderItem/types'
+
 import style from './CinemaProviderParameters.module.scss'
-import useNotification from 'components/hooks/useNotification'
+import { ICinemaProviderParametersValues } from './types'
 
 export interface ICinemaProviderParametersProps {
   venueProvider: IVenueProviderApi

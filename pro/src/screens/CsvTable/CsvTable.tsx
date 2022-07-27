@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-
-import { API_URL } from 'utils/config'
-import { Button } from 'ui-kit/Button'
-import type { ITableData } from 'screens/CsvTable'
-import Spinner from 'components/layout/Spinner'
-import { getKey } from 'utils/strings'
 import { useLocation } from 'react-router-dom'
+
+import Spinner from 'components/layout/Spinner'
+import type { ITableData } from 'screens/CsvTable'
+import { Button } from 'ui-kit/Button'
+import { API_URL } from 'utils/config'
+import { getKey } from 'utils/strings'
 
 export interface ICsvTableProps {
   getCsvData: (url: string) => Promise<ITableData | null>

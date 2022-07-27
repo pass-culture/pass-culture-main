@@ -1,7 +1,7 @@
-import { Link, useLocation } from 'react-router-dom'
-import React, { FunctionComponent, SVGProps } from 'react'
-
 import cn from 'classnames'
+import React, { FunctionComponent, SVGProps } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+
 import styles from './Tabs.module.scss'
 
 interface ITab {

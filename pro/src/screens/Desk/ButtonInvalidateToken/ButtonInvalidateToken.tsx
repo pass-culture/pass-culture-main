@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 
+import ConfirmDialog from 'new_components/ConfirmDialog'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import ConfirmDialog from 'new_components/ConfirmDialog'
 
 interface IButtonInvalidateTokenProps {
   onConfirm: () => void

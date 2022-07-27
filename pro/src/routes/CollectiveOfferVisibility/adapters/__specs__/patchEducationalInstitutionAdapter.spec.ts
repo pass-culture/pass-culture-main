@@ -1,5 +1,6 @@
-import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 import { api } from 'apiClient/api'
+import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
+
 import { patchEducationalInstitutionAdapter } from '../patchEducationalInstitutionAdapter'
 
 describe('patchEducationalInstitutionAdapter', () => {

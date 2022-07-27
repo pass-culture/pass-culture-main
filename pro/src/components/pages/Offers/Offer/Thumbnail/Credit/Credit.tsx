@@ -1,7 +1,7 @@
+import PropTypes from 'prop-types'
 import React, { FunctionComponent, useCallback, useState } from 'react'
 
 import { CreditInput } from 'new_components/CreditInput/CreditInput'
-import PropTypes from 'prop-types'
 
 interface Props {
   credit: string

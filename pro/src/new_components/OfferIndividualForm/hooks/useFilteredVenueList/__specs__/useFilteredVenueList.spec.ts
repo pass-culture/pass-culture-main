@@ -1,11 +1,13 @@
 import '@testing-library/jest-dom'
 
-import { CATEGORY_STATUS } from 'core/Offers'
-import { IUseFilteredVenueListProps } from '../useFilteredVenueList'
-import { REIMBURSEMENT_RULES } from 'core/Finances'
-import { TOfferIndividualVenue } from 'core/Venue/types'
 import { renderHook } from '@testing-library/react-hooks'
+
+import { REIMBURSEMENT_RULES } from 'core/Finances'
+import { CATEGORY_STATUS } from 'core/Offers'
+import { TOfferIndividualVenue } from 'core/Venue/types'
+
 import { useFilteredVenueList } from '../'
+import { IUseFilteredVenueListProps } from '../useFilteredVenueList'
 
 describe('useFilteredVenueList', () => {
   let props: IUseFilteredVenueListProps

@@ -1,9 +1,10 @@
+import cn from 'classnames'
 import React, { FunctionComponent } from 'react'
 
 import { SubmitButton } from 'ui-kit'
-import { VenuePreviews } from './VenuePreviews/VenuePreviews'
-import cn from 'classnames'
+
 import style from './VenueImagePreview.module.scss'
+import { VenuePreviews } from './VenuePreviews/VenuePreviews'
 
 type PropsWithActions = {
   withActions: true

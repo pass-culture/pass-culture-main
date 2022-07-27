@@ -1,19 +1,20 @@
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+
 import {
   Events,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from 'core/FirebaseEvents/constants'
-import React, { useEffect, useState } from 'react'
-
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
+import { SummaryLayout } from 'new_components/SummaryLayout'
+import { RootState } from 'store/reducers'
 import { Button } from 'ui-kit'
 import { ButtonVariant } from 'ui-kit/Button/types'
-import type { IStockEventItemProps } from './StockEventItem'
-import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { ROOT_PATH } from 'utils/config'
-import { RootState } from 'store/reducers'
+
+import type { IStockEventItemProps } from './StockEventItem'
 import { StockEventItem } from './StockEventItem'
-import { SummaryLayout } from 'new_components/SummaryLayout'
 import styles from './StockEventSection.module.scss'
-import { useSelector } from 'react-redux'
 
 const NB_UNFOLDED_STOCK = 2
 

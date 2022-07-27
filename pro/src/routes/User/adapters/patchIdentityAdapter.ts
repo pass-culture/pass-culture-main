@@ -1,10 +1,9 @@
+import { api } from 'apiClient/api'
 import {
   ApiError,
   UserIdentityBodyModel,
   UserIdentityResponseModel,
 } from 'apiClient/v1'
-
-import { api } from 'apiClient/api'
 
 type IPayloadFailure = Record<string, string>
 export type PatchIdentityAdapter = Adapter<
