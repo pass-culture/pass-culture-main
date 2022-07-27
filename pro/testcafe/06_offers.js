@@ -7,8 +7,6 @@ import {
   navigateToOfferDetailsAs,
   navigateToOffersAs,
 } from './helpers/navigations'
-
-/* eslint-disable max-lines */
 import { createUserRole } from './helpers/roles'
 import { fetchSandbox } from './helpers/sandboxes'
 

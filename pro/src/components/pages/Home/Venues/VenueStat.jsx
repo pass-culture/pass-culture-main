@@ -3,7 +3,7 @@ import React from 'react'
 
 import { ReactComponent as LoaderSvg } from 'icons/ico-passculture.svg'
 
-export const VenueStat = ({ stat }) => (
+const VenueStat = ({ stat }) => (
   <div className="h-card-col" data-testid="venue-stat">
     {stat.count ? (
       <div className="venue-stat-count">{stat.count}</div>

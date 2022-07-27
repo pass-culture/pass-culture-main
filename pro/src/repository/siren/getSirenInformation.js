@@ -1,4 +1,4 @@
-export const getSirenInformation = async siren => {
+const getSirenInformation = async siren => {
   const sirenUrl = `https://entreprise.data.gouv.fr/api/sirene/v3/unites_legales/${siren}`
 
   const response = await fetch(sirenUrl)

@@ -8,19 +8,18 @@ const FAILING_RESPONSE: AdapterFailure<boolean> = {
   payload: false,
 }
 
-export const getFilteredBookingsRecapAdapter: GetUserHasBookingsAdapter =
-  async () => {
-    try {
-      const { hasBookings } = await pcapi.getUserHasBookings()
+const getFilteredBookingsRecapAdapter: GetUserHasBookingsAdapter = async () => {
+  try {
+    const { hasBookings } = await pcapi.getUserHasBookings()
 
-      return {
-        isOk: true,
-        message: null,
-        payload: hasBookings,
-      }
-    } catch (e) {
-      return FAILING_RESPONSE
+    return {
+      isOk: true,
+      message: null,
+      payload: hasBookings,
     }
+  } catch (e) {
+    return FAILING_RESPONSE
   }
+}
 
 export default getFilteredBookingsRecapAdapter
