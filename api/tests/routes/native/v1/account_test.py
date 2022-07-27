@@ -322,6 +322,8 @@ class AccountCreationTest:
         assert user.email == "john.doe@example.com"
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated is False
+        assert user.checkPassword(data["password"])
+
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
@@ -335,59 +337,6 @@ class AccountCreationTest:
         ).one_or_none()
         assert email_validation_token is not None
         assert "performance-tests" not in email_validation_token.value
-
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_existing_validated_email_sends_email(
-        self, mocked_check_recaptcha_token_is_valid, client, app
-    ):
-        users_factories.UserFactory(email=self.identifier)
-        mocked_check_recaptcha_token_is_valid.return_value = None
-
-        data = {
-            "email": "eMail@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "gnagna",
-            "marketingEmailSubscription": True,
-        }
-
-        response = client.post("/native/v1/account", json=data)
-        assert response.status_code == 204, response.json
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EMAIL_ALREADY_EXISTS.value
-        )
-        assert not push_testing.requests
-
-    @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
-    def test_account_creation_with_unvalidated_existing_email_sends_email(
-        self, mocked_check_recaptcha_token_is_valid, client, app
-    ):
-        subscriber = users_factories.UserFactory(email=self.identifier, isEmailValidated=False)
-        users_factories.EmailValidationToken(user=subscriber)
-        mocked_check_recaptcha_token_is_valid.return_value = None
-
-        data = {
-            "email": "eMail@example.com",
-            "password": "Aazflrifaoi6@",
-            "birthdate": "1960-12-31",
-            "notifications": True,
-            "token": "some-token",
-            "marketingEmailSubscription": True,
-        }
-
-        response = client.post("/native/v1/account", json=data)
-        assert response.status_code == 204, response.json
-        assert len(mails_testing.outbox) == 1
-        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
-            TransactionalEmail.EMAIL_ALREADY_EXISTS.value
-        )
-        assert not push_testing.requests
-        subscriber.checkPassword(data["password"])
-
-        tokens = users_models.Token.query.all()
-        assert len(tokens) == 2
 
     @patch("pcapi.connectors.api_recaptcha.check_recaptcha_token_is_valid")
     def test_too_young_account_creation(self, mocked_check_recaptcha_token_is_valid, client, app):
@@ -428,6 +377,71 @@ class AccountCreationTest:
             users_models.Token.query.filter_by(user=user).first().value
             == f"performance-tests_email-validation_{user.id}"
         )
+
+
+class AccountCreationEmailExistsTest:
+    identifier = "email@example.com"
+
+    @property
+    def data(self):
+        return {
+            "email": self.identifier,
+            "password": "Aazflrifaoi6@",
+            "birthdate": "1960-12-31",
+            "notifications": True,
+            "token": "gnagna",
+            "marketingEmailSubscription": True,
+        }
+
+    def assert_email_sent(self, response, user):
+        """
+        An email sent here implies:
+            1. an OK http status code returned by the api
+            2. an email with the right template
+            3. a RESET_PASSWORD token created
+        """
+        assert response.status_code == 204, response.json
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0].sent_data["template"] == dataclasses.asdict(
+            TransactionalEmail.EMAIL_ALREADY_EXISTS.value
+        )
+
+        assert users_models.Token.query.filter_by(type=users_models.TokenType.RESET_PASSWORD, userId=user.id).one()
+
+    def test_active_account(self, client):
+        user = users_factories.UserFactory(email=self.identifier)
+
+        response = client.post("/native/v1/account", json=self.data)
+        self.assert_email_sent(response, user)
+
+    def test_suspended_by_fraud_account(self, client):
+        user = users_factories.UserFactory(email=self.identifier, isActive=False)
+        users_factories.UserSuspensionByFraudFactory(user=user)
+
+        response = client.post("/native/v1/account", json=self.data)
+        self.assert_email_sent(response, user)
+
+    def test_suspended_upon_user_request_account(self, client):
+        user = users_factories.UserFactory(email=self.identifier, isActive=False)
+        users_factories.SuspendedUponUserRequestFactory(user=user)
+
+        response = client.post("/native/v1/account", json=self.data)
+        self.assert_email_sent(response, user)
+
+    def test_deleted_account(self, client):
+        user = users_factories.UserFactory(email=self.identifier, isActive=False)
+        users_factories.DeletedAccountSuspensionFactory(user=user)
+
+        response = client.post("/native/v1/account", json=self.data)
+        self.assert_email_sent(response, user)
+
+    def test_email_exists_but_not_validated(self, client):
+        user = users_factories.UserFactory(email=self.identifier, isEmailValidated=False)
+        users_factories.EmailValidationToken(user=user)
+
+        response = client.post("/native/v1/account", json=self.data)
+        self.assert_email_sent(response, user)
 
 
 class UserProfileUpdateTest:
