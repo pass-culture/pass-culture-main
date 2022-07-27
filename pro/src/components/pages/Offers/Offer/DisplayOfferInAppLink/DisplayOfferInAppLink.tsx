@@ -14,7 +14,11 @@ export const DisplayOfferInAppLink: FunctionComponent<Props> = ({
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${nonHumanizedId}`
 
   return (
-    <DisplayInAppLink className="secondary-link" link={offerPreviewUrl}>
+    <DisplayInAppLink
+      className="secondary-link"
+      link={offerPreviewUrl}
+      trackOffer
+    >
       Visualiser dans l’app
     </DisplayInAppLink>
   )

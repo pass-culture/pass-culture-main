@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import useActiveFeature from 'components/hooks/useActiveFeature'
@@ -10,10 +11,17 @@ import Icon from 'components/layout/Icon'
 import Thumb from 'components/layout/Thumb'
 import { isOfferDisabled } from 'components/pages/Offers/domain/isOfferDisabled'
 import StatusLabel from 'components/pages/Offers/Offer/OfferStatus/StatusLabel'
+import {
+  Events,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import { OFFER_STATUS_SOLD_OUT } from 'core/Offers/constants'
 import { Offer } from 'core/Offers/types'
 import { Audience } from 'core/shared'
+import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { computeVenueDisplayName } from 'repository/venuesService'
+import { RootState } from 'store/reducers'
 import { pluralize } from 'utils/pluralize'
 import { formatLocalTimeDateString } from 'utils/timezone'
 
@@ -34,6 +42,7 @@ const OfferItem = ({
 }: OfferItemProps) => {
   const { venue, stocks, id, isEducational, isShowcase } = offer
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
   const editionOfferLink = useOfferEditionURL(
     isEducational,
     id,
@@ -115,6 +124,14 @@ const OfferItem = ({
           <Link
             className="name"
             title={`${offer.name} - éditer l'offre`}
+            onClick={() =>
+              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+                to: OfferBreadcrumbStep.SUMMARY,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_THUMB,
+                isEdition: true,
+              })
+            }
             to={editionOfferLink}
           >
             <Thumb
@@ -128,6 +145,14 @@ const OfferItem = ({
         <Link
           className="name"
           title={`${offer.name} - éditer l'offre`}
+          onClick={() =>
+            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+              to: OfferBreadcrumbStep.SUMMARY,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TITLE,
+              isEdition: true,
+            })
+          }
           to={editionOfferLink}
         >
           {offer.name}
@@ -163,14 +188,36 @@ const OfferItem = ({
         <StatusLabel status={offer.status} />
       </td>
       <td className="switch-column">
-        <Link className="secondary-link with-icon" to={editionStockLink}>
+        <Link
+          className="secondary-link with-icon"
+          onClick={() =>
+            logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+              from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+              to: OfferBreadcrumbStep.STOCKS,
+              used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_STOCKS,
+              isEdition: true,
+            })
+          }
+          to={editionStockLink}
+        >
           <Icon svg="ico-guichet-full" />
           Stocks
         </Link>
       </td>
       <td className="edit-column">
         {isOfferEditable && (
-          <Link className="secondary-link" to={editionOfferLink}>
+          <Link
+            className="secondary-link"
+            onClick={() =>
+              logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+                from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+                to: OfferBreadcrumbStep.SUMMARY,
+                used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_PEN,
+                isEdition: true,
+              })
+            }
+            to={editionOfferLink}
+          >
             <Icon alt={`${offer.name} - éditer l'offre`} svg="ico-pen" />
           </Link>
         )}

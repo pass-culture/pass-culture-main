@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 
 import ActionsBarPortal from 'components/layout/ActionsBarPortal/ActionsBarPortal'
@@ -6,6 +7,12 @@ import PageTitle from 'components/layout/PageTitle/PageTitle'
 import Titles from 'components/layout/Titles/Titles'
 import ActionsBar from 'components/pages/Offers/Offers/ActionsBar'
 import OffersContainer from 'components/pages/Offers/Offers/Offers'
+import {
+  Events,
+  OFFER_FORM_HOMEPAGE,
+  OFFER_FORM_NAVIGATION_IN,
+  OFFER_FORM_NAVIGATION_MEDIUM,
+} from 'core/FirebaseEvents/constants'
 import {
   DEFAULT_SEARCH_FILTERS,
   MAX_TOTAL_PAGES,
@@ -19,6 +26,7 @@ import { ReactComponent as LibraryIcon } from 'icons/library.svg'
 import { ReactComponent as UserIcon } from 'icons/user.svg'
 import NoOffers from 'new_components/NoData'
 import Tabs from 'new_components/Tabs'
+import { RootState } from 'store/reducers'
 
 import SearchFilters from './SearchFilters'
 
@@ -64,6 +72,7 @@ const Offers = ({
 
   const [areAllOffersSelected, setAreAllOffersSelected] = useState(false)
   const [selectedOfferIds, setSelectedOfferIds] = useState<string[]>([])
+  const logEvent = useSelector((state: RootState) => state.app.logEvent)
 
   const { isAdmin } = currentUser || {}
   const currentPageOffersSubset = offers.slice(
@@ -97,7 +106,18 @@ const Offers = ({
   )
 
   const actionLink = isAdmin ? null : (
-    <Link className="primary-button with-icon" to="/offre/creation">
+    <Link
+      className="primary-button with-icon"
+      onClick={() =>
+        logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
+          from: OFFER_FORM_NAVIGATION_IN.OFFERS,
+          to: OFFER_FORM_HOMEPAGE,
+          used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_BUTTON,
+          isEdition: false,
+        })
+      }
+      to="/offre/creation"
+    >
       <AddOfferSvg />
       Créer une offre
     </Link>

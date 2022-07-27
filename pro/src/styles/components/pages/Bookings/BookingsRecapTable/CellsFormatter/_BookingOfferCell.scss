@@ -9,6 +9,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  &:hover,
+  &:focus {
+    text-decoration: underline;
+  }
 }
 
 .booking-offer-additional-info {
