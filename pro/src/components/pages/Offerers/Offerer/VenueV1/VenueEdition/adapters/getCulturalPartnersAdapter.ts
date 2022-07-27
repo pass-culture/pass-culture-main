@@ -11,7 +11,7 @@ const getCulturalPartnersAdapter: GetCulturalPartnersAdapter = async () => {
       isOk: true,
       message: '',
       payload: response.partners.map(partner => ({
-        value: partner.id,
+        value: partner.id.toString(),
         label: partner.libelle,
       })),
     }
