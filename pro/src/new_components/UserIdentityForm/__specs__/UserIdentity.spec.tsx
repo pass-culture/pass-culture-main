@@ -1,56 +1,42 @@
 // react-testing-library doc: https://testing-library.com/docs/react-testing-library/api
 import '@testing-library/jest-dom'
 
-import * as yup from 'yup'
-
-import { Banner, TextInput } from 'ui-kit'
 import { render, screen } from '@testing-library/react'
 
-import { IProfileFormProps } from '../ProfileForm'
-import { ProfileForm } from '../'
+import { Banner } from 'ui-kit'
+import { IUserIdentityFormProps } from '../UserIdentityForm'
 import React from 'react'
+import { UserIdentityForm } from '../'
 import userEvent from '@testing-library/user-event'
 
-const defaultFields = [
-  <TextInput label="Prénom" name="firstName" />,
-  <TextInput label="Nom" name="lastName" />,
-]
+const onUserIdentityFormSubmit = jest.fn()
 
-const defaultSchema = yup.object().shape({
-  firstName: yup.string().max(128).required(),
-  lastName: yup.string().max(128).required(),
-})
-
-const onProfileFormSubmit = jest.fn()
-
-const renderProfileForm = (props: IProfileFormProps) => {
-  return render(<ProfileForm {...props} />)
+const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
+  return render(<UserIdentityForm {...props} />)
 }
 
-describe('new_components:ProfileForm', () => {
-  let props: IProfileFormProps
+describe('new_components:UserIdentityForm', () => {
+  let props: IUserIdentityFormProps
   beforeEach(() => {
     props = {
       title: 'What are you?',
       subtitleFormat: () => 'A bird',
-      fields: defaultFields,
-      validationSchema: defaultSchema,
       initialValues: {
         firstName: 'FirstName',
         lastName: 'lastName',
       },
       banner: <Banner>Banner test text</Banner>,
       shouldDisplayBanner: false,
-      adapter: onProfileFormSubmit,
+      patchIdentityAdapter: onUserIdentityFormSubmit,
     }
   })
   it('renders component successfully', () => {
-    renderProfileForm(props)
+    renderUserIdentityForm(props)
     const element = screen.getByTestId(/test-profile-form/i)
     expect(element).toBeInTheDocument()
   })
   it('should toggle a slider when editing / closing the form', async () => {
-    renderProfileForm(props)
+    renderUserIdentityForm(props)
     const editButton = screen.getByText('Modifier')
     await userEvent.click(editButton)
     expect(editButton).not.toBeInTheDocument()
@@ -60,16 +46,16 @@ describe('new_components:ProfileForm', () => {
     expect(screen.getByText('Modifier')).toBeInTheDocument()
   })
   it('should trigger onSubmit callback when submitting', async () => {
-    renderProfileForm(props)
+    renderUserIdentityForm(props)
     await userEvent.click(screen.getByText('Modifier'))
     await userEvent.type(screen.getByLabelText('Prénom'), 'Harry')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    await expect(onProfileFormSubmit).toHaveBeenCalledTimes(1)
+    await expect(onUserIdentityFormSubmit).toHaveBeenCalledTimes(1)
   })
   it('should render a banner when shouldDisplayBanner', async () => {
     props.shouldDisplayBanner = true
-    renderProfileForm(props)
+    renderUserIdentityForm(props)
     const bannerText = screen.getByText('Banner test text')
     expect(bannerText).toBeInTheDocument()
     await userEvent.click(screen.getByText('Modifier'))
