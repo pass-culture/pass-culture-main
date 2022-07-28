@@ -109,7 +109,7 @@ const CollectiveDataEdition = (): JSX.Element => {
   return (
     <div className={styles['collective-data-edition']}>
       <GoBackLink
-        to={`/structures/${offererId}/lieux/${venueId}}`}
+        to={`/structures/${offererId}/lieux/${venueId}`}
         title="Retour page lieu"
       />
 
