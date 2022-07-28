@@ -51,9 +51,8 @@ export const ManualReviewModal = ({
     { id: 'REDIRECTED_TO_DMS', name: 'Renvoi vers DMS' },
   ]
   const eligibilityChoices = [
-    { id: '', name: 'Par Défaut' },
-    { id: 'UNDERAGE', name: 'Pass 15-17' },
-    { id: 'AGE18', name: 'Pass 18 ans' },
+    { id: 'UNDERAGE', name: 'Pass 15-17', eligibility: 'UNDERAGE' },
+    { id: 'AGE18', name: 'Pass 18 ans', eligibility: 'AGE18' },
   ]
 
   const handleOpenModal = () => {
@@ -122,7 +121,6 @@ export const ManualReviewModal = ({
               <SelectInput
                 source="review"
                 label={'Nouveau Statut'}
-                emptyValue={null}
                 fullWidth
                 variant={'outlined'}
                 choices={statusChoices}
@@ -140,8 +138,11 @@ export const ManualReviewModal = ({
                 source="eligibility"
                 label={'Éligibilité'}
                 variant={'outlined'}
+                emptyText={'Par défaut'}
+                emptyValue={null}
                 fullWidth
                 choices={eligibilityChoices}
+                optionValue="eligibility"
               />
             </Stack>
             <Stack spacing={2} direction={'row'}>

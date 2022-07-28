@@ -27,26 +27,6 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
 
   const [editable, setEditable] = useState(false)
 
-  async function resendValidationEmail() {
-    try {
-      const response = await dataProvider.postResendValidationEmail(
-        'public_accounts',
-        user
-      )
-      const responseData = await response.json()
-      if (response.code === 400) {
-        notify(Object.values(responseData)[0] as string, { type: 'error' })
-      }
-    } catch (error) {
-      if (error instanceof PcApiHttpError) {
-        notify(getHttpApiErrorMessage(error), { type: 'error' })
-      } else {
-        notify('Une erreur est survenue !', { type: 'error' })
-      }
-      captureException(error)
-    }
-  }
-
   async function skipPhoneValidation() {
     try {
       const response = await dataProvider.postSkipPhoneValidation(
@@ -183,13 +163,6 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
                       style={{ width: '100%' }}
                       type={'email'}
                     />
-
-                    <Button
-                      variant={'outlined'}
-                      onClick={resendValidationEmail}
-                    >
-                      Renvoyer l'email de validation
-                    </Button>
                   </>
                 )}
               </Grid>
@@ -242,6 +215,7 @@ export const UserDetailsCard = ({ user, firstFraudCheck }: Props) => {
                         disabled={!user.phoneNumber}
                         variant="outlined"
                         onClick={skipPhoneValidation}
+                        style={{ visibility: 'hidden' }}
                       >
                         Confirmer manuellement
                       </Button>
