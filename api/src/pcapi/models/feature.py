@@ -120,6 +120,10 @@ class FeatureToggle(enum.Enum):
     USE_PRICING_POINT_FOR_PRICING = "Utilise le modèle VenuePricingPointLink pour la valorisation"
     USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS = "Utilise le modèle VenueReimbursementPointLink pour les cashflows"
     ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER = "Ajoute la gestion des zones de mobilité/intervention pour les AC."
+    ENABLE_EAC_FINANCIAL_PROTECTION = (
+        "Protege le pass culture contre les ministeres qui dépenseraient plus que leur budget sur les 4 derniers mois "
+        "de l'année"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -181,6 +185,7 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.USE_PRICING_POINT_FOR_PRICING,
     FeatureToggle.USE_REIMBURSEMENT_POINT_FOR_CASHFLOWS,
     FeatureToggle.ENABLE_INTERVENTION_ZONE_COLLECTIVE_OFFER,
+    FeatureToggle.ENABLE_EAC_FINANCIAL_PROTECTION,
 )
 
 
