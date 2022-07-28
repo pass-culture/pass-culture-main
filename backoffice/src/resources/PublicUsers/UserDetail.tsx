@@ -1,4 +1,5 @@
 import {
+  alpha,
   Box,
   Button,
   Card,
@@ -17,6 +18,7 @@ import {
   Identifier,
   useAuthenticated,
   useGetOne,
+  useNotify,
   useRedirect,
 } from 'react-admin'
 import { useParams } from 'react-router-dom'
@@ -36,6 +38,12 @@ import {
   EligibilitySubscriptionItem,
   UserBaseInfo,
 } from './types'
+import { dataProvider } from '../../providers/dataProvider'
+import {
+  getHttpApiErrorMessage,
+  PcApiHttpError,
+} from '../../providers/apiHelpers'
+import { captureException } from '@sentry/react'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -93,7 +101,26 @@ export const UserDetail = () => {
     // redirect to the list if the book is not found
     { onError: () => redirect('/public_users/search') }
   )
-
+  const notify = useNotify()
+  async function resendValidationEmail() {
+    try {
+      const response = await dataProvider.postResendValidationEmail(
+        'public_accounts',
+        userBaseInfo
+      )
+      const responseData = await response.json()
+      if (response.code === 400) {
+        notify(Object.values(responseData)[0] as string, { type: 'error' })
+      }
+    } catch (error) {
+      if (error instanceof PcApiHttpError) {
+        notify(getHttpApiErrorMessage(error), { type: 'error' })
+      } else {
+        notify('La confirmation a été envoyée avec succès', { type: 'success' })
+      }
+      captureException(error)
+    }
+  }
   if (isLoading) {
     return <CircularProgress size={18} thickness={2} />
   } else if (!userBaseInfo) {
@@ -114,8 +141,8 @@ export const UserDetail = () => {
 
   const digitalCreditProgression = (remainingCredit / initialCredit) * 100
 
-  const subscriptionItems: EligibilitySubscriptionItem[] = []
-  const idsCheckHistory: EligibilityFraudCheck[] = []
+  let subscriptionItems: EligibilitySubscriptionItem[] = []
+  let idsCheckHistory: EligibilityFraudCheck[] = []
 
   const idCheckHistoryLengthAge18 = AGE18?.idCheckHistory?.length
   const idCheckHistoryLengthUnderage = UNDERAGE?.idCheckHistory?.length
@@ -162,6 +189,9 @@ export const UserDetail = () => {
         items: UNDERAGE.subscriptionItems,
       }
     )
+  } else {
+    idsCheckHistory = []
+    subscriptionItems = []
   }
 
   return (
@@ -198,6 +228,14 @@ export const UserDetail = () => {
                   <strong>E-mail : </strong>
                   {userBaseInfo.email}
                 </Typography>
+                <Button
+                  variant={'outlined'}
+                  onClick={resendValidationEmail}
+                  size={'small'}
+                  sx={{ mb: 2 }}
+                >
+                  Renvoyer l'email de validation
+                </Button>
                 <Typography variant="body1" gutterBottom component="div">
                   <strong>Tél : </strong>
                   {userBaseInfo.phoneNumber}
@@ -218,7 +256,11 @@ export const UserDetail = () => {
           <Grid item xs={2}>
             <div>
               <Stack spacing={2}>
-                <Button variant={'contained'} disabled>
+                <Button
+                  variant={'contained'}
+                  disabled
+                  style={{ visibility: 'hidden' }}
+                >
                   Suspendre le compte
                 </Button>
 
@@ -302,10 +344,13 @@ export const UserDetail = () => {
             <Typography variant={'h5'}>
               Dossier{' '}
               <strong>
-                {idsCheckHistory[0] && idsCheckHistory[0].items[0].type}
+                {idsCheckHistory.length > 0 &&
+                  idsCheckHistory[0].items.length > 0 &&
+                  idsCheckHistory[0].items[0].type}
               </strong>{' '}
               importé le :{' '}
-              {idsCheckHistory[0] &&
+              {idsCheckHistory.length > 0 &&
+                idsCheckHistory[0].items.length > 0 &&
                 moment(idsCheckHistory[0].items[0].dateCreated).format(
                   'D/MM/YYYY à HH:mm'
                 )}
@@ -314,7 +359,13 @@ export const UserDetail = () => {
         </Grid>
       </Grid>
       <Grid container spacing={2} sx={{ mt: 3 }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', width: '100%' }}>
+        <Box
+          sx={{
+            borderBottom: 1,
+            borderColor: 'divider',
+            width: '100%',
+          }}
+        >
           <Tabs
             value={tabValue}
             onChange={handleChange}
@@ -322,93 +373,110 @@ export const UserDetail = () => {
             variant="fullWidth"
           >
             <Tab label="" {...a11yProps(0)} disabled />
-            <Tab label="Informations Personnelles" {...a11yProps(1)} />
+            <Tab
+              label="Informations Personnelles"
+              {...a11yProps(1)}
+              sx={{ bgcolor: alpha(Colors.GREY, 0.1) }}
+            />
             <Tab label="" {...a11yProps(2)} disabled />
           </Tabs>
-        </Box>
-        <TabPanel value={tabValue} index={0}>
-          Bientôt disponible
-        </TabPanel>
-        <TabPanel value={tabValue} index={1}>
-          <Stack spacing={3}>
-            <Card style={cardStyle}>
-              <Typography variant={'body1'} sx={{ color: Colors.GREY, mb: 4 }}>
-                Accès
-              </Typography>
-              <Grid container spacing={5}>
-                <Grid item xs={4}>
-                  <Link
-                    role={'link'}
-                    href={'#details-user'}
-                    color={Colors.GREY}
-                    variant="body2"
-                  >
-                    DÉTAILS UTILISATEUR
-                  </Link>
-                </Grid>
-                <Grid item xs={4}>
-                  <Link
-                    role={'link'}
-                    href={'#parcours-register'}
-                    color={Colors.GREY}
-                    variant="body2"
-                  >
-                    PARCOURS D'INSCRIPTION
-                  </Link>
-                </Grid>
-                {idsCheckHistory.map(idCheckHistory => (
-                  <Grid key={idCheckHistory.role}>
-                    {idCheckHistory.items.map(fraudCheck => (
-                      <Grid item xs={4} key={fraudCheck.thirdPartyId}>
-                        <Link
-                          role={'link'}
-                          href={`#${fraudCheck.thirdPartyId}`}
-                          color={Colors.GREY}
-                          variant="body2"
-                        >
-                          {fraudCheck.type.toUpperCase()}
-                        </Link>
+          <TabPanel value={tabValue} index={0}>
+            Bientôt disponible
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            <Stack spacing={3}>
+              <Card style={cardStyle}>
+                <Typography
+                  variant={'body1'}
+                  sx={{ color: Colors.GREY, mb: 4 }}
+                >
+                  Accès
+                </Typography>
+                <Grid container spacing={5}>
+                  <Grid item xs={4}>
+                    <Link
+                      role={'link'}
+                      href={'#details-user'}
+                      color={Colors.GREY}
+                      variant="body2"
+                    >
+                      DÉTAILS UTILISATEUR
+                    </Link>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Link
+                      role={'link'}
+                      href={'#parcours-register'}
+                      color={Colors.GREY}
+                      variant="body2"
+                    >
+                      PARCOURS D'INSCRIPTION
+                    </Link>
+                  </Grid>
+                  {idsCheckHistory.length > 0 &&
+                    idsCheckHistory.map(idCheckHistory => (
+                      <Grid item xs={4} key={idCheckHistory.role}>
+                        {idCheckHistory.items.length > 0 &&
+                          idCheckHistory.items.map(fraudCheck => (
+                            <div
+                              style={{ marginRight: '1rem' }}
+                              key={fraudCheck.thirdPartyId}
+                            >
+                              <Link
+                                role={'link'}
+                                href={`#${fraudCheck.thirdPartyId}`}
+                                color={Colors.GREY}
+                                variant="body2"
+                              >
+                                {fraudCheck.type.toUpperCase()}
+                              </Link>
+                            </div>
+                          ))}
                       </Grid>
                     ))}
-                  </Grid>
-                ))}
-              </Grid>
-            </Card>
-            <div id="details-user">
-              <UserDetailsCard
-                user={userBaseInfo}
-                firstFraudCheck={idsCheckHistory[0].items[0]}
-              />
-            </div>
-            <div id="parcours-register">
-              {subscriptionItems.map(subscriptionItem => (
-                <div key={subscriptionItem.role}>
-                  <UserHistoryCard subscriptionItem={subscriptionItem} />
-                </div>
-              ))}
-            </div>
-            {idsCheckHistory.map(idCheckHistory => (
-              <div key={idCheckHistory.role}>
-                {idCheckHistory.items.map(fraudCheck => (
-                  <div
-                    id={fraudCheck.thirdPartyId}
-                    key={fraudCheck.thirdPartyId}
-                  >
-                    <CheckHistoryCard
-                      eligibilityFraudCheck={{
-                        role: idCheckHistory.role,
-                        items: [fraudCheck],
-                      }}
+                </Grid>
+              </Card>
+              <div id="details-user">
+                {idsCheckHistory.length > 0 &&
+                  idsCheckHistory[0].items.length > 0 && (
+                    <UserDetailsCard
+                      user={userBaseInfo}
+                      firstFraudCheck={idsCheckHistory[0].items[0]}
                     />
+                  )}
+              </div>
+              <div id="parcours-register">
+                {subscriptionItems.map(subscriptionItem => (
+                  <div key={subscriptionItem.role}>
+                    <UserHistoryCard subscriptionItem={subscriptionItem} />
                   </div>
                 ))}
               </div>
-            ))}
-          </Stack>
-        </TabPanel>
-        <TabPanel value={tabValue} index={2}>
-          Bientôt disponible
-        </TabPanel>
+              {idsCheckHistory.length > 0 &&
+                idsCheckHistory.map(idCheckHistory => (
+                  <div key={idCheckHistory.role}>
+                    {idCheckHistory.items.length > 0 &&
+                      idCheckHistory.items.map(fraudCheck => (
+                        <div
+                          id={fraudCheck.thirdPartyId}
+                          key={fraudCheck.thirdPartyId}
+                        >
+                          <CheckHistoryCard
+                            eligibilityFraudCheck={{
+                              role: idCheckHistory.role,
+                              items: [fraudCheck],
+                            }}
+                          />
+                        </div>
+                      ))}
+                  </div>
+                ))}
+            </Stack>
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            Bientôt disponible
+          </TabPanel>
+        </Box>
       </Grid>
     </Grid>
   )
