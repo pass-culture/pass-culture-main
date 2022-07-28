@@ -404,7 +404,7 @@ class CreateBeneficiaryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        user = subscription_api.activate_beneficiary(user)
+        user = subscription_api.activate_beneficiary_for_eligibility(user, "test", users_models.EligibilityType.AGE18)
         assert user.has_beneficiary_role
         assert len(user.deposits) == 1
 
@@ -419,7 +419,9 @@ class CreateBeneficiaryTest:
             eligibilityType=users_models.EligibilityType.UNDERAGE,
             resultContent=fraud_factories.EduconnectContentFactory(registration_datetime=datetime.datetime.utcnow()),
         )
-        user = subscription_api.activate_beneficiary(user)
+        user = subscription_api.activate_beneficiary_for_eligibility(
+            user, "test", users_models.EligibilityType.UNDERAGE
+        )
         assert user.has_underage_beneficiary_role
         assert len(user.deposits) == 1
         assert user.has_active_deposit
@@ -440,7 +442,9 @@ class CreateBeneficiaryTest:
 
         with requests_mock.Mocker() as mock:
             posted = mock.post("https://api2.appsflyer.com/inappevent/app.passculture.webapp")
-            user = subscription_api.activate_beneficiary(user)
+            user = subscription_api.activate_beneficiary_for_eligibility(
+                user, "test", users_models.EligibilityType.AGE18
+            )
 
             assert posted.last_request.json() == expected
 
@@ -452,7 +456,7 @@ class CreateBeneficiaryTest:
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user, type=fraud_models.FraudCheckType.UBBLE, status=fraud_models.FraudCheckStatus.OK
         )
-        subscription_api.activate_beneficiary(user)
+        subscription_api.activate_beneficiary_for_eligibility(user, "test", users_models.EligibilityType.AGE18)
 
         assert len(batch_testing.requests) == 2
         assert len(sendinblue_testing.sendinblue_requests) == 1
