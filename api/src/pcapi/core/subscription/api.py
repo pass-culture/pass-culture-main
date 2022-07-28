@@ -168,16 +168,21 @@ def get_phone_validation_subscription_item(
             status = models.SubscriptionItemStatus.OK
         elif user.is_phone_validation_skipped:
             status = models.SubscriptionItemStatus.SKIPPED
-        elif fraud_repository.has_failed_phone_validation(user):
-            status = models.SubscriptionItemStatus.KO
         elif not FeatureToggle.ENABLE_PHONE_VALIDATION.is_active():
             status = models.SubscriptionItemStatus.NOT_ENABLED
+        elif fraud_repository.has_failed_phone_validation(user):
+            status = models.SubscriptionItemStatus.KO
         elif is_eligibility_activable(user, eligibility):
             status = models.SubscriptionItemStatus.TODO
         else:
             status = models.SubscriptionItemStatus.VOID
 
     return models.SubscriptionItem(type=models.SubscriptionStep.PHONE_VALIDATION, status=status)
+
+
+def _should_validate_phone(user: users_models.User, eligibility: users_models.EligibilityType | None) -> bool:
+    phone_subscription_item = get_phone_validation_subscription_item(user, eligibility)
+    return phone_subscription_item.status in (models.SubscriptionItemStatus.TODO, models.SubscriptionItemStatus.KO)
 
 
 def get_user_profiling_subscription_item(
@@ -290,6 +295,9 @@ def get_next_subscription_step(user: users_models.User) -> models.SubscriptionSt
 
     if not users_api.is_eligible_for_beneficiary_upgrade(user, user.eligibility):
         return None
+
+    if _should_validate_phone(user, user.eligibility):
+        return models.SubscriptionStep.PHONE_VALIDATION
 
     if user.eligibility == users_models.EligibilityType.AGE18:
         if (
@@ -544,7 +552,7 @@ def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool
     if not fraud_check:
         return False
 
-    if not user.is_phone_validated and fraud_check.eligibilityType != users_models.EligibilityType.UNDERAGE:
+    if _should_validate_phone(user, fraud_check.eligibilityType):
         return False
 
     subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)

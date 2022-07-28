@@ -559,7 +559,12 @@ class RunIntegrationTest:
 
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_native_app_user(self, get_applications_with_details):
-        user = users_factories.UserFactory(email=self.EMAIL, dateOfBirth=self.BENEFICIARY_BIRTH_DATE, city="Quito")
+        user = users_factories.UserFactory(
+            email=self.EMAIL,
+            dateOfBirth=self.BENEFICIARY_BIRTH_DATE,
+            city="Quito",
+            phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+        )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
         fraud_factories.BeneficiaryFraudCheckFactory(
             user=user,
