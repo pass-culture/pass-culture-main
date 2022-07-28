@@ -69,7 +69,7 @@ class BeneficiaryUserViewTest:
         assert user_created.dateOfBirth.date() == self.AGE18_ELIGIBLE_BIRTH_DATE.date()
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
-        assert user_created.phoneNumber == "0601020304"
+        assert user_created.phoneNumber == "+33601020304"
         assert len(user_created.deposits) == 1
         assert user_created.deposit.version == 2
         assert user_created.deposit.source == "pass-culture-admin"

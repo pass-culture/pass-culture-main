@@ -145,7 +145,7 @@ def create_account(
         notificationSubscriptions=asdict(  # type: ignore [arg-type]
             models.NotificationSubscriptions(marketing_email=marketing_email_subscription)
         ),
-        phoneNumber=phone_number,
+        phoneNumber=phone_number,  # type: ignore [call-arg]
         lastConnectionDate=datetime.datetime.utcnow(),
     )
 
@@ -212,7 +212,7 @@ def update_user_information(
     if married_name is not None:
         user.married_name = married_name
     if phone_number is not None:
-        user.phoneNumber = phone_number
+        user.phoneNumber = phone_number  # type: ignore [assignment]
     if postal_code is not None:
         user.postalCode = postal_code
         user.departementCode = PostalCode(postal_code).get_departement_code() if postal_code else None
@@ -786,7 +786,7 @@ def search_public_account(terms: typing.Iterable[str], order_by: list[str] | Non
         if not term:
             continue
 
-        filters.append(sa.cast(models.User.phoneNumber, sa.Unicode) == term)
+        filters.append(sa.cast(models.User.phoneNumber, sa.Unicode) == term)  # type: ignore [type-var]
         filters.append(sa.cast(models.User.firstName, sa.Unicode).ilike(f"%{term}%"))
         filters.append(sa.cast(models.User.lastName, sa.Unicode).ilike(f"%{term}%"))
         filters.append(sa.cast(models.User.id, sa.Unicode) == term)

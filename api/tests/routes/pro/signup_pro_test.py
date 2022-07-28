@@ -27,7 +27,7 @@ BASE_DATA_PRO = {
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    def when_user_data_is_valid(self, app):
+    def test_when_user_data_is_valid(self, app):
         # Given
         data = BASE_DATA_PRO.copy()
 
@@ -46,7 +46,7 @@ class Returns204Test:
         assert user.firstName == "Toto"
         assert not user.has_admin_role
         assert user.lastName == "Pro"
-        assert user.phoneNumber == "0102030405"
+        assert user.phoneNumber == "+33102030405"
         assert user.postalCode == "92000"
         assert user.publicName == "Toto Pro"
         assert user.dateOfBirth is None

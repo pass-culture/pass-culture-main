@@ -100,7 +100,7 @@ def _add_or_update_user_from_row(row: dict, update_if_exists: bool) -> User | No
     user.lastName = row["Nom"]
     user.firstName = row["Prénom"]
     user.publicName = f"{user.firstName} {user.lastName}"
-    user.phoneNumber = row["Téléphone"]
+    user.phoneNumber = row["Téléphone"]  # type: ignore [assignment]
     user.departementCode = row["Département"]
     user.postalCode = row["Code postal"]
     user.comment = row["Type"]

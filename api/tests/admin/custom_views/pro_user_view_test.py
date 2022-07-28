@@ -53,7 +53,7 @@ class ProUserViewTest:
         assert user_created.firstName == "Juste"
         assert user_created.lastName == "Leblanc"
         assert user_created.publicName == "Juste Leblanc"
-        assert user_created.phoneNumber == "0601020304"
+        assert user_created.phoneNumber == "+33601020304"
         assert user_created.dateOfBirth == datetime(2020, 12, 9, 9, 45)
         assert user_created.departementCode == "93"
         assert user_created.postalCode == "93000"
@@ -111,7 +111,7 @@ class ProUserViewTest:
         assert updated_user.dateOfBirth is None
         assert updated_user.departementCode == "06"
         assert updated_user.postalCode == "06000"
-        assert updated_user.phoneNumber == "0601020304"
+        assert updated_user.phoneNumber == "+33601020304"
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")

@@ -347,7 +347,7 @@ class OffererBookingRecapTest:
         )
 
         # then
-        assert email_data.params["USER_PHONENUMBER"] == "0123456789"
+        assert email_data.params["USER_PHONENUMBER"] == "+33123456789"
 
 
 class SendNewBookingEmailToProTest:
