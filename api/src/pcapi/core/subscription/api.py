@@ -544,11 +544,7 @@ def has_passed_all_checks_to_become_beneficiary(user: users_models.User) -> bool
     if not fraud_check:
         return False
 
-    if (
-        not user.is_phone_validated
-        and fraud_check.eligibilityType != users_models.EligibilityType.UNDERAGE
-        and FeatureToggle.FORCE_PHONE_VALIDATION.is_active()
-    ):
+    if not user.is_phone_validated and fraud_check.eligibilityType != users_models.EligibilityType.UNDERAGE:
         return False
 
     subscription_item = get_user_profiling_subscription_item(user, fraud_check.eligibilityType)
