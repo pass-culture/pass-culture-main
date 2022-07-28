@@ -6,12 +6,12 @@ from sqlalchemy import create_engine
 from sqlalchemy import schema
 
 from pcapi import settings
-from pcapi.models import db
+from pcapi.models import Base
 
 
 logger = logging.getLogger(__name__)
 
-target_metadata = db.metadata
+target_metadata = Base.metadata
 
 # List of columns to ignore keyed by table e.g {"user":  ("isAdmin", "isBeneficiary")}
 # op.drop_constraint('allocine_pivot_siret_key', 'allocine_pivot', type_='unique')
