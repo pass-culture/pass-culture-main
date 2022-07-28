@@ -59,8 +59,8 @@ const SignIn = (): JSX.Element => {
     }
   }) => {
     const { errors, status } = payload
-    const { password, identifier } = errors
-    if (password || identifier) {
+
+    if (errors && Object.values(errors).length > 0) {
       notification.error('Identifiant ou mot de passe incorrect.')
     } else if (status === HTTP_STATUS.TOO_MANY_REQUESTS) {
       notification.error(
@@ -79,7 +79,7 @@ const SignIn = (): JSX.Element => {
       })
       .catch(payload => {
         setCurrentUser(null)
-        onHandleFail(payload)
+        onHandleFail({ status: payload.status, errors: payload.body })
       })
   }
 
