@@ -415,9 +415,9 @@ def price_booking(
         # database again so that we can make some final checks before
         # actually pricing the booking.
         booking = (
-            reload_collective_booking_for_pricing(booking.id, use_pricing_point)  # type: ignore [arg-type]
+            reload_collective_booking_for_pricing(booking.id, use_pricing_point)
             if is_booking_collective
-            else reload_booking_for_pricing(booking.id, use_pricing_point)  # type: ignore [arg-type]
+            else reload_booking_for_pricing(booking.id, use_pricing_point)
         )
 
         # Perhaps the booking has been marked as unused since we

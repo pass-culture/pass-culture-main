@@ -92,7 +92,7 @@ def serialize_collective_offers_capped(
 
 
 def _serialize_offer_paginated(offer: CollectiveOffer | CollectiveOfferTemplate) -> CollectiveOfferResponseModel:
-    serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))  # type: ignore [arg-type]
+    serialized_stock = _serialize_stock(offer.id, getattr(offer, "collectiveStock", None))
 
     serialized_stocks = [serialized_stock] if serialized_stock is not None else []
     is_offer_template = isinstance(offer, CollectiveOfferTemplate)

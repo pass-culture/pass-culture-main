@@ -62,7 +62,7 @@ def create_activated_user_offerer(csv_row: list[str]) -> UserOfferer:
     filled_offerer = fill_offerer_from(csv_row, offerer)
     repository.save(filled_offerer)
 
-    virtual_venue = find_venue_by_managing_offerer_id(filled_offerer.id)  # type: ignore [arg-type]
+    virtual_venue = find_venue_by_managing_offerer_id(filled_offerer.id)
     if not virtual_venue:
         filled_virtual_venue = create_digital_venue(offerer)
         repository.save(filled_virtual_venue)

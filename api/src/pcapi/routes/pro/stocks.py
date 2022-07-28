@@ -43,7 +43,7 @@ def get_stocks(offer_id: str) -> StocksResponseModel:
         offerer = offerers_repository.get_by_offer_id(dehumanize(offer_id))  # type: ignore [arg-type]
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+    check_user_has_access_to_offerer(current_user, offerer.id)
     stocks = get_stocks_for_offer(dehumanize(offer_id))  # type: ignore [arg-type]
     return StocksResponseModel(
         stocks=[StockResponseModel.from_orm(stock) for stock in stocks],
@@ -58,7 +58,7 @@ def upsert_stocks(body: StocksUpsertBodyModel) -> StockIdsResponseModel:
         offerer = offerers_repository.get_by_offer_id(body.offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         stocks = offers_api.upsert_stocks(body.offer_id, body.stocks, current_user)

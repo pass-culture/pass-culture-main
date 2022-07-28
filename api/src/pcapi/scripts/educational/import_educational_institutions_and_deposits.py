@@ -73,14 +73,14 @@ def _process_educational_csv(
             logger.info("Educational institution with UAI code %s has been created", institution_id)
 
         if educational_repository.find_educational_deposit_by_institution_id_and_year(
-            educational_institution.id, educational_year.adageId  # type: ignore [arg-type]
+            educational_institution.id, educational_year.adageId
         ):
             print(
                 f"\033[93mWARNING: deposit for educational institution with id {educational_institution.institutionId} already exists\033[0m"
             )
             continue
         educational_deposit = api.create_educational_deposit(
-            educational_year.adageId, educational_institution.id, deposit_amount, ministry  # type: ignore [arg-type]
+            educational_year.adageId, educational_institution.id, deposit_amount, ministry
         )
         logger.info(
             "Educational deposit has been created",

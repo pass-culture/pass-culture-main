@@ -117,7 +117,7 @@ def get_pro_attributes(email: str) -> ProAttributes:
                     user_is_creator = True
                 else:
                     user_is_attached = True
-                if not is_eac and offerer_has_venue_with_adage_id(offerer_id):  # type: ignore[arg-type]
+                if not is_eac and offerer_has_venue_with_adage_id(offerer_id):
                     is_eac = True
 
         attributes.update(
@@ -199,7 +199,7 @@ def get_user_attributes(user: User) -> UserAttributes:
         eligibility=user.eligibility,
         first_name=user.firstName,
         has_completed_id_check=fraud_api.has_user_performed_identity_check(user),
-        user_id=user.id,  # type: ignore [arg-type]
+        user_id=user.id,
         is_active=user.isActive,  # type: ignore [arg-type]
         is_beneficiary=user.is_beneficiary,  # type: ignore [arg-type]
         is_current_beneficiary=user.is_beneficiary and not is_ex_beneficiary,

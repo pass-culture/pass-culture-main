@@ -68,8 +68,6 @@ class BookingExportType(enum.Enum):
 class IndividualBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "individual_booking"
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-
     userId = Column(BigInteger, ForeignKey("user.id"), index=True, nullable=False)
     user = relationship(  # type: ignore [misc]
         "User",
@@ -92,8 +90,6 @@ class IndividualBooking(PcObject, Base, Model):  # type: ignore [valid-type, mis
 
 
 class ExternalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
-
     bookingId = Column(BigInteger, ForeignKey("booking.id"), index=True, nullable=False)
 
     booking = relationship("Booking", foreign_keys=[bookingId], backref="externalBookings")  # type: ignore [misc]
@@ -105,8 +101,6 @@ class ExternalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 
 class Booking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "booking"
-
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
 
     dateCreated = Column(DateTime, nullable=False, default=datetime.utcnow)
     Index("ix_booking_date_created", dateCreated)

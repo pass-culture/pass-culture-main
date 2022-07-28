@@ -107,7 +107,7 @@ def book_offer(
         # I don't think that we should use autoflush, nor should we use
         # the `pcapi.repository.repository` module.
         booking = Booking(
-            userId=beneficiary.id,  # type: ignore [arg-type]
+            userId=beneficiary.id,
             stockId=stock.id,
             amount=stock.price,
             quantity=quantity,
@@ -127,7 +127,7 @@ def book_offer(
         individual_booking = IndividualBooking(
             booking=booking,
             depositId=beneficiary.deposit.id if beneficiary.has_active_deposit else None,  # type: ignore [union-attr]
-            userId=beneficiary.id,  # type: ignore [arg-type]
+            userId=beneficiary.id,
         )
         stock.dnBookedQuantity += booking.quantity  # type: ignore [operator]
         _book_external_offer(booking, stock)

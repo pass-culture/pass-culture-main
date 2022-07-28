@@ -32,7 +32,7 @@ def build_pc_pro_offer_link(offer: CollectiveOffer | CollectiveOfferTemplate | O
 
 
 def build_pc_pro_offerer_link(offerer: offerers_models.Offerer) -> str:
-    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"  # type: ignore [arg-type]
+    return f"{settings.PRO_URL}/accueil?structure={humanize(offerer.id)}"
 
 
 def build_pc_pro_venue_link(venue: offerers_models.Venue) -> str:

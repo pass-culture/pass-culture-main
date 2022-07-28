@@ -99,7 +99,7 @@ def educonnect_fraud_checks(
 ) -> list[models.FraudItem]:
     fraud_items = []
     fraud_items.append(_underage_user_fraud_item(educonnect_content.get_birth_date()))
-    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))  # type: ignore [arg-type]
+    fraud_items.append(_duplicate_ine_hash_fraud_item(educonnect_content.ine_hash, user.id))
 
     return fraud_items
 
@@ -144,7 +144,7 @@ def on_identity_fraud_check_result(
                 last_name=content_last_name,
                 married_name=identity_content.get_married_name(),
                 birth_date=content_birth_date,
-                excluded_user_id=user.id,  # type: ignore [arg-type]
+                excluded_user_id=user.id,
             )
         )
         fraud_items.append(_check_user_names_valid(content_first_name, content_last_name))
@@ -251,7 +251,7 @@ def find_duplicate_beneficiary(
 
 
 def duplicate_id_piece_number_fraud_item(user: users_models.User, id_piece_number: str) -> models.FraudItem:
-    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)  # type: ignore [arg-type]
+    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)
 
     if duplicate_user:
         return models.FraudItem(
@@ -771,20 +771,20 @@ def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: str
     if not id_piece_number:
         return
 
-    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)  # type: ignore [arg-type]
+    duplicate_user = find_duplicate_id_piece_number_user(id_piece_number, user.id)
 
     if duplicate_user:
-        raise DuplicateIdPieceNumber(id_piece_number, duplicate_user.id)  # type: ignore [arg-type]
+        raise DuplicateIdPieceNumber(id_piece_number, duplicate_user.id)
 
 
 def _check_ine_hash_unicity(user: users_models.User, ine_hash: str | None) -> None:
     if not ine_hash:
         return
 
-    duplicate_user = find_duplicate_ine_hash_user(ine_hash, user.id)  # type: ignore [arg-type]
+    duplicate_user = find_duplicate_ine_hash_user(ine_hash, user.id)
 
     if duplicate_user:
-        raise DuplicateIneHash(ine_hash, duplicate_user.id)  # type: ignore [arg-type]
+        raise DuplicateIneHash(ine_hash, duplicate_user.id)
 
 
 def create_profile_completion_fraud_check(
