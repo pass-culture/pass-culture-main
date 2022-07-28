@@ -1,10 +1,13 @@
 import './AppLayout.scss'
+import { useMatomo } from '@datapunt/matomo-tracker-react'
 import * as React from 'react'
 
 import { AuthenticatedResponse, VenueResponse } from 'api/gen'
 import { OffersInstantSearch } from 'app/components/OffersInstantSearch/OffersInstantSearch'
 import { ReactComponent as Download } from 'assets/download.svg'
 import { ReactComponent as Logo } from 'assets/logo-with-text.svg'
+
+import { getAnonymisedUserId, trackPageViewHelper } from './helpers'
 
 export const AppLayout = ({
   user,
@@ -15,6 +18,16 @@ export const AppLayout = ({
   removeVenueFilter: () => void
   venueFilter: VenueResponse | null
 }): JSX.Element => {
+  const { enableLinkTracking, pushInstruction, trackPageView } = useMatomo()
+
+  enableLinkTracking()
+
+  const userId = getAnonymisedUserId()
+  if (userId != null) {
+    pushInstruction('setUserId', userId)
+  }
+  trackPageViewHelper(trackPageView)
+
   return (
     <main className="app-layout">
       <div className="app-layout-header">
