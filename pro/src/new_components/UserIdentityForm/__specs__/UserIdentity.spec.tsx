@@ -5,19 +5,38 @@ import { render, screen } from '@testing-library/react'
 
 import { Banner } from 'ui-kit'
 import { IUserIdentityFormProps } from '../UserIdentityForm'
+import { Provider } from 'react-redux'
 import React from 'react'
 import { UserIdentityForm } from '../'
+import { configureTestStore } from 'store/testUtils'
 import userEvent from '@testing-library/user-event'
 
-const onUserIdentityFormSubmit = jest.fn()
+const patchIdentityAdapterMock = jest.fn()
 
 const renderUserIdentityForm = (props: IUserIdentityFormProps) => {
-  return render(<UserIdentityForm {...props} />)
+  const store = configureTestStore({
+    user: {
+      initialized: true,
+      currentUser: {
+        email: 'test@test.test',
+        id: '11',
+        isAdmin: false,
+        firstName: 'John',
+        lastName: 'Do',
+      },
+    },
+  })
+  return render(
+    <Provider store={store}>
+      <UserIdentityForm {...props} />
+    </Provider>
+  )
 }
 
 describe('new_components:UserIdentityForm', () => {
   let props: IUserIdentityFormProps
   beforeEach(() => {
+    patchIdentityAdapterMock.mockResolvedValue({})
     props = {
       title: 'What are you?',
       subtitleFormat: () => 'A bird',
@@ -27,7 +46,7 @@ describe('new_components:UserIdentityForm', () => {
       },
       banner: <Banner>Banner test text</Banner>,
       shouldDisplayBanner: false,
-      patchIdentityAdapter: onUserIdentityFormSubmit,
+      patchIdentityAdapter: patchIdentityAdapterMock,
     }
   })
   it('renders component successfully', () => {
@@ -51,7 +70,7 @@ describe('new_components:UserIdentityForm', () => {
     await userEvent.type(screen.getByLabelText('Prénom'), 'Harry')
     await userEvent.tab()
     await userEvent.click(screen.getByText('Enregistrer'))
-    await expect(onUserIdentityFormSubmit).toHaveBeenCalledTimes(1)
+    await expect(patchIdentityAdapterMock).toHaveBeenCalledTimes(1)
   })
   it('should render a banner when shouldDisplayBanner', async () => {
     props.shouldDisplayBanner = true
