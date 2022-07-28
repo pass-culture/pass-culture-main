@@ -12,7 +12,6 @@ import {
   extractOfferIdAndOfferTypeFromRouteParams,
 } from 'core/OfferEducational'
 import getCollectiveOfferAdapter from 'core/OfferEducational/adapters/getCollectiveOfferAdapter'
-import { getCollectiveStockAdapter } from 'core/OfferEducational/adapters/getCollectiveStockAdapter'
 import { extractInitialVisibilityValues } from 'core/OfferEducational/utils/extractInitialVisibilityValues'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
@@ -37,16 +36,13 @@ const CollectiveOfferVisibility = () => {
   const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true)
 
   useEffect(() => {
-    Promise.all([
-      getCollectiveStockAdapter({ offerId }),
-      getCollectiveOfferAdapter(offerId),
-    ]).then(([stockResult, offerResult]) => {
-      if (!stockResult.isOk || !offerResult.isOk) {
-        return notify.error(stockResult.message)
+    getCollectiveOfferAdapter(offerId).then(offerResult => {
+      if (!offerResult.isOk) {
+        return notify.error(offerResult.message)
       }
 
       setInstitution(offerResult.payload.institution)
-      setIsEditable(stockResult.payload?.stock?.isEducationalStockEditable)
+      setIsEditable(offerResult.payload.isVisibilityEditable)
       setIsReady(true)
     })
   }, [])
