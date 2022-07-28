@@ -6,12 +6,16 @@ import React, { useState } from 'react'
 import { MemoryRouter } from 'react-router'
 
 import { apiV2 } from 'api/api'
-import { ApiError, HTTP_STATUS } from 'api/helpers'
+import { HTTP_STATUS, ApiError as LegacyApiError } from 'api/helpers'
+import { apiContremarque } from 'apiClient/api'
 import {
+  ApiError,
   BookingFormula,
   BookingOfferType,
   GetBookingResponse,
-} from 'api/v2/gen'
+} from 'apiClient/v2'
+import { ApiRequestOptions } from 'apiClient/v2/core/ApiRequestOptions'
+import { ApiResult } from 'apiClient/v2/core/ApiResult'
 import { IDeskProps, MESSAGE_VARIANT } from 'screens/Desk'
 import { Button } from 'ui-kit'
 
@@ -101,13 +105,13 @@ describe('src | routes | Desk', () => {
       venueDepartmentCode: '75',
     }
     jest
-      .spyOn(apiV2, 'getBookingsGetBookingByTokenV2')
+      .spyOn(apiContremarque, 'getBookingByTokenV2')
       .mockResolvedValue(apiBooking)
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
     userEvent.click(buttonGetBooking)
     await waitFor(() => {
-      expect(apiV2.getBookingsGetBookingByTokenV2).toHaveBeenCalledWith(
+      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
       )
     })
@@ -129,17 +133,21 @@ describe('src | routes | Desk', () => {
 
   it('test getBooking failure, booking already validated', async () => {
     const globalErrorMessage = 'Cette réservation a déjà été validée'
-    jest.spyOn(apiV2, 'getBookingsGetBookingByTokenV2').mockRejectedValue(
-      new ApiError(HTTP_STATUS.GONE, {
-        global: [globalErrorMessage],
-      })
-    )
+    jest
+      .spyOn(apiContremarque, 'getBookingByTokenV2')
+      .mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          { status: HTTP_STATUS.GONE, body: {} } as ApiResult,
+          globalErrorMessage
+        )
+      )
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
     userEvent.click(buttonGetBooking)
     await waitFor(() => {
-      expect(apiV2.getBookingsGetBookingByTokenV2).toHaveBeenCalledWith(
+      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
       )
     })
@@ -153,19 +161,24 @@ describe('src | routes | Desk', () => {
     expect(response.error.variant).toBe(MESSAGE_VARIANT.DEFAULT)
   })
 
-  it('test getBooking failure, booking canceled', async () => {
-    const cancelledErrorMessage = 'Cette réservation a déjà été validée'
-    jest.spyOn(apiV2, 'getBookingsGetBookingByTokenV2').mockRejectedValue(
-      new ApiError(HTTP_STATUS.GONE, {
-        booking_cancelled: [cancelledErrorMessage],
-      })
+  it('test getBooking failure, booking cancelled', async () => {
+    const cancelledErrorMessage = 'Cette réservation a été annulée'
+    jest.spyOn(apiContremarque, 'getBookingByTokenV2').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: HTTP_STATUS.GONE,
+          body: { booking_cancelled: 'Cette réservation a été annulée' },
+        } as ApiResult,
+        cancelledErrorMessage
+      )
     )
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
     userEvent.click(buttonGetBooking)
     await waitFor(() => {
-      expect(apiV2.getBookingsGetBookingByTokenV2).toHaveBeenCalledWith(
+      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
       )
     })
@@ -181,17 +194,21 @@ describe('src | routes | Desk', () => {
 
   it('test getBooking failure, api error', async () => {
     const globalErrorMessage = 'Server error'
-    jest.spyOn(apiV2, 'getBookingsGetBookingByTokenV2').mockRejectedValue(
-      new ApiError(HTTP_STATUS.NOT_FOUND, {
-        global: [globalErrorMessage],
-      })
-    )
+    jest
+      .spyOn(apiContremarque, 'getBookingByTokenV2')
+      .mockRejectedValue(
+        new ApiError(
+          {} as ApiRequestOptions,
+          { status: HTTP_STATUS.NOT_FOUND } as ApiResult,
+          globalErrorMessage
+        )
+      )
 
     const { buttonGetBooking, responseDataContainer } = await renderDeskRoute()
 
     userEvent.click(buttonGetBooking)
     await waitFor(() => {
-      expect(apiV2.getBookingsGetBookingByTokenV2).toHaveBeenCalledWith(
+      expect(apiContremarque.getBookingByTokenV2).toHaveBeenCalledWith(
         testToken
       )
     })
@@ -227,7 +244,7 @@ describe('src | routes | Desk', () => {
   it('test submitInvalidate error', async () => {
     const submitInvalidateErrorMessage = 'An Error Happen on submitInvalidate !'
     jest.spyOn(apiV2, 'patchBookingsPatchBookingKeepByToken').mockRejectedValue(
-      new ApiError(HTTP_STATUS.FORBIDDEN, {
+      new LegacyApiError(HTTP_STATUS.FORBIDDEN, {
         global: [submitInvalidateErrorMessage],
       })
     )
@@ -273,7 +290,7 @@ describe('src | routes | Desk', () => {
   it('test submitValidate error', async () => {
     const submitInvalidateErrorMessage = 'An Error Happen on submitValidate!'
     jest.spyOn(apiV2, 'patchBookingsPatchBookingUseByToken').mockRejectedValue(
-      new ApiError(HTTP_STATUS.FORBIDDEN, {
+      new LegacyApiError(HTTP_STATUS.FORBIDDEN, {
         global: [submitInvalidateErrorMessage],
       })
     )
