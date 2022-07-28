@@ -12,6 +12,7 @@ import {
   Tabs,
   Typography,
 } from '@mui/material'
+import { captureException } from '@sentry/react'
 import moment from 'moment'
 import React, { useState } from 'react'
 import {
@@ -25,6 +26,11 @@ import { useParams } from 'react-router-dom'
 
 import { Colors } from '../../layout/Colors'
 import { eventMonitoring } from '../../libs/monitoring/sentry'
+import {
+  getHttpApiErrorMessage,
+  PcApiHttpError,
+} from '../../providers/apiHelpers'
+import { dataProvider } from '../../providers/dataProvider'
 
 import { BeneficiaryBadge } from './Components/BeneficiaryBadge'
 import { CheckHistoryCard } from './Components/CheckHistoryCard'
