@@ -1,6 +1,6 @@
 import { CollectiveStockCreationBodyModel } from 'apiClient/v1'
 
-import { OfferEducationalStockFormValues } from '..'
+import { OfferEducationalStockFormValues } from '../types'
 
 import {
   buildBeginningDatetimeForStockPayload,
