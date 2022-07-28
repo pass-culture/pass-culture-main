@@ -14,7 +14,7 @@ import {
   getOfferersAdapter,
   setInitialFormValues,
 } from 'core/OfferEducational'
-import { canOffererCreateCollectiveOfferAdapter } from 'core/OfferEducational/adapters'
+import canOffererCreateCollectiveOfferAdapter from 'core/OfferEducational/adapters/canOffererCreateCollectiveOfferAdapter'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import OfferEducationalLayout from 'new_components/OfferEducationalLayout'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'

@@ -9,8 +9,8 @@ import * as yup from 'yup'
 import { IOfferIndividualFormValues } from 'new_components/OfferIndividualForm/types'
 import { SubmitButton } from 'ui-kit'
 
+import { validationSchema } from '../'
 import TicketWithdrawal from '../TicketWithdrawal'
-import validationSchema from '../validationSchema'
 
 const renderTicketWithdrawal = ({
   initialValues,

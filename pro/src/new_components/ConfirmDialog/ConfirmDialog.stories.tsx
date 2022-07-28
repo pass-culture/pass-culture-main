@@ -1,4 +1,4 @@
-import type { ComponentMeta, ComponentStory } from '@storybook/react'
+import { ComponentMeta, ComponentStory } from '@storybook/react'
 import React from 'react'
 
 import { ReactComponent as TrashIcon } from 'icons/ico-trash.svg'

@@ -1,5 +1,6 @@
-import { TSearchFilters } from 'core/Offers/types'
 import { Category, SubCategory } from 'custom_types/categories'
+
+import { TSearchFilters } from 'core/Offers/types'
 
 export const categoriesAndSubCategoriesSelector = (
   state: any

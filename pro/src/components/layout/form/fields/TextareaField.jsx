@@ -7,6 +7,8 @@ import { Field } from 'react-final-form'
 import { composeValidators } from 'utils/react-final-form'
 
 import FieldErrors from '../FieldErrors'
+/*eslint no-undef: 0*/
+
 import getRequiredValidate from '../utils/getRequiredValidate'
 
 function formatInputValueIfTooLong(value, maxLength) {
