@@ -627,7 +627,6 @@ class NextSubscriptionStepTest:
 
 @pytest.mark.usefixtures("db_session")
 class OnSuccessfulDMSApplicationTest:
-    @override_features(FORCE_PHONE_VALIDATION=False)
     def test_new_beneficiaries_requires_userprofiling(self):
         # given
         information = fraud_models.DMSContent(
@@ -663,7 +662,6 @@ class OnSuccessfulDMSApplicationTest:
             subscription_api.get_next_subscription_step(first) == subscription_models.SubscriptionStep.PHONE_VALIDATION
         )
 
-    @override_features(FORCE_PHONE_VALIDATION=False)
     def test_new_beneficiaries_are_recorded_with_deposit(self):
         # given
         information = fraud_models.DMSContent(
@@ -969,7 +967,7 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
 
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
 
-    @override_features(FORCE_PHONE_VALIDATION=True)
+    @override_features(ENABLE_PHONE_VALIDATION=True)
     def test_missing_step(self):
         user = self.eligible_user(validate_phone=False)
         fraud_factories.BeneficiaryFraudCheckFactory(
@@ -982,7 +980,7 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
-    @override_features(FORCE_PHONE_VALIDATION=True)
+    @override_features(ENABLE_PHONE_VALIDATION=True)
     def test_rejected_import(self):
         user = self.eligible_user(validate_phone=False)
 
@@ -996,7 +994,7 @@ class HasPassedAllChecksToBecomeBeneficiaryTest:
         assert subscription_api.has_passed_all_checks_to_become_beneficiary(user) is False
         assert not user.has_beneficiary_role
 
-    @override_features(FORCE_PHONE_VALIDATION=True)
+    @override_features(ENABLE_PHONE_VALIDATION=True)
     def test_missing_all(self):
         user = self.eligible_user(validate_phone=False)
 
