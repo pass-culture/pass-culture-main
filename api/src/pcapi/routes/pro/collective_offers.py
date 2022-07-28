@@ -64,7 +64,7 @@ def get_collective_offer(offer_id: str) -> collective_offers_serialize.GetCollec
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     else:
-        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         offer = educational_repository.get_collective_offer_by_id(dehumanized_id)
@@ -91,7 +91,7 @@ def get_collective_offer_template(offer_id: str) -> collective_offers_serialize.
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     else:
-        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, offerer.id)
     try:
         offer = educational_repository.get_collective_offer_template_by_id(dehumanized_id)
     except educational_exceptions.CollectiveOfferTemplateNotFound:
@@ -183,7 +183,7 @@ def edit_collective_offer(
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     else:
-        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         offers_api.update_collective_offer(
@@ -222,7 +222,7 @@ def create_collective_offer_template_from_collective_offer(
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     else:
-        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         collective_offer_template = educational_api.create_collective_offer_template_from_collective_offer(
@@ -257,7 +257,7 @@ def edit_collective_offer_template(
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     else:
-        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         offers_api.update_collective_offer(
@@ -298,7 +298,7 @@ def transform_collective_offer_template_into_collective_offer(
         offerer = offerers_api.get_offerer_by_collective_offer_template_id(dehumanized_offer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
-    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+    check_user_has_access_to_offerer(current_user, offerer.id)
 
     offer = educational_api.transform_collective_offer_template_into_collective_offer(user=current_user, body=body)
 
@@ -374,7 +374,7 @@ def patch_collective_offers_educational_institution(
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
     else:
-        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         offer = educational_api.update_collective_offer_educational_institution(

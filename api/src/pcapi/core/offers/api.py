@@ -863,7 +863,7 @@ def add_criteria_to_offers(
                 offer_criteria.append(
                     criteria_models.OfferCriterion(
                         offerId=offer_id,
-                        criterionId=criterion.id,  # type: ignore [arg-type]
+                        criterionId=criterion.id,
                     )
                 )
 

@@ -205,7 +205,7 @@ def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializer
         if not favorite:
             raise exception
 
-    favorite = get_favorites_for(user, favorite.id)[0]  # type: ignore [arg-type]
+    favorite = get_favorites_for(user, favorite.id)[0]
 
     return serializers.FavoriteResponse.from_orm(favorite)
 

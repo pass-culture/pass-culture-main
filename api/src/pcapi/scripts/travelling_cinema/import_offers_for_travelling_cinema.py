@@ -188,7 +188,7 @@ def _create_venue(infos: dict, offerer: offerers_models.Offerer) -> offerers_mod
         "city": infos["venue_city"],
         "longitude": infos["longitude"],
         "latitude": infos["latitude"],
-        "managingOffererId": humanize(offerer.id),  # type: ignore [arg-type]
+        "managingOffererId": humanize(offerer.id),
         "name": infos["venue_name"],
         "venueTypeCode": "TRAVELING_CINEMA",
         "bookingEmail": infos["venue_email"],

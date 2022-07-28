@@ -15,6 +15,7 @@ from sqlalchemy import Integer
 from sqlalchemy import Numeric
 from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import Mapped
 from sqlalchemy.sql.schema import Column
 
 from pcapi.models.api_errors import DateTimeCastError
@@ -38,7 +39,7 @@ class DeletedRecordException(Exception):
 
 
 class PcObject:
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id: Mapped[int] = Column(BigInteger, primary_key=True, autoincrement=True)  # type: ignore [assignment]
 
     def __init__(self, **kwargs):  # type: ignore [no-untyped-def]
         from_dict = kwargs.pop("from_dict", None)

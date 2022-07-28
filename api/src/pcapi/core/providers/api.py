@@ -450,7 +450,7 @@ def _build_new_offer(
         idAtProvider=id_at_provider,
         lastProviderId=provider_id,
         name=product.name,
-        productId=product.id,  # type: ignore [arg-type]
+        productId=product.id,
         venueId=venue.id,
         subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,

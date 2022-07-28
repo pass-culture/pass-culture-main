@@ -46,7 +46,7 @@ class ApiKeyView(BaseAdminView):
         if is_created:
             with db.session.no_autoflush:
                 offerer_id = find_offerer_by_siren(form.offererSiren.data).id  # type: ignore [union-attr]
-                api_key, clear_api_key = generate_api_key(offerer_id)  # type: ignore [arg-type]
+                api_key, clear_api_key = generate_api_key(offerer_id)
             model.offererId = offerer_id
             model.prefix = api_key.prefix
             model.secret = api_key.secret

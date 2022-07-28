@@ -150,7 +150,7 @@ def cancel_collective_offer_booking(offer_id: str) -> None:
             {"code": "NO_EDUCATIONAL_OFFER_FOUND", "message": "No educational offer has been found with this id"}, 404
         )
     else:
-        check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+        check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
         offers_api.cancel_collective_offer_booking(dehumanized_offer_id)
