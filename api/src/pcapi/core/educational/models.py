@@ -155,6 +155,14 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
     def isEditable(self) -> bool:
         return self.status not in [offer_mixin.OfferStatus.PENDING, offer_mixin.OfferStatus.REJECTED]
 
+    @property
+    def isVisibilityEditable(self) -> bool:
+        is_editable = self.isEditable
+        if self.collectiveStock:
+            is_editable = is_editable and not self.collectiveStock.isSoldOut
+
+        return is_editable
+
     @sa.ext.hybrid.hybrid_property
     def isSoldOut(self):
         if self.collectiveStock:
