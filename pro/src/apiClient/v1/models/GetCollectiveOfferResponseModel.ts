@@ -27,6 +27,7 @@ export type GetCollectiveOfferResponseModel = {
   isActive: boolean;
   isBookable: boolean;
   isEditable: boolean;
+  isVisibilityEditable: boolean;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;
