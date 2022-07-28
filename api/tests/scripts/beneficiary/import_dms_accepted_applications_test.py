@@ -123,7 +123,6 @@ class RunTest:
 
         on_successful_application.assert_not_called()
 
-    @override_features(FORCE_PHONE_VALIDATION=False)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     @patch("pcapi.core.subscription.api.on_successful_application")
     def test_beneficiary_is_created_with_procedure_number(
@@ -190,7 +189,6 @@ class RunIntegrationTest:
     EMAIL = "john.doe@example.com"
     BENEFICIARY_BIRTH_DATE = date.today() - timedelta(days=6752)  # ~18.5 years
 
-    @override_features(FORCE_PHONE_VALIDATION=False)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user(self, get_applications_with_details):
         user = users_factories.UserFactory(
@@ -289,12 +287,10 @@ class RunIntegrationTest:
         assert dms_application.email == "nonexistant@example.com"
         assert dms_application.dateCreated is not None
 
-    @override_features(FORCE_PHONE_VALIDATION=True)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_phone_not_validated_create_beneficiary_with_phone_to_validate(self, get_applications_with_details):
         """
         Test that an imported user without a validated phone number, and the
-        FORCE_PHONE_VALIDATION feature flag activated, requires a future validation
         """
         date_of_birth = self.BENEFICIARY_BIRTH_DATE.strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -337,7 +333,7 @@ class RunIntegrationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["template"]["id_prod"] == 679  # complete subscription
 
-    @override_features(FORCE_PHONE_VALIDATION=True, ENABLE_USER_PROFILING=True)
+    @override_features(ENABLE_USER_PROFILING=True)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_user_requires_userprofiling(self, get_applications_with_details):
         user = users_factories.UserFactory(
@@ -468,7 +464,6 @@ class RunIntegrationTest:
 
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
-    @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_duplicated_user(self, get_applications_with_details):
@@ -517,7 +512,6 @@ class RunIntegrationTest:
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0].sent_data["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}
 
-    @override_features(FORCE_PHONE_VALIDATION=False)
     @freezegun.freeze_time("2021-10-30 09:00:00")
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_with_existing_user_with_the_same_id_number(self, get_applications_with_details, mocker):
@@ -563,7 +557,6 @@ class RunIntegrationTest:
         )
         assert sub_msg.callToActionIcon == subscription_models.CallToActionIcon.EMAIL
 
-    @override_features(FORCE_PHONE_VALIDATION=False)
     @patch.object(dms_connector_api.DMSGraphQLClient, "get_applications_with_details")
     def test_import_native_app_user(self, get_applications_with_details):
         user = users_factories.UserFactory(email=self.EMAIL, dateOfBirth=self.BENEFICIARY_BIRTH_DATE, city="Quito")

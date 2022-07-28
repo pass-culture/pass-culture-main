@@ -1,7 +1,7 @@
 """add_author_to_offer
 
 Revision ID: 2c062a40154e
-Revises: 865dbe4bec27
+Revises: 0fe847be8089
 Create Date: 2021-05-17 16:05:57.108593
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "2c062a40154e"
-down_revision = "865dbe4bec27"
+down_revision = "0fe847be8089"
 branch_labels = None
 depends_on = None
 

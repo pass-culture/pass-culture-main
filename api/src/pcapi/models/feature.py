@@ -74,7 +74,7 @@ class FeatureToggle(enum.Enum):
         "Active le nouveau parcours d'ajout de coordonnées bancaires sur la page lieu"
     )
     ENABLE_NEW_VENUE_PAGES = "Utiliser la nouvelle version des pages d'edition et de creation de lieux"
-    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"  # TODO (viconnex) remove when FORCE_PHONE_VALIDATION is released in production
+    ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PHONE_VALIDATION_IN_STEPPER = (
         "Déplace la validation du numéro de téléphone dans le flux du parcours d'inscription"
     )
@@ -85,7 +85,6 @@ class FeatureToggle(enum.Enum):
     ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
     ENABLE_USER_PROFILING = "Active l'étape USER_PROFILING dans le parcours d'inscription des jeunes de 18 ans"
     ENFORCE_BANK_INFORMATION_WITH_SIRET = "Forcer les informations banquaires à être liées à un SIRET."
-    FORCE_PHONE_VALIDATION = "Forcer la validation du numéro de téléphone pour devenir bénéficiaire"
     GENERATE_CASHFLOWS_BY_CRON = (
         "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
     )
@@ -174,7 +173,6 @@ FEATURES_DISABLED_BY_DEFAULT = (
     FeatureToggle.ENABLE_PRO_NEW_VENUE_PROVIDER_UI,
     FeatureToggle.ENABLE_UBBLE_SUBSCRIPTION_LIMITATION,
     FeatureToggle.ENABLE_USER_PROFILING,
-    FeatureToggle.FORCE_PHONE_VALIDATION,
     FeatureToggle.GENERATE_CASHFLOWS_BY_CRON,
     FeatureToggle.ID_CHECK_ADDRESS_AUTOCOMPLETION,
     FeatureToggle.OFFER_DRAFT_ENABLED,
