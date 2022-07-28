@@ -29,6 +29,7 @@ class Returns200Test:
         assert "validationToken" not in response_json["venue"]["managingOfferer"]
         assert "dateCreated" in response_json
         assert "institution" in response.json
+        assert response.json["isVisibilityEditable"] == True
         assert response_json["nonHumanizedId"] == offer.id
 
     def test_performance(self, client):

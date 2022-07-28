@@ -290,6 +290,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isBookable: bool
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
     institution: EducationalInstitutionResponseModel | None
+    isVisibilityEditable: bool
 
 
 class CollectiveOfferResponseIdModel(BaseModel):
