@@ -510,7 +510,7 @@ class AlgoliaBackend(base.SearchBackend):
         date_created = collective_offer_template.dateCreated.timestamp()  # type: ignore [union-attr]
 
         return {
-            "objectID": _transform_collective_offer_template_id(collective_offer_template.id),  # type: ignore [arg-type]
+            "objectID": _transform_collective_offer_template_id(collective_offer_template.id),
             "offer": {
                 "dateCreated": date_created,
                 "name": collective_offer_template.name,

@@ -18,7 +18,7 @@ def send_duplicate_beneficiary_email(
 ) -> bool:
     if is_id_piece_number_duplicate:
         duplicate_beneficiary = fraud_api.find_duplicate_id_piece_number_user(
-            identity_content.get_id_piece_number(), rejected_user.id  # type: ignore [arg-type]
+            identity_content.get_id_piece_number(), rejected_user.id
         )
     else:
         duplicate_beneficiary = fraud_api.find_duplicate_beneficiary(
@@ -26,7 +26,7 @@ def send_duplicate_beneficiary_email(
             identity_content.get_last_name(),  # type: ignore [arg-type]
             identity_content.get_married_name(),
             identity_content.get_birth_date(),  # type: ignore [arg-type]
-            rejected_user.id,  # type: ignore [arg-type]
+            rejected_user.id,
         )
     if not duplicate_beneficiary:
         logger.error("No duplicate beneficiary found", extra={"user_id": rejected_user.id})

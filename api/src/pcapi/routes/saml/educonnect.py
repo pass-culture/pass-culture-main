@@ -48,10 +48,10 @@ def login_educonnect(user: users_models.User) -> Response:
         response.status_code = 204
         response.headers["educonnect-redirect"] = redirect_url
         response.headers["Access-Control-Expose-Headers"] = "educonnect-redirect"
-        _log_for_educonnect_supervision("Sending redirect url (webapp)", user.id)  # type: ignore [arg-type]
+        _log_for_educonnect_supervision("Sending redirect url (webapp)", user.id)
     else:
         response = redirect(redirect_url, code=302)
-        _log_for_educonnect_supervision("Redirecting to educonnect (app)", user.id)  # type: ignore [arg-type]
+        _log_for_educonnect_supervision("Redirecting to educonnect (app)", user.id)
 
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"

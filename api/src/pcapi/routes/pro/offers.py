@@ -116,7 +116,7 @@ def patch_publish_offer(body: offers_serialize.PatchOfferPublishBodyModel) -> No
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ApiErrors({"offerer": ["Aucune structure trouvée à partir de cette offre"]}, status_code=404)
 
-    check_user_has_access_to_offerer(current_user, offerer.id)  # type: ignore [arg-type]
+    check_user_has_access_to_offerer(current_user, offerer.id)
     offers_api.publish_offer(body.id, current_user)
 
 

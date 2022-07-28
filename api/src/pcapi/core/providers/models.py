@@ -270,7 +270,6 @@ class LocalProviderEventType(enum.Enum):
 
 
 class LocalProviderEvent(PcObject, Base, Model):  # type: ignore [valid-type, misc]
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
     providerId = Column(BigInteger, ForeignKey("provider.id"), nullable=False)
     provider = relationship("Provider", foreign_keys=[providerId])  # type: ignore [misc]
     date = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)

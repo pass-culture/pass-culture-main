@@ -12,6 +12,6 @@ def get_new_offerer_validation_email_data(offerer: Offerer) -> SendinblueTransac
 
 
 def send_new_offerer_validation_email_to_pro(offerer: Offerer) -> bool:
-    offerer_email = find_new_offerer_user_email(offerer.id)  # type: ignore [arg-type]
+    offerer_email = find_new_offerer_user_email(offerer.id)
     data = get_new_offerer_validation_email_data(offerer)
     return mails.send(recipients=[offerer_email], data=data)

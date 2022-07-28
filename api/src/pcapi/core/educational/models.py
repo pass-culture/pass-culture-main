@@ -94,8 +94,6 @@ class CollectiveBookingStatusFilter(enum.Enum):
 class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Base, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     offerId = sa.Column(sa.BigInteger, nullable=True)
 
     isActive = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
@@ -280,8 +278,6 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
 class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin, offer_mixin.StatusMixin, Base, Model):  # type: ignore[valid-type, misc]
     __tablename__ = "collective_offer_template"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     offerId = sa.Column(sa.BigInteger, nullable=True)
 
     isActive = sa.Column(sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True)
@@ -439,8 +435,6 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
 class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "collective_stock"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     stockId = sa.Column(sa.BigInteger, nullable=True)
 
     dateCreated = sa.Column(sa.DateTime, nullable=False, default=datetime.utcnow, server_default=sa.func.now())
@@ -522,8 +516,6 @@ class CollectiveStock(PcObject, Base, Model):  # type: ignore [valid-type, misc]
 class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "educational_institution"
 
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     institutionId = sa.Column(sa.String(30), nullable=False, unique=True, index=True)
 
     institutionType = sa.Column(sa.String(80), nullable=True)
@@ -546,8 +538,6 @@ class EducationalInstitution(PcObject, Base, Model):  # type: ignore [valid-type
 class EducationalYear(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "educational_year"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     adageId: str = sa.Column(sa.String(30), unique=True, nullable=False)
 
     beginningDate: datetime = sa.Column(sa.DateTime, nullable=False)
@@ -559,8 +549,6 @@ class EducationalDeposit(PcObject, Base, Model):  # type: ignore [valid-type, mi
     __tablename__ = "educational_deposit"
 
     TEMPORARY_FUND_AVAILABLE_RATIO = 0.8
-
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     educationalInstitutionId = sa.Column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
@@ -604,8 +592,6 @@ class EducationalRedactor(PcObject, Base, Model):  # type: ignore [valid-type, m
 
     __tablename__ = "educational_redactor"
 
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-
     email: str = sa.Column(sa.String(120), nullable=False, unique=True, index=True)
 
     firstName = sa.Column(sa.String(128), nullable=True)
@@ -626,8 +612,6 @@ class EducationalRedactor(PcObject, Base, Model):  # type: ignore [valid-type, m
 
 class EducationalBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "educational_booking"
-
-    id: int = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     educationalInstitutionId = sa.Column(sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False)
     educationalInstitution: RelationshipProperty["EducationalInstitution"] = relationship(  # type: ignore [misc]
@@ -696,7 +680,6 @@ class EducationalBooking(PcObject, Base, Model):  # type: ignore [valid-type, mi
 
 class CollectiveBooking(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "collective_booking"
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     bookingId = sa.Column(sa.BigInteger)
 
@@ -896,7 +879,6 @@ class EducationalDomainVenue(Base, Model):  # type: ignore[valid-type, misc]
 
 class EducationalDomain(PcObject, Base, Model):  # type: ignore [valid-type, misc]
     __tablename__ = "educational_domain"
-    id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
 
     name = sa.Column(sa.Text, nullable=False)
     venues: "Mapped[list[Venue]]" = sa.orm.relationship(

@@ -458,7 +458,7 @@ def edit_collective_stock(
     validation.check_collective_stock_is_editable(stock)
 
     with transaction():
-        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)  # type: ignore [arg-type]
+        stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
         for attribute, new_value in updatable_fields.items():
             if new_value is not None and getattr(stock, attribute) != new_value:
                 setattr(stock, attribute, new_value)
@@ -773,7 +773,7 @@ def create_collective_offer_template_from_collective_offer(
 
 def get_collective_offer_id_from_educational_stock(stock: Stock) -> int:
     collective_offer = educational_repository.get_collective_offer_by_offer_id(stock.offerId)  # type: ignore [arg-type]
-    return collective_offer.id  # type: ignore [return-value]
+    return collective_offer.id
 
 
 def get_collective_offer_by_id_for_adage(offer_id: int) -> educational_models.CollectiveOffer:

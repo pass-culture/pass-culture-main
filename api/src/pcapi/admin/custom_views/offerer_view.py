@@ -25,10 +25,10 @@ def _get_emails_by_offerer(offerer: Offerer) -> set[str]:
     Get all emails for which pro attributes may be modified when the offerer is updated or deleted.
     Any bookingEmail in a venue should be updated in sendinblue when offerer is disabled, deleted or its name changed
     """
-    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(offerer.id)  # type: ignore [arg-type]
+    users_offerer = offerers_repository.find_all_user_offerers_by_offerer_id(offerer.id)
     emails = {user_offerer.user.email for user_offerer in users_offerer}
 
-    emails |= {venue.bookingEmail for venue in offerers_repository.find_venues_by_managing_offerer_id(offerer.id)}  # type: ignore [arg-type]
+    emails |= {venue.bookingEmail for venue in offerers_repository.find_venues_by_managing_offerer_id(offerer.id)}
 
     return emails
 
@@ -89,7 +89,7 @@ class OffererView(BaseAdminView):
         emails = _get_emails_by_offerer(offerer)
 
         try:
-            delete_cascade_offerer_by_id(offerer.id)  # type: ignore [arg-type]
+            delete_cascade_offerer_by_id(offerer.id)
         except CannotDeleteOffererWithBookingsException:
             flash("Impossible d'effacer une structure juridique pour laquelle il existe des réservations.", "error")
             return False
@@ -101,7 +101,7 @@ class OffererView(BaseAdminView):
 
     def update_model(self, form: Form, offerer: Offerer) -> bool:
         if offerer.isActive and not form.isActive.data:
-            if offerer_has_ongoing_bookings(offerer.id):  # type: ignore [arg-type]
+            if offerer_has_ongoing_bookings(offerer.id):
                 flash(
                     "Impossible de désactiver une structure juridique pour laquelle des réservations sont en cours.",
                     "error",
