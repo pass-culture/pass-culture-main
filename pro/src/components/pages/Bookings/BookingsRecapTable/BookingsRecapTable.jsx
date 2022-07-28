@@ -17,8 +17,6 @@ import FilterByOmniSearch from './Filters/FilterByOmniSearch'
 import Header from './Header/Header'
 import { NB_BOOKINGS_PER_PAGE } from './NB_BOOKINGS_PER_PAGE'
 import NoFilteredBookings from './NoFilteredBookings/NoFilteredBookings'
-/* eslint no-undef: 0 */
-
 import TableFrame from './Table/TableFrame'
 import filterBookingsRecap from './utils/filterBookingsRecap'
 import {
