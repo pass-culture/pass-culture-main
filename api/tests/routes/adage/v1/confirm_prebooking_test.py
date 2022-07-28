@@ -14,6 +14,7 @@ from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import Ministry
 from pcapi.core.offers.utils import offer_app_link
+from pcapi.core.testing import override_features
 from pcapi.routes.adage.v1.serialization import constants
 from pcapi.utils.date import format_into_utc_date
 
@@ -111,6 +112,7 @@ class Returns200Test:
             == CollectiveBookingStatus.CONFIRMED
         )
 
+    @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_insufficient_ministry_fund_other_ministry(self, client) -> None:  # type: ignore [no-untyped-def]
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
@@ -299,6 +301,7 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND"}
 
+    @override_features(ENABLE_EAC_FINANCIAL_PROTECTION=True)
     def test_insufficient_ministry_fund_for_collective_bookings(self, client) -> None:  # type: ignore [no-untyped-def]
         educational_institution = EducationalInstitutionFactory()
         educational_institution2 = EducationalInstitutionFactory()
