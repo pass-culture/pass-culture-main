@@ -53,7 +53,7 @@ def create_bunch_of_accounts():
         firstName="Jean-Luc",
         lastName="Delarue",
         email="jld@example.com",
-        phoneNumber="00000000",
+        phoneNumber="+33234567890",
         city=None,
         address=None,
     )
@@ -1420,21 +1420,6 @@ class SendPhoneValidationCodeTest:
         # then
         assert response.status_code == 400
         assert response.json.get("user_id") == "Le numéro de téléphone est déjà validé"
-
-    @override_features(ENABLE_BACKOFFICE_API=True)
-    def test_cannot_send_phone_validation_code_with_invalid_number(self, client):
-        # given
-        user = users_factories.UserFactory(phoneValidationStatus=None, phoneNumber="1664")
-        auth_token = generate_token(users_factories.UserFactory(), [Permissions.MANAGE_PUBLIC_ACCOUNT])
-
-        # when
-        response = client.with_explicit_token(auth_token).post(
-            url_for("backoffice_blueprint.send_phone_validation_code", user_id=user.id),
-        )
-
-        # then
-        assert response.status_code == 400
-        assert response.json.get("user_id") == "Le numéro de téléphone est invalide"
 
     @override_features(ENABLE_BACKOFFICE_API=True)
     def test_cannot_send_phone_validation_code_to_duplicated_number(self, client):

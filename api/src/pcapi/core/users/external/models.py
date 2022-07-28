@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Iterable
+import typing
 
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
@@ -37,7 +37,7 @@ class UserAttributes:
     marketing_email_subscription: bool
     marketing_push_subscription: bool
     most_booked_subcategory: str | None  # Single subcategory most frequently booked by the user
-    phone_number: str | None  # Added for Zendesk
+    phone_number: typing.Callable[..., typing.Any] | None  # Added for Zendesk
     postal_code: str | None
     products_use_date: dict
     roles: list[str]
@@ -52,13 +52,15 @@ class ProAttributes:
     is_user_email: bool  # Email address is set at least for a user account
     is_booking_email: bool  # Email address is set as bookingEmail for at least one active venue
     marketing_email_subscription: bool
-    offerers_names: Iterable[str]  # All active offerers associated with user account or bookingEmail
-    venues_ids: Iterable[int]  # All active venues ids related to email (from user account or bookingEmail)
-    venues_names: Iterable[str]  # Distinct names of all these venues
-    venues_types: Iterable[str]  # Distinct types of all these venues
-    venues_labels: Iterable[str]  # Distinct labels of all these venues
-    departement_code: Iterable[str]  # Distinct department codes of all these venues; keep same name as UserAttributes
-    postal_code: Iterable[str]  # Distinct postal codes of all these venues; keep same name as UserAttributes
+    offerers_names: typing.Iterable[str]  # All active offerers associated with user account or bookingEmail
+    venues_ids: typing.Iterable[int]  # All active venues ids related to email (from user account or bookingEmail)
+    venues_names: typing.Iterable[str]  # Distinct names of all these venues
+    venues_types: typing.Iterable[str]  # Distinct types of all these venues
+    venues_labels: typing.Iterable[str]  # Distinct labels of all these venues
+    departement_code: typing.Iterable[
+        str
+    ]  # Distinct department codes of all these venues; keep same name as UserAttributes
+    postal_code: typing.Iterable[str]  # Distinct postal codes of all these venues; keep same name as UserAttributes
 
     # Attributes set when is_user_email is True:
     user_id: int | None = None

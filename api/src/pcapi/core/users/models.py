@@ -28,6 +28,7 @@ from pcapi.models.deactivable_mixin import DeactivableMixin
 from pcapi.models.needs_validation_mixin import NeedsValidationMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.utils import crypto
+from pcapi.utils.phone_number import ParsedPhoneNumber
 
 
 if typing.TYPE_CHECKING:
@@ -200,7 +201,7 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
         server_default="""{"marketing_push": true, "marketing_email": true}""",
     )
     password = sa.Column(sa.LargeBinary(60), nullable=False)
-    phoneNumber = sa.Column(sa.String(20), nullable=True, index=True)
+    _phoneNumber = sa.Column(sa.String(20), nullable=True, index=True, name="phoneNumber")
     phoneValidationStatus = sa.Column(sa.Enum(PhoneValidationStatusType, create_constraint=False), nullable=True)
     postalCode = sa.Column(sa.String(5), nullable=True)
     publicName: str = sa.Column(sa.String(255), nullable=False)
@@ -467,6 +468,21 @@ class User(PcObject, Base, Model, NeedsValidationMixin, DeactivableMixin):  # ty
                 self.deposit.expirationDate <= today or self.deposit.expirationDate > today and self.wallet_balance == 0
             )
         )
+
+    @hybrid_property
+    def phoneNumber(self) -> str:
+        return self._phoneNumber
+
+    @phoneNumber.setter  # type: ignore [no-redef]
+    def phoneNumber(self, value: str) -> None:
+        if not value:
+            self._phoneNumber = None
+        else:
+            self._phoneNumber = ParsedPhoneNumber(value, region="FR").phone_number
+
+    @phoneNumber.expression  # type: ignore [no-redef]
+    def phoneNumber(cls) -> sa.Column:  # pylint: disable=no-self-argument
+        return cls._phoneNumber
 
     @hybrid_property
     def is_phone_validated(self) -> bool:

@@ -722,7 +722,7 @@ class BeneficiaryInformationUpdateTest:
         assert beneficiary.lastName == "Doe"
         assert beneficiary.firstName == "Jane"
         assert beneficiary.publicName == "Jane Doe"
-        assert beneficiary.phoneNumber == "0612345678"
+        assert beneficiary.phoneNumber == "+33612345678"
         assert beneficiary.postalCode == "67200"
         assert beneficiary.address == "11 Rue du Test"
         assert beneficiary.dateOfBirth == datetime.datetime(2000, 5, 1, 0, 0)

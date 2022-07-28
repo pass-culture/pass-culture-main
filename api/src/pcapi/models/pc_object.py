@@ -59,11 +59,15 @@ class PcObject:
 
     def populate_from_dict(self, data: dict, skipped_keys: Iterable[str] = ()):  # type: ignore [no-untyped-def]
         self._check_not_soft_deleted()
-        columns = self.__mapper__.column_attrs  # type: ignore [attr-defined]
+        columns = self.__mapper__.all_orm_descriptors  # type: ignore [attr-defined]
         keys_to_populate = self._get_keys_to_populate(columns.keys(), data, skipped_keys)
 
         for key in keys_to_populate:
-            column = columns[key]
+            column = self.__mapper__.column_attrs.get(key)  # type: ignore [attr-defined]
+            if not column:  # key is not a column, so probably an hybrid property
+                setattr(self, key, data.get(key))
+                continue
+
             value = _dehumanize_if_needed(column, data.get(key))
             if isinstance(value, str):
                 if isinstance(column.expression.type, Integer):

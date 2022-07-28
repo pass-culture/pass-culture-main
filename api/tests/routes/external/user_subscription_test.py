@@ -116,7 +116,7 @@ class DmsWebhookApplicationTest:
             firstName="Young",
             lastName="Beneficiary",
             publicName="Young Beneficiary",
-            phoneNumber="+33706050403",
+            phoneNumber="+33746050403",
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
