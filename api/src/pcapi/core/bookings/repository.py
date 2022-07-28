@@ -542,7 +542,7 @@ def _get_filtered_booking_report(
             User.firstName.label("beneficiaryFirstName"),
             User.lastName.label("beneficiaryLastName"),
             User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore[attr-defined]
             Booking.id,
             Booking.token,
             Booking.amount,
@@ -612,7 +612,7 @@ def _get_filtered_booking_pro(
             User.firstName.label("beneficiaryFirstname"),
             User.lastName.label("beneficiaryLastname"),
             User.email.label("beneficiaryEmail"),
-            User.phoneNumber.label("beneficiaryPhoneNumber"),
+            User.phoneNumber.label("beneficiaryPhoneNumber"),  # type: ignore [attr-defined]
             Stock.beginningDatetime.label("stockBeginningDatetime"),
             Booking.stockId,
             Venue.departementCode.label("venueDepartmentCode"),

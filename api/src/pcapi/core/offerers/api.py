@@ -175,7 +175,7 @@ def create_venue(venue_data: venues_serialize.PostVenueBodyModel) -> models.Venu
     data = venue_data.dict(by_alias=True)
     validation.check_venue_creation(data)
     venue = models.Venue()
-    venue.populate_from_dict(data)
+    venue.populate_from_dict(data, skipped_keys=("contact",))
 
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)

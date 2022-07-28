@@ -136,7 +136,7 @@ class Returns200Test:
                     "email": "beneficiary@example.com",
                     "firstname": "Hermione",
                     "lastname": "Granger",
-                    "phonenumber": "0100000000",
+                    "phonenumber": "+33100000000",
                 },
                 "booking_date": format_into_timezoned_date(
                     booking.dateCreated.astimezone(tz.gettz("Europe/Paris")),

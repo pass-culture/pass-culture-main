@@ -98,7 +98,7 @@ def test_get_user_attributes_beneficiary():
     user = BeneficiaryGrant18Factory(
         deposit__version=1,
         departementCode="75",
-        phoneNumber="0706050403",
+        phoneNumber="0746050403",
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
     )
     offer = OfferFactory(product__id=list(TRACKED_PRODUCT_IDS.keys())[0])
@@ -144,7 +144,7 @@ def test_get_user_attributes_beneficiary():
         last_booking_date=last_date_created,
         last_name="Doux",
         marketing_push_subscription=True,
-        phone_number="0706050403",
+        phone_number="+33746050403",
         postal_code=None,
         products_use_date={"product_brut_x_use": datetime(2021, 5, 6, 0, 0)},
         booking_count=2,

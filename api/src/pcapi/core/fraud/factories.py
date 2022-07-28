@@ -67,7 +67,7 @@ class DMSContentFactory(factory.Factory):
     procedure_number = factory.Faker("pyint")
     departement = factory.Sequence("{}".format)
     birth_date = LazyAttribute(lambda _: (datetime.today() - relativedelta(years=18)).date())
-    phone = factory.Sequence("+3361212121{}".format)
+    phone = factory.Sequence("+33612{:06}".format)
     postal_code = "75008"
     activity = "Étudiant"
     address = factory.Faker("address")

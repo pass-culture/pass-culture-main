@@ -365,7 +365,7 @@ def profiling_fraud_score(user: users_models.User, body: serializers.UserProfili
             user_id=user.id,
             user_email=user.email,  # type: ignore [arg-type]
             birth_date=user.dateOfBirth.date() if user.dateOfBirth else None,
-            phone_number=user.phoneNumber,
+            phone_number=user.phoneNumber,  # type: ignore [arg-type]
             workflow_type=user_profiling.WorkflowType.BENEFICIARY_VALIDATION,
             # depends on loadbalancer configuration
             ip_address=request.headers.get("X-Forwarded-For"),  # type: ignore [arg-type]

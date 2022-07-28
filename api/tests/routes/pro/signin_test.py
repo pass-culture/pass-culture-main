@@ -57,7 +57,7 @@ class Returns200Test:
             "lastConnectionDate": format_into_utc_date(user.lastConnectionDate),
             "lastName": "Smisse",
             "needsToFillCulturalSurvey": False,
-            "phoneNumber": "0612345678",
+            "phoneNumber": "+33612345678",
             "postalCode": "93020",
             "publicName": "Toto",
             "roles": ["BENEFICIARY"],

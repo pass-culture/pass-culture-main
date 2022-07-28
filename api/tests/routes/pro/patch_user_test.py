@@ -22,7 +22,7 @@ def test_patch_user(app):
     assert pro.firstName == "John"
     assert pro.lastName == "Doe"
     assert pro.email == "new@example.com"
-    assert pro.phoneNumber == "0999999999"
+    assert pro.phoneNumber == "+33999999999"
 
     assert len(sendinblue_testing.sendinblue_requests) == 2
     assert {req.get("email") for req in sendinblue_testing.sendinblue_requests} == {

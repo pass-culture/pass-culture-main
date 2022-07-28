@@ -132,10 +132,14 @@ def send_phone_validation_code(
         _check_sms_sending_is_allowed(user)
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
-    user.phoneNumber = phone_number
+    user.phoneNumber = phone_number  # type: ignore [assignment]
     repository.save(user)
 
-    phone_validation_token = users_api.create_phone_validation_token(user, phone_number, expiration=expiration)
+    phone_validation_token = users_api.create_phone_validation_token(
+        user,
+        phone_number,
+        expiration=expiration,
+    )
     content = f"{phone_validation_token.value} est ton code de confirmation pass Culture"  # type: ignore [union-attr]
 
     is_sms_sent = sms_notifications.send_transactional_sms(phone_data.phone_number, content)
@@ -175,6 +179,6 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
 
     _ensure_phone_number_unicity(user, phone_number, change_owner=True)
 
-    user.phoneNumber = phone_number
+    user.phoneNumber = phone_number  # type: ignore [assignment]
     user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
     repository.save(user)

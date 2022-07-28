@@ -38,7 +38,7 @@ class ReadFileTest:
         assert jeanne.publicName == "Jeanne Doux"
         assert jeanne.dateOfBirth.date() == AGE18_ELIGIBLE_BIRTH_DATE.date()
         assert jeanne.email == "jeanne.doux@example.com"
-        assert jeanne.phoneNumber == "0102030405"
+        assert jeanne.phoneNumber == "+33102030405"
         assert jeanne.departementCode == "86"
         assert jeanne.postalCode == "86140"
         assert jeanne.comment == "interne:test"
@@ -60,7 +60,7 @@ class ReadFileTest:
         assert pierre.lastName == "Pro"
         assert pierre.publicName == "Pierre Pro"
         assert pierre.email == "pro@example.com"
-        assert pierre.phoneNumber == "0123456789"
+        assert pierre.phoneNumber == "+33123456789"
         assert pierre.departementCode == "06"
         assert pierre.postalCode == "06000"
         assert pierre.comment == "interne:test"

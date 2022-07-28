@@ -223,7 +223,11 @@ def send_phone_validation_code(user_id: int) -> None:
     user = utils.get_user_or_error(user_id)
 
     try:
-        phone_validation_api.send_phone_validation_code(user, user.phoneNumber, ignore_limit=True)
+        phone_validation_api.send_phone_validation_code(
+            user,
+            user.phoneNumber,  # type: ignore [arg-type]
+            ignore_limit=True,
+        )
 
     except phone_validation_exceptions.UserPhoneNumberAlreadyValidated:
         raise ApiErrors({"user_id": "Le numéro de téléphone est déjà validé"})
