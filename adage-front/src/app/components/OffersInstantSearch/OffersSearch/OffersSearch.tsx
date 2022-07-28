@@ -1,4 +1,5 @@
 import './OffersSearch.scss'
+import { useMatomo } from '@datapunt/matomo-tracker-react'
 import * as React from 'react'
 import { useEffect, useContext, useState } from 'react'
 import type { SearchBoxProvided } from 'react-instantsearch-core'
@@ -50,6 +51,8 @@ export const OffersSearchComponent = ({
     'ENABLE_EDUCATIONAL_INSTITUTION_ASSOCIATION'
   )
 
+  const { trackSiteSearch } = useMatomo()
+
   const userUAICode = user.uai
   const uaiCodeAllInstitutionsTab = userUAICode ? ['all', userUAICode] : ['all']
   const uaiCodeShareWithMyInstitutionTab = userUAICode ? [userUAICode] : null
@@ -98,6 +101,9 @@ export const OffersSearchComponent = ({
       })
     )
     setQueryTag(query)
+    if (query) {
+      trackSiteSearch({ keyword: query })
+    }
     refine(query)
   }
 
