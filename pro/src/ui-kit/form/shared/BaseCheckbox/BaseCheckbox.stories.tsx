@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import { Story } from '@storybook/react'
 import React, { ChangeEventHandler } from 'react'
 
 import { ReactComponent as Icon } from 'icons/ico-calendar.svg'

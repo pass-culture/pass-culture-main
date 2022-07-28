@@ -1,9 +1,10 @@
+import { Category, SubCategory } from 'custom_types/categories'
+
 import { CategoriesResponseModel } from 'apiClient/v1'
 import {
   IEducationalCategory,
   IEducationalSubCategory,
 } from 'core/OfferEducational'
-import { Category, SubCategory } from 'custom_types/categories'
 
 interface IFilterEducationalCategoriesResult {
   educationalCategories: IEducationalCategory[]

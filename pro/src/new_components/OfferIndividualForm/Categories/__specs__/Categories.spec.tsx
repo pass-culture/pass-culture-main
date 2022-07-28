@@ -10,9 +10,9 @@ import { REIMBURSEMENT_RULES } from 'core/Finances'
 import { CATEGORY_STATUS } from 'core/Offers'
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 
+import { validationSchema } from '..'
 import Categories, { ICategoriesProps } from '../Categories'
 import { CATEGORIES_DEFAULT_VALUES } from '../constants'
-import validationSchema from '../validationSchema'
 
 interface IInitialValues {
   subCategoryFields: string[]

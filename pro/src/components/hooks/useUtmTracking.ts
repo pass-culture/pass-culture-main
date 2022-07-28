@@ -1,4 +1,4 @@
-import type { LocationListener } from 'history'
+import { LocationListener } from 'history'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router-dom'

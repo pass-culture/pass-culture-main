@@ -1,5 +1,5 @@
 // storybook doc : https://storybook.js.org/docs/react/writing-stories/introduction
-import type { Meta, Story } from '@storybook/react'
+import { Meta, Story } from '@storybook/react'
 import React from 'react'
 
 import { ResetEmailBanner } from './'

@@ -1,4 +1,4 @@
-import type { Story } from '@storybook/react'
+import { Story } from '@storybook/react'
 import React from 'react'
 
 import { imageConstraints } from 'new_components/ConstraintCheck/imageConstraints'
