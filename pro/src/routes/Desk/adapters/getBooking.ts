@@ -1,11 +1,6 @@
-import { apiV2 } from 'api/api'
-import {
-  ApiError,
-  HTTP_STATUS,
-  extractApiErrorMessageForKey,
-  extractApiFirstErrorMessage,
-} from 'api/helpers'
-import { GetBookingResponse } from 'api/v2/gen'
+import { HTTP_STATUS } from 'api/helpers'
+import { apiContremarque } from 'apiClient/api'
+import { ApiError, GetBookingResponse } from 'apiClient/v2'
 import {
   IBooking,
   IDeskGetBookingResponse,
@@ -31,15 +26,13 @@ const getBookingSuccess = (
 const getBookingFailure = (
   apiResponseError: ApiError
 ): IDeskGetBookingResponse => {
-  const errorMessage = extractApiFirstErrorMessage(apiResponseError)
-  if (apiResponseError.statusCode === HTTP_STATUS.GONE) {
+  const errorMessage = apiResponseError.message
+  if (apiResponseError.status === HTTP_STATUS.GONE) {
     // api return HTTP_STATUS.GONE when :
     // * booking is already been validated
     // * booking is already been canceled
-    const apiCancelledErrorMessage = extractApiErrorMessageForKey(
-      apiResponseError,
-      'booking_cancelled'
-    )
+    const apiCancelledErrorMessage = apiResponseError.body['booking_cancelled']
+
     if (apiCancelledErrorMessage) {
       return {
         error: {
@@ -68,9 +61,9 @@ const getBookingFailure = (
   }
 }
 
-const getBooking = (token: string): Promise<IDeskGetBookingResponse> => {
-  return apiV2
-    .getBookingsGetBookingByTokenV2(token)
+const getBooking = async (token: string): Promise<IDeskGetBookingResponse> => {
+  return apiContremarque
+    .getBookingByTokenV2(token)
     .then(getBookingSuccess)
     .catch(getBookingFailure)
 }

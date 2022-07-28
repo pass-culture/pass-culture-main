@@ -2,7 +2,6 @@ import { DEFAULT_PRE_FILTERS } from 'core/Bookings/constants'
 import { ALL_OFFERERS, DEFAULT_SEARCH_FILTERS } from 'core/Offers/constants'
 import {
   generateOffererApiKey,
-  getBooking,
   getFilteredBookingsCSV,
   getVenueStats,
   getVenuesForOfferer,
@@ -478,16 +477,6 @@ describe('pcapi', () => {
       expect(client.get).toHaveBeenCalledWith(
         '/bookings/pro?page=2&venueId=AA&eventDate=2020-09-13&bookingPeriodBeginningDate=2020-08-13&bookingPeriodEndingDate=2020-09-12&bookingStatusFilter=booked'
       )
-    })
-  })
-
-  describe('getBooking', () => {
-    it('should get booking given it code', async () => {
-      // When
-      getBooking('A5DS6Q')
-
-      // Then
-      expect(client.get).toHaveBeenCalledWith('/v2/bookings/token/A5DS6Q')
     })
   })
 
