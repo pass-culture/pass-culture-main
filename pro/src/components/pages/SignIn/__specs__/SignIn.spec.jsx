@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { MemoryRouter, Route } from 'react-router'
 import { fireEvent, render, screen } from '@testing-library/react'
 
+import { ApiError } from 'apiClient/v1'
 import { Events } from 'core/FirebaseEvents/constants'
 import { HTTP_STATUS } from 'api/helpers'
 import NotificationContainer from 'components/layout/Notification/NotificationContainer'
@@ -221,10 +222,16 @@ describe('src | components | pages | SignIn', () => {
         const password = screen.getByLabelText('Mot de passe')
         fireEvent.change(password, { target: { value: 'MCSolar85' } })
 
-        api.signin.mockRejectedValue({
-          errors: { identifier: ['password is invalid'] },
-          status: 401,
-        })
+        api.signin.mockRejectedValue(
+          new ApiError(
+            {},
+            {
+              url: '',
+              body: { identifier: ['password is invalid'] },
+              status: 401,
+            }
+          )
+        )
         fireEvent.click(
           screen.getByRole('button', {
             name: 'Se connecter',
@@ -246,10 +253,16 @@ describe('src | components | pages | SignIn', () => {
         const password = screen.getByLabelText('Mot de passe')
         fireEvent.change(password, { target: { value: 'MCSolar85' } })
 
-        api.signin.mockRejectedValue({
-          errors: {},
-          status: HTTP_STATUS.TOO_MANY_REQUESTS,
-        })
+        api.signin.mockRejectedValue(
+          new ApiError(
+            {},
+            {
+              url: '',
+              errors: {},
+              status: HTTP_STATUS.TOO_MANY_REQUESTS,
+            }
+          )
+        )
         fireEvent.click(
           screen.getByRole('button', {
             name: 'Se connecter',
