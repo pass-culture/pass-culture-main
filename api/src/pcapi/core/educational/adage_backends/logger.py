@@ -134,4 +134,4 @@ class AdageLoggerClient(AdageClient):
                 domaineIds="1,11",
                 synchroPass=0,
             )
-        raise CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
+        raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
