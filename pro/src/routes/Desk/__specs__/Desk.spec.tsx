@@ -5,8 +5,7 @@ import userEvent from '@testing-library/user-event'
 import React, { useState } from 'react'
 import { MemoryRouter } from 'react-router'
 
-import { apiV2 } from 'api/api'
-import { HTTP_STATUS, ApiError as LegacyApiError } from 'api/helpers'
+import { HTTP_STATUS } from 'api/helpers'
 import { apiContremarque } from 'apiClient/api'
 import {
   ApiError,
@@ -223,16 +222,14 @@ describe('src | routes | Desk', () => {
   })
 
   it('test submitInvalidate success', async () => {
-    jest
-      .spyOn(apiV2, 'patchBookingsPatchBookingKeepByToken')
-      .mockResolvedValue({})
+    jest.spyOn(apiContremarque, 'patchBookingKeepByToken').mockResolvedValue()
 
     const { buttonSubmitInvalidate, responseDataContainer } =
       await renderDeskRoute()
 
     userEvent.click(buttonSubmitInvalidate)
     await waitFor(() => {
-      expect(apiV2.patchBookingsPatchBookingKeepByToken).toHaveBeenCalledWith(
+      expect(apiContremarque.patchBookingKeepByToken).toHaveBeenCalledWith(
         testToken
       )
     })
@@ -243,10 +240,17 @@ describe('src | routes | Desk', () => {
 
   it('test submitInvalidate error', async () => {
     const submitInvalidateErrorMessage = 'An Error Happen on submitInvalidate !'
-    jest.spyOn(apiV2, 'patchBookingsPatchBookingKeepByToken').mockRejectedValue(
-      new LegacyApiError(HTTP_STATUS.FORBIDDEN, {
-        global: [submitInvalidateErrorMessage],
-      })
+    jest.spyOn(apiContremarque, 'patchBookingKeepByToken').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: HTTP_STATUS.FORBIDDEN,
+          body: {
+            global: submitInvalidateErrorMessage,
+          },
+        } as ApiResult,
+        ''
+      )
     )
 
     const { buttonSubmitInvalidate, responseDataContainer } =
@@ -254,7 +258,7 @@ describe('src | routes | Desk', () => {
 
     userEvent.click(buttonSubmitInvalidate)
     await waitFor(() => {
-      expect(apiV2.patchBookingsPatchBookingKeepByToken).toHaveBeenCalledWith(
+      expect(apiContremarque.patchBookingKeepByToken).toHaveBeenCalledWith(
         testToken
       )
     })
@@ -269,16 +273,14 @@ describe('src | routes | Desk', () => {
   })
 
   it('test submitValidate success', async () => {
-    jest
-      .spyOn(apiV2, 'patchBookingsPatchBookingUseByToken')
-      .mockResolvedValue({})
+    jest.spyOn(apiContremarque, 'patchBookingUseByToken').mockResolvedValue()
 
     const { buttonSubmitValidate, responseDataContainer } =
       await renderDeskRoute()
 
     userEvent.click(buttonSubmitValidate)
     await waitFor(() => {
-      expect(apiV2.patchBookingsPatchBookingUseByToken).toHaveBeenCalledWith(
+      expect(apiContremarque.patchBookingUseByToken).toHaveBeenCalledWith(
         testToken
       )
     })
@@ -289,10 +291,17 @@ describe('src | routes | Desk', () => {
 
   it('test submitValidate error', async () => {
     const submitInvalidateErrorMessage = 'An Error Happen on submitValidate!'
-    jest.spyOn(apiV2, 'patchBookingsPatchBookingUseByToken').mockRejectedValue(
-      new LegacyApiError(HTTP_STATUS.FORBIDDEN, {
-        global: [submitInvalidateErrorMessage],
-      })
+    jest.spyOn(apiContremarque, 'patchBookingUseByToken').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: HTTP_STATUS.FORBIDDEN,
+          body: {
+            global: submitInvalidateErrorMessage,
+          },
+        } as ApiResult,
+        ''
+      )
     )
 
     const { buttonSubmitValidate, responseDataContainer } =
@@ -300,7 +309,7 @@ describe('src | routes | Desk', () => {
 
     userEvent.click(buttonSubmitValidate)
     await waitFor(() => {
-      expect(apiV2.patchBookingsPatchBookingUseByToken).toHaveBeenCalledWith(
+      expect(apiContremarque.patchBookingUseByToken).toHaveBeenCalledWith(
         testToken
       )
     })
