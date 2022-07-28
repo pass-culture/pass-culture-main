@@ -516,16 +516,6 @@ export const getFilteredCollectiveBookingsXLS = async filters => {
 // Booking
 //
 
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'code' implicitly has an 'any' type.
-export const validateBooking = code => {
-  return client.patch(`/v2/bookings/use/token/${code}`)
-}
-
-// @ts-expect-error ts-migrate(7006) FIXME: Parameter 'code' implicitly has an 'any' type.
-export const invalidateBooking = code => {
-  return client.patch(`/v2/bookings/keep/token/${code}`)
-}
-
 //
 // Business Unit
 //

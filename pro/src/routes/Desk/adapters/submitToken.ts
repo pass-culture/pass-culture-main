@@ -1,23 +1,23 @@
-import { apiV2 } from 'api/api'
-import { ApiError, extractApiErrorMessageForKey } from 'api/helpers'
+import { apiContremarque } from 'apiClient/api'
+import { ApiError } from 'apiClient/v2'
 import { IDeskSubmitResponse, MESSAGE_VARIANT } from 'screens/Desk'
 
 const onSubmitFailure = (error: ApiError): IDeskSubmitResponse => ({
   error: {
-    message: extractApiErrorMessageForKey(error, 'global'),
+    message: error.body['global'],
     variant: MESSAGE_VARIANT.ERROR,
   },
 })
 
 const submitValidate = (token: string): Promise<IDeskSubmitResponse> =>
-  apiV2
-    .patchBookingsPatchBookingUseByToken(token)
+  apiContremarque
+    .patchBookingUseByToken(token)
     .then(() => ({}))
     .catch(onSubmitFailure)
 
 const submitInvalidate = (token: string): Promise<IDeskSubmitResponse> =>
-  apiV2
-    .patchBookingsPatchBookingKeepByToken(token)
+  apiContremarque
+    .patchBookingKeepByToken(token)
     .then(() => ({}))
     .catch(onSubmitFailure)
 
