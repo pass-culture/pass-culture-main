@@ -1,12 +1,11 @@
 import '@testing-library/jest-dom'
 
 import { render, screen } from '@testing-library/react'
-import type { History } from 'history'
-import { createBrowserHistory } from 'history'
+import { History, createBrowserHistory } from 'history'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { Router } from 'react-router-dom'
-import type { Store } from 'redux'
+import { Store } from 'redux'
 
 import { configureTestStore } from 'store/testUtils'
 

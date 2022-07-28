@@ -1,6 +1,7 @@
+import { Category, SubCategory } from 'custom_types/categories'
+
 import { IOfferCategory, IOfferSubCategory } from 'core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from 'core/shared'
-import { Category, SubCategory } from 'custom_types/categories'
 import { useAdapter } from 'hooks'
 import * as pcapi from 'repository/pcapi/pcapi'
 

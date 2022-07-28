@@ -1,7 +1,7 @@
 import { api } from 'apiClient/api'
 import { GetCollectiveOfferResponseModel } from 'apiClient/v1'
 
-import patchEducationalInstitutionAdapter from '../patchEducationalInstitutionAdapter'
+import { patchEducationalInstitutionAdapter } from '../patchEducationalInstitutionAdapter'
 
 describe('patchEducationalInstitutionAdapter', () => {
   it('should return an error when the institutions could not be saved', async () => {

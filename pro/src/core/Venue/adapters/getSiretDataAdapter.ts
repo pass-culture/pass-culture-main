@@ -1,5 +1,5 @@
 import type { KeySelector } from 're-reselect'
-import { createCachedSelector } from 're-reselect'
+import createCachedSelector from 're-reselect'
 
 import { ENTREPRISE_STATUS_ACTIVE, apiEntreprise } from 'api/api'
 import type { IEntrepriseSiretData } from 'api/entreprise/types'

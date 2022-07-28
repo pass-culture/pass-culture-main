@@ -1,12 +1,12 @@
 import { CATEGORY_STATUS } from 'core/Offers'
 
-export type Category = {
+type Category = {
   id: string
   proLabel: string
   isSelectable: boolean
 }
 
-export type SubCategory = {
+type SubCategory = {
   id: string
   categoryId: string
   proLabel: string
