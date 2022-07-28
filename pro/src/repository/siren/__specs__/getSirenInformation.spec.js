@@ -1,4 +1,4 @@
-import getSirenInformation from '../getSirenInformation'
+import { getSirenInformation } from '../getSirenInformation'
 
 describe('getSirenInformations', () => {
   beforeEach(() => {

@@ -1,4 +1,4 @@
-import { Story } from '@storybook/react'
+import type { Story } from '@storybook/react'
 import React from 'react'
 
 import { IBoxRoundedProps } from './BoxRounded'
