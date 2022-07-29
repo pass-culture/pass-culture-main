@@ -25,9 +25,12 @@ const VenueCreationLinks = ({
       <div className="actions-container">
         <Link
           className={insideCard ? 'primary-link' : 'secondary-link'}
-          onClick={() =>
+          onClick={() => {
             logEvent(Events.CLICKED_CREATE_VENUE, { from: location.pathname })
-          }
+            logEvent(Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER, {
+              from: location.pathname,
+            })
+          }}
           to={venueCreationUrl}
         >
           {!hasPhysicalVenue ? 'Créer un lieu' : 'Ajouter un lieu'}
