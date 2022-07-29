@@ -1,0 +1,55 @@
+on:
+  schedule:
+    - cron: "*/10 * * * *" # every 10min to test
+
+jobs:
+  prepare-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          ref: ${{ github.head_ref }}
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dockerize
+        run: |
+          sudo chown -R $USER .
+          ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+
+      - name: Cache
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        with:
+          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
+          restore-keys: |
+            docker-cache-${{ hashFiles('api/requirements.txt') }}
+            docker-cache
+
+      - name: Run API
+        run: |
+          sudo chown -R 1000:1000 .
+          ./pc start-backend &
+
+      - name: Update permission
+        run: cd pro && sudo chown -R $USER .
+
+      - uses: actions/cache@v2
+        with:
+          path: pro/node_modules
+          key: ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
+            ${{ runner.os }}-node-14-yarn-
+
+      - name: Install dependencies
+        run: |
+          cd pro
+          sudo chown -R $USER .
+          yarn install
+
+      - name: Wait for backend
+        run: dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
