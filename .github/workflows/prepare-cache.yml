@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: "*/10 * * * *" # every 10min to test
+    - cron: "0 0 * * *"
 
 jobs:
   prepare-cache:
