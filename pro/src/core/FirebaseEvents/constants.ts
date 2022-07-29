@@ -12,6 +12,7 @@ export enum Events {
   CLICKED_ADD_BANK_INFORMATIONS = 'hasClickedAddBankInformation',
   CLICKED_NO_PRICING_POINT_SELECTED_YET = 'hasClickedNoPricingPointSelectedYet',
   CLICKED_ADD_VENUE_IN_OFFERER = 'hasClickedAddVenueInOfferer',
+  CLICKED_ADD_FIRST_VENUE_IN_OFFERER = 'hasClickedAddFirstVenueInOfferer',
   CLICKED_SAVE_VENUE = 'hasClickedSaveVenue',
   CLICKED_DOWNLOAD_BOOKINGS = 'hasClickedDownloadBooking',
   CLICKED_DOWNLOAD_BOOKINGS_CSV = 'hasClickedDownloadBookingCsv',
