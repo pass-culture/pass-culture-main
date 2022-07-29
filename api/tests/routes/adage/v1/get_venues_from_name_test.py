@@ -63,6 +63,7 @@ class Returns200Test:
                     "siret": venue1.siret,
                     "publicName": venue1.publicName,
                     "description": venue1.description,
+                    "collectiveDescription": venue1.collectiveDescription,
                     "phoneNumber": venue1.contact.phone_number,
                     "email": venue1.contact.email,
                     "website": venue1.contact.website,

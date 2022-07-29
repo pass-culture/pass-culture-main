@@ -1,10 +1,18 @@
-from typing import Any
+from typing import TYPE_CHECKING
 
 from pydantic import PositiveInt
 
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueContact
 from pcapi.routes.serialization import BaseModel
+
+
+if TYPE_CHECKING:
+    from typing import Type
+    from typing import TypeVar
+
+    # Create a generic variable that can be 'BaseVenueModel', or any subclass.
+    VenueModel = TypeVar("VenueModel", bound="BaseVenueModel")
 
 
 class BaseVenueModel(BaseModel):
@@ -15,6 +23,7 @@ class BaseVenueModel(BaseModel):
     city: str | None
     publicName: str | None
     description: str | None
+    collectiveDescription: str | None
     id: int
     adageId: str | None
     email: str | None
@@ -26,11 +35,22 @@ class BaseVenueModel(BaseModel):
     visualDisabilityCompliant: bool | None
 
     @classmethod
-    def from_orm(cls: Any, venue: Venue):  # type: ignore
+    def from_orm(cls: "Type[VenueModel]", venue: Venue) -> "VenueModel":
         contact: VenueContact | None = venue.contact
-        if contact is not None:
+
+        if venue.collectiveEmail:
+            venue.email = venue.collectiveEmail
+        elif contact is not None:
             venue.email = contact.email
+
+        if venue.collectiveWebsite:
+            venue.website = venue.collectiveWebsite
+        elif contact is not None:
             venue.website = contact.website
+
+        if venue.collectivePhone:
+            venue.phoneNumber = venue.collectivePhone
+        elif contact is not None:
             venue.phoneNumber = contact.phone_number
 
         return super().from_orm(venue)
