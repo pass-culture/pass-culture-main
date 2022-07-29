@@ -46,6 +46,7 @@ def get_collective_offers(
         period_ending_date=query.period_ending_date,
     )
 
+    print("goo")
     return collective_offers_serialize.ListCollectiveOffersResponseModel(
         __root__=collective_offers_serialize.serialize_collective_offers_capped(capped_offers)
     )
