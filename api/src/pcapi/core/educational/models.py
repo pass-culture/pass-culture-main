@@ -134,6 +134,8 @@ class CollectiveOffer(PcObject, offer_mixin.ValidationMixin, AccessibilityMixin,
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
 
+    interventionArea = sa.Column(MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}")  # type: ignore [misc]
+
     domains: RelationshipProperty[list["EducationalDomain"]] = relationship(
         "EducationalDomain", secondary="collective_offer_domain", back_populates="collectiveOffers"
     )
@@ -315,6 +317,8 @@ class CollectiveOfferTemplate(PcObject, offer_mixin.ValidationMixin, Accessibili
     contactPhone = sa.Column(sa.Text, nullable=False)
 
     offerVenue = sa.Column(MutableDict.as_mutable(postgresql.json.JSONB), nullable=False)  # type: ignore [misc]
+
+    interventionArea = sa.Column(MutableList.as_mutable(postgresql.ARRAY(sa.Text())), nullable=False, server_default="{}")  # type: ignore [misc]
 
     domains: RelationshipProperty[list["EducationalDomain"]] = relationship(
         "EducationalDomain", secondary="collective_offer_template_domain", back_populates="collectiveOfferTemplates"
