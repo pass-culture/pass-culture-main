@@ -67,6 +67,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.offer_validation import compute_offer_validation_score
 from pcapi.core.offers.offer_validation import parse_offer_validation_config
 import pcapi.core.offers.repository as offers_repository
+from pcapi.core.offers.repository import update_stock_quantity_to_dn_booked_quantity
 from pcapi.core.offers.utils import as_utc_without_timezone
 from pcapi.core.offers.validation import KEY_VALIDATION_CONFIG
 from pcapi.core.offers.validation import check_booking_limit_datetime
@@ -1143,10 +1144,8 @@ def update_stock_quantity_to_match_booking_provider_remaining_place(offer: Offer
 
     for show_id, remaining_places in shows_remaining_places.items():
         stock = next((s for s in offer.activeStocks if get_cds_show_id_from_uuid(s.idAtProviders) == str(show_id)))  # type: ignore [arg-type]
-        if stock:
-            if remaining_places <= 0:
-                stock.quantity = stock.dnBookedQuantity
-                repository.save(stock)
+        if stock and remaining_places <= 0:
+            update_stock_quantity_to_dn_booked_quantity(stock.id)
 
 
 def delete_unwanted_existing_product(isbn: str) -> None:
