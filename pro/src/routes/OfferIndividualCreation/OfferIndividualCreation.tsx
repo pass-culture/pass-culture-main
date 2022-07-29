@@ -4,10 +4,7 @@ import { useHistory, useParams } from 'react-router'
 import useNotification from 'components/hooks/useNotification'
 import Spinner from 'components/layout/Spinner'
 import { OFFER_FORM_STEP_IDS, useOfferFormSteps } from 'core/Offers'
-import {
-  getOfferIndividualAdapter,
-  useGetCategories,
-} from 'core/Offers/adapters'
+import { getOfferIndividualAdapter } from 'core/Offers/adapters'
 import { IOfferIndividual } from 'core/Offers/types'
 import { useHomePath } from 'hooks'
 import Breadcrumb, { BreadcrumbStyle } from 'new_components/Breadcrumb'
@@ -44,23 +41,9 @@ const OfferIndividualCreation = (): JSX.Element | null => {
     }
   }, [offerId])
 
-  const {
-    data: categoriesData,
-    isLoading: categoriesIsLoading,
-    error: categoriesError,
-  } = useGetCategories()
   const { currentStep, stepList } = useOfferFormSteps(offer)
 
-  if (categoriesError !== undefined) {
-    const loadingError = [categoriesError].find(error => error !== undefined)
-    if (loadingError !== undefined) {
-      notify.error(loadingError.message)
-      history.push(homePath)
-    }
-    return null
-  }
-
-  if (offerIsLoading || categoriesIsLoading) {
+  if (offerIsLoading) {
     return <Spinner />
   }
 
@@ -90,11 +73,7 @@ const OfferIndividualCreation = (): JSX.Element | null => {
           <StockRoute offer={offer} />
         )}
         {offer && currentStep.id === OFFER_FORM_STEP_IDS.SUMMARY && (
-          <OfferSummaryRoute
-            offer={offer}
-            categories={categoriesData.categories}
-            subCategories={categoriesData.subCategories}
-          />
+          <OfferSummaryRoute />
         )}
       </OfferFormLayout.Content>
     </OfferFormLayout>
