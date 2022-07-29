@@ -17,6 +17,7 @@ from pcapi.core.offers import repository
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.domain.pro_offers.offers_recap import OffersRecap
+from pcapi.models import db
 from pcapi.models import offer_mixin
 import pcapi.repository.repository as db_repository
 from pcapi.utils.date import utc_datetime_to_department_timezone
@@ -1306,3 +1307,24 @@ class GetCollectiveOffersTemplateByFiltersTest:
         # then
         assert len(result) == 1
         assert result[0].id == template.id
+
+
+@pytest.mark.usefixtures("db_session")
+class UpdateStockQuantityToDnBookedQuantityTest:
+    def test_update_stock_quantity_to_dn_booked_quantity(self):
+        # given
+        offer = factories.OfferFactory()
+        stock = factories.StockFactory(offer=offer, quantity=10, dnBookedQuantity=5)
+        stock_id = stock.id
+        # simulate concurent change
+        db.session.query(models.Stock).filter(models.Stock.id == stock_id).update(
+            {
+                models.Stock.dnBookedQuantity: 6,
+            },
+            synchronize_session=False,
+        )
+        assert stock.quantity == 10
+        # when
+        repository.update_stock_quantity_to_dn_booked_quantity(stock.id)
+        # then
+        assert stock.quantity == 6
