@@ -3,7 +3,7 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
 
 .profile-form {
-  border-radius: rem.torem(10px);
+  border-radius: rem.torem(6px);
   border: 1px solid colors.$grey-medium;
   margin: rem.torem(16px) 0;
 }

@@ -35,9 +35,7 @@ const UserIdentityForm = ({
   const dispatch = useDispatch()
   const [isFormVisible, setIsFormVisible] = useState(false)
   const [subTitle, setSubTitle] = useState(subtitleFormat(initialValues))
-  const toggleFormVisible = () => {
-    setIsFormVisible(oldValue => !oldValue)
-  }
+
   const onSubmit = (values: any) => {
     patchIdentityAdapter(values).then(response => {
       if (response.isOk) {
@@ -50,7 +48,7 @@ const UserIdentityForm = ({
           })
         )
 
-        toggleFormVisible()
+        setIsFormVisible(false)
       } else {
         for (const field in response.payload)
           formik.setFieldError(field, response.payload[field])
@@ -65,8 +63,14 @@ const UserIdentityForm = ({
     validationSchema,
     validateOnChange: false,
   })
-  return (
-    <div className={styles['profile-form']} data-testid="test-profile-form">
+
+  const onCancel = () => {
+    formik.resetForm()
+    setIsFormVisible(false)
+  }
+
+  const renderDetails = () => (
+    <>
       <div className={styles['profile-form-description']}>
         <div className={styles['profile-form-description-column']}>
           <div className={styles['profile-form-description-title']}>
@@ -77,54 +81,56 @@ const UserIdentityForm = ({
           </div>
         </div>
         <div className={styles['profile-form-description-column']}>
-          {!isFormVisible && (
-            <Button
-              className={styles['profile-form-edit-button']}
-              variant={ButtonVariant.TERNARY}
-              onClick={toggleFormVisible}
-              Icon={() => <Icon svg="ico-pen-black" />}
-            >
-              Modifier
-            </Button>
-          )}
+          <Button
+            className={styles['profile-form-edit-button']}
+            variant={ButtonVariant.TERNARY}
+            onClick={() => setIsFormVisible(true)}
+            Icon={() => <Icon svg="ico-pen-black" />}
+          >
+            Modifier
+          </Button>
         </div>
       </div>
-      {!isFormVisible && shouldDisplayBanner && (
+      {shouldDisplayBanner && (
         <div className={styles['profile-form-description-banner']}>
           {banner}
         </div>
       )}
-      {isFormVisible && (
-        <div className={styles['profile-form-content']}>
-          <FormikProvider value={formik}>
-            <Form onSubmit={formik.handleSubmit}>
-              <FormLayout className={styles['profile-form-field']}>
-                <FormLayout.Row>
-                  <TextInput label="Prénom" name="firstName" />,
-                </FormLayout.Row>
-                <FormLayout.Row>
-                  <TextInput label="Nom" name="lastName" />
-                </FormLayout.Row>
-              </FormLayout>
+    </>
+  )
 
-              <div className={styles['buttons-field']}>
-                <Button
-                  onClick={toggleFormVisible}
-                  variant={ButtonVariant.SECONDARY}
-                >
-                  Annuler
-                </Button>
-                <SubmitButton
-                  className="primary-button"
-                  isLoading={formik.isSubmitting}
-                >
-                  Enregistrer
-                </SubmitButton>
-              </div>
-            </Form>
-          </FormikProvider>
-        </div>
-      )}
+  const renderForm = () => (
+    <div className={styles['profile-form-content']}>
+      <FormikProvider value={formik}>
+        <Form onSubmit={formik.handleSubmit}>
+          <FormLayout className={styles['profile-form-field']}>
+            <FormLayout.Row>
+              <TextInput label="Prénom" name="firstName" />
+            </FormLayout.Row>
+            <FormLayout.Row>
+              <TextInput label="Nom" name="lastName" />
+            </FormLayout.Row>
+          </FormLayout>
+
+          <div className={styles['buttons-field']}>
+            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+              Annuler
+            </Button>
+            <SubmitButton
+              className="primary-button"
+              isLoading={formik.isSubmitting}
+            >
+              Enregistrer
+            </SubmitButton>
+          </div>
+        </Form>
+      </FormikProvider>
+    </div>
+  )
+
+  return (
+    <div className={styles['profile-form']} data-testid="test-profile-form">
+      {isFormVisible ? renderForm() : renderDetails()}
     </div>
   )
 }
