@@ -11,7 +11,6 @@ jobs:
         with:
           persist-credentials: false
           ref: ${{ github.head_ref }}
-          fetch-depth: 2
 
       - name: Check changes in API
         uses: dorny/paths-filter@v2
@@ -32,6 +31,14 @@ jobs:
           sudo chown -R $USER .
           ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
 
+      - name: Cache
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        with:
+          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
+          restore-keys: |
+            docker-cache-${{ hashFiles('api/requirements.txt') }}
+            docker-cache
+
       - name: Run API
         if: steps.changesApi.outputs.src == 'true'
         run: |
@@ -46,10 +53,10 @@ jobs:
         if: steps.changesApi.outputs.src == 'true'
         with:
           path: pro/node_modules
-          key: ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
+          key: ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-node-16-yarn-${{ hashFiles('pro/yarn.lock') }}
-            ${{ runner.os }}-node-16-yarn-
+            ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
+            ${{ runner.os }}-node-14-yarn-
 
       - name: Install dependencies
         if: steps.changesApi.outputs.src == 'true'
