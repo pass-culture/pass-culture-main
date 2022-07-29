@@ -33,6 +33,7 @@ import decimal
 import hashlib
 import itertools
 import logging
+import math
 from operator import attrgetter
 from operator import or_
 import pathlib
@@ -137,11 +138,14 @@ _LEGACY_PRICE_BOOKINGS_ORDER_CLAUSE = (
     bookings_models.Booking.id,
 )
 
-
+PRICE_BOOKINGS_BATCH_SIZE = 100
 CASHFLOW_BATCH_LABEL_PREFIX = "VIR"
 
 
-def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
+def price_bookings(
+    min_date: datetime.datetime = MIN_DATE_TO_PRICE,
+    batch_size: int = PRICE_BOOKINGS_BATCH_SIZE,
+) -> None:
     """Price bookings that have been recently marked as used.
 
     This function is normally called by a cron job.
@@ -156,52 +160,83 @@ def price_bookings(min_date: datetime.datetime = MIN_DATE_TO_PRICE) -> None:
     use_pricing_point = FeatureToggle.USE_PRICING_POINT_FOR_PRICING.is_active()
     errored_business_unit_ids = set()
     errored_pricing_point_ids = set()
-    bookings = itertools.chain.from_iterable(
-        (
-            _get_bookings_to_price(bookings_models.Booking, window, use_pricing_point),
-            _get_bookings_to_price(educational_models.CollectiveBooking, window, use_pricing_point),
+
+    # This is a quick hack to avoid fetching all bookings at once,
+    # resulting in a very large session that is updated on each
+    # commit, which takes a lot of time (up to 1 or 2 seconds per
+    # commit).
+    booking_query = _get_bookings_to_price(bookings_models.Booking, window, use_pricing_point)
+    collective_booking_query = _get_bookings_to_price(educational_models.CollectiveBooking, window, use_pricing_point)
+    loops = math.ceil(max(booking_query.count(), collective_booking_query.count()) / batch_size)
+
+    def _get_loop_query(query: BaseQuery, last_id: int | None) -> BaseQuery:
+        # We cannot use OFFSET and LIMIT because the loop "consumes"
+        # bookings that have been priced (so the query will not return
+        # them in the next loop), but keeps bookings that cannot be
+        # priced (so the query WILL return them in the next loop).
+        # Actually, filtering by id is probably faster.
+        if last_id:
+            if bookings_models.Booking in [d["entity"] for d in query.column_descriptions]:
+                query = query.filter(bookings_models.Booking.id > last_id)
+            else:
+                query = query.filter(educational_models.CollectiveBooking.id > last_id)
+        return query.limit(batch_size)
+
+    last_booking_id = None
+    last_collective_booking_id = None
+    while loops > 0:
+        bookings = itertools.chain.from_iterable(
+            (
+                _get_loop_query(booking_query, last_booking_id),
+                _get_loop_query(collective_booking_query, last_collective_booking_id),
+            )
         )
-    )
-    for booking in bookings:
-        try:
-            business_unit_id = pricing_point_id = None
-            if use_pricing_point:
-                pricing_point_id = _get_pricing_point_link(booking).pricingPointId
-                if pricing_point_id in errored_pricing_point_ids:
-                    continue
+        for booking in bookings:
+            if isinstance(booking, bookings_models.Booking):
+                last_booking_id = booking.id
             else:
-                business_unit_id = booking.venue.businessUnitId
-                if business_unit_id in errored_business_unit_ids:
-                    continue
-            extra = {
-                "booking": booking.id,
-                "business_unit": business_unit_id,
-                "pricing_point": pricing_point_id,
-            }
-            with log_elapsed(logger, "Priced booking", extra):
-                price_booking(booking, use_pricing_point)
-        except Exception as exc:  # pylint: disable=broad-except
-            if use_pricing_point:
-                errored_pricing_point_ids.add(pricing_point_id)
-                logger.info(
-                    "Ignoring further bookings from pricing point",
-                    extra={"pricing_point": pricing_point_id},
-                )
-            else:
-                errored_business_unit_ids.add(business_unit_id)
-                logger.info(
-                    "Ignoring further bookings from business unit",
-                    extra={"business_unit": business_unit_id},
-                )
-            logger.exception(
-                "Could not price booking",
-                extra={
+                last_collective_booking_id = booking.id
+            try:
+                business_unit_id = pricing_point_id = None
+                if use_pricing_point:
+                    pricing_point_id = _get_pricing_point_link(booking).pricingPointId
+                    if pricing_point_id in errored_pricing_point_ids:
+                        continue
+                else:
+                    business_unit_id = booking.venue.businessUnitId
+                    if business_unit_id in errored_business_unit_ids:
+                        continue
+                extra = {
                     "booking": booking.id,
                     "business_unit": business_unit_id,
                     "pricing_point": pricing_point_id,
-                    "exc": str(exc),
-                },
-            )
+                }
+                with log_elapsed(logger, "Priced booking", extra):
+                    price_booking(booking, use_pricing_point)
+            except Exception as exc:  # pylint: disable=broad-except
+                if use_pricing_point:
+                    errored_pricing_point_ids.add(pricing_point_id)
+                    logger.info(
+                        "Ignoring further bookings from pricing point",
+                        extra={"pricing_point": pricing_point_id},
+                    )
+                else:
+                    errored_business_unit_ids.add(business_unit_id)
+                    logger.info(
+                        "Ignoring further bookings from business unit",
+                        extra={"business_unit": business_unit_id},
+                    )
+                logger.exception(
+                    "Could not price booking",
+                    extra={
+                        "booking": booking.id,
+                        "business_unit": business_unit_id,
+                        "pricing_point": pricing_point_id,
+                        "exc": str(exc),
+                    },
+                )
+        loops -= 1
+        db.session.expunge_all()
 
 
 def _get_pricing_point_link(
