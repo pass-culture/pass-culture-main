@@ -633,3 +633,10 @@ def get_synchronized_offers_with_provider_for_venue(venue_id: int, provider_id: 
     return Offer.query.filter(Offer.venueId == venue_id).filter(
         Offer.lastProviderId == provider_id  # pylint: disable=comparison-with-callable
     )
+
+
+def update_stock_quantity_to_dn_booked_quantity(stock_id: int | None) -> None:
+    if not stock_id:
+        return
+    Stock.query.filter(Stock.id == stock_id).update({"quantity": Stock.dnBookedQuantity})
+    db.session.commit()
