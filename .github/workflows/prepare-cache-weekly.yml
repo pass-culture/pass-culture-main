@@ -1,0 +1,9 @@
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  prepare-cache-weekly:
+    uses: ./.github/workflows/reusable-update-api-client.yml
+    with:
+      trigger-only-on-change: false
