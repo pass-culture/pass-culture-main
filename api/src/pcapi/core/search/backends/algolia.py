@@ -488,6 +488,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "educationalInstitutionUAICode": collective_offer.institution.institutionId
                 if collective_offer.institution
                 else "all",
+                "interventionArea": collective_offer.interventionArea,
             },
             "offerer": {
                 "name": offerer.name,
@@ -518,6 +519,7 @@ class AlgoliaBackend(base.SearchBackend):
                 "subcategoryId": collective_offer_template.subcategoryId,
                 "domains": [domain.id for domain in collective_offer_template.domains],  # type: ignore [attr-defined]
                 "educationalInstitutionUAICode": "all",
+                "interventionArea": collective_offer_template.interventionArea,
             },
             "offerer": {
                 "name": offerer.name,
