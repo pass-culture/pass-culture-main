@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { WithdrawalTypeEnum } from 'apiClient/v1'
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
@@ -62,10 +63,21 @@ const OfferSummary = ({
   offer,
   conditionalFields,
 }: IOfferSummaryProps): JSX.Element => {
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+  const informationsUrls = isOfferFormV3
+    ? {
+        creation: `/offre/:${offer.id}/v3/creation/individuelle/informations`,
+        edition: `/offre/${offer.id}/v3/individuelle/informations`,
+      }
+    : {
+        creation: `/offre/${offer.id}/individuel/creation`,
+        edition: `/offre/${offer.id}/individuel/edition`,
+      }
   const editLink = isCreation
-    ? `/offre/${offer.id}/individuel/creation`
-    : `/offre/${offer.id}/individuel/edition`
+    ? informationsUrls.creation
+    : informationsUrls.edition
   const { logEvent } = useAnalytics()
+
   const logEditEvent = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,

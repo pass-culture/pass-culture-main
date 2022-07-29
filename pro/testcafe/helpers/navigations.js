@@ -1,7 +1,5 @@
 import { Selector } from 'testcafe'
 
-import { isSummaryPageActive } from './features'
-
 export const HOME_URL = '/accueil'
 
 export const navigateToHomeAs = (user, userRole) => async t => {
@@ -106,35 +104,30 @@ export const navigateToNewOfferAs =
     }
   }
 
+export const navigateToOfferEditionAs = (user, offer, userRole) => async t => {
+  await t.useRole(userRole)
+  await t.navigateTo(`/offre/${offer.id}/individuel/edition`)
+}
+
 export const navigateToOfferDetailsAs = (user, offer, userRole) => async t => {
-  const useSummaryPage = await isSummaryPageActive()
   const searchInput = Selector('#offre')
   const submitButton = Selector('button[type="submit"]')
   const detailsAnchor = Selector(
-    `a[href^="/offre/${offer.id}/individuel/edition"]`
-  ).withText('Modifier')
-  const offerAnchor = useSummaryPage
-    ? Selector(
-        `a[href^="/offre/${offer.id}/individuel/recapitulatif"]`
-      ).withText(offer.name)
-    : Selector(`a[href^="/offre/${offer.id}/individuel/edition"]`).withText(
-        offer.name
-      )
+    `a[href^="/offre/${offer.id}/individuel/recapitulatif"]`
+  ).withText("Détails de l'offre")
+  const offerAnchor = Selector(
+    `a[href^="/offre/${offer.id}/individuel/recapitulatif"]`
+  ).withText(offer.name)
 
   await t.useRole(userRole)
 
   await t.navigateTo('/offres')
 
-  useSummaryPage
-    ? await t
-        .typeText(searchInput, offer.name, { paste: true })
-        .click(submitButton)
-        .click(offerAnchor)
-        .click(detailsAnchor)
-    : await t
-        .typeText(searchInput, offer.name, { paste: true })
-        .click(submitButton)
-        .click(offerAnchor)
+  await t
+    .typeText(searchInput, offer.name, { paste: true })
+    .click(submitButton)
+    .click(offerAnchor)
+    .click(detailsAnchor)
 }
 
 export const navigateToStocksAs = (user, offer, userRole) => async t => {

@@ -23,6 +23,8 @@ import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import * as pcapi from 'repository/pcapi/pcapi'
+import { ButtonLink } from 'ui-kit'
+import { ButtonVariant } from 'ui-kit/Button/types'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import { ActionBar } from '../ActionBar'
@@ -167,13 +169,17 @@ const Summary = ({
               publishOffer={publishOffer}
               disablePublish={isDisabled}
             />
-          ) : (
+          ) : isCreation ? (
             <OfferFormLayout.ActionBar>
               <ActionBar
                 onClickNext={handleNextStep}
                 onClickPrevious={handlePreviousStep}
               />
             </OfferFormLayout.ActionBar>
+          ) : (
+            <ButtonLink to="/offres" variant={ButtonVariant.PRIMARY}>
+              Retour à la liste des offres
+            </ButtonLink>
           )}
         </SummaryLayout.Content>
 

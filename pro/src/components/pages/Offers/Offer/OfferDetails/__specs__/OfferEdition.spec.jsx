@@ -86,6 +86,17 @@ describe('offerDetails - Edition', () => {
           isAdmin: false,
           email: 'francois@example.com',
         },
+        initialized: true,
+      },
+      features: {
+        list: [
+          {
+            name: 'OFFER_FORM_SUMMARY_PAGE',
+            nameKey: 'OFFER_FORM_SUMMARY_PAGE',
+            isActive: true,
+          },
+        ],
+        initialized: true,
       },
     })
 
@@ -129,6 +140,7 @@ describe('offerDetails - Edition', () => {
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: false,
       visualDisabilityCompliant: false,
+      stocks: [],
     }
 
     categories = {
@@ -1167,8 +1179,12 @@ describe('offerDetails - Edition', () => {
       await userEvent.click(
         await screen.findByText('Enregistrer les modifications')
       )
-      await userEvent.click(screen.getByText('Stocks et prix'))
-      await userEvent.click(await screen.findByText("Détails de l'offre"))
+
+      const modifyLinkList = await screen.getAllByRole('link', {
+        name: 'Modifier',
+        exact: false,
+      })
+      await userEvent.click(modifyLinkList[0])
 
       // Then
       await expect(getOfferInputForField('name')).resolves.toHaveValue(

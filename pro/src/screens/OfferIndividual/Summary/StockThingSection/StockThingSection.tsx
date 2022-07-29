@@ -1,6 +1,7 @@
 import { format } from 'date-fns-tz'
 import React from 'react'
 
+import useActiveFeature from 'components/hooks/useActiveFeature'
 import useAnalytics from 'components/hooks/useAnalytics'
 import {
   Events,
@@ -28,10 +29,19 @@ const StockThingSection = ({
   isCreation,
   offerId,
 }: IStockThingSummarySection): JSX.Element => {
-  const editLink = isCreation
-    ? `/offre/${offerId}/individuel/creation/stocks`
-    : `/offre/${offerId}/individuel/stocks`
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
+  const stocksUrls = isOfferFormV3
+    ? {
+        creation: `/offre/:${offerId}/v3/creation/individuelle/stocks`,
+        edition: `/offre/${offerId}/v3/individuelle/stocks`,
+      }
+    : {
+        creation: `/offre/${offerId}/individuel/creation/stocks`,
+        edition: `/offre/${offerId}/individuel/stocks`,
+      }
+  const editLink = isCreation ? stocksUrls.creation : stocksUrls.edition
   const { logEvent } = useAnalytics()
+
   const logEditEvent = () => {
     logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
       from: OfferBreadcrumbStep.SUMMARY,
