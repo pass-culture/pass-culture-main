@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import datetime
+from itertools import chain
 from itertools import cycle
 
 from pcapi.core.educational import models as educational_models
@@ -17,6 +18,8 @@ class StockData:
     numberOfTickets: int
     addressType: str
     otherAddress: str
+    interventionArea: list[str]
+    educationalInstitutionId: str | None
 
 
 @dataclass
@@ -24,6 +27,7 @@ class TemplateOfferData:
     name: str
     addressType: str
     otherAddress: str
+    interventionArea: list[str]
 
 
 FAKE_STOCK_DATA = [
@@ -34,6 +38,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=10,
         addressType="other",
         otherAddress="1 rue des polissons, Paris 75017",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Visite de la mine Gabe Gottes",
@@ -42,6 +48,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=30,
         addressType="school",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Clued'au Château",
@@ -50,6 +58,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=25,
         addressType="other",
         otherAddress="1 rue des polissons, Paris 75017",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Visitez le Panthéon, Chef d'œuvre de l'architecte Soufflot",
@@ -58,6 +68,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=20,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId="0780032L",
     ),
     StockData(
         name="Arc de Triomphe : embrassez tout Paris du haut du monument emblématique",
@@ -66,6 +78,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=5,
         addressType="other",
         otherAddress="1 rue des polissons, Paris 75017",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Site archéologique : un des plus vieux villages d'Europe (2500 ans avant JC)",
@@ -74,6 +88,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=40,
         addressType="school",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Spectacle nocturne Lux Salina",
@@ -82,6 +98,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=50,
         addressType="other",
         otherAddress="1 rue des polissons, Paris 75017",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
@@ -90,6 +108,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=15,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
@@ -98,6 +118,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=100,
         addressType="school",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Le Grognement de la voie lactée - Bonn Park/Paul Moulin, Maia Sandoz",
@@ -106,6 +128,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=10,
         addressType="school",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Baal - Bertolt Brecht / Armel Roussel",
@@ -114,6 +138,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=80,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Intervention Estampe en Partage - Collège Les Célestins de Vichy",
@@ -122,6 +148,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=12,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Sensibilisation au jazz par une approche vivante en lien avec 'Anglet Jazz Festival'",
@@ -130,6 +158,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=50,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="L'art de la mosaïque sur la colline de Fourvière",
@@ -138,6 +168,8 @@ FAKE_STOCK_DATA = [
         numberOfTickets=50,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="À la découverte de la lignée évolutive humaine",
@@ -146,6 +178,48 @@ FAKE_STOCK_DATA = [
         numberOfTickets=50,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
+    ),
+    StockData(
+        name="offre en région parisienne",
+        price=1000,
+        timedelta=20,
+        numberOfTickets=10,
+        addressType="other",
+        otherAddress="1 rue des polissons, Paris 75017",
+        interventionArea=["75", "92", "93", "94", "78", "91", "95"],
+        educationalInstitutionId=None,
+    ),
+    StockData(
+        name="offre en martinique",
+        price=800,
+        timedelta=18,
+        numberOfTickets=30,
+        addressType="school",
+        otherAddress="",
+        interventionArea=["972"],
+        educationalInstitutionId=None,
+    ),
+    StockData(
+        name="offre en corse",
+        price=1200,
+        timedelta=15,
+        numberOfTickets=25,
+        addressType="other",
+        otherAddress="1 rue des polissons, Paris 75017",
+        interventionArea=["2A", "2B"],
+        educationalInstitutionId=None,
+    ),
+    StockData(
+        name="offre en Loire-Atlantique visible uniquement pas l'etablissement 1",
+        price=1200,
+        timedelta=22,
+        numberOfTickets=20,
+        addressType="offererVenue",
+        otherAddress="",
+        interventionArea=["44"],
+        educationalInstitutionId="0780032L",
     ),
 ]
 
@@ -157,6 +231,8 @@ PASSED_STOCK_DATA: list[StockData] = [
         numberOfTickets=50,
         addressType="other",
         otherAddress="1 rue des polissons, Paris 75017",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Passée: Découverte des métiers du patrimoine: Restaurateur(trice) Décorateur(trice), Doreur(reuse)",
@@ -165,6 +241,8 @@ PASSED_STOCK_DATA: list[StockData] = [
         numberOfTickets=15,
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
     StockData(
         name="Passée: Entrée 'Spectacle aux Étoiles' avec conférence 'La Lune... connue et inconnue'",
@@ -173,6 +251,8 @@ PASSED_STOCK_DATA: list[StockData] = [
         numberOfTickets=100,
         addressType="school",
         otherAddress="",
+        interventionArea=[],
+        educationalInstitutionId=None,
     ),
 ]
 
@@ -181,16 +261,31 @@ TEMPLATE_OFFERS_DATA = [
         name="Visite du studio d'enregistrement de l'EAC collectif",
         addressType="offererVenue",
         otherAddress="",
+        interventionArea=[],
     ),
     TemplateOfferData(
         name="Plongez au coeur de la pâtisserie du 12 rue Duhesme",
         addressType="other",
         otherAddress="12 rue Duhesme, Paris 75018",
+        interventionArea=[],
     ),
     TemplateOfferData(
         name="Une offre vitrine pas comme les autres",
         addressType="school",
         otherAddress="",
+        interventionArea=[],
+    ),
+    TemplateOfferData(
+        name="Une offre vitrine pour les Bouches-du-Rhône ",
+        addressType="offererVenue",
+        otherAddress="",
+        interventionArea=["13"],
+    ),
+    TemplateOfferData(
+        name="Une offre vitrine pour toute la france metro",
+        addressType="offererVenue",
+        otherAddress="",
+        interventionArea=[str(i) for i in chain(range(1, 95), ["2A", "2B", "mainland"]) if i != 20],
     ),
 ]
 ADDRESSES = [
@@ -389,6 +484,12 @@ def _create_collective_stock(
     else:
         beginningDatetime = now + datetime.timedelta(days=timedelta)
 
+    educational_institution = None
+    if stock_data.educationalInstitutionId:
+        educational_institution = educational_models.EducationalInstitution.query.filter(
+            educational_models.EducationalInstitution.institutionId == stock_data.educationalInstitutionId
+        ).one()
+
     return educational_factories.CollectiveStockFactory.create_batch(
         number_of_stocks,
         price=stock_data.price,
@@ -413,6 +514,8 @@ def _create_collective_stock(
         collectiveOffer__contactPhone="01010100101",
         collectiveOffer__motorDisabilityCompliant=True,
         collectiveOffer__visualDisabilityCompliant=True,
+        collectiveOffer__interventionArea=stock_data.interventionArea,
+        collectiveOffer__institution=educational_institution,
     )
 
 
@@ -438,6 +541,7 @@ def _create_collective_offer_template(
         contactPhone="01010100101",
         motorDisabilityCompliant=True,
         visualDisabilityCompliant=True,
+        interventionArea=offer_data.interventionArea,
     )
 
 
