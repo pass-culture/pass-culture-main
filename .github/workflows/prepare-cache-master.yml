@@ -1,9 +1,10 @@
 on:
-  pull_request:
+  push:
     branches:
-      - master
+      - "master"
+
 jobs:
-  update-api-client:
+  prepare-cache-master:
     uses: ./.github/workflows/reusable-update-api-client.yml
     with:
-      trigger-only-on-change: true
+      trigger-only-on-change: false
