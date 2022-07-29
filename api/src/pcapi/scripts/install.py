@@ -21,6 +21,7 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.scripts.update_providables",
         "pcapi.scripts.ubble_archive_past_identifications",
         "pcapi.utils.human_ids",
+        "pcapi.utils.secrets",
         "pcapi.workers.worker",
     )
 
