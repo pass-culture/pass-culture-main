@@ -1,0 +1,107 @@
+on:
+  workflow_call:
+    inputs:
+      trigger-only-on-change:
+        required: true
+        type: boolean
+
+jobs:
+  reusable-update-api-client:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          ref: ${{ github.head_ref }}
+
+      - name: Check changes in API
+        uses: dorny/paths-filter@v2
+        if: ${{ inputs.trigger-only-on-change }}
+        id: changesApi
+        with:
+          filters: |
+            src:
+              - 'api/**'
+
+      - uses: actions/setup-node@v2
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        with:
+          node-version: "14"
+
+      - name: Install dockerize
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        run: |
+          sudo chown -R $USER .
+          ./scripts/install_dockerize.sh $DOCKERIZE_VERSION
+
+      - name: Cache
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        with:
+          key: docker-cache-${{ hashFiles('api/requirements.txt') }}
+          restore-keys: |
+            docker-cache-${{ hashFiles('api/requirements.txt') }}
+            docker-cache
+
+      - name: Run API
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        run: |
+          sudo chown -R 1000:1000 .
+          ./pc start-backend &
+
+      - name: Update permission
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        run: cd pro && sudo chown -R $USER .
+
+      - uses: actions/cache@v2
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        with:
+          path: pro/node_modules
+          key: ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node-14-yarn-${{ hashFiles('pro/yarn.lock') }}
+            ${{ runner.os }}-node-14-yarn-
+
+      - name: Install dependencies
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        run: |
+          cd pro
+          sudo chown -R $USER .
+          yarn install
+
+      - name: Wait for backend
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        run: dockerize -wait http://localhost:5001/health/api -timeout 10m -wait-retry-interval 5s
+
+      - name: Update api client
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        run: |
+          cd pro
+          yarn generate:api:client:local
+
+      - name: Check if there are changes
+        if: ${{ !inputs.trigger-only-on-change || (inputs.trigger-only-on-change && steps.changesApi.outputs.src == 'true' )}}
+        id: changes
+        run: |
+          if [[ -z "$(git status --porcelain $STATUS_ARGS $PATHSPEC)" ]];
+            then
+              echo ::set-output name=changed::'false'
+            else
+              echo ::set-output name=changed::'true'
+            fi
+
+      - name: Commit
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          sudo chown -R $USER .
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add .
+          git commit -m "(BSR)[PRO] chore: update api client"
+
+      - name: Push changes
+        if: steps.changes.outputs.changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          branch: ${{ github.head_ref }}
