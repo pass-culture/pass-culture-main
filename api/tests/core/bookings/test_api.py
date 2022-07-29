@@ -125,7 +125,7 @@ class BookOfferTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_create_booking(self, mocked_async_index_offer_ids, app):
 
-        beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
         # There is a different email for the first venue booking
@@ -138,7 +138,7 @@ class BookOfferTest:
         assert len(push_testing.requests) == 2
 
         data = push_testing.requests[0]
-        assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
+        assert data["attribute_values"]["u.credit"] == 29_000  # values in cents
         assert data["attribute_values"]["ut.booking_categories"] == ["FILM"]
 
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
@@ -169,7 +169,7 @@ class BookOfferTest:
         )  # to beneficiary
 
     def test_if_it_is_first_venue_booking_to_send_specific_email(self):
-        beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=10, dnBookedQuantity=5, offer__bookingEmail="offerer@example.com")
 
         api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
@@ -240,7 +240,7 @@ class BookOfferTest:
 
     def test_create_event_booking(self):
         ten_days_from_now = datetime.utcnow() + timedelta(days=10)
-        beneficiary = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
         stock = offers_factories.StockFactory(price=10, beginningDatetime=ten_days_from_now, dnBookedQuantity=5)
 
         booking = api.book_offer(beneficiary=beneficiary, stock_id=stock.id, quantity=1)
@@ -250,7 +250,7 @@ class BookOfferTest:
         assert len(push_testing.requests) == 2
 
         data = push_testing.requests[0]
-        assert data["attribute_values"]["u.credit"] == 49_000  # values in cents
+        assert data["attribute_values"]["u.credit"] == 29_000  # values in cents
 
         expected_date = booking.dateCreated.strftime(BATCH_DATETIME_FORMAT)
         assert data["attribute_values"]["date(u.last_booking_date)"] == expected_date

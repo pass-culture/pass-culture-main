@@ -326,21 +326,18 @@ class DepositGrantFactory(BaseFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
-        if "amount" in kwargs:
-            raise ValueError("You cannot directly set deposit amount: set version instead")
         age = users_utils.get_age_from_birth_date(kwargs["user"].dateOfBirth)
         eligibility = (
             models.EligibilityType.UNDERAGE
             if age in users_constants.ELIGIBILITY_UNDERAGE_RANGE
             else models.EligibilityType.AGE18
         )
-        granted_deposit = payments_api.get_granted_deposit(
-            kwargs["user"], eligibility, age_at_registration=age, version=kwargs.get("version")
-        )
+        granted_deposit = payments_api.get_granted_deposit(kwargs["user"], eligibility, age_at_registration=age)
 
         if "version" not in kwargs:
             kwargs["version"] = granted_deposit.version
-        kwargs["amount"] = granted_deposit.amount
+        if "amount" not in kwargs:
+            kwargs["amount"] = granted_deposit.amount
         if "expirationDate" not in kwargs:
             kwargs["expirationDate"] = granted_deposit.expiration_date
         if "type" not in kwargs:
