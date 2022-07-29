@@ -227,9 +227,15 @@ const VenueCreation = () => {
         <AccessibilityFields />
         <WithdrawalDetailsFields isCreatedEntity readOnly={readOnly} />
         <ContactInfosFields readOnly={false} />
-        {enableAdageVenueInformation && canOffererCreateCollectiveOffer && (
-          <EACInformation venue={null} offererId={offererId} isCreatingVenue />
-        )}
+        {enableAdageVenueInformation &&
+          canOffererCreateCollectiveOffer &&
+          isSiretValued && (
+            <EACInformation
+              venue={null}
+              offererId={offererId}
+              isCreatingVenue
+            />
+          )}
         {!isNewBankInformationCreation &&
           (isBankInformationWithSiretActive ? (
             <BusinessUnitFields isCreatingVenue offerer={offerer} />

@@ -109,7 +109,7 @@ describe('venue form', () => {
       // FIXME: make cacheSelector reset on each test.
       testId += 1
       await renderVenueCreation({ props, storeOverrides })
-      const toggle = await screen.getByRole('button', {
+      const toggle = screen.getByRole('button', {
         name: 'Je veux créer un lieu avec SIRET',
       })
       await userEvent.click(toggle)
@@ -346,7 +346,7 @@ describe('venue form', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should render button when FF is on and offerer can create collective offer', async () => {
+    it('should render button when FF is on and offerer can create collective offer and venue is being created with a siret', async () => {
       jest
         .spyOn(pcapi, 'canOffererCreateEducationalOffer')
         .mockResolvedValueOnce()
@@ -376,6 +376,29 @@ describe('venue form', () => {
         storeOverrides: {
           ...storeOverrides,
           features: {
+            ...storeOverrides.features,
+            list: [
+              ...storeOverrides.features.list,
+              {
+                isActive: true,
+                nameKey: 'ENABLE_ADAGE_VENUE_INFORMATION',
+              },
+            ],
+          },
+        },
+      })
+
+      expect(
+        screen.queryByText('Renseigner mes informations')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should not render button when FF is on and offerer can create collective offer but venue is being created without siret', async () => {
+      await renderVenueCreation({
+        props,
+        storeOverrides: {
+          ...storeOverrides,
+          features: {
             list: [
               {
                 isActive: true,
@@ -385,6 +408,11 @@ describe('venue form', () => {
           },
         },
       })
+
+      const toggle = screen.getByRole('button', {
+        name: 'Je veux créer un lieu avec SIRET',
+      })
+      await userEvent.click(toggle)
 
       expect(
         screen.queryByText('Renseigner mes informations')
