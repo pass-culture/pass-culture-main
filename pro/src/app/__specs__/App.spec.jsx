@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 
 import { setUser } from '@sentry/browser'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
@@ -67,16 +67,16 @@ describe('src | App', () => {
     jest.spyOn(api, 'getProfile').mockResolvedValue(user)
   })
 
-  it('should render App and children components when isMaintenanceActivated is false', () => {
+  it('should render App and children components when isMaintenanceActivated is false', async () => {
     // When
     renderApp({ props, store })
 
     // Then
-    expect(screen.getByText('Sub component')).toBeInTheDocument()
+    expect(await screen.findByText('Sub component')).toBeInTheDocument()
     expect(setUser).toHaveBeenCalledWith({ id: user.id })
   })
 
-  it('should render a Redirect component when isMaintenanceActivated is true', () => {
+  it('should render a Redirect component when isMaintenanceActivated is true', async () => {
     // When
     props = {
       ...props,
@@ -84,7 +84,9 @@ describe('src | App', () => {
     }
     renderApp({ props, store })
 
-    expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
+    await waitFor(() => {
+      expect(setHrefSpy).toHaveBeenCalledWith(URL_FOR_MAINTENANCE)
+    })
   })
 
   it('should load features', async () => {
@@ -92,6 +94,7 @@ describe('src | App', () => {
     renderApp({ props, store })
 
     // Then
+    await screen.findByText('Sub component')
     expect(loadFeatures).toHaveBeenCalledWith()
   })
 })

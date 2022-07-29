@@ -8,14 +8,14 @@ import {
 } from 'core/FirebaseEvents/constants'
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 
-interface Props {
+export interface IDisplayInAppLinkProps {
   className?: string
   link: string
   children?: React.ReactNode
   trackOffer?: boolean
 }
 
-export const DisplayInAppLink: FunctionComponent<Props> = ({
+export const DisplayInAppLink: FunctionComponent<IDisplayInAppLinkProps> = ({
   className,
   link,
   children,

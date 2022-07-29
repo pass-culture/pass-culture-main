@@ -3,6 +3,7 @@ import {
   initializeAnalytics,
   setUserId,
   logEvent as analyticsLogEvent,
+  isSupported,
 } from '@firebase/analytics'
 import * as firebase from '@firebase/app'
 import { useContext, useEffect, useState } from 'react'
@@ -10,20 +11,28 @@ import { useContext, useEffect, useState } from 'react'
 import { firebaseConfig } from 'config/firebase'
 import { AnalyticsContext } from 'context/analyticsContext'
 
-export const useConfigureAnalytics = (
-  currentUserId: string | undefined
-): void => {
+export const useConfigureAnalytics = (currentUserId: string | undefined) => {
   const [app, setApp] = useState<firebase.FirebaseApp | undefined>()
+  const [isFirebaseSupported, setIsFirebaseSupported] = useState<boolean>(false)
   const { setLogEvent } = useAnalytics()
+
   useEffect(() => {
-    if (!app) {
+    async function initializeIfNeeded() {
+      setIsFirebaseSupported(await isSupported())
+    }
+    initializeIfNeeded()
+  }, [])
+
+  useEffect(() => {
+    if (!app && isFirebaseSupported) {
       const initializeApp = firebase.initializeApp(firebaseConfig)
       setApp(initializeApp)
-      initializeAnalytics(initializeApp, {
-        config: {
-          send_page_view: false,
-        },
-      })
+      isFirebaseSupported &&
+        initializeAnalytics(initializeApp, {
+          config: {
+            send_page_view: false,
+          },
+        })
 
       setLogEvent &&
         setLogEvent(
@@ -38,10 +47,10 @@ export const useConfigureAnalytics = (
             }
         )
     }
-  }, [app])
+  }, [app, isFirebaseSupported])
 
   useEffect(() => {
-    if (app && currentUserId) {
+    if (app && currentUserId && isFirebaseSupported) {
       setUserId(getAnalytics(app), currentUserId)
     }
   }, [app, currentUserId])
