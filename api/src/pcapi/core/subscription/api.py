@@ -54,9 +54,6 @@ def activate_beneficiary_for_eligibility(
     else:
         raise exceptions.InvalidEligibilityTypeException()
 
-    if "apps_flyer" in user.externalIds:  # type: ignore [operator]
-        apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
-
     deposit = payments_api.create_deposit(
         user,
         deposit_source=deposit_source,
@@ -68,12 +65,15 @@ def activate_beneficiary_for_eligibility(
     db.session.commit()
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit_source})
 
-    db.session.refresh(user)
+    is_email_sent = accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user)
+    if not is_email_sent:
+        logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
 
     users_external.update_external_user(user)
 
-    if not accepted_as_beneficiary.send_accepted_as_beneficiary_email(user=user):
-        logger.warning("Could not send accepted as beneficiary email to user", extra={"user": user.id})
+    if "apps_flyer" in user.externalIds:  # type: ignore [operator]
+        apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
+
     return user
 
 
