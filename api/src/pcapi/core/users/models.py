@@ -49,8 +49,6 @@ class TokenType(enum.Enum):
 
 
 class PhoneValidationStatusType(enum.Enum):
-    BLOCKED_TOO_MANY_CODE_SENDINGS = "blocked-too-many-code-sendings"
-    BLOCKED_TOO_MANY_CODE_VERIFICATION_TRIES = "blocked-too-many-code-verification-tries"
     SKIPPED_BY_SUPPORT = "skipped-by-support"
     UNVALIDATED = "unvalidated"
     VALIDATED = "validated"
