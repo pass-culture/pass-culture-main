@@ -909,16 +909,18 @@ class CommonSubscritpionTest:
 @pytest.mark.usefixtures("db_session")
 class GetActivableFraudCheckTest:
     AGE18_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=18, months=4)
+    UNDERAGE_ELIGIBLE_BIRTH_DATE = datetime.utcnow() - relativedelta(years=16, months=4)
 
     def eligible_user(
         self,
         validate_phone: bool,
         city: typing.Optional[str] = "Quito",
         activity: typing.Optional[users_models.ActivityEnum] = "Étudiant",
+        is_underage: bool = False,
     ):
         phone_validation_status = users_models.PhoneValidationStatusType.VALIDATED if validate_phone else None
         return users_factories.UserFactory(
-            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE,
+            dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE if not is_underage else self.UNDERAGE_ELIGIBLE_BIRTH_DATE,
             phoneValidationStatus=phone_validation_status,
             city=city,
             activity=activity,
@@ -936,6 +938,26 @@ class GetActivableFraudCheckTest:
             user=user, type=fraud_models.FraudCheckType.HONOR_STATEMENT, status=fraud_models.FraudCheckStatus.OK
         )
         fraud_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        assert subscription_api._get_activable_identity_fraud_check(user) == identity_fraud_check
+
+    def test_no_missing_step_underage(self):
+        user = self.eligible_user(validate_phone=False, is_underage=True)
+        identity_fraud_check = fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.EDUCONNECT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=fraud_models.FraudCheckType.HONOR_STATEMENT,
+            status=fraud_models.FraudCheckStatus.OK,
+            eligibilityType=users_models.EligibilityType.UNDERAGE,
+        )
+        fraud_factories.ProfileCompletionFraudCheckFactory(
+            user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
+        )
 
         assert subscription_api._get_activable_identity_fraud_check(user) == identity_fraud_check
 
