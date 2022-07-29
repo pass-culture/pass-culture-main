@@ -71,7 +71,7 @@ def test_run_sendinblue_only(mock_import_contacts):
 
 @pytest.mark.usefixtures("db_session")
 def test_format_batch_user():
-    user = BeneficiaryGrant18Factory(deposit__version=1, departementCode="75", city="Paris")
+    user = BeneficiaryGrant18Factory(departementCode="75", city="Paris")
     booking = IndividualBookingFactory(individualBooking__user=user)
 
     res = format_batch_users([user])
@@ -83,7 +83,7 @@ def test_format_batch_user():
         "date(u.deposit_expiration_date)": user.deposit_expiration_date.strftime(BATCH_DATETIME_FORMAT),
         "date(u.last_booking_date)": booking.dateCreated.strftime(BATCH_DATETIME_FORMAT),
         "u.city": "Paris",
-        "u.credit": 49000,
+        "u.credit": 29000,
         "u.departement_code": "75",
         "u.is_beneficiary": True,
         "u.is_current_beneficiary": True,
@@ -102,7 +102,7 @@ def test_format_batch_user():
 
 @pytest.mark.usefixtures("db_session")
 def test_format_sendinblue_user():
-    user = BeneficiaryGrant18Factory(deposit__version=1, departementCode="75")
+    user = BeneficiaryGrant18Factory(departementCode="75")
     booking = IndividualBookingFactory(individualBooking__user=user)
 
     res = format_sendinblue_users([user])
@@ -113,7 +113,7 @@ def test_format_sendinblue_user():
         "BOOKED_OFFER_CATEGORIES": "FILM",
         "BOOKED_OFFER_SUBCATEGORIES": "SUPPORT_PHYSIQUE_FILM",
         "BOOKING_COUNT": 1,
-        "CREDIT": Decimal("490.00"),
+        "CREDIT": Decimal("290.00"),
         "DATE_CREATED": user.dateCreated,
         "DATE_OF_BIRTH": user.dateOfBirth,
         "DEPARTMENT_CODE": "75",
@@ -126,7 +126,7 @@ def test_format_sendinblue_user():
         "HAS_BOOKINGS": None,
         "HAS_COMPLETED_ID_CHECK": True,
         "HAS_OFFERS": None,
-        "INITIAL_CREDIT": Decimal("500.00"),
+        "INITIAL_CREDIT": Decimal("300.00"),
         "IS_BENEFICIARY": True,
         "IS_BENEFICIARY_18": True,
         "IS_BOOKING_EMAIL": None,

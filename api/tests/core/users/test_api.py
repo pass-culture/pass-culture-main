@@ -470,7 +470,7 @@ class FulfillBeneficiaryDataTest:
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
-        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18, None)
+        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18)
 
         # then
         assert isinstance(user, users_models.User)
@@ -482,7 +482,7 @@ class FulfillBeneficiaryDataTest:
         user = users_factories.UserFactory(dateOfBirth=self.AGE18_ELIGIBLE_BIRTH_DATE)
 
         # when
-        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18, 2)
+        user = users_api.fulfill_beneficiary_data(user, "deposit_source", users_models.EligibilityType.AGE18)
 
         # then
         assert isinstance(user, users_models.User)
@@ -581,7 +581,7 @@ class UpdateUserInfoTest:
 @pytest.mark.usefixtures("db_session")
 class DomainsCreditTest:
     def test_get_domains_credit_v1(self):
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
 
         # booking only in all domains
         bookings_factories.IndividualBookingFactory(
@@ -640,7 +640,7 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_deposit_expired(self):
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=2)
+        user = users_factories.BeneficiaryGrant18Factory()
         bookings_factories.IndividualBookingFactory(
             individualBooking__user=user,
             amount=250,

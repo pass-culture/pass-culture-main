@@ -303,11 +303,11 @@ def fulfill_account_password(user: models.User) -> models.User:
 
 
 def fulfill_beneficiary_data(
-    user: models.User, deposit_source: str, eligibility: models.EligibilityType, deposit_version: int = None
+    user: models.User, deposit_source: str, eligibility: models.EligibilityType
 ) -> models.User:
     _generate_random_password(user)
 
-    deposit = payment_api.create_deposit(user, deposit_source, eligibility=eligibility, version=deposit_version)
+    deposit = payment_api.create_deposit(user, deposit_source, eligibility=eligibility)
     user.deposits = [deposit]
 
     return user

@@ -72,9 +72,7 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_balance_ignores_expired_deposits(self):
         # given
-        user = users_factories.BeneficiaryGrant18Factory(
-            deposit__version=1, deposit__expirationDate=datetime(2000, 1, 1)
-        )
+        user = users_factories.BeneficiaryGrant18Factory(deposit__expirationDate=datetime(2000, 1, 1))
 
         # then
         assert user.wallet_balance == 0
@@ -83,30 +81,30 @@ class WalletBalanceTest:
     @pytest.mark.usefixtures("db_session")
     def test_balance(self):
         # given
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory()
         bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
         bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=2, amount=20)
         bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=3, amount=30)
         bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user, quantity=4, amount=40)
 
         # then
-        assert user.wallet_balance == 500 - (10 + 2 * 20 + 3 * 30)
-        assert user.real_wallet_balance == 500 - (10 + 2 * 20)
+        assert user.wallet_balance == 300 - (10 + 2 * 20 + 3 * 30)
+        assert user.real_wallet_balance == 300 - (10 + 2 * 20)
 
     @pytest.mark.usefixtures("db_session")
     def test_real_balance_with_only_used_bookings(self):
         # given
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory()
         bookings_factories.IndividualBookingFactory(individualBooking__user=user, quantity=1, amount=30)
 
         # then
-        assert user.wallet_balance == 500 - 30
-        assert user.real_wallet_balance == 500
+        assert user.wallet_balance == 300 - 30
+        assert user.real_wallet_balance == 300
 
     @pytest.mark.usefixtures("db_session")
-    def test_balance_should_not_be_negative(self):
+    def test_balance_when_expired(self):
         # given
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory()
         bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user, quantity=1, amount=10)
         deposit = user.deposit
         deposit.expirationDate = datetime(2000, 1, 1)

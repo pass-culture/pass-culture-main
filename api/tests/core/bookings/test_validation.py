@@ -132,7 +132,7 @@ class CheckStockIsBookableTest:
 @pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsDepositVersion1Test:
     def _get_beneficiary(self):
-        return users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        return users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
 
     def test_physical_limit(self):
         beneficiary = self._get_beneficiary()
@@ -199,7 +199,7 @@ class CheckExpenseLimitsDepositVersion1Test:
 @pytest.mark.usefixtures("db_session")
 class CheckExpenseLimitsDepositVersion2Test:
     def _get_beneficiary(self, **kwargs):
-        return users_factories.BeneficiaryGrant18Factory(deposit__version=2, **kwargs)
+        return users_factories.BeneficiaryGrant18Factory(**kwargs)
 
     def test_raise_if_deposit_expired(self):
         yesterday = datetime.utcnow() - timedelta(days=1)
@@ -265,9 +265,9 @@ class InsufficientFundsSQLCheckTest:
 
     def test_insufficient_funds_when_user_has_negative_deposit(self):
         # The user once booked.
-        user = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+        user = users_factories.BeneficiaryGrant18Factory()
         factories.IndividualBookingFactory(individualBooking__user=user)
-        assert user.wallet_balance == 490
+        assert user.wallet_balance == 290
 
         # But now their deposit expired.
         self._expire_deposit(user)

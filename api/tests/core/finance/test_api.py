@@ -1954,7 +1954,7 @@ def test_generate_payments_file_legacy_with_business_units():
 
 @clean_temporary_files
 def test_generate_wallets_file():
-    user1 = users_factories.BeneficiaryGrant18Factory(deposit__version=1)
+    user1 = users_factories.BeneficiaryGrant18Factory(deposit__version=1, deposit__amount=500)
     bookings_factories.IndividualBookingFactory(individualBooking__user=user1, amount=10)
     bookings_factories.UsedIndividualBookingFactory(individualBooking__user=user1, amount=20)
     bookings_factories.CancelledIndividualBookingFactory(individualBooking__user=user1, amount=30)

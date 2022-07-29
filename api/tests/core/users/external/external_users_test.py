@@ -94,9 +94,10 @@ def test_update_external_pro_user():
     assert len(sendinblue_testing.sendinblue_requests) == 1
 
 
-def test_get_user_attributes_beneficiary():
+def test_get_user_attributes_beneficiary_with_v1_deposit():
     user = BeneficiaryGrant18Factory(
         deposit__version=1,
+        deposit__amount=500,
         departementCode="75",
         phoneNumber="0706050403",
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -168,7 +169,6 @@ def test_get_user_attributes_beneficiary():
 def test_get_user_attributes_ex_beneficiary_because_of_expiration():
     with freeze_time(datetime.utcnow() - relativedelta(years=2, days=2)):
         user = BeneficiaryGrant18Factory(
-            deposit__version=2,
             departementCode="75",
             phoneNumber="+33605040302",
             phoneValidationStatus=PhoneValidationStatusType.VALIDATED,
@@ -229,7 +229,6 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
 
 def test_get_user_attributes_beneficiary_because_of_credit():
     user = BeneficiaryGrant18Factory(
-        deposit__version=2,
         departementCode="75",
         phoneNumber="+33607080901",
         phoneValidationStatus=PhoneValidationStatusType.VALIDATED,

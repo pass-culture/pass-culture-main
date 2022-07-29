@@ -259,8 +259,7 @@ class BeneficiaryUserView(ResendValidationEmailMixin, SuspensionMixin, BaseAdmin
         if is_created:
             model.add_beneficiary_role()
 
-            deposit_version = int(form.depositVersion.data) if not settings.IS_PROD else None
-            users_api.fulfill_beneficiary_data(model, "pass-culture-admin", EligibilityType.AGE18, deposit_version)
+            users_api.fulfill_beneficiary_data(model, "pass-culture-admin", EligibilityType.AGE18)
 
         super().on_model_change(form, model, is_created)
 
