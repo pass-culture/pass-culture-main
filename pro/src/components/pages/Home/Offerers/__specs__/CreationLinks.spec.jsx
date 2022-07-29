@@ -1,12 +1,10 @@
 import '@testing-library/jest-dom'
 
-import { act, render, screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { act, render, screen, within } from '@testing-library/react'
 import React from 'react'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router'
 
-import { Events } from 'core/FirebaseEvents/constants'
 import * as pcapi from 'repository/pcapi/pcapi'
 import { configureTestStore } from 'store/testUtils'
 
@@ -17,7 +15,6 @@ jest.mock('repository/pcapi/pcapi', () => ({
   getAllOfferersNames: jest.fn(),
   getVenueStats: jest.fn(),
 }))
-const mockLogEvent = jest.fn()
 const renderHomePage = async () => {
   const store = configureTestStore({
     user: {
@@ -30,7 +27,6 @@ const renderHomePage = async () => {
       },
       initialized: true,
     },
-    app: { logEvent: mockLogEvent },
   })
 
   return await act(async () => {
@@ -245,46 +241,6 @@ describe('creationLinks', () => {
           name: 'Créer un lieu',
         })
       ).toBeInTheDocument()
-    })
-    it('should track venue creation link', async () => {
-      // Given
-      baseOfferers = [
-        {
-          ...baseOfferers[1],
-          hasDigitalVenueAtLeastOneOffer: false,
-        },
-      ]
-      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
-      await renderHomePage()
-
-      const createVenueButton = await screen.queryByText('Créer un lieu')
-
-      await userEvent.click(createVenueButton)
-      expect(
-        screen.queryByText(
-          'Avant de créer votre première offre physique vous devez avoir un lieu'
-        )
-      ).toBeInTheDocument()
-
-      await waitFor(() =>
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          1,
-          Events.CLICKED_CREATE_VENUE,
-          {
-            from: '/',
-          }
-        )
-      )
-
-      await waitFor(() =>
-        expect(mockLogEvent).toHaveBeenNthCalledWith(
-          2,
-          Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER,
-          {
-            from: '/',
-          }
-        )
-      )
     })
   })
 
