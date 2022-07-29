@@ -986,7 +986,7 @@ class PriceBookingsTest:
         assert len(collective_booking.pricings) == 1
 
     @auto_override_features
-    @mock.patch("pcapi.core.finance.api.price_booking", lambda booking: None)
+    @mock.patch("pcapi.core.finance.api.price_booking", lambda booking, use_pricing_point: None)
     def test_num_queries(self):
         bookings_factories.UsedBookingFactory(
             dateUsed=self.few_minutes_ago,
