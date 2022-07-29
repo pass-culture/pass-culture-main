@@ -79,5 +79,9 @@ test('la balise script pour le tracking HubSpot est présente sur la page', asyn
     'src',
     /.*\/\/js\.hs-scripts.com\/5119289\.js/
   )
-  await t.expect(trackingScript.exists).ok()
+  await t
+    .expect(Selector('h1').withText('Créer votre compte professionnel').exists)
+    .ok()
+    .expect(trackingScript.exists)
+    .ok()
 })
