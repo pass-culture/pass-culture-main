@@ -28,7 +28,6 @@ def get_granted_deposit(
     beneficiary: users_models.User,
     eligibility: users_models.EligibilityType,
     age_at_registration: int | None = None,
-    version: int | None = None,
 ) -> GrantedDeposit | None:
     if eligibility == users_models.EligibilityType.UNDERAGE:
         if age_at_registration not in constants.ELIGIBILITY_UNDERAGE_RANGE:
@@ -42,13 +41,11 @@ def get_granted_deposit(
         )
 
     if eligibility == users_models.EligibilityType.AGE18 or settings.IS_INTEGRATION:
-        if version is None:
-            version = 2
         return GrantedDeposit(
-            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[version],
+            amount=deposit_conf.GRANTED_DEPOSIT_AMOUNTS_FOR_18_BY_VERSION[2],
             expiration_date=datetime.datetime.utcnow() + relativedelta(years=deposit_conf.GRANT_18_VALIDITY_IN_YEARS),
             type=DepositType.GRANT_18,
-            version=version,
+            version=2,
         )
 
     return None
@@ -58,18 +55,13 @@ def create_deposit(
     beneficiary: users_models.User,
     deposit_source: str,
     eligibility: users_models.EligibilityType,
-    version: int | None = None,
     age_at_registration: int | None = None,
 ) -> Deposit:
-    """Create a new deposit for the user if there is no deposit yet.
-
-    The ``version`` argument MUST NOT be used outside (very specific) tests.
-    """
+    """Create a new deposit for the user if there is no deposit yet."""
     granted_deposit = get_granted_deposit(
         beneficiary,
         eligibility,
         age_at_registration=age_at_registration,
-        version=version,
     )
 
     if not granted_deposit:
@@ -80,9 +72,6 @@ def create_deposit(
 
     if beneficiary.has_active_deposit:
         raise exceptions.UserHasAlreadyActiveDeposit()
-
-    if version is not None:
-        granted_deposit.version = version
 
     deposit = Deposit(
         version=granted_deposit.version,

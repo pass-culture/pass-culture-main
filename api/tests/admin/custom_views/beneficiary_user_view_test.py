@@ -43,44 +43,6 @@ class BeneficiaryUserViewTest:
 
     @clean_database
     @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
-    def test_beneficiary_user_creation(self, mocked_validate_csrf_token, app):
-        users_factories.AdminFactory(email="admin@example.com")
-
-        data = dict(
-            email="LAMA@example.com",
-            firstName="Serge",
-            lastName="Lama",
-            dateOfBirth=f"{self.AGE18_ELIGIBLE_BIRTH_DATE:%Y-%m-%d %H:%M:%S}",
-            departementCode="93",
-            postalCode="93000",
-            phoneNumber="0601020304",
-            depositVersion="1",
-            csrf_token="token",
-        )
-
-        client = TestClient(app.test_client()).with_session_auth("admin@example.com")
-        response = client.post("/pc/back-office/beneficiary_users/new", form=data)
-
-        assert response.status_code == 302
-
-        user_created = User.query.filter_by(email="lama@example.com").one()
-        assert user_created.firstName == "Serge"
-        assert user_created.lastName == "Lama"
-        assert user_created.publicName == "Serge Lama"
-        assert user_created.dateOfBirth.date() == self.AGE18_ELIGIBLE_BIRTH_DATE.date()
-        assert user_created.departementCode == "93"
-        assert user_created.postalCode == "93000"
-        assert user_created.phoneNumber == "0601020304"
-        assert len(user_created.deposits) == 1
-        assert user_created.deposit.source == "pass-culture-admin"
-        assert user_created.deposit.amount == 500
-        assert user_created.has_beneficiary_role
-
-        assert len(mails_testing.outbox) == 0
-        assert len(push_testing.requests) == 2
-
-    @clean_database
-    @patch("wtforms.csrf.session.SessionCSRF.validate_csrf_token")
     def test_beneficiary_user_creation_for_deposit_v2(self, mocked_validate_csrf_token, app):
         users_factories.AdminFactory(email="user@example.com")
 
@@ -101,6 +63,13 @@ class BeneficiaryUserViewTest:
         assert response.status_code == 302
 
         user_created = User.query.filter_by(email="toto@example.com").one()
+        assert user_created.firstName == "Serge"
+        assert user_created.lastName == "Lama"
+        assert user_created.publicName == "Serge Lama"
+        assert user_created.dateOfBirth.date() == self.AGE18_ELIGIBLE_BIRTH_DATE.date()
+        assert user_created.departementCode == "93"
+        assert user_created.postalCode == "93000"
+        assert user_created.phoneNumber == "0601020304"
         assert len(user_created.deposits) == 1
         assert user_created.deposit.version == 2
         assert user_created.deposit.source == "pass-culture-admin"

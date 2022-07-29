@@ -93,7 +93,6 @@ class AccountTest:
         }
         user = users_factories.BeneficiaryGrant18Factory(
             dateOfBirth=datetime(2000, 1, 1),
-            deposit__version=1,
             # The expiration date is taken in account in
             # `get_wallet_balance` and compared against the SQL
             # `now()` function, which is NOT overriden by
@@ -118,12 +117,12 @@ class AccountTest:
             "id": user.id,
             "bookedOffers": {str(booking.stock.offer.id): booking.id},
             "domainsCredit": {
-                "all": {"initial": 50000, "remaining": 37655},
-                "digital": {"initial": 20000, "remaining": 20000},
-                "physical": {"initial": 20000, "remaining": 7655},
+                "all": {"initial": 30000, "remaining": 17655},
+                "digital": {"initial": 10000, "remaining": 10000},
+                "physical": None,
             },
             "dateOfBirth": "2000-01-01",
-            "depositVersion": 1,
+            "depositVersion": 2,
             "depositType": "GRANT_18",
             "depositExpirationDate": "2040-01-01T00:00:00Z",
             "eligibility": "age-18",

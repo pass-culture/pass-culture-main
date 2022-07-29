@@ -28,18 +28,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @freeze_time("2021-02-05 09:00:00")
 class CreateDepositTest:
-    def test_deposit_created_with_version_1(self):
-        # Given
-        beneficiary = users_factories.UserFactory(
-            dateOfBirth=datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=18, months=2)
-        )
-
-        deposit = api.create_deposit(beneficiary, "created by test", users_models.EligibilityType.AGE18, version=1)
-
-        assert deposit.version == 1
-        assert deposit.amount == Decimal(500)
-        assert deposit.source == "created by test"
-
     @pytest.mark.parametrize("age,expected_amount", [(15, Decimal(20)), (16, Decimal(30)), (17, Decimal(30))])
     def test_create_underage_deposit(self, age, expected_amount):
         with freeze_time(datetime.combine(datetime.utcnow(), time(0, 0)) - relativedelta(years=age, months=2)):
