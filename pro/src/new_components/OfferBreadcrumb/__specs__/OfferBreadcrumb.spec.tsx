@@ -86,7 +86,7 @@ describe('src | new_components | OfferBreadcrumb', () => {
 
       expect(linkItems).toHaveLength(2)
       expect(linkItems[0].getAttribute('href')).toBe(
-        '/offre/A1/individuel/edition'
+        '/offre/A1/individuel/recapitulatif'
       )
       expect(linkItems[1].getAttribute('href')).toBe(
         '/offre/A1/individuel/stocks'

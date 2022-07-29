@@ -3,6 +3,7 @@ import { Selector } from 'testcafe'
 import { getPathname, goBack } from './helpers/location'
 import {
   navigateToNewOfferAs,
+  navigateToOfferEditionAs,
   navigateToOfferDetailsAs,
   navigateToOffersAs,
 } from './helpers/navigations'
@@ -415,10 +416,8 @@ test("je peux modifier la thumbnail d'une offre", async t => {
     'pro_06_offers',
     'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
   )
-  const detailsAnchor = Selector(
-    `a[href^="/offre/${offer.id}/individuel/edition"]`
-  ).withText('Modifier')
-  await navigateToOfferDetailsAs(user, offer, createUserRole(user))(t)
+
+  await navigateToOfferEditionAs(user, offer, createUserRole(user))(t)
 
   const previousThumbnailSrc = await offerThumbnail().attributes['src']
   await t
@@ -431,4 +430,21 @@ test("je peux modifier la thumbnail d'une offre", async t => {
   await t
     .expect(updatedThumbnail.attributes['src'] === previousThumbnailSrc)
     .notOk()
+})
+
+test("je suis scrollé sur l'élément incorrect du formulaire d'édition d'offre", async t => {
+  const { offer, user } = await fetchSandbox(
+    'pro_06_offers',
+    'get_existing_pro_validated_user_with_at_least_one_offer_with_at_least_one_thumbnail'
+  )
+  await navigateToOfferEditionAs(user, offer, createUserRole(user))(t)
+  const key_combination_to_delete_text_input = 'ctrl+a delete'
+
+  await t
+    .click(nameInput())
+    .pressKey(key_combination_to_delete_text_input)
+    .click(noDisabilityCompliantCheckbox)
+    .click(submitButton)
+    .expect(isElementInViewport('.offer-form [name="name"]'))
+    .ok({ timeout: 2000 })
 })

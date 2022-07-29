@@ -16,19 +16,19 @@ import {
 import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { FORMAT_DD_MM_YYYY_HH_mm, toDateStrippedOfTimezone } from 'utils/date'
 
-const BookingOfferCell = ({
-  offer,
-}: {
+interface IBookingOfferCellProps {
   offer:
     | BookingRecapResponseStockModel
     | CollectiveBookingCollectiveStockResponseModel
-}) => {
-  const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
+}
+
+const BookingOfferCell = ({ offer }: IBookingOfferCellProps) => {
   const { logEvent } = useAnalytics()
+  const isOfferFormV3 = useActiveFeature('OFFER_FORM_V3')
   const editionUrl = useOfferEditionURL(
     offer.offer_is_educational,
     offer.offer_identifier,
-    useSummaryPage
+    isOfferFormV3
   )
   const eventBeginningDatetime = offer.event_beginning_datetime
   const isbn = offer.offer_isbn
