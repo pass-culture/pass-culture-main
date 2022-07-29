@@ -2,20 +2,22 @@ import '@testing-library/jest-dom'
 
 import * as pcapi from 'repository/pcapi/pcapi'
 
-import { act, render, screen, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 
+import { Events } from 'core/FirebaseEvents/constants'
 import Homepage from '../../Homepage'
 import { MemoryRouter } from 'react-router'
 import { Provider } from 'react-redux'
 import React from 'react'
 import { configureTestStore } from 'store/testUtils'
+import userEvent from '@testing-library/user-event'
 
 jest.mock('repository/pcapi/pcapi', () => ({
   getOfferer: jest.fn(),
   getAllOfferersNames: jest.fn(),
   getVenueStats: jest.fn(),
 }))
-
+const mockLogEvent = jest.fn()
 const renderHomePage = async () => {
   const store = configureTestStore({
     user: {
@@ -28,6 +30,7 @@ const renderHomePage = async () => {
       },
       initialized: true,
     },
+    app: { logEvent: mockLogEvent },
   })
 
   return await act(async () => {
@@ -40,7 +43,6 @@ const renderHomePage = async () => {
     )
   })
 }
-
 describe('creationLinks', () => {
   let baseOfferers
   let baseOfferersNames
@@ -243,6 +245,46 @@ describe('creationLinks', () => {
           name: 'Créer un lieu',
         })
       ).toBeInTheDocument()
+    })
+    it('should track venue creation link', async () => {
+      // Given
+      baseOfferers = [
+        {
+          ...baseOfferers[1],
+          hasDigitalVenueAtLeastOneOffer: false,
+        },
+      ]
+      pcapi.getOfferer.mockResolvedValue(baseOfferers[0])
+      await renderHomePage()
+
+      const createVenueButton = await screen.queryByText('Créer un lieu')
+
+      await userEvent.click(createVenueButton)
+      expect(
+        screen.queryByText(
+          'Avant de créer votre première offre physique vous devez avoir un lieu'
+        )
+      ).toBeInTheDocument()
+
+      await waitFor(() =>
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          1,
+          Events.CLICKED_CREATE_VENUE,
+          {
+            from: '/',
+          }
+        )
+      )
+
+      await waitFor(() =>
+        expect(mockLogEvent).toHaveBeenNthCalledWith(
+          2,
+          Events.CLICKED_ADD_FIRST_VENUE_IN_OFFERER,
+          {
+            from: '/',
+          }
+        )
+      )
     })
   })
 
