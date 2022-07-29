@@ -43,6 +43,7 @@ class CollectiveOfferFactory(BaseFactory):
         "otherAddress": "1 rue des polissons, Paris 75017",
         "venueId": "",
     }
+    interventionArea = ["93", "94", "95"]
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
@@ -92,6 +93,7 @@ class CollectiveOfferTemplateFactory(BaseFactory):
         "otherAddress": "1 rue des polissons, Paris 75017",
         "venueId": "",
     }
+    interventionArea = ["2A", "2B"]
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):  # type: ignore [no-untyped-def]
