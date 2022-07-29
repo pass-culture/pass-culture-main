@@ -986,6 +986,25 @@ class PriceBookingsTest:
         assert len(collective_booking.pricings) == 1
 
     @auto_override_features
+    def test_loop(self):
+        bookings_factories.UsedBookingFactory.create_batch(
+            2,
+            dateUsed=self.few_minutes_ago,
+            stock=self.individual_stock_factory(),
+        )
+        print("individual = %s" % [b.id for b in bookings_models.Booking.query.all()])
+        UsedCollectiveBookingFactory.create_batch(
+            3,
+            dateUsed=self.few_minutes_ago,
+            collectiveStock=self.collective_stock_factory(),
+        )
+        import pcapi.core.educational.models as educational_models
+
+        print("collective = %s" % [b.id for b in educational_models.CollectiveBooking.query.all()])
+        api.price_bookings(min_date=self.few_minutes_ago, batch_size=1)
+        assert models.Pricing.query.count() == 2 + 3
+
+    @auto_override_features
     @mock.patch("pcapi.core.finance.api.price_booking", lambda booking, use_pricing_point: None)
     def test_num_queries(self):
         bookings_factories.UsedBookingFactory(
@@ -997,6 +1016,8 @@ class PriceBookingsTest:
             collectiveStock=self.collective_stock_factory(),
         )
         n_queries = 1  # fetch `USE_PRICING_POINT_FOR_PRICING` feature flag
+        n_queries += 1  # count of individual bookings to price
+        n_queries += 1  # count of collective bookings to price
         n_queries += 1  # select individual bookings
         n_queries += 1  # select collective bookings
         with assert_num_queries(n_queries):
