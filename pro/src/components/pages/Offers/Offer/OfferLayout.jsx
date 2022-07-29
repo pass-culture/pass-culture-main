@@ -13,7 +13,6 @@ import Titles from 'components/layout/Titles/Titles'
 import Confirmation from 'components/pages/Offers/Offer/Confirmation/Confirmation'
 import { OfferHeader } from 'components/pages/Offers/Offer/OfferStatus/OfferHeader'
 import StocksContainer from 'components/pages/Offers/Offer/Stocks/StocksContainer'
-import { useGetCategories, serializeOfferApi } from 'core/Offers/adapters'
 import Breadcrumb, { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import RouteLeavingGuardOfferCreation from 'new_components/RouteLeavingGuardOfferCreation'
 import { RouteLeavingGuardOfferIndividual } from 'new_components/RouteLeavingGuardOfferIndividual'
@@ -56,8 +55,6 @@ const OfferLayout = () => {
   const [offer, setOffer] = useState(null)
   const useSummaryPage = useActiveFeature('OFFER_FORM_SUMMARY_PAGE')
 
-  const { data: categoriesData, isLoading: isLoadingCategories } =
-    useGetCategories()
   const loadOffer = async offerId => {
     try {
       const existingOffer = await api.getOffer(offerId)
@@ -83,7 +80,7 @@ const OfferLayout = () => {
 
   let pageTitle = 'Créer une offre'
 
-  if (isLoadingCategories || (match.params.offerId && !offer)) {
+  if (match.params.offerId && !offer) {
     return null
   }
 
@@ -160,15 +157,7 @@ const OfferLayout = () => {
               `${match.path}/creation/recapitulatif`,
             ]}
           >
-            {() => (
-              <OfferSummaryRoute
-                formOfferV2={true}
-                offerId={offer.id}
-                offer={serializeOfferApi(offer)}
-                categories={categoriesData.categories}
-                subCategories={categoriesData.subCategories}
-              />
-            )}
+            {() => <OfferSummaryRoute formOfferV2={true} />}
           </Route>
           <Route exact path={`${match.url}/creation/confirmation`}>
             {() => (

@@ -1,34 +1,59 @@
 import React from 'react'
-import { matchPath, useLocation } from 'react-router-dom'
+import { matchPath, useLocation, useHistory, useParams } from 'react-router-dom'
 
-import {
-  IOfferCategory,
-  IOfferSubCategory,
-  IOfferIndividual,
-} from 'core/Offers/types'
+import useNotification from 'components/hooks/useNotification'
+import Spinner from 'components/layout/Spinner'
+import { useGetCategories, useGetOfferIndividual } from 'core/Offers/adapters'
+import { useHomePath } from 'hooks'
 import { Summary as SummaryScreen } from 'screens/OfferIndividual/Summary'
 
 import { serializePropsFromOfferIndividual } from '.'
 
 interface IOfferIndividualSummaryProps {
   formOfferV2?: boolean
-  offer: IOfferIndividual
-  categories: IOfferCategory[]
-  subCategories: IOfferSubCategory[]
 }
 
 const OfferIndividualSummary = ({
   formOfferV2 = false,
-  offer,
-  categories,
-  subCategories,
 }: IOfferIndividualSummaryProps): JSX.Element | null => {
+  const notify = useNotification()
+  const history = useHistory()
+  const homePath = useHomePath()
   const location = useLocation()
   const isCreation =
     matchPath(
       location.pathname,
       '/offre/:offer_id/individuel/creation/recapitulatif'
     ) !== null
+
+  const { offerId } = useParams<{ offerId: string }>()
+  const {
+    data: offer,
+    isLoading: offerIsLoading,
+    error: offerError,
+  } = useGetOfferIndividual(offerId)
+  const {
+    data: categoriesData,
+    isLoading: categoriesIsLoading,
+    error: categoriesError,
+  } = useGetCategories()
+
+  if (categoriesError !== undefined || offerError !== undefined) {
+    const loadingError = [categoriesError, offerError].find(
+      error => error !== undefined
+    )
+    if (loadingError !== undefined) {
+      notify.error(loadingError.message)
+      history.push(homePath)
+    }
+    return null
+  }
+
+  if (offerIsLoading || categoriesIsLoading) {
+    return <Spinner />
+  }
+
+  const { categories, subCategories } = categoriesData
 
   const {
     providerName,

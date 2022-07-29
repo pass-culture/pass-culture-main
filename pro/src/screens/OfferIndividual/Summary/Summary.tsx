@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router-dom'
 
 import useAnalytics from 'components/hooks/useAnalytics'
@@ -13,7 +12,6 @@ import {
   OFFER_FORM_NAVIGATION_MEDIUM,
   OFFER_FORM_NAVIGATION_OUT,
 } from 'core/FirebaseEvents/constants'
-import { computeOffersUrl } from 'core/Offers'
 import { IOfferSubCategory } from 'core/Offers/types'
 import { ReactComponent as PhoneInfo } from 'icons/info-phone.svg'
 import { BannerSummary } from 'new_components/Banner'
@@ -25,13 +23,11 @@ import { OfferBreadcrumbStep } from 'new_components/OfferBreadcrumb'
 import { OfferFormLayout } from 'new_components/OfferFormLayout'
 import { SummaryLayout } from 'new_components/SummaryLayout'
 import * as pcapi from 'repository/pcapi/pcapi'
-import { RootState } from 'store/reducers'
-import { Button, ButtonLink } from 'ui-kit'
-import { ButtonVariant } from 'ui-kit/Button/types'
 import { getOfferConditionalFields } from 'utils/getOfferConditionalFields'
 
 import { ActionBar } from '../ActionBar'
 
+import { ActionsFormV2 } from './ActionsFormV2'
 import { IOfferSectionProps, OfferSection } from './OfferSection'
 import { IStockEventItemProps, StockEventSection } from './StockEventSection'
 import { IStockThingSectionProps, StockThingSection } from './StockThingSection'
@@ -66,7 +62,7 @@ const Summary = ({
   const location = useLocation()
   const notification = useNotification()
   const { logEvent } = useAnalytics()
-  const handleOfferPublication = () => {
+  const publishOffer = () => {
     setIsDisabled(true)
     const url = `/offre/${offerId}/individuel/creation/confirmation${location.search}`
     pcapi
@@ -122,14 +118,6 @@ const Summary = ({
     ...offerConditionalFields,
   ]
 
-  const offersSearchFilters = useSelector(
-    (state: RootState) => state.offers.searchFilters
-  )
-  const offersPageNumber = useSelector(
-    (state: RootState) => state.offers.pageNumber
-  )
-  const backOfferUrl = computeOffersUrl(offersSearchFilters, offersPageNumber)
-
   const isDisabledOffer = isOfferDisabled(offerStatus)
 
   return (
@@ -172,51 +160,13 @@ const Summary = ({
           )}
 
           {formOfferV2 ? (
-            isCreation ? (
-              <div className={styles['offer-creation-preview-actions']}>
-                <ButtonLink
-                  variant={ButtonVariant.SECONDARY}
-                  link={{
-                    to: `/offre/${offerId}/individuel/creation/stocks`,
-                    isExternal: false,
-                  }}
-                  onClick={() =>
-                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                      from: OfferBreadcrumbStep.SUMMARY,
-                      to: OfferBreadcrumbStep.STOCKS,
-                      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                      isEdition: !isCreation,
-                    })
-                  }
-                >
-                  Étape précédente
-                </ButtonLink>
-                <Button
-                  variant={ButtonVariant.PRIMARY}
-                  onClick={handleOfferPublication}
-                  disabled={isDisabled}
-                >
-                  Publier l'offre
-                </Button>
-              </div>
-            ) : (
-              <div className={styles['offer-creation-preview-actions']}>
-                <ButtonLink
-                  variant={ButtonVariant.PRIMARY}
-                  link={{ to: backOfferUrl, isExternal: false }}
-                  onClick={() =>
-                    logEvent?.(Events.CLICKED_OFFER_FORM_NAVIGATION, {
-                      from: OfferBreadcrumbStep.SUMMARY,
-                      to: OFFER_FORM_NAVIGATION_OUT.OFFERS,
-                      used: OFFER_FORM_NAVIGATION_MEDIUM.STICKY_BUTTONS,
-                      isEdition: !isCreation,
-                    })
-                  }
-                >
-                  Retour à la liste des offres
-                </ButtonLink>
-              </div>
-            )
+            <ActionsFormV2
+              isCreation={isCreation}
+              offerId={offerId}
+              className={styles['offer-creation-preview-actions']}
+              publishOffer={publishOffer}
+              disablePublish={isDisabled}
+            />
           ) : (
             <OfferFormLayout.ActionBar>
               <ActionBar
