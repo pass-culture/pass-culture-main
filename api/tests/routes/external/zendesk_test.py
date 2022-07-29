@@ -69,7 +69,7 @@ class ZendeskWebhookTest:
         user = users_factories.UserFactory(
             dateOfBirth=datetime(2004, 3, 2),
             phoneNumber="0634567890",
-            phoneValidationStatus=PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
+            phoneValidationStatus=None,
             isActive=False,
         )
         users_factories.UserSuspensionByFraudFactory(

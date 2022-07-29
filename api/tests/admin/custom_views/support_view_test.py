@@ -374,9 +374,7 @@ class BeneficiaryValidationViewTest:
 class ValidatePhoneNumberTest:
     def test_phone_validation(self, client, caplog):
         admin = users_factories.AdminFactory()
-        user = users_factories.UserFactory(
-            phoneValidationStatus=users_models.PhoneValidationStatusType.BLOCKED_TOO_MANY_CODE_SENDINGS,
-        )
+        user = users_factories.UserFactory(phoneValidationStatus=None)
         client.with_session_auth(admin.email)
         with caplog.at_level(logging.INFO):
             response = client.post(f"/pc/back-office/support_beneficiary/validate/beneficiary/phone_number/{user.id}")
